@@ -1,0 +1,13 @@
+New ideas should be implemented in one of libideas or widgetideas based on
+whether or not they have a visual components.  This is mainly for
+ease of categorization and browsing.  Avoid creating new top-level packages
+without consulting GWTC first.
+
+Please add a file called OWNERS to the directory that lists the email
+addresses of the folks generally responsible for the code in a directory.
+This will aid in coordination, code reviews, and courtesy.
+
+All code should be licensed under the same licesne as the Google Web Toolkit,
+namely the Apache License, Version 2.0.
+
+Happy coding.
