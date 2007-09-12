@@ -1,13 +1,45 @@
-New ideas should be implemented in one of libideas or widgetideas based on
-whether or not they have a visual components.  This is mainly for
-ease of categorization and browsing.  Avoid creating new top-level packages
-without consulting GWTC first.
+There are two source roots at present:
 
-Please add a file called OWNERS to the directory that lists the email
-addresses of the folks generally responsible for the code in a directory.
-This will aid in coordination, code reviews, and courtesy.
+/src - Source to include in a distribution lives under here
+/test - For unit tests; the hierarchy should parallel /src
 
-All code should be licensed under the same licesne as the Google Web Toolkit,
-namely the Apache License, Version 2.0.
+Please use either in the libideas or widgetideas package hierarchies
+using typical GWT organization conventions. We want to intentionally
+promote unification of code and prevent this from becoming a mere
+dumping ground.
+
+=== Widget packages ===
+com.google.gwt.widgetideas
+- root package for all things visual, typically widgets
+- add module XML here
+
+com.google.gwt.widgetideas.client
+- actual widget code lives here; please don't create additional subpackages
+
+com.google.gwt.widgetideas.client.impl
+- contains deferred binding sublcasses and other low-level implementation
+
+com.google.gwt.widgetideas.rebind
+- contains deferred binding generators related to widgets
+
+com.google.gwt.widgetideas.server
+- contains server-side support related to widgets
+
+=== Library packages ===
+com.google.gwt.libideas  
+- root package for all things non-visual
+- add module XML here
+
+com.google.gwt.libideas.client
+- actual library code lives here; please don't create additional subpackages
+
+com.google.gwt.libideas.client.impl
+- contains deferred binding sublcasses and other low-level implementation
+
+com.google.gwt.libideas.rebind
+- contains deferred binding generators related to libraries
+
+com.google.gwt.libideas.server
+- contains server-side support related to libraries
 
 Happy coding.
