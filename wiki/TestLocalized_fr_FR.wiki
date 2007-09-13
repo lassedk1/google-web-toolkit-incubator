@@ -1,0 +1,2 @@
+#summary Testing a page localized for French
+
