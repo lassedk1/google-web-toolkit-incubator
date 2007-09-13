@@ -73,10 +73,18 @@ public class StaticResourceBundleGenerator extends Generator {
       throw new UnableToCompleteException();
     }
 
+    String locale;
+    try {
+      locale = context.getPropertyOracle().getPropertyValue(logger, "locale");
+    } catch (BadPropertyValueException e) {
+      // Don't care, likely the user isn't using localization.
+      locale = "";
+    }
+
     // Pick a name for the generated class to not conflict. Enclosing class
     // names must be preserved.
     final String generatedSimpleSourceName =
-        generateSimpleSourceName(sourceType.getName());
+        generateSimpleSourceName(sourceType.getName()) + locale;
 
     // Begin writing the generated source.
     final ClassSourceFileComposerFactory f =
@@ -132,7 +140,7 @@ public class StaticResourceBundleGenerator extends Generator {
         }
 
         // The local URL by which the generator can access the file's content
-        URL resourceUrl = getResourceUrlFromMetaData(logger, m);
+        URL resourceUrl = getResourceUrlFromMetaData(logger, m, locale);
 
         // Just for convenience when examining the generated file
         sw.println("// " + resourceUrl.toExternalForm());
@@ -313,8 +321,8 @@ public class StaticResourceBundleGenerator extends Generator {
    * this is only called for valid methods. This is a cut-down version of the
    * logic found in ImageBundleBuilder
    */
-  private URL getResourceUrlFromMetaData(TreeLogger logger, JMethod method)
-      throws UnableToCompleteException {
+  private URL getResourceUrlFromMetaData(TreeLogger logger, JMethod method,
+      String locale) throws UnableToCompleteException {
 
     String[][] md = method.getMetaData(METADATA_TAG);
 
@@ -337,11 +345,30 @@ public class StaticResourceBundleGenerator extends Generator {
           pkgName.replace('.', '/') + "/" + resourceNameFromMetaData;
     }
 
-    // Make sure that the resource exists on the classpath. In the future,
-    // this code will have to be changed if resources are loaded from the
-    // source path or public path.
-    URL resourceURL =
-        getClass().getClassLoader().getResource(resourceNameFromMetaData);
+    URL resourceURL = null;
+    ClassLoader cl = getClass().getClassLoader();
+
+    // Look for locale-specific variants of individual resources
+    if (locale != null) {
+      // Convert language_country_variant to independent pieces
+      String[] localeSegments = locale.split("_");
+      int lastDot = resourceNameFromMetaData.lastIndexOf(".");
+      String prefix = resourceNameFromMetaData.substring(0, lastDot);
+      String extension = resourceNameFromMetaData.substring(lastDot);
+
+      for (int i = localeSegments.length - 1; i >= -1; i--) {
+        String localeInsert = "";
+        for (int j = 0; j <= i; j++) {
+          localeInsert += "_" + localeSegments[j];
+        }
+
+        resourceURL = cl.getResource(prefix + localeInsert + extension);
+        if (resourceURL != null) {
+          break;
+        }
+      }
+    }
+
     if (resourceURL == null) {
       logger.log(TreeLogger.ERROR, "Resource " + resourceNameFromMetaData
           + " not found on classpath. "
