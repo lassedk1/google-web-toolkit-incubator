@@ -1,4 +1,4 @@
-#New Widget - Sliding knob over a range of values
+#summary New Widget - Sliding knob over a range of values
 
 = Introduction =
 
