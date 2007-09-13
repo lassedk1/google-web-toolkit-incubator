@@ -62,20 +62,22 @@ public class StyleInjector {
   /**
    * Add a stylesheet to the document. Any occurrence of
    * <code>%resourceName%</code> in the stylesheet's contents will be replaced
-   * by the URL of the named resource contained in <code>references</code>.
+   * by the URL of the named {@link DataResource} contained in
+   * <code>references</code>.
    * 
    * @param contents the CSS contents of the stylesheet
    * @param references the resources to substitute into the stylesheet.
    */
-  public static void injectStylesheet(String contents, ImmutableResourceBundle references) {
+  public static void injectStylesheet(String contents,
+      ImmutableResourceBundle references) {
     if (references != null) {
       ResourcePrototype[] prototypes = references.getResources();
       for (int i = 0; i < prototypes.length; i++) {
         ResourcePrototype p = prototypes[i];
         if (p instanceof DataResource) {
           contents =
-              contents.replaceAll("%" + prototypes[i].getName() + "%",
-                  ((DataResource)p).getUrl());
+              contents.replaceAll("%" + p.getName() + "%", ((DataResource) p)
+                  .getUrl());
         }
       }
     }
@@ -91,4 +93,10 @@ public class StyleInjector {
   private static native Element getDocumentHead() /*-{
    return $doc.getElementsByTagName("head")[0];
    }-*/;
+
+  /**
+   * Utility class.
+   */
+  private StyleInjector() {
+  }
 }
