@@ -1,3 +1,5 @@
+#New Widget - Sliding knob over a range of values
+
 = Introduction =
 
 Coming soon
