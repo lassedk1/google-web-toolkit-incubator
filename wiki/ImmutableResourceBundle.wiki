@@ -21,7 +21,10 @@
 
 = Examples =
 
-To use the ImmutableResourceBundle, in
+To use the ImmutableResourceBundle, add an inherits tag to your `gwt.xml` file:
+{{{
+<inherits name="com.google.gwt.libideas.ImmutableResources" />
+}}}
 
 Interfaces:
 {{{
