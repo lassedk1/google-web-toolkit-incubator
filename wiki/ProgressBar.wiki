@@ -1,3 +1,5 @@
+#summary New Widget - A Widget that displays progress over a range
+
 = Introduction =
 
 Coming soon
