@@ -1,0 +1,48 @@
+#summary Combines ImmutableResourceBundle with CSS styleshees
+
+= Introduction =
+
+= Goal =
+
+  * Apply the techniques outlined in ImmutableResourceBundle with stylesheets
+
+= Details =
+
+In your gwt.xml file:
+{{{
+<inherits name="com.google.gwt.libideas.ImmutableResources" />
+<inherits name="com.google.gwt.widgetideas.StyleInjector" />
+}}}
+
+Define your ImmutableResourceBundle:
+{{{
+public interface Resources extends ImmutableResourceBundle {
+  public static final Resources INSTANCE =
+      (Resources) GWT.create(Resources.class);
+
+  /**
+   * @gwt.resource myBackground.png
+   */
+  public DataResource background();
+
+  /**
+   * @gwt.resource myCSS.css
+   */
+  public TextResource css();
+}
+}}}
+
+The CSS contents:
+{{{
+body {
+  background: url('%background%') repeat-x;
+}
+}}}
+
+In your `onModuleLoad`:
+{{{
+StyleInjector.injectStylesheet(Resources.INSTANCE.css().getText(), Resources.INSTANCE);
+}}}
+
+
+You now have your stylesheet applied to the document while taking advantage of strongly-named or inlined resource URLs.
