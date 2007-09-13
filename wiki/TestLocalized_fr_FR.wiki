@@ -1,2 +1,3 @@
 #summary Testing a page localized for French
 
+Looks like this can kinda work.
