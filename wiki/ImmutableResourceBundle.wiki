@@ -2,17 +2,17 @@
 
 = Introduction =
 
- The resources in a deployed GWT application can be roughly categorized into resources to never cache (.nocache.js), to cache forever (.cache.html), and everything else (myapp.css).  The proposed ResourceBundle interface seeks to move entries in the everything-else category into the cache-forever category.
+ The resources in a deployed GWT application can be roughly categorized into resources to never cache `.nocache.js`, to cache forever `.cache.html`, and everything else `myapp.css`.  The proposed ImmutableResourceBundle interface seeks to move entries in the everything-else category into the cache-forever category.
 
 = Goals =
 
-  * No more uncertainty if your application is getting the right contents for program resources.  How often have you had to manually clear the browser's cache to force a refresh of a CSS or configuration file?
+  * No more uncertainty if your application is getting the right contents for program resources.
   * Decrease non-determinism caused by intermediate proxy servers.
-  * Enable more aggressive caching headers can be used for program resources.
-  * Eliminate mismatches between filenames and constants in Java code. The compile process will log errors if a resource is unavailable during the compilation process.
-  * Use of data: URLs or embedding resources in compiled JS when browser- and size-appropriate to eliminate round-trips entirely.
-  * Provides a future framework for automatically generating manifests for Google Gears resource stores.
-  * Ensure there is no penalty for having multiple ResourceBundle resource functions refer to the same content.
+  * Enable more aggressive caching headers for program resources.
+  * Eliminate mismatches between physical filenames and constants in Java code by performing consistency checks during the compile.
+  * Use of 'data:' URLs, JSON bundles, or other means of embedding resources in compiled JS when browser- and size-appropriate to decrease the number of round-trips entirely.
+  * Provides an extensible design for adding new implementation strategies.
+  * Ensure there is no penalty for having multiple ImmutableResourceBundle resource functions refer to the same content.
   * To optionally include statistics about the number and size of resources used by your application.
 
 = Non-Goals =
@@ -21,9 +21,11 @@
 
 = Examples =
 
+To use the ImmutableResourceBundle, in
+
 Interfaces:
 {{{
-public interface MyResources extends ResourceBundle {
+public interface MyResources extends ImmutableResourceBundle {
  public static final MyResources INSTANCE =  (MyResources) GWT.create(MyResources.class);
 
  /** @gwt.resource myApp.css */
@@ -32,17 +34,20 @@ public interface MyResources extends ResourceBundle {
  /** @gwt.resource myConfiguration.xml */
  public TextResource initialConfiguration();
 
- /** @gwt.resource com/foo/bar/someGraphic.png */
+ /** @gwt.resource com/foo/bar/binaryFile.bin */
  public DataResource otherFile();
 }
 }}}
 
-
-
+You can then say:
+{{{
+  Window.alert(MyResources.INSTANCE.css().getText());
+  new Frame(MyResources.INSTANCE.otherFile().getURL());
+}}}
 
 = Potential pitfalls =
   * Changing the content of the resources will change the filenames (or data: encoding), thus forcing a recompile of the GWT application. To avoid this, the inlining and renaming features can be globally toggled off in your gwt.xml file during the development phase.
-  * Inlining files into the compiled JS may not make sense if those files are not always accessed by the program, thus inlining should be configurable on a per-resource or per-ResourceBundle basis.
+  * Inlining files into the compiled JS may not make sense if those files are not always accessed by the program, thus inlining should be configurable on a per-resource or per-ImmutableResourceBundle basis.
 
 
 = Future possibilities =
@@ -51,10 +56,8 @@ public interface MyResources extends ResourceBundle {
   * If the GWT compiler is re-targeted at widget- or gadget-likeenvironments, they may have particular requirements for packaging and referencing external resources.
 
 
+= Apache .htaccess configuration =
 
-NB:
-As part of the ResourceBundle docs, we would also include a sample
-.htaccess as the preferred setup:
 {{{
 ExpiresActive on
 ExpiresDefault "now plus 2 hours"
@@ -70,3 +73,8 @@ SetOutputFilter DEFLATE
 </Files>
 }}}
 
+
+= See also =
+
+  * The StyleInjector makes use of ImmutableResourceBundles to substitute URLs into a CSS resource.
+  * [http://www.ietf.org/rfc/rfc2397.txt RFC 2397]
