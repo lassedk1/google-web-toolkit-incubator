@@ -1,0 +1,9 @@
+#summary The best answers to the Frequently Asked Questions on the GWT group can be found here.
+
+= Google-Widget-Toolkit group FAQ =
+
+This FAQ contains answers to questions often encountered on the [http://groups.google.com/group/Google-Web-Toolkit GWT newsgroup].
+
+* [ServerPushFAQ Server Push]
+
+
