@@ -1,8 +1,6 @@
-#ProgressBar Widget
-
 = Introduction =
 
-Add your content here.
+Coming soon
 
 
 = Details =
