@@ -1,0 +1,20 @@
+.YouTubeViewer {
+	border: 2px solid #AAAAAA;
+	padding: 10px;
+	background: #DDDDDD
+}
+
+.titledPanelDemoContents {
+  border: 3px solid #C3D9FF;
+  border-right: 3px solid #7AA5D6;
+  border-bottom: 3px solid #7AA5D6;
+  padding: 3px;
+}
+
+.gwt-Button {
+	width: 10em;
+}
+
+fieldset legend {
+  color: blue;
+}
