@@ -63,10 +63,11 @@ Here is an example CSS style for the SliderBar Widget:
 = Sample Code =
 
 {{{
-  final SliderBar slider = new SliderBar(0.0, 100.0);
+  SliderBar slider = new SliderBar(0.0, 100.0);
   slider.setStepSize(5.0);
   slider.setCurrentValue(50.0);
   slider.setNumTicks(10);
   slider.setNumLabels(5);
 }}}
+ 
  
