@@ -233,6 +233,15 @@ public class ProgressBar extends Widget implements ResizableWidget {
   }
 
   /**
+   * Check whether the text is visible or not.
+   * 
+   * @return true if the text is visible
+   */
+  public boolean isTextVisible() {
+    return textVisible;
+  }
+  
+  /**
    * This method is called when the dimensions of the parent element
    * change.  Subclasses should override this method as needed.
    * 
