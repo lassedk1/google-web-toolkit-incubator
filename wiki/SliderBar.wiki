@@ -5,7 +5,7 @@ The SliderBar input Widget lets the user select a value from a range of values v
 
 The widget itself can display tick marks and labels along the range.  You can specify how many tick marks or labels to show.
 
-The widget is highly customizable via CSS, and the knob itself can be swapped using an ImageBundle.
+The widget is highly customizable via CSS, and the knob itself can be swapped using an Image Bundle.
 
 Example:
 [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/SliderBar/index.html]
@@ -69,5 +69,6 @@ Here is an example CSS style for the SliderBar Widget:
   slider.setNumTicks(10);
   slider.setNumLabels(5);
 }}}
+ 
  
  
