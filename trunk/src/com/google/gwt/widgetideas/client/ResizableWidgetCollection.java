@@ -207,6 +207,15 @@ public class ResizableWidgetCollection implements WindowResizeListener {
   public int getResizeCheckDelay() {
     return resizeCheckDelay;
   }
+  
+  /**
+   * Check whether or not resize checking is enabled.
+   * 
+   * @return true is resize checking is enabled
+   */
+  public boolean isResizeCheckingEnabled() {
+    return resizeCheckingEnabled;
+  }
 
   /**
    * Called when the browser window is resized.
