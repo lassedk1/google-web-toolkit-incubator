@@ -30,3 +30,9 @@ Here is an example CSS style for the ProgressBar Widget:
 }}}
 
 
+= Sample Code =
+
+{{{
+  ProgressBar bar = new ProgressBar(0.0, 2000.0 0.0);
+  bar.setProgress(1500.0);
+}}
