@@ -37,16 +37,36 @@ public interface MyResources extends ImmutableResourceBundle {
  /** @gwt.resource myConfiguration.xml */
  public TextResource initialConfiguration();
 
- /** @gwt.resource com/foo/bar/binaryFile.bin */
- public DataResource otherFile();
+ /** @gwt.resource com/foo/bar/ownersManual.pdf */
+ public DataResource ownersManual();
 }
 }}}
 
 You can then say:
 {{{
   Window.alert(MyResources.INSTANCE.css().getText());
-  new Frame(MyResources.INSTANCE.otherFile().getURL());
+  new Frame(MyResources.INSTANCE.ownersManual().getURL());
 }}}
+
+= I18N =
+
+ImmutableResourceBundle is compatible with GWT's I18N module.
+
+Suppose you defined a resource:
+{{{
+/** @gwt.resource default.txt */
+public TextResource defaultText();
+}}}
+
+For each possible value of the `locale` deferred-binding property, the ImmutableResourceBundle generator will look for variations of the specified filename in a manner similar to that of Java's `ResourceBundle`.
+
+Suppose the `locale` were set to `fr_FR`.  The generator would look for files in the following order:
+  # default_fr_FR.txt
+  # default_fr.txt
+  # default.txt
+
+This will work equally well with `DataResource` types, which can allow you to provide localized versions of other resources, say `ownersManual_en.pdf` versus `ownersManual_fr.pdf`.  Because the files linked by DataResource are renamed to strongly-named files as part of the compile process, there is no cost to proactively creating placeholder files that have identical content.
+
 
 = Potential pitfalls =
   * Changing the content of the resources will change the filenames (or data: encoding), thus forcing a recompile of the GWT application. To avoid this, the inlining and renaming features can be globally toggled off in your gwt.xml file during the development phase.
@@ -79,5 +99,7 @@ SetOutputFilter DEFLATE
 
 = See also =
 
-  * The StyleInjector makes use of ImmutableResourceBundles to substitute URLs into a CSS resource.
+  * The StyleInjector makes use of ImmutableResourceBundle to substitute URLs into a CSS stylesheet.
   * [http://www.ietf.org/rfc/rfc2397.txt RFC 2397]
+
+
