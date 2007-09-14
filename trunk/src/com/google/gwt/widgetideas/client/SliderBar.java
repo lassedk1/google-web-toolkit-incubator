@@ -26,7 +26,9 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ImageBundle;
 import com.google.gwt.user.client.ui.KeyboardListener;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A widget that allows the user to select a value within a range of possible
@@ -185,7 +187,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget {
   /**
    * The elements used to display labels above the ticks.
    */
-  private Vector/* <Element> */labelElements = new Vector/* <Element> */();
+  private List/* <Element> */labelElements = new ArrayList/* <Element> */();
 
   /**
    * The formatter used to generate label text.
@@ -248,7 +250,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget {
    * The elements used to display tick marks, which are the vertical lines along
    * the slider bar.
    */
-  private Vector/* <Element> */tickElements = new Vector/* <Element> */();
+  private List/* <Element> */tickElements = new ArrayList/* <Element> */();
 
   /**
    * Create a slider bar.
@@ -763,7 +765,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget {
       for (int i = 0; i <= numLabels; i++) {
         Element label = null;
         if (i < labelElements.size()) {
-          label = (Element) labelElements.elementAt(i);
+          label = (Element) labelElements.get(i);
         } else { // Create the new label
           label = DOM.createDiv();
           DOM.setStyleAttribute(label, "position", "absolute");
@@ -795,13 +797,12 @@ public class SliderBar extends FocusPanel implements ResizableWidget {
 
       // Hide unused labels
       for (int i = (numLabels + 1); i < labelElements.size(); i++) {
-        DOM.setStyleAttribute((Element) labelElements.elementAt(i), "display",
-            "none");
+        DOM.setStyleAttribute((Element) labelElements.get(i), "display", "none");
       }
     } else { // Hide all labels
-      for (int i = 0; i < labelElements.size(); i++) {
-        DOM.setStyleAttribute((Element) labelElements.elementAt(i), "display",
-            "none");
+      Iterator it = labelElements.iterator();
+      while (it.hasNext()) {
+        DOM.setStyleAttribute((Element) it.next(), "display", "none");
       }
     }
   }
@@ -822,7 +823,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget {
       for (int i = 0; i <= numTicks; i++) {
         Element tick = null;
         if (i < tickElements.size()) {
-          tick = (Element) tickElements.elementAt(i);
+          tick = (Element) tickElements.get(i);
         } else { // Create the new tick
           tick = DOM.createDiv();
           DOM.setStyleAttribute(tick, "position", "absolute");
@@ -846,13 +847,12 @@ public class SliderBar extends FocusPanel implements ResizableWidget {
 
       // Hide unused ticks
       for (int i = (numTicks + 1); i < tickElements.size(); i++) {
-        DOM.setStyleAttribute((Element) tickElements.elementAt(i), "display",
-            "none");
+        DOM.setStyleAttribute((Element) tickElements.get(i), "display", "none");
       }
     } else { // Hide all ticks
-      for (int i = 0; i < tickElements.size(); i++) {
-        DOM.setStyleAttribute((Element) tickElements.elementAt(i), "display",
-            "none");
+      Iterator it = tickElements.iterator();
+      while (it.hasNext()) {
+        DOM.setStyleAttribute((Element) it.next(), "display", "none");
       }
     }
   }
@@ -917,7 +917,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget {
   private void stopSliding(boolean unhighlight, boolean fireEvent) {
     if (unhighlight) {
       DOM.setElementProperty(lineElement, "className", "gwt-SliderBar-line");
-       
+
       DOM.setElementProperty(knobImage.getElement(), "className",
           "gwt-SliderBar-knob");
       images.slider().applyTo(knobImage);
