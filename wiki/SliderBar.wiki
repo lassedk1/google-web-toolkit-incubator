@@ -1,13 +1,71 @@
 #summary New Widget - Sliding knob over a range of values
 
 = Introduction =
+The SliderBar input Widget lets the user select a value from a range of values via mouse events or keyboard events.  You can dynamically change the minimum and maximum values and step size.  The size size allows you to restrict the selected value based on an incremental step.
 
-Coming soon
+The widget itself can display tick marks and labels along the range.  You can specify how many tick marks or labels to show.
+
+The widget is highly customizable via CSS, and the knob itself can be swapped using an ImageBundle.
+
+Example:
+[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/SliderBar/index.html]
 
 
-= Details =
+= CSS =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+Here is an example CSS style for the SliderBar Widget:
+{{{
+.gwt-SliderBar-shell {
+  border: 3px solid #C3D9FF;
+  border-right: 3px solid #7AA5D6;
+  border-bottom: 3px solid #7AA5D6;
+  background-color: #E8EEF7;
+  height: 34pt;
+  width: 50%;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-line {
+  border: 1px solid black;
+  background-color: white;
+  height: 4px;
+  width: 95%;
+  top: 22pt;
+  overflow: hidden;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-knob {
+  top: 14pt;
+  width: 11px;
+  height: 21px;
+  z-index: 1;
+  cursor: pointer;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-tick {
+  top: 12pt;
+  width: 1px;
+  height: 8pt;
+  background: black;
+  overflow: hidden;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-label {
+  top: 2pt;
+  font-size: 8pt;
+  cursor: default;
+}
+.gwt-SliderBar-shell-focused {
+  border: 3px solid #7AA5D6;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-line-sliding {
+  background-color: #CDE2F7;
+  cursor: pointer;
+}
+}}}
+
+
+Sample Code:
+{{{
+  // Create the progress bar
+  final SliderBar slider = new SliderBar(0.0, 100.0);
+  slider.setStepSize(5.0);
+  slider.setCurrentValue(50.0);
+  slider.setNumTicks(10);
+  slider.setNumLabels(5);
+}}}
