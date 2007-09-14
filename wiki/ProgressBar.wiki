@@ -1,13 +1,29 @@
 #summary New Widget - A Widget that displays progress over a range
 
 = Introduction =
+The ProgressBar Widget displays progress over a range of values.  Users can dynamically change the minimum and maximum values in the range.  When the current value is set, a bar will fill the widget up to the percent relative to the range.
 
-Coming soon
 
+= CSS =
 
-= Details =
+Here is an example CSS style for the ProgressBar Widget:
+{{{
+.gwt-ProgressBar-shell {
+  border: 3px solid #C3D9FF;
+  border-right: 3px solid #7AA5D6;
+  border-bottom: 3px solid #7AA5D6;
+  background-color: #AAAAAA;
+  height: 14pt;
+  width: 50%;
+}
+.gwt-ProgressBar-shell .gwt-ProgressBar-bar {
+  background-color: blue;
+}
+.gwt-ProgressBar-shell .gwt-ProgressBar-text {
+  padding: 0px;
+  margin: 0px;
+  color: white;
+}
+}}}
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+ 
