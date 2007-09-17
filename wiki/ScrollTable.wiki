@@ -3,11 +3,7 @@
 = Introduction =
 The ScrollTable Widget is a two part table consisting of a fixed header table and a scrollable data grid.  The header table is an extension of the FlexTable, so it supports rowspans and colspans.  The data portion is an extension of the grid.
 
-In addition to the scrolling feature, the ScrollTable supports many other features.  The data portion supports hovering and selecting rows.  Users can decide between a single or multi row selection policy.
-
-The header table supports mouse resizing.  Users can click and drag the edge of a header cell to resize a column.  If the header cell spans multiple columns, the cells will be smartly resized proportional to their original widths.  Double-clicking on a header cell will auto-resize the column to fit all of its data content.
-
-Click on a header cell will sort the data rows based on the selected column.  Clicking on the same cell again will reverse sort the rows.
+In addition to the scrolling feature, the ScrollTable supports many other features.  The data portion supports hovering and selecting rows.  Users can decide between a single or multi row selection policy.  The header table supports mouse resizing.  Users can click and drag the edge of a header cell to resize a column.  If the header cell spans multiple columns, the cells will be smartly resized proportional to their original widths.  Double-clicking on a header cell will auto-resize the column to fit all of its data content.  Click on a header cell will sort the data rows based on the selected column.  Clicking on the same cell again will reverse sort the rows.
 
 All of the above features can be enabled or disabled, and they can be accessed programatically.
 
@@ -106,6 +102,7 @@ Here is an example CSS style for the Scrolltable Widget:
       }
     }
 }}}
+ 
  
  
  
