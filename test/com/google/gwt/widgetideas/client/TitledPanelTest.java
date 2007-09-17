@@ -25,7 +25,7 @@ import com.google.gwt.user.client.ui.HTML;
 public class TitledPanelTest extends GWTTestCase {
 
   public String getModuleName() {
-    return "com.google.gwt.widgetideas.WidgetIdeas";
+    return "com.google.gwt.widgetideas.TitledPanel";
   }
   
   /**
