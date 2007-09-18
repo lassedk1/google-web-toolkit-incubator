@@ -24,8 +24,10 @@ These changes apply to eclipse:
   # Add the exclusion pattern "com/google/gwt/widgetideas/jlabanca"
 
 Add these line to your module.gwt.xml file:
+{{{
   <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
   <inherits name='com.google.gwt.widgetideas.ScrollTable'/>
+}}}
 
 The above lines will tell the GWT compiler how to map the super-source files described above.
 
@@ -123,6 +125,7 @@ Here is an example CSS style for the Scrolltable Widget:
       }
     }
 }}}
+ 
  
  
  
