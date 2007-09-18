@@ -11,6 +11,27 @@ Example:
 [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/ScrollTable/index.html]
 
 
+= Setup Instructions =
+
+The ScrollTable Widget requires some setup to handle changes in the existing GWT API.  The following changes will override the existing GWT classes.
+
+These changes apply to eclipse:
+1. Right click on the Incubator project and select Properties
+2. In the Java Build Path, click on the "Link Source" button
+3. Enter the location "<path to project>/trunk/src/com/google/gwt/widgetideas/jlabanca"
+4. Enter the folder name "jlabanca" and click Finish
+5. Back in the Java Build Path, click on the src folder and select the Edit option
+6. Add the exclusion pattern "com/google/gwt/widgetideas/jlabanca"
+
+Add these line to your module.gwt.xml file:
+  <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
+  <inherits name='com.google.gwt.widgetideas.ScrollTable'/>
+
+The above lines will tell the GWT compiler how to map the super-source files described above.
+
+Sorry about the long setup, but the Incubator doesn't provide an easy method to modify existing classes.
+
+
 = CSS =
 
 Here is an example CSS style for the Scrolltable Widget:
@@ -102,6 +123,7 @@ Here is an example CSS style for the Scrolltable Widget:
       }
     }
 }}}
+ 
  
  
  
