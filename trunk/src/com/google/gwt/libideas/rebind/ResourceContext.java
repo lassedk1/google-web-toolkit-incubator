@@ -17,24 +17,32 @@ package com.google.gwt.libideas.rebind;
 
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.user.rebind.SourceWriter;
 
-/**
- * This is a refinement that will use data urls for browsers that support them.
- * Only files whose size are smaller than MAX_INLINE_SIZE will be inlined.
- * Larger files will use the standard CacheBundle behavior.
- * 
- * @see "RFC 2397"
- */
-public class InlineResourceBundleGenerator extends
-    StaticResourceBundleGenerator {
-  protected ResourceContext createResourceContext(TreeLogger logger,
-      GeneratorContext context, JClassType resourceBundleType, SourceWriter sw) {
-    return new InlineResourceContext(logger, context, resourceBundleType, sw);
-  }
+import java.net.URL;
 
-  protected String generateSimpleSourceName(String sourceType) {
-    return sourceType.replaceAll("\\.", "_") + "_inlineBundle";
-  }
+/**
+ * Context object for ResourceGenerators.
+ */
+public interface ResourceContext {
+
+  /**
+   * Cause a specific collection of bytes to be available in the program's
+   * compiled output.
+   * @param resource the resource to add to the compiled output
+   * @return a Java expression which will evaluate to the location of the
+   *         provided resource at runtime.
+   */
+  public String addToOutput(URL resource)
+      throws UnableToCompleteException;
+
+  public GeneratorContext getGeneratorContext();
+
+  public TreeLogger getLogger();
+  
+  public JClassType getResourceBundleType();
+
+  public SourceWriter getSourceWriter();
 }
