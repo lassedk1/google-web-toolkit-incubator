@@ -17,8 +17,11 @@
   <inherits name="com.google.gwt.user.User" />
   <inherits name="com.google.gwt.libideas.ImmutableResources" />
   
-  <replace-with class="com.google.gwt.widgetideas.client.StyleInjector.StyleInjectorImplIE">
-    <when-type-is class="com.google.gwt.widgetideas.client.StyleInjector.StyleInjectorImpl" />
+  <!-- We're using a two-level package naming scheme -->
+  <source path="styleinjector/client" />
+  
+  <replace-with class="com.google.gwt.widgetideas.styleinjector.client.StyleInjector.StyleInjectorImplIE">
+    <when-type-is class="com.google.gwt.widgetideas.styleinjector.client.StyleInjector.StyleInjectorImpl" />
     <when-property-is name="user.agent" value="ie6" />
   </replace-with>
 </module>

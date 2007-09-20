@@ -13,12 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.widgetideas.client;
+package com.google.gwt.widgetideas.styleinjector.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.libideas.client.DataResource;
-import com.google.gwt.libideas.client.ImmutableResourceBundle;
-import com.google.gwt.libideas.client.ResourcePrototype;
+import com.google.gwt.libideas.resources.client.DataResource;
+import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
+import com.google.gwt.libideas.resources.client.ResourcePrototype;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 

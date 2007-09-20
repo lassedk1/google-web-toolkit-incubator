@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.rebind;
+package com.google.gwt.libideas.resources.rebind;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.ext.BadPropertyValueException;
@@ -24,9 +24,9 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
-import com.google.gwt.libideas.client.DataResource;
-import com.google.gwt.libideas.client.ResourcePrototype;
-import com.google.gwt.libideas.client.TextResource;
+import com.google.gwt.libideas.resources.client.DataResource;
+import com.google.gwt.libideas.resources.client.ResourcePrototype;
+import com.google.gwt.libideas.resources.client.TextResource;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 

@@ -17,6 +17,9 @@
   <!-- Pull in the necessary base support, including user.agent detection -->
   <inherits name="com.google.gwt.core.Core" />
 
+  <!-- We're using a two-level package naming scheme -->
+  <source path="resources/client" />
+
   <!--  This acts as a switch to disable the use of data: URLs -->
   <define-property name="ResourceBundle.enableInlining" values="true,false" />
   <set-property name="ResourceBundle.enableInlining" value="true" />
@@ -27,15 +30,15 @@
 
   <!--  Specify the default behavior -->
   <generate-with
-    class="com.google.gwt.libideas.rebind.StaticResourceBundleGenerator">
+    class="com.google.gwt.libideas.resources.rebind.StaticResourceBundleGenerator">
 
     <!-- We have to specify on which types to execute the Generator -->
-    <when-type-assignable class="com.google.gwt.libideas.client.ImmutableResourceBundle" />
+    <when-type-assignable class="com.google.gwt.libideas.resources.client.ImmutableResourceBundle" />
   </generate-with>
 
   <!-- Last-matches wins, so this will selectively override the previous rule -->
   <generate-with
-    class="com.google.gwt.libideas.rebind.InlineResourceBundleGenerator">
+    class="com.google.gwt.libideas.resources.rebind.InlineResourceBundleGenerator">
 
     <!-- We have a number of conditions that must be satisfied -->
     <all>
@@ -44,7 +47,7 @@
 
       <!-- Again, it's necessary to specify which types the generator runs on -->
       <when-type-assignable
-        class="com.google.gwt.libideas.client.ImmutableResourceBundle" />
+        class="com.google.gwt.libideas.resources.client.ImmutableResourceBundle" />
 
       <!-- Only some browsers support RFC 2397 data: URLs -->
       <any>

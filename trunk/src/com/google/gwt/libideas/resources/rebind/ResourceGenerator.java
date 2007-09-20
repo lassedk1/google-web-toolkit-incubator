@@ -13,18 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.client;
+package com.google.gwt.libideas.resources.rebind;
+
+import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.core.ext.typeinfo.JMethod;
 
 /**
- * Encapsulates information about a particular resource.
+ * Encapsulates per-type resource generation logic.
  */
-public interface ResourcePrototype {
-  /**
-   * Returns the name of the function within the ResourceBundle used to create
-   * the ResourcePrototype.
-   * 
-   * @return the name of the function within the ResourceBundle used to create
-   *         the ResourcePrototype
-   */
-  public String getName();
+public interface ResourceGenerator {
+  
+  public void finish();
+
+  public void init(ResourceContext context);
+  
+  public void writeAssignment(JMethod method)
+      throws UnableToCompleteException;
 }

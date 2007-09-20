@@ -13,27 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.rebind;
+package com.google.gwt.libideas.resources.rebind;
 
-import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
-import com.google.gwt.dev.util.Util;
-import com.google.gwt.libideas.client.TextResource;
+import com.google.gwt.libideas.resources.client.DataResource;
 import com.google.gwt.user.rebind.SourceWriter;
 
 import java.net.URL;
 
 /**
- * Provides implementations of TextResource.
- * 
+ * Provides implementations of DataResource.
  */
-public class TextResourceGenerator implements ResourceGenerator {
+public class DataResourceGenerator implements ResourceGenerator {
   ResourceContext context;
 
   public void finish() {
-    // no-op
   }
 
   public void init(ResourceContext context) {
@@ -42,6 +38,7 @@ public class TextResourceGenerator implements ResourceGenerator {
 
   public void writeAssignment(JMethod method) throws UnableToCompleteException {
     TreeLogger logger = context.getLogger();
+    
     URL[] resources = ResourceGeneratorUtil.findResources(context, method);
 
     if (resources.length != 1) {
@@ -49,22 +46,21 @@ public class TextResourceGenerator implements ResourceGenerator {
           + ResourceGeneratorUtil.METADATA_TAG + " must be specified", null);
       throw new UnableToCompleteException();
     }
-
+    
     URL resource = resources[0];
-
+    String outputUrlExpression = context.addToOutput(resource);
+    
     SourceWriter sw = context.getSourceWriter();
     // Write the expression to create the subtype.
-    sw.println("new " + TextResource.class.getName() + "() {");
+    sw.println("new " + DataResource.class.getName() + "() {");
     sw.indent();
-
+    
     // Convenience when examining the generated code.
     sw.println("// " + resource.toExternalForm());
 
-    sw.println("public String getText() {");
+    sw.println("public String getUrl() {");
     sw.indent();
-    sw.println("return \""
-        + Generator.escape(new String(Util.readURLAsChars(resource)))
-            .replaceAll("\0", "\\0") + "\";");
+    sw.println("return " + outputUrlExpression + ";");
     sw.outdent();
     sw.println("}");
 
@@ -77,5 +73,4 @@ public class TextResourceGenerator implements ResourceGenerator {
     sw.outdent();
     sw.println("}");
   }
-
 }
