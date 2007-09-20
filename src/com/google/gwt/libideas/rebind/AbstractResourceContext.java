@@ -21,20 +21,35 @@ import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.user.rebind.SourceWriter;
 
 /**
- * This is a refinement that will use data urls for browsers that support them.
- * Only files whose size are smaller than MAX_INLINE_SIZE will be inlined.
- * Larger files will use the standard CacheBundle behavior.
- * 
- * @see "RFC 2397"
+ * Defines base methods for ResourceContext implementations.
  */
-public class InlineResourceBundleGenerator extends
-    StaticResourceBundleGenerator {
-  protected ResourceContext createResourceContext(TreeLogger logger,
-      GeneratorContext context, JClassType resourceBundleType, SourceWriter sw) {
-    return new InlineResourceContext(logger, context, resourceBundleType, sw);
+public abstract class AbstractResourceContext implements ResourceContext {
+  private final TreeLogger logger;
+  private final GeneratorContext context;
+  private final JClassType resourceBundleType;
+  private final SourceWriter sw;
+
+  AbstractResourceContext(TreeLogger logger, GeneratorContext context,
+      JClassType resourceBundleType, SourceWriter sw) {
+    this.logger = logger;
+    this.context = context;
+    this.resourceBundleType = resourceBundleType;
+    this.sw = sw;
   }
 
-  protected String generateSimpleSourceName(String sourceType) {
-    return sourceType.replaceAll("\\.", "_") + "_inlineBundle";
+  public GeneratorContext getGeneratorContext() {
+    return context;
+  }
+
+  public TreeLogger getLogger() {
+    return logger;
+  }
+
+  public JClassType getResourceBundleType() {
+    return resourceBundleType;
+  }
+
+  public SourceWriter getSourceWriter() {
+    return sw;
   }
 }

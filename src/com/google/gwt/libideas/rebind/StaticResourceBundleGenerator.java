@@ -19,44 +19,31 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.ext.BadPropertyValueException;
 import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;
-import com.google.gwt.core.ext.PropertyOracle;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
-import com.google.gwt.dev.util.Util;
 import com.google.gwt.libideas.client.DataResource;
 import com.google.gwt.libideas.client.ResourcePrototype;
 import com.google.gwt.libideas.client.TextResource;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Copies selected files into module output with strong names and generates the
  * ResourceBundle mappings.
  */
 public class StaticResourceBundleGenerator extends Generator {
-  /**
-   * The name of a deferred binding property that determines whether or not this
-   * generator will rename the incoming resources to strong file names.
-   */
-  private static final String ENABLE_RENAMING = "ResourceBundle.enableRenaming";
-
-  /**
-   * The metadata tag name that specifies the classpath location of the target
-   * resource.
-   */
-  private static final String METADATA_TAG = "gwt.resource";
 
   public String generate(TreeLogger logger, GeneratorContext context,
       String typeName) throws UnableToCompleteException {
@@ -124,26 +111,34 @@ public class StaticResourceBundleGenerator extends Generator {
 
       JMethod[] methods = sourceType.getMethods();
 
-      // We'll need these for comparisons in the loop
-      JClassType dataType =
-          typeOracle.findType(DataResource.class.getName()).isInterface();
-      JClassType textType =
-          typeOracle.findType(TextResource.class.getName()).isInterface();
+      Map /* <JClassType, ResourceGenerator> */resourceGenerators =
+          new HashMap();
 
+      ResourceContext resourceContext =
+          createResourceContext(logger, context, sourceType, sw);
+
+      // First assemble all of the ResourceGenerators that we may need for the
+      // type
       for (int i = 0; i < methods.length; i++) {
         JMethod m = methods[i];
-        JClassType returnType = m.getReturnType().isInterface();
+        JClassType returnType = m.getReturnType().isClassOrInterface();
         if (returnType == null) {
           logger.log(TreeLogger.ERROR, "Cannot implement " + m.getName()
-              + ": not an interface return type.", null);
+              + ": not a class or interface.", null);
           throw new UnableToCompleteException();
         }
 
-        // The local URL by which the generator can access the file's content
-        URL resourceUrl = getResourceUrlFromMetaData(logger, m, locale);
+        if (!resourceGenerators.containsKey(returnType)) {
+          ResourceGenerator rg =
+              findResourceGenerator(logger, typeOracle, returnType);
+          rg.init(resourceContext);
+          resourceGenerators.put(returnType, rg);
+        }
+      }
 
-        // Just for convenience when examining the generated file
-        sw.println("// " + resourceUrl.toExternalForm());
+      // Now run the ResourceGenerators
+      for (int i = 0; i < methods.length; i++) {
+        JMethod m = methods[i];
 
         // Strip off all but the access modifiers
         sw.print(m.getReadableDeclaration(false, true, true, true, true));
@@ -160,21 +155,33 @@ public class StaticResourceBundleGenerator extends Generator {
         sw.print("private static final "
             + m.getReturnType().getQualifiedSourceName() + " " + fieldName
             + " = ");
-        if (returnType.isAssignableTo(dataType)) {
-          addDataResource(logger, context, m.getName(), resourceUrl, sw);
-        } else if (returnType.isAssignableTo(textType)) {
-          addTextResource(logger, context, m.getName(), resourceUrl, sw);
-        } else {
-          logger.log(TreeLogger.ERROR, "Cannot implement " + m.getName()
-              + ": unknown return type.", null);
-          throw new UnableToCompleteException();
-        }
+
+        ResourceGenerator rg =
+            (ResourceGenerator) resourceGenerators.get(m.getReturnType()
+                .isClassOrInterface());
+        rg.writeAssignment(m);
 
         sw.println(";");
       }
 
-      writePostlude(logger, context, sw, fieldNames);
+      // Allow ResourceGenerators to clean up
+      Set resourceGeneratorSet = new HashSet(resourceGenerators.values());
+      for (Iterator i = resourceGeneratorSet.iterator(); i.hasNext();) {
+        ((ResourceGenerator) i.next()).finish();
+      }
 
+      sw.println("public ResourcePrototype[] getResources() {");
+      sw.indent();
+      sw.println("return new ResourcePrototype[] {");
+      sw.indent();
+      for (Iterator i = fieldNames.iterator(); i.hasNext();) {
+        sw.println(i.next().toString() + ",");
+      }
+      sw.outdent();
+      sw.println("};");
+      sw.outdent();
+      sw.println("}");
+      
       // Write the generated code to disk
       sw.commit(logger);
     }
@@ -183,114 +190,29 @@ public class StaticResourceBundleGenerator extends Generator {
     return f.getCreatedClassName();
   }
 
-  /**
-   * Add a ResourceBundle-referenced file to the module's output. The extension
-   * of the resource will be preserved to ensure mime-types are correct.
-   */
-  protected void addDataResource(TreeLogger logger, GeneratorContext context,
-      String name, URL resource, SourceWriter sw)
-      throws UnableToCompleteException {
-    byte[] bytes = Util.readURLAsBytes(resource);
-
-    PropertyOracle propertyOracle = context.getPropertyOracle();
-    String enableRenaming = null;
-    try {
-      enableRenaming = propertyOracle.getPropertyValue(logger, ENABLE_RENAMING);
-    } catch (BadPropertyValueException e) {
-      logger.log(TreeLogger.ERROR, "Bad value for " + ENABLE_RENAMING, e);
-      throw new UnableToCompleteException();
-    }
-
-    String fileName = resource.getPath();
-    String outputName;
-
-    if (Boolean.parseBoolean(enableRenaming)) {
-      String strongName = Util.computeStrongName(bytes);
-
-      // Determine the extension of the original file
-      String extension;
-      int lastIdx = fileName.lastIndexOf('.');
-      if (lastIdx != -1) {
-        extension = fileName.substring(lastIdx + 1);
-      } else {
-        extension = "noext";
-      }
-
-      // The name will be MD5.cache.ext
-      outputName = strongName + ".cache." + extension;
-
-    } else {
-      outputName = fileName.substring(fileName.lastIndexOf('/') + 1);
-    }
-
-    // Ask the context for an OutputStream into the named resource
-    OutputStream out = context.tryCreateResource(logger, outputName);
-
-    // This would be null if the resource has already been created in the output
-    // (because two or more resources had identical content).
-    if (out != null) {
-      try {
-        InputStream in = resource.openStream();
-        Util.copy(logger, in, out);
-        in.close();
-
-      } catch (IOException e) {
-        logger.log(TreeLogger.ERROR, "Unable to copy resource "
-            + resource.toExternalForm() + " to output name " + outputName, e);
-        throw new UnableToCompleteException();
-      }
-
-      // If there's an error, this won't be called and there will be nothing
-      // created in the output directory.
-      context.commitResource(logger, out);
-
-      logger.log(TreeLogger.DEBUG, "Copied " + resource.toExternalForm()
-          + " to " + outputName, null);
-    }
-
-    // Write the expression to create the subtype.
-    sw.println("new " + DataResource.class.getName() + "() {");
-    sw.indent();
-
-    sw.println("public String getUrl() {");
-    sw.indent();
-    sw.println("return GWT.getModuleBaseURL() + \"" + outputName + "\";");
-    sw.outdent();
-    sw.println("}");
-
-    sw.println("public String getName() {");
-    sw.indent();
-    sw.println("return \"" + name + "\";");
-    sw.outdent();
-    sw.println("}");
-
-    sw.outdent();
-    sw.println("}");
+  protected ResourceContext createResourceContext(TreeLogger logger,
+      GeneratorContext context, JClassType resourceBundleType, SourceWriter sw) {
+    return new StaticResourceContext(logger, context, resourceBundleType, sw);
   }
 
-  protected void addTextResource(TreeLogger logger, GeneratorContext context,
-      String name, URL resource, SourceWriter sw)
+  protected ResourceGenerator findResourceGenerator(TreeLogger logger,
+      TypeOracle typeOracle, JClassType resourceType)
       throws UnableToCompleteException {
-    // Write the expression to create the subtype.
-    sw.println("new " + TextResource.class.getName() + "() {");
-    sw.indent();
+    // TODO: Make this function more dynamic
+    JClassType dataType =
+        typeOracle.findType(DataResource.class.getName()).isInterface();
+    JClassType textType =
+        typeOracle.findType(TextResource.class.getName()).isInterface();
 
-    sw.println("public String getText() {");
-    sw.indent();
-    sw.println("return \""
-        + escape(new String(Util.readURLAsChars(resource))).replaceAll("\0",
-            "\\0") + "\";");
-    sw.outdent();
-    sw.println("}");
-
-    sw.println("public String getName() {");
-    sw.indent();
-    sw.println("return \"" + name + "\";");
-    sw.outdent();
-    sw.println("}");
-
-    sw.outdent();
-    sw.println("}");
+    if (resourceType.isAssignableTo(dataType)) {
+      return new DataResourceGenerator();
+    } else if (resourceType.isAssignableTo(textType)) {
+      return new TextResourceGenerator();
+    } else {
+      logger.log(TreeLogger.ERROR, "No ResourceGenerator for type "
+          + resourceType.getQualifiedSourceName(), null);
+      throw new UnableToCompleteException();
+    }
   }
 
   /**
@@ -299,88 +221,5 @@ public class StaticResourceBundleGenerator extends Generator {
    */
   protected String generateSimpleSourceName(String sourceType) {
     return sourceType.replaceAll("\\.", "_") + "_externalBundle";
-  }
-
-  protected void writePostlude(TreeLogger logger, GeneratorContext context,
-      SourceWriter sw, List fieldNames) {
-    sw.println("public ResourcePrototype[] getResources() {");
-    sw.indent();
-    sw.println("return new ResourcePrototype[] {");
-    sw.indent();
-    for (Iterator i = fieldNames.iterator(); i.hasNext();) {
-      sw.println(i.next().toString() + ",");
-    }
-    sw.outdent();
-    sw.println("};");
-    sw.outdent();
-    sw.println("}");
-  }
-
-  /**
-   * Determine the resource to include for a given method declaration. Assume
-   * this is only called for valid methods. This is a cut-down version of the
-   * logic found in ImageBundleBuilder
-   */
-  private URL getResourceUrlFromMetaData(TreeLogger logger, JMethod method,
-      String locale) throws UnableToCompleteException {
-
-    String[][] md = method.getMetaData(METADATA_TAG);
-
-    if (md.length != 1) {
-      logger.log(TreeLogger.ERROR, "Method " + method.getName()
-          + " does not have a @" + METADATA_TAG + " annotation", null);
-      throw new UnableToCompleteException();
-    }
-
-    // Metadata is available, so get the resource name from the metadata
-    int lastTagIndex = md.length - 1;
-    int lastValueIndex = md[lastTagIndex].length - 1;
-    String resourceNameFromMetaData = md[lastTagIndex][lastValueIndex];
-
-    // Make sure the name is either absolute or package-relative.
-    if (resourceNameFromMetaData.indexOf("/") == -1) {
-      String pkgName = method.getEnclosingType().getPackage().getName();
-      // This construction handles the default package correctly, too.
-      resourceNameFromMetaData =
-          pkgName.replace('.', '/') + "/" + resourceNameFromMetaData;
-    }
-
-    URL resourceURL = null;
-    ClassLoader cl = getClass().getClassLoader();
-
-    // Look for locale-specific variants of individual resources
-    if (locale != null) {
-      // Convert language_country_variant to independent pieces
-      String[] localeSegments = locale.split("_");
-      int lastDot = resourceNameFromMetaData.lastIndexOf(".");
-      String prefix = resourceNameFromMetaData.substring(0, lastDot);
-      String extension = resourceNameFromMetaData.substring(lastDot);
-
-      for (int i = localeSegments.length - 1; i >= -1; i--) {
-        String localeInsert = "";
-        for (int j = 0; j <= i; j++) {
-          localeInsert += "_" + localeSegments[j];
-        }
-
-        resourceURL = cl.getResource(prefix + localeInsert + extension);
-        if (resourceURL != null) {
-          break;
-        }
-      }
-    }
-
-    if (resourceURL == null) {
-      logger.log(TreeLogger.ERROR, "Resource " + resourceNameFromMetaData
-          + " not found on classpath. "
-          + "Is the name specified as Class.getResource() would expect?", null);
-      throw new UnableToCompleteException();
-    }
-
-    // In the future, it would be desirable to be able to automatically
-    // determine the resource name to use from the method declaration. We're
-    // currently limited by the inability to list the contents of the classpath
-    // and not having a set number of file extensions to empirically test.
-
-    return resourceURL;
   }
 }
