@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.client;
+package com.google.gwt.libideas.resources.client;
 
 /**
  * The use of this interface is similar to that of ImageBundle. Declare

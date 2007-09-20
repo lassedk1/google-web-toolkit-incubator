@@ -13,15 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.client;
+package com.google.gwt.libideas.resources.client;
 
 /**
- * A non-text resource.
+ * A resource that contains text that should be incorporated into the compiled
+ * output.
  */
-public interface DataResource extends ResourcePrototype {
-  /**
-   * Retrieves a URL by which the contents of the resource can be obtained. This
-   * will be an absolute URL.
-   */
-  public String getUrl();
+public interface TextResource extends ResourcePrototype {
+  public String getText();
 }

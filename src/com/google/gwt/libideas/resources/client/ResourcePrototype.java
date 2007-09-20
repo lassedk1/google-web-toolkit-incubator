@@ -13,12 +13,18 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.client;
+package com.google.gwt.libideas.resources.client;
 
 /**
- * A resource that contains text that should be incorporated into the compiled
- * output.
+ * Encapsulates information about a particular resource.
  */
-public interface TextResource extends ResourcePrototype {
-  public String getText();
+public interface ResourcePrototype {
+  /**
+   * Returns the name of the function within the ResourceBundle used to create
+   * the ResourcePrototype.
+   * 
+   * @return the name of the function within the ResourceBundle used to create
+   *         the ResourcePrototype
+   */
+  public String getName();
 }
