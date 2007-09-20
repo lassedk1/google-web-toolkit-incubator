@@ -29,17 +29,13 @@ import java.net.URL;
  * Provides implementations of TextResource.
  * 
  */
-public class TextResourceGenerator implements ResourceGenerator {
+public class TextResourceGenerator extends ResourceGenerator {
   ResourceContext context;
-
-  public void finish() {
-    // no-op
-  }
 
   public void init(ResourceContext context) {
     this.context = context;
   }
-
+  
   public void writeAssignment(JMethod method) throws UnableToCompleteException {
     TreeLogger logger = context.getLogger();
     URL[] resources = ResourceGeneratorUtil.findResources(context, method);
@@ -77,5 +73,4 @@ public class TextResourceGenerator implements ResourceGenerator {
     sw.outdent();
     sw.println("}");
   }
-
 }

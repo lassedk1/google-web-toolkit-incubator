@@ -24,9 +24,7 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
-import com.google.gwt.libideas.resources.client.DataResource;
 import com.google.gwt.libideas.resources.client.ResourcePrototype;
-import com.google.gwt.libideas.resources.client.TextResource;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 
@@ -44,6 +42,8 @@ import java.util.Set;
  * ResourceBundle mappings.
  */
 public class StaticResourceBundleGenerator extends Generator {
+
+  private static final String RESOURCE_GENERATOR_TAG = "gwt.resourceGenerator";
 
   public String generate(TreeLogger logger, GeneratorContext context,
       String typeName) throws UnableToCompleteException {
@@ -128,12 +128,27 @@ public class StaticResourceBundleGenerator extends Generator {
           throw new UnableToCompleteException();
         }
 
+        ResourceGenerator rg;
         if (!resourceGenerators.containsKey(returnType)) {
-          ResourceGenerator rg =
-              findResourceGenerator(logger, typeOracle, returnType);
+          rg = findResourceGenerator(logger, typeOracle, returnType);
           rg.init(resourceContext);
           resourceGenerators.put(returnType, rg);
+        } else {
+          rg = (ResourceGenerator) resourceGenerators.get(returnType);
         }
+
+        // Let the ResourceGenerator know about each JMethod we expect it to
+        // create a ResourcePrototype for
+        rg.prepare(m);
+      }
+      
+      // Write all static fields the ResourceGenerators want to create
+      // Allow ResourceGenerators to clean up
+      Set resourceGeneratorSet = new HashSet(resourceGenerators.values());
+      for (Iterator i = resourceGeneratorSet.iterator(); i.hasNext();) {
+        ResourceGenerator rg = (ResourceGenerator)i.next();
+        
+        rg.writeFields();
       }
 
       // Now run the ResourceGenerators
@@ -164,8 +179,6 @@ public class StaticResourceBundleGenerator extends Generator {
         sw.println(";");
       }
 
-      // Allow ResourceGenerators to clean up
-      Set resourceGeneratorSet = new HashSet(resourceGenerators.values());
       for (Iterator i = resourceGeneratorSet.iterator(); i.hasNext();) {
         ((ResourceGenerator) i.next()).finish();
       }
@@ -181,7 +194,7 @@ public class StaticResourceBundleGenerator extends Generator {
       sw.println("};");
       sw.outdent();
       sw.println("}");
-      
+
       // Write the generated code to disk
       sw.commit(logger);
     }
@@ -198,19 +211,43 @@ public class StaticResourceBundleGenerator extends Generator {
   protected ResourceGenerator findResourceGenerator(TreeLogger logger,
       TypeOracle typeOracle, JClassType resourceType)
       throws UnableToCompleteException {
-    // TODO: Make this function more dynamic
-    JClassType dataType =
-        typeOracle.findType(DataResource.class.getName()).isInterface();
-    JClassType textType =
-        typeOracle.findType(TextResource.class.getName()).isInterface();
 
-    if (resourceType.isAssignableTo(dataType)) {
-      return new DataResourceGenerator();
-    } else if (resourceType.isAssignableTo(textType)) {
-      return new TextResourceGenerator();
-    } else {
-      logger.log(TreeLogger.ERROR, "No ResourceGenerator for type "
+    String[][] md = resourceType.getMetaData(RESOURCE_GENERATOR_TAG);
+    
+    if (md.length == 0) {
+      logger.log(TreeLogger.ERROR, "No " + RESOURCE_GENERATOR_TAG + " annotation for type "
           + resourceType.getQualifiedSourceName(), null);
+      throw new UnableToCompleteException();
+    }
+    
+    int lastInstanceIndex = md.length - 1;
+    int lastEntryIndex = md[lastInstanceIndex].length - 1;
+    String className = md[lastInstanceIndex][lastEntryIndex];
+
+    Class clazz = null;
+
+    try {
+      clazz = Class.forName(className);
+    } catch (ClassNotFoundException e) {
+      logger.log(TreeLogger.ERROR, "Could not load " + className, e);
+      throw new UnableToCompleteException();
+    }
+
+    if (!ResourceGenerator.class.isAssignableFrom(clazz)) {
+      logger.log(TreeLogger.ERROR, className + " is not a ResourceGenerator",
+          null);
+      throw new UnableToCompleteException();
+    }
+
+    try {
+      return (ResourceGenerator) clazz.newInstance();
+    } catch (IllegalAccessException e) {
+      logger.log(TreeLogger.ERROR, className
+          + " must be a public, concrete type", e);
+      throw new UnableToCompleteException();
+    } catch (InstantiationException e) {
+      logger.log(TreeLogger.ERROR, "Unable to create ResourceGenerator "
+          + className, e);
       throw new UnableToCompleteException();
     }
   }

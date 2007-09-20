@@ -19,12 +19,7 @@ import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
-import com.google.gwt.dev.util.Util;
 import com.google.gwt.user.rebind.SourceWriter;
-
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
 
 class InlineResourceContext extends StaticResourceContext {
   /**
@@ -41,33 +36,21 @@ class InlineResourceContext extends StaticResourceContext {
     super(logger, context, resourceBundleType, sw);
   }
 
-  public String addToOutput(URL resource) throws UnableToCompleteException {
+  public String addToOutput(String suggestedFileName, String mimeType,
+      byte[] data) throws UnableToCompleteException {
     TreeLogger logger = getLogger();
-    
-    URLConnection c;
-    try {
-      c = resource.openConnection();
-    } catch (IOException e) {
-      logger.log(TreeLogger.ERROR, "Unable to open resource "
-          + resource.toExternalForm(), e);
-      throw new UnableToCompleteException();
-    }
 
-    if (c.getContentLength() < MAX_INLINE_SIZE) {
+    if (data.length < MAX_INLINE_SIZE) {
       logger.log(TreeLogger.DEBUG, "Inlining", null);
 
       // This is bad, but I am lazy and don't want to write _another_ encoder
       sun.misc.BASE64Encoder enc = new sun.misc.BASE64Encoder();
-      String base64Contents =
-          enc.encode(Util.readURLAsBytes(resource)).replaceAll("\\s+", "");
-      
-      // This is sometime unreliable.
-      String mimeType = c.getContentType();
+      String base64Contents = enc.encode(data).replaceAll("\\s+", "");
 
       return "\"data:" + mimeType + ";base64," + base64Contents + "\"";
 
     } else {
-      return super.addToOutput(resource);
+      return super.addToOutput(suggestedFileName, mimeType, data);
     }
   }
 }
