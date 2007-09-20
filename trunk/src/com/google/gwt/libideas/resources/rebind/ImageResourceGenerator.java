@@ -18,56 +18,61 @@ package com.google.gwt.libideas.resources.rebind;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
-import com.google.gwt.libideas.resources.client.DataResource;
+import com.google.gwt.libideas.resources.client.impl.ImageResourcePrototype;
 import com.google.gwt.user.rebind.SourceWriter;
 
 import java.net.URL;
 
 /**
- * Provides implementations of DataResource.
+ * Builds an image strip for all ImageResources defined within an
+ * ImmutableResourceBundle.
  */
-public class DataResourceGenerator extends ResourceGenerator {
+public class ImageResourceGenerator extends ResourceGenerator {
   ResourceContext context;
+  ImageBundleBuilder builder;
 
   public void init(ResourceContext context) {
     this.context = context;
+    builder = new ImageBundleBuilder();
   }
-  
-  public void writeAssignment(JMethod method) throws UnableToCompleteException {
+
+  public void prepare(JMethod method) throws UnableToCompleteException {
     TreeLogger logger = context.getLogger();
-    
     URL[] resources = ResourceGeneratorUtil.findResources(context, method);
 
     if (resources.length != 1) {
-      logger.log(TreeLogger.ERROR, "Exactly one "
-          + ResourceGeneratorUtil.METADATA_TAG + " must be specified", null);
+      logger.log(TreeLogger.ERROR, "Exactly one image may be specified", null);
       throw new UnableToCompleteException();
     }
-    
+
     URL resource = resources[0];
-    String outputUrlExpression = context.addToOutput(resource);
-    
+
+    builder.assimilate(logger, method.getName(), resource);
+  }
+
+  public void writeAssignment(JMethod method) throws UnableToCompleteException {
+    String name = method.getName();
+
     SourceWriter sw = context.getSourceWriter();
-    // Write the expression to create the subtype.
-    sw.println("new " + DataResource.class.getName() + "() {");
+    sw.println("new " + ImageResourcePrototype.class.getName() + "(");
     sw.indent();
-    
-    // Convenience when examining the generated code.
-    sw.println("// " + resource.toExternalForm());
+    sw.println('"' + name + "\",");
 
-    sw.println("public String getUrl() {");
-    sw.indent();
-    sw.println("return " + outputUrlExpression + ";");
-    sw.outdent();
-    sw.println("}");
+    // This is a reference to a field
+    sw.println("imageResourceBundleUrl,");
 
-    sw.println("public String getName() {");
-    sw.indent();
-    sw.println("return \"" + method.getName() + "\";");
-    sw.outdent();
-    sw.println("}");
+    ImageBundleBuilder.ImageRect rect = builder.getMapping(method.getName());
+    sw.println(rect.left + ", 0, " + rect.width + ", " + rect.height);
 
     sw.outdent();
-    sw.println("}");
+    sw.print(")");
+  }
+
+  public void writeFields() throws UnableToCompleteException {
+    String bundleUrlExpression = builder.writeBundledImage(context);
+
+    SourceWriter sw = context.getSourceWriter();
+    sw.println("private static final String imageResourceBundleUrl = "
+        + bundleUrlExpression + ";");
   }
 }

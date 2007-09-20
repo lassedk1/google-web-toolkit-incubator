@@ -21,12 +21,19 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
 /**
  * Encapsulates per-type resource generation logic.
  */
-public interface ResourceGenerator {
+public abstract class ResourceGenerator {
   
-  public void finish();
+  public void finish() throws UnableToCompleteException {
+  }
 
-  public void init(ResourceContext context);
+  public abstract void init(ResourceContext context) throws UnableToCompleteException;
   
-  public void writeAssignment(JMethod method)
+  public void prepare(JMethod method) throws UnableToCompleteException {
+  }
+  
+  public abstract void writeAssignment(JMethod method)
       throws UnableToCompleteException;
+  
+  public void writeFields() throws UnableToCompleteException {
+  }
 }

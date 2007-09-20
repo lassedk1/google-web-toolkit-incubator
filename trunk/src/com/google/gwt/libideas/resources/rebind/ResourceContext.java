@@ -31,17 +31,31 @@ public interface ResourceContext {
   /**
    * Cause a specific collection of bytes to be available in the program's
    * compiled output.
+   * 
    * @param resource the resource to add to the compiled output
    * @return a Java expression which will evaluate to the location of the
    *         provided resource at runtime.
    */
-  public String addToOutput(URL resource)
-      throws UnableToCompleteException;
+  public String addToOutput(URL resource) throws UnableToCompleteException;
+
+  /**
+   * Cause a specific collection of bytes to be available in the program's
+   * compiled output.
+   * 
+   * @param suggestedFileName an unobfuscated filename to possibly use for the
+   *          resource
+   * @param mimeType the MIME type of the data being provided
+   * @param data the bytes to add to the output
+   * @return a Java expression which will evaluate to the location of the
+   *         provided resource at runtime.
+   */
+  public String addToOutput(String suggestedFileName, String mimeType,
+      byte[] data) throws UnableToCompleteException;
 
   public GeneratorContext getGeneratorContext();
 
   public TreeLogger getLogger();
-  
+
   public JClassType getResourceBundleType();
 
   public SourceWriter getSourceWriter();

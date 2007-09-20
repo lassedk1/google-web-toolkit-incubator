@@ -17,6 +17,7 @@ package com.google.gwt.libideas.resources.client;
 
 /**
  * A non-text resource.
+ * @gwt.resourceGenerator com.google.gwt.libideas.resources.rebind.DataResourceGenerator
  */
 public interface DataResource extends ResourcePrototype {
   /**

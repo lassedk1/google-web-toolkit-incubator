@@ -40,12 +40,12 @@ class StaticResourceContext extends AbstractResourceContext {
     super(logger, context, resourceBundleType, sw);
   }
 
-  public String addToOutput(URL resource)
-      throws UnableToCompleteException {
+  public String addToOutput(String suggestedFileName, String mimeType,
+      byte[] data) throws UnableToCompleteException {
     TreeLogger logger = getLogger();
     GeneratorContext context = getGeneratorContext();
     PropertyOracle propertyOracle = context.getPropertyOracle();
-    
+
     // See if filename obfuscation should be enabled
     String enableRenaming = null;
     try {
@@ -54,20 +54,17 @@ class StaticResourceContext extends AbstractResourceContext {
       logger.log(TreeLogger.ERROR, "Bad value for " + ENABLE_RENAMING, e);
       throw new UnableToCompleteException();
     }
-    
-    String fileName = ResourceGeneratorUtil.baseName(resource);
-    byte[] bytes = Util.readURLAsBytes(resource);
 
     // Determine the final filename for the resource's file
     String outputName;
     if (Boolean.parseBoolean(enableRenaming)) {
-      String strongName = Util.computeStrongName(bytes);
+      String strongName = Util.computeStrongName(data);
 
       // Determine the extension of the original file
       String extension;
-      int lastIdx = fileName.lastIndexOf('.');
+      int lastIdx = suggestedFileName.lastIndexOf('.');
       if (lastIdx != -1) {
-        extension = fileName.substring(lastIdx + 1);
+        extension = suggestedFileName.substring(lastIdx + 1);
       } else {
         extension = "noext";
       }
@@ -76,7 +73,8 @@ class StaticResourceContext extends AbstractResourceContext {
       outputName = strongName + ".cache." + extension;
 
     } else {
-      outputName = fileName.substring(fileName.lastIndexOf('/') + 1);
+      outputName =
+          suggestedFileName.substring(suggestedFileName.lastIndexOf('/') + 1);
     }
 
     // Ask the context for an OutputStream into the named resource
@@ -86,7 +84,7 @@ class StaticResourceContext extends AbstractResourceContext {
     // output (because two or more resources had identical content).
     if (out != null) {
       try {
-        out.write(bytes);
+        out.write(data);
 
       } catch (IOException e) {
         logger.log(TreeLogger.ERROR, "Unable to write data to output name "
@@ -98,11 +96,24 @@ class StaticResourceContext extends AbstractResourceContext {
       // created in the output directory.
       context.commitResource(logger, out);
 
-      logger.log(TreeLogger.DEBUG, "Copied " + bytes.length + " bytes to "
+      logger.log(TreeLogger.DEBUG, "Copied " + data.length + " bytes to "
           + outputName, null);
     }
 
     // Return a Java expression
     return "GWT.getModuleBaseURL() + \"" + outputName + "\"";
+  }
+
+  public String addToOutput(URL resource) throws UnableToCompleteException {
+    String fileName = ResourceGeneratorUtil.baseName(resource);
+    byte[] bytes = Util.readURLAsBytes(resource);
+    try {
+      return addToOutput(fileName, resource.openConnection().getContentType(),
+          bytes);
+    } catch (IOException e) {
+      getLogger().log(TreeLogger.ERROR,
+          "Unable to determine mime type of resource", e);
+      throw new UnableToCompleteException();
+    }
   }
 }
