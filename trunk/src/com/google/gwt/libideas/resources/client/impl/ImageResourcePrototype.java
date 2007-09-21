@@ -27,7 +27,7 @@ public class ImageResourcePrototype implements ImageResource {
 
   final String name;
 
-  final String bundleUrl;
+  final String url;
   final int left;
   final int top;
   final int width;
@@ -35,13 +35,13 @@ public class ImageResourcePrototype implements ImageResource {
   ClippedImagePrototype clippedImage;
   
   public ImageResourcePrototype(String name,
-      String bundleUrl, int left, int top, int width, int height) {
+      String url, int left, int top, int width, int height) {
     this.name = name;
     this.left = left;
     this.top = top;
     this.height = height;
     this.width = width;
-    this.bundleUrl = bundleUrl;
+    this.url = url;
   }
 
   public void applyTo(Image image) {
@@ -66,7 +66,7 @@ public class ImageResourcePrototype implements ImageResource {
   private void ensureImage() {
     if (clippedImage == null) {
       clippedImage =
-          new ClippedImagePrototype(bundleUrl, left, top, width, height);
+          new ClippedImagePrototype(url, left, top, width, height);
     }
   }
 }

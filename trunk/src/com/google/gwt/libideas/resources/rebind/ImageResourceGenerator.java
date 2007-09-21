@@ -22,6 +22,8 @@ import com.google.gwt.libideas.resources.client.impl.ImageResourcePrototype;
 import com.google.gwt.user.rebind.SourceWriter;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Builds an image strip for all ImageResources defined within an
@@ -30,10 +32,16 @@ import java.net.URL;
 public class ImageResourceGenerator extends ResourceGenerator {
   ResourceContext context;
   ImageBundleBuilder builder;
+  Map externalLocationExpressions;
+  Map externalImageRects;
+  int imageStripCount;
 
   public void init(ResourceContext context) {
     this.context = context;
     builder = new ImageBundleBuilder();
+    externalLocationExpressions = new HashMap();
+    externalImageRects = new HashMap();
+    imageStripCount = 0;
   }
 
   public void prepare(JMethod method) throws UnableToCompleteException {
@@ -46,11 +54,21 @@ public class ImageResourceGenerator extends ResourceGenerator {
     }
 
     URL resource = resources[0];
+    String name = method.getName();
 
-    builder.assimilate(logger, method.getName(), resource);
+    try {
+      builder.assimilate(logger, name, resource);
+      imageStripCount++;
+    } catch (UnsuitableForStripException e) {
+      // Add the image to the output as a separate resource
+      String urlExpression = context.addToOutput(resource);
+      externalLocationExpressions.put(name, urlExpression);
+      externalImageRects.put(name, e.getImageRect());
+    }
   }
 
   public void writeAssignment(JMethod method) throws UnableToCompleteException {
+    TreeLogger logger = context.getLogger();
     String name = method.getName();
 
     SourceWriter sw = context.getSourceWriter();
@@ -58,10 +76,22 @@ public class ImageResourceGenerator extends ResourceGenerator {
     sw.indent();
     sw.println('"' + name + "\",");
 
-    // This is a reference to a field
-    sw.println("imageResourceBundleUrl,");
+    ImageBundleBuilder.ImageRect rect;
+    if (!externalImageRects.containsKey(name)) {
+      // This is a reference to a field
+      sw.println("imageResourceBundleUrl,");
+      rect = builder.getMapping(method.getName());
+    } else {
+      sw.println(externalLocationExpressions.get(name).toString() + ", ");
+      rect = (ImageBundleBuilder.ImageRect) externalImageRects.get(name);
+    }
 
-    ImageBundleBuilder.ImageRect rect = builder.getMapping(method.getName());
+    if (rect == null) {
+      logger.log(TreeLogger.ERROR, "No ImageRect ever computed for " + name,
+          null);
+      throw new UnableToCompleteException();
+    }
+    
     sw.println(rect.left + ", 0, " + rect.width + ", " + rect.height);
 
     sw.outdent();
@@ -69,10 +99,12 @@ public class ImageResourceGenerator extends ResourceGenerator {
   }
 
   public void writeFields() throws UnableToCompleteException {
-    String bundleUrlExpression = builder.writeBundledImage(context);
-
-    SourceWriter sw = context.getSourceWriter();
-    sw.println("private static final String imageResourceBundleUrl = "
-        + bundleUrlExpression + ";");
+    if (imageStripCount > 0) {
+      String bundleUrlExpression = builder.writeBundledImage(context);
+  
+      SourceWriter sw = context.getSourceWriter();
+      sw.println("private String imageResourceBundleUrl = " + bundleUrlExpression
+          + ";");
+    }
   }
 }
