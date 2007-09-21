@@ -167,7 +167,7 @@ public class StaticResourceBundleGenerator extends Generator {
         sw.outdent();
         sw.println("}");
 
-        sw.print("private static final "
+        sw.print("private final "
             + m.getReturnType().getQualifiedSourceName() + " " + fieldName
             + " = ");
 

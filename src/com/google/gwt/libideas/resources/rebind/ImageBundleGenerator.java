@@ -33,7 +33,7 @@ import java.util.TreeMap;
 import javax.imageio.ImageIO;
 
 /**
- * Accumulates state for the bundled image.  This is a slighly-modified version
+ * Accumulates state for the bundled image. This is a slighly-modified version
  * of the ImageBundleBuilder class from the GWT UI package.
  */
 class ImageBundleBuilder {
@@ -79,7 +79,7 @@ class ImageBundleBuilder {
    *           image
    */
   public void assimilate(TreeLogger logger, String imageName, URL resource)
-      throws UnableToCompleteException {
+      throws UnableToCompleteException, UnsuitableForStripException {
 
     /*
      * Decide whether or not we need to add to the composite image. Either way,
@@ -90,7 +90,9 @@ class ImageBundleBuilder {
     ImageRect rect = getMapping(imageName);
     if (rect == null) {
       // Assimilate the image into the composite.
-      rect = addImage(logger, resource);
+      rect = readImage(logger, resource);
+
+      checkSuitableForStrip(logger, imageName, resource, rect);
 
       // Map the URL to its image so that even if the same URL is used more than
       // once, we only include the referenced image once in the bundled image.
@@ -130,50 +132,26 @@ class ImageBundleBuilder {
         + ".cache.png", BUNDLE_MIME_TYPE, imageBytes);
   }
 
-  private ImageRect addImage(TreeLogger logger, URL imageUrl)
-      throws UnableToCompleteException {
+  /**
+   * Enforce heuristics about whether or not an image should be added to an
+   * image strip, or left as a separate resource request.
+   * 
+   * @throws UnsuitableForStripException if the resource should not be added to
+   *           an image strip
+   */
+  private void checkSuitableForStrip(TreeLogger logger, String imageName,
+      URL resource, ImageRect rect) throws UnsuitableForStripException {
 
-    logger =
-        logger.branch(TreeLogger.TRACE, "Adding image '"
-            + imageUrl.toExternalForm() + "'", null);
+    // PNG images won't get any bigger, so we may as well include them in the
+    // strip
+    if (resource.getPath().endsWith("png")) {
+      return;
+    }
 
-    // Fetch the image.
-    try {
-      BufferedImage image;
-      // Load the image
-      try {
-        image = ImageIO.read(imageUrl);
-      } catch (IllegalArgumentException iex) {
-        if (imageUrl.getPath().toLowerCase().endsWith("png")
-            && iex.getMessage() != null
-            && iex.getStackTrace()[0].getClassName().equals(
-                "javax.imageio.ImageTypeSpecifier$Indexed")) {
-          logger
-              .log(
-                  TreeLogger.ERROR,
-                  "Unable to read image. The image may not be in valid PNG format. "
-                      + "This problem may also be due to a bug in versions of the "
-                      + "JRE prior to 1.6. See "
-                      + "http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5098176 "
-                      + "for more information. If this bug is the cause of the "
-                      + "error, try resaving the image using a different image "
-                      + "program, or upgrade to a newer JRE.", null);
-          throw new UnableToCompleteException();
-        } else {
-          throw iex;
-        }
-      }
-
-      if (image == null) {
-        logger.log(TreeLogger.ERROR, "Unrecognized image file format", null);
-        throw new UnableToCompleteException();
-      }
-
-      return new ImageRect(image);
-
-    } catch (IOException e) {
-      logger.log(TreeLogger.ERROR, "Unable to read image resource", null);
-      throw new UnableToCompleteException();
+    if (rect.width * rect.height > 128 * 128) {
+      logger.log(TreeLogger.DEBUG, "Not adding " + imageName
+          + " to strip because it is large.", null);
+      throw new UnsuitableForStripException(rect);
     }
   }
 
@@ -242,5 +220,52 @@ class ImageBundleBuilder {
 
   private void putMapping(String imageName, ImageRect rect) {
     imageNameToImageRectMap.put(imageName, rect);
+  }
+
+  private ImageRect readImage(TreeLogger logger, URL imageUrl)
+      throws UnableToCompleteException {
+
+    logger =
+        logger.branch(TreeLogger.TRACE, "Adding image '"
+            + imageUrl.toExternalForm() + "'", null);
+
+    // Fetch the image.
+    try {
+      BufferedImage image;
+      // Load the image
+      try {
+        image = ImageIO.read(imageUrl);
+      } catch (IllegalArgumentException iex) {
+        if (imageUrl.getPath().toLowerCase().endsWith("png")
+            && iex.getMessage() != null
+            && iex.getStackTrace()[0].getClassName().equals(
+                "javax.imageio.ImageTypeSpecifier$Indexed")) {
+          logger
+              .log(
+                  TreeLogger.ERROR,
+                  "Unable to read image. The image may not be in valid PNG format. "
+                      + "This problem may also be due to a bug in versions of the "
+                      + "JRE prior to 1.6. See "
+                      + "http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5098176 "
+                      + "for more information. If this bug is the cause of the "
+                      + "error, try resaving the image using a different image "
+                      + "program, or upgrade to a newer JRE.", null);
+          throw new UnableToCompleteException();
+        } else {
+          throw iex;
+        }
+      }
+
+      if (image == null) {
+        logger.log(TreeLogger.ERROR, "Unrecognized image file format", null);
+        throw new UnableToCompleteException();
+      }
+
+      return new ImageRect(image);
+
+    } catch (IOException e) {
+      logger.log(TreeLogger.ERROR, "Unable to read image resource", null);
+      throw new UnableToCompleteException();
+    }
   }
 }
