@@ -13,11 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.user.client.ui;
+package com.google.gwt.widgetideas.tables.client.overrides;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.SourcesTableEvents;
+import com.google.gwt.user.client.ui.TableListener;
+import com.google.gwt.user.client.ui.TableListenerCollection;
+import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 import com.google.gwt.user.client.ui.HasVerticalAlignment.VerticalAlignmentConstant;
 
@@ -26,12 +34,13 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * HTMLTable contains the common table algorithms for
- * {@link com.google.gwt.user.client.ui.Grid} and
- * {@link com.google.gwt.user.client.ui.FlexTable}.
- * <p>
- * <img class='gallery' src='Table.png'/>
- * </p>
+ * This class should replace the actual class of the same name.
+ * 
+ * TODO: Incorporate changes into actual class.
+ * 
+ * Steps to incorporate:
+ * 1. Relace "OverrideDOM." with "DOM."
+ * 2. Copy contents to actual HTMLTable class
  */
 public abstract class HTMLTable extends Panel implements SourcesTableEvents {
   /**
@@ -1166,7 +1175,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
    * @return the newly created TD
    */
   protected Element createCell() {
-    return DOM.createTD();
+    return OverrideDOM.createTD();
   }
 
   /**

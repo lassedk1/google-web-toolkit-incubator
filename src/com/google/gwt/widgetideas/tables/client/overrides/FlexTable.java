@@ -13,22 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.user.client.ui;
+package com.google.gwt.widgetideas.tables.client.overrides;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 
 /**
- * A flexible table that creates cells on demand. It can be jagged (that is,
- * each row can contain a different number of cells) and individual cells can be
- * set to span multiple rows or columns.
- * <p>
- * <img class='gallery' src='Table.png'/>
- * </p>
- * <p>
- * <h3>Example</h3>
- * {@example com.google.gwt.examples.FlexTableExample}
- * </p>
+ * This class should replace the actual class of the same name.
+ * 
+ * TODO: Incorporate changes into actual class.
  */
 public class FlexTable extends HTMLTable {
 
@@ -226,10 +219,14 @@ public class FlexTable extends HTMLTable {
   }
 
   /**
-   * @see com.google.gwt.user.client.ui.HTMLTable#removeCell(int, int)
+   * Removes the specified cell from the table.
+   * 
+   * @param row the row of the cell to remove
+   * @param column the column of cell to remove
+   * @throws IndexOutOfBoundsException
    */
-  public void removeCell(int row, int col) {
-    super.removeCell(row, col);
+  public void removeCell(int row, int column) {
+    super.removeCell(row, column);
   }
 
   /**

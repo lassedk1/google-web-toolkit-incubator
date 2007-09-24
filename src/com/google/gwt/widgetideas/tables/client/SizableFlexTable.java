@@ -13,13 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.widgetideas.client;
+package com.google.gwt.widgetideas.tables.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.widgetideas.tables.client.overrides.FlexTable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,8 +46,8 @@ public class SizableFlexTable extends FlexTable {
      */
     public void setColumnWidth(SizableFlexTable grid, int column, int width) {
       Element tableElem = grid.getElement();
-      DOM.setStyleAttribute(grid.getGhostCellElement(column), "width", width
-          + "px");
+      DOM.setStyleAttribute(grid.getGhostCellElement(column), "width",
+          width + "px");
     }
   }
 
@@ -97,9 +96,8 @@ public class SizableFlexTable extends FlexTable {
   }
 
   /**
-   * FlexTable-specific implementation of {@link HTMLTable.CellFormatter}. The
-   * formatter retrieved from {@link HTMLTable#getCellFormatter()} may be cast
-   * to this class.
+   * FlexTable-specific implementation of
+   * {@link com.google.gwt.user.client.ui.HTMLTable.CellFormatter}.
    */
   public class SizableFlexCellFormatter extends FlexCellFormatter {
     /**
@@ -365,12 +363,16 @@ public class SizableFlexTable extends FlexTable {
   }
 
   /**
-   * @see com.google.gwt.user.client.ui.HTMLTable#removeCell(int, int)
+   * Removes the specified cell from the table.
+   * 
+   * @param row the row of the cell to remove
+   * @param column the column of cell to remove
+   * @throws IndexOutOfBoundsException
    */
-  public void removeCell(int row, int col) {
-    int colSpan = getFlexCellFormatter().getColSpan(row, col);
-    int rowSpan = getFlexCellFormatter().getRowSpan(row, col);
-    super.removeCell(row, col);
+  public void removeCell(int row, int column) {
+    int colSpan = getFlexCellFormatter().getColSpan(row, column);
+    int rowSpan = getFlexCellFormatter().getRowSpan(row, column);
+    super.removeCell(row, column);
 
     // Update the column counts
     for (int i = row; i < row + rowSpan; i++) {
@@ -408,7 +410,7 @@ public class SizableFlexTable extends FlexTable {
         break;
       }
 
-      // Look for cells that span into the removed row      
+      // Look for cells that span into the removed row
       int numCells = getCellCount(curRow);
       for (int curCell = 0; curCell < numCells; curCell++) {
         int affectedRow = curRow + formatter.getRowSpan(curRow, curCell) - 1;

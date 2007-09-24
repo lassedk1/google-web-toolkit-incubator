@@ -21,27 +21,29 @@
 
   <inherits name="com.google.gwt.core.Core"/>
   <inherits name="com.google.gwt.user.UserAgent"/>
+  <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
+  <inherits name='com.google.gwt.widgetideas.tables.OverrideDOM'/>
 
   <!-- Fall through to this rule -->
-  <replace-with class="com.google.gwt.widgetideas.client.SizableFlexTable.SizableFlexTableImpl">
-    <when-type-is class="com.google.gwt.widgetideas.client.SizableFlexTable.SizableFlexTableImpl"/>
+  <replace-with class="com.google.gwt.widgetideas.tables.client.ExtendedGrid.ExtendedGridImpl">
+    <when-type-is class="com.google.gwt.widgetideas.tables.client.ExtendedGrid.ExtendedGridImpl"/>
   </replace-with>
 
   <!-- IE includes spacing and padding when rendering -->
-  <replace-with class="com.google.gwt.widgetideas.client.SizableFlexTable.SizableFlexTableImplIE6">
-    <when-type-is class="com.google.gwt.widgetideas.client.SizableFlexTable.SizableFlexTableImpl"/>
+  <replace-with class="com.google.gwt.widgetideas.tables.client.ExtendedGrid.ExtendedGridImplIE6">
+    <when-type-is class="com.google.gwt.widgetideas.tables.client.ExtendedGrid.ExtendedGridImpl"/>
     <when-property-is name="user.agent" value="ie6"/>
   </replace-with>
 
   <!-- Safari includes spacing and padding when rendering -->
-  <replace-with class="com.google.gwt.widgetideas.client.SizableFlexTable.SizableFlexTableImplSafari">
-    <when-type-is class="com.google.gwt.widgetideas.client.SizableFlexTable.SizableFlexTableImpl"/>
+  <replace-with class="com.google.gwt.widgetideas.tables.client.ExtendedGrid.ExtendedGridImplSafari">
+    <when-type-is class="com.google.gwt.widgetideas.tables.client.ExtendedGrid.ExtendedGridImpl"/>
     <when-property-is name="user.agent" value="safari"/>
   </replace-with>
 
   <!-- Opera needs to refresh the grid or it won't resize -->
-  <replace-with class="com.google.gwt.widgetideas.client.SizableFlexTable.SizableFlexTableImplOpera">
-    <when-type-is class="com.google.gwt.widgetideas.client.SizableFlexTable.SizableFlexTableImpl"/>
+  <replace-with class="com.google.gwt.widgetideas.tables.client.ExtendedGrid.ExtendedGridImplOpera">
+    <when-type-is class="com.google.gwt.widgetideas.tables.client.ExtendedGrid.ExtendedGridImpl"/>
     <when-property-is name="user.agent" value="opera"/>
   </replace-with>
 </module>
