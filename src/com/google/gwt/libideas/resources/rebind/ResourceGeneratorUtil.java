@@ -28,12 +28,67 @@ import java.net.URL;
  */
 public final class ResourceGeneratorUtil {
   public static final String METADATA_TAG = "gwt.resource";
+  public static final String TRANSFORMER_TAG = "gwt.transformer";
+
+  /**
+   * Apply Transformers to a resource. The presence of one or more
+   * <code>gwt.transformer</code> annotations will specify the
+   * {@link Transformer} class to use. Multiple transformations will be applied
+   * in their declared order.
+   * 
+   * @param <T> the Java type that encapsulates the value of the resource
+   * @param logger the TreeLogger context
+   * @param method the method to examine
+   * @param baseType a class literal which specifies the base type
+   * @param input the value to transform
+   * @return the transformed value.
+   * @throws UnableToCompleteException
+   */
+  public static <T> T applyTransformations(TreeLogger logger, JMethod method,
+      Class<T> baseType, T input) throws UnableToCompleteException {
+    String[][] md = method.getMetaData(TRANSFORMER_TAG);
+
+    logger =
+        logger.branch(TreeLogger.DEBUG, "Applying transformations for method "
+            + method.getName(), null);
+    
+    try {
+      for (int i = 0; i < md.length; i++) {
+        String className = md[i][0];
+
+        // This may throw a ClassCastException, which we trap below
+        Class<? extends Transformer> clazz =
+            Class.forName(className).asSubclass(Transformer.class);
+
+        Transformer<?> t = clazz.newInstance();
+
+        // This, too, may throw a ClassCastException.
+        Transformer<T> t2 = t.asSubclass(baseType);
+        input = t2.transform(method, input);
+      }
+
+      return input;
+    } catch (ClassCastException e) {
+      logger.log(TreeLogger.ERROR, "The class specified by " + TRANSFORMER_TAG
+          + " annotation is not a Transformer<" + baseType.getName() + ">",
+          null);
+    } catch (ClassNotFoundException e) {
+      logger.log(TreeLogger.ERROR, "Could not find Transformer", e);
+    } catch (IllegalAccessException e) {
+      logger.log(TreeLogger.ERROR, "TextTransformers must be public", e);
+    } catch (InstantiationException e) {
+      logger.log(TreeLogger.ERROR,
+          "TextTransformers must have public, no-arg constructors", e);
+    }
+
+    throw new UnableToCompleteException();
+  }
 
   public static String baseName(URL resource) {
     String path = resource.getPath();
     return path.substring(path.lastIndexOf('/') + 1);
   }
-  
+
   public static URL[] findResources(ResourceContext context, JMethod method)
       throws UnableToCompleteException {
     TreeLogger logger =
@@ -48,8 +103,7 @@ public final class ResourceGeneratorUtil {
 
     String locale;
     try {
-      PropertyOracle oracle =
-          context.getGeneratorContext().getPropertyOracle();
+      PropertyOracle oracle = context.getGeneratorContext().getPropertyOracle();
       locale = oracle.getPropertyValue(logger, "locale");
     } catch (BadPropertyValueException e) {
       locale = null;

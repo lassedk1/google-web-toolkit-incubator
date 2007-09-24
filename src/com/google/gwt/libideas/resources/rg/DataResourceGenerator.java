@@ -13,12 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.resources.rebind;
+package com.google.gwt.libideas.resources.rg;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.libideas.resources.client.DataResource;
+import com.google.gwt.libideas.resources.rebind.ResourceContext;
+import com.google.gwt.libideas.resources.rebind.ResourceGenerator;
+import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
 import com.google.gwt.user.rebind.SourceWriter;
 
 import java.net.URL;
@@ -26,8 +29,8 @@ import java.net.URL;
 /**
  * Provides implementations of DataResource.
  */
-public class DataResourceGenerator extends ResourceGenerator {
-  ResourceContext context;
+public final class DataResourceGenerator extends ResourceGenerator {
+  private ResourceContext context;
 
   public void init(ResourceContext context) {
     this.context = context;

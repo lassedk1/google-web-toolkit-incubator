@@ -29,7 +29,7 @@ public abstract class AbstractResourceContext implements ResourceContext {
   private final JClassType resourceBundleType;
   private final SourceWriter sw;
 
-  AbstractResourceContext(TreeLogger logger, GeneratorContext context,
+  protected AbstractResourceContext(TreeLogger logger, GeneratorContext context,
       JClassType resourceBundleType, SourceWriter sw) {
     this.logger = logger;
     this.context = context;

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.resources.rebind;
+package com.google.gwt.libideas.resources.rebind.context;
 
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
@@ -21,7 +21,8 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.user.rebind.SourceWriter;
 
-class InlineResourceContext extends StaticResourceContext {
+
+class InlineResourceContext  extends StaticResourceContext {
   /**
    * The largest file size that will be inlined. Note that this value is taken
    * before any encodings are applied.
