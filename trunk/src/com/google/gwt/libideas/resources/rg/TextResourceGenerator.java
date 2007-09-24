@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.resources.rebind;
+package com.google.gwt.libideas.resources.rg;
 
 import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.TreeLogger;
@@ -21,6 +21,9 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.dev.util.Util;
 import com.google.gwt.libideas.resources.client.TextResource;
+import com.google.gwt.libideas.resources.rebind.ResourceContext;
+import com.google.gwt.libideas.resources.rebind.ResourceGenerator;
+import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
 import com.google.gwt.user.rebind.SourceWriter;
 
 import java.net.URL;
@@ -29,13 +32,14 @@ import java.net.URL;
  * Provides implementations of TextResource.
  * 
  */
-public class TextResourceGenerator extends ResourceGenerator {
+public final class TextResourceGenerator extends ResourceGenerator {
+
   ResourceContext context;
 
   public void init(ResourceContext context) {
     this.context = context;
   }
-  
+
   public void writeAssignment(JMethod method) throws UnableToCompleteException {
     TreeLogger logger = context.getLogger();
     URL[] resources = ResourceGeneratorUtil.findResources(context, method);
@@ -58,9 +62,15 @@ public class TextResourceGenerator extends ResourceGenerator {
 
     sw.println("public String getText() {");
     sw.indent();
-    sw.println("return \""
-        + Generator.escape(new String(Util.readURLAsChars(resource)))
-            .replaceAll("\0", "\\0") + "\";");
+
+    TreeLogger transformLogger =
+        logger.branch(TreeLogger.DEBUG, "Applying Transformers", null);
+    String toWrite =
+        ResourceGeneratorUtil.applyTransformations(transformLogger, method,
+            String.class, new String(Util.readURLAsChars(resource)));
+
+    sw.println("return \"" + Generator.escape(toWrite).replaceAll("\0", "\\0")
+        + "\";");
     sw.outdent();
     sw.println("}");
 

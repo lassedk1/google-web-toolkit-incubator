@@ -18,7 +18,7 @@ package com.google.gwt.libideas.resources.client;
 /**
  * A resource that contains text that should be incorporated into the compiled
  * output.
- * @gwt.resourceGenerator com.google.gwt.libideas.resources.rebind.TextResourceGenerator
+ * @gwt.resourceGenerator com.google.gwt.libideas.resources.rg.TextResourceGenerator
  */
 public interface TextResource extends ResourcePrototype {
   public String getText();

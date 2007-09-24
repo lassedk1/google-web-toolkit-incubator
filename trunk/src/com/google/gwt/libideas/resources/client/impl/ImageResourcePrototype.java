@@ -20,7 +20,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.impl.ClippedImagePrototype;
 
 /**
- * This is part of aa prototype implementation of the ImageBundle optimization
+ * This is part of a prototype implementation of the ImageBundle optimization
  * implemented with ImmutableResourceBundle.
  */
 public class ImageResourcePrototype implements ImageResource {
@@ -33,9 +33,9 @@ public class ImageResourcePrototype implements ImageResource {
   final int width;
   final int height;
   ClippedImagePrototype clippedImage;
-  
-  public ImageResourcePrototype(String name,
-      String url, int left, int top, int width, int height) {
+
+  public ImageResourcePrototype(String name, String url, int left, int top,
+      int width, int height) {
     this.name = name;
     this.left = left;
     this.top = top;
@@ -65,8 +65,7 @@ public class ImageResourcePrototype implements ImageResource {
 
   private void ensureImage() {
     if (clippedImage == null) {
-      clippedImage =
-          new ClippedImagePrototype(url, left, top, width, height);
+      clippedImage = new ClippedImagePrototype(url, left, top, width, height);
     }
   }
 }

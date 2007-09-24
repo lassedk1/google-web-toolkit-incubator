@@ -30,7 +30,7 @@
 
   <!--  Specify the default behavior -->
   <generate-with
-    class="com.google.gwt.libideas.resources.rebind.StaticResourceBundleGenerator">
+    class="com.google.gwt.libideas.resources.rebind.context.StaticResourceBundleGenerator">
 
     <!-- We have to specify on which types to execute the Generator -->
     <when-type-assignable class="com.google.gwt.libideas.resources.client.ImmutableResourceBundle" />
@@ -38,7 +38,7 @@
 
   <!-- Last-matches wins, so this will selectively override the previous rule -->
   <generate-with
-    class="com.google.gwt.libideas.resources.rebind.InlineResourceBundleGenerator">
+    class="com.google.gwt.libideas.resources.rebind.context.InlineResourceBundleGenerator">
 
     <!-- We have a number of conditions that must be satisfied -->
     <all>

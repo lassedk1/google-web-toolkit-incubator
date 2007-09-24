@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.resources.rebind;
+package com.google.gwt.libideas.resources.rg;
 
 /**
  * Indicates that an image is not suitable for being added to an image strip.

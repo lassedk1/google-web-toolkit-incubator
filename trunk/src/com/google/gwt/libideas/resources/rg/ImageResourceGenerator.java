@@ -13,12 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.resources.rebind;
+package com.google.gwt.libideas.resources.rg;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.libideas.resources.client.impl.ImageResourcePrototype;
+import com.google.gwt.libideas.resources.rebind.ResourceContext;
+import com.google.gwt.libideas.resources.rebind.ResourceGenerator;
+import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
 import com.google.gwt.user.rebind.SourceWriter;
 
 import java.net.URL;
@@ -29,12 +32,12 @@ import java.util.Map;
  * Builds an image strip for all ImageResources defined within an
  * ImmutableResourceBundle.
  */
-public class ImageResourceGenerator extends ResourceGenerator {
-  ResourceContext context;
-  ImageBundleBuilder builder;
-  Map externalLocationExpressions;
-  Map externalImageRects;
-  int imageStripCount;
+public final class ImageResourceGenerator extends ResourceGenerator {
+  private ResourceContext context;
+  private ImageBundleBuilder builder;
+  private Map externalLocationExpressions;
+  private Map externalImageRects;
+  private int imageStripCount;
 
   public void init(ResourceContext context) {
     this.context = context;

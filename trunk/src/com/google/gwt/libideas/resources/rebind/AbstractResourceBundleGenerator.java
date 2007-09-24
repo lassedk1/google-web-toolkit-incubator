@@ -31,21 +31,22 @@ import com.google.gwt.user.rebind.SourceWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
- * Copies selected files into module output with strong names and generates the
- * ResourceBundle mappings.
+ * The base class for creating new ResourceBundle implementations.
  */
-public class StaticResourceBundleGenerator extends Generator {
+public abstract class AbstractResourceBundleGenerator extends Generator {
 
   private static final String RESOURCE_GENERATOR_TAG = "gwt.resourceGenerator";
 
-  public String generate(TreeLogger logger, GeneratorContext context,
+  public AbstractResourceBundleGenerator() {
+    super();
+  }
+
+  public final String generate(TreeLogger logger, GeneratorContext context,
       String typeName) throws UnableToCompleteException {
 
     // The TypeOracle knows about all types in the type system
@@ -111,7 +112,7 @@ public class StaticResourceBundleGenerator extends Generator {
 
       JMethod[] methods = sourceType.getMethods();
 
-      Map /* <JClassType, ResourceGenerator> */resourceGenerators =
+      Map /* <Class<? extends ResourceGenerator>, List<JMethod>> */resourceGenerators =
           new HashMap();
 
       ResourceContext resourceContext =
@@ -128,61 +129,82 @@ public class StaticResourceBundleGenerator extends Generator {
           throw new UnableToCompleteException();
         }
 
-        ResourceGenerator rg;
-        if (!resourceGenerators.containsKey(returnType)) {
-          rg = findResourceGenerator(logger, typeOracle, returnType);
-          rg.init(resourceContext);
-          resourceGenerators.put(returnType, rg);
+        Class clazz = findResourceGenerator(logger, typeOracle, m);
+        List generatorMethods;
+        if (resourceGenerators.containsKey(clazz)) {
+          generatorMethods = (List) resourceGenerators.get(clazz);
         } else {
-          rg = (ResourceGenerator) resourceGenerators.get(returnType);
+          generatorMethods = new ArrayList();
+          resourceGenerators.put(clazz, generatorMethods);
         }
 
-        // Let the ResourceGenerator know about each JMethod we expect it to
-        // create a ResourcePrototype for
-        rg.prepare(m);
+        generatorMethods.add(m);
       }
-      
-      // Write all static fields the ResourceGenerators want to create
-      // Allow ResourceGenerators to clean up
-      Set resourceGeneratorSet = new HashSet(resourceGenerators.values());
-      for (Iterator i = resourceGeneratorSet.iterator(); i.hasNext();) {
-        ResourceGenerator rg = (ResourceGenerator)i.next();
-        
+
+      // Run the ResourceGenerator code
+      for (Iterator i = resourceGenerators.entrySet().iterator(); i.hasNext();) {
+        Map.Entry /* <Class, List> */entry = (Map.Entry) i.next();
+        Class generatorClass = (Class) entry.getKey();
+        List generatorMethods = (List) entry.getValue();
+
+        // Create the ResourceGenerator
+        ResourceGenerator rg;
+        try {
+          rg = (ResourceGenerator) generatorClass.newInstance();
+          rg.init(resourceContext);
+        } catch (InstantiationException e) {
+          logger.log(TreeLogger.ERROR,
+              "Unable to initialize ResourceGenerator", e);
+          throw new UnableToCompleteException();
+        } catch (IllegalAccessException e) {
+          logger.log(TreeLogger.ERROR,
+              "Unable to instantiate ResourceGenerator. "
+                  + "Does it have a public default constructor?", e);
+          throw new UnableToCompleteException();
+        }
+
+        // Prepare the ResourceGenerator by telling it all methods that it is
+        // expected to produce.
+        for (Iterator methodIterator = generatorMethods.iterator(); methodIterator
+            .hasNext();) {
+          JMethod m = (JMethod) methodIterator.next();
+          rg.prepare(m);
+        }
+
+        // Write all field values
         rg.writeFields();
+
+        // Create the instance variables in the IRB subclass by calling
+        // writeAssignment() on the ResourceGenerator
+        for (Iterator methodIterator = generatorMethods.iterator(); methodIterator
+            .hasNext();) {
+          JMethod m = (JMethod) methodIterator.next();
+          // Strip off all but the access modifiers
+          sw.print(m.getReadableDeclaration(false, true, true, true, true));
+          sw.println(" {");
+          sw.indent();
+
+          String fieldName = (m.getName() + "_instance").toUpperCase();
+          fieldNames.add(fieldName);
+          sw.println("return " + fieldName + ";");
+
+          sw.outdent();
+          sw.println("}");
+
+          sw.print("private final "
+              + m.getReturnType().getQualifiedSourceName() + " " + fieldName
+              + " = ");
+
+          rg.writeAssignment(m);
+
+          sw.println(";");
+        }
+
+        // Finalize the ResourceGenerator
+        rg.finish();
       }
 
-      // Now run the ResourceGenerators
-      for (int i = 0; i < methods.length; i++) {
-        JMethod m = methods[i];
-
-        // Strip off all but the access modifiers
-        sw.print(m.getReadableDeclaration(false, true, true, true, true));
-        sw.println(" {");
-        sw.indent();
-
-        String fieldName = (m.getName() + "_instance").toUpperCase();
-        fieldNames.add(fieldName);
-        sw.println("return " + fieldName + ";");
-
-        sw.outdent();
-        sw.println("}");
-
-        sw.print("private final "
-            + m.getReturnType().getQualifiedSourceName() + " " + fieldName
-            + " = ");
-
-        ResourceGenerator rg =
-            (ResourceGenerator) resourceGenerators.get(m.getReturnType()
-                .isClassOrInterface());
-        rg.writeAssignment(m);
-
-        sw.println(";");
-      }
-
-      for (Iterator i = resourceGeneratorSet.iterator(); i.hasNext();) {
-        ((ResourceGenerator) i.next()).finish();
-      }
-
+      // Complete the IRB contract
       sw.println("public ResourcePrototype[] getResources() {");
       sw.indent();
       sw.println("return new ResourcePrototype[] {");
@@ -203,27 +225,61 @@ public class StaticResourceBundleGenerator extends Generator {
     return f.getCreatedClassName();
   }
 
-  protected ResourceContext createResourceContext(TreeLogger logger,
-      GeneratorContext context, JClassType resourceBundleType, SourceWriter sw) {
-    return new StaticResourceContext(logger, context, resourceBundleType, sw);
-  }
+  /**
+   * Create the ResourceContext object that will be used by
+   * {@link ResourceGenerator} subclasses. This is the primary way to implement
+   * custom logic in the resource generation pass.
+   * 
+   * @param logger
+   * @param context
+   * @param resourceBundleType
+   * @param sw
+   * @return the ResourceContext to be used
+   */
+  protected abstract ResourceContext createResourceContext(TreeLogger logger,
+      GeneratorContext context, JClassType resourceBundleType, SourceWriter sw);
 
-  protected ResourceGenerator findResourceGenerator(TreeLogger logger,
-      TypeOracle typeOracle, JClassType resourceType)
-      throws UnableToCompleteException {
+  /**
+   * Given a user-defined type name, determine the type name for the generated
+   * class.
+   */
+  protected abstract String generateSimpleSourceName(String sourceType);
 
-    String[][] md = resourceType.getMetaData(RESOURCE_GENERATOR_TAG);
-    
+  private Class findResourceGenerator(TreeLogger logger, TypeOracle typeOracle,
+      JMethod method) throws UnableToCompleteException {
+
+    String className;
+    String[][] md;
+    JClassType resourceType = method.getReturnType().isClassOrInterface();
+
+    // Look for an override on the method itself
+    md = method.getMetaData(RESOURCE_GENERATOR_TAG);
     if (md.length == 0) {
-      logger.log(TreeLogger.ERROR, "No " + RESOURCE_GENERATOR_TAG + " annotation for type "
-          + resourceType.getQualifiedSourceName(), null);
-      throw new UnableToCompleteException();
+      // Otherwise, look at the return type
+      while (resourceType != null) {
+        md = resourceType.getMetaData(RESOURCE_GENERATOR_TAG);
+
+        // Found some metadata
+        if (md.length > 0) {
+          break;
+        } else {
+          // Try supertype if no annotation found
+          resourceType = resourceType.getSuperclass();
+        }
+      }
+
+      // No generator tag defined on the return type or any of its supertypes
+      if (resourceType == null) {
+        logger.log(TreeLogger.ERROR, "No " + RESOURCE_GENERATOR_TAG
+            + " annotation for method " + method.getName()
+            + " or its return type hierarchy", null);
+        throw new UnableToCompleteException();
+      }
     }
-    
+
     int lastInstanceIndex = md.length - 1;
     int lastEntryIndex = md[lastInstanceIndex].length - 1;
-    String className = md[lastInstanceIndex][lastEntryIndex];
-
+    className = md[lastInstanceIndex][lastEntryIndex];
     Class clazz = null;
 
     try {
@@ -239,24 +295,6 @@ public class StaticResourceBundleGenerator extends Generator {
       throw new UnableToCompleteException();
     }
 
-    try {
-      return (ResourceGenerator) clazz.newInstance();
-    } catch (IllegalAccessException e) {
-      logger.log(TreeLogger.ERROR, className
-          + " must be a public, concrete type", e);
-      throw new UnableToCompleteException();
-    } catch (InstantiationException e) {
-      logger.log(TreeLogger.ERROR, "Unable to create ResourceGenerator "
-          + className, e);
-      throw new UnableToCompleteException();
-    }
-  }
-
-  /**
-   * Given a user-defined type name, determine the type name for the generated
-   * class.
-   */
-  protected String generateSimpleSourceName(String sourceType) {
-    return sourceType.replaceAll("\\.", "_") + "_externalBundle";
+    return clazz;
   }
 }

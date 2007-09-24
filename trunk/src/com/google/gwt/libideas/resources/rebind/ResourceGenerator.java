@@ -23,17 +23,29 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
  */
 public abstract class ResourceGenerator {
   
+  /**
+   * Default no-op implementation.
+   * @throws UnableToCompleteException
+   */
   public void finish() throws UnableToCompleteException {
   }
 
   public abstract void init(ResourceContext context) throws UnableToCompleteException;
   
+  /**
+   * Default no-op implementation.
+   * @throws UnableToCompleteException
+   */
   public void prepare(JMethod method) throws UnableToCompleteException {
   }
   
   public abstract void writeAssignment(JMethod method)
       throws UnableToCompleteException;
   
+  /**
+   * Default no-op implementation.
+   * @throws UnableToCompleteException
+   */
   public void writeFields() throws UnableToCompleteException {
   }
 }

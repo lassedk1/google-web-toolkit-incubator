@@ -19,7 +19,7 @@ import com.google.gwt.user.client.ui.Image;
 
 /**
  * Test for ImageBundle optimizations.
- * @gwt.resourceGenerator com.google.gwt.libideas.resources.rebind.ImageResourceGenerator
+ * @gwt.resourceGenerator com.google.gwt.libideas.resources.rg.ImageResourceGenerator
  */
 public interface ImageResource extends ResourcePrototype {
 
