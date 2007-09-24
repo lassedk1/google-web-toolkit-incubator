@@ -23,17 +23,27 @@
   <inherits name="com.google.gwt.user.UserAgent"/>
   <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
   <inherits name='com.google.gwt.widgetideas.tables.OverrideDOM'/>
-  <inherits name='com.google.gwt.widgetideas.tables.ExtendedGrid'/>
-  <inherits name='com.google.gwt.widgetideas.tables.SizableFlexTable'/>
 
-  <!-- Fall through to this rule is the browser isn't Opera -->
-  <replace-with class="com.google.gwt.widgetideas.tables.client.ScrollTable.MouseResizeWorker">
-    <when-type-is class="com.google.gwt.widgetideas.tables.client.ScrollTable.MouseResizeWorker"/>
+  <!-- Fall through to this rule -->
+  <replace-with class="com.google.gwt.widgetideas.tables.client.SizableFlexTable.SizableFlexTableImpl">
+    <when-type-is class="com.google.gwt.widgetideas.tables.client.SizableFlexTable.SizableFlexTableImpl"/>
   </replace-with>
 
-  <!-- Opera has a different MouseWorker implementation -->
-  <replace-with class="com.google.gwt.widgetideas.tables.client.ScrollTable.MouseResizeWorkerOpera">
-    <when-type-is class="com.google.gwt.widgetideas.tables.client.ScrollTable.MouseResizeWorker"/>
+  <!-- IE includes spacing and padding when rendering -->
+  <replace-with class="com.google.gwt.widgetideas.tables.client.SizableFlexTable.SizableFlexTableImplIE6">
+    <when-type-is class="com.google.gwt.widgetideas.tables.client.SizableFlexTable.SizableFlexTableImpl"/>
+    <when-property-is name="user.agent" value="ie6"/>
+  </replace-with>
+
+  <!-- Safari includes spacing and padding when rendering -->
+  <replace-with class="com.google.gwt.widgetideas.tables.client.SizableFlexTable.SizableFlexTableImplSafari">
+    <when-type-is class="com.google.gwt.widgetideas.tables.client.SizableFlexTable.SizableFlexTableImpl"/>
+    <when-property-is name="user.agent" value="safari"/>
+  </replace-with>
+
+  <!-- Opera needs to refresh the grid or it won't resize -->
+  <replace-with class="com.google.gwt.widgetideas.tables.client.SizableFlexTable.SizableFlexTableImplOpera">
+    <when-type-is class="com.google.gwt.widgetideas.tables.client.SizableFlexTable.SizableFlexTableImpl"/>
     <when-property-is name="user.agent" value="opera"/>
   </replace-with>
 </module>

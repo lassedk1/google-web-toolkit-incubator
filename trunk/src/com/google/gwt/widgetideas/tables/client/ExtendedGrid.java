@@ -13,15 +13,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.widgetideas.client;
+package com.google.gwt.widgetideas.tables.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.widgetideas.tables.client.overrides.Grid;
+import com.google.gwt.widgetideas.tables.client.overrides.OverrideDOM;
 
 import java.util.ArrayList;
 import java.util.EventListener;
@@ -610,7 +611,7 @@ public class ExtendedGrid extends Grid {
             (targetRow != null)) {
           // Clear out currently selected rows
           boolean ctrlKey = DOM.eventGetCtrlKey(event); 
-          int targetRowIndex = DOM.getRowIndex(targetRow) - 1;
+          int targetRowIndex = OverrideDOM.getRowIndex(targetRow) - 1;
           if (!ctrlKey || !(selectionPolicy == SELECTION_POLICY_MULTI_ROW)) {
             deselectRows();
           }
@@ -1041,7 +1042,7 @@ public class ExtendedGrid extends Grid {
    * @param rowElem the row element
    */
   protected void hoverRow(Element rowElem) {
-    int row = DOM.getRowIndex(rowElem) - 1;
+    int row = OverrideDOM.getRowIndex(rowElem) - 1;
     if (row >= minHoverRowIndex)  {
       // Highlight the row if not selected
       if (!selectedRows.containsKey(new Integer(row))) {
@@ -1448,7 +1449,7 @@ public class ExtendedGrid extends Grid {
     if (numColumns > numGhosts) {
       // Add ghosts as needed
       for (int i = numGhosts; i < numColumns; i++) {
-        Element td = DOM.createTD();
+        Element td = OverrideDOM.createTD();
         DOM.setStyleAttribute(td, "height", "0px");
         DOM.setStyleAttribute(td, "overflow", "hidden");
         DOM.setStyleAttribute(td, "paddingTop", "0px");

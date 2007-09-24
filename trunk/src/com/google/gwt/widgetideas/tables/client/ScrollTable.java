@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.widgetideas.client;
+package com.google.gwt.widgetideas.tables.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
@@ -29,7 +29,10 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ImageBundle;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.client.ExtendedGrid.ExtendedGridListener;
+import com.google.gwt.widgetideas.client.ResizableWidget;
+import com.google.gwt.widgetideas.client.ResizableWidgetCollection;
+import com.google.gwt.widgetideas.tables.client.ExtendedGrid.ExtendedGridListener;
+import com.google.gwt.widgetideas.tables.client.overrides.OverrideDOM;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -322,8 +325,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
      * @return the cell index
      */
     private int getCellIndex(Element cell) {
-      int row = DOM.getRowIndex(DOM.getParent(cell)) - 1;
-      int column = DOM.getCellIndex(cell);
+      int row = OverrideDOM.getRowIndex(DOM.getParent(cell)) - 1;
+      int column = OverrideDOM.getCellIndex(cell);
       return table.headerTable.getFlexCellFormatter().getColumnIndex(row,
           column);
     }
@@ -466,10 +469,14 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     }
 
     /**
-     * @see com.google.gwt.user.client.ui.HTMLTable#removeCell(int, int)
+     * Removes the specified cell from the table.
+     * 
+     * @param row the row of the cell to remove
+     * @param column the column of cell to remove
+     * @throws IndexOutOfBoundsException
      */
-    public void removeCell(int row, int col) {
-      super.removeCell(row, col);
+    public void removeCell(int row, int column) {
+      super.removeCell(row, column);
       resizeTablesVertically();
     }
 
@@ -917,8 +924,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
           if (sortingEnabled) {
             Element cellElem = headerTable.getEventTargetCell(event);
             if (cellElem != null) {
-              int row = DOM.getRowIndex(DOM.getParent(cellElem)) - 1;
-              int cell = DOM.getCellIndex(cellElem);
+              int row = OverrideDOM.getRowIndex(DOM.getParent(cellElem)) - 1;
+              int cell = OverrideDOM.getCellIndex(cellElem);
               int column = headerTable.getFlexCellFormatter().getColumnIndex(
                   row, cell);
               sortedColumnTrigger = cellElem;
