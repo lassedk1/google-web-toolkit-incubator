@@ -7,3 +7,5 @@ This FAQ contains answers to questions often encountered on the [http://groups.g
   * [ServerPushFAQ Server Push]
 
   * [StubbingRPC Stubbing RPC for hosted mode] - How to stub RPC servlets to make deployment a breeze while making hosted mode testing simple and easy.
+
+  * [IntegratingWithSpring Integrating GWT with Spring 2.0]
