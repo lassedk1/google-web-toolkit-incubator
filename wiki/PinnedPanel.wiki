@@ -1,0 +1,19 @@
+A panel whose contents are either pinned in place or pop out when the user hovers over them.
+
+= Introduction =
+A PinnedPanel is commonly used for nav bar and help pages which need the ability to be either
+  * Always visible
+  * Visible only when the user hovers over a sidebar
+ 
+
+= Details =
+You can create a new PinnedPanel with 
+{{{
+   PinnedPanel p = new PinnedPanel(mySize);
+   p.setWidget(yourWidget);
+}}}
+To change the look and feel of the state switch button:
+{{{ 
+  ToggleButton b = p.getSwitchButton();
+  // Manipulate b here;
+}}}
