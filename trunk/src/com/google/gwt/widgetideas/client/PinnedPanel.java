@@ -16,7 +16,6 @@
 
 package com.google.gwt.widgetideas.client;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
@@ -26,6 +25,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
@@ -37,16 +38,17 @@ import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
  * when the users mouse hovers over it.
  */
 public class PinnedPanel extends Composite {
-  public static class PinnedPanelImplMozilla extends PinnedPanelImpl {
+  public static class PinnedPanelImplStandard extends PinnedPanelImpl {
 
     protected void hiddenState() {
       DOM.setStyleAttribute(e, "width", pin.peekoutSize + "px");
       DOM.setStyleAttribute(e, "overflow", "hidden");
       DOM.setStyleAttribute(e, "marginRight", "0px");
+      overlayTimer.cancel = true;
     }
 
     protected void setPanelWidth(int width) {
-      DOM.setStyleAttribute(e, "marginRight", width - pin.peekoutSize + "px");
+      DOM.setStyleAttribute(e, "marginRight", -(width - pin.peekoutSize) + "px");
       DOM.setStyleAttribute(e, "width", width + "px");
     }
   }
@@ -116,11 +118,13 @@ public class PinnedPanel extends Composite {
   }
 
   private static int OVERLAY_SPEED = 1;
-  private static int NUMBER_OF_INTEVALS = 20;
+  private static int NUMBER_OF_INTEVALS = 24;
 
   private static final String DEFAULT_STYLENAME = "gwt-PinnedPanel";
 
-  private PinnedPanelImpl impl = (PinnedPanelImpl) GWT.create(PinnedPanelImpl.class);
+  // Managed to remove ie/firefox differences, left impl class seperated for
+  // later support of safari and opera.
+  private PinnedPanelImpl impl = new PinnedPanelImplStandard();
 
   private int width;
 
@@ -142,13 +146,24 @@ public class PinnedPanel extends Composite {
       }
 
       public void onBrowserEvent(Event event) {
+
         if (!switchButton.isDown()) {
           switch (DOM.eventGetType(event)) {
             case Event.ONMOUSEOUT:
-              hiddenState();
+
+              if (!DOM.isOrHasChild(this.getElement(),
+                  DOM.eventGetToElement(event))) {
+                RootPanel.get().add(new Label("leaving"));
+
+                hiddenState();
+              }
               break;
             case Event.ONMOUSEOVER:
-              overlayState();
+              if (!DOM.isOrHasChild(this.getElement(),
+                  DOM.eventGetFromElement(event))) {
+                RootPanel.get().add(new Label("coming"));
+                overlayState();
+              }
               break;
 
           }
