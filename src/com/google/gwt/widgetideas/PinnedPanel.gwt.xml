@@ -14,18 +14,4 @@
 
 <module>
 	<inherits name='com.google.gwt.widgetideas.WidgetIdeas' />
-
-
-
-	<!-- Mozilla needs a different implementation due to issue #410 -->
-	<replace-with
-		class="com.google.gwt.widgetideas.client.PinnedPanel.PinnedPanelImplMozilla">
-		<when-type-is
-			class="com.google.gwt.widgetideas.client.PinnedPanel.PinnedPanelImpl" />
-		<any>
-			<when-property-is name="user.agent" value="gecko" />
-			<when-property-is name="user.agent" value="gecko1_8" />
-		</any>
-	</replace-with>
-
 </module>
