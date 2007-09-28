@@ -1,0 +1,31 @@
+#summary Explains how to do logins with GWT securely, in 3 levels.
+
+= Login Security =
+
+This article describes how to do the following:
+  * Create a 'login' page that is based on user/password authentication.
+  * Store this data in a secure fashion on your server.
+  * Allow users to 'remain logged in' for as long as you want so they don't have to enter their user name and password every time.
+  * Make 'auto-complete' features of most modern browsers work with your GWT's login page.
+  * Discussion on adding more security with either HTTPS or fancy hashing algorithm.
+
+== Creating a 'login' page ==
+
+TODO: Talk about the basics - !TextBox, !PasswordTextBox, and one form of AJAX call or another. Explain that for security purposes, the session id must be sent with every outgoing request.
+
+== Storing user/pass info on the server ==
+
+TODO: Talk about the need for hashing algorithms. Link to BCrypt.
+
+== How to remember logins ==
+
+TODO: Talk about Cookies class and reiterate that the server must not look at the header, only at the payload.
+
+== auto-complete and GWT ==
+
+TODO: Explain the trick of putting the login page in a div in the main .html, and hiding this after login is complete.
+
+== Extra Security Discussion ==
+    _Based on a chat with GWT's Bob Vawter_
+
+TODO: Explain how without https security is limited regardless, touch on bobv's proposal for running login outside of GWT over HTTPS, setting a (non-secure) cookie with a key, redirecting to a non-https GWT app which reads the cookie again, and then using a JS version of e.g. bcrypt or some other hasher to generate fresh hash values for every request, involving a counter so that the server knows which hashes have been 'used' - to protect against replay attacks.
