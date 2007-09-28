@@ -1,4 +1,4 @@
-#summary Explains how to do logins with GWT securely, in 3 levels.
+#summary Explains how to do logins with GWT in a secure fashion.
 
 = Login Security =
 
@@ -11,11 +11,31 @@ This article describes how to do the following:
 
 == Creating a 'login' page ==
 
-TODO: Talk about the basics - !TextBox, !PasswordTextBox, and one form of AJAX call or another. Explain that for security purposes, the session id must be sent with every outgoing request.
+A login page is consists really of just a [http://code.google.com/webtoolkit/documentation/com.google.gwt.user.client.ui.TextBox.html TextBox] for the username or email address or other identifier (henceforth known as username, and a [http://code.google.com/webtoolkit/documentation/com.google.gwt.user.client.ui.PasswordTextBox.html PasswordTextBox] for the password.
+
+Add a 'login' button to the mix and that's all there's to it. This login button will result in an AJAX call to your server, using either [http://www.json.org/ JSON] over [http://code.google.com/webtoolkit/documentation/com.google.gwt.http.client.RequestBuilder.html RequestBuilder] or [http://code.google.com/webtoolkit/documentation/com.google.gwt.doc.DeveloperGuide.RemoteProcedureCalls.html GWT-RPC].
+
+Your server will then validate this login, and return a _sessionID_ to your GWT app. The GWT app will store this _sessionID_ in a static field. For every further request your GWT app makes to your server, include this _sessionID_ in the *payload* of the request. (Either in the JSON data or the object you are transferring using GWT-RPC).
+
+  NB: Do _NOT_ attempt to use the `Cookie` header to transfer the sessionID from GWT to the server; it is fraught with security issues that will become clear in the rest of this article. You *MUST* transfer the sessionID in the payload of the request. For an example of why this can fail, see CrossSiteRequestForgery.
 
 == Storing user/pass info on the server ==
 
-TODO: Talk about the need for hashing algorithms. Link to BCrypt.
+During account registration (or a change password operation), your user will specify a username and a password that he'd like to use. You'll need to store this information on your server somehow so that you can authenticate future login requests. However, storing the passwords without encryption on your server means that losing your database, or a compromised server, will result in your user's passwords being out on the street. The vast majority of users 're-use' their passwords, which means virtually their entire online existence is at risk. This is irresponsible, not to mention the bad press such a breach would generate.
+
+Fortunately there are ways to 'mangle' the password so that you can still authenticate users, but without storing the password itself. This act is called *hashing*.
+
+The basic mathematical principle behind hashing is  explained [http://en.wikipedia.org/wiki/Cryptographic_hash_function on this wikipedia page], but all you really need to know is:
+
+Use BCrypt. It's a very simple algorithm available for a number of platforms that takes a password and converts it into a string which can be used to ascertain that someone _knows_ the password without actually storing the password. It's specifically written for login authentication and security experts have thoroughly reviewed it.
+
+  * [http://www.mindrot.org/projects/jBCrypt/ jBCrypt]: BCrypt for Java
+  * [http://bcrypt.sourceforge.net/ BCrypt]: BCrypt for C/C++ (the original and official implementation)
+  * [http://bcrypt-ruby.rubyforge.org/ ruby-bcrypt]: BCrypt for Ruby
+  * [http://www.openwall.com/phpass/ Portable PHP Hashing Framework]: BCrypt for PHP
+  * [http://www.mindrot.org/projects/py-bcrypt/ py-bcrypt]: BCrypt for Python
+
+Thus, whenever a user registers or changes a password, send the password to your server as usual, but then let your server BCrypt the content. Then, when a user logs in, simply ask the BCrypt framework to check if the password entered is validated by the hash that you stored in e.g. a database.
 
 == How to remember logins ==
 
