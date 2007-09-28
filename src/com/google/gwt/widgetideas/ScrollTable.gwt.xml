@@ -22,18 +22,18 @@
   <inherits name="com.google.gwt.core.Core"/>
   <inherits name="com.google.gwt.user.UserAgent"/>
   <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
-  <inherits name='com.google.gwt.widgetideas.tables.OverrideDOM'/>
-  <inherits name='com.google.gwt.widgetideas.tables.ExtendedGrid'/>
-  <inherits name='com.google.gwt.widgetideas.tables.SizableFlexTable'/>
+  <inherits name='com.google.gwt.widgetideas.table.OverrideDOM'/>
+  <inherits name='com.google.gwt.widgetideas.table.ExtendedGrid'/>
+  <inherits name='com.google.gwt.widgetideas.table.SizableFlexTable'/>
 
   <!-- Fall through to this rule is the browser isn't Opera -->
-  <replace-with class="com.google.gwt.widgetideas.tables.client.ScrollTable.MouseResizeWorker">
-    <when-type-is class="com.google.gwt.widgetideas.tables.client.ScrollTable.MouseResizeWorker"/>
+  <replace-with class="com.google.gwt.widgetideas.table.client.ScrollTable.MouseResizeWorker">
+    <when-type-is class="com.google.gwt.widgetideas.table.client.ScrollTable.MouseResizeWorker"/>
   </replace-with>
 
   <!-- Opera has a different MouseWorker implementation -->
-  <replace-with class="com.google.gwt.widgetideas.tables.client.ScrollTable.MouseResizeWorkerOpera">
-    <when-type-is class="com.google.gwt.widgetideas.tables.client.ScrollTable.MouseResizeWorker"/>
+  <replace-with class="com.google.gwt.widgetideas.table.client.ScrollTable.MouseResizeWorkerOpera">
+    <when-type-is class="com.google.gwt.widgetideas.table.client.ScrollTable.MouseResizeWorker"/>
     <when-property-is name="user.agent" value="opera"/>
   </replace-with>
 </module>
