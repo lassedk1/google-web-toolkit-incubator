@@ -35,11 +35,46 @@ Use BCrypt. It's a very simple algorithm available for a number of platforms tha
   * [http://www.openwall.com/phpass/ Portable PHP Hashing Framework]: BCrypt for PHP
   * [http://www.mindrot.org/projects/py-bcrypt/ py-bcrypt]: BCrypt for Python
 
-Thus, whenever a user registers or changes a password, send the password to your server as usual, but then let your server BCrypt the content. Then, when a user logs in, simply ask the BCrypt framework to check if the password entered is validated by the hash that you stored in e.g. a database.
+So, whenever a user registers or changes a password, send the password to your server as usual, but then let your server BCrypt the content. Then, when a user logs in, simply ask the BCrypt framework to check if the password entered is validated by the hash that you stored in e.g. a database.
+
+Add new account to database example for java using jBCrypt:
+{{{
+    String password = /*(get password from incoming JSON or GWT-RPC request)*/;
+    String hash = BCrypt.hashpw(password, BCrypt.genSalt());
+    //(create new user entry in db storing ONLY username and hash, *NOT* the password).
+}}}
+
+Check if an incoming user/pass combo is valid for java using jBCrypt:
+{{{
+    String password = /*(get password from incoming JSON or GWT-RPC request)*/;
+    String hashFromDB = /*(obtain hash from user's db entry)*/;
+    boolean valid = BCrypt.checkpw(password, hashFromDB);
+    if ( valid ) generateSessionIDAndSendItBackToClient();
+    else sendErrorToClient("Wrong Username or Password.");
+}}}
+
+BCrypt is similarly trivial to use for the other languages.
 
 == How to remember logins ==
 
-TODO: Talk about Cookies class and reiterate that the server must not look at the header, only at the payload.
+Our login system so far misses a useful feature: For now it requires users to log in again every time.
+
+We can use Cookies to allow the user's web browser to 'remember' the login. In GWT, to set the cookie (which you'd do right after your GWT code receives the response as we did in the previous code fragment):
+{{{
+    String sessionID = /*(Get sessionID from server's response to your login request.)*/;
+    final long DURATION = 1000 * 60 * 60 * 24 * 14; //duration remembering login. 2 weeks in this example.
+    Date expires = new Date(System.currentTimeMillis() + DURATION);
+    Cookies.setCookie("sid", sessionID, expires, null, "/", false);
+}}}
+
+Now you can run the following code right after your `!EntryPoint` begins execution:
+{{{
+    String sessionID = Cookies.getCookie("sid");
+    if ( sessionID != null ) checkWithServerIfSessionIdIsStillLegal();
+    else displayLoginBox();
+}}}
+
+*Remember* - you must never rely on the sessionID sent to your server in the cookie _header_ ; look only at the sessionID that your GWT app sends explicitly in the payload of messages to your server.
 
 == auto-complete and GWT ==
 
