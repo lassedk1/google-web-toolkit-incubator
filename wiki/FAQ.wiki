@@ -4,7 +4,9 @@
 
 This FAQ contains answers to questions often encountered on the [http://groups.google.com/group/Google-Web-Toolkit GWT newsgroup].
 
-  * [ServerPushFAQ Server Push]
+  * [ServerPushFAQ Server Push] - a method for sending events asynchronously from your server to GWT.
+
+  * [PathsHandlingFAQ How GWT handles paths] - Read this if you're getting 'can't find file' errors from GWT.
 
   * [StubbingRPC Stubbing RPC for hosted mode] - How to stub RPC servlets to make deployment a breeze while making hosted mode testing simple and easy.
 
