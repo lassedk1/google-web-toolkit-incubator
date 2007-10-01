@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * A ModeledGrid can respond to events from an underlying data model.
+ * A {@link GridView} responds to events from an underlying
+ * {@link TableController}.
  */
 public class GridView extends ExtendedGrid {
   /**
@@ -52,14 +53,15 @@ public class GridView extends ExtendedGrid {
   private int currentPage = 0;
 
   /**
-   * The gridModel that affects this ModeledGrid.
+   * The {@link TableController} that affects this view of the data.
    */
-  private TableController gridModel;
+  private TableController tableController;
 
   /**
-   * The listener that handles events from the grid model.
+   * The listener that handles events from the underlying
+   * {@link TableController}.
    */
-  private TableControllerListener gridModelListener = new TableControllerListener() {
+  private TableControllerListener tableControllerListener = new TableControllerListener() {
     /**
      * Fired when the number of rows changes.
      * 
@@ -67,12 +69,12 @@ public class GridView extends ExtendedGrid {
      */
     public void onNumRowsChanged(int numRows) {
       // Fire listeners
-      if (modeledGridListeners != null) {
-        // for (ModeledGridListener listener : modeledGridListeners) {
-        Iterator it = modeledGridListeners.iterator();
+      int numPages = getNumPages();
+      if (gridViewListeners != null) {
+        Iterator it = gridViewListeners.iterator();
         while (it.hasNext()) {
           GridViewListener listener = (GridViewListener) it.next();
-          listener.onNumRowsChanges(numRows, getNumPages());
+          listener.onNumRowsChanges(numRows, numPages);
         }
       }
 
@@ -104,7 +106,7 @@ public class GridView extends ExtendedGrid {
       }
 
       // Update listeners
-      onNumRowsChanged(gridModel.getNumRows());
+      onNumRowsChanged(tableController.getNumRows());
     }
 
     /**
@@ -123,13 +125,13 @@ public class GridView extends ExtendedGrid {
           // Shift rows up
           removeRow(0);
         }
-        
+
         // Readd row that was removed
         insertRow(pageSize - 1);
       }
 
       // Update listeners
-      onNumRowsChanged(gridModel.getNumRows());
+      onNumRowsChanged(tableController.getNumRows());
     }
 
     /**
@@ -168,15 +170,15 @@ public class GridView extends ExtendedGrid {
               curColumn++;
             }
           }
-  
+
           // Go to next row
           firstRow++;
         }
       }
 
       // Fire listeners
-      if (modeledGridListeners != null) {
-        Iterator it = modeledGridListeners.iterator();
+      if (gridViewListeners != null) {
+        Iterator it = gridViewListeners.iterator();
         while (it.hasNext()) {
           GridViewListener listener = (GridViewListener) it.next();
           listener.onPageLoaded();
@@ -186,45 +188,45 @@ public class GridView extends ExtendedGrid {
   };
 
   /**
-   * The listeners attached to this widget.
+   * The listeners attached to this {@link GridView}.
    */
-  private ArrayList/* <ModeledGridListener> */modeledGridListeners;
+  private ArrayList/* <GridViewListener> */gridViewListeners;
 
   /**
    * The number of rows per page. If the number of rows per page is equal to the
    * number of rows, paging is disabled because only one page exists.
    */
   private int pageSize = 0;
- 
+
   /**
    * Constructor.
    * 
-   * @param gridModel the underlying grid model
+   * @param tableController the underlying {@link TableController}
    */
-  public GridView(TableController gridModel) {
-    this.gridModel = gridModel;
-    gridModel.addGridModelListener(gridModelListener);
+  public GridView(TableController tableController) {
+    this.tableController = tableController;
+    tableController.addTableControllerListener(tableControllerListener);
   }
 
   /**
    * Constructor.
    * 
-   * @param oracle the {@link MutableTableModel} used to retrieve data
+   * @param tableModel the {@link MutableTableModel} used to retrieve data
    */
-  public GridView(MutableTableModel oracle) {
-    this(new TableController(oracle));
+  public GridView(MutableTableModel tableModel) {
+    this(new TableController(tableModel));
   }
 
   /**
-   * Add a new modeled grid listener.
+   * Add a new {@link GridViewListener}.
    * 
    * @param listener the listener
    */
-  public void addModeledGridListener(GridViewListener listener) {
-    if (modeledGridListeners == null) {
-      modeledGridListeners = new ArrayList/* <ModeledGridListener> */();
+  public void addGridViewListener(GridViewListener listener) {
+    if (gridViewListeners == null) {
+      gridViewListeners = new ArrayList/* <GridViewListener> */();
     }
-    modeledGridListeners.add(listener);
+    gridViewListeners.add(listener);
   }
 
   /**
@@ -246,16 +248,7 @@ public class GridView extends ExtendedGrid {
   }
 
   /**
-   * Get the grid model from the grid.
-   * 
-   * @return the grid model
-   */
-  public TableController getGridModel() {
-    return gridModel;
-  }
-
-  /**
-   * Get the number of pages.
+   * Get the number of pages. If the number of pages is unknown, -1 is returned.
    * 
    * @return the page count
    */
@@ -263,7 +256,11 @@ public class GridView extends ExtendedGrid {
     if (pageSize < 1) {
       return 1;
     } else {
-      return (int) Math.ceil(gridModel.getNumRows() / (pageSize + 0.0));
+      int numDataRows = tableController.getNumRows();
+      if (numDataRows < 0) {
+        return -1;
+      }
+      return (int) Math.ceil(numDataRows / (pageSize + 0.0));
     }
   }
 
@@ -277,6 +274,15 @@ public class GridView extends ExtendedGrid {
   }
 
   /**
+   * Get the underlying {@link TableController} from the grid.
+   * 
+   * @return the table controller
+   */
+  public TableController getTableController() {
+    return tableController;
+  }
+
+  /**
    * Go to the first page.
    */
   public void gotoFirstPage() {
@@ -287,7 +293,9 @@ public class GridView extends ExtendedGrid {
    * Go to the last page.
    */
   public void gotoLastPage() {
-    gotoPage(getNumPages());
+    if (getNumPages() >= 0) {
+      gotoPage(getNumPages());
+    }
   }
 
   /**
@@ -305,16 +313,20 @@ public class GridView extends ExtendedGrid {
    */
   public void gotoPage(int page) {
     int oldPage = currentPage;
-    currentPage = Math.max(0, Math.min(page, getNumPages() - 1));
+    int numPages = getNumPages();
+    if (numPages >= 0) {
+      currentPage = Math.max(0, Math.min(page, numPages - 1));
+    } else {
+      currentPage = page;
+    }
 
     if (currentPage != oldPage) {
       // Deselect rows when switching pages
       deselectRows();
-      
+
       // Fire listeners
-      if (modeledGridListeners != null) {
-        // for (ModeledGridListener listener : modeledGridListeners) {
-        Iterator it = modeledGridListeners.iterator();
+      if (gridViewListeners != null) {
+        Iterator it = gridViewListeners.iterator();
         while (it.hasNext()) {
           GridViewListener listener = (GridViewListener) it.next();
           listener.onPageChanged(currentPage);
@@ -332,9 +344,9 @@ public class GridView extends ExtendedGrid {
 
           // Clear out existing data
           clearAll();
-  
-          // Request the new data from the model
-          gridModel.requestData(currentPage * pageSize, pageSize);
+
+          // Request the new data from the controller
+          tableController.requestData(currentPage * pageSize, pageSize);
         }
       });
     }
@@ -353,15 +365,15 @@ public class GridView extends ExtendedGrid {
   public void reloadPage() {
     resetPage(true);
   }
-  
+
   /**
-   * Remove a grid model listener.
+   * Remove a {@link GridViewListener}.
    * 
    * @param listener the listener to remove
    */
-  public void removeModeledGridListener(GridViewListener listener) {
-    if (modeledGridListeners != null) {
-      modeledGridListeners.remove(listener);
+  public void removeGridViewListener(GridViewListener listener) {
+    if (gridViewListeners != null) {
+      gridViewListeners.remove(listener);
     }
   }
 
@@ -402,12 +414,12 @@ public class GridView extends ExtendedGrid {
     resetPage(true);
 
     // Fire listeners
-    if (modeledGridListeners != null) {
-      // for (ModeledGridListener listener : modeledGridListeners) {
-      Iterator it = modeledGridListeners.iterator();
+    int numPages = getNumPages();
+    if (gridViewListeners != null) {
+      Iterator it = gridViewListeners.iterator();
       while (it.hasNext()) {
         GridViewListener listener = (GridViewListener) it.next();
-        listener.onPageSizeChange(pageSize, getNumPages());
+        listener.onPageSizeChange(pageSize, numPages);
       }
     }
   }
@@ -427,7 +439,11 @@ public class GridView extends ExtendedGrid {
    * @return the last row index
    */
   protected int getLastRow() {
-    return Math.min(gridModel.getNumRows(), (currentPage + 1) * pageSize) - 1;
+    int numDataRows = tableController.getNumRows();
+    if (numDataRows < 0) {
+      return (currentPage + 1) * pageSize - 1;
+    }
+    return Math.min(numDataRows, (currentPage + 1) * pageSize) - 1;
   }
 
   /**

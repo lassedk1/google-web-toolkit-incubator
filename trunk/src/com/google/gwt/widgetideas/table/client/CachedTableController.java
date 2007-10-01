@@ -21,16 +21,17 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * A model defining a 2-dimensional grid of data. This grid has its own cache so
- * subsequent requests for the same data will not require another
- * {@link TableModel} request.
+ * A controller that interfaces between a {@link TableModel} and mutliple views
+ * of the data. This controller has its own cache so subsequent requests for the
+ * same data will not require another {@link TableModel} request.
  * 
  * <h1>Cache</h1>
  * <p>
- * The GridModel supports caching rows of data before they are needed, allowing
- * listeners to request data much more quickly. When another class requests
- * data, the GridModel will feed data from its cache if available, and then it
- * will request unavailable data from your specific implementation.
+ * The CachedTableController supports caching rows of data before they are
+ * needed, allowing listeners to request data much more quickly. When another
+ * class requests data, the CachedTableController will feed data from its cache
+ * if available, and then it will request unavailable data from your specific
+ * implementation.
  * </p>
  * <p>
  * The pre cache and post cache refers to the number of rows to request in
@@ -41,9 +42,9 @@ import java.util.List;
  * </p>
  * <p>
  * The size of your cache depends on the implementation and usage of your view
- * component. If you are using the ModeledGrid to do paging, you should set your
- * cache to a multiple of the page size so the user can go to the next and
- * previous pages very quickly.
+ * component. If you are using a view that supports paging, such as the
+ * {@link GridView}, you should set your cache to a multiple of the page size
+ * so the user can go to the next and previous pages quickly.
  * </p>
  */
 public class CachedTableController extends TableController {
@@ -54,14 +55,16 @@ public class CachedTableController extends TableController {
     public boolean hasNext() {
       return false;
     }
+
     public Object next() {
       return null;
     }
+
     public void remove() {
       throw new UnsupportedOperationException("Remove not supported.");
     }
   };
-  
+
   /**
    * An iterator that iterates over the cached rows of data.
    */
@@ -108,10 +111,10 @@ public class CachedTableController extends TableController {
       throw new UnsupportedOperationException("Remove not supported.");
     }
   }
-  
+
   /**
-   * The data contained within this GridModel. The HashMap contains a collection
-   * of "rows", each of which is another List of objects.
+   * The cached data contained within this CachedTableController. The HashMap
+   * contains a collection of "rows", each of which is another List of objects.
    */
   private HashMap/* Integer, ArrayList<Object> */dataMap = new HashMap();
 
@@ -127,13 +130,18 @@ public class CachedTableController extends TableController {
 
   /**
    * Constructor.
+   * 
+   * @param tableModel the underlying {@link MutableTableModel}
    */
-  public CachedTableController(MutableTableModel oracle) {
-    super(oracle);
+  public CachedTableController(MutableTableModel tableModel) {
+    super(tableModel);
   }
 
   /**
-   * Get data from the grid.
+   * Get data from the cache. If the data is not available, this method will not
+   * request the data from the table model. Use the
+   * {@link #requestData(int, int)} method to request data from the
+   * {@link TableModel}.
    * 
    * @param row the row index
    * @param column the column index
@@ -196,9 +204,15 @@ public class CachedTableController extends TableController {
   public void requestData(int firstRow, int rowCount) {
     // Calculate bounds including the cache
     int numRows = getNumRows();
-    int lastRow = Math.min(numRows - 1, firstRow + rowCount - 1);
+    int lastRow = firstRow + rowCount - 1;
+    if (numRows >= 0) {
+      lastRow = Math.min(numRows - 1, lastRow);
+    }
     int uncachedFirstRow = Math.max(0, firstRow - preCacheRows);
-    int uncachedLastRow = Math.min(numRows - 1, lastRow + postCacheRows);
+    int uncachedLastRow = lastRow + postCacheRows;
+    if (numRows >= 0) {
+      uncachedLastRow = Math.min(numRows - 1, uncachedLastRow);
+    }
 
     // Remove any data already retrieved from the first Row
     for (int row = uncachedFirstRow; row <= lastRow; row++) {
@@ -243,7 +257,7 @@ public class CachedTableController extends TableController {
   }
 
   /**
-   * Set data in the grid.
+   * Set data in the controller.
    * 
    * @param row the row index
    * @param column the column index
@@ -254,14 +268,19 @@ public class CachedTableController extends TableController {
     List/* <Object> */rowList = ensureRowList(row, true);
     ensureListCapacity(rowList, column + 1);
     rowList.set(column, data);
-    setNumRows(Math.max(getNumRows(), row + 1));
+    
+    // Update the number of rows
+    int numRows = getNumRows();
+    if (numRows >= 0) {
+      setNumRows(Math.max(numRows, row + 1));
+    }
 
     // Call super method
     super.setData(row, column, data);
   }
 
   /**
-   * Set blocks of data in the grid.
+   * Set blocks of data in the controller.
    * 
    * This method takes an iterator of Collections, where each collection
    * represents one row of data starting with the first row.
@@ -338,7 +357,7 @@ public class CachedTableController extends TableController {
   }
 
   /**
-   * Get a row from the dataGrid, creating it if it doesn't exist yet.
+   * Get a row from the dataMap, creating it if it doesn't exist yet.
    * 
    * If createList is true, this method will ensure that the row has a key in
    * the cache AND the key points to a valid List object. If createList is
@@ -370,7 +389,7 @@ public class CachedTableController extends TableController {
   }
 
   /**
-   * Get a row from the dataGrid.
+   * Get a row from the dataMap.
    * 
    * @param row the row index
    * @return the List of row data
