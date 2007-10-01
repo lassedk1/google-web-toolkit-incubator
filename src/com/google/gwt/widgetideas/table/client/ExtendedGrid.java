@@ -632,6 +632,7 @@ public class ExtendedGrid extends Grid {
         }
         int rowIndex = OverrideDOM.getRowIndex(targetRow) - 1;
         int cellIndex = OverrideDOM.getCellIndex(targetCell);
+        onCellClicked(rowIndex, cellIndex);
         if (extendedGridListeners != null) {
           Iterator it = extendedGridListeners.iterator();
           while (it.hasNext()) {
@@ -718,6 +719,15 @@ public class ExtendedGrid extends Grid {
     }
   }
 
+  /**
+   * Handle cell click events.
+   * 
+   * @param row the row index
+   * @param cell the cell index
+   */
+  public void onCellClicked(int row, int cell) {
+  }
+  
   /**
    * Remove one of the grid listeners.
    * 

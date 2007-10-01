@@ -15,6 +15,7 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
+import com.google.gwt.widgetideas.table.client.TableModel.Callback;
 import com.google.gwt.widgetideas.table.client.TableModel.Request;
 import com.google.gwt.widgetideas.table.client.TableModel.Response;
 
@@ -22,31 +23,32 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * A model defining a 2-dimensional grid of data. This model does not include
- * any internal caching, and as such it will send a new request to the
- * {@link TableModel} with every request for rows.
+ * A controller that interfaces between a {@link TableModel} and one or more
+ * views of the 2-dimensional data. This model does not include any internal
+ * caching, and as such it will send a new request to the {@link TableModel}
+ * with every request for rows.
  */
 public class TableController {
 
   /**
-   * The {@link TableControllerListener}s attached to this model.
+   * The {@link TableControllerListener}s attached to this controller.
    */
-  private ArrayList/* <GridModelListener> */gridModelListeners;
+  private ArrayList/* <TableControllerListener> */tableControllerListener;
 
   /**
-   * The total number of rows in this model.
+   * The total number of rows that we predict the model can return.
    */
   private int numRows = -1;
 
   /**
-   * The table oracle.
+   * The underlying table model.
    */
-  private MutableTableModel oracle;
+  private MutableTableModel tableModel;
 
   /**
    * The callback used to receive the data.
    */
-  private TableModel.Callback callback = new TableModel.Callback() {
+  private Callback callback = new Callback() {
     public void onRowsReady(Request request, Response response) {
       setData(request.getStartRow(), response.getRows());
     }
@@ -54,21 +56,23 @@ public class TableController {
 
   /**
    * Constructor.
+   * 
+   * @param tableModel the underlying {@link MutableTableModel}
    */
-  public TableController(MutableTableModel oracle) {
-    this.oracle = oracle;
+  public TableController(MutableTableModel tableModel) {
+    this.tableModel = tableModel;
   }
 
   /**
-   * Add a new grid model listener.
+   * Add a new {@link TableControllerListener}.
    * 
    * @param listener the listener
    */
-  public void addGridModelListener(TableControllerListener listener) {
-    if (gridModelListeners == null) {
-      gridModelListeners = new ArrayList/* <GridModelListener> */();
+  public void addTableControllerListener(TableControllerListener listener) {
+    if (tableControllerListener == null) {
+      tableControllerListener = new ArrayList/* <TableControllerListener> */();
     }
-    gridModelListeners.add(listener);
+    tableControllerListener.add(listener);
   }
 
   /**
@@ -97,24 +101,13 @@ public class TableController {
     }
 
     // Fire listeners
-    oracle.onRowInserted(beforeRow);
-    if (gridModelListeners != null) {
-      Iterator it = gridModelListeners.iterator();
+    tableModel.onRowInserted(beforeRow);
+    if (tableControllerListener != null) {
+      Iterator it = tableControllerListener.iterator();
       while (it.hasNext()) {
         TableControllerListener listener = (TableControllerListener) it.next();
         listener.onRowInserted(beforeRow);
       }
-    }
-  }
-
-  /**
-   * Remove a grid model listener.
-   * 
-   * @param listener the listener to remove
-   */
-  public void removeGridModelListener(TableControllerListener listener) {
-    if (gridModelListeners != null) {
-      gridModelListeners.remove(listener);
     }
   }
 
@@ -127,20 +120,31 @@ public class TableController {
   public void removeRow(int row) {
     // Check row bounds
     checkRowBounds(row);
-
+  
     // Decrement the number of rows
     if (numRows >= 0) {
       numRows--;
     }
-
+  
     // Fire listeners
-    oracle.onRowRemoved(row);
-    if (gridModelListeners != null) {
-      Iterator it = gridModelListeners.iterator();
+    tableModel.onRowRemoved(row);
+    if (tableControllerListener != null) {
+      Iterator it = tableControllerListener.iterator();
       while (it.hasNext()) {
         TableControllerListener listener = (TableControllerListener) it.next();
         listener.onRowRemoved(row);
       }
+    }
+  }
+
+  /**
+   * Remove a {@link TableControllerListener}.
+   * 
+   * @param listener the listener to remove
+   */
+  public void removeTableControllerListener(TableControllerListener listener) {
+    if (tableControllerListener != null) {
+      tableControllerListener.remove(listener);
     }
   }
 
@@ -151,20 +155,20 @@ public class TableController {
    * @param rowCount the number of rows of data to request
    */
   public void requestData(int firstRow, int rowCount) {
-    oracle.requestRows(firstRow, rowCount, callback);
+    tableModel.requestRows(firstRow, rowCount, callback);
   }
 
   /**
-   * Set data in the grid.
+   * Set data in the controller.
    * 
    * @param row the row index
    * @param column the column index
    * @param data the data to set
    */
   public void setData(int row, int column, Object data) {
-    oracle.onSetData(row, column, data);
-    if (gridModelListeners != null) {
-      Iterator it = gridModelListeners.iterator();
+    tableModel.onSetData(row, column, data);
+    if (tableControllerListener != null) {
+      Iterator it = tableControllerListener.iterator();
       while (it.hasNext()) {
         TableControllerListener listener = (TableControllerListener) it.next();
         listener.onSetData(row, column, data);
@@ -173,7 +177,7 @@ public class TableController {
   }
 
   /**
-   * Set blocks of data in the grid.
+   * Set blocks of data in the controller.
    * 
    * This method takes an iterator of Collections, where each collection
    * represents one row of data starting with the first row.
@@ -183,8 +187,8 @@ public class TableController {
    */
   public void setData(int firstRow, Iterator/* Iterator<Object> */rows) {
     // Fire listeners
-    if (gridModelListeners != null) {
-      Iterator it = gridModelListeners.iterator();
+    if (tableControllerListener != null) {
+      Iterator it = tableControllerListener.iterator();
       while (it.hasNext()) {
         TableControllerListener listener = (TableControllerListener) it.next();
         listener.onSetData(firstRow, rows);
@@ -202,8 +206,8 @@ public class TableController {
     this.numRows = Math.max(-1, numRows);
 
     // Fire listeners
-    if (gridModelListeners != null) {
-      Iterator it = gridModelListeners.iterator();
+    if (tableControllerListener != null) {
+      Iterator it = tableControllerListener.iterator();
       while (it.hasNext()) {
         TableControllerListener listener = (TableControllerListener) it.next();
         listener.onNumRowsChanged(this.numRows);

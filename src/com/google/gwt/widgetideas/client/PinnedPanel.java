@@ -38,6 +38,9 @@ import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
  * when the users mouse hovers over it.
  */
 public class PinnedPanel extends Composite {
+  /**
+   * Implementation class for PinnedPanel.
+   */
   public static class PinnedPanelImplStandard extends PinnedPanelImpl {
 
     protected void hiddenState() {
@@ -97,7 +100,7 @@ public class PinnedPanel extends Composite {
       overlayTimer.interval = (pin.width - pin.peekoutSize)
           / NUMBER_OF_INTEVALS;
       overlayTimer.run();
-    };
+    }
 
     protected void pinnedState() {
       DOM.setStyleAttribute(e, "marginRight", "0px");
@@ -106,14 +109,12 @@ public class PinnedPanel extends Composite {
     protected void setPanelWidth(int width) {
       DOM.setStyleAttribute(e, "marginRight", -width + "px");
       DOM.setStyleAttribute(e, "width", width + "px");
-
     }
 
     void setPinnedPanel(PinnedPanel pinnedPanel) {
       this.pin = pinnedPanel;
       e = pinnedPanel.getElement();
       DOM.setStyleAttribute(e, "position", "relative");
-
     }
   }
 
@@ -165,7 +166,6 @@ public class PinnedPanel extends Composite {
                 overlayState();
               }
               break;
-
           }
         }
         super.onBrowserEvent(event);
@@ -193,9 +193,7 @@ public class PinnedPanel extends Composite {
       public void onClick(Widget sender) {
         setPinned(switchButton.isDown());
       }
-
     });
-
   }
 
   public ToggleButton getSwitchButton() {
@@ -239,7 +237,6 @@ public class PinnedPanel extends Composite {
     } else {
       switchButton.setDown(false);
       hiddenState();
-
     }
   }
 

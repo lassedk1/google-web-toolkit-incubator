@@ -19,7 +19,7 @@ import java.util.Collection;
 
 /**
  * A class to manage the connection between the local table and an external
- * source of data that support manipulation.
+ * source of data that supports manipulation.
  */
 public abstract class MutableTableModel extends TableModel {
   /**
