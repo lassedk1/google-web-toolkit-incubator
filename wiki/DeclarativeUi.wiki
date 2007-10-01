@@ -198,7 +198,6 @@ As shown above, the composite base class implements 'DeclUi', which is simply a 
 
 = Open Questions =
   * The element names & namespaces (e.g. gwt:ui, DeclUi) are still up for debate.
-  * It would be nice to get rid of the imports, or at least make them implicit in most cases.
   * It would be nice to generate a Java interface skeleton from an xml file to boostrap the process.
   * I18n (string replacement and the like).
   * ImageBundle support.
