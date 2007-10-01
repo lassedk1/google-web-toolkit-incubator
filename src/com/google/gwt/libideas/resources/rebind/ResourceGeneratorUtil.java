@@ -51,7 +51,7 @@ public final class ResourceGeneratorUtil {
     logger =
         logger.branch(TreeLogger.DEBUG, "Applying transformations for method "
             + method.getName(), null);
-    
+
     try {
       for (int i = 0; i < md.length; i++) {
         String className = md[i][0];
@@ -84,15 +84,30 @@ public final class ResourceGeneratorUtil {
     throw new UnableToCompleteException();
   }
 
+  /**
+   * Return the base filename of a resource. The behavior is similar to the unix
+   * command <code>basename</code>.
+   * 
+   * @param resource the URL of the resource
+   * @return the final name segment of the resource
+   */
   public static String baseName(URL resource) {
     String path = resource.getPath();
     return path.substring(path.lastIndexOf('/') + 1);
   }
 
-  public static URL[] findResources(ResourceContext context, JMethod method)
-      throws UnableToCompleteException {
-    TreeLogger logger =
-        context.getLogger().branch(TreeLogger.DEBUG, "Finding resources", null);
+  /**
+   * Find all resources referenced by a method on the bundle.
+   * 
+   * @param context
+   * @param method
+   * @return URLs for each resource annotation defined on the method.
+   * @throws UnableToCompleteException if the method has no resource annotations
+   *           or ore or more of the resources could not be found
+   */
+  public static URL[] findResources(TreeLogger logger, ResourceContext context,
+      JMethod method) throws UnableToCompleteException {
+    logger = logger.branch(TreeLogger.DEBUG, "Finding resources", null);
     String[][] md = method.getMetaData(METADATA_TAG);
 
     if (md.length == 0) {
@@ -111,6 +126,7 @@ public final class ResourceGeneratorUtil {
 
     URL[] toReturn = new URL[md.length];
 
+    boolean error = false;
     for (int tagIndex = 0; tagIndex < toReturn.length; tagIndex++) {
       int lastValueIndex = md[tagIndex].length - 1;
       String resourceNameFromMetaData = md[tagIndex][lastValueIndex];
@@ -130,19 +146,32 @@ public final class ResourceGeneratorUtil {
             + " not found on classpath. "
             + "Is the name specified as Class.getResource() would expect?",
             null);
-        throw new UnableToCompleteException();
+        error = true;
       }
       toReturn[tagIndex] = resourceURL;
+    }
+
+    if (error) {
+      throw new UnableToCompleteException();
     }
 
     // In the future, it would be desirable to be able to automatically
     // determine the resource name to use from the method declaration. We're
     // currently limited by the inability to list the contents of the classpath
     // and not having a set number of file extensions to empirically test.
+    // It would also be worthwhile to be able to search for globs of files.
 
     return toReturn;
   }
 
+  /**
+   * This performs the locale lookup function for a given resource name.
+   * 
+   * @param resourceName the string name of the desired resource
+   * @param locale the locale of the current rebind permutation
+   * @return a URL by which the resource can be loaded, <code>null</code> if
+   *         one cannot be found
+   */
   private static URL tryFindResource(String resourceName, String locale) {
     URL toReturn = null;
     ClassLoader cl = ClassLoader.getSystemClassLoader();
@@ -166,11 +195,16 @@ public final class ResourceGeneratorUtil {
           break;
         }
       }
+    } else {
+      toReturn = cl.getResource(resourceName);
     }
 
     return toReturn;
   }
 
+  /**
+   * Utility class.
+   */
   private ResourceGeneratorUtil() {
   }
 }

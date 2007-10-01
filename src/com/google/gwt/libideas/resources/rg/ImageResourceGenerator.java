@@ -22,6 +22,7 @@ import com.google.gwt.libideas.resources.client.impl.ImageResourcePrototype;
 import com.google.gwt.libideas.resources.rebind.ResourceContext;
 import com.google.gwt.libideas.resources.rebind.ResourceGenerator;
 import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
+import com.google.gwt.libideas.resources.rg.ImageBundleBuilder.ImageRect;
 import com.google.gwt.user.rebind.SourceWriter;
 
 import java.net.URL;
@@ -35,21 +36,24 @@ import java.util.Map;
 public final class ImageResourceGenerator extends ResourceGenerator {
   private ResourceContext context;
   private ImageBundleBuilder builder;
-  private Map externalLocationExpressions;
-  private Map externalImageRects;
+  private Map<String, String> externalLocationExpressions;
+  private Map<String, ImageRect> externalImageRects;
   private int imageStripCount;
 
-  public void init(ResourceContext context) {
+  @Override
+  public void init(TreeLogger logger, ResourceContext context) {
     this.context = context;
     builder = new ImageBundleBuilder();
-    externalLocationExpressions = new HashMap();
-    externalImageRects = new HashMap();
+    externalLocationExpressions = new HashMap<String, String>();
+    externalImageRects = new HashMap<String, ImageRect>();
     imageStripCount = 0;
   }
 
-  public void prepare(JMethod method) throws UnableToCompleteException {
-    TreeLogger logger = context.getLogger();
-    URL[] resources = ResourceGeneratorUtil.findResources(context, method);
+  @Override
+  public void prepare(TreeLogger logger, JMethod method)
+      throws UnableToCompleteException {
+    URL[] resources =
+        ResourceGeneratorUtil.findResources(logger, context, method);
 
     if (resources.length != 1) {
       logger.log(TreeLogger.ERROR, "Exactly one image may be specified", null);
@@ -70,8 +74,9 @@ public final class ImageResourceGenerator extends ResourceGenerator {
     }
   }
 
-  public void writeAssignment(JMethod method) throws UnableToCompleteException {
-    TreeLogger logger = context.getLogger();
+  @Override
+  public void writeAssignment(TreeLogger logger, JMethod method)
+      throws UnableToCompleteException {
     String name = method.getName();
 
     SourceWriter sw = context.getSourceWriter();
@@ -94,20 +99,23 @@ public final class ImageResourceGenerator extends ResourceGenerator {
           null);
       throw new UnableToCompleteException();
     }
-    
+
     sw.println(rect.left + ", 0, " + rect.width + ", " + rect.height);
 
     sw.outdent();
     sw.print(")");
   }
 
-  public void writeFields() throws UnableToCompleteException {
+  @Override
+  public void writeFields(TreeLogger logger) throws UnableToCompleteException {
     if (imageStripCount > 0) {
-      String bundleUrlExpression = builder.writeBundledImage(context);
-  
+      String bundleUrlExpression =
+          builder.writeBundledImage(logger.branch(TreeLogger.DEBUG,
+              "Writing image strip", null), context);
+
       SourceWriter sw = context.getSourceWriter();
-      sw.println("private String imageResourceBundleUrl = " + bundleUrlExpression
-          + ";");
+      sw.println("private String imageResourceBundleUrl = "
+          + bundleUrlExpression + ";");
     }
   }
 }

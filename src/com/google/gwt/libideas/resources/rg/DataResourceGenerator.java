@@ -32,29 +32,32 @@ import java.net.URL;
 public final class DataResourceGenerator extends ResourceGenerator {
   private ResourceContext context;
 
-  public void init(ResourceContext context) {
+  @Override
+  public void init(TreeLogger logger, ResourceContext context) {
     this.context = context;
   }
-  
-  public void writeAssignment(JMethod method) throws UnableToCompleteException {
-    TreeLogger logger = context.getLogger();
-    
-    URL[] resources = ResourceGeneratorUtil.findResources(context, method);
+
+  @Override
+  public void writeAssignment(TreeLogger logger, JMethod method)
+      throws UnableToCompleteException {
+
+    URL[] resources =
+        ResourceGeneratorUtil.findResources(logger, context, method);
 
     if (resources.length != 1) {
       logger.log(TreeLogger.ERROR, "Exactly one "
           + ResourceGeneratorUtil.METADATA_TAG + " must be specified", null);
       throw new UnableToCompleteException();
     }
-    
+
     URL resource = resources[0];
     String outputUrlExpression = context.addToOutput(resource);
-    
+
     SourceWriter sw = context.getSourceWriter();
     // Write the expression to create the subtype.
     sw.println("new " + DataResource.class.getName() + "() {");
     sw.indent();
-    
+
     // Convenience when examining the generated code.
     sw.println("// " + resource.toExternalForm());
 

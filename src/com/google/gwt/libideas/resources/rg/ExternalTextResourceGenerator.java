@@ -44,7 +44,8 @@ public final class ExternalTextResourceGenerator extends ResourceGenerator {
   private int currentIndex;
 
   @Override
-  public void init(ResourceContext context) throws UnableToCompleteException {
+  public void init(TreeLogger logger, ResourceContext context)
+      throws UnableToCompleteException {
     this.context = context;
     data = new StringBuffer("[\n");
     first = true;
@@ -55,10 +56,10 @@ public final class ExternalTextResourceGenerator extends ResourceGenerator {
   }
 
   @Override
-  public void prepare(JMethod method) throws UnableToCompleteException {
-    TreeLogger logger = context.getLogger();
+  public void prepare(TreeLogger logger, JMethod method)
+      throws UnableToCompleteException {
 
-    URL[] urls = ResourceGeneratorUtil.findResources(context, method);
+    URL[] urls = ResourceGeneratorUtil.findResources(logger, context, method);
 
     if (urls.length != 1) {
       logger.log(TreeLogger.ERROR, "Exactly one resource must be specified",
@@ -94,7 +95,8 @@ public final class ExternalTextResourceGenerator extends ResourceGenerator {
   }
 
   @Override
-  public void writeAssignment(JMethod method) throws UnableToCompleteException {
+  public void writeAssignment(TreeLogger logger, JMethod method)
+      throws UnableToCompleteException {
     String name = method.getName();
 
     SourceWriter sw = context.getSourceWriter();
@@ -108,7 +110,8 @@ public final class ExternalTextResourceGenerator extends ResourceGenerator {
     sw.print(")");
   }
 
-  public void writeFields() throws UnableToCompleteException {
+  @Override
+  public void writeFields(TreeLogger logger) throws UnableToCompleteException {
     data.append(']');
 
     urlExpression =
