@@ -16,7 +16,6 @@
 package com.google.gwt.libideas.resources.rebind;
 
 import com.google.gwt.core.ext.GeneratorContext;
-import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.user.rebind.SourceWriter;
@@ -53,8 +52,6 @@ public interface ResourceContext {
       byte[] data) throws UnableToCompleteException;
 
   public GeneratorContext getGeneratorContext();
-
-  public TreeLogger getLogger();
 
   public JClassType getResourceBundleType();
 

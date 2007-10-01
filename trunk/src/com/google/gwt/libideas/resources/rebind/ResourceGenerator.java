@@ -15,6 +15,7 @@
  */
 package com.google.gwt.libideas.resources.rebind;
 
+import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 
@@ -22,30 +23,38 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
  * Encapsulates per-type resource generation logic.
  */
 public abstract class ResourceGenerator {
-  
+
   /**
    * Default no-op implementation.
+   * 
+   * @param logger the TreeLogger to use when recording events for the method
    * @throws UnableToCompleteException
    */
-  public void finish() throws UnableToCompleteException {
+  public void finish(TreeLogger logger) throws UnableToCompleteException {
   }
 
-  public abstract void init(ResourceContext context) throws UnableToCompleteException;
-  
-  /**
-   * Default no-op implementation.
-   * @throws UnableToCompleteException
-   */
-  public void prepare(JMethod method) throws UnableToCompleteException {
-  }
-  
-  public abstract void writeAssignment(JMethod method)
+  public abstract void init(TreeLogger logger, ResourceContext context)
       throws UnableToCompleteException;
-  
+
   /**
    * Default no-op implementation.
+   * 
+   * @param logger the TreeLogger to use when recording events for the method
    * @throws UnableToCompleteException
    */
-  public void writeFields() throws UnableToCompleteException {
+  public void prepare(TreeLogger logger, JMethod method)
+      throws UnableToCompleteException {
+  }
+
+  public abstract void writeAssignment(TreeLogger logger, JMethod method)
+      throws UnableToCompleteException;
+
+  /**
+   * Default no-op implementation.
+   * 
+   * @param logger the TreeLogger to use when recording events for the method
+   * @throws UnableToCompleteException
+   */
+  public void writeFields(TreeLogger logger) throws UnableToCompleteException {
   }
 }

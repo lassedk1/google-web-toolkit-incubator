@@ -36,13 +36,16 @@ public final class TextResourceGenerator extends ResourceGenerator {
 
   ResourceContext context;
 
-  public void init(ResourceContext context) {
+  @Override
+  public void init(TreeLogger logger, ResourceContext context) {
     this.context = context;
   }
 
-  public void writeAssignment(JMethod method) throws UnableToCompleteException {
-    TreeLogger logger = context.getLogger();
-    URL[] resources = ResourceGeneratorUtil.findResources(context, method);
+  @Override
+  public void writeAssignment(TreeLogger logger, JMethod method)
+      throws UnableToCompleteException {
+    URL[] resources =
+        ResourceGeneratorUtil.findResources(logger, context, method);
 
     if (resources.length != 1) {
       logger.log(TreeLogger.ERROR, "Exactly one "

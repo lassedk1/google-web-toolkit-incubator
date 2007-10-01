@@ -64,7 +64,8 @@ class ImageBundleBuilder {
   private static final String BUNDLE_FILE_TYPE = "png";
   private static final String BUNDLE_MIME_TYPE = "image/png";
 
-  private final Map imageNameToImageRectMap = new HashMap();
+  private final Map<String, ImageRect> nameToRectMap =
+      new HashMap<String, ImageRect>();
 
   /**
    * Assimilates the image associated with a particular image method into the
@@ -102,15 +103,13 @@ class ImageBundleBuilder {
   }
 
   public ImageRect getMapping(String imageName) {
-    return (ImageRect) imageNameToImageRectMap.get(imageName);
+    return (ImageRect) nameToRectMap.get(imageName);
   }
 
-  public String writeBundledImage(ResourceContext context)
+  public String writeBundledImage(TreeLogger logger, ResourceContext context)
       throws UnableToCompleteException {
 
-    TreeLogger logger =
-        context.getLogger().branch(TreeLogger.DEBUG, "Writing bundle image",
-            null);
+    logger = logger.branch(TreeLogger.DEBUG, "Writing bundle image", null);
 
     // Create the bundled image from all of the constituent images.
     BufferedImage bundledImage = drawBundledImage();
@@ -172,9 +171,9 @@ class ImageBundleBuilder {
    * in a deterministic way. The drawing of the image should not rely on
    * implementation details of the Generator system which may be subject to
    * change. For example, at the time of this writing, the image names are added
-   * to imageNameToImageRectMap based on the alphabetical ordering of their
-   * associated methods. This behavior is the result of the oracle returning the
-   * list of a type's methods in alphabetical order. However, this behavior is
+   * to nameToRectMap based on the alphabetical ordering of their associated
+   * methods. This behavior is the result of the oracle returning the list of a
+   * type's methods in alphabetical order. However, this behavior is
    * undocumented, and should not be relied on. If this behavior were to change,
    * it would inadvertently affect the generation of bundled images.
    */
@@ -182,9 +181,10 @@ class ImageBundleBuilder {
 
     // Impose an ordering on the image rectangles, so that we construct
     // the bundled image in a deterministic way.
-    SortedMap sortedImageNameToImageRectMap = new TreeMap();
-    sortedImageNameToImageRectMap.putAll(imageNameToImageRectMap);
-    Collection orderedImageRects = sortedImageNameToImageRectMap.values();
+    SortedMap<String, ImageRect> sortedNameToRectMap =
+        new TreeMap<String, ImageRect>();
+    sortedNameToRectMap.putAll(nameToRectMap);
+    Collection orderedImageRects = sortedNameToRectMap.values();
 
     // Determine how big the composited image should be by taking the
     // sum of the widths and the max of the heights.
@@ -220,7 +220,7 @@ class ImageBundleBuilder {
   }
 
   private void putMapping(String imageName, ImageRect rect) {
-    imageNameToImageRectMap.put(imageName, rect);
+    nameToRectMap.put(imageName, rect);
   }
 
   private ImageRect readImage(TreeLogger logger, URL imageUrl)
