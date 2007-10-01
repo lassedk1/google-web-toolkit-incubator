@@ -65,8 +65,20 @@ Suppose the `locale` were set to `fr_FR`.  The generator would look for files in
   # default_fr.txt
   # default.txt
 
-This will work equally well with `DataResource` types, which can allow you to provide localized versions of other resources, say `ownersManual_en.pdf` versus `ownersManual_fr.pdf`.  Because the files linked by DataResource are renamed to strongly-named files as part of the compile process, there is no cost to proactively creating placeholder files that have identical content.
+This will work equally well with `DataResource` types, which can allow you to provide localized versions of other resources, say `ownersManual_en.pdf` versus `ownersManual_fr.pdf`.  Because the files linked by `DataResource` are renamed to strongly-named files as part of the compile process, there is no cost to proactively creating placeholder files that have identical content.
 
+= Pluggable Resource Generation =
+
+Each subtype of `ResourcePrototype` must define a `@gwt.resourceGenerator` annotation whose value is the name of a concrete Java class that extends `ResourceGenerator`.  The instance of the `ResourceGenerator` is responsible for accumulation (or bundling) of incoming resource data as well as a small degree of code generation to assemble the concrete implementation of the ImmutableResourceBundle class.  Implementors of `ResourceGenerator` subclasses can expect that only one `ResourceGenerator` will be created for a given type of resource within an ImmutableResourceBundle interface.
+
+The methods on a `ResourceGenerator` are called in the following order
+  # `init` to provide the `ResourceGenerator` with a `ResourceContext`
+  # `prepare` is called for each `JMethod` the `ResourceGenerator` is expected to handle
+  # `writeFields` allows the `ResourceGenerator` to add code at the class level
+  # `writeAssignment` is called for each `JMethod`.  The generated code should be suitable for use as the right-hand side of an assignment expression.
+  # `finish` is called after all assignments should have been written.
+
+`ResourceGenerators` are expected to make use of the `ResourceGeneratorUtil` class.
 
 = Potential pitfalls =
   * Changing the content of the resources will change the filenames (or data: encoding), thus forcing a recompile of the GWT application. To avoid this, the inlining and renaming features can be globally toggled off in your gwt.xml file during the development phase.
@@ -101,5 +113,3 @@ SetOutputFilter DEFLATE
 
   * The StyleInjector makes use of ImmutableResourceBundle to substitute URLs into a CSS stylesheet.
   * [http://www.ietf.org/rfc/rfc2397.txt RFC 2397]
-
-
