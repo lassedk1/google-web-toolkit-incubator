@@ -37,11 +37,13 @@ class InlineResourceContext  extends StaticResourceContext {
     super(logger, context, resourceBundleType, sw);
   }
 
+  @Override
   public String addToOutput(String suggestedFileName, String mimeType,
-      byte[] data) throws UnableToCompleteException {
+      byte[] data, boolean xhrCompatible) throws UnableToCompleteException {
     TreeLogger logger = getLogger();
 
-    if (data.length < MAX_INLINE_SIZE) {
+    // data: URLs are not compatible with XHRs on FF and Safari browsers
+    if ((!xhrCompatible) && (data.length < MAX_INLINE_SIZE)) {
       logger.log(TreeLogger.DEBUG, "Inlining", null);
 
       // This is bad, but I am lazy and don't want to write _another_ encoder
@@ -51,7 +53,7 @@ class InlineResourceContext  extends StaticResourceContext {
       return "\"data:" + mimeType + ";base64," + base64Contents + "\"";
 
     } else {
-      return super.addToOutput(suggestedFileName, mimeType, data);
+      return super.addToOutput(suggestedFileName, mimeType, data, true);
     }
   }
 }

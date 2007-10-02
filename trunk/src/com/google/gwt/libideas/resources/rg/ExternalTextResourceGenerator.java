@@ -117,7 +117,7 @@ public final class ExternalTextResourceGenerator extends ResourceGenerator {
     urlExpression =
         context.addToOutput(context.getResourceBundleType()
             .getQualifiedSourceName().replace('.', '_')
-            + "_jsonbundle.txt", "text/plain", data.toString().getBytes());
+            + "_jsonbundle.txt", "text/plain", data.toString().getBytes(), true);
 
     SourceWriter sw = context.getSourceWriter();
     sw.println("final String EXTERNAL_TEXT_URL = " + urlExpression + ";");

@@ -68,7 +68,7 @@ public final class ImageResourceGenerator extends ResourceGenerator {
       imageStripCount++;
     } catch (UnsuitableForStripException e) {
       // Add the image to the output as a separate resource
-      String urlExpression = context.addToOutput(resource);
+      String urlExpression = context.addToOutput(resource, false);
       externalLocationExpressions.put(name, urlExpression);
       externalImageRects.put(name, e.getImageRect());
     }
