@@ -216,6 +216,23 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
       sw.outdent();
       sw.println("}");
 
+      // Allow map-style lookup
+      sw.println("public native ResourcePrototype "
+          + "getResource(String name) /*-{");
+      sw.indent();
+      sw.println("switch (name) {");
+      sw.indent();
+      for (JMethod m : methods) {
+        sw.println("case '" + m.getName() + "': return this.@"
+            + f.getCreatedClassName() + "::"
+            + (m.getName() + "_instance").toUpperCase() + ";");
+      }
+      sw.outdent();
+      sw.println("}");
+      sw.println("return null;");
+      sw.outdent();
+      sw.println("}-*/;");
+
       // Write the generated code to disk
       sw.commit(logger);
     }
