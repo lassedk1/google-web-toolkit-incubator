@@ -83,4 +83,6 @@ TODO: Explain the trick of putting the login page in a div in the main .html, an
 == Extra Security Discussion ==
     _Based on a chat with GWT's Bob Vawter_
 
-TODO: Explain how without https security is limited regardless, touch on bobv's proposal for running login outside of GWT over HTTPS, setting a (non-secure) cookie with a key, redirecting to a non-https GWT app which reads the cookie again, and then using a JS version of e.g. bcrypt or some other hasher to generate fresh hash values for every request, involving a counter so that the server knows which hashes have been 'used' - to protect against replay attacks.
+See http://groups.google.com/group/Google-Web-Toolkit/browse_thread/thread/59f3aafcf4951523
+
+TODO: Explain how without https security is limited regardless, touch on bobv's proposal for running login outside of GWT over HTTPS, setting a (non-secure) cookie with a key, redirecting to a non-https GWT app which reads the cookie again, and then using a JS version of e.g. bcrypt or some other hasher to generate fresh hash values for every request, involving a counter so that the server knows which hashes have been 'used' - to protect against replay attacks. The highlights of this are discussed here
