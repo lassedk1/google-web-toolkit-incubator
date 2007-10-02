@@ -22,15 +22,10 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 
 /**
  * {@link PinnedPanel} creates a panel that is, by default, pinned in place.
@@ -39,107 +34,149 @@ import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
  */
 public class PinnedPanel extends Composite {
   /**
-   * Implementation class for PinnedPanel.
-   */
-  public static class PinnedPanelImplStandard extends PinnedPanelImpl {
-
-    protected void hiddenState() {
-      DOM.setStyleAttribute(e, "width", pin.peekoutSize + "px");
-      DOM.setStyleAttribute(e, "overflow", "hidden");
-      DOM.setStyleAttribute(e, "marginRight", "0px");
-      overlayTimer.cancel = true;
-    }
-
-    protected void setPanelWidth(int width) {
-      DOM.setStyleAttribute(e, "marginRight", -(width - pin.peekoutSize) + "px");
-      DOM.setStyleAttribute(e, "width", width + "px");
-    }
-  }
-  /**
    * Pinned panel impl.
    */
-  static class PinnedPanelImpl {
-    class OverlayTimer extends Timer {
-      int finalSize;
+  abstract static class PinnedPanelImpl {
+    abstract class SlidingTimer extends Timer {
       int interval;
-      int currentSize;
       boolean cancel;
 
       public void run() {
         if (cancel) {
           cancel = false;
         } else {
-          currentSize += interval;
-          currentSize = Math.min(currentSize, finalSize);
-          setPanelWidth(currentSize);
-          if (currentSize < finalSize) {
+          if (processSizeChange()) {
             this.schedule(OVERLAY_SPEED);
+          } else {
+            finish();
           }
         }
       }
+
+      protected abstract void finish();
+
+      protected abstract boolean processSizeChange();
     }
 
-    protected PinnedPanel pin;
+    private class HidingTimer extends SlidingTimer {
+      protected void finish() {
+        pin.state.currentState = State.IS_HIDDEN;
+      }
 
+      protected boolean processSizeChange() {
+        pin.currentWidth -= interval;
+        pin.currentWidth = Math.max(pin.currentWidth, pin.peekoutSize);
+        setPanelWidth(pin.currentWidth);
+        return pin.currentWidth > pin.peekoutSize;
+      }
+    }
+    private class OverlayTimer extends SlidingTimer {
+      protected void finish() {
+        pin.state.currentState = State.IS_SHOWN;
+      }
+
+      protected boolean processSizeChange() {
+        pin.currentWidth += interval;
+        pin.currentWidth = Math.min(pin.currentWidth, pin.width);
+        setPanelWidth(pin.currentWidth);
+        return pin.currentWidth < pin.width;
+      }
+    }
+
+    private static int OVERLAY_SPEED = 1;
+
+    private static int NUMBER_OF_INTERVALS = 20;
+
+    protected PinnedPanel pin;
     protected Element e;
 
     OverlayTimer overlayTimer = new OverlayTimer();
 
-    protected void hiddenState() {
-      DOM.setStyleAttribute(e, "marginRight", -(pin.peekoutSize) + "px");
-      DOM.setStyleAttribute(e, "width", pin.peekoutSize + "px");
+    HidingTimer hidingTimer = new HidingTimer();
+
+    public void setPinnedPanel(PinnedPanel pinnedPanel) {
+      pin = pinnedPanel;
+      e = pinnedPanel.getElement();
+      DOM.setStyleAttribute(e, "position", "relative");
       DOM.setStyleAttribute(e, "overflow", "hidden");
-      overlayTimer.cancel = true;
     }
 
-    protected void overlayState() {
+    protected void hide() {
+      overlayTimer.cancel = true;
+      hidingTimer.cancel = false;
+      hidingTimer.interval =
+          (pin.width - pin.peekoutSize) / NUMBER_OF_INTERVALS;
+      hidingTimer.run();
+    }
 
+    protected abstract void setPanelWidth(int width);
+
+    protected void show() {
       overlayTimer.cancel = false;
-      overlayTimer.currentSize = pin.peekoutSize;
-      overlayTimer.finalSize = pin.width;
-      overlayTimer.interval = (pin.width - pin.peekoutSize)
-          / NUMBER_OF_INTEVALS;
+      hidingTimer.cancel = true;
+      overlayTimer.interval =
+          (pin.width - pin.peekoutSize) / NUMBER_OF_INTERVALS;
       overlayTimer.run();
     }
 
-    protected void pinnedState() {
-      DOM.setStyleAttribute(e, "marginRight", "0px");
-    }
-
-    protected void setPanelWidth(int width) {
-      DOM.setStyleAttribute(e, "marginRight", -width + "px");
-      DOM.setStyleAttribute(e, "width", width + "px");
-    }
-
-    void setPinnedPanel(PinnedPanel pinnedPanel) {
-      this.pin = pinnedPanel;
-      e = pinnedPanel.getElement();
-      DOM.setStyleAttribute(e, "position", "relative");
+    protected void showPinned() {
+      DOM.setStyleAttribute(e, "marginRight", pin.getRightMargin() + "px");
     }
   }
 
-  private static int OVERLAY_SPEED = 1;
-  private static int NUMBER_OF_INTEVALS = 24;
+  static class PinnedPanelImplStandard extends PinnedPanelImpl {
+    protected void setPanelWidth(int width) {
+
+      DOM.setStyleAttribute(e, "marginRight", pin.getRightMargin()
+          - (width - pin.peekoutSize) + "px");
+      DOM.setStyleAttribute(pin.innerContents.getElement(), "marginLeft",
+          -(pin.width - width) + "px");
+      DOM.setStyleAttribute(e, "width", width + "px");
+    }
+  }
+
+  static class State {
+    static int MUST_HIDE = 0;
+    static int HIDING = 1;
+    static int IS_HIDDEN = 2;
+    static int SHOWING = -1;
+    static int IS_SHOWN = -2;
+    int currentState;
+
+    public boolean shouldHide() {
+      return (currentState < 0);
+    }
+
+    public boolean shouldShow() {
+      return currentState > 0;
+    }
+  }
 
   private static final String DEFAULT_STYLENAME = "gwt-PinnedPanel";
+
+  State state = new State();
+
+  private int userDefinedRightMargin = 0;
 
   // Managed to remove ie/firefox differences, left impl class seperated for
   // later support of safari and opera.
   private PinnedPanelImpl impl = new PinnedPanelImplStandard();
 
   private int width;
-
-  private Grid grid = new Grid(2, 1);
-  private ToggleButton switchButton = new ToggleButton("Pinned");
+  private int currentWidth;
+  private HorizontalPanel innerContents = new HorizontalPanel();
   private int peekoutSize;
+  private ToggleButton switchButton;
 
-  public PinnedPanel(int width) {
-    this(width, 30);
-  }
-
-  public PinnedPanel(int width, int peekoutSize) {
-    this.peekoutSize = peekoutSize;
-
+  /**
+   * Create a new Pinned Pane. The stickout toggle button is always going to be
+   * displayed. It must have a fixed width.
+   * 
+   * @param width width
+   * @param pinnedToggle the button to toggle the collapsing state.
+   */
+  public PinnedPanel(int width, ToggleButton pinnedToggle, Widget contents) {
+    this.switchButton = pinnedToggle;
     SimplePanel container = new SimplePanel() {
       {
         sinkEvents(Event.ONMOUSEOUT);
@@ -151,65 +188,92 @@ public class PinnedPanel extends Composite {
         if (!switchButton.isDown()) {
           switch (DOM.eventGetType(event)) {
             case Event.ONMOUSEOUT:
-
-              if (!DOM.isOrHasChild(this.getElement(),
-                  DOM.eventGetToElement(event))) {
-                RootPanel.get().add(new Label("leaving"));
-
-                hiddenState();
+              Element to = DOM.eventGetToElement(event);
+              if (to != null) {
+                maybeHide(to);
               }
               break;
             case Event.ONMOUSEOVER:
-              if (!DOM.isOrHasChild(this.getElement(),
-                  DOM.eventGetFromElement(event))) {
-                RootPanel.get().add(new Label("coming"));
-                overlayState();
-              }
+              Element from = DOM.eventGetFromElement(event);
+              maybeShow(from);
               break;
+
           }
         }
         super.onBrowserEvent(event);
       }
+
+      private void maybeHide(Element e) {
+        if (!DOM.isOrHasChild(this.getElement(), e)) {
+          if ((state.shouldHide())) {
+            state.currentState = State.HIDING;
+            impl.hide();
+          }
+
+        }
+      }
+
+      private void maybeShow(Element e) {
+        if (!DOM.isOrHasChild(this.getElement(), e)) {
+          if ((state.shouldShow())) {
+            state.currentState = State.SHOWING;
+            impl.show();
+          }
+        }
+      }
+
     };
 
     initWidget(container);
-    grid.setHeight("100%");
+    innerContents.setHeight("100%");
+    innerContents.add(contents);
+    innerContents.add(switchButton);
+    innerContents.setCellHeight(switchButton, "100%");
+    innerContents.setCellWidth(switchButton, "1px");
 
-    container.setWidget(grid);
+    container.setWidget(innerContents);
     impl.setPinnedPanel(this);
-    CellFormatter formatter = grid.getCellFormatter();
-    formatter.setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_RIGHT);
-    formatter.setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP);
-    formatter.setHeight(0, 0, "5%");
-    switchButton.setWidth("3em");
-    switchButton.setDown(true);
-    grid.setWidget(0, 0, switchButton);
-    grid.setWidth("100%");
+
     setWidth(width + "px");
+    currentWidth = width;
     this.width = width;
     setStyleName(DEFAULT_STYLENAME);
+    switchButton.setDown(true);
     switchButton.addClickListener(new ClickListener() {
 
       public void onClick(Widget sender) {
         setPinned(switchButton.isDown());
       }
+
     });
+
+  }
+
+  public int getRightMargin() {
+    return userDefinedRightMargin;
   }
 
   public ToggleButton getSwitchButton() {
     return switchButton;
   }
 
-  public void setStyleNamded(String styleName) {
-    super.setStyleName(grid.getElement(), styleName, true);
+  /**
+   * As {@link PinnedPanel} needs to manipulate the right margin, the right
+   * margin must be controlled in code.
+   * 
+   * @param rightMargin
+   */
+  public void setRightMargin(int rightMargin) {
+    this.userDefinedRightMargin = rightMargin;
+    if (switchButton.isDown()) {
+      impl.showPinned();
+    } else {
+      impl.hide();
+    }
   }
 
   public void setWidget(Widget widget) {
-    grid.setWidget(1, 0, widget);
-  }
 
-  protected void hiddenState() {
-    impl.hiddenState();
   }
 
   /**
@@ -217,26 +281,20 @@ public class PinnedPanel extends Composite {
    * browser's document.
    */
   protected void onLoad() {
-    int clientWidth = DOM.getElementPropertyInt(this.getElement(),
-        "clientWidth");
-    grid.setWidth(clientWidth + "px");
-  }
+    int clientWidth =
+        DOM.getElementPropertyInt(this.getElement(), "clientWidth");
+    innerContents.setWidth(clientWidth + "px");
+    this.peekoutSize = switchButton.getOffsetWidth();
 
-  protected void overlayState() {
-    impl.overlayState();
-  }
-
-  protected void pinnedState() {
-    impl.pinnedState();
   }
 
   private void setPinned(boolean pinned) {
+    state.currentState = State.MUST_HIDE;
+    switchButton.setDown(pinned);
     if (pinned) {
-      switchButton.setDown(pinned);
-      pinnedState();
+      impl.showPinned();
     } else {
-      switchButton.setDown(false);
-      hiddenState();
+      impl.hide();
     }
   }
 
