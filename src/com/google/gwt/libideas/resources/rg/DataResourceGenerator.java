@@ -51,7 +51,7 @@ public final class DataResourceGenerator extends ResourceGenerator {
     }
 
     URL resource = resources[0];
-    String outputUrlExpression = context.addToOutput(resource);
+    String outputUrlExpression = context.addToOutput(resource, false);
 
     SourceWriter sw = context.getSourceWriter();
     // Write the expression to create the subtype.

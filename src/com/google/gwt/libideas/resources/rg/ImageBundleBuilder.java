@@ -129,7 +129,7 @@ class ImageBundleBuilder {
     }
 
     return context.addToOutput(context.getResourceBundleType().getName()
-        + ".cache.png", BUNDLE_MIME_TYPE, imageBytes);
+        + ".cache.png", BUNDLE_MIME_TYPE, imageBytes, false);
   }
 
   /**

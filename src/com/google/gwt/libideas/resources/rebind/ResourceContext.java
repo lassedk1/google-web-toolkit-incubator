@@ -24,6 +24,13 @@ import java.net.URL;
 
 /**
  * Context object for ResourceGenerators.
+ * <p>
+ * Depending on the optimizations made by the implementation of the
+ * ResourceContext, the resultant URL may or may not be compatible with standard
+ * XMLHttpRequest security semantics. If the resource is intended to be used
+ * with XHR, the <code>xhrCompatible</code> paramater should be set to
+ * <code>true</code> when invoking {@link #addToOutput(URL, boolean)}.
+ * </p>
  */
 public interface ResourceContext {
 
@@ -32,10 +39,13 @@ public interface ResourceContext {
    * compiled output.
    * 
    * @param resource the resource to add to the compiled output
+   * @param xhrCompatible enforces compatibility with security restrictions if
+   *          the resource is intended to be accessed via an XMLHttpRequest.
    * @return a Java expression which will evaluate to the location of the
    *         provided resource at runtime.
    */
-  public String addToOutput(URL resource) throws UnableToCompleteException;
+  public String addToOutput(URL resource, boolean xhrCompatible)
+      throws UnableToCompleteException;
 
   /**
    * Cause a specific collection of bytes to be available in the program's
@@ -45,15 +55,30 @@ public interface ResourceContext {
    *          resource
    * @param mimeType the MIME type of the data being provided
    * @param data the bytes to add to the output
+   * @param xhrCompatible enforces compatibility with security restrictions if
+   *          the resource is intended to be accessed via an XMLHttpRequest.
    * @return a Java expression which will evaluate to the location of the
    *         provided resource at runtime.
    */
   public String addToOutput(String suggestedFileName, String mimeType,
-      byte[] data) throws UnableToCompleteException;
+      byte[] data, boolean xhrCompatible) throws UnableToCompleteException;
 
+  /**
+   * Return the GeneratorContext in which the overall resource generation
+   * framework is being run.
+   */
   public GeneratorContext getGeneratorContext();
 
+  /**
+   * Return the type of the resource bundle being generated.
+   */
   public JClassType getResourceBundleType();
 
+  /**
+   * Return a SourceWriter which can be used to add to the concrete
+   * implementation of the type.
+   * 
+   * @return
+   */
   public SourceWriter getSourceWriter();
 }
