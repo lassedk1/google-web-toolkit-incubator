@@ -1,6 +1,14 @@
 <module>
     <inherits name="com.google.gwt.user.User"/>
-
+    <inherits name="com.google.gwt.i18n.I18N"/>
+    <!-- Only exposing 3 locales to start with, just to show that the
+         widget is internationalized. The DatePicker should work for
+         all locales for which there is a DateTimeConstants property
+         file in the overrides package.
+    -->
+    <extend-property name="locale" values="de" />
+    <extend-property name="locale" values="fr" />
+    <extend-property name="locale" values="ja" />
     <source path="client/"/>
 </module>
 
