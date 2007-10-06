@@ -20,19 +20,18 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.impl.ClippedImagePrototype;
 
 /**
- * This is part of a prototype implementation of the ImageBundle optimization
- * implemented with ImmutableResourceBundle.
+ * This is part of an implementation of the ImageBundle optimization implemented
+ * with ImmutableResourceBundle.
  */
 public class ImageResourcePrototype implements ImageResource {
 
-  final String name;
-
-  final String url;
-  final int left;
-  final int top;
-  final int width;
-  final int height;
-  ClippedImagePrototype clippedImage;
+  private final String name;
+  private final String url;
+  private final int left;
+  private final int top;
+  private final int width;
+  private final int height;
+  private ClippedImagePrototype clippedImage;
 
   public ImageResourcePrototype(String name, String url, int left, int top,
       int width, int height) {
@@ -54,13 +53,48 @@ public class ImageResourcePrototype implements ImageResource {
     return clippedImage.createImage();
   }
 
+  /**
+   * Exists for testing purposes, not part of the ImageResource interface.
+   */
+  public int getHeight() {
+    return height;
+  }
+
   public String getHTML() {
     ensureImage();
     return clippedImage.getHTML();
   }
 
+  /**
+   * Exists for testing purposes, not part of the ImageResource interface.
+   */
+  public int getLeft() {
+    return left;
+  }
+
   public String getName() {
     return name;
+  }
+
+  /**
+   * Exists for testing purposes, not part of the ImageResource interface.
+   */
+  public int getTop() {
+    return top;
+  }
+
+  /**
+   * Exists for testing purposes, not part of the ImageResource interface.
+   */
+  public String getURL() {
+    return url;
+  }
+
+  /**
+   * Exists for testing purposes, not part of the ImageResource interface.
+   */
+  public int getWidth() {
+    return width;
   }
 
   private void ensureImage() {

@@ -17,16 +17,17 @@ package com.google.gwt.libideas.resources.rg;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.dev.util.Util;
 import com.google.gwt.libideas.resources.rebind.ResourceContext;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -49,11 +50,26 @@ class ImageBundleBuilder {
     public final BufferedImage image;
     public int left;
     public final int width;
+    public final String strongName;
 
-    public ImageRect(BufferedImage image) {
+    public ImageRect(BufferedImage image, String strongName) {
       this.image = image;
       this.width = image.getWidth();
       this.height = image.getHeight();
+      this.strongName = strongName;
+    }
+
+    public boolean equals(Object o) {
+      return ((o instanceof ImageRect) && (((ImageRect) o).strongName
+          .equals(strongName)));
+    }
+
+    public int hashCode() {
+      return strongName.hashCode();
+    }
+
+    public String toString() {
+      return strongName + " " + width + "x" + height;
     }
   }
 
@@ -64,6 +80,8 @@ class ImageBundleBuilder {
   private static final String BUNDLE_FILE_TYPE = "png";
   private static final String BUNDLE_MIME_TYPE = "image/png";
 
+  private final Map<String, ImageRect> strongNameToRectMap =
+      new HashMap<String, ImageRect>();
   private final Map<String, ImageRect> nameToRectMap =
       new HashMap<String, ImageRect>();
 
@@ -95,6 +113,13 @@ class ImageBundleBuilder {
       rect = readImage(logger, resource);
 
       checkSuitableForStrip(logger, imageName, resource, rect);
+
+      // De-dup the component images
+      if (strongNameToRectMap.containsKey(rect.strongName)) {
+        rect = strongNameToRectMap.get(rect.strongName);
+      } else {
+        strongNameToRectMap.put(rect.strongName, rect);
+      }
 
       // Map the URL to its image so that even if the same URL is used more than
       // once, we only include the referenced image once in the bundled image.
@@ -183,20 +208,17 @@ class ImageBundleBuilder {
     // the bundled image in a deterministic way.
     SortedMap<String, ImageRect> sortedNameToRectMap =
         new TreeMap<String, ImageRect>();
-    sortedNameToRectMap.putAll(nameToRectMap);
-    Collection orderedImageRects = sortedNameToRectMap.values();
+    sortedNameToRectMap.putAll(strongNameToRectMap);
+    Collection<ImageRect> orderedImageRects = sortedNameToRectMap.values();
 
     // Determine how big the composited image should be by taking the
     // sum of the widths and the max of the heights.
     int nextLeft = 0;
     int maxHeight = 0;
-    for (Iterator iter = orderedImageRects.iterator(); iter.hasNext();) {
-      ImageRect imageRect = (ImageRect) iter.next();
+    for (ImageRect imageRect : orderedImageRects) {
       imageRect.left = nextLeft;
       nextLeft += imageRect.width;
-      if (imageRect.height > maxHeight) {
-        maxHeight = imageRect.height;
-      }
+      maxHeight = Math.max(maxHeight, imageRect.height);
     }
 
     // Create the bundled image.
@@ -204,8 +226,7 @@ class ImageBundleBuilder {
         new BufferedImage(nextLeft, maxHeight, BufferedImage.TYPE_INT_ARGB_PRE);
     Graphics2D g2d = bundledImage.createGraphics();
 
-    for (Iterator iter = orderedImageRects.iterator(); iter.hasNext();) {
-      ImageRect imageRect = (ImageRect) iter.next();
+    for (ImageRect imageRect : orderedImageRects) {
 
       // We do not need to pass in an ImageObserver, because we are working
       // with BufferedImages. ImageObservers only need to be used when
@@ -231,11 +252,13 @@ class ImageBundleBuilder {
             + imageUrl.toExternalForm() + "'", null);
 
     // Fetch the image.
+    byte[] imageBytes = Util.readURLAsBytes(imageUrl);
+
     try {
       BufferedImage image;
-      // Load the image
+      // Decode the image
       try {
-        image = ImageIO.read(imageUrl);
+        image = ImageIO.read(new ByteArrayInputStream(imageBytes));
       } catch (IllegalArgumentException iex) {
         if (imageUrl.getPath().toLowerCase().endsWith("png")
             && iex.getMessage() != null
@@ -262,7 +285,7 @@ class ImageBundleBuilder {
         throw new UnableToCompleteException();
       }
 
-      return new ImageRect(image);
+      return new ImageRect(image, Util.computeStrongName(imageBytes));
 
     } catch (IOException e) {
       logger.log(TreeLogger.ERROR, "Unable to read image resource", null);
