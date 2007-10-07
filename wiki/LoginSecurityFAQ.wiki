@@ -1,5 +1,7 @@
 #summary Explains how to do logins with GWT in a secure fashion.
 
+This FAQ page is slightly more hands-on, but you should definitely also read [http://groups.google.com/group/Google-Web-Toolkit/web/security-for-gwt-applications Security for GWT applications].
+
 = Login Security =
 
 This article describes how to do the following:
