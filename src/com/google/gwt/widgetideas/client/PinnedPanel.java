@@ -104,8 +104,8 @@ public class PinnedPanel extends Composite {
     protected void hide() {
       overlayTimer.cancel = true;
       hidingTimer.cancel = false;
-      hidingTimer.interval =
-          (pin.width - pin.peekoutSize) / NUMBER_OF_INTERVALS;
+      hidingTimer.interval = (pin.width - pin.peekoutSize)
+          / NUMBER_OF_INTERVALS;
       hidingTimer.run();
     }
 
@@ -114,8 +114,8 @@ public class PinnedPanel extends Composite {
     protected void show() {
       overlayTimer.cancel = false;
       hidingTimer.cancel = true;
-      overlayTimer.interval =
-          (pin.width - pin.peekoutSize) / NUMBER_OF_INTERVALS;
+      overlayTimer.interval = (pin.width - pin.peekoutSize)
+          / NUMBER_OF_INTERVALS;
       overlayTimer.run();
     }
 
@@ -197,7 +197,6 @@ public class PinnedPanel extends Composite {
               Element from = DOM.eventGetFromElement(event);
               maybeShow(from);
               break;
-
           }
         }
         super.onBrowserEvent(event);
@@ -209,7 +208,6 @@ public class PinnedPanel extends Composite {
             state.currentState = State.HIDING;
             impl.hide();
           }
-
         }
       }
 
@@ -246,7 +244,6 @@ public class PinnedPanel extends Composite {
       }
 
     });
-
   }
 
   public int getRightMargin() {
@@ -273,7 +270,6 @@ public class PinnedPanel extends Composite {
   }
 
   public void setWidget(Widget widget) {
-
   }
 
   /**
@@ -281,11 +277,10 @@ public class PinnedPanel extends Composite {
    * browser's document.
    */
   protected void onLoad() {
-    int clientWidth =
-        DOM.getElementPropertyInt(this.getElement(), "clientWidth");
+    int clientWidth = DOM.getElementPropertyInt(this.getElement(),
+        "clientWidth");
     innerContents.setWidth(clientWidth + "px");
     this.peekoutSize = switchButton.getOffsetWidth();
-
   }
 
   private void setPinned(boolean pinned) {
