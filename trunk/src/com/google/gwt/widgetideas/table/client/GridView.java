@@ -17,6 +17,7 @@ package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -386,7 +387,11 @@ public class GridView extends ExtendedGrid {
    */
   public void renderCell(int row, int column, Object data) {
     if (cellRenderer == null) {
-      setHTML(row, column, data + "");
+      if (data instanceof Widget) {
+        setWidget(row, column, (Widget) data);
+      } else {
+        setHTML(row, column, data + "");
+      }
     } else {
       cellRenderer.renderCell(this, row, column, data);
     }

@@ -18,7 +18,6 @@ package com.google.gwt.widgetideas.table.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
@@ -78,25 +77,23 @@ public class ScrollTableView extends ScrollTable {
       int numPages = gridView.getNumPages(); 
       if (sender == pagingButtonFirst) {
         // Load first page
-        nextButtonTimer.cancel();
         gridView.gotoFirstPage();
       } else if (sender == pagingButtonLast) {
         // Load last page
-        nextButtonTimer.cancel();
         gridView.gotoLastPage();
       } else if (sender == pagingButtonNext) {
         // Load next page
         int curPage = getPagingBoxValue();
         if ((numPages < 0) || (curPage + 1 < numPages)) {
           gridViewListener.onPageChanged(curPage + 1);
-          nextButtonTimer.schedule(500);
+          gridView.gotoPage(getPagingBoxValue());
         }
       } else if (sender == pagingButtonPrev) {
         // Load previous page
         int curPage = getPagingBoxValue();
         if (curPage > 0) {
           gridViewListener.onPageChanged(curPage - 1);
-          nextButtonTimer.schedule(500);
+          gridView.gotoPage(getPagingBoxValue());
         }
       }
     }
@@ -137,19 +134,6 @@ public class ScrollTableView extends ScrollTable {
       } else {
         pagingNumPagesLabel.setHTML("of&nbsp;&nbsp;" + numPages);
       }
-    }
-  };
-
-  /**
-   * A timer that delays the offset of loading the next or previous page until
-   * the user stops pressing the next or previous buttons for at least a small
-   * time. This allows the user to press the next button repeatedly without
-   * sending a bunch of requests.
-   */
-  private Timer nextButtonTimer = new Timer() {
-    public void run() {
-      GridView gridView = (GridView) getDataTable();
-      gridView.gotoPage(getPagingBoxValue());
     }
   };
 
@@ -231,7 +215,6 @@ public class ScrollTableView extends ScrollTable {
     pagingCurPageBox.addKeyboardListener(new KeyboardListenerAdapter() {
       public void onKeyPress(Widget sender, char keyCode, int modifiers) {
         if (keyCode == (char) KEY_ENTER) {
-          nextButtonTimer.cancel();
           GridView dataTable = (GridView) getDataTable();
           dataTable.gotoPage(getPagingBoxValue());
         } else if ((!Character.isDigit(keyCode)) && (keyCode != (char) KEY_TAB)

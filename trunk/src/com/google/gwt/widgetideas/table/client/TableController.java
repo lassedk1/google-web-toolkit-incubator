@@ -85,6 +85,15 @@ public class TableController {
   }
 
   /**
+   * Get the underlying {@link TableModel}.
+   * 
+   * @return the table model
+   */
+  public TableModel getTableModel() {
+    return tableModel;
+  }
+  
+  /**
    * Insert a row of data.
    * 
    * @param beforeRow the row to insert
