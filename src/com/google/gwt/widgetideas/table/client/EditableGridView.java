@@ -76,6 +76,17 @@ public class EditableGridView extends GridView {
   }
 
   /**
+   * Close any open cell editors. This method will close the editor even if it
+   * wouldn't normally allow the user to cancel.
+   */
+  public void closeCellEditor() {
+    if (curCellEditor != null) {
+      curCellEditor.hide();
+      curCellEditor = null;
+    }
+  }
+
+  /**
    * Get the column editor for a column.
    * 
    * @param column the column index
