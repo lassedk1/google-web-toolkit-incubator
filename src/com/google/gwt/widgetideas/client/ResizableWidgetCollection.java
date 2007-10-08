@@ -279,7 +279,7 @@ public class ResizableWidgetCollection implements WindowResizeListener {
 
       // Call the onResize method only if the widget is attached
       if (info.setClientSize(curWidth, curHeight)) {
-        if (widget.isAttached()) {
+        if (curWidth > 0 && curHeight > 0 && widget.isAttached()) {
           widget.onResize(curWidth, curHeight);
         }
       }
