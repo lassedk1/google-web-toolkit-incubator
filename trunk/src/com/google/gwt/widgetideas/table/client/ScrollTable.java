@@ -173,12 +173,13 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       int colspan = DOM.getElementPropertyInt(curCell, "colSpan");
       int sacrificeColumn = curCellIndex + colspan;
       int resizePolicy = table.getResizePolicy();
-      if (resizePolicy == RESIZE_POLICY_FIXED_WIDTH) {
+      if (resizePolicy == RESIZE_POLICY_FIXED_WIDTH
+          || resizePolicy == RESIZE_POLICY_FILL_WIDTH) {
         if (sacrificeColumn >= dataTable.getColumnCount()) {
           return;
         }
       }
-      
+
       // Calculate new sizes and total difference
       int[] newWidths = new int[colspan];
       int diff = 0;
@@ -187,7 +188,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
         newWidths[i] = dataTable.getAutoFitColumnWidth(actualColumn);
         diff += (newWidths[i] - table.getColumnWidth(actualColumn));
       }
-      
+
       // Redistribute the width
       if (resizePolicy == RESIZE_POLICY_FLOW) {
         table.redistributeWidth(-diff, sacrificeColumn);
@@ -195,7 +196,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       } else if (resizePolicy != RESIZE_POLICY_UNCONSTRAINED) {
         diff += table.redistributeWidth(-diff, sacrificeColumn);
       }
-      
+
       // Resize the columns
       for (int i = 0; i < colspan; i++) {
         int actualColumn = curCellIndex + i;
@@ -246,8 +247,9 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       Element cell = table.headerTable.getEventTargetCell(event);
       int clientX = DOM.eventGetClientX(event);
       if (cell != null) {
-        int absRight = DOM.getAbsoluteLeft(cell)
-            + DOM.getElementPropertyInt(cell, "offsetWidth");
+        int absRight =
+            DOM.getAbsoluteLeft(cell)
+                + DOM.getElementPropertyInt(cell, "offsetWidth");
         if (clientX < absRight - 15 || clientX > absRight) {
           cell = null;
         }
@@ -356,7 +358,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     protected ScrollTable getScrollTable() {
       return table;
     }
-    
+
     /**
      * Get the actual cell index of a cell in the header table.
      * 
@@ -387,8 +389,9 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
           int originalWidth = curNode.getOriginalWidth();
           int column = curNode.getCellIndex();
           int delta = totalDelta / colSpanRemaining;
-          int colWidth = table.setColumnWidth(column, originalWidth + delta,
-              sacrificeColumn);
+          int colWidth =
+              table.setColumnWidth(column, originalWidth + delta,
+                  sacrificeColumn);
 
           totalDelta -= (colWidth - originalWidth);
           colSpanRemaining--;
@@ -435,10 +438,12 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       // Position a div that forces a cursor redraw in Opera
       if (cellChanged) {
         DOM.setCapture(getScrollTable().getElement());
-        DOM.setStyleAttribute(cursorUpdateDiv, "height",
-            (Window.getClientHeight() - 1) + "px");
-        DOM.setStyleAttribute(cursorUpdateDiv, "width",
-            (Window.getClientWidth() - 1) + "px");
+        DOM.setStyleAttribute(cursorUpdateDiv, "height", (Window
+            .getClientHeight() - 1)
+            + "px");
+        DOM.setStyleAttribute(cursorUpdateDiv, "width", (Window
+            .getClientWidth() - 1)
+            + "px");
         DOM.setStyleAttribute(cursorUpdateDiv, "left", "0px");
         DOM.setStyleAttribute(cursorUpdateDiv, "top", "0px");
         DOM.appendChild(RootPanel.getBodyElement(), cursorUpdateDiv);
@@ -656,12 +661,18 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   public static final int RESIZE_POLICY_FLOW = 1;
 
   /**
+   * Same as FIXED_WIDTH, but the grid will always fill the available width,
+   * even if the widget is resized.
+   */
+  public static final int RESIZE_POLICY_FILL_WIDTH = 2;
+
+  /**
    * As one column expands or shrinks, the columns to the right will do the
    * opposite, trying to maintain the same size. The width of the grid will
    * remain constant, ignoring column resizing that would result in the grid
    * growing in size.
    */
-  public static final int RESIZE_POLICY_FIXED_WIDTH = 2;
+  public static final int RESIZE_POLICY_FIXED_WIDTH = 3;
 
   /**
    * The data table.
@@ -765,7 +776,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   /**
    * The worker that helps with mouse resize events.
    */
-  private MouseResizeWorker resizeWorker = (MouseResizeWorker) GWT.create(MouseResizeWorker.class);
+  private MouseResizeWorker resizeWorker =
+      (MouseResizeWorker) GWT.create(MouseResizeWorker.class);
 
   /**
    * A Deferred command used to resize tables vertically. Using this command
@@ -944,9 +956,13 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    * proportional to the current width of each column.
    */
   public void fillWidth() {
+    
     // Calculate how much room we have to work with
     DOM.setStyleAttribute(dataWrapper, "overflow", "scroll");
     int clientWidth = DOM.getElementPropertyInt(dataWrapper, "clientWidth") - 1;
+    if (clientWidth < 0) {
+      return;
+    }
     int diff = clientWidth - dataTable.getOffsetWidth();
     DOM.setStyleAttribute(dataWrapper, "overflow", "auto");
 
@@ -1094,8 +1110,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
             if (cellElem != null) {
               int row = OverrideDOM.getRowIndex(DOM.getParent(cellElem)) - 1;
               int cell = OverrideDOM.getCellIndex(cellElem);
-              int column = headerTable.getFlexCellFormatter().getColumnIndex(
-                  row, cell);
+              int column =
+                  headerTable.getFlexCellFormatter().getColumnIndex(row, cell);
               sortedColumnTrigger = cellElem;
               dataTable.sortColumn(column);
             }
@@ -1143,6 +1159,14 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    */
   public void onResize(int width, int height) {
     resizeTablesVertically();
+    
+    if (resizePolicy == RESIZE_POLICY_FILL_WIDTH) {
+      DeferredCommand.addCommand(new Command() {
+        public void execute() {
+          fillWidth();
+        }
+      });
+    }
   }
 
   /**
@@ -1197,6 +1221,9 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     this.resizePolicy = resizePolicy;
     if (resizePolicy == RESIZE_POLICY_FIXED_WIDTH) {
       fillWidthImage.setVisible(false);
+    } else if (resizePolicy == RESIZE_POLICY_FILL_WIDTH) {
+      fillWidthImage.setVisible(false);
+      fillWidth();
     } else {
       fillWidthImage.setVisible(true);
     }
@@ -1252,6 +1279,9 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     super.onAttach();
     resizeTablesVertically();
     repositionHeaderSpacer();
+    if (resizePolicy == RESIZE_POLICY_FILL_WIDTH) {
+      fillWidth();
+    }
   }
 
   /**
@@ -1285,11 +1315,11 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   protected void scrollTables(boolean baseHeader) {
     if (isAttached()) {
       if (baseHeader) {
-        DOM.setElementPropertyInt(dataWrapper, "scrollLeft",
-            DOM.getElementPropertyInt(headerWrapper, "scrollLeft"));
+        DOM.setElementPropertyInt(dataWrapper, "scrollLeft", DOM
+            .getElementPropertyInt(headerWrapper, "scrollLeft"));
       }
-      DOM.setElementPropertyInt(headerWrapper, "scrollLeft",
-          DOM.getElementPropertyInt(dataWrapper, "scrollLeft"));
+      DOM.setElementPropertyInt(headerWrapper, "scrollLeft", DOM
+          .getElementPropertyInt(dataWrapper, "scrollLeft"));
     }
   }
 
@@ -1311,7 +1341,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       diff += redistributeWidth(-diff, sacrificeColumn);
 
       // Prevent over resizing
-      if (resizePolicy == RESIZE_POLICY_FIXED_WIDTH) {
+      if (resizePolicy == RESIZE_POLICY_FIXED_WIDTH
+          || resizePolicy == RESIZE_POLICY_FILL_WIDTH) {
         width -= diff;
       }
     }
@@ -1354,7 +1385,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
         }
       }
     }
-    
+
     // Return the actual width
     return actualWidth;
   }
