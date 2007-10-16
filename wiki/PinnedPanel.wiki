@@ -1,4 +1,3 @@
-#labels Deprecated
 A panel whose contents are either pinned in place or pop out when the user hovers over them.
 
 = Introduction =
