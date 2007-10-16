@@ -51,14 +51,23 @@ public class RadioCellEditor extends AbstractCellEditor {
    * Constructor.
    */
   public RadioCellEditor() {
-    super(new VerticalPanel());
+    this(true);
+  }
+
+  /**
+   * Constructor.
+   * 
+   * @param useDefaultButtons true to use default accept/cancel buttons
+   */
+  public RadioCellEditor(boolean useDefaultButtons) {
+    super(new VerticalPanel(), useDefaultButtons);
     vpanel = (VerticalPanel) getContentWidget();
     
     // Assign a unique name
     uniqueID++;
     groupName = "gwtRadioCellEditor" + uniqueID;
   }
-
+  
   /**
    * Add an option to this editor.
    * 

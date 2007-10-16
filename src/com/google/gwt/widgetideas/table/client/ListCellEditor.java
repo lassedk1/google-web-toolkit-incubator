@@ -40,10 +40,20 @@ public class ListCellEditor extends AbstractCellEditor {
    * @param listBox a custom {@link ListBox} to use
    */
   public ListCellEditor(ListBox listBox) {
-    super(listBox);
-    this.listBox = listBox;
+    this(listBox, true);
   }
 
+  /**
+   * Constructor.
+   * 
+   * @param listBox a custom {@link ListBox} to use
+   * @param useDefaultButtons true to use default accept/cancel buttons
+   */
+  public ListCellEditor(ListBox listBox, boolean useDefaultButtons) {
+    super(listBox, useDefaultButtons);
+    this.listBox = listBox;
+  }
+  
   /**
    * Get the {@link ListBox} of options.
    * 
