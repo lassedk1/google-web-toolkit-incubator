@@ -8,7 +8,7 @@ The widget itself can display tick marks and labels along the range.  You can sp
 The widget is highly customizable via CSS, and the knob itself can be swapped using an Image Bundle.
 
 Example:
-[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/SliderBar/index.html]
+[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/SliderBar/index.html]
 
 
 = CSS =
