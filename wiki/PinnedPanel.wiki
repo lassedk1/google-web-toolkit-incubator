@@ -1,3 +1,4 @@
+#summary A panel used primarily to wrap navigation side bars.
 A panel whose contents are either pinned in place or pop out when the user hovers over them.
 
 = Introduction =
@@ -7,13 +8,10 @@ A PinnedPanel is commonly used for nav bar and help pages which need the ability
  
 
 = Details =
-You can create a new PinnedPanel with 
-{{{
-   PinnedPanel p = new PinnedPanel(mySize);
-   p.setWidget(yourWidget);
-}}}
-To change the look and feel of the state switch button:
-{{{ 
-  ToggleButton b = p.getSwitchButton();
-  // Manipulate b here;
-}}}
+
+||Demo:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/PinnedPanelDemo/index.html live demo]||
+||Sample Code:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/pinnedpanel/client/PinnedPanelDemo.java sample code] ||
+||Module:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/widgetideas/WidgetIdeas.gwt.xml WidgetIdeas]||
+
+   
+ 
