@@ -64,23 +64,23 @@ public class ExtendedGrid extends Grid {
      * @param columns the number of columns per row
      */
     public native void addRows(Element table, int rows, int columns) /*-{
-                                                                         var span = $doc.createElement("span");
-                                                                         span.style["padding"] = "0px";
-                                                                         span.innerHTML = "&nbsp;";
-                                                                         var td = $doc.createElement("td");
-                                                                         td.style["overflow"] = "hidden";
-                                                                         td.appendChild(span);
-                                                                         
-                                                                         var row = $doc.createElement("tr");
-                                                                         for(var cellNum = 0; cellNum < columns; cellNum++) {
-                                                                           var cell = td.cloneNode(true);
-                                                                           row.appendChild(cell);
-                                                                         }
-                                                                         table.appendChild(row);
-                                                                         for(var rowNum = 1; rowNum < rows; rowNum++) {  
-                                                                           table.appendChild(row.cloneNode(true));
-                                                                         }
-                                                                      }-*/;
+      var span = $doc.createElement("span");
+      span.style["padding"] = "0px";
+      span.innerHTML = "&nbsp;";
+      var td = $doc.createElement("td");
+      td.style["overflow"] = "hidden";
+      td.appendChild(span);
+
+      var row = $doc.createElement("tr");
+      for(var cellNum = 0; cellNum < columns; cellNum++) {
+        var cell = td.cloneNode(true);
+        row.appendChild(cell);
+      }
+      table.appendChild(row);
+      for(var rowNum = 1; rowNum < rows; rowNum++) {  
+        table.appendChild(row.cloneNode(true));
+      }
+    }-*/;
 
     /**
      * Set the width of a column.
@@ -288,7 +288,8 @@ public class ExtendedGrid extends Grid {
   /**
    * The implementation class.
    */
-  private static ExtendedGridImpl impl = (ExtendedGridImpl) GWT.create(ExtendedGridImpl.class);
+  private static ExtendedGridImpl impl =
+      (ExtendedGridImpl) GWT.create(ExtendedGridImpl.class);
 
   /**
    * A mapping of column indexes to their widths in pixels.
@@ -453,7 +454,8 @@ public class ExtendedGrid extends Grid {
     if (extendedGridListeners != null) {
       Iterator listenerIt = extendedGridListeners.iterator();
       while (listenerIt.hasNext()) {
-        ExtendedGridListener listener = (ExtendedGridListener) listenerIt.next();
+        ExtendedGridListener listener =
+            (ExtendedGridListener) listenerIt.next();
         listener.onAllRowsDeselected();
       }
     }
@@ -490,9 +492,10 @@ public class ExtendedGrid extends Grid {
       }
 
       // Calculate hidden area for this cell
-      widthOffset = Math.max(widthOffset, DOM.getElementPropertyInt(
-          getCellContainer(td), "offsetWidth")
-          - contentVisibleWidth);
+      widthOffset =
+          Math.max(widthOffset, DOM.getElementPropertyInt(getCellContainer(td),
+              "offsetWidth")
+              - contentVisibleWidth);
 
       // Scroll back if needed
       DOM.setElementPropertyInt(DOM.getFirstChild(td), "scrollLeft", 0);
@@ -670,45 +673,17 @@ public class ExtendedGrid extends Grid {
 
         switch (selectionPolicy) {
           case SELECTION_POLICY_MULTI_ROW:
-            // Clear out currently selected rows
-            boolean ctrlKey = DOM.eventGetCtrlKey(event)
-                || DOM.eventGetMetaKey(event);
-            if (!ctrlKey) {
-              deselectRows();
-            } else {
-              // Prevent default text selection
+            boolean shiftKey = DOM.eventGetShiftKey(event);
+            boolean ctrlKey =
+                DOM.eventGetCtrlKey(event) || DOM.eventGetMetaKey(event);
+
+            // Prevent default text selection
+            if (ctrlKey || shiftKey) {
               DOM.eventPreventDefault(event);
             }
 
-            if (DOM.eventGetShiftKey(event) && (lastSelectedRowIndex > -1)) {
-              // Prevent default text selection
-              DOM.eventPreventDefault(event);
-
-              // Shift+select rows
-              ExtendedGridRowFormatter formatter = getExtendedGridRowFormatter();
-              int firstRow = Math.min(targetRowIndex, lastSelectedRowIndex);
-              int lastRow = Math.max(targetRowIndex, lastSelectedRowIndex);
-              for (int row = firstRow; row <= lastRow; row++) {
-                selectRow(row, formatter.getRawElement(row), false, false);
-              }
-
-              // Fire grid listeners
-              if (extendedGridListeners != null) {
-                Iterator it = extendedGridListeners.iterator();
-                while (it.hasNext()) {
-                  ExtendedGridListener listener = (ExtendedGridListener) it.next();
-                  listener.onRowsSelected(firstRow, lastRow - firstRow + 1);
-                }
-              }
-            } else if (selectedRows.containsKey(new Integer(targetRowIndex))) {
-              // Ctrl+unselect a selected row
-              deselectRow(targetRowIndex);
-              lastSelectedRowIndex = targetRowIndex;
-            } else {
-              // Select the row
-              selectRow(targetRowIndex, targetRow, false, true);
-              lastSelectedRowIndex = targetRowIndex;
-            }
+            // Select the rows
+            selectRow(targetRowIndex, ctrlKey, shiftKey);
             break;
           case SELECTION_POLICY_ONE_ROW:
             selectRow(-1, targetRow, true, true);
@@ -727,7 +702,7 @@ public class ExtendedGrid extends Grid {
    */
   public void onCellClicked(int row, int cell) {
   }
-  
+
   /**
    * Remove one of the grid listeners.
    * 
@@ -813,6 +788,56 @@ public class ExtendedGrid extends Grid {
   public void selectRow(int row, boolean unselectAll) {
     selectRow(row, getExtendedGridRowFormatter().getElement(row), unselectAll,
         true);
+  }
+
+  /**
+   * Select a row in the data table. Simulate the effect of a shift click and/or
+   * control click. This method ignores the selection policy, which only applies
+   * to user selection via mouse events.
+   * 
+   * @param row the row index
+   * @param unselectAll unselect all rows even if ctrlKey is true
+   * @param ctrlKey true to simulate a control click
+   * @param shiftKey true to simulate a shift selection
+   * @throws IndexOutOfBoundsException
+   */
+  public void selectRow(int row, boolean ctrlKey, boolean shiftKey) {
+    // Check the row bounds
+    checkRowBounds(row);
+
+    // Deselect all rows
+    if (!ctrlKey) {
+      deselectRows();
+    }
+
+    if (shiftKey && (lastSelectedRowIndex > -1)) {
+      // Shift+select rows
+      ExtendedGridRowFormatter formatter = getExtendedGridRowFormatter();
+      int firstRow = Math.min(row, lastSelectedRowIndex);
+      int lastRow = Math.max(row, lastSelectedRowIndex);
+      lastRow = Math.min(lastRow, getRowCount() - 1);
+      for (int curRow = firstRow; curRow <= lastRow; curRow++) {
+        selectRow(curRow, formatter.getRawElement(curRow), false, false);
+      }
+
+      // Fire grid listeners
+      if (extendedGridListeners != null) {
+        Iterator it = extendedGridListeners.iterator();
+        while (it.hasNext()) {
+          ExtendedGridListener listener = (ExtendedGridListener) it.next();
+          listener.onRowsSelected(firstRow, lastRow - firstRow + 1);
+        }
+      }
+    } else if (selectedRows.containsKey(new Integer(row))) {
+      // Ctrl+unselect a selected row
+      deselectRow(row);
+      lastSelectedRowIndex = row;
+    } else {
+      // Select the row
+      ExtendedGridRowFormatter formatter = getExtendedGridRowFormatter();
+      selectRow(row, formatter.getRawElement(row), false, true);
+      lastSelectedRowIndex = row;
+    }
   }
 
   /**
@@ -1023,7 +1048,8 @@ public class ExtendedGrid extends Grid {
         public void onSortColumn(ExtendedGrid grid, int column,
             boolean reversed, ColumnSorterCallback callback) {
           // Apply the default quicksort algorithm
-          ExtendedGridCellFormatter formatter = grid.getExtendedGridCellFormatter();
+          ExtendedGridCellFormatter formatter =
+              grid.getExtendedGridCellFormatter();
           Element[] tdElems = new Element[grid.getRowCount()];
           for (int i = 0; i < tdElems.length; i++) {
             tdElems[i] = formatter.getRawElement(i, column);
