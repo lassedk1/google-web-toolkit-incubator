@@ -43,7 +43,19 @@ public class TextCellEditor extends AbstractCellEditor {
    * @param textBox the text box to use
    */
   public TextCellEditor(TextBoxBase textBox) {
-    super(textBox);
+    this(textBox, true);
+  }
+  
+  /**
+   * Constructor.
+   * 
+   * Create a new TextCellEditor using a custom defined text box.
+   * 
+   * @param textBox the text box to use
+   * @param useDefaultButtons true to use default accept/cancel buttons
+   */
+  public TextCellEditor(TextBoxBase textBox, boolean useDefaultButtons) {
+    super(textBox, useDefaultButtons);
     this.textBox = textBox;
   }
   

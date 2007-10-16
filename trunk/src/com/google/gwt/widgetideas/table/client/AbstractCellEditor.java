@@ -79,7 +79,17 @@ public abstract class AbstractCellEditor extends PopupPanel {
    * The images used for all cell editors.
    */
   private static AbstractCellEditorImages images = (AbstractCellEditorImages) GWT.create(AbstractCellEditorImages.class);
-
+ 
+  /**
+   * The Widget used as an accept button.
+   */
+  private Widget acceptWidget = null;
+  
+  /**
+   * The Widget used as a cancel button.
+   */
+  private Widget cancelWidget = null;
+  
   /**
    * The current callback.
    */
@@ -109,8 +119,9 @@ public abstract class AbstractCellEditor extends PopupPanel {
    * Constructor.
    * 
    * @param content the {@link Widget} used to edit
+   * @param useDefaultButtons true to use default accept/cancel buttons
    */
-  public AbstractCellEditor(Widget content) {
+  public AbstractCellEditor(Widget content, boolean useDefaultButtons) {
     setStyleName("gwt-CellEditor");
 
     // Wrap contents in a grid
@@ -129,31 +140,17 @@ public abstract class AbstractCellEditor extends PopupPanel {
     // Add content widget
     layoutTable.setWidget(1, 0, content);
 
-    // Add accept button
-    Image acceptImage = new Image() {
-      public void onBrowserEvent(Event event) {
-        if (DOM.eventGetType(event) == Event.ONCLICK) {
-          accept();
-        }
-      }
-    };
-    images.cellEditorAccept().applyTo(acceptImage);
-    DOM.setStyleAttribute(acceptImage.getElement(), "cursor", "pointer");
-    acceptImage.setTitle("Accept");
-    layoutTable.setWidget(1, 1, acceptImage);
+    if (useDefaultButtons) {
+      // Add accept button
+      Image acceptImage = images.cellEditorAccept().createImage();
+      DOM.setStyleAttribute(acceptImage.getElement(), "cursor", "pointer");
+      setAcceptWidget(acceptImage);
 
-    // Add cancel button
-    Image cancelImage = new Image() {
-      public void onBrowserEvent(Event event) {
-        if (DOM.eventGetType(event) == Event.ONCLICK) {
-          cancel();
-        }
-      }
-    };
-    images.cellEditorCancel().applyTo(cancelImage);
-    DOM.setStyleAttribute(cancelImage.getElement(), "cursor", "pointer");
-    cancelImage.setTitle("Cancel");
-    layoutTable.setWidget(1, 2, cancelImage);
+      // Add cancel button
+      Image cancelImage = images.cellEditorCancel().createImage();
+      DOM.setStyleAttribute(cancelImage.getElement(), "cursor", "pointer");
+      setCancelWidget(cancelImage);
+    }
   }
 
   /**
@@ -186,6 +183,24 @@ public abstract class AbstractCellEditor extends PopupPanel {
   }
 
   /**
+   * Get the widget used as an accept button.
+   * 
+   * @return the accept widget
+   */
+  public Widget getAcceptWidget() {
+    return acceptWidget;
+  }
+
+  /**
+   * Get the widget used as an cancel button.
+   * 
+   * @return the cancel widget
+   */
+  public Widget getCancelWidget() {
+    return cancelWidget;
+  }
+
+  /**
    * Get the label text.
    * 
    * @return the label text
@@ -212,6 +227,26 @@ public abstract class AbstractCellEditor extends PopupPanel {
     return true;
   }
 
+  public void onBrowserEvent(Event event) {
+    if (DOM.eventGetType(event) == Event.ONCLICK) {
+      Element target = DOM.eventGetTarget(event);
+      
+      // Check if this is an accept event
+      if (acceptWidget != null) {
+        if (DOM.isOrHasChild(acceptWidget.getElement(), target)) {
+          accept();
+        }
+      }
+      
+      // Check if this is a cancel event
+      if (acceptWidget != null) {
+        if (DOM.isOrHasChild(cancelWidget.getElement(), target)) {
+          cancel();
+        }
+      }
+    }
+  }
+  
   /**
    * Fired when the user cancels. Override this method and return false to
    * prevent the user from cancelling.
@@ -230,6 +265,40 @@ public abstract class AbstractCellEditor extends PopupPanel {
    * @param cell the cell index
    */
   public void onEditCell(HTMLTable table, int row, int cell) {
+  }
+
+  /**
+   * Set the widget to use as the accept button.  This cell editor will
+   * automatically respond to click events originating in the widget.
+   * 
+   * @param acceptWidget the accept widget
+   */
+  public void setAcceptWidget(Widget acceptWidget) {
+    this.acceptWidget = acceptWidget;
+    if (acceptWidget == null) {
+      layoutTable.clearCell(1, 1);
+    } else {
+      acceptWidget.sinkEvents(Event.ONCLICK);
+      DOM.setEventListener(acceptWidget.getElement(), this);
+      layoutTable.setWidget(1, 1, acceptWidget);
+    }
+  }
+
+  /**
+   * Set the widget to use as the cancel button.  This cell editor will
+   * automatically respond to click events originating in the widget.
+   * 
+   * @param cancelWidget the cancel widget
+   */
+  public void setCancelWidget(Widget cancelWidget) {
+    this.cancelWidget = cancelWidget;
+    if (acceptWidget == null) {
+      layoutTable.clearCell(1, 2);
+    } else {
+      cancelWidget.sinkEvents(Event.ONCLICK);
+      DOM.setEventListener(cancelWidget.getElement(), this);
+      layoutTable.setWidget(1, 2, cancelWidget);
+    }
   }
 
   /**
@@ -319,6 +388,19 @@ public abstract class AbstractCellEditor extends PopupPanel {
     return layoutTable.getWidget(1, 0);
   }
 
+  /**
+   * Reset the event listener on the Images when this Widget is reattached.
+   */
+  protected void onAttach() {
+    super.onAttach();
+    if (acceptWidget != null) {
+      DOM.setEventListener(acceptWidget.getElement(), this);
+    }
+    if (cancelWidget != null) {
+      DOM.setEventListener(cancelWidget.getElement(), this);
+    }
+  }
+  
   /**
    * Set the current value in the cell editor.
    * 
