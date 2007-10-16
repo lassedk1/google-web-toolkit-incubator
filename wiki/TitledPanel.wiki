@@ -4,7 +4,7 @@
 The TitledPanel is an extension of the SimplePanel that wraps its contents in a titled border.  The title appears right over the border in the upper left corner.  This is a wrapper class for the fieldset HTML element.
 
 Example:
-[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/TitledPanel/index.html]
+[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/TitledPanel/index.html]
 
 
 = CSS =
