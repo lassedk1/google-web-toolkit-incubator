@@ -4,7 +4,7 @@
 The ProgressBar Widget displays progress over a range of values.  Users can dynamically change the minimum and maximum values in the range.  When the current value is set, a bar will fill the widget up to the percent relative to the range.
 
 Example:
-[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/ProgressBar/index.html]
+[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/ProgressBar/index.html]
 
 
 = CSS =
