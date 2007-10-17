@@ -18,19 +18,122 @@ package com.google.gwt.widgetideas.table.client;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * A class to retrieve row data to be used in a table.
  */
 public abstract class TableModel {
+
   /**
-   * Callback for {@link TableModel}. Every Request should be associated
-   * with a callback that should be called after a Response is generated.
+   * A {@link TableModel} usable for simple list structures.
+   */
+  public static class ListTableModel extends ClientTableModel {
+    public List rows;
+
+    public ListTableModel(List rows) {
+      this.rows = rows;
+    }
+
+    public Object getCell(int rowNum, int cellNum) {
+      if (rowNum >= rows.size()) {
+        return null;
+      }
+      List row = (List) rows.get(rowNum);
+      if (cellNum >= row.size()) {
+        return null;
+      }
+      return row.get(cellNum);
+    }
+  }
+
+  /**
+   * A {@link TableModel} used when the data source can be accessed
+   * synchronously.
+   */
+  public abstract static class ClientTableModel extends TableModel {
+
+    /**
+     * Convenience class
+     */
+    private abstract class StubIterator implements Iterator {
+      int index;
+      Object next;
+
+      public Object next() {
+        if (next == null) {
+          throw new NoSuchElementException();
+        } else {
+          Object accum = next;
+          next = null;
+          return accum;
+        }
+      }
+
+      public void remove() {
+        throw new UnsupportedOperationException();
+      }
+    }
+
+    private class RowIterator extends StubIterator {
+      int max;
+
+      public RowIterator(Request request) {
+        index = request.getStartRow();
+        if (request.getNumRows() == -1) {
+          max = Integer.MAX_VALUE;
+        } else {
+          max = request.getNumRows() - index;
+        }
+      }
+
+      public boolean hasNext() {
+        if (next == null & index < max) {
+          next = getRow(index++);
+        }
+        return next != null;
+      }
+    }
+
+    ColumnIterator columnIter = new ColumnIterator();
+
+    private Iterator getRow(int rowNum) {
+      columnIter.index = 0;
+      columnIter.row = rowNum;
+      if (columnIter.hasNext()) {
+        return columnIter;
+      } else {
+        return null;
+      }
+    }
+
+    private class ColumnIterator extends StubIterator {
+      private int row = 0;
+
+      public boolean hasNext() {
+        if (next == null) {
+          next = getCell(row, index++);
+        }
+        return next != null;
+      }
+    }
+
+    public abstract Object getCell(int rowNum, int colNum);
+
+    public void requestRows(Request request, Callback callback) {
+      RowIterator rowIter = new RowIterator(request);
+      callback.onRowsReady(request, new Response(rowIter));
+    }
+  }
+
+  /**
+   * Callback for {@link TableModel}. Every Request should be associated with a
+   * callback that should be called after a Response is generated.
    */
   public static interface Callback {
     /**
-     * Consume the data created by {@link TableModel} in response to a
-     * Request.
+     * Consume the data created by {@link TableModel} in response to a Request.
      * 
      * @param request the request
      * @param response the response
@@ -57,7 +160,7 @@ public abstract class TableModel {
      */
     public Request() {
     }
-    
+
     /**
      * Constructor.
      * 
@@ -103,7 +206,7 @@ public abstract class TableModel {
      */
     public Response() {
     }
-    
+
     /**
      * Constructor. Create a response with the data to enter into each cell of
      * each row.
@@ -123,6 +226,8 @@ public abstract class TableModel {
       return rows;
     }
   }
+
+  public static final int ALL_ROWS = -1;
 
   /**
    * Generate a Response based on a specific Request. After the is created, it
