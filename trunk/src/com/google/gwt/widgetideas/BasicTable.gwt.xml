@@ -12,6 +12,13 @@
 <!-- implied. License for the specific language governing permissions and   -->
 <!-- limitations under the License.                                         -->
 
+<!-- Deferred binding rules for browser selection.                          -->
+<!--                                                                        -->
+<!-- This module is typically inherited via com.google.gwt.user.User        -->
+<!--                                                                        -->
 <module>
-	<inherits name='com.google.gwt.widgetideas.WidgetIdeas' />
+	<!-- Inherit the core Web Toolkit stuff.                  -->
+	<inherits name='com.google.gwt.widgetideas.BasicWidget' />
+	<source path="table/client"/> 
+	
 </module>
