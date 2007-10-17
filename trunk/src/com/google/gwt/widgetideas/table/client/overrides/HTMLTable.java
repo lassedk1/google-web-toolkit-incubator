@@ -404,7 +404,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
     public void setStylePrimaryName(int column, String styleName) {
       UIObject.setStylePrimaryName(ensureColumn(column), styleName);
     }
-    
+
     /**
      * Sets the width of the specified column.
      * 
@@ -596,7 +596,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
       return getRow(bodyElem, row);
     }
 
-    protected native Element getRow(Element elem, int row)/*-{
+    protected native Element getRow(Element elem, int row) /*-{
               return elem.rows[row];
             }-*/;
 
@@ -746,7 +746,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
   /**
    * Table's body.
    */
-  private final Element bodyElem;
+  private Element bodyElem;
 
   /**
    * Current cell formatter.
@@ -1434,6 +1434,10 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
       cleanCell(row, column, false);
     }
     DOM.removeChild(bodyElem, rowFormatter.getRawElement(row));
+  }
+
+  protected void setBodyElement(Element element) {
+    this.bodyElem = element;
   }
 
   /**
