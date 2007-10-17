@@ -15,18 +15,17 @@
  */
 package com.google.gwt.widgetideas.client;
 
-import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * Tests the ProgressBar widget.
  */
-public class SliderBarTest extends GWTTestCase {
-    
+public class SliderBarTest extends BasicWidgetTest {
+
   public String getModuleName() {
     return "com.google.gwt.widgetideas.BasicWidget";
   }
-  
+
   /**
    * Test that the accessors correctly change the slider value.
    */
@@ -36,8 +35,8 @@ public class SliderBarTest extends GWTTestCase {
       /**
        * Format the label to display above the ticks
        * 
-       * Override this method in a subclass to customize the format.  By
-       * default, this method returns the integer portion of the value.
+       * Override this method in a subclass to customize the format. By default,
+       * this method returns the integer portion of the value.
        * 
        * @param value the value at the label
        * @return the text to put in the label
@@ -49,7 +48,7 @@ public class SliderBarTest extends GWTTestCase {
     slider.setCurrentValue(50.0);
     slider.setStepSize(2.0);
     RootPanel.get().add(slider);
-    
+
     // Test Accessors
     slider.setMaxValue(200.0);
     assertEquals(slider.getMaxValue(), 200.0, 0.0);
@@ -63,7 +62,7 @@ public class SliderBarTest extends GWTTestCase {
     slider.setStepSize(10.25);
     assertEquals(slider.getStepSize(), 10.25, 0.0);
 
-    // Test current values 
+    // Test current values
     slider.setMinValue(-100.0);
     slider.setMaxValue(100.0);
     slider.setStepSize(1.0);
@@ -91,7 +90,7 @@ public class SliderBarTest extends GWTTestCase {
     assertEquals(slider.getCurrentValue(), 0.9, 0.0001);
     slider.setCurrentValue(-1.0);
     assertEquals(slider.getCurrentValue(), -1.0, 0.0);
-    
+
     // Test illegal bounds
     slider.setMinValue(200.0);
     slider.setMaxValue(100.0);
@@ -112,7 +111,7 @@ public class SliderBarTest extends GWTTestCase {
     slider.setStepSize(10.0);
     assertEquals(slider.getCurrentValue(), 75.0, 0.0);
   }
-  
+
   /**
    * Tests the various uses of TextFormatters.
    */
@@ -121,18 +120,18 @@ public class SliderBarTest extends GWTTestCase {
     SliderBar slider = new SliderBar(0.0, 100.0) {
       protected String formatLabel(double value) {
         return super.formatLabel(value);
-      }      
+      }
     };
     slider.setLabelFormatter(new SliderBar.LabelFormatter() {
       protected String formatLabel(SliderBar slider, double value) {
         return "L: " + (int) value;
       }
     });
-    
+
     // Verify the new label formatter overrides the old one
     slider.setCurrentValue(43.123);
     assertEquals(slider.formatLabel(43.123), "L: 43");
-    
+
     // Check label format without a label formatter
     slider.setLabelFormatter(null);
     assertEquals(slider.formatLabel(43.123), "43.1");

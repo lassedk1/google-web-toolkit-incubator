@@ -16,6 +16,7 @@
 
 package com.google.gwt.widgetideas.testsuites;
 
+import com.google.gwt.widgetideas.client.PinnedPanelTest;
 import com.google.gwt.widgetideas.client.ProgressBarTest;
 import com.google.gwt.widgetideas.client.SliderBarTest;
 import com.google.gwt.widgetideas.client.TitledPanelTest;
@@ -27,6 +28,10 @@ import com.google.gwt.widgetideas.table.client.SizableFlexTableTest;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+/**
+ * Tests all widgets in the incubator. Must be run with lots of memory and gives
+ * a warning "Undefined behavior".
+ */
 public class WidgetSuite {
 
   public static Test suite() {
@@ -36,6 +41,7 @@ public class WidgetSuite {
     suite.addTestSuite(ProgressBarTest.class);
     suite.addTestSuite(SliderBarTest.class);
     suite.addTestSuite(TitledPanelTest.class);
+    suite.addTestSuite(PinnedPanelTest.class);
 
     // Table Tests
     suite.addTestSuite(BulkLoadedTableTest.class);
