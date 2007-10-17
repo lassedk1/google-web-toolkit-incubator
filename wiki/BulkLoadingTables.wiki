@@ -1,0 +1,20 @@
+#Bulk loading tables: BulkLoadedTable and PreloadedTable
+= Introduction =
+For those that need every last millisecond of speed for table manipulation, we have introduced BulkLoadedTable and PreloadedTable.
+
+A `BulkLoadedTable` uses a `TableModel` to load its data.  
+
+After being loaded, widgets, cell spans, row spans etc. may be added to the table, but there will be no speed advantage for them.
+
+A `PreloadedTable` is simply a wrapper around a `BulkLoadedTable` that allows programmers to use the familiar declarative API and still get some of the speed advantages of the `BulkLoadedTable`.
+ 
+Here are some comparison numbers for a 120 X 15 row table.
+
+Browser: IE
+|| Table Widget || 1st run|| 2nd run || 3rd run|| average milli||  
+|| `FlexTable`   || 2125 || 1953 || 1844 ||1973||
+|| `BulkLoadedTable` || 156|| 156 ||157 ||156  ||
+|| `PreloadedTable` ||203 ||203 || 187 ||197 ||
+
+= Details =
+ 
