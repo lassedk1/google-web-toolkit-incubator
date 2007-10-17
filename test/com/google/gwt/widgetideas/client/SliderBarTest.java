@@ -24,7 +24,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class SliderBarTest extends GWTTestCase {
     
   public String getModuleName() {
-    return "com.google.gwt.widgetideas.WidgetIdeas";
+    return "com.google.gwt.widgetideas.BasicWidget";
   }
   
   /**

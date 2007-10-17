@@ -24,7 +24,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class ScrollTableTest extends GWTTestCase {
 
   public String getModuleName() {
-    return "com.google.gwt.widgetideas.tables.ScrollTable";
+    return "com.google.gwt.widgetideas.ScrollTable";
   }
   
   /**
