@@ -1,4 +1,4 @@
-#Bulk loading tables: BulkLoadedTable and PreloadedTable
+#summary Bulk loading tables: `BulkLoadedTable` and `PreloadedTable`
 = Introduction =
 For those that need every last millisecond of speed for table manipulation, we have introduced BulkLoadedTable and PreloadedTable.
 
