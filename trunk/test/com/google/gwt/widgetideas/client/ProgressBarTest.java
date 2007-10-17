@@ -24,7 +24,7 @@ import com.google.gwt.user.client.DOM;
 public class ProgressBarTest extends GWTTestCase {
 
   public String getModuleName() {
-    return "com.google.gwt.widgetideas.WidgetIdeas";
+    return "com.google.gwt.widgetideas.BasicWidget";
   }
 
   /**

@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class SizableFlexTableTest extends GWTTestCase {
   
   public String getModuleName() {
-    return "com.google.gwt.widgetideas.tables.SizableFlexTable";
+    return "com.google.gwt.widgetideas.table.SizableFlexTable";
   }
   
   /**
