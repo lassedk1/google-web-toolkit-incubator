@@ -37,42 +37,6 @@ import com.google.gwt.user.client.ui.Widget;
  * Planned enhancements: Allow panel to be collapsed in arbitrary direction.
  */
 public class PinnedPanel extends Composite {
-  DelayAction delayAction = new DelayAction();
-
-  private class DelayAction extends Timer {
-    private static final int DELAY_MILLI = 20;
-    private static final int NONE = -10000;
-    int savedState;
-
-    public void activate() {
-      if (savedState == state.currentState) {
-        // Do nothing, timer is already running.
-        return;
-      } else if (savedState != NONE) {
-        this.cancel();
-      }
-      savedState = state.currentState;
-      delayAction.schedule(DELAY_MILLI);
-    }
-
-    public void run() {
-      if (savedState != state.currentState) {
-        throw new IllegalStateException("How did this happen?" + savedState
-            + " current state:" + state.currentState);
-      }
-      if (state.currentState == State.WILL_HIDE) {
-        impl.hide();
-      } else if (state.currentState == State.WILL_SHOW) {
-        impl.show();
-      } else {
-        throw new IllegalStateException("Why are we in state "
-            + state.currentState + " rather than state " + savedState);
-      }
-
-      savedState = NONE;
-    }
-  }
-
   /**
    * Pinned panel impl.
    */
@@ -196,7 +160,43 @@ public class PinnedPanel extends Composite {
     }
   }
 
+  private class DelayAction extends Timer {
+    private static final int DELAY_MILLI = 50;
+    private static final int NONE = -10000;
+    int savedState;
+
+    public void activate() {
+      if (savedState == state.currentState) {
+        // Do nothing, timer is already running.
+        return;
+      } else if (savedState != NONE) {
+        this.cancel();
+      }
+      savedState = state.currentState;
+      delayAction.schedule(DELAY_MILLI);
+    }
+
+    public void run() {
+      if (savedState != state.currentState) {
+        throw new IllegalStateException("How did this happen?" + savedState
+            + " current state:" + state.currentState);
+      }
+      if (state.currentState == State.WILL_HIDE) {
+        impl.hide();
+      } else if (state.currentState == State.WILL_SHOW) {
+        impl.show();
+      } else {
+        throw new IllegalStateException("Why are we in state "
+            + state.currentState + " rather than state " + savedState);
+      }
+
+      savedState = NONE;
+    }
+  }
+
   private static final String DEFAULT_STYLENAME = "gwt-PinnedPanel";
+
+  DelayAction delayAction = new DelayAction();
 
   State state = new State();
 
