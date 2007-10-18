@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 import com.google.gwt.user.client.ui.HasVerticalAlignment.VerticalAlignmentConstant;
+import com.google.gwt.widgetideas.table.client.HasColumns;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,7 +40,8 @@ import java.util.NoSuchElementException;
  * Steps to incorporate: 1. Relace "OverrideDOM." with "DOM." 2. Copy contents
  * to actual HTMLTable class
  */
-public abstract class HTMLTable extends Panel implements SourcesTableEvents {
+public abstract class HTMLTable extends Panel implements SourcesTableEvents,
+    HasColumns {
   /**
    * This class contains methods used to format a table's cells.
    */
@@ -321,9 +323,9 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
      * @return the element
      */
     private native Element getCellElement(Element table, int row, int col) /*-{
-           var out = table.rows[row].cells[col];
-           return (out == null ? null : out);
-           }-*/;
+              var out = table.rows[row].cells[col];
+              return (out == null ? null : out);
+              }-*/;
   }
 
   /**
@@ -597,8 +599,8 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
     }
 
     protected native Element getRow(Element elem, int row) /*-{
-              return elem.rows[row];
-            }-*/;
+                  return elem.rows[row];
+                }-*/;
 
     /**
      * Convenience methods to set an attribute on a row.
@@ -630,17 +632,17 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
     }
 
     private static native void clearWidgetIndex(Element elem) /*-{
-           elem["__widgetID"] = null;
-           }-*/;
+              elem["__widgetID"] = null;
+              }-*/;
 
     private static native int getWidgetIndex(Element elem) /*-{
-           var index = elem["__widgetID"];
-           return (index == null) ? -1 : index;
-           }-*/;
+              var index = elem["__widgetID"];
+              return (index == null) ? -1 : index;
+              }-*/;
 
     private static native void setWidgetIndex(Element elem, int index) /*-{
-           elem["__widgetID"] = index;
-           }-*/;
+              elem["__widgetID"] = index;
+              }-*/;
 
     private FreeNode freeList = null;
 
@@ -888,6 +890,34 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
    */
   public ColumnFormatter getColumnFormatter() {
     return columnFormatter;
+  }
+
+  /**
+   * Determines the TD associated with the specified event.
+   * 
+   * @param event the event to be queried
+   * @return the TD associated with the event, or <code>null</code> if none is
+   *         found.
+   */
+  public Element getEventTargetCell(Event event) {
+    Element td = DOM.eventGetTarget(event);
+    for (; td != null; td = DOM.getParent(td)) {
+      // If it's a TD, it might be the one we're looking for.
+      if (DOM.getElementProperty(td, "tagName").equalsIgnoreCase("td")) {
+        // Make sure it's directly a part of this table before returning
+        // it.
+        Element tr = DOM.getParent(td);
+        Element body = DOM.getParent(tr);
+        if (DOM.compare(body, bodyElem)) {
+          return td;
+        }
+      }
+      // If we run into this table's body, we're out of options.
+      if (DOM.compare(td, bodyElem)) {
+        return null;
+      }
+    }
+    return null;
   }
 
   /**
@@ -1235,8 +1265,8 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
    * @return number of columns in the row
    */
   protected native int getDOMCellCount(Element tableBody, int row) /*-{
-     return tableBody.rows[row].cells.length;
-     }-*/;
+      return tableBody.rows[row].cells.length;
+      }-*/;
 
   /**
    * Directly ask the underlying DOM what the cell count on the given row is.
@@ -1258,36 +1288,8 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
   }
 
   protected native int getDOMRowCount(Element elem) /*-{
-     return elem.rows.length;
-     }-*/;
-
-  /**
-   * Determines the TD associated with the specified event.
-   * 
-   * @param event the event to be queried
-   * @return the TD associated with the event, or <code>null</code> if none is
-   *         found.
-   */
-  protected Element getEventTargetCell(Event event) {
-    Element td = DOM.eventGetTarget(event);
-    for (; td != null; td = DOM.getParent(td)) {
-      // If it's a TD, it might be the one we're looking for.
-      if (DOM.getElementProperty(td, "tagName").equalsIgnoreCase("td")) {
-        // Make sure it's directly a part of this table before returning
-        // it.
-        Element tr = DOM.getParent(td);
-        Element body = DOM.getParent(tr);
-        if (DOM.compare(body, bodyElem)) {
-          return td;
-        }
-      }
-      // If we run into this table's body, we're out of options.
-      if (DOM.compare(td, bodyElem)) {
-        return null;
-      }
-    }
-    return null;
-  }
+      return elem.rows.length;
+      }-*/;
 
   /**
    * Returns the widgetMap.

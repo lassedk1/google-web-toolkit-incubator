@@ -16,10 +16,11 @@
 
 package com.google.gwt.widgetideas.table.client;
 
-import com.google.gwt.widgetideas.table.client.BulkLoadedTable;
-import com.google.gwt.widgetideas.table.client.TableModel;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 
+/**
+ * Test for the {@link BulkLoadedTable} class. 
+ */
 public class BulkLoadedTableTest extends HTMLTableTestBase {
 
   public String getModuleName() {

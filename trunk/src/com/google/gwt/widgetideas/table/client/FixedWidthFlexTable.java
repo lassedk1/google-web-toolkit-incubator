@@ -29,14 +29,15 @@ import java.util.Map;
 /**
  * A variation of the {@link FlexTable} that supports smarter column resizing
  * options. Unlike the {@link FlexTable}, columns resized in the
- * SizableFlexTable class are guaranteed to be resized correctly.
+ * {@link FixedWidthFlexTable} class are guaranteed to be resized correctly.
  */
-public class SizableFlexTable extends FlexTable {
+public class FixedWidthFlexTable extends FlexTable implements
+    HasFixedColumnWidth {
   /**
    * An implementation used accommodate differences in column width
    * implementations between browsers.
    */
-  private static class SizableFlexTableImpl {
+  private static class FixedWidthFlexTableImpl {
     /**
      * Set the width of a column.
      * 
@@ -44,10 +45,10 @@ public class SizableFlexTable extends FlexTable {
      * @param width the width in pixels
      * @throws IndexOutOfBoundsException
      */
-    public void setColumnWidth(SizableFlexTable grid, int column, int width) {
+    public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
       Element tableElem = grid.getElement();
-      DOM.setStyleAttribute(grid.getGhostCellElement(column), "width",
-          width + "px");
+      DOM.setStyleAttribute(grid.getGhostCellElement(column), "width", width
+          + "px");
     }
   }
 
@@ -55,8 +56,9 @@ public class SizableFlexTable extends FlexTable {
    * IE6 version of the implementation. IE6 sets the overall column width
    * instead of the innerWidth, so we need to add the padding and spacing.
    */
-  private static class SizableFlexTableImplIE6 extends SizableFlexTableImpl {
-    public void setColumnWidth(SizableFlexTable grid, int column, int width) {
+  private static class FixedWidthFlexTableImplIE6 extends
+      FixedWidthFlexTableImpl {
+    public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
       width += 2 * grid.getCellPadding() + grid.getCellSpacing();
       super.setColumnWidth(grid, column, width);
     }
@@ -66,8 +68,9 @@ public class SizableFlexTable extends FlexTable {
    * Safari version of the implementation. Safari sets the overall column width
    * instead of the innerWidth, so we need to add the padding and spacing.
    */
-  private static class SizableFlexTableImplSafari extends SizableFlexTableImpl {
-    public void setColumnWidth(SizableFlexTable grid, int column, int width) {
+  private static class FixedWidthFlexTableImplSafari extends
+      FixedWidthFlexTableImpl {
+    public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
       width += 2 * grid.getCellPadding() + grid.getCellSpacing();
       super.setColumnWidth(grid, column, width);
     }
@@ -78,8 +81,9 @@ public class SizableFlexTable extends FlexTable {
    * column size takes effect. Without the display refresh, the column width
    * doesn't update in the browser.
    */
-  private static class SizableFlexTableImplOpera extends SizableFlexTableImpl {
-    public void setColumnWidth(SizableFlexTable grid, int column, int width) {
+  private static class FixedWidthFlexTableImplOpera extends
+      FixedWidthFlexTableImpl {
+    public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
       super.setColumnWidth(grid, column, width);
       Element tableElem = grid.getElement();
       Element parentElem = DOM.getParent(tableElem);
@@ -99,7 +103,7 @@ public class SizableFlexTable extends FlexTable {
    * FlexTable-specific implementation of
    * {@link com.google.gwt.user.client.ui.HTMLTable.CellFormatter}.
    */
-  public class SizableFlexCellFormatter extends FlexCellFormatter {
+  public class FixedWidthFlexCellFormatter extends FlexCellFormatter {
     /**
      * Sets the column span for the given cell. This is the number of logical
      * columns covered by the cell.
@@ -177,7 +181,7 @@ public class SizableFlexTable extends FlexTable {
    * This class contains methods used to format a table's columns. It is limited
    * by the support cross-browser HTML support for column formatting.
    */
-  public class SizableFlexColumnFormatter extends ColumnFormatter {
+  public class FixedWidthFlexColumnFormatter extends ColumnFormatter {
     /**
      * UnsupportedOperation. Use ExtendedGrid.setColumnWidth(column, width)
      * instead.
@@ -195,7 +199,7 @@ public class SizableFlexTable extends FlexTable {
   /**
    * This class contains methods used to format a table's rows.
    */
-  public class SizableFlexRowFormatter extends RowFormatter {
+  public class FixedWidthFlexRowFormatter extends RowFormatter {
     /**
      * Unsafe method to get a row element.
      * 
@@ -215,7 +219,7 @@ public class SizableFlexTable extends FlexTable {
   /**
    * The implementation class.
    */
-  private static SizableFlexTableImpl impl = (SizableFlexTableImpl) GWT.create(SizableFlexTableImpl.class);
+  private static FixedWidthFlexTableImpl impl = (FixedWidthFlexTableImpl) GWT.create(FixedWidthFlexTableImpl.class);
 
   /**
    * A mapping of column indexes to their widths in pixels.
@@ -260,21 +264,30 @@ public class SizableFlexTable extends FlexTable {
   /**
    * Constructor.
    */
-  public SizableFlexTable() {
+  public FixedWidthFlexTable() {
     super();
     Element tableElem = getElement();
     DOM.setStyleAttribute(tableElem, "tableLayout", "fixed");
     DOM.setStyleAttribute(tableElem, "width", "0px");
 
-    setCellFormatter(new SizableFlexCellFormatter());
-    setColumnFormatter(new SizableFlexColumnFormatter());
-    setRowFormatter(new SizableFlexRowFormatter());
+    setCellFormatter(new FixedWidthFlexCellFormatter());
+    setColumnFormatter(new FixedWidthFlexColumnFormatter());
+    setRowFormatter(new FixedWidthFlexRowFormatter());
 
     // Create the zero row for sizing
     zeroRow = DOM.createTR();
     DOM.setStyleAttribute(zeroRow, "height", "0px");
     DOM.setStyleAttribute(zeroRow, "overflow", "hidden");
     DOM.insertChild(getBodyElement(), zeroRow, 0);
+  }
+  
+  /**
+   * Gets the number of columns in this table.
+   * 
+   * @return the number of columns
+   */
+  public int getColumnCount() {
+    return maxRawColumnCount;
   }
 
   /**
@@ -287,12 +300,21 @@ public class SizableFlexTable extends FlexTable {
   public int getColumnWidth(int column) {
     Object colWidth = colWidths.get(new Integer(column));
     if (colWidth == null) {
-      return DEFAULT_COLUMN_WIDTH;
+      return getDefaultColumnWidth();
     } else {
       return ((Integer) colWidth).intValue();
     }
   }
 
+  /**
+   * Get the default width of a column in pixels.
+   * 
+   * @return the default column width
+   */
+  public int getDefaultColumnWidth() {
+    return DEFAULT_COLUMN_WIDTH;
+  }
+  
   /**
    * Inserts a cell into the FlexTable.
    * 

@@ -16,34 +16,36 @@
 package com.google.gwt.widgetideas.table.client;
 
 /**
- * Event listener interface for {@link GridView} events.
+ * An interface for tables that manipulate columns using a fixed table width.
  */
-public interface GridViewListener {
+public interface HasFixedColumnWidth extends HasColumns {
   /**
-   * Fired when the number of rows changes.
+   * Gets the number of columns in this table.
    * 
-   * @param numRows the new number of rows
-   * @param numPages the new number of pages
+   * @return the number of columns
    */
-  public void onNumRowsChanges(int numRows, int numPages);
+  public int getColumnCount();
   
   /**
-   * Fired when the current page changes.
+   * Get the width of a column in pixels.
    * 
-   * @param page the new page
+   * @param column the column index
+   * @return the column width
    */
-  public void onPageChanged(int page);
-  
-  /**
-   * Fired when the current page has completely finished loading.
-   */
-  public void onPageLoaded();
+  public int getColumnWidth(int column);
 
   /**
-   * Fired when the page size changes.
+   * Get the default width of a column in pixels.
    * 
-   * @param pageSize the new page size
-   * @param numPages the number of pages
+   * @return the default column width
    */
-  public void onPageSizeChange(int pageSize, int numPages);
+  public int getDefaultColumnWidth();
+
+  /**
+   * Set the width of a column in pixels.
+   * 
+   * @param column the column index
+   * @param width the column width
+   */
+  public void setColumnWidth(int column, int width);
 }

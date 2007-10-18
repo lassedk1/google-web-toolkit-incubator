@@ -16,6 +16,9 @@
 
 package com.google.gwt.widgetideas.client;
 
+/**
+ * Test for the {@link PinnedPanel}. 
+ */
 public class PinnedPanelTest extends BasicWidgetTest {
 
 }

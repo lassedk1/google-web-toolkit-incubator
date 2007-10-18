@@ -22,8 +22,8 @@
 	<inherits name="com.google.gwt.user.UserAgent" />
 	<inherits name='com.google.gwt.widgetideas.WidgetIdeas' />
 	<inherits name='com.google.gwt.widgetideas.table.OverrideDOM' />
-	<inherits name='com.google.gwt.widgetideas.table.ExtendedGrid' />
-	<inherits name='com.google.gwt.widgetideas.table.SizableFlexTable' />
+  <inherits name='com.google.gwt.widgetideas.table.FixedWidthGrid'/>
+  <inherits name='com.google.gwt.widgetideas.table.FixedWidthFlexTable'/>
 	<inherits name='com.google.gwt.widgetideas.BasicTable'/>
 	<!-- Fall through to this rule is the browser isn't Opera -->
 	<replace-with

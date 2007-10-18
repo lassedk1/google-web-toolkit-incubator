@@ -119,6 +119,22 @@ public class BulkLoadingTableDemo implements EntryPoint {
     panel.add(pendingAPI);
   }
 
+  private void clearTable() {
+    if (flexTable != null) {
+      flexTable.removeFromParent();
+      flexTable = null;
+    }
+  }
+
+  private void finishTable(long milli, FlexTable table) {
+    flexTable = table;
+    table.setBorderWidth(2);
+    panel.add(table);
+    table.setWidget(0, 3, new Button("A widget"));
+    Window.alert("Finished in " + (System.currentTimeMillis() - milli)
+        + " milliseconds");
+  }
+
   private void usingBulkLoadedTableAPI(BulkLoadedTable table) {
     TableModel.ClientTableModel oracle = new TableModel.ClientTableModel() {
       public Object getCell(int rowNum, int cellNum) {
@@ -139,27 +155,11 @@ public class BulkLoadingTableDemo implements EntryPoint {
     }
   }
 
-  private void finishTable(long milli, FlexTable table) {
-    flexTable = table;
-    table.setBorderWidth(2);
-    panel.add(table);
-    table.setWidget(0, 3, new Button("A widget"));
-    Window.alert("Finished in " + (System.currentTimeMillis() - milli)
-        + " milliseconds");
-  }
-
   private void usingPreloadedTableAPI(PreloadedTable table) {
     for (int i = 0; i < numRows; i++) {
       for (int j = 0; j < numColumns; j++) {
         table.setPendingHTML(i, j, "cell " + i + ", " + j);
       }
-    }
-  }
-
-  private void clearTable() {
-    if (flexTable != null) {
-      flexTable.removeFromParent();
-      flexTable = null;
     }
   }
 }

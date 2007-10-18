@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
- * Tests methods in the {@link ExtendedGrid} class.
+ * Tests methods in the {@link SortableFixedWidthGrid} class.
  */
 public class ExtendedGridTest extends GWTTestCase {
 
@@ -30,13 +30,13 @@ public class ExtendedGridTest extends GWTTestCase {
     return "com.google.gwt.widgetideas.table.ExtendedGrid";
   }
 
-  //ECC removed as it's currently failing
+  // ECC removed as it's currently failing
   /**
    * Set and get cell contents.
    */
   public void removedtestCellContents() {
     // Create a small grid
-    ExtendedGrid grid = new ExtendedGrid();
+    SortableFixedWidthGrid grid = new SortableFixedWidthGrid();
     
     // set/get Widget
     HTML widget1 = new HTML("Widget 1");
@@ -143,7 +143,7 @@ public class ExtendedGridTest extends GWTTestCase {
    */
   public void testColumnWidth() {
     // Create a small grid
-    ExtendedGrid grid = new ExtendedGrid();
+    SortableFixedWidthGrid grid = new SortableFixedWidthGrid();
     grid.resize(5, 5);
     RootPanel.get().add(grid);
     
@@ -201,10 +201,10 @@ public class ExtendedGridTest extends GWTTestCase {
    */
   public void testResizeGrid() {
     // Create an empty grid
-    ExtendedGrid grid = new ExtendedGrid();
+    SortableFixedWidthGrid grid = new SortableFixedWidthGrid();
 
     // Verify columns widths can be added before the column
-    int defaultWidth = ExtendedGrid.DEFAULT_COLUMN_WIDTH;
+    int defaultWidth = SortableFixedWidthGrid.DEFAULT_COLUMN_WIDTH;
     grid.setColumnWidth(2, defaultWidth + 20);
     grid.setColumnWidth(3, defaultWidth + 30);
     grid.resize(4, 4);
