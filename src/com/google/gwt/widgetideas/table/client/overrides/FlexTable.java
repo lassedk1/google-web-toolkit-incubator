@@ -17,13 +17,14 @@ package com.google.gwt.widgetideas.table.client.overrides;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.widgetideas.table.client.HasCellSpans;
 
 /**
  * This class should replace the actual class of the same name.
  * 
  * TODO: Incorporate changes into actual class.
  */
-public class FlexTable extends HTMLTable {
+public class FlexTable extends HTMLTable implements HasCellSpans {
 
   /**
    * FlexTable-specific implementation of {@link HTMLTable.CellFormatter}. The
@@ -43,20 +44,6 @@ public class FlexTable extends HTMLTable {
      */
     public int getColSpan(int row, int column) {
       return DOM.getElementPropertyInt(getElement(row, column), "colSpan");
-    }
-    
-    /**
-     * Gets the overall column index of this cell as if this table were a grid,
-     * as determined by the rowspan and colspan of other cells in the table.
-     * 
-     * @param row the cell's row
-     * @param column the cell's column
-     * @return the cell's column index
-     * @throws IndexOutOfBoundsException
-     */
-    public int getColumnIndex(int row, int column) {
-      checkCellBounds(row, column);
-      return getRawColumnIndex(row, column);
     }
 
     /**
@@ -97,39 +84,6 @@ public class FlexTable extends HTMLTable {
     public void setRowSpan(int row, int column, int rowSpan) {
       DOM.setElementPropertyInt(ensureElement(row, column), "rowSpan", rowSpan);
     }
-    
-    /**
-     * Gets the overall column index of this cell as if this table were a grid,
-     * as determined by the rowspan and colspan of other cells in the table.
-     * This helper method doesn't check the bounds on every recursive call.
-     * 
-     * @param row the cell's row
-     * @param column the cell's column
-     * @return the cell's column index
-     * @throws IndexOutOfBoundsException
-     */
-    private int getRawColumnIndex(int row, int column) {
-      // Get cells before me in my row
-      int columnIndex = 0;
-      for (int curCell = 0; curCell < column; curCell++) {
-        columnIndex += getColSpan(row, curCell);
-      }
-      
-      // Get cells that span down into my row
-      int numCells = 0;
-      for (int curRow = 0; curRow < row; curRow++) {
-        numCells = getCellCount(curRow);
-        for (int curCell = 0; curCell < numCells; curCell++) {
-          if ( (curRow + getRowSpan(curRow, curCell) - 1) >= row ) {
-            if ( getRawColumnIndex(curRow, curCell) <= columnIndex ) {
-              columnIndex += getColSpan(curRow, curCell);
-            }
-          }
-        }
-      }
-      
-      return columnIndex;
-    }
   }
 
   /**
@@ -140,14 +94,14 @@ public class FlexTable extends HTMLTable {
    * @param num the number of cells to add
    */
   private static native void addCells(Element table, int row, int num)/*-{
-    var rowElem = table.rows[row];
-    for(var i = 0; i < num; i++){
-      var cell = $doc.createElement("td");
-      cell['colSpan'] = 1;
-      cell['rowSpan'] = 1;
-      rowElem.appendChild(cell);  
-    }
-  }-*/;
+        var rowElem = table.rows[row];
+        for(var i = 0; i < num; i++){
+          var cell = $doc.createElement("td");
+          cell['colSpan'] = 1;
+          cell['rowSpan'] = 1;
+          rowElem.appendChild(cell);  
+        }
+      }-*/;
 
   public FlexTable() {
     super();
@@ -176,6 +130,20 @@ public class FlexTable extends HTMLTable {
   public int getCellCount(int row) {
     checkRowBounds(row);
     return getDOMCellCount(row);
+  }
+
+  /**
+   * Gets the overall column index of this cell as if this table were a grid, as
+   * determined by the rowspan and colspan of other cells in the table.
+   * 
+   * @param row the cell's row
+   * @param column the cell's column
+   * @return the cell's column index
+   * @throws IndexOutOfBoundsException
+   */
+  public int getColumnIndex(int row, int column) {
+    checkCellBounds(row, column);
+    return getRawColumnIndex(row, column);
   }
 
   /**
@@ -256,7 +224,7 @@ public class FlexTable extends HTMLTable {
   protected void addCells(int row, int num) {
     addCells(getBodyElement(), row, num);
   }
-  
+
   /**
    * Ensure that the cell exists.
    * 
@@ -296,5 +264,39 @@ public class FlexTable extends HTMLTable {
     for (int i = rowCount; i <= row; i++) {
       insertRow(i);
     }
+  }
+
+  /**
+   * Gets the overall column index of this cell as if this table were a grid, as
+   * determined by the rowspan and colspan of other cells in the table. This
+   * helper method doesn't check the bounds on every recursive call.
+   * 
+   * @param row the cell's row
+   * @param column the cell's column
+   * @return the cell's column index
+   * @throws IndexOutOfBoundsException
+   */
+  private int getRawColumnIndex(int row, int column) {
+    // Get cells before me in my row
+    FlexCellFormatter formatter = getFlexCellFormatter();
+    int columnIndex = 0;
+    for (int curCell = 0; curCell < column; curCell++) {
+      columnIndex += formatter.getColSpan(row, curCell);
+    }
+
+    // Get cells that span down into my row
+    int numCells = 0;
+    for (int curRow = 0; curRow < row; curRow++) {
+      numCells = getCellCount(curRow);
+      for (int curCell = 0; curCell < numCells; curCell++) {
+        if ((curRow + formatter.getRowSpan(curRow, curCell) - 1) >= row) {
+          if (getRawColumnIndex(curRow, curCell) <= columnIndex) {
+            columnIndex += formatter.getColSpan(curRow, curCell);
+          }
+        }
+      }
+    }
+
+    return columnIndex;
   }
 }

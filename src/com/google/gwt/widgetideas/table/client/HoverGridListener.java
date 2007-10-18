@@ -16,9 +16,9 @@
 package com.google.gwt.widgetideas.table.client;
 
 /**
- * Event listener interface for {@link ExtendedGrid} events.
+ * Event listener interface for {@link FixedWidthGrid} events.
  */
-public interface ExtendedGridListener {
+public interface HoverGridListener {
   /**
    * Fired when all rows are deselected.
    */
@@ -77,12 +77,4 @@ public interface ExtendedGridListener {
    * @param row the row index
    */
   public void onRowUnhover(int row);
-
-  /**
-   * Fired when the currently sorted column changes.
-   * 
-   * @param column the currently sorted column, -1 for unsorted
-   * @param reversed specifies that this is a reverse sorting
-   */
-  public void onSetSortedColumn(int column, boolean reversed);
 }

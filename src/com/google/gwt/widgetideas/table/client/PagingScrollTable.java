@@ -33,12 +33,12 @@ import com.google.gwt.user.client.ui.Widget;
  * A {@link ScrollTable} that acts as a view for an underlying
  * {@link TableModel}.
  */
-public class ScrollTableView extends ScrollTable {
+public class PagingScrollTable extends ScrollTable {
   /**
    * An {@link com.google.gwt.user.client.ui.ImageBundle} that provides images
-   * for {@link ScrollTableView}.
+   * for {@link PagingScrollTable}.
    */
-  public static interface ScrollTableViewImages extends ScrollTableImages {
+  public static interface PagingScrollTableImages extends ScrollTableImages {
     /**
      * An image used to navigate to the first page.
      * 
@@ -73,27 +73,27 @@ public class ScrollTableView extends ScrollTable {
    */
   public ClickListener imageClickListener = new ClickListener() {
     public void onClick(Widget sender) {
-      GridView gridView = (GridView) getDataTable();
-      int numPages = gridView.getNumPages(); 
+      HasRowPaging dataTable = (HasRowPaging) getDataTable();
+      int numPages = dataTable.getNumPages();
       if (sender == pagingButtonFirst) {
         // Load first page
-        gridView.gotoFirstPage();
+        dataTable.gotoFirstPage();
       } else if (sender == pagingButtonLast) {
         // Load last page
-        gridView.gotoLastPage();
+        dataTable.gotoLastPage();
       } else if (sender == pagingButtonNext) {
         // Load next page
         int curPage = getPagingBoxValue();
         if ((numPages < 0) || (curPage + 1 < numPages)) {
-          gridViewListener.onPageChanged(curPage + 1);
-          gridView.gotoPage(getPagingBoxValue());
+          rowPagingListener.onPageChanged(curPage + 1);
+          dataTable.gotoPage(getPagingBoxValue());
         }
       } else if (sender == pagingButtonPrev) {
         // Load previous page
         int curPage = getPagingBoxValue();
         if (curPage > 0) {
-          gridViewListener.onPageChanged(curPage - 1);
-          gridView.gotoPage(getPagingBoxValue());
+          rowPagingListener.onPageChanged(curPage - 1);
+          dataTable.gotoPage(getPagingBoxValue());
         }
       }
     }
@@ -105,9 +105,9 @@ public class ScrollTableView extends ScrollTable {
   private Image loadingImage = new Image("scrollTableLoading.gif");
 
   /**
-   * A listener that listens for page events from the {@link GridView}.
+   * A listener that listens for page events from the {@link HasRowPaging}.
    */
-  private GridViewListener gridViewListener = new GridViewListener() {
+  private HasRowPagingListener rowPagingListener = new HasRowPagingListener() {
     public void onNumRowsChanges(int numRows, int numPages) {
       if (numPages < 0) {
         pagingNumPagesLabel.setVisible(false);
@@ -175,47 +175,32 @@ public class ScrollTableView extends ScrollTable {
   /**
    * Constructor.
    * 
-   * @param tableModel the {@link MutableTableModel} used to retrieve data
+   * @param dataTable the {@link HasRowPaging} used in as the data table
+   * @param headerTable the header table
    */
-  public ScrollTableView(MutableTableModel tableModel) {
-    this(new TableController(tableModel));
+  public PagingScrollTable(HasRowPaging dataTable,
+      HasFixedColumnWidth headerTable) {
+    this(dataTable, headerTable,
+        (PagingScrollTableImages) GWT.create(PagingScrollTableImages.class));
   }
 
   /**
    * Constructor.
    * 
-   * @param tableController the underlying {@link TableController}
-   */
-  public ScrollTableView(TableController tableController) {
-    this(new GridView(tableController));
-  }
-
-  /**
-   * Constructor.
-   * 
-   * @param gridView the {@link GridView} used in as the data table
-   */
-  public ScrollTableView(GridView gridView) {
-    this(
-        gridView,
-        (ScrollTableViewImages) GWT./* <ScrollTableViewImages> */create(ScrollTableViewImages.class));
-  }
-
-  /**
-   * Constructor.
-   * 
-   * @param gridView the {@link GridView} used in as the data table
+   * @param dataTable the {@link HasRowPaging} used in as the data table
+   * @param headerTable the header table
    * @param images the images to use in the table
    */
-  public ScrollTableView(GridView gridView, ScrollTableViewImages images) {
-    super(gridView, images);
-    gridView.addGridViewListener(gridViewListener);
+  public PagingScrollTable(HasRowPaging dataTable,
+      HasFixedColumnWidth headerTable, PagingScrollTableImages images) {
+    super(dataTable, headerTable, images);
+    dataTable.addRowPagingListener(rowPagingListener);
 
     // Disallow non-numeric pages
     pagingCurPageBox.addKeyboardListener(new KeyboardListenerAdapter() {
       public void onKeyPress(Widget sender, char keyCode, int modifiers) {
         if (keyCode == (char) KEY_ENTER) {
-          GridView dataTable = (GridView) getDataTable();
+          HasRowPaging dataTable = (HasRowPaging) getDataTable();
           dataTable.gotoPage(getPagingBoxValue());
         } else if ((!Character.isDigit(keyCode)) && (keyCode != (char) KEY_TAB)
             && (keyCode != (char) KEY_BACKSPACE)
@@ -277,8 +262,8 @@ public class ScrollTableView extends ScrollTable {
     adopt(pagingWrapperPanel);
 
     // Set the page size
-    gridViewListener.onPageSizeChange(gridView.getPageSize(),
-        gridView.getNumPages());
+    rowPagingListener.onPageSizeChange(dataTable.getPageSize(),
+        dataTable.getNumPages());
   }
 
   /**
@@ -287,16 +272,7 @@ public class ScrollTableView extends ScrollTable {
    * @return the number of rows per page
    */
   public int getPageSize() {
-    return ((GridView) getDataTable()).getPageSize();
-  }
-  
-  /**
-   * Get the underlying {@link TableController} from the {@link GridView}.
-   * 
-   * @return the table controller
-   */
-  public TableController getTableController() {
-    return ((GridView) getDataTable()).getTableController();
+    return ((HasRowPaging) getDataTable()).getPageSize();
   }
 
   /**
@@ -308,7 +284,7 @@ public class ScrollTableView extends ScrollTable {
    * @param pageSize the number of rows per page
    */
   public void setPageSize(int pageSize) {
-    ((GridView) getDataTable()).setPageSize(pageSize);
+    ((HasRowPaging) getDataTable()).setPageSize(pageSize);
   }
 
   /**
@@ -329,20 +305,21 @@ public class ScrollTableView extends ScrollTable {
    * Helper method that actually performs the vertical resizing.
    */
   protected void resizeTablesVerticallyNow() {
+    super.resizeTablesVerticallyNow();
+    
     Element dataWrapper = getDataWrapper();
-    Element headerWrapper = getHeaderWrapper();
-    int totalHeight = DOM.getElementPropertyInt(getElement(), "clientHeight");
-
-    // Header takes what it needs
-    int headerHeight = getHeaderTable().getOffsetHeight();
-    DOM.setStyleAttribute(headerWrapper, "height", headerHeight + "px");
-
-    // Data takes whatever is left over
-    int pagingHeight = DOM.getElementPropertyInt(pagingWrapper, "offsetHeight");
-    int dataHeight = totalHeight - headerHeight - pagingHeight;
-    DOM.setStyleAttribute(dataWrapper, "height", dataHeight + "px");
-    DOM.setStyleAttribute(dataWrapper, "overflow", "hidden");
-    DOM.setStyleAttribute(dataWrapper, "overflow", "auto");
+    if (isScrollingEnabled()) {
+      // Take some space from the data table to make room for the paging div
+      int pagingHeight = DOM.getElementPropertyInt(pagingWrapper, "offsetHeight");
+      int dataHeight = DOM.getElementPropertyInt(dataWrapper, "offsetHeight")
+          - pagingHeight;
+      DOM.setStyleAttribute(dataWrapper, "height", dataHeight + "px");
+      DOM.setStyleAttribute(dataWrapper, "overflow", "hidden");
+      DOM.setStyleAttribute(dataWrapper, "overflow", "auto");
+    } else {
+      DOM.setStyleAttribute(dataWrapper, "overflow", "hidden");
+      DOM.setStyleAttribute(dataWrapper, "overflow", "");
+    }
 
     // Scroll tables to be safe
     scrollTables(true);

@@ -32,9 +32,9 @@ public class ScrollTableTest extends GWTTestCase {
    */
   public void testAccessors() {
     // Create a ScrollTable
-    ScrollTable table = new ScrollTable();
-    ExtendedGrid dataTable = table.getDataTable();
-    SizableFlexTable headerTable = table.getHeaderTable();
+    FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
+    SortableFixedWidthGrid dataTable = new SortableFixedWidthGrid();
+    ScrollTable table = new ScrollTable(dataTable, headerTable);
     RootPanel.get().add(table);
 
     // Add some default data

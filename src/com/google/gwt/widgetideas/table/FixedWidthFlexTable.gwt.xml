@@ -25,25 +25,25 @@
   <inherits name='com.google.gwt.widgetideas.table.OverrideDOM'/>
 
   <!-- Fall through to this rule -->
-  <replace-with class="com.google.gwt.widgetideas.table.client.ExtendedGrid.ExtendedGridImpl">
-    <when-type-is class="com.google.gwt.widgetideas.table.client.ExtendedGrid.ExtendedGridImpl"/>
+  <replace-with class="com.google.gwt.widgetideas.table.client.FixedWidthFlexTable.FixedWidthFlexTableImpl">
+    <when-type-is class="com.google.gwt.widgetideas.table.client.FixedWidthFlexTable.FixedWidthFlexTableImpl"/>
   </replace-with>
 
   <!-- IE includes spacing and padding when rendering -->
-  <replace-with class="com.google.gwt.widgetideas.table.client.ExtendedGrid.ExtendedGridImplIE6">
-    <when-type-is class="com.google.gwt.widgetideas.table.client.ExtendedGrid.ExtendedGridImpl"/>
+  <replace-with class="com.google.gwt.widgetideas.table.client.FixedWidthFlexTable.FixedWidthFlexTableImplIE6">
+    <when-type-is class="com.google.gwt.widgetideas.table.client.FixedWidthFlexTable.FixedWidthFlexTableImpl"/>
     <when-property-is name="user.agent" value="ie6"/>
   </replace-with>
 
   <!-- Safari includes spacing and padding when rendering -->
-  <replace-with class="com.google.gwt.widgetideas.table.client.ExtendedGrid.ExtendedGridImplSafari">
-    <when-type-is class="com.google.gwt.widgetideas.table.client.ExtendedGrid.ExtendedGridImpl"/>
+  <replace-with class="com.google.gwt.widgetideas.table.client.FixedWidthFlexTable.FixedWidthFlexTableImplSafari">
+    <when-type-is class="com.google.gwt.widgetideas.table.client.FixedWidthFlexTable.FixedWidthFlexTableImpl"/>
     <when-property-is name="user.agent" value="safari"/>
   </replace-with>
 
   <!-- Opera needs to refresh the grid or it won't resize -->
-  <replace-with class="com.google.gwt.widgetideas.table.client.ExtendedGrid.ExtendedGridImplOpera">
-    <when-type-is class="com.google.gwt.widgetideas.table.client.ExtendedGrid.ExtendedGridImpl"/>
+  <replace-with class="com.google.gwt.widgetideas.table.client.FixedWidthFlexTable.FixedWidthFlexTableImplOpera">
+    <when-type-is class="com.google.gwt.widgetideas.table.client.FixedWidthFlexTable.FixedWidthFlexTableImpl"/>
     <when-property-is name="user.agent" value="opera"/>
   </replace-with>
 </module>

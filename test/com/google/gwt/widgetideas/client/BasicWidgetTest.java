@@ -21,6 +21,9 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ToggleButton;
 
+/**
+ * Test for the {@link PinnedPanel}. 
+ */
 public abstract class BasicWidgetTest extends GWTTestCase {
 
   public String getModuleName() {

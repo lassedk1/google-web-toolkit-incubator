@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
- * Tests methods in the {@link SizableFlexTable} class.
+ * Tests methods in the {@link FixedWidthFlexTable} class.
  */
 public class SizableFlexTableTest extends GWTTestCase {
   
@@ -35,7 +35,7 @@ public class SizableFlexTableTest extends GWTTestCase {
    */
   public void testCellContents() {
     // Create a small grid
-    SizableFlexTable grid = new SizableFlexTable();
+    FixedWidthFlexTable grid = new FixedWidthFlexTable();
     
     // set/get Widget
     HTML widget1 = new HTML("Widget 1");
@@ -136,7 +136,7 @@ public class SizableFlexTableTest extends GWTTestCase {
    */
   public void testCellManipulation() {
     // Create a 3x3 grid
-    SizableFlexTable grid = new SizableFlexTable() {
+    FixedWidthFlexTable grid = new FixedWidthFlexTable() {
       public int getGhostColumnCount() {
         return super.getGhostColumnCount();
       }
@@ -194,7 +194,7 @@ public class SizableFlexTableTest extends GWTTestCase {
    */
   public void testColumnWidth() {
     // Create a small grid
-    SizableFlexTable grid = new SizableFlexTable();
+    FixedWidthFlexTable grid = new FixedWidthFlexTable();
     RootPanel.get().add(grid);
     
     // Set and get the column width
