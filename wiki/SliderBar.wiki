@@ -1,4 +1,5 @@
 #summary New Widget - Sliding knob over a range of values
+#labels Type-Widget
 
 = Introduction =
 The SliderBar input Widget lets the user select a value from a range of values via mouse events or keyboard events.  You can dynamically change the minimum and maximum values and step size.  The size size allows you to restrict the selected value based on an incremental step.
