@@ -1,4 +1,5 @@
 #summary DRAFT: Overview of Incubator Widgets
+#labels Type-Widget
 
 = Introduction =
 The widgets package is meant for widgets that are candidates for a later GWT release.  All widgets are available using the  `Widgets.gwt.xml' module file.
