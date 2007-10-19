@@ -1,5 +1,5 @@
 #summary Combines ImmutableResourceBundle with CSS styleshees
-#labels Type-FAQ
+#labels Type-Library
 
 = Goal =
 
