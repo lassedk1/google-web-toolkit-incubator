@@ -15,8 +15,8 @@
       * SliderBar
       * ProgressBar
     * [FAQ]
-      * StubbingRPC
+      * [StubbingRPC]
       * IntegratingWithSpring
-      * ServerPushFAQ
-      * PathsHandlingFAQ
-      * LoginSecurityFAQ
+      * [ServerPushFAQ]
+      * [PathsHandlingFAQ]
+      * [LoginSecurityFAQ]
