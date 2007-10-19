@@ -1,4 +1,5 @@
 #summary A panel used primarily to wrap navigation side bars.
+#labels Type-Widget
 A panel whose contents are either pinned in place or pop out when the user hovers over them.
 
 = Introduction =
