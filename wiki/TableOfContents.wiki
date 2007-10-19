@@ -1,12 +1,12 @@
 #summary DRAFT: Table of contents for GWT incubator documentation
 #labels Type-Guide
   * Incubator Wiki
-    * Libraries
+    * [Libraries]
       * DeclarativeUi
       * ImmutableResourceBundle
         * StyleInjector
-    * Widgets
-      * Tables
+    * [Widgets]
+      * [Tables]
         * ScrollTable
         * BulkLoadingTables
       * Panels
@@ -14,5 +14,9 @@
         * PinnedPanel
       * SliderBar
       * ProgressBar
-    * FAQ
-    
+    * [FAQ]
+      * StubbingRPC
+      * IntegratingWithSpring
+      * ServerPushFAQ
+      * PathsHandlingFAQ
+      * LoginSecurityFAQ
