@@ -1,4 +1,4 @@
-#summary DRAFT: Table of contents for GWT incubator documentation
+#summary Table of contents for GWT incubator documentation
 #labels Type-Guide
   * Incubator Wiki
     * [Libraries]
