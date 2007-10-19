@@ -1,4 +1,5 @@
 #summary Declarative XML structure for defining GWT widgets
+#labels Type-Library
 
 = Motivation & Use Cases =
 Writing imperative Java code to construct a user-interface hierarchy is awkward, and it makes working with UI designers difficult and/or impossible. What we want is to provide designers (and developers) with a simple way to define the static structure of applications and widgets, without having to write code.
