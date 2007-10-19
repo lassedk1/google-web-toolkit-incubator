@@ -1,4 +1,5 @@
 #summary Explains how GWT finds files.
+#labels Type-FAQ
 
 = Introduction =
 
