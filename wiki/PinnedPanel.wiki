@@ -9,7 +9,7 @@ A PinnedPanel is commonly used for nav bar and help pages which need the ability
 
 = Details =
 
-||Demo:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/PinnedPanelDemo/index.html live demo]||
+||Demo:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/PinnedPanel/index.html live demo]||
 ||Sample Code:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/pinnedpanel/client/PinnedPanelDemo.java sample code] ||
 ||Module:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/widgetideas/WidgetIdeas.gwt.xml WidgetIdeas]||
 
