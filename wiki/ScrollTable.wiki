@@ -1,4 +1,5 @@
 #summary New Widget - A two part table with a fixed header and scrollable data area
+#labels Type-Widget
 
 = Introduction =
 The ScrollTable Widget is a two part table consisting of a fixed header table and a scrollable data grid.  The header table is an extension of the FlexTable, so it supports rowspans and colspans.  The data portion is an extension of the grid.
