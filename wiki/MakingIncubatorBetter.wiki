@@ -1,4 +1,5 @@
 #summary DRAFT developing with the incubator source
+#labels Type-Guide
 = Introduction =
 This page explains how to develop with the gwt-incubator source.
  
@@ -9,9 +10,7 @@ This page explains how to develop with the gwt-incubator source.
  # Create a new eclipse project from the existing source
  # In the properties tab go to Java Build Path --> Libraries. 
    # Add the gwt-user and gwt-dev jars from [http://code.google.com/webtoolkit/download.html here]
-   # Add the junit jar from [http://google-web-toolkit.googlecode.com/svn/tools/lib/junit/ here]
+   # Add the junit jar using the eclipse "Add Library option". Select junit3 
 You now should be completely set up. 
 == Setup for other IDEs==
 We would much appreciate instructions here, if you are motivated to add them, add them as a comment below and I'll pull them up to this section.
-
-
