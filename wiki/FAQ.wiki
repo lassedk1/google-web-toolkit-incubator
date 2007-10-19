@@ -1,4 +1,5 @@
 #summary The best answers to the Frequently Asked Questions on the GWT group can be found here.
+#labels Type-FAQ
 
 = Google-Widget-Toolkit group FAQ =
 
