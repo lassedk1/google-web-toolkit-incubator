@@ -1,2 +1,3 @@
 #summary DRAFT overview of all table components in the incubator and how they fit together.
+#labels Type-Widget
  
