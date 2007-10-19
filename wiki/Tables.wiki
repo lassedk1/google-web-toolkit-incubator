@@ -1,3 +1,9 @@
 #summary DRAFT overview of all table components in the incubator and how they fit together.
 #labels Type-Widget
  
+=Overview of all table comments=
+http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/ScrollTableClassDiagram.png
+
+|| Class Name || Overview || Further information||
+|| HTMLTable || Root GWT table ||http://code.google.com/webtoolkit/documentation/com.google.gwt.user.client.ui.HTMLTable.html||
+|| Grid || Tabular Table ||||
