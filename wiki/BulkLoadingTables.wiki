@@ -1,4 +1,5 @@
 #summary Bulk loading tables: `BulkLoadedTable` and `PreloadedTable`
+#labels Type-Widget
 = Introduction =
 For those that need every last millisecond of speed for table manipulation, we have introduced BulkLoadedTable and PreloadedTable.
 
