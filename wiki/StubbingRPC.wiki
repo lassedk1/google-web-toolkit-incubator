@@ -1,4 +1,5 @@
 #summary Article describes a way to "fake" or "stub" your RPC calls in GWT's hosted mode.
+#labels Type-FAQ
 
 = Stubbing RPC calls in Google Web Toolkit's Hosted Mode =
   _original by [http://gwttips.blogpspot.com/ Richard Bondi]_
