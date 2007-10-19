@@ -1,4 +1,5 @@
 #summary Explains Server Push, sometimes known as 'comet', and how you can achieve this with GWT.
+#labels Type-FAQ
 
 = What is Server Push? =
 
