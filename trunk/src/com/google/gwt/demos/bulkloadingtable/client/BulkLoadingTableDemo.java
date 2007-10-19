@@ -32,6 +32,8 @@ import com.google.gwt.widgetideas.table.client.BulkLoadedTable;
 import com.google.gwt.widgetideas.table.client.PreloadedTable;
 import com.google.gwt.widgetideas.table.client.TableModel;
 import com.google.gwt.widgetideas.table.client.overrides.FlexTable;
+import com.google.gwt.widgetideas.table.client.overrides.Grid;
+import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 
 /**
  * Demo of {@link PreloadedTable} and {@link BulkLoadedTable}.
@@ -39,7 +41,7 @@ import com.google.gwt.widgetideas.table.client.overrides.FlexTable;
 public class BulkLoadingTableDemo implements EntryPoint {
   int numColumns = 15;
   int numRows = 120;
-  FlexTable flexTable;
+  HTMLTable curTable;
   Panel panel;
 
   public void onModuleLoad() {
@@ -67,8 +69,9 @@ public class BulkLoadingTableDemo implements EntryPoint {
       }
     });
     columns.setText(numColumns + "");
-    
-    panel.add(new HTML("<b>Clear Table now </b> (clearing will also happen if the buttons are clicked below)"));
+
+    panel.add(new HTML(
+        "<p/><p/><b>Clear Table now </b> (clearing will also happen if the buttons are clicked below)"));
     panel.add(new Button("Go", new ClickListener() {
 
       public void onClick(Widget sender) {
@@ -77,7 +80,7 @@ public class BulkLoadingTableDemo implements EntryPoint {
 
     }));
 
-    panel.add(new HTML("<b> Use the traditional FlexTable API</b>"));
+    panel.add(new HTML("<p/><p/><b> Use the traditional FlexTable API</b>"));
     Button flexTableAPI = new Button("Go", new ClickListener() {
 
       public void onClick(Widget sender) {
@@ -90,6 +93,18 @@ public class BulkLoadingTableDemo implements EntryPoint {
     });
     panel.add(flexTableAPI);
 
+    panel.add(new HTML("<p/><p/><b> Use the traditional Grid API</b>"));
+    Button gridAPI = new Button("Go", new ClickListener() {
+      public void onClick(Widget sender) {
+        clearTable();
+        long milli = System.currentTimeMillis();
+        Grid newTable = new Grid();
+        usingGridAPI(newTable);
+        finishTable(milli, newTable);
+      }
+
+    });
+    panel.add(gridAPI);
     panel.add(new HTML("<p/><p/><b> Use the BulkLoadedTable API</b>"));
     Button dataDrivenAPI = new Button("Go", new ClickListener() {
       public void onClick(Widget sender) {
@@ -111,7 +126,6 @@ public class BulkLoadingTableDemo implements EntryPoint {
         long milli = System.currentTimeMillis();
         PreloadedTable table = new PreloadedTable();
         usingPreloadedTableAPI(table);
-
         finishTable(milli, table);
       }
 
@@ -120,14 +134,14 @@ public class BulkLoadingTableDemo implements EntryPoint {
   }
 
   private void clearTable() {
-    if (flexTable != null) {
-      flexTable.removeFromParent();
-      flexTable = null;
+    if (curTable != null) {
+      curTable.removeFromParent();
+      curTable = null;
     }
   }
 
-  private void finishTable(long milli, FlexTable table) {
-    flexTable = table;
+  private void finishTable(long milli, HTMLTable table) {
+    curTable = table;
     table.setBorderWidth(2);
     panel.add(table);
     table.setWidget(0, 3, new Button("A widget"));
@@ -148,6 +162,15 @@ public class BulkLoadingTableDemo implements EntryPoint {
   }
 
   private void usingFlexTableAPI(FlexTable table) {
+    for (int i = 0; i < numRows; i++) {
+      for (int j = 0; j < numColumns; j++) {
+        table.setHTML(i, j, "cell " + i + ", " + j);
+      }
+    }
+  }
+
+  private void usingGridAPI(Grid table) {
+    table.resize(numRows, numColumns);
     for (int i = 0; i < numRows; i++) {
       for (int j = 0; j < numColumns; j++) {
         table.setHTML(i, j, "cell " + i + ", " + j);

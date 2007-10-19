@@ -62,138 +62,136 @@ public class GridView extends SortableFixedWidthGrid implements HasRowPaging {
    * The listener that handles events from the underlying
    * {@link TableController}.
    */
-  private TableControllerListener tableControllerListener =
-      new TableControllerListener() {
-        /**
-         * Fired when the number of rows changes.
-         * 
-         * @param numRows the new number of rows
-         */
-        public void onNumRowsChanged(int numRows) {
-          // Fire listeners
-          int numPages = getNumPages();
-          if (rowPagingListeners != null) {
-            Iterator it = rowPagingListeners.iterator();
-            while (it.hasNext()) {
-              HasRowPagingListener listener = (HasRowPagingListener) it.next();
-              listener.onNumRowsChanges(numRows, numPages);
-            }
-          }
+  private TableControllerListener tableControllerListener = new TableControllerListener() {
+    /**
+     * Fired when the number of rows changes.
+     * 
+     * @param numRows the new number of rows
+     */
+    public void onNumRowsChanged(int numRows) {
+      // Fire listeners
+      int numPages = getNumPages();
+      if (rowPagingListeners != null) {
+        Iterator it = rowPagingListeners.iterator();
+        while (it.hasNext()) {
+          HasRowPagingListener listener = (HasRowPagingListener) it.next();
+          listener.onNumRowsChanges(numRows, numPages);
+        }
+      }
 
-          // Make sure we are still on a valid page
-          resetPage(false);
+      // Make sure we are still on a valid page
+      resetPage(false);
+    }
+
+    /**
+     * Fired when a row is inserted.
+     * 
+     * @param beforeRow the row index
+     */
+    public void onRowInserted(int beforeRow) {
+      int lastRow = getLastRow();
+      if (beforeRow <= lastRow) {
+        int firstRow = getFirstRow();
+        if (beforeRow >= firstRow) {
+          // Insert specified row into current page
+          insertRow(beforeRow - firstRow);
+        } else {
+          // Shift rows down
+          insertRow(0);
         }
 
-        /**
-         * Fired when a row is inserted.
-         * 
-         * @param beforeRow the row index
-         */
-        public void onRowInserted(int beforeRow) {
-          int lastRow = getLastRow();
-          if (beforeRow <= lastRow) {
-            int firstRow = getFirstRow();
-            if (beforeRow >= firstRow) {
-              // Insert specified row into current page
-              insertRow(beforeRow - firstRow);
-            } else {
-              // Shift rows down
-              insertRow(0);
-            }
+        // Remove rows past page size
+        if (numRows > pageSize) {
+          removeRow(pageSize);
+        }
+      }
 
-            // Remove rows past page size
-            if (numRows > pageSize) {
-              removeRow(pageSize);
-            }
-          }
+      // Update listeners
+      onNumRowsChanged(tableController.getNumRows());
+    }
 
-          // Update listeners
-          onNumRowsChanged(tableController.getNumRows());
+    /**
+     * Fired when a row is removed.
+     * 
+     * @param row the row index
+     */
+    public void onRowRemoved(int row) {
+      int lastRow = getLastRow();
+      if (row <= lastRow) {
+        int firstRow = getFirstRow();
+        if (row >= firstRow) {
+          // Remove the actual row
+          removeRow(row - firstRow);
+        } else {
+          // Shift rows up
+          removeRow(0);
         }
 
-        /**
-         * Fired when a row is removed.
-         * 
-         * @param row the row index
-         */
-        public void onRowRemoved(int row) {
-          int lastRow = getLastRow();
-          if (row <= lastRow) {
-            int firstRow = getFirstRow();
-            if (row >= firstRow) {
-              // Remove the actual row
-              removeRow(row - firstRow);
-            } else {
-              // Shift rows up
-              removeRow(0);
-            }
+        // Readd row that was removed
+        insertRow(pageSize - 1);
+      }
 
-            // Readd row that was removed
-            insertRow(pageSize - 1);
-          }
+      // Update listeners
+      onNumRowsChanged(tableController.getNumRows());
+    }
 
-          // Update listeners
-          onNumRowsChanged(tableController.getNumRows());
-        }
+    /**
+     * Fired when the data in a given cell changes.
+     * 
+     * @param row the row index
+     * @param column the column index
+     * @param data the data to set
+     */
+    public void onSetData(int row, int column, Object data) {
+      int firstRow = getFirstRow();
+      if ((row >= firstRow) && (row <= getLastRow())) {
+        renderCell(row - firstRow, column, data);
+      }
+    }
 
-        /**
-         * Fired when the data in a given cell changes.
-         * 
-         * @param row the row index
-         * @param column the column index
-         * @param data the data to set
-         */
-        public void onSetData(int row, int column, Object data) {
-          int firstRow = getFirstRow();
-          if ((row >= firstRow) && (row <= getLastRow())) {
-            renderCell(row - firstRow, column, data);
-          }
-        }
-
-        /**
-         * Fired when a block of data changes. This method takes an iterator of
-         * Collections, where each collection represents one row of data
-         * starting with the first row.
-         * 
-         * @param firstRow the row index
-         * @param rows the 2D iterator of data
-         */
-        public void onSetData(int firstRow, Iterator/* Iterator<Object> */rows) {
-          // Set the HTML data
-          if (rows != null) {
-            int firstVisibleRow = getFirstRow();
-            int lastVisibleRow = getLastRow();
-            while (rows.hasNext()) {
-              Iterator columnIt = (Iterator) rows.next();
-              if ((firstRow >= firstVisibleRow) && (firstRow <= lastVisibleRow)) {
-                int curColumn = 0;
-                while (columnIt.hasNext()) {
-                  renderCell(firstRow - firstVisibleRow, curColumn, columnIt
-                      .next());
-                  curColumn++;
-                }
-              }
-
-              // Go to next row
-              firstRow++;
+    /**
+     * Fired when a block of data changes. This method takes an iterator of
+     * Collections, where each collection represents one row of data starting
+     * with the first row.
+     * 
+     * @param firstRow the row index
+     * @param rows the 2D iterator of data
+     */
+    public void onSetData(int firstRow, Iterator/* Iterator<Object> */rows) {
+      // Set the HTML data
+      if (rows != null) {
+        int firstVisibleRow = getFirstRow();
+        int lastVisibleRow = getLastRow();
+        while (rows.hasNext()) {
+          Iterator columnIt = (Iterator) rows.next();
+          if ((firstRow >= firstVisibleRow) && (firstRow <= lastVisibleRow)) {
+            int curColumn = 0;
+            while (columnIt.hasNext()) {
+              renderCell(firstRow - firstVisibleRow, curColumn, columnIt.next());
+              curColumn++;
             }
           }
 
-          // Fire listeners
-          if (rowPagingListeners != null) {
-            Iterator it = rowPagingListeners.iterator();
-            while (it.hasNext()) {
-              HasRowPagingListener listener = (HasRowPagingListener) it.next();
-              listener.onPageLoaded();
-            }
-          }
+          // Go to next row
+          firstRow++;
         }
-      };
+      }
+
+      // Fire listeners
+      if (rowPagingListeners != null) {
+        Iterator it = rowPagingListeners.iterator();
+        while (it.hasNext()) {
+          HasRowPagingListener listener = (HasRowPagingListener) it.next();
+          listener.onPageLoaded();
+        }
+      }
+    }
+  };
 
   /**
    * The listeners attached to this {@link GridView}.
    */
-  private ArrayList/* <GridViewListener> */rowPagingListeners;
+  private RowPagingListenerCollection/* <GridViewListener> */rowPagingListeners;
 
   /**
    * The number of rows per page. If the number of rows per page is equal to the
@@ -227,7 +225,7 @@ public class GridView extends SortableFixedWidthGrid implements HasRowPaging {
    */
   public void addRowPagingListener(HasRowPagingListener listener) {
     if (rowPagingListeners == null) {
-      rowPagingListeners = new ArrayList();
+      rowPagingListeners = new RowPagingListenerCollection();
     }
     rowPagingListeners.add(listener);
   }
@@ -329,11 +327,7 @@ public class GridView extends SortableFixedWidthGrid implements HasRowPaging {
 
       // Fire listeners
       if (rowPagingListeners != null) {
-        Iterator it = rowPagingListeners.iterator();
-        while (it.hasNext()) {
-          HasRowPagingListener listener = (HasRowPagingListener) it.next();
-          listener.onPageChanged(currentPage);
-        }
+        rowPagingListeners.firePageChange(currentPage, this);
       }
 
       // Clear the current data in the grid
