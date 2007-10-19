@@ -3,8 +3,7 @@
   * Incubator Wiki
     * Libraries
       * DeclarativeUi
-      * ResourceManagement
-        * ImmutableResourceBundle
+      * ImmutableResourceBundle
         * StyleInjector
     * Widgets
       * Tables
