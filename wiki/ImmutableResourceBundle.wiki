@@ -1,4 +1,5 @@
 #summary Provides structured access to application resources
+#labels Type-Library
 
 = Introduction =
 
