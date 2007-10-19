@@ -1,4 +1,5 @@
 #summary New Widget - A Widget that displays progress over a range
+#labels Type-Widget
 
 = Introduction =
 The ProgressBar Widget displays progress over a range of values.  Users can dynamically change the minimum and maximum values in the range.  When the current value is set, a bar will fill the widget up to the percent relative to the range.
