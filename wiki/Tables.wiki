@@ -1,12 +1,19 @@
-#summary DRAFT overview of all table components in the incubator and how they fit together.
+#summary Overview of all table components in the incubator and how they fit together.
 #labels Type-Widget
+
+=Overview=
+Here is an informal class diagram detailing the table classes. 
+http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/ScrollTableClassDiagram.png
+=Core GWT Table classes=
+`HTMLTable`, `Grid`, and `FlexTable` are all core GWT classes. Their documentation is [http://code.google.com/webtoolkit/documentation/com.google.gwt.user.client.ui.HTMLTable.html here]
+
 
 =Table Modeling=
 One of the key features of the incubator table classes is the introduction of a table model in order to support both the bulk loading to table data and the ability to support paging tables.
-
-==Table model class overview==
-Class diagram
-
+ 
+===Class diagram===
+http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/TableModel.jpg
+===Class overview===
   * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/TableModel.html TableModel]
     * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/TableModel.Request.html Request]
     * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/TableModel.Response.html Response]
@@ -15,15 +22,11 @@ Class diagram
   * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/TableModel.ClientTableModel.html ClientTableModel]
   * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/TableModel.ListTableModel.html ListTableModel]
 
-==Sample usage of table model==
+===Sample usage of table model===
 Use case: A user wants to bulk load a table.
 
+http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/BulkLoadingSequenceDiagram.jpg
 
-=Overview=
-Here is an informal class diagram detailing the table classes. 
-http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/ScrollTableClassDiagram.png
-=Core GWT Table classes=
-`HTMLTable`, `Grid`, and `FlexTable` are all core GWT classes. Their documentation is [http://code.google.com/webtoolkit/documentation/com.google.gwt.user.client.ui.HTMLTable.html here]
 =Advanced Grids=
 The incubator includes many `Grid` based classes.
  
