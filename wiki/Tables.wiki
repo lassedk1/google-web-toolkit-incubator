@@ -1,15 +1,18 @@
 #summary DRAFT overview of all table components in the incubator and how they fit together.
 #labels Type-Widget
 =Advanced Grids=
-The incubator includes many `Grid` based classes. Any class descended from `FixedWidthGrid` may be used as the table body for a `ScrollTable`.
- 
-  * `HoverGrid` 
+The incubator includes many `Grid` based classes.
 
-  * `FixedWidthGrid`
-  * `SortableFixedWidthGrid`
-  * `PagingFixedWidthGrid`
-  * `EditableFixedWidthGrid`
+Any class descended from `FixedWidthGrid` may be used as the table body for a `ScrollTable`.
+  * General purpose Grids 
+    * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/HoverGrid.html HoverGrid] 
+  * Grids primarily used as the body of a complex table, such as ScrollTable
+    * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/FixedWidthGrid.html FixedWidthGrid]
+    * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/SortableFixedWidthGrid.html SortableFixedWidthGrid]
+    * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/GridView.html PagingFixedWidthGrid]
+    * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/EditableGridView.html EditableFixedWidthGrid]
 
+=Advanced FlexTables=
 
   
 
