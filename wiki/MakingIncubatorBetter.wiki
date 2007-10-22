@@ -25,9 +25,8 @@ Before deciding to contribute source code to the incubator project, you should c
     * Answer outstanding design questions
 If the answer to all the questions above is "yes", then your next step is to mail 
 Google-Web-Toolkit-Contributors@googlegroups.com with the little "Looking for Incubator sponsor for <<<synopsis of code>>>".
+
 example:
   Looking for Incubator sponsor for DatePicker.
 
 At this point someone who already is a committer to gwt-incubator must be willing to sponsor your code. You will work with the sponsor to get the code into shape for submittal.  You may then petition to become a committer to gwt-incubator.
-
-
