@@ -2,19 +2,22 @@
 #labels Type-Widget
 =Advanced Grids=
 The incubator includes many `Grid` based classes.
-
-Any class descended from `FixedWidthGrid` may be used as the table body for a `ScrollTable`.
-  * General purpose Grids 
+ 
+  * General purpose
     * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/HoverGrid.html HoverGrid] 
-  * Grids primarily used as the body of a complex table, such as ScrollTable
+  * Primarily used as ScrollTable body
     * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/FixedWidthGrid.html FixedWidthGrid]
     * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/SortableFixedWidthGrid.html SortableFixedWidthGrid]
     * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/GridView.html PagingFixedWidthGrid]
     * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/EditableGridView.html EditableFixedWidthGrid]
 
 =Advanced FlexTables=
-
-  
+The incubator includes several tables based on `FlexTable`.
+  * Primarily used as ScrollTable Header
+    * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/FixedWidthFlexTable.html FixedWidthFlexTable]
+  * BulkLoadingTables
+    * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/index.html?com/google/gwt/widgetideas/table/client/EditableGridView.html BulkLoadedTable]
+    * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/index.html?com/google/gwt/widgetideas/table/client/EditableGridView.html PreloadedTable]
 
 =Overview=
 Here is an informal class diagram detailing the table classes. 
