@@ -27,6 +27,9 @@ Use case: A user wants to bulk load a table.
 
 http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/BulkLoadingSequenceDiagram.jpg
 
+=ScrollTable=
+ScrollTable represents a table with a body, header and optional footer tables. The user choses which table types to use while constructing the ScrollTable. ScrollTable used the characteristic interfaces depicted in red above to determine what functionality the user can enable. 
+
 =Advanced Grids=
 The incubator includes many `Grid` based classes.
  
@@ -38,7 +41,7 @@ The incubator includes many `Grid` based classes.
     * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/GridView.html PagingFixedWidthGrid]
     * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/EditableGridView.html EditableFixedWidthGrid]
 
-=Advanced FlexTables=
+=Advanced !FlexTables=
 The incubator includes several tables based on `FlexTable`.
   * Primarily used as ScrollTable Header
     * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/table/client/FixedWidthFlexTable.html FixedWidthFlexTable]
