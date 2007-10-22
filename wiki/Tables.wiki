@@ -1,11 +1,20 @@
 #summary DRAFT overview of all table components in the incubator and how they fit together.
 #labels Type-Widget
-I am before a table 
-||I am a table||yes I am|| [Table]||
-|| 1 || 2 || [Table]||
-I am after a table
+=Advanced Grids=
+The incubator includes many `Grid` based classes. Any class descended from `FixedWidthGrid` may be used as the table body for a `ScrollTable`.
+ 
+  * `HoverGrid` 
+
+  * `FixedWidthGrid`
+  * `SortableFixedWidthGrid`
+  * `PagingFixedWidthGrid`
+  * `EditableFixedWidthGrid`
 
 
+  
+
+=Overview=
+Here is an informal class diagram detailing the table classes. 
 http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/ScrollTableClassDiagram.png
-
-http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/ScrollTableClassDiagram.png
+=Core GWT Table classes=
+`HTMLTable`, `Grid`, and `FlexTable` are all core GWT classes. Their documentation is [http://code.google.com/webtoolkit/documentation/com.google.gwt.user.client.ui.HTMLTable.html here]
