@@ -1,0 +1,11 @@
+<module>
+
+	<!-- Inherit the core Web Toolkit stuff. -->
+	<inherits name='com.google.gwt.user.User'/>
+  <inherits name='com.google.gwt.widgetideas.TitledPanel'/>
+
+	<!-- Specify the app entry point class. -->
+	<entry-point class='com.google.gwt.demos.titledpanel.client.TitledPanelDemo'/>
+  
+  <stylesheet src='TitledPanelDemo.css'/>
+</module>
