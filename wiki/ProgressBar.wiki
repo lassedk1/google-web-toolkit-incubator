@@ -13,15 +13,15 @@ Example:
 Here is an example CSS style for the ProgressBar Widget:
 {{{
 .gwt-ProgressBar-shell {
-  border: 3px solid #C3D9FF;
-  border-right: 3px solid #7AA5D6;
-  border-bottom: 3px solid #7AA5D6;
+  border: 2px solid #faf9f7;
+  border-right: 2px solid #848280;
+  border-bottom: 2px solid #848280;
   background-color: #AAAAAA;
   height: 14pt;
   width: 50%;
 }
 .gwt-ProgressBar-shell .gwt-ProgressBar-bar {
-  background-color: blue;
+  background-color: #67A7E3;
 }
 .gwt-ProgressBar-shell .gwt-ProgressBar-text {
   padding: 0px;
