@@ -31,20 +31,7 @@ public class SliderBarTest extends BasicWidgetTest {
    */
   public void testAccessors() {
     // Create a slider bar
-    SliderBar slider = new SliderBar(0.0, 100.0) {
-      /**
-       * Format the label to display above the ticks
-       * 
-       * Override this method in a subclass to customize the format. By default,
-       * this method returns the integer portion of the value.
-       * 
-       * @param value the value at the label
-       * @return the text to put in the label
-       */
-      public String formatLabel(double value) {
-        return super.formatLabel(value);
-      }
-    };
+    SliderBar slider = new SliderBar(0.0, 100.0);
     slider.setCurrentValue(50.0);
     slider.setStepSize(2.0);
     RootPanel.get().add(slider);
@@ -117,13 +104,9 @@ public class SliderBarTest extends BasicWidgetTest {
    */
   public void testTextFormatter() {
     // Set a new label formatter
-    SliderBar slider = new SliderBar(0.0, 100.0) {
-      protected String formatLabel(double value) {
-        return super.formatLabel(value);
-      }
-    };
+    SliderBar slider = new SliderBar(0.0, 100.0);
     slider.setLabelFormatter(new SliderBar.LabelFormatter() {
-      protected String formatLabel(SliderBar slider, double value) {
+      public String formatLabel(SliderBar slider, double value) {
         return "L: " + (int) value;
       }
     });
