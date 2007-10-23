@@ -17,10 +17,10 @@ Example:
 Here is an example CSS style for the SliderBar Widget:
 {{{
 .gwt-SliderBar-shell {
-  border: 3px solid #C3D9FF;
-  border-right: 3px solid #7AA5D6;
-  border-bottom: 3px solid #7AA5D6;
-  background-color: #E8EEF7;
+  border: 2px solid #faf9f7;
+  border-right: 2px solid #848280;
+  border-bottom: 2px solid #848280;
+  background-color: #efebe7;
   height: 34pt;
   width: 50%;
 }
@@ -52,10 +52,9 @@ Here is an example CSS style for the SliderBar Widget:
   cursor: default;
 }
 .gwt-SliderBar-shell-focused {
-  border: 3px solid #7AA5D6;
 }
 .gwt-SliderBar-shell .gwt-SliderBar-line-sliding {
-  background-color: #CDE2F7;
+  background-color: #DDDDDD;
   cursor: pointer;
 }
 }}}
