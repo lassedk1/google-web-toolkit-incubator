@@ -1,0 +1,26 @@
+#summary New Widget - Embed YouTube videos in your GWT application
+
+= Introduction =
+The YouTubeViewer Widget embeds a YouTube video in your GWT application.  It supports basic options such as changing the video, auto play, and links to related videos.
+
+Example:
+[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/YouTubeViewer/index.html]
+
+
+= CSS =
+
+Here is an example CSS style for the YouTubeViewer Widget:
+{{{
+.YouTubeViewer {
+	border: 2px solid #AAAAAA;
+	padding: 10px;
+	background: #DDDDDD
+}
+}}}
+
+
+= Sample Code =
+
+{{{
+  YouTubeViewer viewer = new YouTubeViewer("k56DbGDBsNk");
+}}
