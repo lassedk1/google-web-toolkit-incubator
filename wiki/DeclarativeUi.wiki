@@ -190,6 +190,17 @@ public abstract class App extends Composite implements Template {
 }
 }}}
 
+= Restrictions and Caveats =
+Because it uses a generator, composites defined this way must be created using {{{GWT.create()}}}. This also implies that they must have a no-argument constructor (because you cannot pass parameters to {{{GWT.create()}}}. A simple way to make this a little cleaner is to create a public static create() method, so that the site of instantiation just looks like {{{MyWidget w = MyWidget.create()}}}.
+
+{{{
+public static MyWidget create() {
+  return (MyWidget)GWT.create(MyWidget.class);
+}
+}}}
+
+Widgets instantiated *by* a template composite must also have a no-argument constructor, because the code generator doesn't know what arguments to pass to them (This restriction can be worked around with a custom parser; see below).
+
 = Implementation Details =
 As shown above, the composite base class implements 'Template', which is simply a tag interface that triggers a generator. The generator will find the associated ui.xml and generate a concrete implementation that constructs the widget hierarchy and implements all of the widget getter methods().
 
