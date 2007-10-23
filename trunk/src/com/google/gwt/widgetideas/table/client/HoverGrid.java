@@ -79,7 +79,7 @@ public class HoverGrid extends Grid {
   /**
    * The current hovering policy.
    */
-  private int hoveringPolicy = HOVERING_POLICY_ROW;
+  private int hoveringPolicy = HOVERING_POLICY_CELL;
 
   /**
    * The index of the cell currently being hovered.
