@@ -22,15 +22,15 @@ mymock.html
 
 App.ui.xml
 {{{
-<gwt:widget>
+<g:HTML xmlns:g='http://code.google.com/webtoolkit/com.google.gwt.user.client.ui'>
   <!-- A tree of buttons -->
   <div><div><button>Do something</button>...
-</gwt:widget>
+</g:HTML>
 }}}
 
 App.java
 {{{
-class App extends Composite implements EntryPoint, DeclUi {
+class App extends Composite implements EntryPoint, Template {
   public void onModuleLoad() {
    // ...
   }
@@ -43,18 +43,20 @@ class App extends Composite implements EntryPoint, DeclUi {
 
 App.ui.xml
 {{{
-<gwt:ui xmlns:gwt='module:com.google.gwt.user.User'>
-  <gwt:ButtonTree/>
-</gwt:ui>
+<!-- Note how we add a new namespace for the application's package -->
+<app:ButtonTree
+  xmlns:g='http://code.google.com/webtoolkit/com.google.gwt.user.client.ui'
+  xmlns:app='http://code.google.com/webtoolkit/com.example.myapp.client'
+/>
 }}}
 
 ButtonTree.ui.xml
 {{{
-<gwt:ui xmlns:gwt='module:com.google.gwt.user.User'>
-  <gwt:Tree>
-    <gwt:TreeItem><gwt:Button>Do something</Button></gwt:TreeItem>
-  </gwt:Tree>
-</gwt:ui>
+<g:Tree xmlns:g='http://code.google.com/webtoolkit/com.google.gwt.user.client.ui'>
+  <g:TreeItem>
+    <g:Button>Do something</g:Button>
+  </g:TreeItem>
+</g:Tree>
 }}}
 
 5. Still runnable! 
@@ -88,17 +90,15 @@ In this rather contrived example, we define a simple labeled text box using HTML
 
 EditableTextBox.ui.xml:
 {{{
-<gwt:ui xmlns:gwt='module:com.google.gwt.user.User'>
-  <gwt:HorizontalPanel>
-    <gwt:HTML id='label'>This <em>text box</em> is editable:</gwt:HTML>
-    <gwt:TextBox id='editor'/>
-  <gwt:HorizontalPanel>
-</gwt:ui>
+<g:HorizontalPanel xmlns:g='http://code.google.com/webtoolkit/com.google.gwt.user.client.ui'>
+  <g:HTML id='label'>This <em>text box</em> is editable:</g:HTML>
+  <g:TextBox id='editor'/>
+<g:HorizontalPanel>
 }}}
 
 EditableTextBox.java:
 {{{
-public abstract class EditableTextBox extends Composite implements DeclUi {
+public abstract class EditableTextBox extends Composite implements Template {
 
   public static EditableTextBox create() {
     return (EditableTextBox) GWT.create(EditableTextBox.class);
@@ -132,42 +132,40 @@ A couple of important things to notice here:
 
 App.ui.xml:
 {{{
-<gwt:ui xmlns:gwt='module:com.google.gwt.user.User'>
-  <gwt:HTMLPanel>
-    <div class='banner' style='width:100%'>
-      <img src='myLogo.gif'/>
-      Welcome to my application. It's really cool.
-    </div>
+<g:HTMLPanel xmlns:g='http://code.google.com/webtoolkit/com.google.gwt.user.client.ui'>
+  <div class='banner' style='width:100%'>
+    <img src='myLogo.gif'/>
+    Welcome to my application. It's really cool.
+  </div>
 
-    <gwt:MenuBar>
-      <gwt:MenuItem caption='file'>
-        <gwt:MenuBar>
-          <gwt:MenuItem caption='open'/ id='openMenu'>
-          <gwt:MenuItem caption='close' id='closeMenu'/>
-          <gwt:MenuItem caption='exit' id='exitMenu'/>
-        </gwt:MenuBar>
-      </gwt:MenuItem>
-    </gwt:MenuBar>
+  <g:MenuBar>
+    <g:MenuItem caption='file'>
+      <g:MenuBar>
+        <g:MenuItem caption='open'/ id='openMenu'>
+        <g:MenuItem caption='close' id='closeMenu'/>
+        <g:MenuItem caption='exit' id='exitMenu'/>
+      </g:MenuBar>
+    </g:MenuItem>
+  </g:MenuBar>
 
-    <div class='app' style='width:100%'>
-      <gwt:TabPanel id='tabs'>
-        <gwt:Tab>
-          <gwt:TabCaption><em>Main</em></gwt:TabCaption>
-          <gwt:MainComposite id='main'/>
-        </gwt:Tab>
-        <gwt:Tab>
-          <gwt:TabCaption><em>Settings</em></gwt:TabCaption>
-          <gwt:SettingsComposite id='settings'/>
-        </gwt:Tab>
-      </gwt:TabPanel>
-    </div>
-  </gwt:HTMLPanel>
-</gwt:ui>
+  <div class='app' style='width:100%'>
+    <g:TabPanel id='tabs'>
+      <g:Tab>
+        <g:TabCaption><em>Main</em></g:TabCaption>
+        <g:MainComposite id='main'/>
+      </g:Tab>
+      <g:Tab>
+        <g:TabCaption><em>Settings</em></g:TabCaption>
+        <g:SettingsComposite id='settings'/>
+      </g:Tab>
+    </g:TabPanel>
+  </div>
+</g:HTMLPanel>
 }}}
 
 App.java:
 {{{
-public abstract class App extends Composite implements DeclUi {
+public abstract class App extends Composite implements Template {
 
   public static App create() {
     return (App) GWT.create(App.class);
@@ -193,12 +191,11 @@ public abstract class App extends Composite implements DeclUi {
 }}}
 
 = Implementation Details =
-As shown above, the composite base class implements 'DeclUi', which is simply a tag interface that triggers a generator. The generator will find the associated ui.xml and generate a concrete implementation that constructs the widget hierarchy and implements all of the widget getter methods().
+As shown above, the composite base class implements 'Template', which is simply a tag interface that triggers a generator. The generator will find the associated ui.xml and generate a concrete implementation that constructs the widget hierarchy and implements all of the widget getter methods().
 
 (More to come on how the xml gets parsed, how xml structures are defined for widgets, and so forth)
 
 = Open Questions =
-  * The element names & namespaces (e.g. gwt:ui, DeclUi) are still up for debate.
   * It would be nice to generate a Java interface skeleton from an xml file to boostrap the process.
   * I18n (string replacement and the like).
   * ImageBundle support.
