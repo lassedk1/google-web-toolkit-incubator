@@ -21,10 +21,13 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ChangeListenerCollection;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ImageBundle;
 import com.google.gwt.user.client.ui.KeyboardListener;
+import com.google.gwt.user.client.ui.SourcesChangeEvents;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -66,7 +69,8 @@ import java.util.List;
  * line } </li>
  * </ul>
  */
-public class SliderBar extends FocusPanel implements ResizableWidget {
+public class SliderBar extends FocusPanel implements ResizableWidget,
+    SourcesChangeEvents {
   /**
    * The timer used to continue to shift the knob as the user holds down one of
    * the left/right arrow keys. Only IE auto-repeats, so we just keep catching
@@ -135,7 +139,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget {
   /**
    * A formatter used to format the labels displayed in the widget.
    */
-  public static class LabelFormatter {
+  public static interface LabelFormatter {
     /**
      * Generate the text to display in each label based on the label's value.
      * 
@@ -145,9 +149,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget {
      * @param value the value the label displays
      * @return the text to display for the label
      */
-    protected String formatLabel(SliderBar slider, double value) {
-      return (int) (10 * value) / 10.0 + "";
-    }
+    public abstract String formatLabel(SliderBar slider, double value);
   }
 
   /**
@@ -169,6 +171,11 @@ public class SliderBar extends FocusPanel implements ResizableWidget {
     AbstractImagePrototype sliderSliding();
   }
 
+  /**
+   * The change listeners.
+   */
+  private ChangeListenerCollection changeListeners;
+  
   /**
    * The current value.
    */
@@ -310,6 +317,18 @@ public class SliderBar extends FocusPanel implements ResizableWidget {
 
     // Make this a resizable widget
     ResizableWidgetCollection.get().add(this);
+  }
+
+  /**
+   * Add a change listener to this SliderBar.
+   * 
+   * @param listener the listener to add
+   */
+  public void addChangeListener(ChangeListener listener) {
+    if (changeListeners == null) {
+      changeListeners = new ChangeListenerCollection();
+    }
+    changeListeners.add(listener);
   }
 
   /**
@@ -519,26 +538,6 @@ public class SliderBar extends FocusPanel implements ResizableWidget {
   }
 
   /**
-   * The event fired when we start sliding.
-   */
-  public void onStartSliding() {
-  }
-
-  /**
-   * The event fired when we stop sliding.
-   */
-  public void onStopSliding() {
-  }
-
-  /**
-   * The event fired when the value changes.
-   * 
-   * @param curValue the current value
-   */
-  public void onValueChanged(double curValue) {
-  }
-
-  /**
    * Redraw the progress bar when something changes the layout.
    */
   public void redraw() {
@@ -546,6 +545,17 @@ public class SliderBar extends FocusPanel implements ResizableWidget {
       int width = DOM.getElementPropertyInt(getElement(), "clientWidth");
       int height = DOM.getElementPropertyInt(getElement(), "clientHeight");
       onResize(width, height);
+    }
+  }
+  
+  /**
+   * Remove a change listener from this SliderBar.
+   * 
+   * @param listener the listener to remove
+   */
+  public void removeChangeListener(ChangeListener listener) {
+    if (changeListeners != null) {
+      changeListeners.remove(listener);
     }
   }
 
@@ -580,8 +590,8 @@ public class SliderBar extends FocusPanel implements ResizableWidget {
     drawKnob();
 
     // Fire the onValueChange event
-    if (fireEvent) {
-      this.onValueChanged(getCurrentValue());
+    if (fireEvent && (changeListeners != null)) {
+      changeListeners.fireChange(this);
     }
   }
 
@@ -903,9 +913,6 @@ public class SliderBar extends FocusPanel implements ResizableWidget {
           "gwt-SliderBar-knob gwt-SliderBar-knob-sliding");
       images.sliderSliding().applyTo(knobImage);
     }
-    if (fireEvent) {
-      onStartSliding();
-    }
   }
 
   /**
@@ -921,9 +928,6 @@ public class SliderBar extends FocusPanel implements ResizableWidget {
       DOM.setElementProperty(knobImage.getElement(), "className",
           "gwt-SliderBar-knob");
       images.slider().applyTo(knobImage);
-    }
-    if (fireEvent) {
-      onStopSliding();
     }
   }
 
