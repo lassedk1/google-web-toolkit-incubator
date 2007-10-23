@@ -20,7 +20,7 @@
     
 	<inherits name="com.google.gwt.core.Core" />
 	<inherits name="com.google.gwt.user.UserAgent" />
-	<inherits name='com.google.gwt.widgetideas.WidgetIdeas' />
+	<inherits name='com.google.gwt.widgetideas.BasicWidget' />
 	<inherits name='com.google.gwt.widgetideas.table.OverrideDOM' />
   <inherits name='com.google.gwt.widgetideas.table.FixedWidthGrid'/>
   <inherits name='com.google.gwt.widgetideas.table.FixedWidthFlexTable'/>
