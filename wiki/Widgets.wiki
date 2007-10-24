@@ -2,6 +2,7 @@
 #labels Type-Widget
 
 = Introduction =
-The widgets package is meant for widgets that are candidates for a later GWT release.  All widgets are available using the  `Widgets.gwt.xml' module file.
+The widgets package is meant for widgets that are candidates for a later GWT release.  All widgets are available using the  `Widgets' module file. To use it, include the following line into your module file:
+{{{<inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>}}}
 
  
