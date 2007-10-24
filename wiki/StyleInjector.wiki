@@ -10,7 +10,6 @@
 In your gwt.xml file:
 {{{
 <inherits name="com.google.gwt.libideas.ImmutableResources" />
-<inherits name="com.google.gwt.widgetideas.StyleInjector" />
 }}}
 
 Define your ImmutableResourceBundle:
