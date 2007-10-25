@@ -18,4 +18,5 @@
 <!-- Most new code should inherit this module.                              -->
 <!--                                                                        -->
 <module>
+  <inherits name="com.google.gwt.libideas.StyleInjector" />
 </module>
