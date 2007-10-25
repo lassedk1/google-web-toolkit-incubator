@@ -4,7 +4,7 @@
 	<inherits name='com.google.gwt.user.User'/>
  
   <!-- Must include PinnedPanel module -->
-  <inherits name='com.google.gwt.widgetideas.PinnedPanel' />
+  <inherits name='com.google.gwt.widgetideas.BasicWidget' />
  
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='com.google.gwt.demos.pinnedpanel.client.PinnedPanelDemo'/>
