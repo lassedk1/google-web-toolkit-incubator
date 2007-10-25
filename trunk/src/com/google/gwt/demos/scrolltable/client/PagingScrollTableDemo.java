@@ -86,7 +86,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       int startRow = request.getStartRow();
       int numRows = request.getNumRows();
       int lastRow = startRow + numRows;
-      callback.onRowsReady(request, new Response(new DataSourceIterator(
+      callback.onRowsReady(request, new ClientResponse(new DataSourceIterator(
           startRow, lastRow, 12)));
     }
   }
