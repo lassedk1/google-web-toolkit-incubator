@@ -43,17 +43,12 @@ public class PinnedPanel extends Composite {
   abstract static class PinnedPanelImpl {
     abstract class SlidingTimer extends Timer {
       int interval;
-      boolean cancel;
 
       public void run() {
-        if (cancel) {
-          cancel = false;
+        if (processSizeChange()) {
+          this.schedule(OVERLAY_SPEED);
         } else {
-          if (processSizeChange()) {
-            this.schedule(OVERLAY_SPEED);
-          } else {
-            finish();
-          }
+          finish();
         }
       }
 
@@ -107,10 +102,10 @@ public class PinnedPanel extends Composite {
 
     protected void hide() {
       pin.state.currentState = State.HIDING;
-      overlayTimer.cancel = true;
-      hidingTimer.cancel = false;
-      hidingTimer.interval =
-          (pin.width - pin.peekoutSize) / NUMBER_OF_INTERVALS;
+      overlayTimer.cancel();
+      hidingTimer.cancel();
+      hidingTimer.interval = (pin.width - pin.peekoutSize)
+          / NUMBER_OF_INTERVALS;
       hidingTimer.run();
     }
 
@@ -118,15 +113,15 @@ public class PinnedPanel extends Composite {
 
     protected void show() {
       pin.state.currentState = State.SHOWING;
-      overlayTimer.cancel = false;
-      hidingTimer.cancel = true;
-      overlayTimer.interval =
-          (pin.width - pin.peekoutSize) / NUMBER_OF_INTERVALS;
+      overlayTimer.cancel();
+      hidingTimer.cancel();
+      overlayTimer.interval = (pin.width - pin.peekoutSize)
+          / NUMBER_OF_INTERVALS;
       overlayTimer.run();
     }
 
     protected void showPinned() {
-      // for later cleanup code.
+      DOM.setStyleAttribute(e, "marginRight", pin.getRightMargin() + "px");
     }
   }
 
@@ -170,6 +165,7 @@ public class PinnedPanel extends Composite {
         // Do nothing, timer is already running.
         return;
       } else if (savedState != NONE) {
+        // cancel previous cued-up run as our information trumps theirs.
         this.cancel();
       }
       savedState = state.currentState;
@@ -177,13 +173,9 @@ public class PinnedPanel extends Composite {
     }
 
     public void run() {
-      if (savedState != state.currentState) {
-        throw new IllegalStateException("How did this happen?" + savedState
-            + " current state:" + state.currentState);
-      }
-      if (state.currentState == State.WILL_HIDE) {
+      if (savedState == State.WILL_HIDE) {
         impl.hide();
-      } else if (state.currentState == State.WILL_SHOW) {
+      } else if (savedState == State.WILL_SHOW) {
         impl.show();
       } else {
         throw new IllegalStateException("Why are we in state "
@@ -323,8 +315,8 @@ public class PinnedPanel extends Composite {
    * browser's document.
    */
   protected void onLoad() {
-    int clientWidth =
-        DOM.getElementPropertyInt(this.getElement(), "clientWidth");
+    int clientWidth = DOM.getElementPropertyInt(this.getElement(),
+        "clientWidth");
     innerContents.setWidth(clientWidth + "px");
     this.peekoutSize = switchButton.getOffsetWidth();
     innerContents.setCellWidth(switchButton, peekoutSize + "px");
