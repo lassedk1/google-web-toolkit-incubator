@@ -61,7 +61,7 @@ public class GridView extends SortableFixedWidthGrid implements HasRowPaging {
    * The listener that handles events from the underlying
    * {@link TableController}.
    */
-  private TableControllerListener tableControllerListener = new TableControllerListener() {
+  protected TableControllerListener tableControllerListener = new TableControllerListener() {
     /**
      * Fired when the number of rows changes.
      * 
@@ -176,14 +176,7 @@ public class GridView extends SortableFixedWidthGrid implements HasRowPaging {
         }
       }
 
-      // Fire listeners
-      if (rowPagingListeners != null) {
-        Iterator it = rowPagingListeners.iterator();
-        while (it.hasNext()) {
-          HasRowPagingListener listener = (HasRowPagingListener) it.next();
-          listener.onPageLoaded();
-        }
-      }
+      fireRowPagingEvent();
     }
   };
 
@@ -204,8 +197,18 @@ public class GridView extends SortableFixedWidthGrid implements HasRowPaging {
    * @param tableController the underlying {@link TableController}
    */
   public GridView(TableController tableController) {
+    setTableController(tableController);
+  }
+
+  protected void setTableController(TableController tableController) {
     this.tableController = tableController;
     tableController.addTableControllerListener(tableControllerListener);
+  }
+  
+  /**
+   * Default constructor used for subclasses.
+   */
+  protected GridView(){
   }
 
   /**
@@ -333,16 +336,7 @@ public class GridView extends SortableFixedWidthGrid implements HasRowPaging {
       DeferredCommand.addCommand(new Command() {
         public void execute() {
           // Resize the grid if needed
-          int numRows = getLastRow() - getFirstRow() + 1;
-          if (numRows != getRowCount()) {
-            resizeRows(numRows);
-          }
-
-          // Clear out existing data
-          clearAll();
-
-          // Request the new data from the controller
-          tableController.requestData(currentPage * pageSize, pageSize);
+          renderContents();
         }
       });
     }
@@ -457,5 +451,32 @@ public class GridView extends SortableFixedWidthGrid implements HasRowPaging {
       currentPage = -1;
     }
     gotoPage(curPage);
+  }
+
+  /**
+   * Render the contents of the {@link GridView}.
+   */
+  protected void renderContents() {
+    int numRows = getLastRow() - getFirstRow() + 1;
+    if (numRows != getRowCount()) {
+      resizeRows(numRows);
+    }
+
+    // Clear out existing data
+    clearAll();
+
+    // Request the new data from the controller
+    tableController.requestData(currentPage * pageSize, pageSize);
+  }
+
+  protected void fireRowPagingEvent() {
+    // Fire listeners
+    if (rowPagingListeners != null) {
+      Iterator it = rowPagingListeners.iterator();
+      while (it.hasNext()) {
+        HasRowPagingListener listener = (HasRowPagingListener) it.next();
+        listener.onPageLoaded();
+      }
+    }
   }
 }

@@ -26,26 +26,35 @@ import java.util.List;
  * the current table.
  */
 public class BulkLoadedTable extends FlexTable implements
-    BulkLoadableImpl.BulkLoadable {
+    BulkLoader.BulkLoadable {
 
-  private BulkLoadableImpl impl;
+  private BulkLoader loader;
 
   /**
    * Constructor.
    */
   public BulkLoadedTable() {
-    impl = new BulkLoadableImpl(this);
+    loader = new BulkLoader(this);
   }
 
   private StringCellRenderer renderer = new StringCellRenderer();
 
   /**
-   * Sets the table's rows to the list of rows provided.
+   * Sets the table's rows to the list of rows provided. For example,
+   * 
+   * <pre>
+   *   ArrayList rows = new ArrayList();
+   *   ArrayList row1 = new ArrayList();
+   *   row1.add("cell 0,1");
+   *   row1.add("cell 0,2");
+   *   rows.add(row1);
+   *   renderRows(rows);
+   * </pre>
    * 
    * @param rows list of rows. Each row itself must be another list
    */
   public void renderRows(List rows) {
-    impl.renderRows(rows);
+    loader.renderRows(rows);
   }
 
   /**
@@ -72,7 +81,7 @@ public class BulkLoadedTable extends FlexTable implements
    *          indicates all of them
    */
   public void renderRows(TableModel tableModel, int startRow, int numRows) {
-    impl.renderRows(tableModel, startRow, numRows);
+    loader.renderRows(tableModel, startRow, numRows);
   }
 
   /**
@@ -88,4 +97,25 @@ public class BulkLoadedTable extends FlexTable implements
   public StringCellRenderer getRenderer() {
     return renderer;
   }
+
+  /**
+   * Sets a callback to be called after the table is finished being loaded.
+   * @param callback the callback
+   */
+  public void setOnLoadCompleteCallBack(
+      BulkLoader.OnLoadCompleteCallBack callback) {
+    loader.onLoadComplete = callback;
+  }
+
+  /**
+   * Sets how many rows should be processed before time is checked for an event flush.  Note: If rowsPerTimeCheck is set to anything other than Integer.MAX_VALUE, then the table is constructed asynchronously.
+   * @param rowsPerTimeCheck
+   */
+ public void setRowsPerTimeCheck(int rowsPerTimeCheck) {
+   loader.setRowsPerTimeCheck(rowsPerTimeCheck);
+  }
+
+ public int getRowsPerTimeCheck() {
+   return loader.getRowsPerTimeCheck();
+ } 
 }

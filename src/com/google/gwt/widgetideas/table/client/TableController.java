@@ -50,7 +50,7 @@ public class TableController {
    */
   private Callback callback = new Callback() {
     public void onRowsReady(Request request, Response response) {
-      setData(request.getStartRow(), response.getRows());
+      setData(request.getStartRow(), response.iterator());
     }
   };
 

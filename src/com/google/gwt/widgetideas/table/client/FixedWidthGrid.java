@@ -31,96 +31,6 @@ import java.util.HashMap;
 public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
     HasAutoFitColumn {
   /**
-   * An implementation used to accommodate differences in column width
-   * implementations between browsers.
-   */
-  private static class FixedWidthGridImpl {
-    /**
-     * Native method to add rows into a table with a given number of columns.
-     * 
-     * @param table the table element
-     * @param rows number of rows to add
-     * @param columns the number of columns per row
-     */
-    public native void addRows(Element table, int rows, int columns) /*-{
-                           var span = $doc.createElement("span");
-                           span.style["padding"] = "0px";
-                           span.innerHTML = "&nbsp;";
-                           var td = $doc.createElement("td");
-                           td.style["overflow"] = "hidden";
-                           td.appendChild(span);
-
-                           var row = $doc.createElement("tr");
-                           for(var cellNum = 0; cellNum < columns; cellNum++) {
-                             var cell = td.cloneNode(true);
-                             row.appendChild(cell);
-                           }
-                           table.appendChild(row);
-                           for(var rowNum = 1; rowNum < rows; rowNum++) {  
-                             table.appendChild(row.cloneNode(true));
-                           }
-                         }-*/;
-
-    /**
-     * Set the width of a column.
-     * 
-     * @param grid the grid to resize
-     * @param column the index of the column
-     * @param width the width in pixels
-     * @throws IndexOutOfBoundsException
-     */
-    public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
-      Element tableElem = grid.getElement();
-      DOM.setStyleAttribute(grid.getGhostCellElement(column), "width", width
-          + "px");
-    }
-  }
-
-  /**
-   * IE6 version of the implementation. IE6 sets the overall column width
-   * instead of the innerWidth, so we need to add the padding and spacing.
-   */
-  private static class FixedWidthGridImplIE6 extends FixedWidthGridImpl {
-    public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
-      width += 2 * grid.getCellPadding() + grid.getCellSpacing();
-      super.setColumnWidth(grid, column, width);
-    }
-  }
-
-  /**
-   * Safari version of the implementation. Safari sets the overall column width
-   * instead of the innerWidth, so we need to add the padding and spacing.
-   */
-  private static class FixedWidthGridImplSafari extends FixedWidthGridImpl {
-    public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
-      width += 2 * grid.getCellPadding() + grid.getCellSpacing();
-      super.setColumnWidth(grid, column, width);
-    }
-  }
-
-  /**
-   * Opera version of the implementation refreshes the table display so the new
-   * column size takes effect. Without the display refresh, the column width
-   * doesn't update in the browser.
-   */
-  private static class FixedWidthGridImplOpera extends FixedWidthGridImpl {
-    public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
-      super.setColumnWidth(grid, column, width);
-      Element tableElem = grid.getElement();
-      Element parentElem = DOM.getParent(tableElem);
-      int scrollLeft = 0;
-      if (parentElem != null) {
-        scrollLeft = DOM.getElementPropertyInt(parentElem, "scrollLeft");
-      }
-      DOM.setStyleAttribute(tableElem, "display", "none");
-      DOM.setStyleAttribute(tableElem, "display", "");
-      if (parentElem != null) {
-        DOM.setElementPropertyInt(parentElem, "scrollLeft", scrollLeft);
-      }
-    }
-  }
-
-  /**
    * This class contains methods used to format a table's cells.
    */
   public class FixedWidthGridCellFormatter extends CellFormatter {
@@ -151,6 +61,95 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
   public class FixedWidthGridRowFormatter extends HoverGridRowFormatter {
     protected Element getRawElement(int row) {
       return super.getRawElement(row + 1);
+    }
+  }
+
+  /**
+   * An implementation used to accommodate differences in column width
+   * implementations between browsers.
+   */
+  private static class FixedWidthGridImpl {
+    /**
+     * Native method to add rows into a table with a given number of columns.
+     * 
+     * @param table the table element
+     * @param rows number of rows to add
+     * @param columns the number of columns per row
+     */
+    public native void addRows(Element table, int rows, int columns) /*-{
+      var span = $doc.createElement("span");
+      span.style["padding"] = "0px";
+      span.innerHTML = "&nbsp;";
+      var td = $doc.createElement("td");
+      td.style["overflow"] = "hidden";
+      td.appendChild(span);
+
+      var row = $doc.createElement("tr");
+      for(var cellNum = 0; cellNum < columns; cellNum++) {
+        var cell = td.cloneNode(true);
+        row.appendChild(cell);
+      }
+      table.appendChild(row);
+      for(var rowNum = 1; rowNum < rows; rowNum++) {  
+        table.appendChild(row.cloneNode(true));
+      }
+    }-*/;
+
+    /**
+     * Set the width of a column.
+     * 
+     * @param grid the grid to resize
+     * @param column the index of the column
+     * @param width the width in pixels
+     * @throws IndexOutOfBoundsException
+     */
+    public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
+      DOM.setStyleAttribute(grid.getGhostCellElement(column), "width", width
+          + "px");
+    }
+  }
+
+  /**
+   * IE6 version of the implementation. IE6 sets the overall column width
+   * instead of the innerWidth, so we need to add the padding and spacing.
+   */
+  private static class FixedWidthGridImplIE6 extends FixedWidthGridImpl {
+    public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
+      width += 2 * grid.getCellPadding() + grid.getCellSpacing();
+      super.setColumnWidth(grid, column, width);
+    }
+  }
+
+  /**
+   * Opera version of the implementation refreshes the table display so the new
+   * column size takes effect. Without the display refresh, the column width
+   * doesn't update in the browser.
+   */
+  private static class FixedWidthGridImplOpera extends FixedWidthGridImpl {
+    public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
+      super.setColumnWidth(grid, column, width);
+      Element tableElem = grid.getElement();
+      Element parentElem = DOM.getParent(tableElem);
+      int scrollLeft = 0;
+      if (parentElem != null) {
+        scrollLeft = DOM.getElementPropertyInt(parentElem, "scrollLeft");
+      }
+      DOM.setStyleAttribute(tableElem, "display", "none");
+      DOM.setStyleAttribute(tableElem, "display", "");
+      if (parentElem != null) {
+        DOM.setElementPropertyInt(parentElem, "scrollLeft", scrollLeft);
+      }
+    }
+  }
+
+  /**
+   * Safari version of the implementation. Safari sets the overall column width
+   * instead of the innerWidth, so we need to add the padding and spacing.
+   */
+  private static class FixedWidthGridImplSafari extends FixedWidthGridImpl {
+    public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
+      width += 2 * grid.getCellPadding() + grid.getCellSpacing();
+      super.setColumnWidth(grid, column, width);
     }
   }
 
@@ -204,7 +203,7 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
     // Sink hover and selection events
     sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEDOWN | Event.ONCLICK);
   }
-
+ 
   /**
    * Stretches or shrinks the column to automatically fit its data content.
    * 
@@ -356,9 +355,9 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
       throw new IndexOutOfBoundsException(
           "Cannot access a column with a negative index: " + column);
     }
-
-    // Set the width
+    
     width = Math.max(MIN_COLUMN_WIDTH, width);
+    
     colWidths.put(new Integer(column), new Integer(width));
 
     // Update the cell width if possible
@@ -429,6 +428,10 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
    */
   protected int getGhostColumnCount() {
     return super.getDOMCellCount(0);
+  }
+
+  protected Element getGhostRow(){
+    return ghostRow;
   }
 
   /**
@@ -534,11 +537,18 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
   private Element getGhostCellElement(int column) {
     return DOM.getChild(ghostRow, column);
   }
-
+ 
+  /**
+   * Sets the ghost row variable. This does not change the underlying structure of the table.
+   * @param ghostRow the new ghost row
+   */
+  protected void setGhostRow(Element ghostRow){
+   this.ghostRow = ghostRow;
+  }
   /**
    * Add or remove ghost cells when the table size changes.
    */
-  private void updateGhostRow() {
+  protected void updateGhostRow() {
     int numGhosts = getGhostColumnCount();
     if (numColumns > numGhosts) {
       // Add ghosts as needed
