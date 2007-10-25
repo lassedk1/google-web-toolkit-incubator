@@ -44,7 +44,7 @@ public abstract class MutableTableModel extends TableModel {
    * @param data the new contents of the cell
    */
   public abstract void onSetData(int row, int cell, Object data);
-  
+
   /**
    * Event fired when the local data changes.
    * 
@@ -52,4 +52,55 @@ public abstract class MutableTableModel extends TableModel {
    * @param rows the 2D collection of row data
    */
   public abstract void onSetData(int firstRow, Collection rows);
+
+  /**
+   * 
+   */
+
+  /**
+   * {@link TableModelAdapter} wraps a read-only {@link TableModel} in a
+   * {@link MutableTableModel} wrapper, throwing
+   * {@link UnsupportedOperationException} when appropriate. This was done to
+   * simplify the design of tables, such as {@link ScrollTable} which may or may
+   * not have mutable data.
+   * 
+   */
+  public static class TableModelAdaptor extends MutableTableModel {
+    private TableModel baseModel;
+
+    /**
+     * Constructor for {@link TableModelAdaptor}.
+     * 
+     * @param readOnlyTableModel the underlying read only table model
+     */
+    public TableModelAdaptor(TableModel readOnlyTableModel) {
+      baseModel = readOnlyTableModel;
+    }
+
+    public void onRowInserted(int beforeRow) {
+      throw new UnsupportedOperationException(
+          "This Table Model supports read only operations");
+    }
+
+    public void onRowRemoved(int row) {
+      throw new UnsupportedOperationException(
+          "This Table Model supports read only operations");
+    }
+
+    public void onSetData(int row, int cell, Object data) {
+      throw new UnsupportedOperationException(
+          "This Table Model supports read only operations");
+    }
+
+    public void onSetData(int firstRow, Collection rows) {
+      throw new UnsupportedOperationException(
+          "This Table Model supports read only operations");
+    }
+
+    public void requestRows(Request request, Callback callback) {
+      baseModel.requestRows(request, callback);
+    }
+
+  }
+
 }

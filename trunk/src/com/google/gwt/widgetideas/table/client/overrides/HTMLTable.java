@@ -599,8 +599,8 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
     }
 
     protected native Element getRow(Element elem, int row) /*-{
-                  return elem.rows[row];
-                }-*/;
+       return elem.rows[row];
+     }-*/;
 
     /**
      * Convenience methods to set an attribute on a row.

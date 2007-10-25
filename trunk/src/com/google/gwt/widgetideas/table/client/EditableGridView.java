@@ -76,6 +76,13 @@ public class EditableGridView extends GridView {
   }
 
   /**
+   * Default constructor for subclasses.
+   */
+  protected EditableGridView(){
+    this.setHoveringPolicy(HOVERING_POLICY_CELL);
+    this.setSelectionPolicy(SELECTION_POLICY_DISABLED);
+  }
+  /**
    * Close any open cell editors. This method will close the editor even if it
    * wouldn't normally allow the user to cancel.
    */
