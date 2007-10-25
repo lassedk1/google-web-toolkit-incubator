@@ -8,8 +8,11 @@
 	color: #fff;
 	width: 20px;
 	text-align: center;
-	padding-top: 5px; height : 100%; cursor : pointer;
-	background: #59d; cursor : hand;
+	padding-top: 5px; 
+	height : 100%; 
+	cursor : pointer;
+	background: #59d; 
+	cursor : hand;
 	font-size: 80%;
 	white-space: nowrap;
 	text-align: center;
