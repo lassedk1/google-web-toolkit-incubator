@@ -1,0 +1,170 @@
+#summary New Widget - Date picker
+#labels Type-Widget
+
+= Introduction =
+DatePicker dialogbox widget that displays a small Gregorian calendar dates to select a date by the user.
+
+It is fully internationalized by the default locale. It has options to display of dates form the adjacent dates months. If needed, special formatting can be added for a given day. Any date can be choosen the start date and the month grid. Today's date is the default selection and also the default displayed month.
+
+= CSS =
+== Hooks ==
+|| .goog-date-picker ||	Entire widget ||	
+|| .goog-date-picker .grid || Grid in the DatePicker. This includes week names and the date numbers. ||	
+|| .goog-date-picker .title || Month and Year titles on the top ||	
+|| .goog-date-picker .control || Month and year increment and decrement buttons ||	
+|| .goog-date-picker .control-menu || Month and year list available by clicking on them ||	
+|| .goog-date-picker .control-block || The block of month/year display with its increment decrement controls ||	
+|| .goog-date-picker .control-pane || Top area containing month and year controls ||	
+|| .goog-date-picker .control-today || Clickable today button ||	
+|| .goog-date-picker .weekday || Any date ||	
+|| .goog-date-picker .week-names || Weekday names ||	
+|| .goog-date-picker .week-numbers || Week of the year number ||	
+|| .goog-date-picker .weekend-start || Weekend startdate ||	
+|| .goog-date-picker .weekend-end || Weekend end date ||	
+|| .goog-date-picker .today || Special formatting for today ||	
+|| .goog-date-picker .selected || Special formatting for the selected date ||	
+|| .goog-date-picker .other-month || Opacity reducing formatting for the adjacent months ||	
+
+== Example CSS style ==
+{{{
+  .goog-date-picker {
+    border: 1px solid black;
+    text-align: center;
+    vertical-align: middle; 
+  }
+  .goog-date-picker .grid { 
+    font: menu;
+	border-collapse: collapse;
+  }
+  .goog-date-picker .grid { 
+    font: menu;
+	border-collapse: collapse;
+  }
+
+  .goog-date-picker .grid td {
+	border-width: 1px;
+	padding: 0px;
+	border-style: solid;
+	border-color: white;
+	height: 20px;
+	width: 4ex;
+  }
+  .goog-date-picker .week-names {
+   color: gray;
+   text-align: center;
+   font-size: 0.8em;
+  }
+
+  .goog-date-picker .week-numbers {
+   color: gray;
+   text-align: center;
+  }
+
+  .goog-date-picker .control {
+    font: san-serif;
+	font-size: 12pt;
+	text-align: center;
+  	padding: 2px 2px 2px 2px;
+  	margin: 0px 1px 0px 1px ;
+   }
+   
+  .goog-date-picker .title {
+    border: 1px solid gray;
+    background: buttonface;
+    font: san-serif;
+	text-align: center;
+	vertical-align: middle;
+	width: 8ex;
+	font-size: 10pt;
+  	padding: 1px 2px 1px 2px;
+   }
+   
+   .goog-date-picker .control-today {
+    border: 1px solid gray;
+    background: buttonface;
+    font: san-serif;
+	text-align: center;
+	vertical-align: middle;
+	width: 25ex;
+	font-size: 10pt;
+   }
+   
+   
+  .goog-date-picker .control-menu {
+  	margin: 0px 1px 0px 1px ;
+   }
+  
+  .goog-date-picker .control-block {
+  	margin: 1px 1px 1px 1px ;
+   }
+  
+  .goog-date-picker .control-pane {
+  	margin: 1px 1px 1px 1px ;
+   }
+     
+  .goog-date-picker .control-submenu {
+  	font: menu;
+   }
+  
+  .goog-date-picker .weekday {
+    text-align: center;   
+    vertical-align: middle; 
+    font: menu;
+  }
+  
+  .goog-date-picker .weekend-start {
+    background-color: rgb(255, 204, 204);
+    text-align: center;   
+    vertical-align: middle; 
+    font: menu;
+  }
+
+  .goog-date-picker .weekend-end {
+    background-color: rgb(255, 204, 204);
+    text-align: center;   
+    vertical-align: middle; 
+    font: menu;
+    color: red;
+  }
+
+  .goog-date-picker .today {
+    font: menu;
+    font-weight: bold !important; 
+  }
+
+  .goog-date-picker .selected {
+    font: menu;
+    background-color: rgb(204, 204, 255);
+    color: blue;
+  }
+  
+  .goog-date-picker .special {
+    font-weight: bold !important; 
+    background: #FF6347;
+  }
+  
+  .goog-date-picker .other-month {
+    filter: Alpha(Opacity=30); 
+    opacity: 0.3;
+  }
+}}}
+
+
+= Sample Code =
+
+{{{
+      DatePicker datePicker = new DatePicker();
+      Date date = datePicker.selectedDate();
+
+
+      // features that could be enabled programmatically 
+      datePicker.showAdjacentMonths(true);
+      datePicker.showYearMonthListing(true);
+      datePicker.showTodayButton(true);
+      datePicker.setFullDate(new Date(1, 2, 3));
+      datePicker.setSpecialDate(date, "special"); //use 'special' style
+
+}}}
+ 
+ 
+ 
