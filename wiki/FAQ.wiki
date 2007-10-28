@@ -12,3 +12,5 @@ This FAQ contains answers to questions often encountered on the [http://groups.g
   * [StubbingRPC Stubbing RPC for hosted mode] - How to stub RPC servlets to make deployment a breeze while making hosted mode testing simple and easy.
 
   * [IntegratingWithSpring Integrating GWT with Spring 2.0]
+
+  * I'd like to unit test my server's email facility: Use [http://quintanasoft.com/dumbster/ Dumbster] - it's a fake SMTP server written in java that stores the email it would have sent so your testing utility can check it.
