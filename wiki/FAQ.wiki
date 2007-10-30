@@ -9,6 +9,8 @@ This FAQ contains answers to questions often encountered on the [http://groups.g
 
   * [PathsHandlingFAQ How GWT handles paths] - Read this if you're getting 'can't find file' errors from GWT.
 
+  * [LoginSecurityFAQ Login Security] - Basic treatise on writing your login system in a secure fashion.
+
   * [StubbingRPC Stubbing RPC for hosted mode] - How to stub RPC servlets to make deployment a breeze while making hosted mode testing simple and easy.
 
   * [IntegratingWithSpring Integrating GWT with Spring 2.0]
