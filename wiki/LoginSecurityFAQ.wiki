@@ -81,7 +81,15 @@ Now you can run the following code right after your `!EntryPoint` begins executi
 
 == auto-complete and GWT ==
 
-TODO: Explain the trick of putting the login page in a div in the main .html, and hiding this after login is complete.
+Certain browsers offer the option to store username/password combinations so that they are automatically filled in for the user the next time they visit the page. However, usually this works only if there are two input boxes (one of type password), and only if those input boxes are loaded along with the main page, and not added later via javascript (which is what GWT does).
+
+In order to force these input boxes to show up, stuff them in the project's HTML in an invisible div. Then, in GWT, instead of creating a TextBox and a PasswordTextBox, make the div visible and read out the values using the DOM.* library.
+
+TODO: Expand on this section.
+
+== Using Acegi with GWT ==
+
+[http://www.acegisecurity.org/ Acegi] is a security system for [http://www.springframework.org/ Spring], but it can also be used separately. Bruno Marchesson wrote an article about it: [http://www.dotnetguru2.org/bmarchesson/index.php?p=678&more=1&c=1&tb=1&pb=1 Using Acegi with GWT].
 
 == Extra Security Discussion ==
     _Based on a chat with GWT's Bob Vawter_
