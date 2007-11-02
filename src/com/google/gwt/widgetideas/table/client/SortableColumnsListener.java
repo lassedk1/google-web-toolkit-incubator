@@ -25,7 +25,7 @@ public interface SortableColumnsListener extends EventListener {
    * Fired when the currently sorted column changes.
    * 
    * @param column the currently sorted column, -1 for unsorted
-   * @param reversed specifies that this is a reverse sorting
+   * @param ascending specifies that this sort is ascending
    */
-  public abstract void onSetSortedColumn(int column, boolean reversed);
+  public abstract void onSetSortedColumn(int column, boolean ascending);
 }

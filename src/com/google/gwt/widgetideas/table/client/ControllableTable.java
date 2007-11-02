@@ -20,44 +20,60 @@ import java.util.Iterator;
 /**
  * Event listener interface for {@link TableController} events.
  */
-public interface TableControllerListener {
+public interface ControllableTable extends SourceDataRequestEvents {
   /**
-   * Fired when the number of rows changes.
+   * Get the sort index.
    * 
-   * @param numRows the new number of rows
+   * @return the sort index, -1 if unsorted
    */
-  public void onNumRowsChanged(int numRows);
-
+  public int getSortIndex();
+  
   /**
-   * Fired when a row is inserted.
+   * Insert a row into the table.
    * 
    * @param beforeRow the row index
+   * @return the index of the newly created row
    */
-  public void onRowInserted(int beforeRow);
+  public int insertRow(int beforeRow);
 
   /**
-   * Fired when a row is removed.
+   * Return true if the sort order is ascending, false if descending.
+   * 
+   * @return the sort order
+   */
+  public boolean isSortAscending();
+  
+  /**
+   * Remove a row from the table.
    * 
    * @param row the row index
    */
-  public void onRowRemoved(int row);
+  public void removeRow(int row);
 
   /**
-   * Fired when the data in a given cell changes.
+   * Set some arbitrary data in a specific cell.
    * 
    * @param row the row index
    * @param column the column index
    * @param data the data to set
    */
-  public void onSetData(int row, int column, Object data);
+  public void setData(int row, int column, Object data);
 
   /**
-   * Fired when a block of data changes. This method takes an iterator of
-   * Collections, where each collection represents one row of data starting with
-   * the first row.
+   * Set a block of data. This method is used when responding to data requests.
+   * 
+   * This method takes an iterator of Collections, where each collection
+   * represents one row of data starting with the first row.
    * 
    * @param firstRow the row index
    * @param rows the 2D Iterator of data
    */
-  public void onSetData(int firstRow, Iterator/* Iterator<Object> */rows);
+  public void setData(int firstRow, Iterator/* Iterator<Object> */rows);
+
+  /**
+   * Set the total number of rows.
+   * 
+   * @param numRows the new number of rows
+   */
+  public void setNumRows(int numRows);
 }

@@ -19,8 +19,6 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -40,11 +38,11 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
      * 
      * @param grid the grid that the sorting will be applied to
      * @param column the column to sort
-     * @param reversed true if the column should be reverse sorted
+     * @param ascending true if the column should be ascending sorted
      * @param callback the callback object when sorting is complete
      */
     public abstract void onSortColumn(SortableFixedWidthGrid grid, int column,
-        boolean reversed, ColumnSorterCallback callback);
+        boolean ascending, ColumnSorterCallback callback);
   }
 
   /**
@@ -58,10 +56,10 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
      * according to their new positions in the Grid.
      * 
      * @param column the column that was sorted
-     * @param reversed a boolean indicating that the sorting is reversed
+     * @param ascending a boolean indicating that the sorting is ascending
      * @param trIndexes the row index in their new order
      */
-    protected void onSortingComplete(int column, boolean reversed,
+    protected void onSortingComplete(int column, boolean ascending,
         int[] trIndexes) {
       // Convert indexes to row elements
       FixedWidthGridRowFormatter formatter = getFixedWidthGridRowFormatter();
@@ -71,7 +69,7 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
       }
 
       // Call main callback method
-      onSortingComplete(column, reversed, trElems);
+      onSortingComplete(column, ascending, trElems);
     }
 
     /**
@@ -81,10 +79,10 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
      * according to their new positions in the Grid.
      * 
      * @param column the column that was sorted
-     * @param reversed a boolean indicating that the sorting is reversed
+     * @param ascending a boolean indicating that the sorting is ascending
      * @param trElems the row elements in their new order
      */
-    protected void onSortingComplete(int column, boolean reversed,
+    protected void onSortingComplete(int column, boolean ascending,
         Element[] trElems) {
       // Move the rows to their new positions
       Element bodyElem = getBodyElement();
@@ -96,7 +94,7 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
       }
 
       // Mark the column as sorted
-      setSortedColumn(column, reversed);
+      setSortedColumn(column, ascending);
     }
   }
 
@@ -108,7 +106,7 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
   /**
    * The sortable columns listeners attached to this grid.
    */
-  private ArrayList/* <HasSortableColumnsListener> */sortableColumnsListeners = null;
+  private SortableColumnsListenerCollection sortableColumnsListeners = null;
 
   /**
    * The currently sorted column, if one exists.
@@ -116,9 +114,9 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
   private int sortedColumnIndex = -1;
 
   /**
-   * If true, the currently sorted column is reversed.
+   * If true, the currently sorted column is ascending.
    */
-  private boolean sortedColumnReversed = false;
+  private boolean sortedColumnAscending = false;
 
   /**
    * Add a {@link SortableColumnsListener} listener.
@@ -127,7 +125,7 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
    */
   public void addSortableColumnsListener(SortableColumnsListener listener) {
     if (sortableColumnsListeners == null) {
-      sortableColumnsListeners = new ArrayList();
+      sortableColumnsListeners = new SortableColumnsListenerCollection();
     }
     sortableColumnsListeners.add(listener);
   }
@@ -142,7 +140,25 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
   }
 
   /**
-   * Move a row up one index to a smaller index.
+   * Get the sort index.
+   * 
+   * @return the sort index, -1 if unsorted
+   */
+  public int getSortIndex() {
+    return sortedColumnIndex;
+  }
+
+  /**
+   * Return true if the sort order is ascending, false if descending.
+   * 
+   * @return the sort order
+   */
+  public boolean isSortAscending() {
+    return sortedColumnAscending;
+  }
+
+  /**
+   * Move a row up (relative to the screen) one index to a lesser index.
    * 
    * @param row the row index to move
    * @throws IndexOutOfBoundsException
@@ -152,7 +168,7 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
   }
 
   /**
-   * Move a row down one index to a higher index.
+   * Move a row down (relative to the screen) one index to a greater index.
    * 
    * @param row the row index to move
    * @throws IndexOutOfBoundsException
@@ -183,7 +199,7 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
     }
 
     // Set the column sorting as reversed
-    setSortedColumn(sortedColumnIndex, !sortedColumnReversed);
+    setSortedColumn(sortedColumnIndex, !sortedColumnAscending);
   }
 
   /**
@@ -258,9 +274,9 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
    */
   public void sortColumn(int column) {
     if (column == sortedColumnIndex) {
-      sortColumn(column, !sortedColumnReversed);
+      sortColumn(column, !sortedColumnAscending);
     } else {
-      sortColumn(column, false);
+      sortColumn(column, true);
     }
   }
 
@@ -268,10 +284,10 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
    * Sort the grid according to the specified column.
    * 
    * @param column the column to sort
-   * @param reversed reverse sort the column
+   * @param ascending sort the column in ascending order
    * @throws IndexOutOfBoundsException
    */
-  public void sortColumn(int column, boolean reversed) {
+  public void sortColumn(int column, boolean ascending) {
     // Verify the column bounds
     if (column < 0) {
       throw new IndexOutOfBoundsException(
@@ -283,14 +299,14 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
 
     // See if column is already sorted
     if (column == sortedColumnIndex) {
-      if (reversed != sortedColumnReversed) {
+      if (ascending != sortedColumnAscending) {
         reverseRows();
       }
       return;
     }
 
     // Use the onSort method to actually sort the column
-    getColumnSorter(true).onSortColumn(this, column, reversed,
+    getColumnSorter(true).onSortColumn(this, column, ascending,
         new ColumnSorterCallback());
   }
 
@@ -321,22 +337,31 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
     if ((columnSorter == null) && createAsNeeded) {
       columnSorter = new ColumnSorter() {
         public void onSortColumn(SortableFixedWidthGrid grid, int column,
-            boolean reversed, ColumnSorterCallback callback) {
+            boolean ascending, ColumnSorterCallback callback) {
           // Apply the default quicksort algorithm
-          FixedWidthGridCellFormatter formatter = grid.getFixedWidthGridCellFormatter();
+          FixedWidthGridCellFormatter formatter =
+              grid.getFixedWidthGridCellFormatter();
           Element[] tdElems = new Element[grid.getRowCount()];
           for (int i = 0; i < tdElems.length; i++) {
             tdElems[i] = formatter.getRawElement(i, column);
           }
           this.onSortColumnQuickSort(tdElems, 0, tdElems.length - 1);
 
-          // Convert tdElems to trElems
-          for (int i = 0; i < tdElems.length; i++) {
-            tdElems[i] = DOM.getParent(tdElems[i]);
+          // Convert tdElems to trElems, reversing if needed
+          Element[] trElems = new Element[tdElems.length];
+          if (ascending) {
+            for (int i = 0; i < tdElems.length; i++) {
+              trElems[i] = DOM.getParent(tdElems[i]);
+            }
+          } else {
+            int maxElem = tdElems.length - 1;
+            for (int i = 0; i <= maxElem; i++) {
+              trElems[i] = DOM.getParent(tdElems[maxElem - i]);
+            }
           }
 
           // Use the callback to complete the sorting
-          callback.onSortingComplete(column, reversed, tdElems);
+          callback.onSortingComplete(column, ascending, trElems);
         }
 
         /**
@@ -397,28 +422,24 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
    * Set the currently sorted column.
    * 
    * @param column the column index
-   * @param reversed whether the column is reverse sorted
+   * @param ascending whether the column is reverse sorted
    */
-  protected void setSortedColumn(int column, boolean reversed) {
-    if ((column == sortedColumnIndex) && (reversed == sortedColumnReversed)) {
+  protected void setSortedColumn(int column, boolean ascending) {
+    if ((column == sortedColumnIndex) && (ascending == sortedColumnAscending)) {
       // Nothing changed
       return;
     } else if (column < 0) {
       sortedColumnIndex = -1;
-      sortedColumnReversed = false;
+      sortedColumnAscending = false;
     } else {
       sortedColumnIndex = column;
-      sortedColumnReversed = reversed;
+      sortedColumnAscending = ascending;
     }
 
     // Fire grid listeners
     if (sortableColumnsListeners != null) {
-      // for (ExtendedGridListener listener : extendedGridListeners) {
-      Iterator it = sortableColumnsListeners.iterator();
-      while (it.hasNext()) {
-        SortableColumnsListener listener = (SortableColumnsListener) it.next();
-        listener.onSetSortedColumn(sortedColumnIndex, sortedColumnReversed);
-      }
+      sortableColumnsListeners.fireOnSetSortedColumn(sortedColumnIndex,
+          sortedColumnAscending);
     }
   }
 

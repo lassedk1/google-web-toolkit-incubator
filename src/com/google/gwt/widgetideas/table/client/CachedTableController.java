@@ -15,6 +15,9 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
+import com.google.gwt.widgetideas.table.client.TableModel.Request;
+import com.google.gwt.widgetideas.table.client.TableModel.Response;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,7 +46,7 @@ import java.util.List;
  * <p>
  * The size of your cache depends on the implementation and usage of your view
  * component. If you are using a view that supports paging, such as the
- * {@link GridView}, you should set your cache to a multiple of the page size
+ * {@link PagingGrid}, you should set your cache to a multiple of the page size
  * so the user can go to the next and previous pages quickly.
  * </p>
  */
@@ -64,6 +67,67 @@ public class CachedTableController extends TableController {
       throw new UnsupportedOperationException("Remove not supported.");
     }
   };
+
+  /**
+   * A callback that automatically updates a {@link ControllableTable}.
+   */
+  public class CacheCallback extends ControllableTableCallback {
+    /**
+     * The first requested row.
+     */
+    private int firstRow;
+
+    /**
+     * The last requested row.
+     */
+    private int lastRow;
+
+    /**
+     * Constructor.
+     * 
+     * @param controllableTable the {@link ControllableTable} instance
+     * @param firstRow the first row that was requested by the table
+     * @param lastRow the last row that was requested by the table
+     */
+    public CacheCallback(ControllableTable controllableTable, int firstRow,
+        int lastRow) {
+      super(controllableTable);
+      this.firstRow = firstRow;
+      this.lastRow = lastRow;
+    }
+
+    /**
+     * Update the table with the requested data.
+     * 
+     * @param request the request
+     * @param response the response
+     */
+    public void onRowsReady(Request request, Response response) {
+      // Save the response data into the cache
+      int curRow = request.getStartRow();
+      Iterator rows = response.iterator();
+      if (rows != null) {
+        // Save the data to the cache
+        while (rows.hasNext()) {
+          Iterator columnIt = (Iterator) rows.next();
+          List/* Object */rowList = ensureRowList(curRow);
+          if (columnIt != null) {
+            rowList.clear();
+            while (columnIt.hasNext()) {
+              rowList.add(columnIt.next());
+            }
+          }
+
+          // Go to next row
+          curRow++;
+        }
+      }
+
+      // Update the table
+      getControllableTable().setData(firstRow,
+          new CacheIterator(firstRow, lastRow));
+    }
+  }
 
   /**
    * An iterator that iterates over the cached rows of data.
@@ -131,17 +195,15 @@ public class CachedTableController extends TableController {
   /**
    * Constructor.
    * 
-   * @param tableModel the underlying {@link MutableTableModel}
+   * @param tableModel the underlying {@link TableModel}
    */
-  public CachedTableController(MutableTableModel tableModel) {
+  public CachedTableController(TableModel tableModel) {
     super(tableModel);
   }
 
   /**
    * Get data from the cache. If the data is not available, this method will not
-   * request the data from the table model. Use the
-   * {@link #requestData(int, int)} method to request data from the
-   * {@link TableModel}.
+   * request the data from the table model.
    * 
    * @param row the row index
    * @param column the column index
@@ -161,7 +223,7 @@ public class CachedTableController extends TableController {
    * 
    * @return the number of rows to post cache
    */
-  public int getPostCacheRows() {
+  public int getNumPostCachedRows() {
     return postCacheRows;
   }
 
@@ -170,7 +232,7 @@ public class CachedTableController extends TableController {
    * 
    * @return the number of rows to pre cache
    */
-  public int getPreCacheRows() {
+  public int getNumPreCachedRows() {
     return preCacheRows;
   }
 
@@ -185,7 +247,7 @@ public class CachedTableController extends TableController {
   }
 
   /**
-   * Remove a row of data and decrement all rows after the removed row.
+   * Remove a row of data.
    * 
    * @param row the row to remove
    * @throws IndexOutOfBoundsException
@@ -193,67 +255,6 @@ public class CachedTableController extends TableController {
   public void removeRow(int row) {
     dataMap.clear();
     super.removeRow(row);
-  }
-
-  /**
-   * Request new data to load.
-   * 
-   * @param firstRow the start row of the request
-   * @param rowCount the number of rows of data to request
-   */
-  public void requestData(int firstRow, int rowCount) {
-    // Calculate bounds including the cache
-    int numRows = getNumRows();
-    int lastRow = firstRow + rowCount - 1;
-    if (numRows >= 0) {
-      lastRow = Math.min(numRows - 1, lastRow);
-    }
-    int uncachedFirstRow = Math.max(0, firstRow - preCacheRows);
-    int uncachedLastRow = lastRow + postCacheRows;
-    if (numRows >= 0) {
-      uncachedLastRow = Math.min(numRows - 1, uncachedLastRow);
-    }
-
-    // Remove any data already retrieved from the first Row
-    for (int row = uncachedFirstRow; row <= lastRow; row++) {
-      if (dataMap.containsKey(new Integer(row))) {
-        uncachedFirstRow++;
-      } else {
-        // Need to request the remaining rows
-        break;
-      }
-    }
-
-    // Send back the info we already have from the front
-    if (uncachedFirstRow > firstRow) {
-      super.setData(firstRow, new CacheIterator(firstRow, uncachedFirstRow - 1));
-      firstRow = uncachedFirstRow;
-    }
-
-    // Remove any data already retrieved from the last Row
-    for (int row = uncachedLastRow; row >= firstRow; row--) {
-      if (dataMap.containsKey(new Integer(row))) {
-        uncachedLastRow--;
-      } else {
-        // Need to request the remaining rows
-        break;
-      }
-    }
-
-    // Send back the info we already have from the back
-    if (uncachedLastRow < lastRow) {
-      super.setData(uncachedLastRow + 1, new CacheIterator(uncachedLastRow + 1,
-          lastRow));
-    }
-
-    // Request the remaining rows
-    if (uncachedFirstRow <= uncachedLastRow) {
-      for (int i = uncachedFirstRow; i <= uncachedLastRow; i++) {
-        ensureRowList(i, false);
-      }
-      super.requestData(uncachedFirstRow, uncachedLastRow - uncachedFirstRow
-          + 1);
-    }
   }
 
   /**
@@ -265,10 +266,12 @@ public class CachedTableController extends TableController {
    */
   public void setData(int row, int column, Object data) {
     // Save the data to the cache
-    List/* <Object> */rowList = ensureRowList(row, true);
-    ensureListCapacity(rowList, column + 1);
+    List/* <Object> */rowList = ensureRowList(row);
+    for (int i = rowList.size(); i < column + 1; i++) {
+      rowList.add(null);
+    }
     rowList.set(column, data);
-    
+
     // Update the number of rows
     int numRows = getNumRows();
     if (numRows >= 0) {
@@ -277,51 +280,6 @@ public class CachedTableController extends TableController {
 
     // Call super method
     super.setData(row, column, data);
-  }
-
-  /**
-   * Set blocks of data in the controller.
-   * 
-   * This method takes an iterator of Collections, where each collection
-   * represents one row of data starting with the first row.
-   * 
-   * @param firstRow the first row index
-   * @param rows the 2D collection of row data
-   */
-  public void setData(int firstRow, Iterator rows) {
-    int curRow = firstRow;
-    if (rows != null) {
-      // Save the data to the cache
-      while (rows.hasNext()) {
-        Iterator columnIt = (Iterator) rows.next();
-        if (columnIt == null) {
-          ensureRowList(curRow, false);
-        } else {
-          List/* Object */rowList = ensureRowList(curRow, true);
-          rowList.clear();
-          while (columnIt.hasNext()) {
-            rowList.add(columnIt.next());
-          }
-        }
-
-        // Go to next row
-        curRow++;
-      }
-    }
-
-    // Call super method
-    super.setData(firstRow, new CacheIterator(firstRow, curRow - 1));
-  }
-
-  /**
-   * Set the number of rows to cache before and after the visible data area.
-   * 
-   * @param preCacheRows the number of rows to pre cache
-   * @param postCacheRows the number of rows to post cache
-   */
-  public void setNumCachedRows(int preCacheRows, int postCacheRows) {
-    setNumPreCachedRows(preCacheRows);
-    setNumPostCachedRows(postCacheRows);
   }
 
   /**
@@ -343,49 +301,81 @@ public class CachedTableController extends TableController {
   }
 
   /**
-   * Ensure that the specified list has the minimum size.
+   * Request some data from the model and respond with the specified callback.
    * 
-   * Note that this is the actual number of elements, not just the capacity.
-   * 
-   * @param list the list to enlarge
-   * @param minSize the minimum number of elements in the list
+   * @param startRow the first row to request
+   * @param numRows the number of rows to request
+   * @param sortIndex the index to sort by
+   * @param sortAscending true to sort ascending, false for descending
+   * @param table the table requesting the rows
    */
-  private void ensureListCapacity(List list, int minSize) {
-    for (int i = list.size(); i < minSize; i++) {
-      list.add(null);
+  protected void requestRows(int startRow, int numRows, int sortIndex,
+      boolean sortAscending, ControllableTable table) {
+    // Check if all requested rows are in the cache
+    int lastRow = startRow + numRows - 1;
+    boolean fullyCached = true;
+    for (int row = startRow; row <= lastRow; row++) {
+      if (!dataMap.containsKey(new Integer(row))) {
+        fullyCached = false;
+        break;
+      }
     }
+    if (fullyCached) {
+      table.setData(startRow, new CacheIterator(startRow, lastRow));
+      return;
+    }
+
+    // Calculate bounds including the cache
+    int uncachedFirstRow = Math.max(0, startRow - preCacheRows);
+    int uncachedLastRow = lastRow + postCacheRows;
+
+    // Check the upper bounds against the total number of rows
+    int totalNumRows = getNumRows();
+    if (totalNumRows >= 0) {
+      lastRow = Math.min(totalNumRows - 1, lastRow);
+      uncachedLastRow = Math.min(totalNumRows - 1, uncachedLastRow);
+    }
+
+    // Remove any data already retrieved starting at the first rows
+    for (int row = uncachedFirstRow; row <= lastRow; row++) {
+      if (dataMap.containsKey(new Integer(row))) {
+        uncachedFirstRow++;
+      } else {
+        // Need to request the remaining rows
+        break;
+      }
+    }
+
+    // Remove any data already retrieved from the last Row
+    for (int row = uncachedLastRow; row >= startRow; row--) {
+      if (dataMap.containsKey(new Integer(row))) {
+        uncachedLastRow--;
+      } else {
+        // Need to request the remaining rows
+        break;
+      }
+    }
+
+    // Request the remaining rows that aren't in the cache
+    requestRows(uncachedFirstRow, uncachedLastRow - uncachedFirstRow + 1,
+        sortIndex, sortAscending, table, new CacheCallback(table, startRow,
+            lastRow));
   }
 
   /**
    * Get a row from the dataMap, creating it if it doesn't exist yet.
    * 
-   * If createList is true, this method will ensure that the row has a key in
-   * the cache AND the key points to a valid List object. If createList is
-   * false, this method will just ensure the key exists but point it to null.
-   * 
    * @param row the row index
-   * @param createList actually add the list, not just the key
    * @return the List of row data
    */
-  private List/* <Object> */ensureRowList(int row, boolean createList) {
+  private List/* <Object> */ensureRowList(int row) {
     Integer rowI = new Integer(row);
-    if (createList) {
-      // Make sure the List is created
-      List rowList = (List) dataMap.get(rowI);
-      if (rowList == null) {
-        rowList = new ArrayList();
-        dataMap.put(rowI, rowList);
-      }
-      return rowList;
-    } else {
-      // Just make sure a key is set for the row
-      if (dataMap.containsKey(rowI)) {
-        return (List) dataMap.get(rowI);
-      } else {
-        dataMap.put(rowI, null);
-        return null;
-      }
+    List rowList = (List) dataMap.get(rowI);
+    if (rowList == null) {
+      rowList = new ArrayList();
+      dataMap.put(rowI, rowList);
     }
+    return rowList;
   }
 
   /**

@@ -39,6 +39,20 @@ public class FixedWidthFlexTable extends FlexTable implements
    */
   private static class FixedWidthFlexTableImpl {
     /**
+     * Create the ghost row.
+     * 
+     * @return the ghost row element
+     */
+    public Element createGhostRow() {
+      Element ghostRow = DOM.createTR();
+      DOM.setStyleAttribute(ghostRow, "margin", "0px");
+      DOM.setStyleAttribute(ghostRow, "padding", "0px");
+      DOM.setStyleAttribute(ghostRow, "height", "0px");
+      DOM.setStyleAttribute(ghostRow, "overflow", "hidden");
+      return ghostRow;
+    }
+    
+    /**
      * Set the width of a column.
      * 
      * @param column the index of the column
@@ -58,6 +72,12 @@ public class FixedWidthFlexTable extends FlexTable implements
    */
   private static class FixedWidthFlexTableImplIE6 extends
       FixedWidthFlexTableImpl {
+    public Element createGhostRow() {
+      Element ghostRow = super.createGhostRow();
+      DOM.setStyleAttribute(ghostRow, "display", "none");
+      return ghostRow;
+    }
+    
     public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
       width += 2 * grid.getCellPadding() + grid.getCellSpacing();
       super.setColumnWidth(grid, column, width);
@@ -114,6 +134,7 @@ public class FixedWidthFlexTable extends FlexTable implements
      * @throws IndexOutOfBoundsException
      */
     public void setColSpan(int row, int column, int colSpan) {
+      colSpan = Math.max(1, colSpan);
       int colSpanDelta = colSpan - getColSpan(row, column);
       super.setColSpan(row, column, colSpan);
 
@@ -134,6 +155,7 @@ public class FixedWidthFlexTable extends FlexTable implements
      * @throws IndexOutOfBoundsException
      */
     public void setRowSpan(int row, int column, int rowSpan) {
+      rowSpan = Math.max(1, rowSpan);
       int curRowSpan = getRowSpan(row, column);
       super.setRowSpan(row, column, rowSpan);
 
@@ -259,7 +281,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   /**
    * The hidden, zero row used for sizing the columns.
    */
-  private Element zeroRow;
+  private Element ghostRow;
 
   /**
    * Constructor.
@@ -275,10 +297,8 @@ public class FixedWidthFlexTable extends FlexTable implements
     setRowFormatter(new FixedWidthFlexRowFormatter());
 
     // Create the zero row for sizing
-    zeroRow = DOM.createTR();
-    DOM.setStyleAttribute(zeroRow, "height", "0px");
-    DOM.setStyleAttribute(zeroRow, "overflow", "hidden");
-    DOM.insertChild(getBodyElement(), zeroRow, 0);
+    ghostRow = impl.createGhostRow();
+    DOM.insertChild(getBodyElement(), ghostRow, 0);
   }
   
   /**
@@ -481,6 +501,7 @@ public class FixedWidthFlexTable extends FlexTable implements
    * @param num the number of cells to add
    */
   protected void addCells(int row, int num) {
+    // Account for ghost row
     super.addCells(row + 1, num);
   }
 
@@ -491,6 +512,7 @@ public class FixedWidthFlexTable extends FlexTable implements
    * @return number of columns in the row
    */
   protected int getDOMCellCount(int row) {
+    // Account for ghost row
     return super.getDOMCellCount(row + 1);
   }
 
@@ -500,6 +522,7 @@ public class FixedWidthFlexTable extends FlexTable implements
    * @return Returns the number of rows in the table
    */
   protected int getDOMRowCount() {
+    // Account for ghost row
     return super.getDOMRowCount() - 1;
   }
 
@@ -547,7 +570,7 @@ public class FixedWidthFlexTable extends FlexTable implements
    * @return the ghost cell
    */
   private Element getGhostCellElement(int column) {
-    return DOM.getChild(zeroRow, column);
+    return DOM.getChild(ghostRow, column);
   }
 
   /**
@@ -650,7 +673,7 @@ public class FixedWidthFlexTable extends FlexTable implements
       // Remove ghost rows as needed
       int cellsToRemove = curNumGhosts - maxRawColumnCount;
       for (int i = 0; i < cellsToRemove; i++) {
-        DOM.removeChild(zeroRow, getGhostCellElement(maxRawColumnCount));
+        DOM.removeChild(ghostRow, getGhostCellElement(maxRawColumnCount));
       }
     }
   }

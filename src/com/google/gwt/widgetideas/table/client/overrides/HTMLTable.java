@@ -26,7 +26,7 @@ import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 import com.google.gwt.user.client.ui.HasVerticalAlignment.VerticalAlignmentConstant;
-import com.google.gwt.widgetideas.table.client.HasColumns;
+import com.google.gwt.widgetideas.table.client.HasTableCells;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -41,7 +41,7 @@ import java.util.NoSuchElementException;
  * to actual HTMLTable class
  */
 public abstract class HTMLTable extends Panel implements SourcesTableEvents,
-    HasColumns {
+    HasTableCells {
   /**
    * This class contains methods used to format a table's cells.
    */

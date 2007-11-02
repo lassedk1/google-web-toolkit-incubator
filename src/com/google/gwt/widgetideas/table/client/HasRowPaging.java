@@ -18,28 +18,22 @@ package com.google.gwt.widgetideas.table.client;
 /**
  * An interface for tables that can do paging.
  */
-public interface HasRowPaging extends HasFixedColumnWidth {
-  /**
-   * Add a new {@link HasRowPagingListener}.
-   * 
-   * @param listener the listener
-   */
-  public void addRowPagingListener(HasRowPagingListener listener);
-  
+public interface HasRowPaging extends SourceRowPagingEvents,
+    HasFixedColumnWidth {
   /**
    * Get the number of pages. If the number of pages is unknown, -1 is returned.
    * 
    * @return the page count
    */
   public int getNumPages();
-  
+
   /**
    * Get the number of rows per page.
    * 
    * @return the number of rows per page
    */
   public int getPageSize();
-  
+
   /**
    * Go to the first page.
    */
@@ -55,15 +49,9 @@ public interface HasRowPaging extends HasFixedColumnWidth {
    * automatically set to zero or the last page without throwing any errors.
    * 
    * @param page the page
+   * @param forced reload the page even if it is already loaded
    */
-  public void gotoPage(int page);
-  
-  /**
-   * Remove a {@link HasRowPagingListener}.
-   * 
-   * @param listener the listener to remove
-   */
-  public void removeRowPagingListener(HasRowPagingListener listener);
+  public void gotoPage(int page, boolean forced);
 
   /**
    * Set the number of rows per page.

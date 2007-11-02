@@ -18,7 +18,7 @@ package com.google.gwt.widgetideas.table.client;
 /**
  * Event listener interface for {@link FixedWidthGrid} events.
  */
-public interface HoverGridListener {
+public interface TableSelectionListener {
   /**
    * Fired when all rows are deselected.
    */

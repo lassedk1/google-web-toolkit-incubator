@@ -18,21 +18,7 @@ package com.google.gwt.widgetideas.table.client;
 /**
  * An interface for tables that support column sorting.
  */
-public interface HasSortableColumns extends HasFixedColumnWidth {
-  /**
-   * Add a {@link SortableColumnsListener} listener.
-   * 
-   * @param listener the listener
-   */
-  public void addSortableColumnsListener(SortableColumnsListener listener);
-
-  /**
-   * Remove a {@link SortableColumnsListener}bleColumnsListener listener.
-   * 
-   * @param listener the listener to remove
-   */
-  public void removeSortableColumnsListener(SortableColumnsListener listener);
-  
+public interface HasSortableColumns extends SourceSortableColumnsEvents {
   /**
    * Sort the grid by the specified column.
    * 

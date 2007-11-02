@@ -71,7 +71,7 @@ public class PagingScrollTable extends ScrollTable {
   /**
    * Listens for click events from the images that allow navigation.
    */
-  public ClickListener imageClickListener = new ClickListener() {
+  private ClickListener imageClickListener = new ClickListener() {
     public void onClick(Widget sender) {
       HasRowPaging dataTable = (HasRowPaging) getDataTable();
       int numPages = dataTable.getNumPages();
@@ -86,14 +86,14 @@ public class PagingScrollTable extends ScrollTable {
         int curPage = getPagingBoxValue();
         if ((numPages < 0) || (curPage + 1 < numPages)) {
           rowPagingListener.onPageChanged(curPage + 1);
-          dataTable.gotoPage(getPagingBoxValue());
+          dataTable.gotoPage(getPagingBoxValue(), false);
         }
       } else if (sender == pagingButtonPrev) {
         // Load previous page
         int curPage = getPagingBoxValue();
         if (curPage > 0) {
           rowPagingListener.onPageChanged(curPage - 1);
-          dataTable.gotoPage(getPagingBoxValue());
+          dataTable.gotoPage(getPagingBoxValue(), false);
         }
       }
     }
@@ -107,10 +107,10 @@ public class PagingScrollTable extends ScrollTable {
   /**
    * A listener that listens for page events from the {@link HasRowPaging}.
    */
-  private HasRowPagingListener rowPagingListener = new HasRowPagingListener() {
-    public void onNumRowsChanges(int numRows, int numPages) {
+  private RowPagingListener rowPagingListener = new RowPagingListener() {
+    public void onNumPagesChanges(int numPages) {
       if (numPages < 0) {
-        pagingNumPagesLabel.setVisible(false);
+        pagingNumPagesLabel.setHTML("");
         pagingButtonLast.setVisible(false);
       } else {
         pagingNumPagesLabel.setHTML("of&nbsp;&nbsp;" + numPages);
@@ -126,14 +126,6 @@ public class PagingScrollTable extends ScrollTable {
 
     public void onPageLoaded() {
       loadingImage.setVisible(false);
-    }
-
-    public void onPageSizeChange(int pageSize, int numPages) {
-      if (numPages < 0) {
-        pagingNumPagesLabel.setHTML("");
-      } else {
-        pagingNumPagesLabel.setHTML("of&nbsp;&nbsp;" + numPages);
-      }
     }
   };
 
@@ -180,8 +172,8 @@ public class PagingScrollTable extends ScrollTable {
    */
   public PagingScrollTable(HasRowPaging dataTable,
       HasFixedColumnWidth headerTable) {
-    this(dataTable, headerTable,
-        (PagingScrollTableImages) GWT.create(PagingScrollTableImages.class));
+    this(dataTable, headerTable, (PagingScrollTableImages) GWT
+        .create(PagingScrollTableImages.class));
   }
 
   /**
@@ -201,7 +193,7 @@ public class PagingScrollTable extends ScrollTable {
       public void onKeyPress(Widget sender, char keyCode, int modifiers) {
         if (keyCode == (char) KEY_ENTER) {
           HasRowPaging dataTable = (HasRowPaging) getDataTable();
-          dataTable.gotoPage(getPagingBoxValue());
+          dataTable.gotoPage(getPagingBoxValue(), false);
         } else if ((!Character.isDigit(keyCode)) && (keyCode != (char) KEY_TAB)
             && (keyCode != (char) KEY_BACKSPACE)
             && (keyCode != (char) KEY_DELETE) && (keyCode != (char) KEY_ENTER)
@@ -262,8 +254,7 @@ public class PagingScrollTable extends ScrollTable {
     adopt(pagingWrapperPanel);
 
     // Set the page size
-    rowPagingListener.onPageSizeChange(dataTable.getPageSize(),
-        dataTable.getNumPages());
+    rowPagingListener.onNumPagesChanges(dataTable.getNumPages());
   }
 
   /**
@@ -306,13 +297,14 @@ public class PagingScrollTable extends ScrollTable {
    */
   protected void resizeTablesVerticallyNow() {
     super.resizeTablesVerticallyNow();
-    
+
     Element dataWrapper = getDataWrapper();
     if (isScrollingEnabled()) {
       // Take some space from the data table to make room for the paging div
-      int pagingHeight = DOM.getElementPropertyInt(pagingWrapper, "offsetHeight");
-      int dataHeight = DOM.getElementPropertyInt(dataWrapper, "offsetHeight")
-          - pagingHeight;
+      int pagingHeight =
+          DOM.getElementPropertyInt(pagingWrapper, "offsetHeight");
+      int dataHeight =
+          DOM.getElementPropertyInt(dataWrapper, "offsetHeight") - pagingHeight;
       DOM.setStyleAttribute(dataWrapper, "height", dataHeight + "px");
       DOM.setStyleAttribute(dataWrapper, "overflow", "hidden");
       DOM.setStyleAttribute(dataWrapper, "overflow", "auto");

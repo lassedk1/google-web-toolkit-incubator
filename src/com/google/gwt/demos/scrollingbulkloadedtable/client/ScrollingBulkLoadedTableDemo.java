@@ -1,3 +1,18 @@
+/*
+ * Copyright 2007 Google Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.google.gwt.demos.scrollingbulkloadedtable.client;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -9,13 +24,13 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.table.client.BulkEditablePagingGrid;
-import com.google.gwt.widgetideas.table.client.EditableGridView;
+import com.google.gwt.widgetideas.table.client.ClientTableModel;
+import com.google.gwt.widgetideas.table.client.EditablePagingGrid;
 import com.google.gwt.widgetideas.table.client.FixedWidthFlexTable;
 import com.google.gwt.widgetideas.table.client.PagingScrollTable;
 import com.google.gwt.widgetideas.table.client.ScrollTable;
 import com.google.gwt.widgetideas.table.client.TableModel;
 import com.google.gwt.widgetideas.table.client.TextCellEditor;
-import com.google.gwt.widgetideas.table.client.MutableTableModel.TableModelAdaptor;
 
 /**
  * Demo for a scrolling bulk loaded table.
@@ -29,7 +44,7 @@ public class ScrollingBulkLoadedTableDemo implements EntryPoint {
    * Create Demo.
    */
   public void onModuleLoad() {
-    final TableModelAdaptor adaptor = createOracle();
+    final TableModel adaptor = createOracle();
     final TextBox numColumnsBox = new TextBox();
     numColumnsBox.setText(numColumns + "");
     final TextBox numRowsBox = new TextBox();
@@ -44,7 +59,7 @@ public class ScrollingBulkLoadedTableDemo implements EntryPoint {
     Button b = new Button("Create traditional ScrollTable");
     b.addClickListener(new ClickListener() {
       public void onClick(Widget sender) {
-        EditableGridView body = new EditableGridView(adaptor);
+        EditablePagingGrid body = new EditablePagingGrid(adaptor);
         createScrollTable(body);
       }
     });
@@ -52,8 +67,9 @@ public class ScrollingBulkLoadedTableDemo implements EntryPoint {
     Button b2 = new Button("Create bulkloading ScrollTable");
     b2.addClickListener(new ClickListener() {
       public void onClick(Widget sender) {
-        EditableGridView body = new BulkEditablePagingGrid(adaptor,
-            toInt(numRowsBox), toInt(numColumnsBox));
+        EditablePagingGrid body =
+            new BulkEditablePagingGrid(adaptor, toInt(numRowsBox),
+                toInt(numColumnsBox));
         createScrollTable(body);
       }
 
@@ -74,7 +90,7 @@ public class ScrollingBulkLoadedTableDemo implements EntryPoint {
     RootPanel.get().add(c);
   }
 
-  private void createScrollTable(EditableGridView body) {
+  private void createScrollTable(EditablePagingGrid body) {
     // Must set page size for paging scroll table to display.
     body.setPageSize(numRows / 2);
 
@@ -97,11 +113,10 @@ public class ScrollingBulkLoadedTableDemo implements EntryPoint {
     body.gotoFirstPage();
     RootPanel.get().add(scrollTable);
     current = scrollTable;
-
   }
 
-  private TableModelAdaptor createOracle() {
-    TableModel.ClientTableModel oracle = new TableModel.ClientTableModel() {
+  private TableModel createOracle() {
+    ClientTableModel oracle = new ClientTableModel() {
       public Object getCell(int rowNum, int cellNum) {
 
         if (rowNum >= numRows | cellNum >= numColumns) {
@@ -109,13 +124,11 @@ public class ScrollingBulkLoadedTableDemo implements EntryPoint {
         }
         return "cell " + rowNum + ", " + cellNum;
       }
-    };
 
-    TableModelAdaptor adaptor = new TableModelAdaptor(oracle) {
       public void onSetData(int row, int cell, Object data) {
-        RootPanel.get().add(new Label("Setting cell:" + data));
+        RootPanel.get().add(new Label("Setting cell: " + data));
       }
     };
-    return adaptor;
+    return oracle;
   }
 }

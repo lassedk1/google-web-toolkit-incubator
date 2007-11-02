@@ -21,7 +21,16 @@ package com.google.gwt.widgetideas.table.client;
  */
 public interface HasAutoFitColumn extends HasFixedColumnWidth {
   /**
-   * Calculate the width required for a content to fit its contents. 
+   * Stretches or shrinks the column to automatically fit its data content.
+   * 
+   * @param column the column to fit
+   * @return the new column width
+   * @throws IndexOutOfBoundsException
+   */
+  public int autoFitColumnWidth(int column);
+
+  /**
+   * Calculate the width required for a content to fit its contents.
    * 
    * @param column the column that will be fitted
    * @return the default column width

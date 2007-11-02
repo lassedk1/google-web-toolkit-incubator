@@ -23,13 +23,13 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.table.client.SortableColumnsListener;
-import com.google.gwt.widgetideas.table.client.HoverGridListener;
+import com.google.gwt.widgetideas.table.client.TableSelectionListener;
 import com.google.gwt.widgetideas.table.client.SortableFixedWidthGrid;
 
 /**
  * Logs events fired by the ScrollTable.
  */
-public class DemoTabPanelLog extends DemoTab implements HoverGridListener,
+public class DemoTabPanelLog extends DemoTab implements TableSelectionListener,
     ClickListener, SortableColumnsListener {
   /**
    * The button used to clear the log.
@@ -123,11 +123,11 @@ public class DemoTabPanelLog extends DemoTab implements HoverGridListener,
    * Fired when the currently sorted column changes.
    * 
    * @param column the currently sorted column, -1 for unsorted
-   * @param reversed specifies that this is a reverse sorting
+   * @param ascending specifies that this sort is ascending
    */
-  public void onSetSortedColumn(int column, boolean reversed) {
-    if (reversed) {
-      addText("sorted column: " + column + " (reversed)", "black");
+  public void onSetSortedColumn(int column, boolean ascending) {
+    if (ascending) {
+      addText("sorted column: " + column + " (ascending)", "black");
     } else {
       addText("sorted column: " + column, "black");
     }
@@ -140,7 +140,7 @@ public class DemoTabPanelLog extends DemoTab implements HoverGridListener,
     scrollPanel.setHeight("200px");
     DOM.setStyleAttribute(label.getElement(), "font", "8pt/10pt courier");
     DOM.setStyleAttribute(scrollPanel.getElement(), "border", "1px solid black");
-    dataTable.addHoverGridListener(this);
+    dataTable.addTableSelectionListener(this);
     dataTable.addSortableColumnsListener(this);
 
     VerticalPanel panel = new VerticalPanel();

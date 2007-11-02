@@ -22,7 +22,7 @@ import com.google.gwt.user.client.Event;
  * An interface for tables. All of these methods are implemented in the
  * HTMLTable class.
  */
-public interface HasColumns {
+public interface HasTableCells {
   /**
    * Gets the number of cells in a given row.
    * 
@@ -46,13 +46,6 @@ public interface HasColumns {
   public int getCellSpacing();
 
   /**
-   * Gets a handle to the object's underlying DOM element.
-   * 
-   * @return the object's browser element
-   */
-  public Element getElement();
-  
-  /**
    * Determines the TD associated with the specified event.
    * 
    * @param event the event to be queried
@@ -60,15 +53,7 @@ public interface HasColumns {
    *         found.
    */
   public Element getEventTargetCell(Event event);
-  
-  /**
-   * Gets the object's offset width in pixels. This is the total width of the
-   * object, including decorations such as border, margin, and padding.
-   * 
-   * @return the object's offset width
-   */
-  public int getOffsetWidth();
-  
+ 
   /**
    * Sets the amount of padding to be added around all cells.
    * 
@@ -82,11 +67,4 @@ public interface HasColumns {
    * @param spacing the cell spacing, in pixels
    */
   public void setCellSpacing(int spacing); 
-
-  /**
-   * Clears all of the object's style names and sets it to the given style.
-   * 
-   * @param style the new style name
-   */
-  public void setStyleName(String style);
 }

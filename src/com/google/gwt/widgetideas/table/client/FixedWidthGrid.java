@@ -28,8 +28,8 @@ import java.util.HashMap;
  * {@link com.google.gwt.widgetideas.table.client.overrides.Grid} that resizes
  * columns using a fixed table width.
  */
-public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
-    HasAutoFitColumn {
+public class FixedWidthGrid extends SelectionGrid implements
+    HasFixedColumnWidth, HasAutoFitColumn {
   /**
    * This class contains methods used to format a table's cells.
    */
@@ -58,7 +58,7 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
   /**
    * This class contains methods used to format a table's rows.
    */
-  public class FixedWidthGridRowFormatter extends HoverGridRowFormatter {
+  public class FixedWidthGridRowFormatter extends SelectedGridRowFormatter {
     protected Element getRawElement(int row) {
       return super.getRawElement(row + 1);
     }
@@ -77,24 +77,38 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
      * @param columns the number of columns per row
      */
     public native void addRows(Element table, int rows, int columns) /*-{
-      var span = $doc.createElement("span");
-      span.style["padding"] = "0px";
-      span.innerHTML = "&nbsp;";
-      var td = $doc.createElement("td");
-      td.style["overflow"] = "hidden";
-      td.appendChild(span);
+         var span = $doc.createElement("span");
+         span.style["padding"] = "0px";
+         span.innerHTML = "&nbsp;";
+         var td = $doc.createElement("td");
+         td.style["overflow"] = "hidden";
+         td.appendChild(span);
 
-      var row = $doc.createElement("tr");
-      for(var cellNum = 0; cellNum < columns; cellNum++) {
-        var cell = td.cloneNode(true);
-        row.appendChild(cell);
-      }
-      table.appendChild(row);
-      for(var rowNum = 1; rowNum < rows; rowNum++) {  
-        table.appendChild(row.cloneNode(true));
-      }
-    }-*/;
+         var row = $doc.createElement("tr");
+         for(var cellNum = 0; cellNum < columns; cellNum++) {
+           var cell = td.cloneNode(true);
+           row.appendChild(cell);
+         }
+         table.appendChild(row);
+         for(var rowNum = 1; rowNum < rows; rowNum++) {  
+           table.appendChild(row.cloneNode(true));
+         }
+       }-*/;
 
+    /**
+     * Create the ghost row.
+     * 
+     * @return the ghost row element
+     */
+    public Element createGhostRow() {
+      Element ghostRow = DOM.createTR();
+      DOM.setStyleAttribute(ghostRow, "margin", "0px");
+      DOM.setStyleAttribute(ghostRow, "padding", "0px");
+      DOM.setStyleAttribute(ghostRow, "height", "0px");
+      DOM.setStyleAttribute(ghostRow, "overflow", "hidden");
+      return ghostRow;
+    }
+    
     /**
      * Set the width of a column.
      * 
@@ -114,6 +128,12 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
    * instead of the innerWidth, so we need to add the padding and spacing.
    */
   private static class FixedWidthGridImplIE6 extends FixedWidthGridImpl {
+    public Element createGhostRow() {
+      Element ghostRow = super.createGhostRow();
+      DOM.setStyleAttribute(ghostRow, "display", "none");
+      return ghostRow;
+    }
+    
     public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
       width += 2 * grid.getCellPadding() + grid.getCellSpacing();
       super.setColumnWidth(grid, column, width);
@@ -166,7 +186,8 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
   /**
    * The implementation class.
    */
-  private static FixedWidthGridImpl impl = (FixedWidthGridImpl) GWT.create(FixedWidthGridImpl.class);
+  private static FixedWidthGridImpl impl =
+      (FixedWidthGridImpl) GWT.create(FixedWidthGridImpl.class);
 
   /**
    * A mapping of column indexes to their widths in pixels.
@@ -176,7 +197,7 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
   /**
    * The hidden, ghost row used for sizing the columns.
    */
-  private Element ghostRow = DOM.createTR();
+  private Element ghostRow = null;
 
   /**
    * Constructor.
@@ -196,14 +217,13 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
     setColumnFormatter(new FixedWidthGridColumnFormatter());
 
     // Create the ghost row for sizing
-    DOM.setStyleAttribute(ghostRow, "height", "0px");
-    DOM.setStyleAttribute(ghostRow, "overflow", "hidden");
+    ghostRow = impl.createGhostRow();
     DOM.insertChild(getBodyElement(), ghostRow, 0);
 
     // Sink hover and selection events
     sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEDOWN | Event.ONCLICK);
   }
- 
+
   /**
    * Stretches or shrinks the column to automatically fit its data content.
    * 
@@ -245,9 +265,10 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
       }
 
       // Calculate hidden area for this cell
-      widthOffset = Math.max(widthOffset, DOM.getElementPropertyInt(
-          getCellContainer(td), "offsetWidth")
-          - contentVisibleWidth);
+      widthOffset =
+          Math.max(widthOffset, DOM.getElementPropertyInt(getCellContainer(td),
+              "offsetWidth")
+              - contentVisibleWidth);
 
       // Scroll back if needed
       DOM.setElementPropertyInt(DOM.getFirstChild(td), "scrollLeft", 0);
@@ -289,7 +310,7 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
   public int insertRow(int beforeRow) {
     // Deselect all rows
     deselectRows();
-    
+
     // Specifically allow the row count as an insert position.
     if (beforeRow != getRowCount()) {
       checkRowBounds(beforeRow);
@@ -303,6 +324,16 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
       insertCell(beforeRow, column);
     }
     return beforeRow;
+  }
+
+  /**
+   * Removes the specified row from the table.
+   * 
+   * @param row the index of the row to be removed
+   * @throws IndexOutOfBoundsException
+   */
+  public void removeRow(int row) {
+    super.removeRow(row);
   }
 
   /**
@@ -355,9 +386,9 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
       throw new IndexOutOfBoundsException(
           "Cannot access a column with a negative index: " + column);
     }
-    
+
     width = Math.max(MIN_COLUMN_WIDTH, width);
-    
+
     colWidths.put(new Integer(column), new Integer(width));
 
     // Update the cell width if possible
@@ -430,7 +461,7 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
     return super.getDOMCellCount(0);
   }
 
-  protected Element getGhostRow(){
+  protected Element getGhostRow() {
     return ghostRow;
   }
 
@@ -440,7 +471,7 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
   protected int getRowIndex(Element rowElem) {
     return OverrideDOM.getRowIndex(rowElem) - 1;
   }
-  
+
   /**
    * Inserts a new cell into the specified row.
    * 
@@ -510,6 +541,44 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
   }
 
   /**
+   * Sets the ghost row variable. This does not change the underlying structure
+   * of the table.
+   * 
+   * @param ghostRow the new ghost row
+   */
+  protected void setGhostRow(Element ghostRow) {
+    this.ghostRow = ghostRow;
+  }
+
+  /**
+   * Add or remove ghost cells when the table size changes.
+   */
+  protected void updateGhostRow() {
+    int numGhosts = getGhostColumnCount();
+    if (numColumns > numGhosts) {
+      // Add ghosts as needed
+      for (int i = numGhosts; i < numColumns; i++) {
+        Element td = OverrideDOM.createTD();
+        DOM.setStyleAttribute(td, "height", "0px");
+        DOM.setStyleAttribute(td, "overflow", "hidden");
+        DOM.setStyleAttribute(td, "paddingTop", "0px");
+        DOM.setStyleAttribute(td, "paddingBottom", "0px");
+        DOM.setStyleAttribute(td, "borderTop", "0px");
+        DOM.setStyleAttribute(td, "borderBottom", "0px");
+        DOM.setStyleAttribute(td, "margin", "0px");
+        DOM.appendChild(ghostRow, td);
+        setColumnWidth(i, getColumnWidth(i));
+      }
+    } else if (numColumns < numGhosts) {
+      int cellsToRemove = numGhosts - numColumns;
+      for (int i = 0; i < cellsToRemove; i++) {
+        Element td = getGhostCellElement(numColumns);
+        DOM.removeChild(ghostRow, td);
+      }
+    }
+  }
+
+  /**
    * Appends a div and span container to a cell. All cell content is actually
    * added to the container, which allows for forceful control of the width of a
    * column.
@@ -536,39 +605,5 @@ public class FixedWidthGrid extends HoverGrid implements HasFixedColumnWidth,
    */
   private Element getGhostCellElement(int column) {
     return DOM.getChild(ghostRow, column);
-  }
- 
-  /**
-   * Sets the ghost row variable. This does not change the underlying structure of the table.
-   * @param ghostRow the new ghost row
-   */
-  protected void setGhostRow(Element ghostRow){
-   this.ghostRow = ghostRow;
-  }
-  /**
-   * Add or remove ghost cells when the table size changes.
-   */
-  protected void updateGhostRow() {
-    int numGhosts = getGhostColumnCount();
-    if (numColumns > numGhosts) {
-      // Add ghosts as needed
-      for (int i = numGhosts; i < numColumns; i++) {
-        Element td = OverrideDOM.createTD();
-        DOM.setStyleAttribute(td, "height", "0px");
-        DOM.setStyleAttribute(td, "overflow", "hidden");
-        DOM.setStyleAttribute(td, "paddingTop", "0px");
-        DOM.setStyleAttribute(td, "paddingBottom", "0px");
-        DOM.setStyleAttribute(td, "borderTop", "0px");
-        DOM.setStyleAttribute(td, "borderBottom", "0px");
-        DOM.appendChild(ghostRow, td);
-        setColumnWidth(i, getColumnWidth(i));
-      }
-    } else if (numColumns < numGhosts) {
-      int cellsToRemove = numGhosts - numColumns;
-      for (int i = 0; i < cellsToRemove; i++) {
-        Element td = getGhostCellElement(numColumns);
-        DOM.removeChild(ghostRow, td);
-      }
-    }
   }
 }

@@ -18,7 +18,7 @@ package com.google.gwt.widgetideas.table.client;
 /**
  * An interface for tables that manipulate columns using a fixed table width.
  */
-public interface HasFixedColumnWidth extends HasColumns {
+public interface HasFixedColumnWidth extends HasTableCells {
   /**
    * Gets the number of columns in this table.
    * 

@@ -85,6 +85,9 @@ public class TextCellEditor extends AbstractCellEditor {
    * @param value the current value
    */
   protected void setValue(Object value) {
+    if (value == null) {
+      value = "";
+    }
     textBox.setText(value.toString());
   }
 }
