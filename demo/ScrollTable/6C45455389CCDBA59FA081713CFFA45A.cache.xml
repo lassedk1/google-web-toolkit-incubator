@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cache-entry>
 	<generated-type-hash class="com.google.gwt.widgetideas.table.client.ScrollTable_ScrollTableImages_generatedBundle" hash="A5B161D574534F56D5C25A03AFB9272A"/>
+	<generated-type-hash class="com.google.gwt.widgetideas.table.client.AbstractCellEditor_AbstractCellEditorImages_generatedBundle" hash="F092FB8C6A0B43A2FA81B1028B516CC3"/>
 	<rebind-decision in="com.google.gwt.user.client.ui.impl.TextBoxImpl" out="com.google.gwt.user.client.ui.impl.TextBoxImpl"/>
 	<rebind-decision in="com.google.gwt.widgetideas.table.client.FixedWidthGrid.FixedWidthGridImpl" out="com.google.gwt.widgetideas.table.client.FixedWidthGrid.FixedWidthGridImplSafari"/>
 	<rebind-decision in="com.google.gwt.widgetideas.table.client.ScrollTable.MouseResizeWorker" out="com.google.gwt.widgetideas.table.client.ScrollTable.MouseResizeWorker"/>
@@ -11,6 +12,7 @@
 	<rebind-decision in="com.google.gwt.demos.scrolltable.client.ScrollTableDemo" out="com.google.gwt.demos.scrolltable.client.ScrollTableDemo"/>
 	<rebind-decision in="com.google.gwt.user.client.impl.HistoryImpl" out="com.google.gwt.user.client.impl.HistoryImplSafari"/>
 	<rebind-decision in="com.google.gwt.user.client.impl.DOMImpl" out="com.google.gwt.user.client.impl.DOMImplSafari"/>
+	<rebind-decision in="com.google.gwt.widgetideas.table.client.AbstractCellEditor.AbstractCellEditorImages" out="com.google.gwt.widgetideas.table.client.AbstractCellEditor_AbstractCellEditorImages_generatedBundle"/>
 	<rebind-decision in="com.google.gwt.user.client.ui.impl.PopupImpl" out="com.google.gwt.user.client.ui.impl.PopupImpl"/>
 	<rebind-decision in="com.google.gwt.widgetideas.table.client.overrides.OverrideDOMImpl" out="com.google.gwt.widgetideas.table.client.overrides.OverrideDOMImplSafari"/>
 	<rebind-decision in="com.google.gwt.widgetideas.table.client.ScrollTable.ScrollTableImages" out="com.google.gwt.widgetideas.table.client.ScrollTable_ScrollTableImages_generatedBundle"/>
