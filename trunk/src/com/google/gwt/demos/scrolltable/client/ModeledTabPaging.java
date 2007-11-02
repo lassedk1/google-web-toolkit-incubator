@@ -24,7 +24,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.table.client.CachedTableController;
-import com.google.gwt.widgetideas.table.client.GridView;
 import com.google.gwt.widgetideas.table.client.PagingScrollTable;
 
 /**
@@ -82,9 +81,10 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
    * @param sender
    */
   public void onClick(Widget sender) {
-    PagingScrollTable scrollTable = PagingScrollTableDemo.getPagingScrollTable();
-    GridView gridView = PagingScrollTableDemo.getEditableGridView();
-    CachedTableController tableController = (CachedTableController) gridView.getTableController();
+    PagingScrollTable scrollTable =
+        PagingScrollTableDemo.getPagingScrollTable();
+    CachedTableController tableController =
+        PagingScrollTableDemo.getTableController();
     try {
       if (sender == numRowsButton) {
         // Set number of rows

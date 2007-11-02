@@ -18,9 +18,9 @@ package com.google.gwt.demos.scrolltable.client;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.table.client.GridView;
+import com.google.gwt.widgetideas.table.client.CachedTableController;
+import com.google.gwt.widgetideas.table.client.PagingGrid;
 import com.google.gwt.widgetideas.table.client.ScrollTable;
-import com.google.gwt.widgetideas.table.client.TableController;
 
 /**
  * Panel with options for manipulating data contents and number of cells.
@@ -35,8 +35,9 @@ public class ModeledTabDataManipulation extends DemoTabDataManipulation
    */
   public void onClick(Widget sender) {
     ScrollTable scrollTable = ScrollTableDemo.scrollTable;
-    GridView gridView = (GridView) scrollTable.getDataTable();
-    TableController tableController = gridView.getTableController();
+    PagingGrid gridView = (PagingGrid) ScrollTableDemo.getDataTable();
+    CachedTableController tableController =
+        PagingScrollTableDemo.getTableController();
     try {
       if (sender == setHtmlButton) {
         // Set cell HTML
@@ -74,7 +75,7 @@ public class ModeledTabDataManipulation extends DemoTabDataManipulation
       Window.alert("Please enter valid integers for the row and column.");
     }
   }
-  
+
   protected Widget onInitialize() {
     Widget w = super.onInitialize();
     setTextButton.setVisible(false);

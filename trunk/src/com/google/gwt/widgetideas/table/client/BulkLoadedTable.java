@@ -30,6 +30,8 @@ public class BulkLoadedTable extends FlexTable implements
 
   private BulkLoader loader;
 
+  private StringCellRenderer renderer = new StringCellRenderer();
+
   /**
    * Constructor.
    */
@@ -37,18 +39,24 @@ public class BulkLoadedTable extends FlexTable implements
     loader = new BulkLoader(this);
   }
 
-  private StringCellRenderer renderer = new StringCellRenderer();
+  public StringCellRenderer getRenderer() {
+    return renderer;
+  }
+
+  public int getRowsPerTimeCheck() {
+    return loader.getRowsPerTimeCheck();
+  }
 
   /**
    * Sets the table's rows to the list of rows provided. For example,
    * 
    * <pre>
-   *   ArrayList rows = new ArrayList();
-   *   ArrayList row1 = new ArrayList();
-   *   row1.add("cell 0,1");
-   *   row1.add("cell 0,2");
-   *   rows.add(row1);
-   *   renderRows(rows);
+   * ArrayList rows = new ArrayList();
+   * ArrayList row1 = new ArrayList();
+   * row1.add(&quot;cell 0,1&quot;);
+   * row1.add(&quot;cell 0,2&quot;);
+   * rows.add(row1);
+   * renderRows(rows);
    * </pre>
    * 
    * @param rows list of rows. Each row itself must be another list
@@ -66,11 +74,6 @@ public class BulkLoadedTable extends FlexTable implements
     renderRows(tableModel, 0, TableModel.ALL_ROWS);
   }
 
-  /** Sets the body element of the table. */
-  public void setBodyElement(Element e) {
-    super.setBodyElement(e);
-  }
-
   /**
    * Init rows removes all rows in the current table and adds the rows supplied
    * by the tableModel.
@@ -78,10 +81,27 @@ public class BulkLoadedTable extends FlexTable implements
    * @param tableModel the table data
    * @param startRow the tableModel's start row index
    * @param numRows the number of rows to request from the tableModel -1
-   *          indicates all of them
+   *        indicates all of them
    */
   public void renderRows(TableModel tableModel, int startRow, int numRows) {
     loader.renderRows(tableModel, startRow, numRows);
+  }
+
+  /**
+   * Sets the body element of the table.
+   */
+  public void setBodyElement(Element e) {
+    super.setBodyElement(e);
+  }
+
+  /**
+   * Sets a callback to be called after the table is finished being loaded.
+   * 
+   * @param callback the callback
+   */
+  public void setOnLoadCompleteCallBack(
+      BulkLoader.OnLoadCompleteCallBack callback) {
+    loader.onLoadComplete = callback;
   }
 
   /**
@@ -94,28 +114,14 @@ public class BulkLoadedTable extends FlexTable implements
     this.renderer = renderer;
   }
 
-  public StringCellRenderer getRenderer() {
-    return renderer;
-  }
-
   /**
-   * Sets a callback to be called after the table is finished being loaded.
-   * @param callback the callback
-   */
-  public void setOnLoadCompleteCallBack(
-      BulkLoader.OnLoadCompleteCallBack callback) {
-    loader.onLoadComplete = callback;
-  }
-
-  /**
-   * Sets how many rows should be processed before time is checked for an event flush.  Note: If rowsPerTimeCheck is set to anything other than Integer.MAX_VALUE, then the table is constructed asynchronously.
+   * Sets how many rows should be processed before time is checked for an event
+   * flush. Note: If rowsPerTimeCheck is set to anything other than
+   * Integer.MAX_VALUE, then the table is constructed asynchronously.
+   * 
    * @param rowsPerTimeCheck
    */
- public void setRowsPerTimeCheck(int rowsPerTimeCheck) {
-   loader.setRowsPerTimeCheck(rowsPerTimeCheck);
+  public void setRowsPerTimeCheck(int rowsPerTimeCheck) {
+    loader.setRowsPerTimeCheck(rowsPerTimeCheck);
   }
-
- public int getRowsPerTimeCheck() {
-   return loader.getRowsPerTimeCheck();
- } 
 }

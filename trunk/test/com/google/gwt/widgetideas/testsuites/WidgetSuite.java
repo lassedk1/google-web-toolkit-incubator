@@ -21,9 +21,7 @@ import com.google.gwt.widgetideas.client.ProgressBarTest;
 import com.google.gwt.widgetideas.client.SliderBarTest;
 import com.google.gwt.widgetideas.client.TitledPanelTest;
 import com.google.gwt.widgetideas.table.client.BulkLoadedTableTest;
-import com.google.gwt.widgetideas.table.client.ExtendedGridTest;
 import com.google.gwt.widgetideas.table.client.ScrollTableTest;
-import com.google.gwt.widgetideas.table.client.SizableFlexTableTest;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -35,8 +33,8 @@ import junit.framework.TestSuite;
 public class WidgetSuite {
 
   public static Test suite() {
-    TestSuite suite = new TestSuite(
-        "Test for com.google.gwt.widgetideas.client");
+    TestSuite suite =
+        new TestSuite("Test for com.google.gwt.widgetideas.client");
     // Widget Tests.
     suite.addTestSuite(ProgressBarTest.class);
     suite.addTestSuite(SliderBarTest.class);
@@ -46,9 +44,7 @@ public class WidgetSuite {
     // Table Tests
     suite.addTestSuite(BulkLoadedTableTest.class);
     suite.addTestSuite(ScrollTableTest.class);
-    suite.addTestSuite(ExtendedGridTest.class);
     suite.addTestSuite(BulkLoadedTableTest.class);
-    suite.addTestSuite(SizableFlexTableTest.class);
     return suite;
   }
 

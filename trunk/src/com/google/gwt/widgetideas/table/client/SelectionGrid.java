@@ -21,7 +21,6 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.widgetideas.table.client.overrides.Grid;
 import com.google.gwt.widgetideas.table.client.overrides.OverrideDOM;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -31,7 +30,7 @@ import java.util.Set;
  * A variation of the {@link Grid} that supports row or cell hovering and row
  * selection.
  */
-public class HoverGrid extends Grid {
+public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   /**
    * Enable hovering of a cell.
    */
@@ -65,16 +64,16 @@ public class HoverGrid extends Grid {
   /**
    * This class contains methods used to format a table's rows.
    */
-  public class HoverGridRowFormatter extends RowFormatter {
+  public class SelectedGridRowFormatter extends RowFormatter {
     protected Element getRawElement(int row) {
       return super.getRawElement(row);
     }
   }
 
   /**
-   * The {@link HoverGridListener}s attached to this grid.
+   * The {@link TableSelectionListener}s attached to this grid.
    */
-  private ArrayList/* HoverGridListener */hoverGridListeners = null;
+  private TableSelectionListenerCollection tableSelectionListeners = null;
 
   /**
    * The current hovering policy.
@@ -121,40 +120,41 @@ public class HoverGrid extends Grid {
   /**
    * Constructor.
    */
-  public HoverGrid() {
+  public SelectionGrid() {
     super();
-    setRowFormatter(new HoverGridRowFormatter());
+    setRowFormatter(new SelectedGridRowFormatter());
 
     // Sink hover and selection events
     sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEDOWN | Event.ONCLICK);
   }
 
   /**
-   * Constructs a {@link HoverGrid} with the requested size.
+   * Constructs a {@link SelectionGrid} with the requested size.
    * 
    * @param rows the number of rows
    * @param columns the number of columns
    * @throws IndexOutOfBoundsException
    */
-  public HoverGrid(int rows, int columns) {
+  public SelectionGrid(int rows, int columns) {
     this();
     resize(rows, columns);
   }
-  
+
   /**
-   * Add a listener to this grid.
+   * Add a {@link TableSelectionListener}.
    * 
    * @param listener the listener
    */
-  public void addHoverGridListener(HoverGridListener listener) {
-    if (hoverGridListeners == null) {
-      hoverGridListeners = new ArrayList();
+  public void addTableSelectionListener(TableSelectionListener listener) {
+    if (tableSelectionListeners == null) {
+      tableSelectionListeners = new TableSelectionListenerCollection();
     }
-    hoverGridListeners.add(listener);
+    tableSelectionListeners.add(listener);
   }
 
   /**
-   * Deselect a row in the data table.
+   * Deselect a row in the data table. This method is safe to call even if the
+   * row is not selected, or doesn't exist (out of bounds).
    * 
    * @param row the row index
    */
@@ -164,12 +164,8 @@ public class HoverGrid extends Grid {
       deselectRow(row, rowElem);
 
       // Fire grid listeners
-      if (hoverGridListeners != null) {
-        Iterator it = hoverGridListeners.iterator();
-        while (it.hasNext()) {
-          HoverGridListener listener = (HoverGridListener) it.next();
-          listener.onRowDeselected(row);
-        }
+      if (tableSelectionListeners != null) {
+        tableSelectionListeners.fireRowDeselected(row);
       }
     }
   }
@@ -187,12 +183,8 @@ public class HoverGrid extends Grid {
     }
 
     // Fire grid listeners
-    if (hoverGridListeners != null) {
-      Iterator listenerIt = hoverGridListeners.iterator();
-      while (listenerIt.hasNext()) {
-        HoverGridListener listener = (HoverGridListener) listenerIt.next();
-        listener.onAllRowsDeselected();
-      }
+    if (tableSelectionListeners != null) {
+      tableSelectionListeners.fireAllRowsDeselected();
     }
 
     // Clear out the rows
@@ -206,6 +198,15 @@ public class HoverGrid extends Grid {
    */
   public int getHoveringPolicy() {
     return hoveringPolicy;
+  }
+
+  /**
+   * Get the minimum row that can be hovered or selected.
+   * 
+   * @return the minimum hover row
+   */
+  public int getMinHoverRow() {
+    return minHoverRowIndex;
   }
 
   /**
@@ -260,12 +261,8 @@ public class HoverGrid extends Grid {
         int rowIndex = getRowIndex(targetRow);
         int cellIndex = OverrideDOM.getCellIndex(targetCell);
         onCellClicked(rowIndex, cellIndex);
-        if (hoverGridListeners != null) {
-          Iterator it = hoverGridListeners.iterator();
-          while (it.hasNext()) {
-            HoverGridListener listener = (HoverGridListener) it.next();
-            listener.onCellClicked(rowIndex, cellIndex);
-          }
+        if (tableSelectionListeners != null) {
+          tableSelectionListeners.fireCellClicked(rowIndex, cellIndex);
         }
         break;
 
@@ -298,8 +295,8 @@ public class HoverGrid extends Grid {
         switch (selectionPolicy) {
           case SELECTION_POLICY_MULTI_ROW:
             boolean shiftKey = DOM.eventGetShiftKey(event);
-            boolean ctrlKey = DOM.eventGetCtrlKey(event)
-                || DOM.eventGetMetaKey(event);
+            boolean ctrlKey =
+                DOM.eventGetCtrlKey(event) || DOM.eventGetMetaKey(event);
 
             // Prevent default text selection
             if (ctrlKey || shiftKey) {
@@ -328,27 +325,14 @@ public class HoverGrid extends Grid {
   }
 
   /**
-   * Remove one of the grid listeners.
+   * Remove a {@link TableSelectionListener}.
    * 
    * @param listener the listener to remove
    */
-  public void removeHoverGridListener(HoverGridListener listener) {
-    if (hoverGridListeners != null) {
-      hoverGridListeners.remove(listener);
+  public void removeTableSelectionListener(TableSelectionListener listener) {
+    if (tableSelectionListeners != null) {
+      tableSelectionListeners.remove(listener);
     }
-  }
-
-  /**
-   * Removes the specified row from the table.
-   * 
-   * @param row the index of the row to be removed
-   * @throws IndexOutOfBoundsException
-   */
-  public void removeRow(int row) {
-    checkRowBounds(row);
-    deselectRow(row);
-    super.removeRow(row);
-    numRows--;
   }
 
   /**
@@ -383,7 +367,8 @@ public class HoverGrid extends Grid {
 
     if (shiftKey && (lastSelectedRowIndex > -1)) {
       // Shift+select rows
-      HoverGridRowFormatter formatter = (HoverGridRowFormatter) getRowFormatter();
+      SelectedGridRowFormatter formatter =
+          (SelectedGridRowFormatter) getRowFormatter();
       int firstRow = Math.min(row, lastSelectedRowIndex);
       int lastRow = Math.max(row, lastSelectedRowIndex);
       lastRow = Math.min(lastRow, getRowCount() - 1);
@@ -392,12 +377,9 @@ public class HoverGrid extends Grid {
       }
 
       // Fire grid listeners
-      if (hoverGridListeners != null) {
-        Iterator it = hoverGridListeners.iterator();
-        while (it.hasNext()) {
-          HoverGridListener listener = (HoverGridListener) it.next();
-          listener.onRowsSelected(firstRow, lastRow - firstRow + 1);
-        }
+      if (tableSelectionListeners != null) {
+        tableSelectionListeners.fireRowsSelected(firstRow, lastRow - firstRow
+            + 1);
       }
     } else if (selectedRows.containsKey(new Integer(row))) {
       // Ctrl+unselect a selected row
@@ -405,7 +387,8 @@ public class HoverGrid extends Grid {
       lastSelectedRowIndex = row;
     } else {
       // Select the row
-      HoverGridRowFormatter formatter = (HoverGridRowFormatter) getRowFormatter();
+      SelectedGridRowFormatter formatter =
+          (SelectedGridRowFormatter) getRowFormatter();
       selectRow(row, formatter.getRawElement(row), false, true);
       lastSelectedRowIndex = row;
     }
@@ -417,10 +400,14 @@ public class HoverGrid extends Grid {
    * @param hoveringPolicy the hovering policy to use
    */
   public void setHoveringPolicy(int hoveringPolicy) {
-    if (this.hoveringPolicy != hoveringPolicy) {
-      unhover();
-      this.hoveringPolicy = hoveringPolicy;
+    // Check the hovering policy
+    if (hoveringPolicy != HOVERING_POLICY_DISABLED
+        && hoveringPolicy != HOVERING_POLICY_CELL
+        && hoveringPolicy != HOVERING_POLICY_ROW) {
+      throw new IllegalArgumentException("Invalid hoveringPolicy");
     }
+
+    setHoveringPolicyRaw(hoveringPolicy);
   }
 
   /**
@@ -430,7 +417,7 @@ public class HoverGrid extends Grid {
    * @param minRow the min row that can be hovered
    */
   public void setMinHoverRow(int minRow) {
-    minHoverRowIndex = minRow;
+    minHoverRowIndex = Math.max(0, minRow);
   }
 
   /**
@@ -440,8 +427,25 @@ public class HoverGrid extends Grid {
    * @param selectionPolicy the selection policy
    */
   public void setSelectionPolicy(int selectionPolicy) {
+    // Check the selection policy
+    if (selectionPolicy != SELECTION_POLICY_DISABLED
+        && selectionPolicy != SELECTION_POLICY_ONE_ROW
+        && selectionPolicy != SELECTION_POLICY_MULTI_ROW) {
+      throw new IllegalArgumentException("Invalid selectionPolicy");
+    }
+
+    // Set selection policy
     deselectRows();
     this.selectionPolicy = selectionPolicy;
+  }
+
+  /**
+   * Get the element that is currently being hovered.
+   * 
+   * @return the hovering element
+   */
+  protected Element getHoveringElement() {
+    return hoveringElement;
   }
 
   /**
@@ -450,7 +454,7 @@ public class HoverGrid extends Grid {
   protected int getRowIndex(Element rowElem) {
     return OverrideDOM.getRowIndex(rowElem);
   }
-  
+
   /**
    * Returns a HashMap of selected rows.
    * 
@@ -480,12 +484,8 @@ public class HoverGrid extends Grid {
       hoveringCellIndex = OverrideDOM.getCellIndex(cellElem);
 
       // Fire grid listeners
-      if (hoverGridListeners != null) {
-        Iterator it = hoverGridListeners.iterator();
-        while (it.hasNext()) {
-          HoverGridListener listener = (HoverGridListener) it.next();
-          listener.onCellHover(row, hoveringCellIndex);
-        }
+      if (tableSelectionListeners != null) {
+        tableSelectionListeners.fireCellHover(row, hoveringCellIndex);
       }
     }
   }
@@ -509,16 +509,12 @@ public class HoverGrid extends Grid {
       hoveringRowIndex = row;
 
       // Fire grid listeners
-      if (hoverGridListeners != null) {
-        Iterator it = hoverGridListeners.iterator();
-        while (it.hasNext()) {
-          HoverGridListener listener = (HoverGridListener) it.next();
-          listener.onRowHover(row);
-        }
+      if (tableSelectionListeners != null) {
+        tableSelectionListeners.fireRowHover(row);
       }
     }
   }
-  
+
   /**
    * Inserts a new row into the table, deselecting all selected rows.
    * 
@@ -529,6 +525,19 @@ public class HoverGrid extends Grid {
   protected int insertRow(int beforeRow) {
     deselectRows();
     return super.insertRow(beforeRow);
+  }
+
+  /**
+   * Removes the specified row from the table.
+   * 
+   * @param row the index of the row to be removed
+   * @throws IndexOutOfBoundsException
+   */
+  protected void removeRow(int row) {
+    checkRowBounds(row);
+    deselectRows();
+    super.removeRow(row);
+    numRows--;
   }
 
   /**
@@ -561,13 +570,21 @@ public class HoverGrid extends Grid {
       setStyleName(rowElem, "selected", true);
 
       // Fire grid listeners
-      if (fireEvent && hoverGridListeners != null) {
-        Iterator it = hoverGridListeners.iterator();
-        while (it.hasNext()) {
-          HoverGridListener listener = (HoverGridListener) it.next();
-          listener.onRowsSelected(row, 1);
-        }
+      if (fireEvent && tableSelectionListeners != null) {
+        tableSelectionListeners.fireRowsSelected(row, 1);
       }
+    }
+  }
+
+  /**
+   * Set the hovering policy without checking that it is valid.
+   * 
+   * @param hoveringPolicy the new hovering policy
+   */
+  protected void setHoveringPolicyRaw(int hoveringPolicy) {
+    if (this.hoveringPolicy != hoveringPolicy) {
+      unhover();
+      this.hoveringPolicy = hoveringPolicy;
     }
   }
 
@@ -585,21 +602,14 @@ public class HoverGrid extends Grid {
     hoveringElement = null;
 
     // Fire grid listeners
-    if (hoverGridListeners != null) {
+    if (tableSelectionListeners != null) {
       if (hoveringCellIndex >= 0) {
         // Unhover the cell
-        Iterator it = hoverGridListeners.iterator();
-        while (it.hasNext()) {
-          HoverGridListener listener = (HoverGridListener) it.next();
-          listener.onCellUnhover(hoveringRowIndex, hoveringCellIndex);
-        }
+        tableSelectionListeners.fireCellUnhover(hoveringRowIndex,
+            hoveringCellIndex);
       } else {
         // Unhover the row
-        Iterator it = hoverGridListeners.iterator();
-        while (it.hasNext()) {
-          HoverGridListener listener = (HoverGridListener) it.next();
-          listener.onRowUnhover(hoveringCellIndex);
-        }
+        tableSelectionListeners.fireRowUnhover(hoveringCellIndex);
       }
     }
 

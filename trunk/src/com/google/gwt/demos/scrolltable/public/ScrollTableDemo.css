@@ -2,64 +2,55 @@
  * ScrollTable
  */
 .gwt-ScrollTable {
-  border: 2px solid #C3D9FF;
-}
-.gwt-ScrollTable .gwt-ScrollTable-data tr {
-  background: #EAEAEA;
-}
-.gwt-ScrollTable .gwt-ScrollTable-data tr.hovering {
-  background: #C3D9FF;
-}
-.gwt-ScrollTable .gwt-ScrollTable-data tr.selected {
-  background: #7AA5D6;
-}
-.gwt-ScrollTable .gwt-ScrollTable-data tr td {
-  border: 2px solid white;
-  border-bottom: 2px solid #666666;
-  border-right: 2px solid #888888;
-  white-space: nowrap;
-  margin: 0px;
-  overflow: hidden;
-}
-.gwt-ScrollTable .gwt-ScrollTable-data tr td.hovering {
-  background: #C3D9FF;
+  border-color: #aaa;
+  border-style: solid;
+  border-width: 1px 0px 3px 1px;
 }
 
 .gwt-ScrollTable .gwt-ScrollTable-header-wrapper {
-  background: #E8EEF7;
-  border-bottom: 1px solid #C3D9FF;
-}
-.gwt-ScrollTable .gwt-ScrollTable-header tr {
-  background: #E8EEF7;
-}
-.gwt-ScrollTable .gwt-ScrollTable-header tr td {
-  border: 2px solid transparent;
-  border-right: 2px solid #7AA5D6;
-  border-bottom: 2px solid #7AA5D6;
-  white-space: nowrap;
-  margin: 0px;
-  overflow: hidden;
+  background: #8bd url(images/bg_header_gradient.gif) repeat-x bottom left;
 }
 
 .gwt-ScrollTable .gwt-ScrollTable-footer-wrapper {
-  background: #E8EEF7;
-  border-top: 1px solid #C3D9FF;
+	border-top: 1px solid #aaa;
+  background: #8bd url(images/bg_header_gradient.gif) repeat-x bottom left;
 }
-.gwt-ScrollTable .gwt-ScrollTable-footer tr {
-  background: #E8EEF7;
-}
-.gwt-ScrollTable .gwt-ScrollTable-footer tr td {
-  border: 2px solid transparent;
-  border-right: 2px solid #7AA5D6;
-  border-bottom: 2px solid #7AA5D6;
+
+.gwt-ScrollTable .gwt-ScrollTable-data td,
+.gwt-ScrollTable .gwt-ScrollTable-header td,
+.gwt-ScrollTable .gwt-ScrollTable-footer td {
+  border-color: #aaa;
+  border-style: solid;
+  border-width: 0px 1px 1px 0px;
   white-space: nowrap;
-  margin: 0px;
   overflow: hidden;
+  padding: 3px;
 }
+
+.gwt-ScrollTable .gwt-ScrollTable-header td,
+.gwt-ScrollTable .gwt-ScrollTable-footer td {
+  color: #fff;
+}
+	
+.gwt-ScrollTable .gwt-ScrollTable-data tr.selected {
+  background: #7AA5D6;
+}
+
+.gwt-ScrollTable .gwt-ScrollTable-data tr.hovering {
+  background: #C3D9FF;
+}
+
+.gwt-ScrollTable .gwt-ScrollTable-data td.hovering {
+  border: 1px solid blue;
+}
+
 .gwt-ModeledScrollTable-paging {
-	background: #e8eef7;
-	border-top: 1px solid #7AA5D6;
+  background: #e8eef7;
+  border-top: 1px solid #aaa;
+  border-right: 1px solid #aaa;
+  padding: 1px 0px;
 }
+
 .gwt-CellEditor {
 	border: 3px solid #7AA5D6;
 	padding: 4px;

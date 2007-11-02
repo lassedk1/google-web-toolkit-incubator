@@ -21,6 +21,7 @@ import com.google.gwt.widgetideas.table.client.TableModel.Response;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * A controller that interfaces between a {@link TableModel} and one or more
@@ -29,11 +30,48 @@ import java.util.Iterator;
  * with every request for rows.
  */
 public class TableController {
+  /**
+   * A callback that automatically updates a {@link ControllableTable}.
+   */
+  public class ControllableTableCallback implements Callback {
+    /**
+     * The table that requested the data.
+     */
+    private ControllableTable controllableTable;
+
+    /**
+     * Constructor.
+     * 
+     * @param controllableTable the {@link ControllableTable} instance
+     */
+    public ControllableTableCallback(ControllableTable controllableTable) {
+      this.controllableTable = controllableTable;
+    }
+
+    /**
+     * Get the {@link ControllableTable}.
+     * 
+     * @return the table
+     */
+    public ControllableTable getControllableTable() {
+      return controllableTable;
+    }
+
+    /**
+     * Update the table with the requested data.
+     * 
+     * @param request the request
+     * @param response the response
+     */
+    public void onRowsReady(Request request, Response response) {
+      controllableTable.setData(request.getStartRow(), response.iterator());
+    }
+  }
 
   /**
-   * The {@link TableControllerListener}s attached to this controller.
+   * The {@link ControllableTable}s attached to this controller.
    */
-  private ArrayList/* <TableControllerListener> */tableControllerListener;
+  private List controllableTables;
 
   /**
    * The total number of rows that we predict the model can return.
@@ -43,36 +81,40 @@ public class TableController {
   /**
    * The underlying table model.
    */
-  private MutableTableModel tableModel;
-
-  /**
-   * The callback used to receive the data.
-   */
-  private Callback callback = new Callback() {
-    public void onRowsReady(Request request, Response response) {
-      setData(request.getStartRow(), response.iterator());
-    }
-  };
+  private TableModel tableModel;
 
   /**
    * Constructor.
    * 
-   * @param tableModel the underlying {@link MutableTableModel}
+   * @param tableModel the underlying {@link ReadOnlyTableModel}
    */
-  public TableController(MutableTableModel tableModel) {
+  public TableController(TableModel tableModel) {
     this.tableModel = tableModel;
   }
 
   /**
-   * Add a new {@link TableControllerListener}.
+   * Add a new {@link ControllableTable}.
    * 
-   * @param listener the listener
+   * @param controllableTable the ControllableTable widget
    */
-  public void addTableControllerListener(TableControllerListener listener) {
-    if (tableControllerListener == null) {
-      tableControllerListener = new ArrayList/* <TableControllerListener> */();
+  public void addControllableTable(final ControllableTable controllableTable) {
+    // Keep a reference to the table
+    if (controllableTables == null) {
+      controllableTables = new ArrayList();
     }
-    tableControllerListener.add(listener);
+    controllableTables.add(controllableTable);
+
+    // Set the number of rows
+    controllableTable.setNumRows(numRows);
+
+    // Listen for data request events from the table
+    controllableTable.addDataRequestListener(new DataRequestListener() {
+      public void onRequestData(int firstRow, int rowCount, int sortIndex,
+          boolean sortAscending) {
+        requestRows(firstRow, rowCount, sortIndex, sortAscending,
+            controllableTable);
+      }
+    });
   }
 
   /**
@@ -92,7 +134,7 @@ public class TableController {
   public TableModel getTableModel() {
     return tableModel;
   }
-  
+
   /**
    * Insert a row of data.
    * 
@@ -104,19 +146,33 @@ public class TableController {
       checkRowBounds(beforeRow);
     }
 
+    // Fire listeners
+    tableModel.onRowInserted(beforeRow);
+
     // Increment number of rows
     if (numRows >= 0) {
       numRows++;
     }
 
-    // Fire listeners
-    tableModel.onRowInserted(beforeRow);
-    if (tableControllerListener != null) {
-      Iterator it = tableControllerListener.iterator();
+    // Update tables
+    if (controllableTables != null) {
+      Iterator it = controllableTables.iterator();
       while (it.hasNext()) {
-        TableControllerListener listener = (TableControllerListener) it.next();
-        listener.onRowInserted(beforeRow);
+        ControllableTable controllableTable = (ControllableTable) it.next();
+        controllableTable.setNumRows(numRows);
+        controllableTable.insertRow(beforeRow);
       }
+    }
+  }
+
+  /**
+   * Remove a {@link ControllableTable}.
+   * 
+   * @param controllableTable the controllable table to remove
+   */
+  public void removeControllableTable(ControllableTable controllableTable) {
+    if (controllableTables != null) {
+      controllableTables.remove(controllableTable);
     }
   }
 
@@ -129,42 +185,24 @@ public class TableController {
   public void removeRow(int row) {
     // Check row bounds
     checkRowBounds(row);
-  
+
+    // Fire listeners
+    tableModel.onRowRemoved(row);
+
     // Decrement the number of rows
     if (numRows >= 0) {
       numRows--;
     }
-  
-    // Fire listeners
-    tableModel.onRowRemoved(row);
-    if (tableControllerListener != null) {
-      Iterator it = tableControllerListener.iterator();
+
+    // Update tables
+    if (controllableTables != null) {
+      Iterator it = controllableTables.iterator();
       while (it.hasNext()) {
-        TableControllerListener listener = (TableControllerListener) it.next();
-        listener.onRowRemoved(row);
+        ControllableTable controllableTable = (ControllableTable) it.next();
+        controllableTable.setNumRows(numRows);
+        controllableTable.removeRow(row);
       }
     }
-  }
-
-  /**
-   * Remove a {@link TableControllerListener}.
-   * 
-   * @param listener the listener to remove
-   */
-  public void removeTableControllerListener(TableControllerListener listener) {
-    if (tableControllerListener != null) {
-      tableControllerListener.remove(listener);
-    }
-  }
-
-  /**
-   * Request new data to load.
-   * 
-   * @param firstRow the start row of the request
-   * @param rowCount the number of rows of data to request
-   */
-  public void requestData(int firstRow, int rowCount) {
-    tableModel.requestRows(firstRow, rowCount, callback);
   }
 
   /**
@@ -176,31 +214,11 @@ public class TableController {
    */
   public void setData(int row, int column, Object data) {
     tableModel.onSetData(row, column, data);
-    if (tableControllerListener != null) {
-      Iterator it = tableControllerListener.iterator();
+    if (controllableTables != null) {
+      Iterator it = controllableTables.iterator();
       while (it.hasNext()) {
-        TableControllerListener listener = (TableControllerListener) it.next();
-        listener.onSetData(row, column, data);
-      }
-    }
-  }
-
-  /**
-   * Set blocks of data in the controller.
-   * 
-   * This method takes an iterator of Collections, where each collection
-   * represents one row of data starting with the first row.
-   * 
-   * @param firstRow the first row index
-   * @param rows the 2D iterator of row data
-   */
-  public void setData(int firstRow, Iterator/* Iterator<Object> */rows) {
-    // Fire listeners
-    if (tableControllerListener != null) {
-      Iterator it = tableControllerListener.iterator();
-      while (it.hasNext()) {
-        TableControllerListener listener = (TableControllerListener) it.next();
-        listener.onSetData(firstRow, rows);
+        ControllableTable controllableTable = (ControllableTable) it.next();
+        controllableTable.setData(row, column, data);
       }
     }
   }
@@ -215,11 +233,11 @@ public class TableController {
     this.numRows = Math.max(-1, numRows);
 
     // Fire listeners
-    if (tableControllerListener != null) {
-      Iterator it = tableControllerListener.iterator();
+    if (controllableTables != null) {
+      Iterator it = controllableTables.iterator();
       while (it.hasNext()) {
-        TableControllerListener listener = (TableControllerListener) it.next();
-        listener.onNumRowsChanged(this.numRows);
+        ControllableTable controllableTable = (ControllableTable) it.next();
+        controllableTable.setNumRows(this.numRows);
       }
     }
   }
@@ -234,6 +252,50 @@ public class TableController {
     if ((numRows >= 0) && ((row >= numRows) || (row < 0))) {
       throw new IndexOutOfBoundsException("Row index: " + row + ", Row size: "
           + numRows);
+    }
+  }
+
+  /**
+   * Get the collection of {@link ControllableTable}s.
+   * 
+   * @return the controllableTables
+   */
+  protected List getControllableTables() {
+    return controllableTables;
+  }
+
+  /**
+   * Request some data from the model and respond with the specified callback.
+   * 
+   * @param startRow the first row to request
+   * @param numRows the number of rows to request
+   * @param sortIndex the index to sort by
+   * @param sortAscending true to sort ascending, false for descending
+   * @param table the table requesting the rows
+   */
+  protected void requestRows(int startRow, int numRows, int sortIndex,
+      boolean sortAscending, ControllableTable table) {
+    requestRows(startRow, numRows, sortIndex, sortAscending, table,
+        new ControllableTableCallback(table));
+  }
+
+  /**
+   * Request some data from the model and respond with the specified callback.
+   * 
+   * @param startRow the first row to request
+   * @param numRows the number of rows to request
+   * @param sortIndex the index to sort by
+   * @param sortAscending true to sort ascending, false for descending
+   * @param table the table requesting the rows
+   */
+  protected void requestRows(int startRow, int numRows, int sortIndex,
+      boolean sortAscending, ControllableTable table,
+      ControllableTableCallback callback) {
+    if (sortIndex < 0) {
+      tableModel.requestRows(new Request(startRow, numRows), callback);
+    } else {
+      tableModel.requestRows(new Request(startRow, numRows, sortIndex,
+          sortAscending), callback);
     }
   }
 }

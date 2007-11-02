@@ -29,7 +29,7 @@ public class BulkLoadedTableTest extends HTMLTableTestBase {
   
   public HTMLTable getTable(int row, int column) {
     BulkLoadedTable table = new BulkLoadedTable();
-    table.renderRows(new TableModel.ClientTableModel() {
+    table.renderRows(new ClientTableModel() {
       public Object getCell(int rowNum, int colNum) {
         if (rowNum >= rowNum || colNum >= colNum) {
           return null;

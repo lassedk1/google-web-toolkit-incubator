@@ -18,115 +18,11 @@ package com.google.gwt.widgetideas.table.client;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
  * A class to retrieve row data to be used in a table.
  */
 public abstract class TableModel {
-
-  /**
-   * A {@link TableModel} usable for simple list structures.
-   */
-  public static class ListTableModel extends ClientTableModel {
-    public List rows;
-
-    public ListTableModel(List rows) {
-      this.rows = rows;
-    }
-
-    public Object getCell(int rowNum, int cellNum) {
-      if (rowNum >= rows.size()) {
-        return null;
-      }
-      List row = (List) rows.get(rowNum);
-      if (cellNum >= row.size()) {
-        return null;
-      }
-      return row.get(cellNum);
-    }
-  }
-
-  /**
-   * A {@link TableModel} used when the data source can be accessed
-   * synchronously.
-   */
-  public abstract static class ClientTableModel extends TableModel {
-
-    /**
-     * Convenience class
-     */
-    private abstract class StubIterator implements Iterator {
-      int index;
-      Object next;
-
-      public Object next() {
-        if (next == null) {
-          throw new NoSuchElementException();
-        } else {
-          Object accum = next;
-          next = null;
-          return accum;
-        }
-      }
-
-      public void remove() {
-        throw new UnsupportedOperationException();
-      }
-    }
-
-    private class RowIterator extends StubIterator {
-      int max;
-
-      public RowIterator(Request request) {
-        index = request.getStartRow();
-        if (request.getNumRows() == -1) {
-          max = Integer.MAX_VALUE;
-        } else {
-          max = request.getNumRows() + index;
-        }
-      }
-
-      public boolean hasNext() {
-        if (next == null & index < max) {
-          next = getRow(index++);
-        }
-        return next != null;
-      }
-    }
-
-    ColumnIterator columnIter = new ColumnIterator();
-
-    private Iterator getRow(int rowNum) {
-      columnIter.index = 0;
-      columnIter.row = rowNum;
-      if (columnIter.hasNext()) {
-        return columnIter;
-      } else {
-        return null;
-      }
-    }
-
-    private class ColumnIterator extends StubIterator {
-      private int row = 0;
-
-      public boolean hasNext() {
-        if (next == null) {
-          next = getCell(row, index++);
-        }
-        return next != null;
-      }
-    }
-
-    public abstract Object getCell(int rowNum, int colNum);
-
-    public void requestRows(Request request, Callback callback) {
-      RowIterator rowIter = new RowIterator(request);
-      callback.onRowsReady(request, new ClientResponse(rowIter));
-    }
-  }
-
   /**
    * Callback for {@link TableModel}. Every Request should be associated with a
    * callback that should be called after a Response is generated.
@@ -146,14 +42,24 @@ public abstract class TableModel {
    */
   public static class Request implements IsSerializable {
     /**
-     * The first row of table data to request.
-     */
-    private int startRow;
-
-    /**
      * The number of rows to request.
      */
     private int numRows;
+
+    /**
+     * Indicates whether or not we are sorting in ascending or descending order.
+     */
+    private boolean sortAscending;
+
+    /**
+     * The column index to sort.
+     */
+    private int sortIndex;
+
+    /**
+     * The first row of table data to request.
+     */
+    private int startRow;
 
     /**
      * Constructor.
@@ -168,8 +74,23 @@ public abstract class TableModel {
      * @param numRows the number of rows to request
      */
     public Request(int startRow, int numRows) {
+      this(startRow, numRows, -1, true);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param startRow the first row to request
+     * @param numRows the number of rows to request
+     * @param sortIndex the index to sort by
+     * @param sortAscending true to sort ascending, false for descending
+     */
+    public Request(int startRow, int numRows, int sortIndex,
+        boolean sortAscending) {
       this.startRow = startRow;
       this.numRows = numRows;
+      this.sortIndex = sortIndex;
+      this.sortAscending = sortAscending;
     }
 
     /**
@@ -182,12 +103,30 @@ public abstract class TableModel {
     }
 
     /**
+     * Get the sort index. If the index is -1, the sort order is not specified.
+     * 
+     * @return the sort index, of -1 if not specified
+     */
+    public int getSortIndex() {
+      return sortIndex;
+    }
+
+    /**
      * Get the first row to request.
      * 
      * @return the first requested row
      */
     public int getStartRow() {
       return startRow;
+    }
+
+    /**
+     * Return true if the sort order is ascending, false if descending.
+     * 
+     * @return the sort order
+     */
+    public boolean isSortAscending() {
+      return sortAscending;
     }
   }
 
@@ -203,46 +142,36 @@ public abstract class TableModel {
      * @return the rows data
      */
     public abstract Iterator/* <Iterator<Iterator<Object>>> */iterator();
-
   }
 
   /**
-   * A local {@link TableModel} response.
+   * Use the ALL_ROWS value in place of the numRows variable when requesting all
+   * rows.
    */
-  public static class ClientResponse extends Response {
-
-    /**
-     * An iterator over the rows of data.
-     */
-    private Iterator/* <Iterator<Object>> */rows = null;
-
-    /**
-     * Constructor.
-     */
-    public ClientResponse() {
-    }
-
-    /**
-     * Constructor. Create a response with the data to enter into each cell of
-     * each row.
-     * 
-     * @param rows the data for the table
-     */
-    public ClientResponse(Iterator/* <Iterator<Object>> */rows) {
-      this.rows = rows;
-    }
-
-    /**
-     * Get the rows data.
-     * 
-     * @return the rows data
-     */
-    public Iterator/* <Iterator<Object>> */iterator() {
-      return rows;
-    }
-  }
-
   public static final int ALL_ROWS = -1;
+
+  /**
+   * Event fired when a row is inserted.
+   * 
+   * @param beforeRow the row index of the new row
+   */
+  public abstract void onRowInserted(int beforeRow);
+
+  /**
+   * Event fired when a row is removed.
+   * 
+   * @param row the row index of the removed row
+   */
+  public abstract void onRowRemoved(int row);
+
+  /**
+   * Event fired when the local data changes.
+   * 
+   * @param row the row index
+   * @param cell the cell index
+   * @param data the new contents of the cell
+   */
+  public abstract void onSetData(int row, int cell, Object data);
 
   /**
    * Generate a Response based on a specific Request. After the is created, it
@@ -254,6 +183,22 @@ public abstract class TableModel {
    */
   public void requestRows(int startRow, int numRows, Callback callback) {
     requestRows(new Request(startRow, numRows), callback);
+  }
+
+  /**
+   * Generate a Response based on a specific Request. After the is created, it
+   * is passed into the Callback.
+   * 
+   * @param startRow the first row to request
+   * @param numRows the number of rows to request
+   * @param callback the callback to use for the response
+   * @param sortIndex the index to sort by
+   * @param sortAscending true to sort ascending, false for descending
+   */
+  public void requestRows(int startRow, int numRows, int sortIndex,
+      boolean sortAscending, Callback callback) {
+    requestRows(new Request(startRow, numRows, sortIndex, sortAscending),
+        callback);
   }
 
   /**

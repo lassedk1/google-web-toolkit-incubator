@@ -17,8 +17,6 @@
 <!-- This module is typically inherited via com.google.gwt.user.User        -->
 <!--                                                                        -->
 <module>
-  <super-source path="jlabanca" />
-
   <inherits name="com.google.gwt.core.Core"/>
   <inherits name="com.google.gwt.user.UserAgent"/>
   <inherits name='com.google.gwt.widgetideas.BasicWidget'/>

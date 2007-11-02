@@ -18,14 +18,13 @@ package com.google.gwt.widgetideas.table.client;
 /**
  * Event listener interface for {@link HasRowPaging} events.
  */
-public interface HasRowPagingListener {
+public interface RowPagingListener {
   /**
-   * Fired when the number of rows changes.
+   * Fired when the number of pages changes.
    * 
-   * @param numRows the new number of rows
    * @param numPages the new number of pages
    */
-  public void onNumRowsChanges(int numRows, int numPages);
+  public void onNumPagesChanges(int numPages);
   
   /**
    * Fired when the current page changes.
@@ -38,12 +37,4 @@ public interface HasRowPagingListener {
    * Fired when the current page has completely finished loading.
    */
   public void onPageLoaded();
-
-  /**
-   * Fired when the page size changes.
-   * 
-   * @param pageSize the new page size
-   * @param numPages the number of pages
-   */
-  public void onPageSizeChange(int pageSize, int numPages);
 }

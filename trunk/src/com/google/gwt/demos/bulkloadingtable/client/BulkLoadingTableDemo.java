@@ -17,8 +17,6 @@
 package com.google.gwt.demos.bulkloadingtable.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -31,8 +29,8 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.table.client.BulkLoadedTable;
+import com.google.gwt.widgetideas.table.client.ClientTableModel;
 import com.google.gwt.widgetideas.table.client.PreloadedTable;
-import com.google.gwt.widgetideas.table.client.TableModel;
 import com.google.gwt.widgetideas.table.client.BulkLoader.OnLoadCompleteCallBack;
 import com.google.gwt.widgetideas.table.client.overrides.FlexTable;
 import com.google.gwt.widgetideas.table.client.overrides.Grid;
@@ -128,7 +126,6 @@ public class BulkLoadingTableDemo implements EntryPoint {
         long milli = System.currentTimeMillis();
         BulkLoadedTable table = new BulkLoadedTable();
         usingAsynBulkLoadedTableAPI(table, milli);
-        
       }
     });
 
@@ -169,7 +166,6 @@ public class BulkLoadingTableDemo implements EntryPoint {
     Window.alert("Finished in " + (System.currentTimeMillis() - milli)
         + " milliseconds");
   }
-
   
   private void usingAsynBulkLoadedTableAPI(final BulkLoadedTable table,
       final long milli) {
@@ -183,7 +179,7 @@ public class BulkLoadingTableDemo implements EntryPoint {
   }
 
   private void usingBulkLoadedTableAPI(final BulkLoadedTable table) {
-    TableModel.ClientTableModel oracle = new TableModel.ClientTableModel() {
+    ClientTableModel oracle = new ClientTableModel() {
       public Object getCell(int rowNum, int cellNum) {
         if (rowNum >= numRows | cellNum >= numColumns) {
           return null;

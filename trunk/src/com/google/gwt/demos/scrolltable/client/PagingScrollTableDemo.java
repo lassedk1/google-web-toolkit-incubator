@@ -24,19 +24,16 @@ import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.table.client.CachedTableController;
-import com.google.gwt.widgetideas.table.client.EditableGridView;
-import com.google.gwt.widgetideas.table.client.GridView;
+import com.google.gwt.widgetideas.table.client.EditablePagingGrid;
 import com.google.gwt.widgetideas.table.client.ListCellEditor;
-import com.google.gwt.widgetideas.table.client.MutableTableModel;
+import com.google.gwt.widgetideas.table.client.PagingGrid;
 import com.google.gwt.widgetideas.table.client.PagingScrollTable;
 import com.google.gwt.widgetideas.table.client.RadioCellEditor;
-import com.google.gwt.widgetideas.table.client.TableController;
+import com.google.gwt.widgetideas.table.client.ScrollTable;
 import com.google.gwt.widgetideas.table.client.TextCellEditor;
-import com.google.gwt.widgetideas.table.client.GridView.CellRenderer;
+import com.google.gwt.widgetideas.table.client.PagingGrid.CellRenderer;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 import com.google.gwt.widgetideas.table.client.overrides.FlexTable.FlexCellFormatter;
-
-import java.util.Collection;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -45,9 +42,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   /**
    * A custom cell renderer.
    */
-  private static class CustomCellRenderer extends CellRenderer {
-    public void renderCell(GridView grid, int row, int column,
-        Object data) {
+  private static class CustomCellRenderer implements CellRenderer {
+    public void renderCell(PagingGrid grid, int row, int column, Object data) {
       if (data == null) {
         grid.clearCell(row, column);
       }
@@ -67,37 +63,17 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   }
 
   /**
-   * A custom table mode.
+   * The {@link CachedTableController} used in the {@link PagingScrollTable}.
    */
-  private static class CustomMutableTableModel extends MutableTableModel {
-    public void onRowInserted(int beforeRow) {
-    }
-
-    public void onRowRemoved(int row) {
-    }
-
-    public void onSetData(int row, int cell, Object data) {
-    }
-
-    public void onSetData(int firstRow, Collection rows) {
-    }
-
-    public void requestRows(final Request request, final Callback callback) {
-      int startRow = request.getStartRow();
-      int numRows = request.getNumRows();
-      int lastRow = startRow + numRows;
-      callback.onRowsReady(request, new ClientResponse(new DataSourceIterator(
-          startRow, lastRow, 12)));
-    }
-  }
+  protected static CachedTableController tableController = null;
 
   /**
    * Get the data table.
    * 
    * @return the data table.
    */
-  public static EditableGridView getEditableGridView() {
-    return (EditableGridView) dataTable;
+  public static EditablePagingGrid getEditableGridView() {
+    return (EditablePagingGrid) dataTable;
   }
 
   /**
@@ -110,6 +86,15 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   }
 
   /**
+   * Get the table controller.
+   * 
+   * @return the table controller
+   */
+  public static CachedTableController getTableController() {
+    return tableController;
+  }
+
+  /**
    * Add a row of data cells each consisting of a string that describes the
    * row:column coordinates of the new cell. The number of columns in the new
    * row will match the number of columns in the grid.
@@ -117,8 +102,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
    * @param beforeRow the index to add the new row into
    */
   public static void insertDataRow(int beforeRow) {
-    GridView gridView = (GridView) scrollTable.getDataTable();
-    TableController tableController = gridView.getTableController();
+    PagingGrid gridView = (PagingGrid) scrollTable.getDataTable();
     tableController.insertRow(beforeRow);
   }
 
@@ -131,19 +115,20 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     getFooterTable();
 
     // Setup the controller
-    CachedTableController tableController = new CachedTableController(
-        new CustomMutableTableModel());
+    tableController = new CachedTableController(new DataSourceTableModel());
     tableController.setNumRows(10000);
-    tableController.setNumCachedRows(20, 20);
+    tableController.setNumPreCachedRows(20);
+    tableController.setNumPostCachedRows(20);
 
     // Setup the view
-    EditableGridView gridView = new EditableGridView(tableController);
+    EditablePagingGrid gridView = new EditablePagingGrid(tableController);
     dataTable = gridView;
     gridView.setCellRenderer(new CustomCellRenderer());
     setupCellEditors(gridView);
 
     // Create the scroll table
     scrollTable = new PagingScrollTable(gridView, headerTable);
+    getPagingScrollTable().setPageSize(20);
     scrollTable.setFooterTable(getFooterTable());
 
     // Add some data to the footer table
@@ -191,10 +176,10 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
    */
   private void setupScrollTable() {
     // Setup the formatting
-    getPagingScrollTable().setPageSize(20);
     scrollTable.setCellPadding(3);
-    scrollTable.setCellSpacing(1);
+    scrollTable.setCellSpacing(0);
     scrollTable.setSize("95%", "50%");
+    scrollTable.setResizePolicy(ScrollTable.RESIZE_POLICY_FILL_WIDTH);
 
     // Set column widths
     scrollTable.setColumnWidth(1, 100);
@@ -245,7 +230,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   /**
    * Setup the cell editors on the scroll table.
    */
-  private void setupCellEditors(EditableGridView gridView) {
+  private void setupCellEditors(EditablePagingGrid gridView) {
     // Integer only cell editor for age
     TextBox intOnlyTextBox = new TextBox();
     intOnlyTextBox.setWidth("4em");
@@ -278,8 +263,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     // Race cell editor
     ListCellEditor raceEditor = new ListCellEditor();
     ListBox raceBox = raceEditor.getListBox();
-    for (int i = 0; i < DataSourceIterator.races.length; i++) {
-      raceBox.addItem(DataSourceIterator.races[i]);
+    for (int i = 0; i < DataSourceTableModel.races.length; i++) {
+      raceBox.addItem(DataSourceTableModel.races[i]);
     }
     gridView.setCellEditor(4, raceEditor);
 
@@ -290,8 +275,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       }
     };
     colorEditor.setLabel("Select a color:");
-    for (int i = 0; i < DataSourceIterator.colors.length; i++) {
-      colorEditor.addOption(DataSourceIterator.colors[i]);
+    for (int i = 0; i < DataSourceTableModel.colors.length; i++) {
+      colorEditor.addOption(DataSourceTableModel.colors[i]);
     }
     gridView.setCellEditor(5, colorEditor);
 
@@ -299,8 +284,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     ListCellEditor sportEditor = new ListCellEditor();
     sportEditor.setLabel("Select a sport:");
     ListBox sportBox = sportEditor.getListBox();
-    for (int i = 0; i < DataSourceIterator.sports.length; i++) {
-      sportBox.addItem(DataSourceIterator.sports[i]);
+    for (int i = 0; i < DataSourceTableModel.sports.length; i++) {
+      sportBox.addItem(DataSourceTableModel.sports[i]);
     }
     gridView.setCellEditor(6, sportEditor);
 
