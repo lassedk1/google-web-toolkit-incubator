@@ -21,34 +21,26 @@ package com.google.gwt.widgetideas.table.client;
  */
 public abstract class ReadOnlyTableModel extends TableModel {
   /**
-   * Error message for non-read only operations.
+   * Error message used when calling a write operation.
    */
   public static final String READ_ONLY_ERROR = "TableModel is read only.";
 
   /**
-   * Event fired when a row is inserted.
-   * 
-   * @param beforeRow the row index of the new row
+   * @see TableModel
    */
   public void onRowInserted(int beforeRow) {
     throw new UnsupportedOperationException(READ_ONLY_ERROR);
   }
 
   /**
-   * Event fired when a row is removed.
-   * 
-   * @param row the row index of the removed row
+   * @see TableModel
    */
   public void onRowRemoved(int row) {
     throw new UnsupportedOperationException(READ_ONLY_ERROR);
   }
 
   /**
-   * Event fired when the local data changes.
-   * 
-   * @param row the row index
-   * @param cell the cell index
-   * @param data the new contents of the cell
+   * @see TableModel
    */
   public void onSetData(int row, int cell, Object data) {
     throw new UnsupportedOperationException(READ_ONLY_ERROR);

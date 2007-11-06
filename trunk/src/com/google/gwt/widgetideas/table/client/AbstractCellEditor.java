@@ -122,6 +122,7 @@ public abstract class AbstractCellEditor extends PopupPanel {
    * @param useDefaultButtons true to use default accept/cancel buttons
    */
   public AbstractCellEditor(Widget content, boolean useDefaultButtons) {
+    super(true, true);
     setStyleName("gwt-CellEditor");
 
     // Wrap contents in a grid

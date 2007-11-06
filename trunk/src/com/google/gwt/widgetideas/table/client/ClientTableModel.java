@@ -107,7 +107,7 @@ public abstract class ClientTableModel extends TableModel {
       Object current = next;
       curCell++;
       next = getCell(row, curCell);
-      
+
       // Return the current data
       return current;
     }

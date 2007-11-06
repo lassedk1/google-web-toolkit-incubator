@@ -17,16 +17,16 @@ package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 
-import java.util.EventListener;
-
 /**
- * Event listener interface for column sort events.
+ * Event listener interface for {@link SourceTableDataRequestEvents}.
  */
-public interface SortableColumnsListener extends EventListener {
+public interface TableDataRequestListener {
   /**
-   * Fired when the currently sorted column changes.
+   * Fired when the source requests data.
    * 
-   * @param sortList the list of sorted columns
+   * @param firstRow the rows to request
+   * @param rowCount the number of rows of data to request
+   * @param sortList detailed information of column sorting
    */
-  public abstract void onColumnSorted(ColumnSortList sortList);
+  public void onRequestData(int firstRow, int rowCount, ColumnSortList sortList);
 }

@@ -23,8 +23,9 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.table.client.SortableColumnsListener;
-import com.google.gwt.widgetideas.table.client.TableSelectionListener;
 import com.google.gwt.widgetideas.table.client.SortableFixedWidthGrid;
+import com.google.gwt.widgetideas.table.client.TableSelectionListener;
+import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 
 /**
  * Logs events fired by the ScrollTable.
@@ -84,6 +85,25 @@ public class DemoTabPanelLog extends DemoTab implements TableSelectionListener,
   }
 
   /**
+   * Fired when the currently sorted column changes.
+   * 
+   * @param sortList the list of sorted columns
+   */
+  public void onColumnSorted(ColumnSortList sortList) {
+    int column = -1;
+    boolean ascending = true;
+    if (sortList != null) {
+      column = sortList.getPrimaryColumn();
+      ascending = sortList.isPrimaryAscending();
+    }
+    if (ascending) {
+      addText("sorted column: " + column + " (ascending)", "black");
+    } else {
+      addText("sorted column: " + column, "black");
+    }
+  }
+
+  /**
    * Fired when a row is deselected.
    * 
    * @param row the row index
@@ -117,20 +137,6 @@ public class DemoTabPanelLog extends DemoTab implements TableSelectionListener,
    * @param row the row index
    */
   public void onRowUnhover(int row) {
-  }
-
-  /**
-   * Fired when the currently sorted column changes.
-   * 
-   * @param column the currently sorted column, -1 for unsorted
-   * @param ascending specifies that this sort is ascending
-   */
-  public void onSetSortedColumn(int column, boolean ascending) {
-    if (ascending) {
-      addText("sorted column: " + column + " (ascending)", "black");
-    } else {
-      addText("sorted column: " + column, "black");
-    }
   }
 
   protected Widget onInitialize() {

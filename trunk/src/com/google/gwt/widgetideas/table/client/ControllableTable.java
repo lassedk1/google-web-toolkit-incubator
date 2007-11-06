@@ -16,39 +16,27 @@
 package com.google.gwt.widgetideas.table.client;
 
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Event listener interface for {@link TableController} events.
  */
-public interface ControllableTable extends SourceDataRequestEvents {
+public interface ControllableTable extends SourceTableDataRequestEvents {
   /**
-   * Get the sort index.
-   * 
-   * @return the sort index, -1 if unsorted
-   */
-  public int getSortIndex();
-  
-  /**
-   * Insert a row into the table.
+   * Insert a row into the table relative to the total number of rows.
    * 
    * @param beforeRow the row index
-   * @return the index of the newly created row
+   * @param numRows the new number of rows
    */
-  public int insertRow(int beforeRow);
+  public void insertAbsoluteRow(int beforeRow, int numRows);
 
   /**
-   * Return true if the sort order is ascending, false if descending.
-   * 
-   * @return the sort order
-   */
-  public boolean isSortAscending();
-  
-  /**
-   * Remove a row from the table.
+   * Remove a row from the table relative to the total number of rows.
    * 
    * @param row the row index
+   * @param numRows the new number of rows
    */
-  public void removeRow(int row);
+  public void removeAbsoluteRow(int row, int numRows);
 
   /**
    * Set some arbitrary data in a specific cell.
@@ -67,8 +55,10 @@ public interface ControllableTable extends SourceDataRequestEvents {
    * 
    * @param firstRow the row index
    * @param rows the 2D Iterator of data
+   * @param rowValues the values associated with the rows
    */
-  public void setData(int firstRow, Iterator/* Iterator<Object> */rows);
+  public void setData(int firstRow, Iterator/* Iterator<Object> */rows,
+      List rowValues);
 
   /**
    * Set the total number of rows.

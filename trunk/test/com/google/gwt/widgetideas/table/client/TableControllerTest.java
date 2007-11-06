@@ -40,6 +40,11 @@ public class TableControllerTest extends GWTTestCase {
     public boolean removeRowCalled = false;
 
     /**
+     * The row values.
+     */
+    public List rowValues = null;
+
+    /**
      * Has setData been called.
      */
     public boolean setDataCalled = false;
@@ -54,7 +59,7 @@ public class TableControllerTest extends GWTTestCase {
      */
     private int numRows = -1;
 
-    public void addDataRequestListener(DataRequestListener listener) {
+    public void addTableDataRequestListener(TableDataRequestListener listener) {
     }
 
     /**
@@ -70,28 +75,28 @@ public class TableControllerTest extends GWTTestCase {
       return 0;
     }
 
-    public int insertRow(int beforeRow) {
+    public void insertAbsoluteRow(int beforeRow, int numRows) {
       insertRowCalled = true;
-      return 0;
     }
 
     public boolean isSortAscending() {
       return false;
     }
 
-    public void removeDataRequestListener(DataRequestListener listener) {
+    public void removeAbsoluteRow(int row, int numRows) {
+      removeRowCalled = true;
     }
 
-    public void removeRow(int row) {
-      removeRowCalled = true;
+    public void removeTableDataRequestListener(TableDataRequestListener listener) {
     }
 
     public void setData(int row, int column, Object data) {
       setDataCalled = true;
     }
 
-    public void setData(int firstRow, Iterator rows) {
+    public void setData(int firstRow, Iterator rows, List rowValues) {
       setDataIteratorCalled = true;
+      this.rowValues = rowValues;
     }
 
     public void setNumRows(int numRows) {
@@ -119,7 +124,7 @@ public class TableControllerTest extends GWTTestCase {
   public String getModuleName() {
     return "com.google.gwt.widgetideas.WidgetIdeas";
   }
-  
+
   /**
    * Get the table controller to test.
    */

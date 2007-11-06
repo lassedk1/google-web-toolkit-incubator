@@ -302,9 +302,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   }
   
   /**
-   * Gets the number of columns in this table.
-   * 
-   * @return the number of columns
+   * @return the raw number of columns in this table.
    */
   public int getColumnCount() {
     return maxRawColumnCount;
@@ -336,11 +334,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   }
   
   /**
-   * Inserts a cell into the FlexTable.
-   * 
-   * @param beforeRow the cell's row
-   * @param beforeColumn the cell's column
-   * @return the element
+   * @see FlexTable
    */
   public Element insertCell(int beforeRow, int beforeColumn) {
     Element td = super.insertCell(beforeRow, beforeColumn);
@@ -350,11 +344,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   }
 
   /**
-   * Inserts a new row into the table.
-   * 
-   * @param beforeRow the index before which the new row will be inserted
-   * @return the index of the newly-created row
-   * @throws IndexOutOfBoundsException
+   * @see FlexTable
    */
   public int insertRow(int beforeRow) {
     // Get the affected colSpan, which is the number of raw cells created by
@@ -405,11 +395,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   }
 
   /**
-   * Removes the specified cell from the table.
-   * 
-   * @param row the row of the cell to remove
-   * @param column the column of cell to remove
-   * @throws IndexOutOfBoundsException
+   * @see FlexTable
    */
   public void removeCell(int row, int column) {
     int colSpan = getFlexCellFormatter().getColSpan(row, column);
@@ -423,10 +409,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   }
 
   /**
-   * Removes the specified row from the table.
-   * 
-   * @param row the index of the row to be removed
-   * @throws IndexOutOfBoundsException
+   * @see FlexTable
    */
   public void removeRow(int row) {
     // Set the rowspan of everything in this row to 1
@@ -495,10 +478,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   }
 
   /**
-   * Add cells to the specified row.
-   * 
-   * @param row the row to affect
-   * @param num the number of cells to add
+   * @see FlexTable
    */
   protected void addCells(int row, int num) {
     // Account for ghost row
@@ -506,10 +486,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   }
 
   /**
-   * Directly ask the underlying DOM what the cell count on the given row is.
-   * 
-   * @param row the row
-   * @return number of columns in the row
+   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
    */
   protected int getDOMCellCount(int row) {
     // Account for ghost row
@@ -517,9 +494,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   }
 
   /**
-   * Directly ask the underlying DOM what the row count is.
-   * 
-   * @return Returns the number of rows in the table
+   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
    */
   protected int getDOMRowCount() {
     // Account for ghost row
@@ -536,11 +511,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   }
 
   /**
-   * Ensure that the cell exists.
-   * 
-   * @param row the row to prepare.
-   * @param column the column to prepare.
-   * @throws IndexOutOfBoundsException if the row is negative
+   * @see com.google.gwt.widgetideas.table.client.overrides.FlexTable
    */
   protected void prepareCell(int row, int column) {
     int curNumCells = 0;

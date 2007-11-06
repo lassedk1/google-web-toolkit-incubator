@@ -16,20 +16,12 @@
 package com.google.gwt.widgetideas.table.client;
 
 /**
- * An interface for tables that request data.
+ * A callback used when rendering a {@link com.google.gwt.user.client.ui.Widget}
+ * asynchronously or in a bulk operation.
  */
-public interface SourceDataRequestEvents {
+public interface RendererCallback {
   /**
-   * Add a new {@link DataRequestListener}.
-   * 
-   * @param listener the listener
+   * Called when the Widget rendering completes.
    */
-  public void addDataRequestListener(DataRequestListener listener);
-
-  /**
-   * Remove a {@link DataRequestListener}.
-   * 
-   * @param listener the listener to remove
-   */
-  public void removeDataRequestListener(DataRequestListener listener);
+  public void onRendered();
 }

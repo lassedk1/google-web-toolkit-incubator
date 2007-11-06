@@ -47,20 +47,12 @@ public class EditablePagingGrid extends PagingGrid {
    */
   private Callback cellEditorCallback = new Callback() {
     public void onAccept(int row, int cell, Object value) {
-      curCellEditor = null;
-      renderCell(row, cell, value);
       tableController.setData(row, cell, value);
     }
 
     public void onCancel(int row, int cell) {
-      curCellEditor = null;
     }
   };
-
-  /**
-   * The current cell editor that is being displayed.
-   */
-  private AbstractCellEditor curCellEditor = null;
 
   /**
    * The table controller.
@@ -86,17 +78,6 @@ public class EditablePagingGrid extends PagingGrid {
   public EditablePagingGrid(TableModel tableModel) {
     this(new TableController(tableModel));
     initialize();
-  }
-
-  /**
-   * Close any open cell editors. This method will close the editor even if it
-   * wouldn't normally allow the user to cancel.
-   */
-  public void closeCellEditor() {
-    if (curCellEditor != null) {
-      curCellEditor.hide();
-      curCellEditor = null;
-    }
   }
 
   /**
@@ -156,20 +137,10 @@ public class EditablePagingGrid extends PagingGrid {
    * @param cell the cell index
    */
   public void onCellClicked(int row, int cell) {
-    // Hide the current cell editor
-    if (curCellEditor != null) {
-      if (curCellEditor.cancel()) {
-        curCellEditor = null;
-      } else {
-        return;
-      }
-    }
-
     // Show the new cell editor
     AbstractCellEditor cellEditor = getCellEditor(cell);
     if (cellEditor != null) {
-      curCellEditor = cellEditor;
-      curCellEditor.editCell(this, row, cell, cellEditorCallback);
+      cellEditor.editCell(this, row, cell, cellEditorCallback);
     }
   }
 

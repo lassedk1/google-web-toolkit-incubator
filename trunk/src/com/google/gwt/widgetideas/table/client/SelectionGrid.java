@@ -153,8 +153,8 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   }
 
   /**
-   * Deselect a row in the data table. This method is safe to call even if the
-   * row is not selected, or doesn't exist (out of bounds).
+   * Deselect a row in the grid. This method is safe to call even if the row is
+   * not selected, or doesn't exist (out of bounds).
    * 
    * @param row the row index
    */
@@ -192,35 +192,27 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   }
 
   /**
-   * Returns the current hovering policy.
-   * 
-   * @return the hovering policy.
+   * @return the hovering policy
    */
   public int getHoveringPolicy() {
     return hoveringPolicy;
   }
 
   /**
-   * Get the minimum row that can be hovered or selected.
-   * 
-   * @return the minimum hover row
+   * @return the minimum row that can be hovered or selected.
    */
   public int getMinHoverRow() {
     return minHoverRowIndex;
   }
 
   /**
-   * Returns a Set of selected row indexes.
-   * 
-   * @return the selected rows
+   * @return the set of selected row indexes
    */
   public Set/* <Integer> */getSelectedRows() {
     return selectedRows.keySet();
   }
 
   /**
-   * Returns the current selection policy.
-   * 
    * @return the selection policy
    */
   public int getSelectionPolicy() {
@@ -228,19 +220,15 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   }
 
   /**
-   * Returns true if the row is currently selected.
-   * 
    * @param row the row index
-   * @return true if the row is selected
+   * @return true if the row is selected, false if not
    */
   public boolean isRowSelected(int row) {
     return selectedRows.containsKey(new Integer(row));
   }
 
   /**
-   * Method to process events generated from the browser.
-   * 
-   * @param event the generated event
+   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
    */
   public void onBrowserEvent(Event event) {
     super.onBrowserEvent(event);
@@ -440,25 +428,22 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   }
 
   /**
-   * Get the element that is currently being hovered.
-   * 
-   * @return the hovering element
+   * @return the element that is currently being hovered
    */
   protected Element getHoveringElement() {
     return hoveringElement;
   }
 
   /**
-   * Get the index of a row given the row element.
+   * @param rowElem the row element
+   * @return the index of a row
    */
   protected int getRowIndex(Element rowElem) {
     return OverrideDOM.getRowIndex(rowElem);
   }
 
   /**
-   * Returns a HashMap of selected rows.
-   * 
-   * @return the selected rows
+   * @return a map or selected row indexes to their elements
    */
   protected Map getSelectedRowsMap() {
     return selectedRows;
@@ -468,6 +453,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    * Set the current hovering cell.
    * 
    * @param cellElem the cell element
+   * @param rowElem the row element to hover
    */
   protected void hoverCell(Element cellElem, Element rowElem) {
     // Check for null cell element
@@ -516,11 +502,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   }
 
   /**
-   * Inserts a new row into the table, deselecting all selected rows.
-   * 
-   * @param beforeRow the index before which the new row will be inserted
-   * @return the index of the newly-created row
-   * @throws IndexOutOfBoundsException
+   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
    */
   protected int insertRow(int beforeRow) {
     deselectRows();
@@ -528,10 +510,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   }
 
   /**
-   * Removes the specified row from the table.
-   * 
-   * @param row the index of the row to be removed
-   * @throws IndexOutOfBoundsException
+   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
    */
   protected void removeRow(int row) {
     checkRowBounds(row);

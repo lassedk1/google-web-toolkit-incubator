@@ -249,12 +249,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     gridView.setCellEditor(2, new TextCellEditor(intOnlyTextBox));
 
     // Gender cell editor
-    RadioCellEditor genderEditor = new RadioCellEditor() {
-      public boolean onCancel() {
-        Window.alert("You must select a value");
-        return false;
-      }
-    };
+    RadioCellEditor genderEditor = new RadioCellEditor();
     genderEditor.setLabel("Select a gender:");
     genderEditor.addOption("male");
     genderEditor.addOption("female");

@@ -19,6 +19,7 @@ import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.widgetideas.table.client.SortableFixedWidthGrid.ColumnSorter;
 import com.google.gwt.widgetideas.table.client.SortableFixedWidthGrid.ColumnSorterCallback;
+import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 
 /**
  * Tests methods used for all {@link SortableFixedWidthGrid} class.
@@ -29,32 +30,19 @@ public class SortableFixedWidthGridTest extends GWTTestCase {
    */
   private class TestSortableColumnsListener implements SortableColumnsListener {
     /**
-     * The sorted column index.
+     * The sorted column info.
      */
-    private int sortedColumn = -1;
+    private ColumnSortList sortList = null;
 
     /**
-     * Is sorting reversed.
+     * @return the sorted column information
      */
-    private boolean sortedAscending = true;
-
-    /**
-     * @return the sortedColumn
-     */
-    public int getSortedColumn() {
-      return sortedColumn;
+    public ColumnSortList getSortList() {
+      return sortList;
     }
 
-    /**
-     * @return the sortedAscending
-     */
-    public boolean isSortedAscending() {
-      return sortedAscending;
-    }
-
-    public void onSetSortedColumn(int column, boolean ascending) {
-      sortedColumn = column;
-      sortedAscending = ascending;
+    public void onColumnSorted(ColumnSortList sortList) {
+      this.sortList = (ColumnSortList) sortList.clone();
     }
   }
 
@@ -96,8 +84,8 @@ public class SortableFixedWidthGridTest extends GWTTestCase {
     // Initialize the grid
     SortableFixedWidthGrid testGrid = getSortableGrid();
     ColumnSorter mySorter = new ColumnSorter() {
-      public void onSortColumn(SortableFixedWidthGrid grid, int column,
-          boolean ascending, ColumnSorterCallback callback) {
+      public void onSortColumn(SortableFixedWidthGrid grid,
+          ColumnSortList sortList, ColumnSorterCallback callback) {
       }
     };
 
@@ -110,30 +98,31 @@ public class SortableFixedWidthGridTest extends GWTTestCase {
     assertNull(testGrid.getColumnSorter());
 
     // Sorted index
+    ColumnSortList sortList = testGrid.getColumnSortList();
     testGrid.sortColumn(3, true);
-    assertEquals(3, testGrid.getSortIndex());
-    assertTrue(testGrid.isSortAscending());
+    assertEquals(3, sortList.getPrimaryColumn());
+    assertTrue(sortList.isPrimaryAscending());
     testGrid.sortColumn(3);
-    assertEquals(3, testGrid.getSortIndex());
-    assertFalse(testGrid.isSortAscending());
+    assertEquals(3, sortList.getPrimaryColumn());
+    assertFalse(sortList.isPrimaryAscending());
 
     // Set HTML
     testGrid.sortColumn(3, true);
-    assertEquals(3, testGrid.getSortIndex());
+    assertEquals(3, sortList.getPrimaryColumn());
     testGrid.setHTML(1, 3, "html");
-    assertEquals(-1, testGrid.getSortIndex());
+    assertEquals(3, sortList.getPrimaryColumn());
 
     // Set text
     testGrid.sortColumn(3, true);
-    assertEquals(3, testGrid.getSortIndex());
+    assertEquals(3, sortList.getPrimaryColumn());
     testGrid.setText(1, 3, "text");
-    assertEquals(-1, testGrid.getSortIndex());
+    assertEquals(3, sortList.getPrimaryColumn());
 
     // Set Widget
     testGrid.sortColumn(3, true);
-    assertEquals(3, testGrid.getSortIndex());
+    assertEquals(3, sortList.getPrimaryColumn());
     testGrid.setWidget(1, 3, new HTML("widget"));
-    assertEquals(-1, testGrid.getSortIndex());
+    assertEquals(3, sortList.getPrimaryColumn());
   }
 
   /**
@@ -144,6 +133,7 @@ public class SortableFixedWidthGridTest extends GWTTestCase {
   public void testListener() {
     // Initialize the grid
     SortableFixedWidthGrid testGrid = getSortableGrid();
+    ColumnSortList sortList = testGrid.getColumnSortList();
 
     // Create some listeners
     TestSortableColumnsListener listener1 = new TestSortableColumnsListener();
@@ -155,24 +145,30 @@ public class SortableFixedWidthGridTest extends GWTTestCase {
 
     // Sort columns
     testGrid.sortColumn(5, false);
-    assertEquals(5, listener1.getSortedColumn());
-    assertFalse(listener1.isSortedAscending());
-    assertEquals(5, listener2.getSortedColumn());
-    assertFalse(listener2.isSortedAscending());
-    assertEquals(5, listener3.getSortedColumn());
-    assertFalse(listener3.isSortedAscending());
+    assertEquals(5, listener1.getSortList().getPrimaryColumn());
+    assertFalse(listener1.getSortList().isPrimaryAscending());
+    assertTrue(sortList.equals(listener1.getSortList()));
+    assertEquals(5, listener2.getSortList().getPrimaryColumn());
+    assertFalse(listener2.getSortList().isPrimaryAscending());
+    assertTrue(sortList.equals(listener2.getSortList()));
+    assertEquals(5, listener3.getSortList().getPrimaryColumn());
+    assertFalse(listener3.getSortList().isPrimaryAscending());
+    assertTrue(sortList.equals(listener3.getSortList()));
 
     // Remove listener
     testGrid.removeSortableColumnsListener(listener2);
 
     // Sort columns
     testGrid.sortColumn(4, true);
-    assertEquals(4, listener1.getSortedColumn());
-    assertTrue(listener1.isSortedAscending());
-    assertEquals(5, listener2.getSortedColumn());
-    assertFalse(listener2.isSortedAscending());
-    assertEquals(4, listener3.getSortedColumn());
-    assertTrue(listener3.isSortedAscending());
+    assertEquals(4, listener1.getSortList().getPrimaryColumn());
+    assertTrue(listener1.getSortList().isPrimaryAscending());
+    assertTrue(sortList.equals(listener1.getSortList()));
+    assertEquals(5, listener2.getSortList().getPrimaryColumn());
+    assertFalse(listener2.getSortList().isPrimaryAscending());
+    assertFalse(sortList.equals(listener2.getSortList()));
+    assertEquals(4, listener3.getSortList().getPrimaryColumn());
+    assertTrue(listener3.getSortList().isPrimaryAscending());
+    assertTrue(sortList.equals(listener3.getSortList()));
   }
 
   /**
@@ -189,7 +185,7 @@ public class SortableFixedWidthGridTest extends GWTTestCase {
     testGrid.moveRowUp(5);
     assertEquals("4", testGrid.getHTML(5, 6));
     assertEquals("5", testGrid.getHTML(4, 6));
-    
+
     // Move a row down
     testGrid.moveRowDown(7);
     assertEquals("7", testGrid.getHTML(8, 6));
@@ -199,7 +195,7 @@ public class SortableFixedWidthGridTest extends GWTTestCase {
     testGrid.swapRows(1, 9);
     assertEquals("1", testGrid.getHTML(9, 6));
     assertEquals("9", testGrid.getHTML(1, 6));
-    
+
     // Test invalid indexes
     try {
       testGrid.moveRowUp(0);
@@ -247,36 +243,37 @@ public class SortableFixedWidthGridTest extends GWTTestCase {
   public void testSorting() {
     // Initialize the grid
     SortableFixedWidthGrid testGrid = getSortableGrid();
+    ColumnSortList sortList = testGrid.getColumnSortList();
 
     // Sort ascending using default sort
     testGrid.setColumnSorter(null);
     testGrid.sortColumn(2);
-    assertEquals(2, testGrid.getSortIndex());
-    assertTrue(testGrid.isSortAscending());
+    assertEquals(2, sortList.getPrimaryColumn());
+    assertTrue(sortList.isPrimaryAscending());
     for (int row = 0; row < 10; row++) {
       assertEquals(row + "", testGrid.getHTML(row, 2));
     }
 
     // Sort descending in same row
     testGrid.sortColumn(2);
-    assertEquals(2, testGrid.getSortIndex());
-    assertFalse(testGrid.isSortAscending());
+    assertEquals(2, sortList.getPrimaryColumn());
+    assertFalse(sortList.isPrimaryAscending());
     for (int row = 0; row < 10; row++) {
       assertEquals((9 - row) + "", testGrid.getHTML(row, 2));
     }
 
     // Sort descending in different row
     testGrid.sortColumn(1, false);
-    assertEquals(1, testGrid.getSortIndex());
-    assertFalse(testGrid.isSortAscending());
+    assertEquals(1, sortList.getPrimaryColumn());
+    assertFalse(sortList.isPrimaryAscending());
     for (int row = 0; row < 10; row++) {
       assertEquals((9 - row) + "", testGrid.getHTML(row, 1));
     }
 
     // Reverse rows
     testGrid.reverseRows();
-    assertEquals(1, testGrid.getSortIndex());
-    assertTrue(testGrid.isSortAscending());
+    assertEquals(1, sortList.getPrimaryColumn());
+    assertTrue(sortList.isPrimaryAscending());
     for (int row = 0; row < 10; row++) {
       assertEquals(row + "", testGrid.getHTML(row, 1));
     }

@@ -42,6 +42,8 @@
 
 .gwt-ScrollTable .gwt-ScrollTable-data td.hovering {
   border: 1px solid blue;
+  cursor: hand;
+  cursor: pointer;
 }
 
 .gwt-ModeledScrollTable-paging {

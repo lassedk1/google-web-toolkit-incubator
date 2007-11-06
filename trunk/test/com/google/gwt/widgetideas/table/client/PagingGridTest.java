@@ -18,9 +18,9 @@ package com.google.gwt.widgetideas.table.client;
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.widgetideas.table.client.PagingGrid.CellRenderer;
 import com.google.gwt.widgetideas.table.client.PagingGrid.TableRenderer;
-import com.google.gwt.widgetideas.table.client.PagingGrid.TableRendererCallback;
 import com.google.gwt.widgetideas.table.client.SortableFixedWidthGrid.ColumnSorter;
 import com.google.gwt.widgetideas.table.client.SortableFixedWidthGrid.ColumnSorterCallback;
+import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 
 import java.util.Iterator;
 
@@ -29,9 +29,9 @@ import java.util.Iterator;
  */
 public class PagingGridTest extends GWTTestCase {
   /**
-   * A {@link DataRequestListener} used for testing.
+   * A {@link TableDataRequestListener} used for testing.
    */
-  private class TestDataRequestListener implements DataRequestListener {
+  private class TestDataRequestListener implements TableDataRequestListener {
     /**
      * The request row.
      */
@@ -56,8 +56,8 @@ public class PagingGridTest extends GWTTestCase {
       return rowCount;
     }
 
-    public void onRequestData(int firstRow, int rowCount, int sortIndex,
-        boolean sortAscending) {
+    public void onRequestData(int firstRow, int rowCount,
+        ColumnSortList sortList) {
       this.firstRow = firstRow;
       this.rowCount = rowCount;
     }
@@ -190,7 +190,7 @@ public class PagingGridTest extends GWTTestCase {
   }
 
   /**
-   * Test the {@link DataRequestListener} class.
+   * Test the {@link TableDataRequestListener} class.
    */
   public void testDataRequestListener() {
     // Initialize the grid
@@ -202,10 +202,10 @@ public class PagingGridTest extends GWTTestCase {
     TestDataRequestListener listener3 = new TestDataRequestListener();
 
     // Add and remove listeners
-    testGrid.addDataRequestListener(listener1);
-    testGrid.addDataRequestListener(listener2);
-    testGrid.addDataRequestListener(listener3);
-    testGrid.removeDataRequestListener(listener2);
+    testGrid.addTableDataRequestListener(listener1);
+    testGrid.addTableDataRequestListener(listener2);
+    testGrid.addTableDataRequestListener(listener3);
+    testGrid.removeTableDataRequestListener(listener2);
 
     // Goto a page
     testGrid.setPageSize(10);
@@ -281,8 +281,8 @@ public class PagingGridTest extends GWTTestCase {
     TestRowPaginingListener listener2 = new TestRowPaginingListener();
     testGrid.addRowPagingListener(listener2);
     testGrid.setColumnSorter(new ColumnSorter() {
-      public void onSortColumn(SortableFixedWidthGrid grid, int column,
-          boolean ascending, ColumnSorterCallback callback) {
+      public void onSortColumn(SortableFixedWidthGrid grid,
+          ColumnSortList sortList, ColumnSorterCallback callback) {
       }
     });
     assertEquals(-1, listener2.getCurPage());
@@ -430,6 +430,34 @@ public class PagingGridTest extends GWTTestCase {
   }
 
   /**
+   * Test values associated with rows.
+   */
+  public void testRowValues() {
+    // Initialize the grid
+    PagingGrid testGrid = getPagingGrid();
+
+    // Test manually setting values
+    String value1 = "value1";
+    String value2 = "value2";
+    String value3 = "value3";
+    assertNull(testGrid.getRowValue(0));
+    assertNull(testGrid.getRowValue(10));
+    testGrid.setRowValue(4, value1);
+    assertNull(testGrid.getRowValue(3));
+    assertEquals(value1, testGrid.getRowValue(4));
+    assertNull(testGrid.getRowValue(5));
+    testGrid.setRowValue(4, value2);
+    assertNull(testGrid.getRowValue(3));
+    assertEquals(value2, testGrid.getRowValue(4));
+    assertNull(testGrid.getRowValue(5));
+    testGrid.setRowValue(5, value3);
+    assertNull(testGrid.getRowValue(3));
+    assertEquals(value2, testGrid.getRowValue(4));
+    assertEquals(value3, testGrid.getRowValue(5));
+    assertNull(testGrid.getRowValue(6));
+  }
+
+  /**
    * Test using a table renderer.
    */
   public void testTableRenderer() {
@@ -439,7 +467,7 @@ public class PagingGridTest extends GWTTestCase {
     // Create a table renderer
     TableRenderer tableRenderer = new TableRenderer() {
       public void renderTable(PagingGrid grid, Iterator rows,
-          TableRendererCallback callback) {
+          RendererCallback callback) {
         int firstRow = grid.getPageSize() * grid.getCurrentPage();
         int row = 0;
         while (rows.hasNext()) {
@@ -452,7 +480,7 @@ public class PagingGridTest extends GWTTestCase {
           }
           row++;
         }
-        callback.onTableRendered();
+        callback.onRendered();
       }
     };
 
@@ -471,7 +499,7 @@ public class PagingGridTest extends GWTTestCase {
 
     // Check that content is based on table renderer
     TestRowPaginingListener listener = new TestRowPaginingListener();
-    testGrid.setTableRendered(tableRenderer);
+    testGrid.setTableRenderer(tableRenderer);
     testGrid.addRowPagingListener(listener);
     assertFalse(listener.isPageLoaded());
     testGrid.renderContents();

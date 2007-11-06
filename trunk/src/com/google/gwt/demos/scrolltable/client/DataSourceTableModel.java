@@ -26,34 +26,35 @@ import com.google.gwt.widgetideas.table.client.ClientTableModel;
  * An iterator that serves as the data source for TableOracle requests.
  */
 public class DataSourceTableModel extends ClientTableModel {
-  public static final String[] colleges = {
-      "Georgia", "Connecticut", "Arizona", "Florida", "Wisconsin", "Maryland",
-      "Tennessee", "Arkansas", "Virginia", "Maine", "Texes", "South Carolina"};
+  public static final String[] colleges =
+      {"Georgia", "Connecticut", "Arizona", "Florida", "Wisconsin", "Maryland",
+          "Tennessee", "Arkansas", "Virginia", "Maine", "Texes",
+          "South Carolina"};
 
-  public static final String[] colors = {
-      "red", "blue", "green", "orange", "purple"};
+  public static final String[] colors =
+      {"red", "blue", "green", "orange", "purple"};
 
-  public static final String[] firstNames = {
-      "Arnold", "Bob", "Cathy", "Dennis", "Earl", "Frank", "George", "Hillary",
-      "Irma", "John", "Kelly", "Michelle", "Natalie", "Oscar", "Paul", "Susan",
-      "Todd"};
+  public static final String[] firstNames =
+      {"Arnold", "Bob", "Cathy", "Dennis", "Earl", "Frank", "George",
+          "Hillary", "Irma", "John", "Kelly", "Michelle", "Natalie", "Oscar",
+          "Paul", "Susan", "Todd"};
 
-  public static final String[] lastNames = {
-      "Anderson", "Billings", "Corper", "Donavon", "Elkins", "Fitzgerald",
-      "Gaskins", "Haskins", "Iterby", "Johnson", "Kellickson", "Lee",
-      "Peterson", "Richardson", "Sauxby", "Wilkinson", "York"};
+  public static final String[] lastNames =
+      {"Anderson", "Billings", "Corper", "Donavon", "Elkins", "Fitzgerald",
+          "Gaskins", "Haskins", "Iterby", "Johnson", "Kellickson", "Lee",
+          "Peterson", "Richardson", "Sauxby", "Wilkinson", "York"};
 
-  public static final String[] sports = {
-      "baseball", "soccor", "football", "basketball", "hockey", "softball",
-      "rugby", "water polo", "golf", "tennis"};
+  public static final String[] sports =
+      {"baseball", "soccor", "football", "basketball", "hockey", "softball",
+          "rugby", "water polo", "golf", "tennis"};
 
-  public static final String[] races = {
-      "African American", "Caucasian", "Hispanic", "Green Alien", "Asian",
-      "Other"};
+  public static final String[] races =
+      {"African American", "Caucasian", "Hispanic", "Green Alien", "Asian",
+          "Other"};
 
   public Object getCell(int rowNum, int colNum) {
     switch (colNum) {
-      case 0: 
+      case 0:
         final String firstName = firstNames[Random.nextInt(firstNames.length)];
         CheckBox cb = new CheckBox(firstName) {
           public void onBrowserEvent(Event event) {
@@ -93,5 +94,14 @@ public class DataSourceTableModel extends ClientTableModel {
       default:
         return null;
     }
+  }
+
+  public void onRowInserted(int beforeRow) {
+  }
+
+  public void onRowRemoved(int row) {
+  }
+
+  public void onSetData(int row, int cell, Object data) {
   }
 }
