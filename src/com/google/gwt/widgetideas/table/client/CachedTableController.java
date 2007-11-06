@@ -15,6 +15,8 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
+import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortInfo;
+import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 import com.google.gwt.widgetideas.table.client.TableModel.Request;
 import com.google.gwt.widgetideas.table.client.TableModel.Response;
 
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * A controller that interfaces between a {@link TableModel} and mutliple views
@@ -49,6 +52,18 @@ import java.util.List;
  * {@link PagingGrid}, you should set your cache to a multiple of the page size
  * so the user can go to the next and previous pages quickly.
  * </p>
+ * <h1>Limitations</h1>
+ * <p>
+ * This cache controller has some significant limitations. Row values are not
+ * cached for performance reasons and are not passed to the Controlled Tables,
+ * even on new requests to the model. You need to set them manually or keep
+ * track of them separately if they are important to you.
+ * </p>
+ * <p>
+ * Additionally, the cache is cleared every time the sort order changes.
+ * However, if you disallow column sorting or expect that the user will not sort
+ * the columns repeatedly, the cache will still improve paging performance.
+ * </p>
  */
 public class CachedTableController extends TableController {
   /**
@@ -60,7 +75,7 @@ public class CachedTableController extends TableController {
     }
 
     public Object next() {
-      return null;
+      throw new NoSuchElementException();
     }
 
     public void remove() {
@@ -97,10 +112,7 @@ public class CachedTableController extends TableController {
     }
 
     /**
-     * Update the table with the requested data.
-     * 
-     * @param request the request
-     * @param response the response
+     * @see com.google.gwt.widgetideas.table.client.TableModel.Callback
      */
     public void onRowsReady(Request request, Response response) {
       // Save the response data into the cache
@@ -125,7 +137,7 @@ public class CachedTableController extends TableController {
 
       // Update the table
       getControllableTable().setData(firstRow,
-          new CacheIterator(firstRow, lastRow));
+          new CacheIterator(firstRow, lastRow), null);
     }
   }
 
@@ -159,16 +171,17 @@ public class CachedTableController extends TableController {
     }
 
     public Object next() {
-      if (hasNext()) {
-        curRow++;
-        List rowList = getRowList(curRow);
-        if (rowList == null) {
-          return EMPTY_ITERATOR;
-        } else {
-          return rowList.iterator();
-        }
+      if (!hasNext()) {
+        throw new NoSuchElementException();
       }
-      return null;
+
+      curRow++;
+      List rowList = getRowList(curRow);
+      if (rowList == null) {
+        return EMPTY_ITERATOR;
+      } else {
+        return rowList.iterator();
+      }
     }
 
     public void remove() {
@@ -181,6 +194,11 @@ public class CachedTableController extends TableController {
    * contains a collection of "rows", each of which is another List of objects.
    */
   private HashMap/* Integer, ArrayList<Object> */dataMap = new HashMap();
+
+  /**
+   * The last sort info.
+   */
+  private ColumnSortList lastSortList = null;
 
   /**
    * The number of rows to request that come after the actual requested rows.
@@ -219,27 +237,21 @@ public class CachedTableController extends TableController {
   }
 
   /**
-   * Get the number of rows to cache after the visible area.
-   * 
-   * @return the number of rows to post cache
+   * @return the number of rows to cache after the requested rows
    */
   public int getNumPostCachedRows() {
     return postCacheRows;
   }
 
   /**
-   * Get the number of rows to cache before the visible area.
-   * 
-   * @return the number of rows to pre cache
+   * @return the number of rows to cache before the requested rows
    */
   public int getNumPreCachedRows() {
     return preCacheRows;
   }
 
   /**
-   * Insert a row of data.
-   * 
-   * @param beforeRow the row to insert
+   * @see TableController
    */
   public void insertRow(int beforeRow) {
     dataMap.clear();
@@ -247,10 +259,7 @@ public class CachedTableController extends TableController {
   }
 
   /**
-   * Remove a row of data.
-   * 
-   * @param row the row to remove
-   * @throws IndexOutOfBoundsException
+   * @see TableController
    */
   public void removeRow(int row) {
     dataMap.clear();
@@ -258,11 +267,7 @@ public class CachedTableController extends TableController {
   }
 
   /**
-   * Set data in the controller.
-   * 
-   * @param row the row index
-   * @param column the column index
-   * @param data the data to set
+   * @see TableController
    */
   public void setData(int row, int column, Object data) {
     // Save the data to the cache
@@ -301,16 +306,28 @@ public class CachedTableController extends TableController {
   }
 
   /**
-   * Request some data from the model and respond with the specified callback.
-   * 
-   * @param startRow the first row to request
-   * @param numRows the number of rows to request
-   * @param sortIndex the index to sort by
-   * @param sortAscending true to sort ascending, false for descending
-   * @param table the table requesting the rows
+   * @see TableController
    */
-  protected void requestRows(int startRow, int numRows, int sortIndex,
-      boolean sortAscending, ControllableTable table) {
+  protected void requestRows(int startRow, int numRows,
+      ColumnSortList sortList, ControllableTable table) {
+    // Clear the cache if the sort order has changed
+    if (sortList == null) {
+      if (lastSortList != null) {
+        dataMap.clear();
+        lastSortList = null;
+      }
+    } else if (!sortList.equals(lastSortList)) {
+      dataMap.clear();
+      // Copy the sort list and save it
+      lastSortList = new ColumnSortList();
+      Iterator it = sortList.iterator();
+      while (it.hasNext()) {
+        ColumnSortInfo sortInfo = (ColumnSortInfo) it.next();
+        lastSortList.add(new ColumnSortInfo(sortInfo.getColumn(), sortInfo
+            .isAscending()));
+      }
+    }
+
     // Check if all requested rows are in the cache
     int lastRow = startRow + numRows - 1;
     boolean fullyCached = true;
@@ -321,7 +338,7 @@ public class CachedTableController extends TableController {
       }
     }
     if (fullyCached) {
-      table.setData(startRow, new CacheIterator(startRow, lastRow));
+      table.setData(startRow, new CacheIterator(startRow, lastRow), null);
       return;
     }
 
@@ -358,8 +375,7 @@ public class CachedTableController extends TableController {
 
     // Request the remaining rows that aren't in the cache
     requestRows(uncachedFirstRow, uncachedLastRow - uncachedFirstRow + 1,
-        sortIndex, sortAscending, table, new CacheCallback(table, startRow,
-            lastRow));
+        sortList, table, new CacheCallback(table, startRow, lastRow));
   }
 
   /**

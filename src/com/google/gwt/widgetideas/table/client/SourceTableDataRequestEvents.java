@@ -16,18 +16,20 @@
 package com.google.gwt.widgetideas.table.client;
 
 /**
- * Event listener interface for {@link SourceDataRequestEvents}.
+ * An interface for tables that request data.
  */
-public interface DataRequestListener {
+public interface SourceTableDataRequestEvents {
+  /**
+   * Add a new {@link TableDataRequestListener}.
+   * 
+   * @param listener the listener
+   */
+  public void addTableDataRequestListener(TableDataRequestListener listener);
 
   /**
-   * Fired when the source requests data.
+   * Remove a {@link TableDataRequestListener}.
    * 
-   * @param firstRow the rows to request
-   * @param rowCount the number of rows of data to request
-   * @param sortIndex the index to sort by
-   * @param sortAscending true to sort ascending, false for descending
+   * @param listener the listener to remove
    */
-  public void onRequestData(int firstRow, int rowCount, int sortIndex,
-      boolean sortAscending);
+  public void removeTableDataRequestListener(TableDataRequestListener listener);
 }

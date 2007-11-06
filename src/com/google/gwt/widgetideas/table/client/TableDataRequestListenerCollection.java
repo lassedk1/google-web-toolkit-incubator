@@ -15,28 +15,29 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
+import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * A helper class for implementers of the {@link SourceDataRequestEvents}
+ * A helper class for implementers of the {@link SourceTableDataRequestEvents}
  * interface. This subclass of {@link ArrayList} assumes that all objects added
- * to it will be of type {@link DataRequestListener}.
+ * to it will be of type {@link TableDataRequestListener}.
  */
-public class DataRequestListenerCollection extends ArrayList {
+public class TableDataRequestListenerCollection extends ArrayList {
   /**
    * Fired when the source requests data.
    * 
    * @param firstRow the start row of the request
    * @param rowCount the number of rows of data to request
-   * @param sortIndex the index to sort by
-   * @param sortAscending true to sort ascending, false for descending
+   * @param sortList detailed information of column sorting
    */
-  public void fireRequestData(int firstRow, int rowCount, int sortIndex,
-      boolean sortAscending) {
+  public void fireRequestData(int firstRow, int rowCount,
+      ColumnSortList sortList) {
     for (Iterator it = iterator(); it.hasNext();) {
-      DataRequestListener listener = (DataRequestListener) it.next();
-      listener.onRequestData(firstRow, rowCount, sortIndex, sortAscending);
+      TableDataRequestListener listener = (TableDataRequestListener) it.next();
+      listener.onRequestData(firstRow, rowCount, sortList);
     }
   }
 }

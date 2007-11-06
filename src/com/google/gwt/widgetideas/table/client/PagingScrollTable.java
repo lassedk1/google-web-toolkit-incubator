@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.ImageBundle;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
@@ -34,6 +35,19 @@ import com.google.gwt.user.client.ui.Widget;
  * {@link TableModel}.
  */
 public class PagingScrollTable extends ScrollTable {
+  /**
+   * An {@link ImageBundle} that provides the loading image, which is an
+   * animition and should not be bundled.
+   */
+  public static interface LoadingImage extends ImageBundle {
+    /**
+     * An image used when loading a page.
+     * 
+     * @return a prototype of this image
+     */
+    AbstractImagePrototype scrollTableLoading();
+  }
+
   /**
    * An {@link com.google.gwt.user.client.ui.ImageBundle} that provides images
    * for {@link PagingScrollTable}.
@@ -102,7 +116,7 @@ public class PagingScrollTable extends ScrollTable {
   /**
    * The loading image.
    */
-  private Image loadingImage = new Image("scrollTableLoading.gif");
+  private Image loadingImage = new Image();
 
   /**
    * A listener that listens for page events from the {@link HasRowPaging}.
@@ -188,6 +202,10 @@ public class PagingScrollTable extends ScrollTable {
     super(dataTable, headerTable, images);
     dataTable.addRowPagingListener(rowPagingListener);
 
+    // Create the loading image
+    LoadingImage loadingBundle = (LoadingImage) GWT.create(LoadingImage.class);
+    loadingBundle.scrollTableLoading().applyTo(loadingImage);
+
     // Disallow non-numeric pages
     pagingCurPageBox.addKeyboardListener(new KeyboardListenerAdapter() {
       public void onKeyPress(Widget sender, char keyCode, int modifiers) {
@@ -258,8 +276,6 @@ public class PagingScrollTable extends ScrollTable {
   }
 
   /**
-   * Get the number of rows per page.
-   * 
    * @return the number of rows per page
    */
   public int getPageSize() {
@@ -281,7 +297,7 @@ public class PagingScrollTable extends ScrollTable {
   /**
    * Show or hide the paging options.
    * 
-   * @param visible true to show paging options
+   * @param visible true to show paging options, false to hide them
    */
   public void setPagingOptionsVisible(boolean visible) {
     if (visible) {
@@ -293,7 +309,7 @@ public class PagingScrollTable extends ScrollTable {
   }
 
   /**
-   * Helper method that actually performs the vertical resizing.
+   * @see ScrollTable
    */
   protected void resizeTablesVerticallyNow() {
     super.resizeTablesVerticallyNow();

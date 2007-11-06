@@ -31,6 +31,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.ResizableWidget;
 import com.google.gwt.widgetideas.client.ResizableWidgetCollection;
+import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 import com.google.gwt.widgetideas.table.client.overrides.OverrideDOM;
 
 import java.util.ArrayList;
@@ -719,7 +720,15 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     if (dataTable instanceof HasSortableColumns) {
       ((HasSortableColumns) dataTable)
           .addSortableColumnsListener(new SortableColumnsListener() {
-            public void onSetSortedColumn(int column, boolean reversed) {
+            public void onColumnSorted(ColumnSortList sortList) {
+              // Get the primary column and sort order
+              int column = -1;
+              boolean ascending = true;
+              if (sortList != null) {
+                column = sortList.getPrimaryColumn();
+                ascending = sortList.isPrimaryAscending();
+              }
+
               // Remove the sorted column indicator
               if (sortingEnabled) {
                 Element parent = DOM.getParent(sortedColumnWrapper);
@@ -732,12 +741,12 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
                   sortedColumnTrigger = null;
                 } else if (sortedColumnTrigger != null) {
                   DOM.appendChild(sortedColumnTrigger, sortedColumnWrapper);
-                  if (reversed) {
-                    images.scrollTableDescending().applyTo(
-                        sortedColumnIndicator);
-                  } else {
+                  if (ascending) {
                     images.scrollTableAscending()
                         .applyTo(sortedColumnIndicator);
+                  } else {
+                    images.scrollTableDescending().applyTo(
+                        sortedColumnIndicator);
                   }
                 }
               }
@@ -831,18 +840,14 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   }
 
   /**
-   * Gets the amount of padding that is added around all cells.
-   * 
-   * @return the cell padding, in pixels
+   * @return the cell padding of the tables, in pixels
    */
   public int getCellPadding() {
     return dataTable.getCellPadding();
   }
 
   /**
-   * Gets the amount of spacing that is added around all cells.
-   * 
-   * @return the cell spacing, in pixels
+   * @return the cell spacing of the tables, in pixels
    */
   public int getCellSpacing() {
     return dataTable.getCellSpacing();
@@ -859,8 +864,6 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   }
 
   /**
-   * Get the data table.
-   * 
    * @return the data table
    */
   public HasFixedColumnWidth getDataTable() {
@@ -868,8 +871,6 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   }
 
   /**
-   * Get the footer table.
-   * 
    * @return the footer table
    */
   public HasFixedColumnWidth getFooterTable() {
@@ -877,8 +878,6 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   }
 
   /**
-   * Get the header table.
-   * 
    * @return the header table
    */
   public HasFixedColumnWidth getHeaderTable() {
@@ -886,8 +885,6 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   }
 
   /**
-   * Get the current resize policy.
-   * 
    * @return the resize policy
    */
   public int getResizePolicy() {
@@ -895,36 +892,28 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   }
 
   /**
-   * Returns true if column auto fitting is currently enabled.
-   * 
-   * @return true if auto fitting is enabled
+   * @return true if auto fitting is enabled, false if disabled
    */
   public boolean isAutoFitEnabled() {
     return autoFitEnabled;
   }
 
   /**
-   * Returns true if data scrolling is currently enabled.
-   * 
-   * @return true if scrolling is enabled
+   * @return true if scrolling is enabled, false if disabled
    */
   public boolean isScrollingEnabled() {
     return scrollingEnabled;
   }
 
   /**
-   * Returns true if column sorting is currently enabled.
-   * 
-   * @return true if sorting is enabled
+   * @return true if sorting is enabled, false if disabled
    */
   public boolean isSortingEnabled() {
     return sortingEnabled;
   }
 
   /**
-   * Method to process events generated from the browser.
-   * 
-   * @param event the generated event
+   * @see Widget
    */
   public void onBrowserEvent(Event event) {
     super.onBrowserEvent(event);
@@ -1227,26 +1216,14 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   }
 
   /**
-   * Get the data wrapper Element.
-   * 
-   * @return the dataWrapper
+   * @return the wrapper element around the data table
    */
   protected Element getDataWrapper() {
     return dataWrapper;
   }
 
   /**
-   * This method is called when a widget is attached to the browser's document.
-   * To receive notification after a Widget has been added from the document,
-   * override the onLoad method.
-   * 
-   * <p>
-   * Subclasses that override this method must call
-   * <code>super.onAttach()</code> to ensure that the Widget has been attached
-   * to the underlying Element.
-   * </p>
-   * 
-   * @throws IllegalStateException if this widget is already attached
+   * Resize the widget and redistribute space as needed.
    */
   protected void onAttach() {
     super.onAttach();

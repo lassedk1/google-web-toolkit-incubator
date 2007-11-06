@@ -19,7 +19,9 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -56,17 +58,7 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
      * @param callback the callback to use when rendering completes
      */
     public void renderTable(PagingGrid grid, Iterator rows,
-        TableRendererCallback callback);
-  }
-
-  /**
-   * Called when table rendering completes.
-   */
-  protected interface TableRendererCallback {
-    /**
-     * Call this when rendering is complete.
-     */
-    public void onTableRendered();
+        RendererCallback callback);
   }
 
   /**
@@ -139,7 +131,7 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
   /**
    * The listeners that respond to data requests.
    */
-  private DataRequestListenerCollection dataRequestListeners = null;
+  private TableDataRequestListenerCollection dataRequestListeners = null;
 
   /**
    * The number of rows of data that we expect to exist.
@@ -150,6 +142,12 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
    * The listeners attached to this {@link PagingGrid}.
    */
   private RowPagingListenerCollection rowPagingListeners = null;
+
+  /**
+   * The values associated with each row. This is an optional list of data that
+   * ties the visible content in each row to an underlying object.
+   */
+  private List rowValues = null;
 
   /**
    * The number of rows per page. If the number of rows per page is equal to the
@@ -163,9 +161,9 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
   private TableRenderer tableRenderer = null;
 
   /**
-   * The {@link TableRendererCallback} used when table rendering completes.
+   * The {@link RendererCallback} used when table rendering completes.
    */
-  private TableRendererCallback tableRendererCallback = null;
+  private RendererCallback tableRendererCallback = null;
 
   /**
    * Constructor.
@@ -186,18 +184,6 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
   }
 
   /**
-   * Add a new {@link DataRequestListener}.
-   * 
-   * @param listener the listener
-   */
-  public void addDataRequestListener(DataRequestListener listener) {
-    if (dataRequestListeners == null) {
-      dataRequestListeners = new DataRequestListenerCollection();
-    }
-    dataRequestListeners.add(listener);
-  }
-
-  /**
    * Add a new {@link RowPagingListener}.
    * 
    * @param listener the listener
@@ -210,18 +196,25 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
   }
 
   /**
-   * Get the cell renderer.
+   * Add a new {@link TableDataRequestListener}.
    * 
-   * @return the cell rendered
+   * @param listener the listener
+   */
+  public void addTableDataRequestListener(TableDataRequestListener listener) {
+    if (dataRequestListeners == null) {
+      dataRequestListeners = new TableDataRequestListenerCollection();
+    }
+    dataRequestListeners.add(listener);
+  }
+
+  /**
+   * @return the {@link CellRenderer} used to render cells.
    */
   public CellRenderer getCellRenderer() {
     return cellRenderer;
   }
 
   /**
-   * Returns the currently visible page. If no page has been loaded, -1 is
-   * returned.
-   * 
    * @return the current page
    */
   public int getCurrentPage() {
@@ -229,9 +222,7 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
   }
 
   /**
-   * Get the number of pages. If the number of pages is unknown, -1 is returned.
-   * 
-   * @return the page count
+   * @return the number of pages, or -1 if not known
    */
   public int getNumPages() {
     if (pageSize < 1) {
@@ -246,21 +237,30 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
   }
 
   /**
-   * Get the total number of rows. If -1, the totol number of rows is not known.
-   * 
-   * @return the total number of rows
+   * @return the total number of rows, or -1 if not known
    */
   public int getNumRows() {
     return totalNumRows;
   }
 
   /**
-   * Get the number of rows per page.
-   * 
    * @return the number of rows per page
    */
   public int getPageSize() {
     return pageSize;
+  }
+
+  /**
+   * Get the value associated with a row.
+   * 
+   * @param row the row index
+   * @return the value associated with the row
+   */
+  public Object getRowValue(int row) {
+    if (rowValues == null || rowValues.size() <= row) {
+      return null;
+    }
+    return rowValues.get(row);
   }
 
   /**
@@ -271,7 +271,8 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
   }
 
   /**
-   * Go to the last page.
+   * Go to the last page. If the number of pages is not known, this method is
+   * ignored.
    */
   public void gotoLastPage() {
     if (getNumPages() >= 0) {
@@ -329,12 +330,15 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
   }
 
   /**
-   * Insert a row into the table.
+   * Insert a row into the table relative to the total number of rows.
    * 
    * @param beforeRow the row index
-   * @return the index of the newly created row
+   * @param numRows the new number of rows
    */
-  public int insertRow(int beforeRow) {
+  public void insertAbsoluteRow(int beforeRow, int numRows) {
+    // Update the total number of rows
+    setNumRows(numRows);
+
     int lastRow = getLastRow() + 1;
     if (beforeRow <= lastRow) {
       int firstRow = getFirstRow();
@@ -349,7 +353,6 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
         super.removeRow(pageSize);
       }
     }
-    return beforeRow;
   }
 
   /**
@@ -360,22 +363,15 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
   }
 
   /**
-   * Remove a {@link DataRequestListener}.
-   * 
-   * @param listener the listener to remove
-   */
-  public void removeDataRequestListener(DataRequestListener listener) {
-    if (dataRequestListeners != null) {
-      dataRequestListeners.remove(listener);
-    }
-  }
-
-  /**
-   * Remove a row from the table.
+   * Remove a row from the table relative to the total number of rows.
    * 
    * @param row the row index
+   * @param numRows the new number of rows
    */
-  public void removeRow(int row) {
+  public void removeAbsoluteRow(int row, int numRows) {
+    // Update the total number of rows
+    setNumRows(numRows);
+
     int lastRow = getLastRow();
     if (row <= lastRow) {
       int firstRow = getFirstRow();
@@ -402,7 +398,18 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
   }
 
   /**
-   * Set the cell renderer.
+   * Remove a {@link TableDataRequestListener}.
+   * 
+   * @param listener the listener to remove
+   */
+  public void removeTableDataRequestListener(TableDataRequestListener listener) {
+    if (dataRequestListeners != null) {
+      dataRequestListeners.remove(listener);
+    }
+  }
+
+  /**
+   * Set the {@link CellRenderer} used to render cell contents.
    * 
    * @param cellRenderer the new renderer
    */
@@ -411,7 +418,12 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
   }
 
   /**
-   * Set data in the controller.
+   * Set the data in a cell. The data object will be rendered using the
+   * {@link CellRenderer}, if one is specified.
+   * 
+   * The row index in this method is relative to the total number of rows across
+   * all pages. It is not the same as the row index passed into setHTML, which
+   * is relative to the current page.
    * 
    * @param row the row index
    * @param column the column index
@@ -432,8 +444,11 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
    * 
    * @param firstRow the row index
    * @param rows the 2D Iterator of data
+   * @param rowValues the values associated with each row
    */
-  public void setData(int firstRow, Iterator/* Iterator<Object> */rows) {
+  public void setData(int firstRow, Iterator/* Iterator<Object> */rows,
+      List rowValues) {
+    this.rowValues = rowValues;
     if (rows != null) {
       int firstVisibleRow = getFirstRow();
       int lastVisibleRow = getLastRow();
@@ -446,6 +461,7 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
       }
 
       // Render the cells the default way
+      int rowCount = 0;
       while (rows.hasNext()) {
         Iterator columnIt = (Iterator) rows.next();
         if ((firstRow >= firstVisibleRow) && (firstRow <= lastVisibleRow)) {
@@ -464,7 +480,7 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
   }
 
   /**
-   * Fired when the number of rows changes.
+   * Set the number of rows in the underlying data.
    * 
    * @param numRows the new number of rows
    */
@@ -506,6 +522,25 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
   }
 
   /**
+   * Associate a row in the table with a value.
+   * 
+   * @param row the row index
+   * @param value the value to associate
+   */
+  public void setRowValue(int row, Object value) {
+    // Make sure the list can fit the row
+    if (rowValues == null) {
+      rowValues = new ArrayList(row + 1);
+    }
+    for (int i = rowValues.size(); i <= row; i++) {
+      rowValues.add(null);
+    }
+
+    // Set the row value
+    rowValues.set(row, value);
+  }
+
+  /**
    * Sort the grid according to the specified column.
    * 
    * Unlike a normal {@link SortableFixedWidthGrid}, the {@link PagingGrid}
@@ -531,7 +566,7 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
 
     // Sort the column
     if (getColumnSorter() == null) {
-      setSortedColumn(column, ascending);
+      getColumnSortList().addColumnSortInfo(column, ascending);
       gotoPage(currentPage, true);
     } else {
       super.sortColumn(column, ascending);
@@ -574,6 +609,8 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
    */
   protected void onLoad() {
     super.onLoad();
+
+    // If we have not loaded any pages, load one now
     if (currentPage < 0) {
       gotoPage(0, true);
     }
@@ -602,18 +639,20 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
    * Render the contents of the {@link PagingGrid}.
    */
   protected void renderContents() {
-    int rowCount = getLastRow() - getFirstRow() + 1;
-    if (rowCount != getRowCount()) {
-      resizeRows(rowCount);
-    }
+    if (tableRenderer == null) {
+      int rowCount = getLastRow() - getFirstRow() + 1;
+      if (rowCount != getRowCount()) {
+        resizeRows(rowCount);
+      }
 
-    // Clear out existing data
-    clearAll();
+      // Clear out existing data
+      clearAll();
+    }
 
     // Request the new data from the controller
     if (dataRequestListeners != null) {
       dataRequestListeners.fireRequestData(currentPage * pageSize, pageSize,
-          getSortIndex(), isSortAscending());
+          getColumnSortList());
     }
   }
 
@@ -622,11 +661,11 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
    * 
    * @param tableRenderer the table renderer
    */
-  protected void setTableRendered(TableRenderer tableRenderer) {
+  protected void setTableRenderer(TableRenderer tableRenderer) {
     this.tableRenderer = tableRenderer;
-    if (tableRenderer != null) {
-      tableRendererCallback = new TableRendererCallback() {
-        public void onTableRendered() {
+    if (tableRenderer != null && tableRendererCallback == null) {
+      tableRendererCallback = new RendererCallback() {
+        public void onRendered() {
           firePageLoadedEvent();
         }
       };
@@ -634,7 +673,7 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
   }
 
   /**
-   * Reset the current page.
+   * Reload the current page.
    * 
    * @param force true to force a refresh
    */

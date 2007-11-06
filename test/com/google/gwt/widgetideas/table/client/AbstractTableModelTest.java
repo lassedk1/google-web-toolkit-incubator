@@ -17,6 +17,7 @@ package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.widgetideas.table.client.TableModel.Callback;
+import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 import com.google.gwt.widgetideas.table.client.TableModel.Request;
 import com.google.gwt.widgetideas.table.client.TableModel.Response;
 
@@ -39,14 +40,9 @@ public abstract class AbstractTableModelTest extends GWTTestCase {
     private int numRows;
 
     /**
-     * Expected sort order in Request.
+     * Column sort infot.
      */
-    private boolean sortAscending;
-
-    /**
-     * Expected sort index in Request.
-     */
-    private int sortIndex;
+    private ColumnSortList sortList;
 
     /**
      * Expected start row in Request.
@@ -58,15 +54,12 @@ public abstract class AbstractTableModelTest extends GWTTestCase {
      * 
      * @param startRow expected start row in request
      * @param numRows expected num rows in request
-     * @param sortIndex expected sort index in request
-     * @param sortAscending expected sort order in request
+     * @param sortList the column sort information
      */
-    public TestCallback(int startRow, int numRows, int sortIndex,
-        boolean sortAscending) {
+    public TestCallback(int startRow, int numRows, ColumnSortList sortList) {
       this.startRow = startRow;
       this.numRows = numRows;
-      this.sortIndex = sortIndex;
-      this.sortAscending = sortAscending;
+      this.sortList = sortList;
     }
 
     /**
@@ -82,8 +75,13 @@ public abstract class AbstractTableModelTest extends GWTTestCase {
       executed = true;
       assertEquals(request.getStartRow(), startRow);
       assertEquals(request.getNumRows(), numRows);
-      assertEquals(request.getSortIndex(), sortIndex);
-      assertEquals(request.isSortAscending(), sortAscending);
+      if (sortList == null) {
+        if (request.getColumnSortList() != null) {
+          fail("inconsistent sortLists");
+        }
+      } else {
+        assertTrue(sortList.equals(request.getColumnSortList()));
+      }
     }
   }
 
@@ -106,18 +104,21 @@ public abstract class AbstractTableModelTest extends GWTTestCase {
     TableModel tableModel = getTableModel();
 
     // Request some rows without sorting
-    TestCallback callback1 = new TestCallback(10, 20, -1, true);
+    TestCallback callback1 = new TestCallback(10, 20, null);
     tableModel.requestRows(10, 20, callback1);
     assertTrue(callback1.isExecuted());
 
     // Request some rows with sorting
-    TestCallback callback2 = new TestCallback(5, 6, 5, true);
-    tableModel.requestRows(5, 6, 5, true, callback2);
+    ColumnSortList sortList = new ColumnSortList();
+    sortList.addColumnSortInfo(5, true);
+    TestCallback callback2 = new TestCallback(5, 6, sortList);
+    tableModel.requestRows(5, 6, sortList, callback2);
     assertTrue(callback2.isExecuted());
 
     // Request some rows with sorting descending
-    TestCallback callback3 = new TestCallback(5, 6, 5, false);
-    tableModel.requestRows(5, 6, 5, false, callback3);
+    sortList.addColumnSortInfo(5, false);
+    TestCallback callback3 = new TestCallback(5, 6, sortList);
+    tableModel.requestRows(5, 6, sortList, callback3);
     assertTrue(callback2.isExecuted());
   }
 }

@@ -31,7 +31,7 @@ public class ListTableModel extends ClientTableModel {
    * 
    * Constructor.
    * 
-   * @param rows the data that this model feeds from.
+   * @param rows the data that this model feeds from
    */
   public ListTableModel(List rows) {
     this.rows = rows;
@@ -54,6 +54,9 @@ public class ListTableModel extends ClientTableModel {
     return row.get(cellNum);
   }
 
+  /**
+   * @see TableModel
+   */
   public void onRowInserted(int beforeRow) {
     if (beforeRow <= rows.size()) {
       // Insert new row
@@ -66,12 +69,18 @@ public class ListTableModel extends ClientTableModel {
     }
   }
 
+  /**
+   * @see TableModel
+   */
   public void onRowRemoved(int row) {
     if (row < rows.size()) {
       rows.remove(row);
     }
   }
 
+  /**
+   * @see TableModel
+   */
   public void onSetData(int row, int cell, Object data) {
     // Get the row list
     List rowList = getList(row);

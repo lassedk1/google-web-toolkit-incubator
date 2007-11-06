@@ -16,6 +16,7 @@
 package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.widgetideas.table.client.TableModel.Callback;
+import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 import com.google.gwt.widgetideas.table.client.TableModel.Request;
 import com.google.gwt.widgetideas.table.client.TableModel.Response;
 
@@ -58,13 +59,11 @@ public class TableController {
     }
 
     /**
-     * Update the table with the requested data.
-     * 
-     * @param request the request
-     * @param response the response
+     * @see Callback
      */
     public void onRowsReady(Request request, Response response) {
-      controllableTable.setData(request.getStartRow(), response.iterator());
+      controllableTable.setData(request.getStartRow(), response.iterator(),
+          response.getRowValues());
     }
   }
 
@@ -79,14 +78,14 @@ public class TableController {
   private int numRows = -1;
 
   /**
-   * The underlying table model.
+   * The underlying {@link TableModel}.
    */
   private TableModel tableModel;
 
   /**
    * Constructor.
    * 
-   * @param tableModel the underlying {@link ReadOnlyTableModel}
+   * @param tableModel the underlying {@link TableModel}
    */
   public TableController(TableModel tableModel) {
     this.tableModel = tableModel;
@@ -95,7 +94,7 @@ public class TableController {
   /**
    * Add a new {@link ControllableTable}.
    * 
-   * @param controllableTable the ControllableTable widget
+   * @param controllableTable the {@link ControllableTable} widget to add
    */
   public void addControllableTable(final ControllableTable controllableTable) {
     // Keep a reference to the table
@@ -108,28 +107,24 @@ public class TableController {
     controllableTable.setNumRows(numRows);
 
     // Listen for data request events from the table
-    controllableTable.addDataRequestListener(new DataRequestListener() {
-      public void onRequestData(int firstRow, int rowCount, int sortIndex,
-          boolean sortAscending) {
-        requestRows(firstRow, rowCount, sortIndex, sortAscending,
-            controllableTable);
-      }
-    });
+    controllableTable
+        .addTableDataRequestListener(new TableDataRequestListener() {
+          public void onRequestData(int firstRow, int rowCount,
+              ColumnSortList sortList) {
+            requestRows(firstRow, rowCount, sortList, controllableTable);
+          }
+        });
   }
 
   /**
-   * Get the number of rows. If the number of rows is not known, return -1.
-   * 
-   * @return the number of rows
+   * @return the number of rows, or -1 if unknown
    */
   public int getNumRows() {
     return numRows;
   }
 
   /**
-   * Get the underlying {@link TableModel}.
-   * 
-   * @return the table model
+   * @return the underlying {@link TableModel}
    */
   public TableModel getTableModel() {
     return tableModel;
@@ -159,8 +154,7 @@ public class TableController {
       Iterator it = controllableTables.iterator();
       while (it.hasNext()) {
         ControllableTable controllableTable = (ControllableTable) it.next();
-        controllableTable.setNumRows(numRows);
-        controllableTable.insertRow(beforeRow);
+        controllableTable.insertAbsoluteRow(beforeRow, numRows);
       }
     }
   }
@@ -168,7 +162,7 @@ public class TableController {
   /**
    * Remove a {@link ControllableTable}.
    * 
-   * @param controllableTable the controllable table to remove
+   * @param controllableTable the {@link ControllableTable} to remove
    */
   public void removeControllableTable(ControllableTable controllableTable) {
     if (controllableTables != null) {
@@ -199,8 +193,7 @@ public class TableController {
       Iterator it = controllableTables.iterator();
       while (it.hasNext()) {
         ControllableTable controllableTable = (ControllableTable) it.next();
-        controllableTable.setNumRows(numRows);
-        controllableTable.removeRow(row);
+        controllableTable.removeAbsoluteRow(row, numRows);
       }
     }
   }
@@ -265,37 +258,32 @@ public class TableController {
   }
 
   /**
-   * Request some data from the model and respond with the specified callback.
+   * Request some data from the {@link TableModel}.
    * 
    * @param startRow the first row to request
    * @param numRows the number of rows to request
-   * @param sortIndex the index to sort by
-   * @param sortAscending true to sort ascending, false for descending
+   * @param sortList detailed information of column sorting
    * @param table the table requesting the rows
    */
-  protected void requestRows(int startRow, int numRows, int sortIndex,
-      boolean sortAscending, ControllableTable table) {
-    requestRows(startRow, numRows, sortIndex, sortAscending, table,
+  protected void requestRows(int startRow, int numRows,
+      ColumnSortList sortList, ControllableTable table) {
+    requestRows(startRow, numRows, sortList, table,
         new ControllableTableCallback(table));
   }
 
   /**
-   * Request some data from the model and respond with the specified callback.
+   * Request some data from the {@link TableModel} and respond with the
+   * specified {@link Callback}.
    * 
    * @param startRow the first row to request
    * @param numRows the number of rows to request
-   * @param sortIndex the index to sort by
-   * @param sortAscending true to sort ascending, false for descending
+   * @param sortList detailed information of column sorting
    * @param table the table requesting the rows
+   * @param callback the callback used when the data is available
    */
-  protected void requestRows(int startRow, int numRows, int sortIndex,
-      boolean sortAscending, ControllableTable table,
+  protected void requestRows(int startRow, int numRows,
+      ColumnSortList sortList, ControllableTable table,
       ControllableTableCallback callback) {
-    if (sortIndex < 0) {
-      tableModel.requestRows(new Request(startRow, numRows), callback);
-    } else {
-      tableModel.requestRows(new Request(startRow, numRows, sortIndex,
-          sortAscending), callback);
-    }
+    tableModel.requestRows(startRow, numRows, sortList, callback);
   }
 }

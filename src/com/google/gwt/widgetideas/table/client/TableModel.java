@@ -17,7 +17,9 @@ package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * A class to retrieve row data to be used in a table.
@@ -38,6 +40,211 @@ public abstract class TableModel {
   }
 
   /**
+   * Information about the sort order of a specific column in a table.
+   */
+  public static class ColumnSortInfo {
+    /**
+     * Is the sort ascending.
+     */
+    private boolean ascending;
+
+    /**
+     * The column index.
+     */
+    private int column;
+
+    /**
+     * Constructor.
+     * 
+     * @param column the column index
+     * @param ascending true if sorted ascending
+     */
+    public ColumnSortInfo(int column, boolean ascending) {
+      this.column = column;
+      this.ascending = ascending;
+    }
+
+    /**
+     * Check if this object is equal to another. The objects are equal if the
+     * column and ascending values are equal.
+     * 
+     * @param obj the other object
+     * @return true if objects are the same
+     */
+    public boolean equals(Object obj) {
+      // Object is null
+      if (obj == null) {
+        return false;
+      }
+
+      // Compare values and next
+      if (obj instanceof ColumnSortInfo) {
+        ColumnSortInfo csi = (ColumnSortInfo) obj;
+        return getColumn() == csi.getColumn()
+            && isAscending() == csi.isAscending();
+      }
+
+      // Object is not same type
+      return false;
+    }
+
+    /**
+     * @return the column index
+     */
+    public int getColumn() {
+      return column;
+    }
+
+    /**
+     * @return true if ascending, false if descending
+     */
+    public boolean isAscending() {
+      return ascending;
+    }
+
+    /**
+     * Set whether or not the sorting is ascending or descending.
+     * 
+     * @param ascending true if ascending, false if descending
+     */
+    public void setAscending(boolean ascending) {
+      this.ascending = ascending;
+    }
+
+    /**
+     * Set the column index.
+     * 
+     * @param column the column index
+     */
+    public void setColumn(int column) {
+      this.column = column;
+    }
+  }
+
+  /**
+   * An ordered list of sorting info where each entry tells us how to sort a
+   * single column. The first entry is the primary sort order, the second entry
+   * is the first tie-breaket, and so on.
+   */
+  public static class ColumnSortList extends ArrayList {
+    /**
+     * Add a {@link ColumnSortInfo} to this list. If the column already exists,
+     * it will be removed from its current position and placed at the start of
+     * the list, becoming the primary sort info.
+     * 
+     * This add method inserts an entry at the beginning of the list. It does
+     * not append the entry to the end of the list.
+     * 
+     * @param column the column index
+     * @param ascending is the sort ascending
+     */
+    public void addColumnSortInfo(int column, boolean ascending) {
+      addColumnSortInfo(new ColumnSortInfo(column, ascending));
+    }
+
+    /**
+     * Add a {@link ColumnSortInfo} to this list. If the column already exists,
+     * it will be removed from its current position and placed at the start of
+     * the list, becoming the primary sort info.
+     * 
+     * This add method inserts an entry at the beginning of the list. It does
+     * not append the entry to the end of the list.
+     * 
+     * @param sortInfo the column sort info
+     */
+    public void addColumnSortInfo(ColumnSortInfo sortInfo) {
+      // Remove existing column sort info
+      int column = sortInfo.getColumn();
+      for (int i = 0; i < size(); i++) {
+        ColumnSortInfo curInfo = (ColumnSortInfo) get(i);
+        if (curInfo.getColumn() == column) {
+          remove(i);
+          i--;
+        }
+      }
+
+      // Insert the new sort info
+      add(0, sortInfo);
+    }
+
+    /**
+     * Check if this object is equal to another.
+     * 
+     * @param obj the other object
+     * @return true if objects are equal
+     */
+    public boolean equals(Object obj) {
+      // Object is null
+      if (obj == null) {
+        return false;
+      }
+
+      // Compare values and next
+      if (obj instanceof ColumnSortList) {
+        // Check the size of the lists
+        ColumnSortList csl = (ColumnSortList) obj;
+        int size = size();
+        if (size != csl.size()) {
+          return false;
+        }
+
+        // Compare the entries
+        for (int i = 0; i < size; i++) {
+          ColumnSortInfo mySortInfo = (ColumnSortInfo) get(i);
+          ColumnSortInfo cslSortInfo = (ColumnSortInfo) csl.get(i);
+          if (!mySortInfo.equals(cslSortInfo)) {
+            return false;
+          }
+        }
+
+        // Everything is equal
+        return true;
+      }
+
+      // Object is not same type
+      return false;
+    }
+
+    /**
+     * Get the primary (first) {@link ColumnSortInfo}'s column index.
+     * 
+     * @return the primary column or -1 if not sorted
+     */
+    public int getPrimaryColumn() {
+      ColumnSortInfo primaryInfo = getPrimaryColumnSortInfo();
+      if (primaryInfo == null) {
+        return -1;
+      }
+      return primaryInfo.getColumn();
+    }
+
+    /**
+     * Get the primary (first) {@link ColumnSortInfo}.
+     * 
+     * @return the primary column sort info
+     */
+    public ColumnSortInfo getPrimaryColumnSortInfo() {
+      if (size() > 0) {
+        return (ColumnSortInfo) get(0);
+      }
+      return null;
+    }
+
+    /**
+     * Get the primary (first) {@link ColumnSortInfo}'s sort order.
+     * 
+     * @return true if ascending, false if descending
+     */
+    public boolean isPrimaryAscending() {
+      ColumnSortInfo primaryInfo = getPrimaryColumnSortInfo();
+      if (primaryInfo == null) {
+        return true;
+      }
+      return primaryInfo.isAscending();
+    }
+  }
+
+  /**
    * A {@link TableModel} request.
    */
   public static class Request implements IsSerializable {
@@ -47,14 +254,9 @@ public abstract class TableModel {
     private int numRows;
 
     /**
-     * Indicates whether or not we are sorting in ascending or descending order.
+     * An ordered list of {@link ColumnSortInfo}.
      */
-    private boolean sortAscending;
-
-    /**
-     * The column index to sort.
-     */
-    private int sortIndex;
+    private ColumnSortList columnSortList;
 
     /**
      * The first row of table data to request.
@@ -63,18 +265,12 @@ public abstract class TableModel {
 
     /**
      * Constructor.
-     */
-    public Request() {
-    }
-
-    /**
-     * Constructor.
      * 
      * @param startRow the first row to request
      * @param numRows the number of rows to request
      */
     public Request(int startRow, int numRows) {
-      this(startRow, numRows, -1, true);
+      this(startRow, numRows, null);
     }
 
     /**
@@ -82,15 +278,22 @@ public abstract class TableModel {
      * 
      * @param startRow the first row to request
      * @param numRows the number of rows to request
-     * @param sortIndex the index to sort by
-     * @param sortAscending true to sort ascending, false for descending
+     * @param columnSortList column sort orders
      */
-    public Request(int startRow, int numRows, int sortIndex,
-        boolean sortAscending) {
+    public Request(int startRow, int numRows, ColumnSortList columnSortList) {
       this.startRow = startRow;
       this.numRows = numRows;
-      this.sortIndex = sortIndex;
-      this.sortAscending = sortAscending;
+      this.columnSortList = columnSortList;
+    }
+
+    /**
+     * Get the {@link ColumnSortInfo}, which includes the sort indexes and
+     * ascending or descending order info.
+     * 
+     * @return the sort info
+     */
+    public ColumnSortList getColumnSortList() {
+      return columnSortList;
     }
 
     /**
@@ -103,30 +306,12 @@ public abstract class TableModel {
     }
 
     /**
-     * Get the sort index. If the index is -1, the sort order is not specified.
-     * 
-     * @return the sort index, of -1 if not specified
-     */
-    public int getSortIndex() {
-      return sortIndex;
-    }
-
-    /**
      * Get the first row to request.
      * 
      * @return the first requested row
      */
     public int getStartRow() {
       return startRow;
-    }
-
-    /**
-     * Return true if the sort order is ascending, false if descending.
-     * 
-     * @return the sort order
-     */
-    public boolean isSortAscending() {
-      return sortAscending;
     }
   }
 
@@ -135,6 +320,36 @@ public abstract class TableModel {
    * 
    */
   public abstract static class Response {
+    /**
+     * The values associated with each row.
+     */
+    private List rowValues;
+
+    /**
+     * Constructor.
+     */
+    public Response() {
+      this(null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param rowValues the values to associate with each row
+     */
+    public Response(List rowValues) {
+      this.rowValues = rowValues;
+    }
+
+    /**
+     * Get a list of objects associated with the retrieved rows.
+     * 
+     * @return the list of objects associated with the retrieved row
+     */
+    public List getRowValues() {
+      return rowValues;
+    }
+
     /**
      * Gets the iterator associated with the row data generated by the
      * {@link Response}.
@@ -174,39 +389,37 @@ public abstract class TableModel {
   public abstract void onSetData(int row, int cell, Object data);
 
   /**
-   * Generate a Response based on a specific Request. After the is created, it
-   * is passed into the Callback.
+   * Generate a {@link Response} based on a specific {@link Request}. The
+   * response is passed into the {@link Callback}.
    * 
    * @param startRow the first row to request
    * @param numRows the number of rows to request
-   * @param callback the callback to use for the response
+   * @param callback the {@link Callback} to use for the {@link Response}
    */
   public void requestRows(int startRow, int numRows, Callback callback) {
     requestRows(new Request(startRow, numRows), callback);
   }
 
   /**
-   * Generate a Response based on a specific Request. After the is created, it
-   * is passed into the Callback.
+   * Generate a {@link Response} based on a specific {@link Request}. The
+   * response is passed into the {@link Callback}.
    * 
    * @param startRow the first row to request
    * @param numRows the number of rows to request
-   * @param callback the callback to use for the response
-   * @param sortIndex the index to sort by
-   * @param sortAscending true to sort ascending, false for descending
+   * @param sortList detailed information of column sorting
+   * @param callback the {@link Callback} to use for the {@link Response}
    */
-  public void requestRows(int startRow, int numRows, int sortIndex,
-      boolean sortAscending, Callback callback) {
-    requestRows(new Request(startRow, numRows, sortIndex, sortAscending),
-        callback);
+  public void requestRows(int startRow, int numRows, ColumnSortList sortList,
+      Callback callback) {
+    requestRows(new Request(startRow, numRows, sortList), callback);
   }
 
   /**
-   * Generate a Response based on a specific Request. After the is created, it
-   * is passed into the Callback.
+   * Generate a {@link Response} based on a specific {@link Request}. The
+   * response is passed into the {@link Callback}.
    * 
-   * @param request the request
-   * @param callback the callback to use for the response
+   * @param request the {@link Request} for row data
+   * @param callback the {@link Callback} to use for the {@link Response}
    */
   public abstract void requestRows(Request request, Callback callback);
 }

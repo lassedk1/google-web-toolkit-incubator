@@ -15,6 +15,8 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
+import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -27,13 +29,12 @@ public class SortableColumnsListenerCollection extends ArrayList {
   /**
    * Fired when the currently sorted column changes.
    * 
-   * @param column the currently sorted column, -1 for unsorted
-   * @param ascending specifies that this sort is ascending
+   * @param sortList the list of sorted columns
    */
-  public void fireOnSetSortedColumn(int column, boolean ascending) {
+  public void fireColumnSorted(ColumnSortList sortList) {
     for (Iterator it = iterator(); it.hasNext();) {
       SortableColumnsListener listener = (SortableColumnsListener) it.next();
-      listener.onSetSortedColumn(column, ascending);
+      listener.onColumnSorted(sortList);
     }
   }
 }
