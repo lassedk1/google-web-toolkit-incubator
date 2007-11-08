@@ -1,4 +1,4 @@
-#summary New Widget - Date picker
+#summary Date picker
 #labels Type-Widget
 
 = Introduction =
