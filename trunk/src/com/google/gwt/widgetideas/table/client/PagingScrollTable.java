@@ -33,6 +33,13 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * A {@link ScrollTable} that acts as a view for an underlying
  * {@link TableModel}.
+ * 
+ * <h3>CSS Style Rules</h3>
+ * <ul class="css">
+ * <li> .gwt-ScrollTable .pagingOptions { paging options panel } </li>
+ * <li> .gwt-ScrollTable .pagingOptions .errorLabel { error text in paging
+ * options }</li>
+ * </ul>
  */
 public class PagingScrollTable extends ScrollTable {
   /**
@@ -81,6 +88,11 @@ public class PagingScrollTable extends ScrollTable {
      */
     AbstractImagePrototype scrollTableViewPrevPage();
   }
+
+  /**
+   * The label used to display errors.
+   */
+  private HTML errorLabel = new HTML();
 
   /**
    * Listens for click events from the images that allow navigation.
@@ -136,10 +148,17 @@ public class PagingScrollTable extends ScrollTable {
     public void onPageChanged(int page) {
       pagingCurPageBox.setText((page + 1) + "");
       loadingImage.setVisible(true);
+      errorLabel.setHTML("");
     }
 
     public void onPageLoaded() {
       loadingImage.setVisible(false);
+      errorLabel.setHTML("");
+    }
+
+    public void onPagingFailure(Throwable caught) {
+      loadingImage.setVisible(false);
+      errorLabel.setHTML(caught.getMessage());
     }
   };
 
@@ -186,8 +205,8 @@ public class PagingScrollTable extends ScrollTable {
    */
   public PagingScrollTable(HasRowPaging dataTable,
       HasFixedColumnWidth headerTable) {
-    this(dataTable, headerTable, (PagingScrollTableImages) GWT
-        .create(PagingScrollTableImages.class));
+    this(dataTable, headerTable,
+        (PagingScrollTableImages) GWT.create(PagingScrollTableImages.class));
   }
 
   /**
@@ -224,12 +243,12 @@ public class PagingScrollTable extends ScrollTable {
     });
 
     // Create the paging widget
+    errorLabel.setStylePrimaryName("errorLabel");
     loadingImage.setVisible(false);
     pagingCurPageBox.setWidth("3em");
     pagingCurPageBox.setText("1");
     pagingCurPageBox.setTextAlignment(TextBoxBase.ALIGN_RIGHT);
-    DOM.setElementProperty(pagingWrapper, "className",
-        "gwt-ModeledScrollTable-paging");
+    setStylePrimaryName(pagingWrapper, "pagingOptions");
     HorizontalPanel pagingWrapperPanel = new HorizontalPanel();
     pagingWrapperPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
     pagingWrapperPanel.add(new HTML("&nbsp;&nbsp;"));
@@ -246,6 +265,7 @@ public class PagingScrollTable extends ScrollTable {
     pagingWrapperPanel.add(pagingButtonLast);
     pagingWrapperPanel.add(new HTML("&nbsp;&nbsp;"));
     pagingWrapperPanel.add(loadingImage);
+    pagingWrapperPanel.add(errorLabel);
 
     // Apply the images
     images.scrollTableViewFirstPage().applyTo(pagingButtonFirst);
@@ -317,10 +337,10 @@ public class PagingScrollTable extends ScrollTable {
     Element dataWrapper = getDataWrapper();
     if (isScrollingEnabled()) {
       // Take some space from the data table to make room for the paging div
-      int pagingHeight =
-          DOM.getElementPropertyInt(pagingWrapper, "offsetHeight");
-      int dataHeight =
-          DOM.getElementPropertyInt(dataWrapper, "offsetHeight") - pagingHeight;
+      int pagingHeight = DOM.getElementPropertyInt(pagingWrapper,
+          "offsetHeight");
+      int dataHeight = DOM.getElementPropertyInt(dataWrapper, "offsetHeight")
+          - pagingHeight;
       DOM.setStyleAttribute(dataWrapper, "height", dataHeight + "px");
       DOM.setStyleAttribute(dataWrapper, "overflow", "hidden");
       DOM.setStyleAttribute(dataWrapper, "overflow", "auto");

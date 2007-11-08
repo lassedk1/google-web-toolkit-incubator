@@ -28,13 +28,13 @@ public class ClientTableModelTest extends AbstractTableModelTest {
   /**
    * The number of columns in the underlying data.
    */
-  public static final int NUM_COLUMNS = 7; 
+  public static final int NUM_COLUMNS = 7;
 
   /**
    * The number of rows in the underlying data.
    */
-  public static final int NUM_ROWS = 10; 
-  
+  public static final int NUM_ROWS = 10;
+
   /**
    * A row/column pairing used for confirming values.
    */
@@ -87,7 +87,18 @@ public class ClientTableModelTest extends AbstractTableModelTest {
   /**
    * @see AbstractTableModelTest
    */
-  public TableModel getTableModel() {
+  public TableModel getTableModel(boolean failureMode) {
+    if (failureMode) {
+      return new ClientTableModel() {
+        public Object getCell(int rowNum, int colNum) {
+          return null;
+        }
+
+        public void requestRows(Request request, Callback callback) {
+          callback.onFailure(new Exception());
+        }
+      };
+    }
     return tableModel;
   }
 
@@ -95,7 +106,10 @@ public class ClientTableModelTest extends AbstractTableModelTest {
    * Test requestRows method return values.
    */
   public void testRequestRows() {
-    getTableModel().requestRows(0, NUM_ROWS, new Callback() {
+    getTableModel(false).requestRows(0, NUM_ROWS, new Callback() {
+      public void onFailure(Throwable caught) {
+      }
+
       public void onRowsReady(Request request, Response response) {
         // Iterate the rows
         int row = 0;
@@ -128,19 +142,19 @@ public class ClientTableModelTest extends AbstractTableModelTest {
   public void testUnsupportedOperations() {
     // Try calling unsupported operations
     try {
-      getTableModel().onRowInserted(0);
+      getTableModel(false).onRowInserted(0);
       fail("UnsupportedOperationException expected");
     } catch (UnsupportedOperationException e) {
       assertEquals(e.getMessage(), ReadOnlyTableModel.READ_ONLY_ERROR);
     }
     try {
-      getTableModel().onRowRemoved(0);
+      getTableModel(false).onRowRemoved(0);
       fail("UnsupportedOperationException expected");
     } catch (UnsupportedOperationException e) {
       assertEquals(e.getMessage(), ReadOnlyTableModel.READ_ONLY_ERROR);
     }
     try {
-      getTableModel().onSetData(0, 0, null);
+      getTableModel(false).onSetData(0, 0, null);
       fail("UnsupportedOperationException expected");
     } catch (UnsupportedOperationException e) {
       assertEquals(e.getMessage(), ReadOnlyTableModel.READ_ONLY_ERROR);

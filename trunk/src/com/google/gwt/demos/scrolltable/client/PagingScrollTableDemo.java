@@ -68,6 +68,11 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   protected static CachedTableController tableController = null;
 
   /**
+   * The {@link DataSourceTableModel}.
+   */
+  protected static DataSourceTableModel tableModel = null;
+  
+  /**
    * Get the data table.
    * 
    * @return the data table.
@@ -93,6 +98,15 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   public static CachedTableController getTableController() {
     return tableController;
   }
+  
+  /**
+   * Get the table model.
+   * 
+   * @return the table model
+   */
+  public static DataSourceTableModel getTableModel() {
+    return tableModel;
+  }
 
   /**
    * Add a row of data cells each consisting of a string that describes the
@@ -115,7 +129,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     getFooterTable();
 
     // Setup the controller
-    tableController = new CachedTableController(new DataSourceTableModel());
+    tableModel = new DataSourceTableModel();
+    tableController = new CachedTableController(tableModel);
     tableController.setNumRows(10000);
     tableController.setNumPreCachedRows(20);
     tableController.setNumPostCachedRows(20);

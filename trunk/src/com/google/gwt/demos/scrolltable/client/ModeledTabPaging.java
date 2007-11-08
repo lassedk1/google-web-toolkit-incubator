@@ -46,6 +46,16 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
   private Button cachePreSizeButton = new Button("Set Pre Cache Size", this);
 
   /**
+   * The button used to toggle error mode.
+   */
+  private Button errorModeButton = new Button("Toggle Error Mode", this);
+
+  /**
+   * The main layout grid.
+   */
+  private Grid grid = null;
+
+  /**
    * The num rows box.
    */
   private TextBox numRowsBox = new TextBox();
@@ -85,6 +95,7 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
         PagingScrollTableDemo.getPagingScrollTable();
     CachedTableController tableController =
         PagingScrollTableDemo.getTableController();
+    DataSourceTableModel tableModel = PagingScrollTableDemo.getTableModel();
     try {
       if (sender == numRowsButton) {
         // Set number of rows
@@ -106,6 +117,15 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
         // Set Post cached rows
         int cacheSize = Integer.parseInt(cacheSizeBox.getText());
         tableController.setNumPostCachedRows(cacheSize);
+      } else if (sender == errorModeButton) {
+        // Toggle error mode
+        boolean enabled = tableModel.isErrorModeEnabled();
+        tableModel.setErrorModeEnabled(!enabled);
+        if (enabled) {
+          grid.setHTML(3, 1, "disabled");
+        } else {
+          grid.setHTML(3, 1, "enabled");
+        }
       }
     } catch (NumberFormatException e) {
       Window.alert("Please enter valid integers for the row and column.");
@@ -113,7 +133,7 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
   }
 
   protected Widget onInitialize() {
-    Grid grid = new Grid(3, 3);
+    grid = new Grid(4, 3);
 
     // Num Rows
     HorizontalPanel panel1 = new HorizontalPanel();
@@ -145,6 +165,12 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
     grid.setHTML(2, 0, "<B>Cache Size:</B>");
     grid.setWidget(2, 1, cacheSizeBox);
     grid.setWidget(2, 2, panel3);
+
+    // Error mode
+    grid.setWidget(3, 0, errorModeButton);
+    grid.setHTML(3, 1, "disabled");
+    grid.setHTML(3, 2, "If the table model throws an error during a paging "
+        + "request, the ScrollTable will display the error gracefully.");
 
     return grid;
   }

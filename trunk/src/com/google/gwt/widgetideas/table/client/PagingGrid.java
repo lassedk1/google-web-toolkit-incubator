@@ -522,6 +522,15 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
   }
 
   /**
+   * @see ControllableTable#setPagingFailure(java.lang.Throwable)
+   */
+  public void setPagingFailure(Throwable caught) {
+    if (rowPagingListeners != null) {
+      rowPagingListeners.firePagingFailuire(caught);
+    }
+  }
+
+  /**
    * Associate a row in the table with a value.
    * 
    * @param row the row index

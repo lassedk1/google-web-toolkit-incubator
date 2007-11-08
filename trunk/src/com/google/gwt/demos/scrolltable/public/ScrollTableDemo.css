@@ -46,11 +46,15 @@
   cursor: pointer;
 }
 
-.gwt-ModeledScrollTable-paging {
+.gwt-ScrollTable .pagingOptions {
   background: #e8eef7;
   border-top: 1px solid #aaa;
   border-right: 1px solid #aaa;
   padding: 1px 0px;
+}
+
+.gwt-ScrollTable .pagingOptions .errorLabel {
+	color: red;
 }
 
 .gwt-CellEditor {

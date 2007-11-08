@@ -31,7 +31,25 @@ public class TableModelTest extends AbstractTableModelTest {
   /**
    * @see AbstractTableModelTest
    */
-  public TableModel getTableModel() {
+  public TableModel getTableModel(boolean failureMode) {
+    // Failure mode version
+    if (failureMode) {
+      return new TableModel() {
+        public void onRowInserted(int beforeRow) {
+        }
+        public void onRowRemoved(int row) {
+        }
+
+        public void onSetData(int row, int cell, Object data) {
+        }
+
+        public void requestRows(Request request, Callback callback) {
+          callback.onFailure(new Exception());
+        }
+      };
+    }
+    
+    // Normal version
     return new TableModel() {
       public void onRowInserted(int beforeRow) {
       }
@@ -135,7 +153,7 @@ public class TableModelTest extends AbstractTableModelTest {
     assertTrue(sortList.get(1).equals(new ColumnSortInfo(8, true)));
     assertTrue(sortList.get(2).equals(new ColumnSortInfo(6, false)));
     assertTrue(sortList.get(3).equals(new ColumnSortInfo(4, false)));
-    
+
     // Add an existing item
     sortList.addColumnSortInfo(6, false);
     assertEquals(4, sortList.size());

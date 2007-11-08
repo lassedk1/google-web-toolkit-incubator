@@ -175,7 +175,9 @@ public class BulkLoader {
     // TODO clear all widgets in widget cache.
     tableModel.requestRows(new TableModel.Request(startRow, numRows),
         new TableModel.Callback() {
-          public void onRowsReady(TableModel.Request request,
+      public void onFailure(Throwable caught) {
+      }
+      public void onRowsReady(TableModel.Request request,
               final TableModel.Response response) {
             final JavaScriptObject temp = tempNew();
             tempAdd(temp, "<table><tbody>");

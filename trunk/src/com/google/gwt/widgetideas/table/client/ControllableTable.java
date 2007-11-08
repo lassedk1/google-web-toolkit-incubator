@@ -59,11 +59,18 @@ public interface ControllableTable extends SourceTableDataRequestEvents {
    */
   public void setData(int firstRow, Iterator/* Iterator<Object> */rows,
       List rowValues);
-
+  
   /**
    * Set the total number of rows.
    * 
    * @param numRows the new number of rows
    */
   public void setNumRows(int numRows);
+
+  /**
+   * Set the failure condition associated with a page request.
+   * 
+   * @param caught the exception that led to the failure
+   */
+  public void setPagingFailure(Throwable caught);
 }

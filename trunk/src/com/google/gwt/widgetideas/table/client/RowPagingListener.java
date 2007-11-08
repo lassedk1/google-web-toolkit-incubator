@@ -37,4 +37,11 @@ public interface RowPagingListener {
    * Fired when the current page has completely finished loading.
    */
   public void onPageLoaded();
+  
+  /**
+   * Fired when a failure occurs while loading the page.
+   * 
+   * @param caught the exception that caused the failure
+   */
+  public void onPagingFailure(Throwable caught);
 }

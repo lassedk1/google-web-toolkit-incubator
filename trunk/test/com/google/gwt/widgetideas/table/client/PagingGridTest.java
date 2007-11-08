@@ -114,6 +114,9 @@ public class PagingGridTest extends GWTTestCase {
     public void onPageLoaded() {
       isPageLoaded = true;
     }
+
+    public void onPagingFailure(Throwable caught) {
+    }
   }
 
   /**

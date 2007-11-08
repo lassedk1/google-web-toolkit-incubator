@@ -57,4 +57,16 @@ public class RowPagingListenerCollection extends ArrayList {
       listener.onPageLoaded();
     }
   }
+  
+  /**
+   * Fired when the current page has completely finished loading.
+   * 
+   * @param caught the exception that caused the failure
+   */
+  public void firePagingFailuire(Throwable caught) {
+    for (Iterator it = iterator(); it.hasNext();) {
+      RowPagingListener listener = (RowPagingListener) it.next();
+      listener.onPagingFailure(caught);
+    }
+  }
 }

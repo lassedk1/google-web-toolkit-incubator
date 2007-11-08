@@ -31,6 +31,13 @@ public abstract class TableModel {
    */
   public static interface Callback {
     /**
+     * Called when an error occurs and the rows cannot be loaded.
+     * 
+     * @param caught the exception that was thrown
+     */
+    public void onFailure(Throwable caught);
+    
+    /**
      * Consume the data created by {@link TableModel} in response to a Request.
      * 
      * @param request the request

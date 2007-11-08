@@ -59,7 +59,14 @@ public class TableController {
     }
 
     /**
-     * @see Callback
+     * @see Callback#onFailure(Throwable)
+     */
+    public void onFailure(Throwable caught) {
+      controllableTable.setPagingFailure(caught);
+    }
+
+    /**
+     * @see Callback#onRowsReady(Request, Response)
      */
     public void onRowsReady(Request request, Response response) {
       controllableTable.setData(request.getStartRow(), response.iterator(),
@@ -284,6 +291,10 @@ public class TableController {
   protected void requestRows(int startRow, int numRows,
       ColumnSortList sortList, ControllableTable table,
       ControllableTableCallback callback) {
-    tableModel.requestRows(startRow, numRows, sortList, callback);
+    try {
+      tableModel.requestRows(startRow, numRows, sortList, callback);
+    } catch (Exception e) {
+      callback.onFailure(e);
+    }
   }
 }

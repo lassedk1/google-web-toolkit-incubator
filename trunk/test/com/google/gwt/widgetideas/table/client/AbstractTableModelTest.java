@@ -38,7 +38,12 @@ public abstract class AbstractTableModelTest extends GWTTestCase {
      * Expected num rows in Request.
      */
     private int numRows;
-
+    
+    /**
+     * A boolean indicating that a failure occured.
+     */
+    private boolean failed = false;
+    
     /**
      * Column sort infot.
      */
@@ -70,6 +75,19 @@ public abstract class AbstractTableModelTest extends GWTTestCase {
     public boolean isExecuted() {
       return executed;
     }
+    
+    /**
+     * Check if this callback failed.
+     * 
+     * @return true if failed
+     */
+    public boolean isFailed() {
+      return failed;
+    }
+
+    public void onFailure(Throwable caught) {
+      failed = true;
+    }
 
     public void onRowsReady(Request request, Response response) {
       executed = true;
@@ -92,21 +110,23 @@ public abstract class AbstractTableModelTest extends GWTTestCase {
   /**
    * Get an instance of the table model.
    * 
+   * @param failureMode if true, all requests should return an error
    * @return the table model
    */
-  public abstract TableModel getTableModel();
+  public abstract TableModel getTableModel(boolean failureMode);
 
   /**
    * Test requestRows method.
    */
   public void testRequestRows() {
     // Get the table model
-    TableModel tableModel = getTableModel();
+    TableModel tableModel = getTableModel(false);
 
     // Request some rows without sorting
     TestCallback callback1 = new TestCallback(10, 20, null);
     tableModel.requestRows(10, 20, callback1);
     assertTrue(callback1.isExecuted());
+    assertFalse(callback1.isFailed());
 
     // Request some rows with sorting
     ColumnSortList sortList = new ColumnSortList();
@@ -114,11 +134,20 @@ public abstract class AbstractTableModelTest extends GWTTestCase {
     TestCallback callback2 = new TestCallback(5, 6, sortList);
     tableModel.requestRows(5, 6, sortList, callback2);
     assertTrue(callback2.isExecuted());
+    assertFalse(callback2.isFailed());
 
     // Request some rows with sorting descending
     sortList.addColumnSortInfo(5, false);
     TestCallback callback3 = new TestCallback(5, 6, sortList);
     tableModel.requestRows(5, 6, sortList, callback3);
-    assertTrue(callback2.isExecuted());
+    assertTrue(callback3.isExecuted());
+    assertFalse(callback3.isFailed());
+    
+    // Request some rows and fail to return them
+    TableModel failureModel = getTableModel(true);
+    TestCallback callback4 = new TestCallback(-1, -1, null);
+    failureModel.requestRows(5, 6, sortList, callback4);
+    assertFalse(callback4.isExecuted());
+    assertTrue(callback4.isFailed());
   }
 }
