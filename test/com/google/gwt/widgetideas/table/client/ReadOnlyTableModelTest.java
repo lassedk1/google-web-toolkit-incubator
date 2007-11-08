@@ -27,7 +27,14 @@ public class ReadOnlyTableModelTest extends AbstractTableModelTest {
   /**
    * @see AbstractTableModelTest
    */
-  public TableModel getTableModel() {
+  public TableModel getTableModel(boolean failureMode) {
+    if (failureMode) {
+      return new ReadOnlyTableModel() {
+        public void requestRows(Request request, Callback callback) {
+          callback.onFailure(new Exception());
+        }
+      };
+    }
     if (tableModel == null) {
       tableModel = new ReadOnlyTableModel() {
         public void requestRows(Request request, Callback callback) {
@@ -42,7 +49,7 @@ public class ReadOnlyTableModelTest extends AbstractTableModelTest {
    * Test Unsupported Opertions that are not read only.
    */
   public void testUnsupportedOperations() {
-    getTableModel();
+    getTableModel(false);
     
     // Try calling unsupported operations
     try {

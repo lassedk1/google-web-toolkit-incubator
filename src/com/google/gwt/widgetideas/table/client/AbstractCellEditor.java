@@ -31,6 +31,11 @@ import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 
 /**
  * An abstract representation of an editor used to edit the contents of a cell.
+ * 
+ * <h3>CSS Style Rules</h3>
+ * <ul class="css">
+ * <li> .gwt-CellEditor { applied to the entire widget } </li>
+ * </ul>
  */
 public abstract class AbstractCellEditor extends PopupPanel {
   /**
@@ -123,7 +128,7 @@ public abstract class AbstractCellEditor extends PopupPanel {
    */
   public AbstractCellEditor(Widget content, boolean useDefaultButtons) {
     super(true, true);
-    setStyleName("gwt-CellEditor");
+    setStylePrimaryName("gwt-CellEditor");
 
     // Wrap contents in a grid
     layoutTable = new FlexTable();

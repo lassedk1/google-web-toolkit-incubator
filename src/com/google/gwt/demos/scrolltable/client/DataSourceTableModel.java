@@ -26,32 +26,39 @@ import com.google.gwt.widgetideas.table.client.ClientTableModel;
  * An iterator that serves as the data source for TableOracle requests.
  */
 public class DataSourceTableModel extends ClientTableModel {
-  public static final String[] colleges =
-      {"Georgia", "Connecticut", "Arizona", "Florida", "Wisconsin", "Maryland",
-          "Tennessee", "Arkansas", "Virginia", "Maine", "Texes",
-          "South Carolina"};
+  public static final String[] colleges = {
+      "Georgia", "Connecticut", "Arizona", "Florida", "Wisconsin", "Maryland",
+      "Tennessee", "Arkansas", "Virginia", "Maine", "Texes", "South Carolina"};
 
-  public static final String[] colors =
-      {"red", "blue", "green", "orange", "purple"};
+  public static final String[] colors = {
+      "red", "blue", "green", "orange", "purple"};
 
-  public static final String[] firstNames =
-      {"Arnold", "Bob", "Cathy", "Dennis", "Earl", "Frank", "George",
-          "Hillary", "Irma", "John", "Kelly", "Michelle", "Natalie", "Oscar",
-          "Paul", "Susan", "Todd"};
+  public static final String[] firstNames = {
+      "Arnold", "Bob", "Cathy", "Dennis", "Earl", "Frank", "George", "Hillary",
+      "Irma", "John", "Kelly", "Michelle", "Natalie", "Oscar", "Paul", "Susan",
+      "Todd"};
 
-  public static final String[] lastNames =
-      {"Anderson", "Billings", "Corper", "Donavon", "Elkins", "Fitzgerald",
-          "Gaskins", "Haskins", "Iterby", "Johnson", "Kellickson", "Lee",
-          "Peterson", "Richardson", "Sauxby", "Wilkinson", "York"};
+  public static final String[] lastNames = {
+      "Anderson", "Billings", "Corper", "Donavon", "Elkins", "Fitzgerald",
+      "Gaskins", "Haskins", "Iterby", "Johnson", "Kellickson", "Lee",
+      "Peterson", "Richardson", "Sauxby", "Wilkinson", "York"};
 
-  public static final String[] sports =
-      {"baseball", "soccor", "football", "basketball", "hockey", "softball",
-          "rugby", "water polo", "golf", "tennis"};
+  public static final String[] sports = {
+      "baseball", "soccor", "football", "basketball", "hockey", "softball",
+      "rugby", "water polo", "golf", "tennis"};
 
-  public static final String[] races =
-      {"African American", "Caucasian", "Hispanic", "Green Alien", "Asian",
-          "Other"};
+  public static final String[] races = {
+      "African American", "Caucasian", "Hispanic", "Green Alien", "Asian",
+      "Other"};
 
+  /**
+   * A boolean indicating that we should throw an error.
+   */
+  private boolean errorMode = false;
+
+  /**
+   * @see ClientTableModel#getCell(int, int)
+   */
   public Object getCell(int rowNum, int colNum) {
     switch (colNum) {
       case 0:
@@ -95,13 +102,51 @@ public class DataSourceTableModel extends ClientTableModel {
         return null;
     }
   }
+  
+  /**
+   * Check if error mode is enabled.
+   * 
+   * @return true if enabled
+   */
+  public boolean isErrorModeEnabled() {
+    return errorMode;
+  }
 
+  /**
+   * Allow, but do nothing.
+   */
   public void onRowInserted(int beforeRow) {
   }
 
+  /**
+   * Allow, but do nothing.
+   */
   public void onRowRemoved(int row) {
   }
 
+  /**
+   * Allow, but do nothing.
+   */
   public void onSetData(int row, int cell, Object data) {
+  }
+
+  /**
+   * Override that can optionally throw an error.
+   */
+  public void requestRows(Request request, Callback callback) {
+    if (errorMode) {
+      callback.onFailure(new Exception("An error has occured."));
+    } else {
+      super.requestRows(request, callback);
+    }
+  }
+
+  /**
+   * Enable or disable error mode.
+   * 
+   * @param enabled true to enable
+   */
+  public void setErrorModeEnabled(boolean enabled) {
+    this.errorMode = enabled;
   }
 }

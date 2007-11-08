@@ -102,6 +102,9 @@ public class TableControllerTest extends GWTTestCase {
     public void setNumRows(int numRows) {
       this.numRows = numRows;
     }
+
+    public void setPagingFailure(Throwable caught) {
+    }
   }
 
   /**

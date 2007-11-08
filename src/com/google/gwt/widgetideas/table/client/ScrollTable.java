@@ -55,14 +55,12 @@ import java.util.List;
  * <h3>CSS Style Rules</h3>
  * <ul class="css">
  * <li> .gwt-ScrollTable { applied to the entire widget } </li>
- * <li> .gwt-ScrollTable .gwt-ScrollTable-header { applied to the header table }
- * </li>
- * <li> .gwt-ScrollTable .gwt-ScrollTable-header-wrapper { applied to the
- * wrapper around the header table } </li>
- * <li> .gwt-ScrollTable .gwt-ScrollTable-data { applied to the data table }
- * </li>
- * <li> .gwt-ScrollTable .gwt-ScrollTable-data-wrapper { applied to the wrapper
- * around the data table } </li>
+ * <li> .gwt-ScrollTable-header { applied to the header table }
+ * <li> .gwt-ScrollTable-data { applied to the data table }
+ * <li> .gwt-ScrollTable-footer { applied to the footer table }
+ * <li> .gwt-ScrollTable-header-wrapper { wrapper around the header table }</li>
+ * <li> .gwt-ScrollTable-data-wrapper { wrapper around the data table }</li>
+ * <li> .gwt-ScrollTable-footer-wrapper { wrapper around the footer table }</li>
  * </ul>
  */
 public class ScrollTable extends ComplexPanel implements ResizableWidget {
@@ -250,9 +248,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       Element cell = table.headerTable.getEventTargetCell(event);
       int clientX = DOM.eventGetClientX(event);
       if (cell != null) {
-        int absRight =
-            DOM.getAbsoluteLeft(cell)
-                + DOM.getElementPropertyInt(cell, "offsetWidth");
+        int absRight = DOM.getAbsoluteLeft(cell)
+            + DOM.getElementPropertyInt(cell, "offsetWidth");
         if (clientX < absRight - 15 || clientX > absRight) {
           cell = null;
         }
@@ -395,9 +392,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
           int originalWidth = curNode.getOriginalWidth();
           int column = curNode.getCellIndex();
           int delta = totalDelta / colSpanRemaining;
-          int colWidth =
-              table.setColumnWidth(column, originalWidth + delta,
-                  sacrificeColumn);
+          int colWidth = table.setColumnWidth(column, originalWidth + delta,
+              sacrificeColumn);
 
           totalDelta -= (colWidth - originalWidth);
           colSpanRemaining--;
@@ -444,12 +440,10 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       // Position a div that forces a cursor redraw in Opera
       if (cellChanged) {
         DOM.setCapture(getScrollTable().getElement());
-        DOM.setStyleAttribute(cursorUpdateDiv, "height", (Window
-            .getClientHeight() - 1)
-            + "px");
-        DOM.setStyleAttribute(cursorUpdateDiv, "width", (Window
-            .getClientWidth() - 1)
-            + "px");
+        DOM.setStyleAttribute(cursorUpdateDiv, "height",
+            (Window.getClientHeight() - 1) + "px");
+        DOM.setStyleAttribute(cursorUpdateDiv, "width",
+            (Window.getClientWidth() - 1) + "px");
         DOM.setStyleAttribute(cursorUpdateDiv, "left", "0px");
         DOM.setStyleAttribute(cursorUpdateDiv, "top", "0px");
         DOM.appendChild(RootPanel.getBodyElement(), cursorUpdateDiv);
@@ -601,8 +595,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   /**
    * The worker that helps with mouse resize events.
    */
-  private MouseResizeWorker resizeWorker =
-      (MouseResizeWorker) GWT.create(MouseResizeWorker.class);
+  private MouseResizeWorker resizeWorker = (MouseResizeWorker) GWT.create(MouseResizeWorker.class);
 
   /**
    * A Deferred command used to resize tables vertically. Using this command
@@ -648,8 +641,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    */
   public ScrollTable(HasFixedColumnWidth dataTable,
       HasFixedColumnWidth headerTable) {
-    this(dataTable, headerTable, (ScrollTableImages) GWT
-        .create(ScrollTableImages.class));
+    this(dataTable, headerTable,
+        (ScrollTableImages) GWT.create(ScrollTableImages.class));
   }
 
   /**
@@ -667,21 +660,21 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     resizeWorker.setScrollTable(this);
 
     // Prepare the header and data tables
-    prepareTable((Widget) dataTable, "-data");
-    prepareTable((Widget) headerTable, "-header");
+    prepareTable((Widget) dataTable, "data");
+    prepareTable((Widget) headerTable, "header");
 
     // Create the main div container
     Element mainElem = DOM.createDiv();
     setElement(mainElem);
-    setStyleName("gwt-ScrollTable");
+    setStylePrimaryName(DEFAULT_STYLE_NAME);
     DOM.setStyleAttribute(mainElem, "padding", "0px");
     DOM.setStyleAttribute(mainElem, "overflow", "hidden");
     DOM.setStyleAttribute(mainElem, "position", "relative");
 
     // Create the table wrapper and spacer
-    headerWrapper = createWrapper("-header-wrapper");
+    headerWrapper = createWrapper("header-wrapper");
     headerSpacer = createSpacer(headerWrapper);
-    dataWrapper = createWrapper("-data-wrapper");
+    dataWrapper = createWrapper("data-wrapper");
 
     // Create image to fill width
     fillWidthImage = new Image() {
@@ -718,40 +711,37 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
 
     // Listen for sorting events in the data table
     if (dataTable instanceof HasSortableColumns) {
-      ((HasSortableColumns) dataTable)
-          .addSortableColumnsListener(new SortableColumnsListener() {
-            public void onColumnSorted(ColumnSortList sortList) {
-              // Get the primary column and sort order
-              int column = -1;
-              boolean ascending = true;
-              if (sortList != null) {
-                column = sortList.getPrimaryColumn();
-                ascending = sortList.isPrimaryAscending();
-              }
+      ((HasSortableColumns) dataTable).addSortableColumnsListener(new SortableColumnsListener() {
+        public void onColumnSorted(ColumnSortList sortList) {
+          // Get the primary column and sort order
+          int column = -1;
+          boolean ascending = true;
+          if (sortList != null) {
+            column = sortList.getPrimaryColumn();
+            ascending = sortList.isPrimaryAscending();
+          }
 
-              // Remove the sorted column indicator
-              if (sortingEnabled) {
-                Element parent = DOM.getParent(sortedColumnWrapper);
-                if (parent != null) {
-                  DOM.removeChild(parent, sortedColumnWrapper);
-                }
+          // Remove the sorted column indicator
+          if (sortingEnabled) {
+            Element parent = DOM.getParent(sortedColumnWrapper);
+            if (parent != null) {
+              DOM.removeChild(parent, sortedColumnWrapper);
+            }
 
-                // Re-add the sorted column indicator
-                if (column < 0) {
-                  sortedColumnTrigger = null;
-                } else if (sortedColumnTrigger != null) {
-                  DOM.appendChild(sortedColumnTrigger, sortedColumnWrapper);
-                  if (ascending) {
-                    images.scrollTableAscending()
-                        .applyTo(sortedColumnIndicator);
-                  } else {
-                    images.scrollTableDescending().applyTo(
-                        sortedColumnIndicator);
-                  }
-                }
+            // Re-add the sorted column indicator
+            if (column < 0) {
+              sortedColumnTrigger = null;
+            } else if (sortedColumnTrigger != null) {
+              DOM.appendChild(sortedColumnTrigger, sortedColumnWrapper);
+              if (ascending) {
+                images.scrollTableAscending().applyTo(sortedColumnIndicator);
+              } else {
+                images.scrollTableDescending().applyTo(sortedColumnIndicator);
               }
             }
-          });
+          }
+        }
+      });
     }
 
     // Add to Resizable Collection
@@ -1102,11 +1092,11 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     if (footerTable != null) {
       footerTable.setCellSpacing(getCellSpacing());
       footerTable.setCellPadding(getCellPadding());
-      prepareTable((Widget) footerTable, "-footer");
+      prepareTable((Widget) footerTable, "footer");
 
       // Create the footer wrapper and spacer
       if (footerWrapper == null) {
-        footerWrapper = createWrapper("-footer-wrapper");
+        footerWrapper = createWrapper("footer-wrapper");
         footerSpacer = createSpacer(footerWrapper);
       }
 
@@ -1279,8 +1269,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   protected void scrollTables(boolean baseHeader) {
     if (isAttached()) {
       if (baseHeader) {
-        DOM.setElementPropertyInt(dataWrapper, "scrollLeft", DOM
-            .getElementPropertyInt(headerWrapper, "scrollLeft"));
+        DOM.setElementPropertyInt(dataWrapper, "scrollLeft",
+            DOM.getElementPropertyInt(headerWrapper, "scrollLeft"));
       }
       int scrollLeft = DOM.getElementPropertyInt(dataWrapper, "scrollLeft");
       DOM.setElementPropertyInt(headerWrapper, "scrollLeft", scrollLeft);
@@ -1370,7 +1360,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     DOM.setStyleAttribute(wrapper, "padding", "0px");
     DOM.setStyleAttribute(wrapper, "overflow", "hidden");
     DOM.setStyleAttribute(wrapper, "position", "relative");
-    DOM.setElementProperty(wrapper, "className", DEFAULT_STYLE_NAME + cssName);
+    setStylePrimaryName(wrapper, DEFAULT_STYLE_NAME + "-" + cssName);
     return wrapper;
   }
 
@@ -1384,7 +1374,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     Element tableElem = table.getElement();
     DOM.setStyleAttribute(tableElem, "margin", "0px");
     DOM.setStyleAttribute(tableElem, "border", "0px");
-    table.setStyleName(DEFAULT_STYLE_NAME + cssName);
+    table.setStyleName(DEFAULT_STYLE_NAME + "-" + cssName);
   }
 
   /**
@@ -1432,13 +1422,11 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    * Reposition the header spacer next to the header table.
    */
   private void repositionHeaderSpacer() {
-    DOM.setStyleAttribute(headerSpacer, "left", ((Widget) headerTable)
-        .getOffsetWidth()
-        + "px");
+    DOM.setStyleAttribute(headerSpacer, "left",
+        ((Widget) headerTable).getOffsetWidth() + "px");
     if (footerTable != null) {
-      DOM.setStyleAttribute(footerSpacer, "left", ((Widget) footerTable)
-          .getOffsetWidth()
-          + "px");
+      DOM.setStyleAttribute(footerSpacer, "left",
+          ((Widget) footerTable).getOffsetWidth() + "px");
     }
   }
 

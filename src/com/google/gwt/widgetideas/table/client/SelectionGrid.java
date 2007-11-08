@@ -29,6 +29,13 @@ import java.util.Set;
 /**
  * A variation of the {@link Grid} that supports row or cell hovering and row
  * selection.
+ * 
+ * <h3>CSS Style Rules</h3>
+ * <ul class="css">
+ * <li> tr.selected { applied to selected rows } </li>
+ * <li> tr.hovering { applied to row currently being hovered } </li>
+ * <li> td.hovering { applied to cell currently being hovered } </li>
+ * </ul>
  */
 public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   /**
