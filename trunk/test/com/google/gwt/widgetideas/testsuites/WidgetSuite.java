@@ -20,7 +20,6 @@ import com.google.gwt.widgetideas.client.PinnedPanelTest;
 import com.google.gwt.widgetideas.client.ProgressBarTest;
 import com.google.gwt.widgetideas.client.SliderBarTest;
 import com.google.gwt.widgetideas.client.TitledPanelTest;
-import com.google.gwt.widgetideas.table.client.BulkLoadedTableTest;
 import com.google.gwt.widgetideas.table.client.ScrollTableTest;
 
 import junit.framework.Test;
@@ -42,9 +41,7 @@ public class WidgetSuite {
     suite.addTestSuite(PinnedPanelTest.class);
 
     // Table Tests
-    suite.addTestSuite(BulkLoadedTableTest.class);
     suite.addTestSuite(ScrollTableTest.class);
-    suite.addTestSuite(BulkLoadedTableTest.class);
     return suite;
   }
 

@@ -109,4 +109,6 @@ public class FixedWidthGridTest extends SelectionGridTest {
     testGrid.insertRow(5);
     assertEquals(0, testGrid.getSelectedRows().size());
   }
+    
+  
 }

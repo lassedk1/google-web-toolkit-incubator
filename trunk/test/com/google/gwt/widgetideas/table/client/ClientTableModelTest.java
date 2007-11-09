@@ -113,7 +113,7 @@ public class ClientTableModelTest extends AbstractTableModelTest {
       public void onRowsReady(Request request, Response response) {
         // Iterate the rows
         int row = 0;
-        Iterator rowIt = response.iterator();
+        Iterator rowIt = response.getIterator();
         while (rowIt.hasNext()) {
           // Iterate the columns
           int column = 0;
@@ -126,12 +126,12 @@ public class ClientTableModelTest extends AbstractTableModelTest {
           }
 
           // Check the number of columns
-          assertEquals(column, NUM_COLUMNS);
+          assertEquals(NUM_COLUMNS, column);
           row++;
         }
 
         // Check the number of rows
-        assertEquals(row, NUM_ROWS);
+        assertEquals(NUM_ROWS, row);
       }
     });
   }

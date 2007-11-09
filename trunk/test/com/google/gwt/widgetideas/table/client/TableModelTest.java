@@ -96,7 +96,7 @@ public class TableModelTest extends AbstractTableModelTest {
 
     // Create a Response
     Response response = new Response(rowValues) {
-      public Iterator iterator() {
+      public Iterator getIterator() {
         return null;
       }
     };

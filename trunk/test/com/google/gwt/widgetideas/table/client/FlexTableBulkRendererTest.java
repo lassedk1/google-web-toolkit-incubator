@@ -14,23 +14,21 @@
  * the License.
  */
 
-package com.google.gwt.widgetideas.client;
+package com.google.gwt.widgetideas.table.client;
 
-import com.google.gwt.junit.client.GWTTestCase;
+import com.google.gwt.widgetideas.table.client.overrides.FlexTable;
 
 /**
- * Test for the {@link PinnedPanel}.
+ * {@link FlexTableBulkRenderer} test.
+ * 
  */
-public abstract class BasicWidgetTest extends GWTTestCase {
+public class FlexTableBulkRendererTest extends TableBulkRendererTestBase {
 
-  public String getModuleName() {
-    return "com.google.gwt.widgetideas.BasicWidget";
+  protected Object[] createTableAndRenderer() {
+    FlexTable table = new FlexTable();
+    FlexTableBulkRenderer renderer = new FlexTableBulkRenderer(table);
+    Object[] pair = {table, renderer};
+    return pair;
   }
 
-  /*
-   * public void testBasicCreate() { ToggleButton testOne = new
-   * ToggleButton("You will never see me"); HTML hello = new HTML("hello");
-   * PinnedPanel p = new PinnedPanel(200, 300, testOne, hello);
-   * RootPanel.get().add(p); assertEquals(20, p.getOffsetWidth()); }
-   */
 }

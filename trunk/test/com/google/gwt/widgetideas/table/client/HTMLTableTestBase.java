@@ -28,8 +28,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Base test for HTMLTable derived classes copied from gwt user for use in
- * table testing.
+ * Base test for HTMLTable derived classes copied from gwt user for use in table
+ * testing.
  */
 public abstract class HTMLTableTestBase extends GWTTestCase {
   public static void assertEquals(Object[] x, Object[] y) {
@@ -52,7 +52,7 @@ public abstract class HTMLTableTestBase extends GWTTestCase {
   }
 
   public String getModuleName() {
-    return "com.google.gwt.user.User";
+    return "com.google.gwt.widgetideas.WidgetIdeas";
   }
 
   public abstract HTMLTable getTable(int row, int column);

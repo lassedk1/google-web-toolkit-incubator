@@ -16,29 +16,18 @@
 
 package com.google.gwt.widgetideas.table.client;
 
+import com.google.gwt.widgetideas.table.client.overrides.Grid;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 
 /**
- * Test for the {@link BulkLoadedTable} class. 
+ * Test for {@link Grid}
+ * 
+ * 
  */
-public class BulkLoadedTableTest extends HTMLTableTestBase {
+public class GridTest extends HTMLTableTestBase {
 
-  public String getModuleName() {
-    return "com.google.gwt.widgetideas.BasicTable";
-  }
-  
   public HTMLTable getTable(int row, int column) {
-    BulkLoadedTable table = new BulkLoadedTable();
-    table.renderRows(new ClientTableModel() {
-      public Object getCell(int rowNum, int colNum) {
-        if (rowNum >= rowNum || colNum >= colNum) {
-          return null;
-        } else {
-          return "";
-        }
-      }
-    });
-    return table;
+    return new Grid(row, column);
   }
 
 }
