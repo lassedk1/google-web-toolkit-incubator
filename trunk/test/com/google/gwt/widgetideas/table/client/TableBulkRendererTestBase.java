@@ -146,6 +146,16 @@ public abstract class TableBulkRendererTestBase extends GWTTestCase {
 
   protected abstract Object[] createTableAndRenderer();
 
+  protected void doTest(TableModel model, TestCallback callback) {
+  
+    Object[] local = createTableAndRenderer();
+    HTMLTable table = (HTMLTable) local[0];
+    TableBulkRenderer renderer = (TableBulkRenderer) local[1];
+    callback.table = table;
+    renderer.renderRows(model, callback);
+    delayTestFinish(TIME_OUT);
+  }
+
   private String cellContents(int rowNum, int cellNum) {
     return "cell " + rowNum + ", " + cellNum;
   }
@@ -180,15 +190,5 @@ public abstract class TableBulkRendererTestBase extends GWTTestCase {
       }
     };
     return oracle;
-  }
-
-  protected void doTest(TableModel model, TestCallback callback) {
-
-    Object[] local = createTableAndRenderer();
-    HTMLTable table = (HTMLTable) local[0];
-    TableBulkRenderer renderer = (TableBulkRenderer) local[1];
-    callback.table = table;
-    renderer.renderRows(model, callback);
-    delayTestFinish(TIME_OUT);
   }
 }

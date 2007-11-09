@@ -47,7 +47,7 @@ public class EditablePagingGrid extends PagingGrid {
    */
   private Callback cellEditorCallback = new Callback() {
     public void onAccept(int row, int cell, Object value) {
-      tableController.setData(row, cell, value);
+      tableController.setData(row + getFirstRow(), cell, value);
     }
 
     public void onCancel(int row, int cell) {

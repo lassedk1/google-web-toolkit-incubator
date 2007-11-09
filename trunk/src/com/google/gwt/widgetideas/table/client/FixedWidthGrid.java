@@ -77,23 +77,23 @@ public class FixedWidthGrid extends SelectionGrid implements
      * @param columns the number of columns per row
      */
     public native void addRows(Element table, int rows, int columns) /*-{
-      var span = $doc.createElement("span");
-      span.style["padding"] = "0px";
-      span.innerHTML = "&nbsp;";
-      var td = $doc.createElement("td");
-      td.style["overflow"] = "hidden";
-      td.appendChild(span);
+         var span = $doc.createElement("span");
+         span.style["padding"] = "0px";
+         span.innerHTML = "&nbsp;";
+         var td = $doc.createElement("td");
+         td.style["overflow"] = "hidden";
+         td.appendChild(span);
 
-      var row = $doc.createElement("tr");
-      for(var cellNum = 0; cellNum < columns; cellNum++) {
-        var cell = td.cloneNode(true);
-        row.appendChild(cell);
-      }
-      table.appendChild(row);
-      for(var rowNum = 1; rowNum < rows; rowNum++) {  
-        table.appendChild(row.cloneNode(true));
-      }
-    }-*/;
+         var row = $doc.createElement("tr");
+         for(var cellNum = 0; cellNum < columns; cellNum++) {
+           var cell = td.cloneNode(true);
+           row.appendChild(cell);
+         }
+         table.appendChild(row);
+         for(var rowNum = 1; rowNum < rows; rowNum++) {  
+           table.appendChild(row.cloneNode(true));
+         }
+       }-*/;
 
     /**
      * Create the ghost row.
@@ -403,23 +403,17 @@ public class FixedWidthGrid extends SelectionGrid implements
   }
 
   /**
-<<<<<<< .mine
-   * Gets the new ghost element directly from the table
+   * Gets the new ghost element directly from the table.
    * 
    * @param table the table
    * @return the new ghost row
    */
   protected native Element getDOMGhostRow(HTMLTable table) /*-{
-    return table.@com.google.gwt.widgetideas.table.client.overrides.HTMLTable::getBodyElement()(table).rows[0];
-  }-*/;
+     return table.@com.google.gwt.widgetideas.table.client.overrides.HTMLTable::getBodyElement()(table).rows[0];
+   }-*/;
 
   /**
-   * Directly ask the underlying DOM what the row count is.
-   * 
-   * @return Returns the number of rows in the table
-=======
    * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
->>>>>>> .r216
    */
   protected int getDOMRowCount() {
     return super.getDOMRowCount() - 1;

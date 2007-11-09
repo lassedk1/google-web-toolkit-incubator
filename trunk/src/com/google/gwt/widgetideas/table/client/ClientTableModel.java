@@ -86,7 +86,7 @@ public abstract class ClientTableModel extends TableModel {
       columnIter.done = false;
       columnIter.next = null;
       // Now check for next.
-      if (columnIter.hasNext()) {
+      if (columnIter.hasNext() && index < max) {
         return columnIter;
       } else {
         return null;

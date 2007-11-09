@@ -20,9 +20,7 @@ import com.google.gwt.widgetideas.table.client.overrides.Grid;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 
 /**
- * Test for {@link Grid}
- * 
- * 
+ * Test for {@link Grid}.
  */
 public class GridTest extends HTMLTableTestBase {
 

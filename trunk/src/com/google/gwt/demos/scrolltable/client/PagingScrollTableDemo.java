@@ -27,11 +27,13 @@ import com.google.gwt.widgetideas.table.client.CachedTableController;
 import com.google.gwt.widgetideas.table.client.EditablePagingGrid;
 import com.google.gwt.widgetideas.table.client.ListCellEditor;
 import com.google.gwt.widgetideas.table.client.PagingGrid;
+import com.google.gwt.widgetideas.table.client.PagingGridBulkRenderer;
 import com.google.gwt.widgetideas.table.client.PagingScrollTable;
 import com.google.gwt.widgetideas.table.client.RadioCellEditor;
 import com.google.gwt.widgetideas.table.client.ScrollTable;
 import com.google.gwt.widgetideas.table.client.TextCellEditor;
 import com.google.gwt.widgetideas.table.client.PagingGrid.CellRenderer;
+import com.google.gwt.widgetideas.table.client.TableBulkRenderer.StringCellRenderer;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 import com.google.gwt.widgetideas.table.client.overrides.FlexTable.FlexCellFormatter;
 
@@ -39,6 +41,24 @@ import com.google.gwt.widgetideas.table.client.overrides.FlexTable.FlexCellForma
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class PagingScrollTableDemo extends ScrollTableDemo {
+  /**
+   * A custom cell renderer.
+   */
+  private static class CustomBulkRenderer extends StringCellRenderer {
+    public String renderCell(int row, int column, Object cellData) {
+      if (cellData == null) {
+        return "";
+      }
+
+      switch (column) {
+        case 5:
+          return "<FONT color=\"" + cellData + "\">" + cellData + "</FONT>";
+        default:
+          return cellData.toString();
+      }
+    }
+  }
+
   /**
    * A custom cell renderer.
    */
@@ -71,7 +91,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
    * The {@link DataSourceTableModel}.
    */
   protected static DataSourceTableModel tableModel = null;
-  
+
   /**
    * Get the data table.
    * 
@@ -98,7 +118,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   public static CachedTableController getTableController() {
     return tableController;
   }
-  
+
   /**
    * Get the table model.
    * 
@@ -140,6 +160,11 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     dataTable = gridView;
     gridView.setCellRenderer(new CustomCellRenderer());
     setupCellEditors(gridView);
+
+    // Setup the renderer
+    PagingGridBulkRenderer dataRenderer = new PagingGridBulkRenderer(gridView,
+        12);
+    dataRenderer.setRenderer(new CustomBulkRenderer());
 
     // Create the scroll table
     scrollTable = new PagingScrollTable(gridView, headerTable);
