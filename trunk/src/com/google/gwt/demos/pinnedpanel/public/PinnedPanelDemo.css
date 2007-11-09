@@ -1,54 +1,64 @@
 /*----------------------------------------------------------------------------
 * Toggle Button
 */
-	/* ---------------------------------------------------------------------------
- * Custom Buttons
- */
 .gwt-ToggleButton {
-	color: #fff;
-	width: 20px;
-	text-align: center;
-	padding-top: 5px; height : 100%; cursor : pointer;
-	background: #59d; cursor : hand;
-	font-size: 80%;
-	white-space: nowrap;
-	text-align: center;
-	cursor: hand;
-	cursor: pointer;
-	height: 30em;
+  color: #fff;
+  width: 20px;
+  text-align: center;
+  cursor: pointer;
+  cursor: hand;
+  font-size: 80%;
+  white-space: nowrap;
+  height: 100%;
+}
+
+body {
+  margin-left: 0;
 }
 
 /* ---------------------------------------------------------------------------
  * Tree
  */
 .gwt-TreeItem,.gwt-TreeItem-selected {
-	white-space: nowrap;
+  
 }
 
 .gwt-TreeItem {
-	color: black;
+  color: black;
+  white-space: normal;
 }
 
 .gwt-TreeItem-selected {
-	background-color: #59d;
-	color: white;
+  background-color: #59d;
+  color: white;
 }
 
 .gwt-PinnedPanel {
-	background-color: white;
-	border: 1px solid #59d;
-	height: 100%;
+  height: 400px;
+  margin: 0px;
+}
 
+.gwt-PinnedPanel .hover-bar {
+  position: relative;
+  background-color: #147;
+  height: 100%;
+  width: 30px;
+}
+
+.gwt-PinnedPanel .mover {
+  border: 1px solid #59d;
+  background-color: white;
+  position: relative;
+  z-index: 100;
 }
 
 .nav-tree-title {
-	width: 100%;
-	height: 30px;
-	text-align: center;
-	vertical-align: bottom;
-	color: white;
-	background-color: #26a;
-	border:1px solid black;
-	
-	
+  height: 30px;
+  width: 100%;
+  text-align: center;
+  vertical-align: bottom;
+  color: white;
+  background-color: #26a;
+  text-align: center;
+}
 }

@@ -17,9 +17,12 @@
 package com.google.gwt.demos.pinnedpanel.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Tree;
@@ -36,29 +39,48 @@ public class PinnedPanelDemo implements EntryPoint {
    * This is the entry point method.
    */
   public void onModuleLoad() {
-    // Some random contents to make the tree interesting.
-    Widget contents = createSchoolNavBar();
 
     // The toggle Button.
     ToggleButton toggler = createToggleButton();
 
+    // Some random contents to make the tree interesting.
+    Widget contents = createSchoolNavBar(toggler);
+    HTML hoverBar = createHoverBar();
+
     // The actual pinned panel.
-    PinnedPanel pinned = new PinnedPanel(200, toggler, contents);
+    final PinnedPanel pinned = new PinnedPanel(200, toggler, hoverBar, contents);
 
     // Right margin needs to be set programmatically as it is used to create the
     // panel slide-out effect.
-    pinned.setRightMargin(3);
+    pinned.setRightMargin(10);
+
+    // Add a change listener
+    pinned.addChangeListener(new ChangeListener() {
+
+      public void onChange(Widget sender) {
+        RootPanel.get().add(new Label("Pinned:" + pinned.isPinned()));
+      }
+    });
 
     RootPanel.get("pinned-panel").add(pinned);
   }
 
-  private Widget createSchoolNavBar() {
+  private HTML createHoverBar() {
+    HTML html = new HTML();
+    return html;
+  }
+
+  private Widget createSchoolNavBar(ToggleButton toggler) {
     FlowPanel navBar = new FlowPanel();
     navBar.setSize("100%", "100%");
-
     HTML title = new HTML("School Directory");
-    title.setStyleName("nav-tree-title");
-    navBar.add(title);
+    HorizontalPanel panel = new HorizontalPanel();
+    panel.setWidth("100%");
+    panel.add(toggler);
+    panel.add(title);
+    navBar.add(panel);
+
+    panel.setStyleName("nav-tree-title");
     Tree contents = new Tree();
     navBar.add(contents);
 
@@ -72,6 +94,7 @@ public class PinnedPanelDemo implements EntryPoint {
 
     TreeItem admin = contents.addItem("Administrators");
     admin.addItem("The Soup Nazi");
+    admin.addItem("This widget can now grow with the contents");
     return navBar;
   }
 
