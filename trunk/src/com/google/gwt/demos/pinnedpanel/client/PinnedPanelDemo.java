@@ -45,10 +45,10 @@ public class PinnedPanelDemo implements EntryPoint {
 
     // Some random contents to make the tree interesting.
     Widget contents = createSchoolNavBar(toggler);
-    HTML hoverBar = createHoverBar();
+ 
 
-    // The actual pinned panel.
-    final PinnedPanel pinned = new PinnedPanel(200, toggler, hoverBar, contents);
+    // The actual pinned panel. 
+    final PinnedPanel pinned = new PinnedPanel(200, toggler, contents);
 
     // Right margin needs to be set programmatically as it is used to create the
     // panel slide-out effect.
@@ -58,17 +58,14 @@ public class PinnedPanelDemo implements EntryPoint {
     pinned.addChangeListener(new ChangeListener() {
 
       public void onChange(Widget sender) {
-        RootPanel.get().add(new Label("Pinned:" + pinned.isPinned()));
+        RootPanel.get().add(new Label("Pinned: " + pinned.isPinned()));
       }
     });
 
+     
     RootPanel.get("pinned-panel").add(pinned);
   }
 
-  private HTML createHoverBar() {
-    HTML html = new HTML();
-    return html;
-  }
 
   private Widget createSchoolNavBar(ToggleButton toggler) {
     FlowPanel navBar = new FlowPanel();
@@ -94,7 +91,7 @@ public class PinnedPanelDemo implements EntryPoint {
 
     TreeItem admin = contents.addItem("Administrators");
     admin.addItem("The Soup Nazi");
-    admin.addItem("This widget can now grow with the contents");
+    admin.addItem("The Grand High Supreme Master Pubba");
     return navBar;
   }
 
