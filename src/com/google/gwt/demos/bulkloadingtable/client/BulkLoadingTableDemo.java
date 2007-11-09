@@ -28,10 +28,10 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.table.client.BulkLoadedTable;
+import com.google.gwt.widgetideas.table.client.FlexTableBulkRenderer;
 import com.google.gwt.widgetideas.table.client.ClientTableModel;
 import com.google.gwt.widgetideas.table.client.PreloadedTable;
-import com.google.gwt.widgetideas.table.client.BulkLoader.OnLoadCompleteCallBack;
+import com.google.gwt.widgetideas.table.client.RendererCallback;
 import com.google.gwt.widgetideas.table.client.overrides.FlexTable;
 import com.google.gwt.widgetideas.table.client.overrides.Grid;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
@@ -44,6 +44,15 @@ public class BulkLoadingTableDemo implements EntryPoint {
   int numRows = 120;
   HTMLTable curTable;
   Panel panel;
+
+  public void systemSpeedTest() {
+    long time = System.currentTimeMillis();
+    long current;
+    for (int i = 0; i < 1000; i++) {
+      current = System.currentTimeMillis();
+    }
+    Window.alert("Time is " + (time));
+  }
 
   public void onModuleLoad() {
     panel = new VerticalPanel();
@@ -106,26 +115,14 @@ public class BulkLoadingTableDemo implements EntryPoint {
 
     });
     panel.add(gridAPI);
-    panel.add(new HTML("<p/><p/><b> Use the BulkLoadedTable API</b>"));
-    Button dataDrivenAPI = new Button("Go", new ClickListener() {
-      public void onClick(Widget sender) {
-        clearTable();
-        long milli = System.currentTimeMillis();
-        BulkLoadedTable table = new BulkLoadedTable();
-        usingBulkLoadedTableAPI(table);
-        finishTable(table, milli);
-      }
-    });
-
-    panel.add(dataDrivenAPI);
 
     panel.add(new HTML("<p/><p/><b> Use Async BulkLoadedTable API</b>"));
     Button asyncAPI = new Button("Go", new ClickListener() {
       public void onClick(Widget sender) {
         clearTable();
         long milli = System.currentTimeMillis();
-        BulkLoadedTable table = new BulkLoadedTable();
-        usingAsynBulkLoadedTableAPI(table, milli);
+        FlexTable table = new FlexTable();
+        usingBulkLoadedTableAPI(table, milli);
       }
     });
 
@@ -166,20 +163,15 @@ public class BulkLoadingTableDemo implements EntryPoint {
     Window.alert("Finished in " + (System.currentTimeMillis() - milli)
         + " milliseconds");
   }
-  
-  private void usingAsynBulkLoadedTableAPI(final BulkLoadedTable table,
-      final long milli) {
-    table.setOnLoadCompleteCallBack(new OnLoadCompleteCallBack() {
-      public void onLoadComplete() {
-       finishTable(table, milli);
-      }
-    });
-    table.setRowsPerTimeCheck(10);
-    usingBulkLoadedTableAPI(table);
-  }
 
-  private void usingBulkLoadedTableAPI(final BulkLoadedTable table) {
-    ClientTableModel oracle = new ClientTableModel() {
+  private void usingBulkLoadedTableAPI(final FlexTable table, final long milli) {
+    RendererCallback callback = new RendererCallback() {
+      public void onRendered() {
+        finishTable(table, milli);
+      }
+    };
+
+    ClientTableModel tableModel = new ClientTableModel() {
       public Object getCell(int rowNum, int cellNum) {
         if (rowNum >= numRows | cellNum >= numColumns) {
           return null;
@@ -187,7 +179,8 @@ public class BulkLoadingTableDemo implements EntryPoint {
         return "cell " + rowNum + ", " + cellNum;
       }
     };
-    table.renderRows(oracle);
+    FlexTableBulkRenderer renderer = new FlexTableBulkRenderer(table);
+    renderer.renderRows(tableModel, callback);
   }
 
   private void usingFlexTableAPI(FlexTable table) {

@@ -69,7 +69,7 @@ public class TableController {
      * @see Callback#onRowsReady(Request, Response)
      */
     public void onRowsReady(Request request, Response response) {
-      controllableTable.setData(request.getStartRow(), response.iterator(),
+      controllableTable.setData(request.getStartRow(), response.getIterator(),
           response.getRowValues());
     }
   }
@@ -114,13 +114,12 @@ public class TableController {
     controllableTable.setNumRows(numRows);
 
     // Listen for data request events from the table
-    controllableTable
-        .addTableDataRequestListener(new TableDataRequestListener() {
-          public void onRequestData(int firstRow, int rowCount,
-              ColumnSortList sortList) {
-            requestRows(firstRow, rowCount, sortList, controllableTable);
-          }
-        });
+    controllableTable.addTableDataRequestListener(new TableDataRequestListener() {
+      public void onRequestData(int firstRow, int rowCount,
+          ColumnSortList sortList) {
+        requestRows(firstRow, rowCount, sortList, controllableTable);
+      }
+    });
   }
 
   /**
