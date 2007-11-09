@@ -33,18 +33,18 @@ public class Grid extends HTMLTable {
    * @param columns the number of columns per row
    */
   private static native void addRows(Element table, int rows, int columns) /*-{
-     var td = $doc.createElement("td");
-     td.innerHTML = "&nbsp;";
-     var row = $doc.createElement("tr");
-     for(var cellNum = 0; cellNum < columns; cellNum++) {
-       var cell = td.cloneNode(true);
-       row.appendChild(cell);
-     }
-     table.appendChild(row);
-     for(var rowNum = 1; rowNum < rows; rowNum++) {  
-       table.appendChild(row.cloneNode(true));
-     }
-   }-*/;
+      var td = $doc.createElement("td");
+      td.innerHTML = "&nbsp;";
+      var row = $doc.createElement("tr");
+      for(var cellNum = 0; cellNum < columns; cellNum++) {
+        var cell = td.cloneNode(true);
+        row.appendChild(cell);
+      }
+      table.appendChild(row);
+      for(var rowNum = 1; rowNum < rows; rowNum++) {  
+        table.appendChild(row.cloneNode(true));
+      }
+    }-*/;
 
   /**
    * Number of columns in the current grid.
@@ -78,7 +78,7 @@ public class Grid extends HTMLTable {
     this();
     resize(rows, columns);
   }
-  
+
   /**
    * Return number of columns. For grid, row argument is ignored as all grids
    * are rectangular.

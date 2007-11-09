@@ -117,7 +117,7 @@ public class CachedTableController extends TableController {
     public void onRowsReady(Request request, Response response) {
       // Save the response data into the cache
       int curRow = request.getStartRow();
-      Iterator rows = response.iterator();
+      Iterator rows = response.getIterator();
       if (rows != null) {
         // Save the data to the cache
         while (rows.hasNext()) {

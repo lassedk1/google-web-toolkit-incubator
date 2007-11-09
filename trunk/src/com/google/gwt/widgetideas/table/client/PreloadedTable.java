@@ -17,16 +17,17 @@
 package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.widgetideas.table.client.overrides.FlexTable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A {@link PreloadedTable} allow users to configure a table with HTML cell
- * data before rendering the table. This can lead to faster
- * performance for large tables.
+ * A {@link PreloadedTable} allow users to configure a table with HTML cell data
+ * before rendering the table. This can lead to faster performance for large
+ * tables.
  */
-public class PreloadedTable extends BulkLoadedTable {
+public class PreloadedTable extends FlexTable {
   List rows = new ArrayList();
   boolean isFilledIn = false;
 
@@ -87,7 +88,7 @@ public class PreloadedTable extends BulkLoadedTable {
   private void ensureLoaded() {
     if (!isFilledIn) {
       isFilledIn = true;
-      renderRows(rows);
+      new FlexTableBulkRenderer(this).renderRows(rows);
     }
   }
 

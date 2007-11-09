@@ -25,24 +25,28 @@ public abstract class ReadOnlyTableModel extends TableModel {
    */
   public static final String READ_ONLY_ERROR = "TableModel is read only.";
 
+  static void throwReadOnlyException() {
+    throw new UnsupportedOperationException(READ_ONLY_ERROR);
+  }
+
   /**
    * @see TableModel
    */
   public void onRowInserted(int beforeRow) {
-    throw new UnsupportedOperationException(READ_ONLY_ERROR);
+    throwReadOnlyException();
   }
 
   /**
    * @see TableModel
    */
   public void onRowRemoved(int row) {
-    throw new UnsupportedOperationException(READ_ONLY_ERROR);
+    throwReadOnlyException();
   }
 
   /**
    * @see TableModel
    */
   public void onSetData(int row, int cell, Object data) {
-    throw new UnsupportedOperationException(READ_ONLY_ERROR);
+    throwReadOnlyException();
   }
 }

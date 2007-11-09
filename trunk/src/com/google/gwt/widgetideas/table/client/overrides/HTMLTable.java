@@ -37,7 +37,7 @@ import java.util.NoSuchElementException;
  * 
  * TODO: Incorporate changes into actual class.
  * 
- * Steps to incorporate: 1. Relace "OverrideDOM." with "DOM." 2. Copy contents
+ * Steps to incorporate: 1. Replace "OverrideDOM." with "DOM." 2. Copy contents
  * to actual HTMLTable class
  */
 public abstract class HTMLTable extends Panel implements SourcesTableEvents,
@@ -1440,6 +1440,10 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
   }
 
   protected void setBodyElement(Element element) {
+    // Must free any existing widgets from the current DOM first.
+    if (this.bodyElem != null) {
+      clearOnlyWidgets();
+    }
     this.bodyElem = element;
   }
 
@@ -1474,6 +1478,18 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
    */
   protected void setRowFormatter(RowFormatter rowFormatter) {
     this.rowFormatter = rowFormatter;
+  }
+
+  /**
+   * Clears the widgets from the table without actually modifying the underlying
+   * HTMLTable.
+   */
+  private void clearOnlyWidgets() {
+    Iterator widgets = iterator();
+    while (widgets.hasNext()) {
+      orphan((Widget) widgets.next());
+    }
+    widgetMap = new WidgetMapper();
   }
 
   /**

@@ -461,7 +461,6 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
       }
 
       // Render the cells the default way
-      int rowCount = 0;
       while (rows.hasNext()) {
         Iterator columnIt = (Iterator) rows.next();
         if ((firstRow >= firstVisibleRow) && (firstRow <= lastVisibleRow)) {

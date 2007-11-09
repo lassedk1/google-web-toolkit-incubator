@@ -19,20 +19,15 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * A {@link ClientTableModel} used when the data source can be accessed
- * synchronously.
+ * A {@link TableModel} used when the data source can be accessed synchronously.
  */
 public abstract class ClientTableModel extends TableModel {
-  /**
-   * Error message for non-read only operations.
-   */
-  public static final String READ_ONLY_ERROR = "TableModel is read only.";
 
   /**
-   * A local {@link ListTableModel} response.
+   * A {@link Response} that can be used when the response is not going over a
+   * RPC request.
    */
   public static class ClientResponse extends Response {
-
     /**
      * An iterator over the rows of data.
      */
@@ -59,112 +54,86 @@ public abstract class ClientTableModel extends TableModel {
      * 
      * @return the rows data
      */
-    public Iterator/* <Iterator<Object>> */iterator() {
+    public Iterator/* <Iterator<Object>> */getIterator() {
       return rows;
     }
   }
 
-  /**
-   * An iterator over a single row of data.
-   */
-  private class ColumnIterator implements Iterator {
-    /**
-     * The row index that we are iterating.
-     */
-    private int row;
+  private class ColumnIterator extends StubIterator {
+    private int row = 0;
 
-    /**
-     * The current column index.
-     */
-    private int curCell = 0;
-
-    /**
-     * The next value to return.
-     */
-    private Object next = null;
-
-    /**
-     * Constructor.
-     * 
-     * @param row the row index
-     */
-    public ColumnIterator(int row) {
-      this.row = row;
-      next = getCell(row, curCell);
-    }
-
-    public boolean hasNext() {
-      return (next != null);
-    }
-
-    public Object next() {
-      // Next not available
-      if (!hasNext()) {
-        throw new NoSuchElementException();
-      }
-
-      // Save the next data
-      Object current = next;
-      curCell++;
-      next = getCell(row, curCell);
-
-      // Return the current data
-      return current;
-    }
-
-    public void remove() {
-      throw new UnsupportedOperationException();
+    public Object computeNext() {
+      return getCell(row, index++);
     }
   }
 
-  /**
-   * An iterator over rows of data.
-   */
-  private class RowIterator implements Iterator {
-    /**
-     * The current row that is being iterated.
-     */
-    private int curRow;
+  private class RowIterator extends StubIterator {
+    int max;
 
-    /**
-     * The maximum row that can be iterated.
-     */
-    private int maxRow;
-
-    /**
-     * Constructor.
-     * 
-     * @param request the request for rows
-     */
     public RowIterator(Request request) {
-      curRow = request.getStartRow();
+      index = request.getStartRow();
       if (request.getNumRows() == -1) {
-        maxRow = Integer.MAX_VALUE;
+        max = Integer.MAX_VALUE;
       } else {
-        maxRow = curRow + request.getNumRows();
+        max = request.getNumRows() + index;
       }
     }
 
+    protected Object computeNext() {
+      // Reset column iterator rather than creating new one.
+      columnIter.index = 0;
+      columnIter.row = index++;
+      columnIter.done = false;
+      columnIter.next = null;
+      // Now check for next.
+      if (columnIter.hasNext()) {
+        return columnIter;
+      } else {
+        return null;
+      }
+    }
+  }
+
+  /**
+   * Convenience class to support custom iterators.
+   */
+  private abstract class StubIterator implements Iterator {
+    int index;
+    Object next;
+    boolean done = false;
+
+    protected abstract Object computeNext();
+
     public boolean hasNext() {
-      return (curRow < maxRow);
+      if (done) {
+        return false;
+      }
+      if (next == null) {
+        next = computeNext();
+        if (next == null) {
+          done = true;
+          return false;
+        }
+      }
+      return true;
     }
 
     public Object next() {
-      // Next not available
       if (!hasNext()) {
         throw new NoSuchElementException();
+      } else {
+        Object accum = next;
+        next = null;
+        return accum;
       }
-
-      // Get next column iterator
-      ColumnIterator colIt = new ColumnIterator(curRow);
-      curRow++;
-      return colIt;
     }
 
     public void remove() {
       throw new UnsupportedOperationException();
     }
   }
+
+  private ColumnIterator columnIter = new ColumnIterator();
 
   /**
    * Get the value for a given cell. Return null if no more values are
@@ -182,7 +151,7 @@ public abstract class ClientTableModel extends TableModel {
    * @param beforeRow the row index of the new row
    */
   public void onRowInserted(int beforeRow) {
-    throw new UnsupportedOperationException(READ_ONLY_ERROR);
+    ReadOnlyTableModel.throwReadOnlyException();
   }
 
   /**
@@ -191,7 +160,7 @@ public abstract class ClientTableModel extends TableModel {
    * @param row the row index of the removed row
    */
   public void onRowRemoved(int row) {
-    throw new UnsupportedOperationException(READ_ONLY_ERROR);
+    ReadOnlyTableModel.throwReadOnlyException();
   }
 
   /**
@@ -202,7 +171,7 @@ public abstract class ClientTableModel extends TableModel {
    * @param data the new contents of the cell
    */
   public void onSetData(int row, int cell, Object data) {
-    throw new UnsupportedOperationException(READ_ONLY_ERROR);
+    ReadOnlyTableModel.throwReadOnlyException();
   }
 
   /**
@@ -212,4 +181,5 @@ public abstract class ClientTableModel extends TableModel {
     RowIterator rowIter = new RowIterator(request);
     callback.onRowsReady(request, new ClientResponse(rowIter));
   }
+
 }

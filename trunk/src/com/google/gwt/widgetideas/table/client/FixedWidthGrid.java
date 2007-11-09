@@ -19,6 +19,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 import com.google.gwt.widgetideas.table.client.overrides.OverrideDOM;
 
 import java.util.HashMap;
@@ -185,8 +186,7 @@ public class FixedWidthGrid extends SelectionGrid implements
   /**
    * The implementation class.
    */
-  private static FixedWidthGridImpl impl =
-      (FixedWidthGridImpl) GWT.create(FixedWidthGridImpl.class);
+  private static FixedWidthGridImpl impl = (FixedWidthGridImpl) GWT.create(FixedWidthGridImpl.class);
 
   /**
    * A mapping of column indexes to their widths in pixels.
@@ -264,10 +264,9 @@ public class FixedWidthGrid extends SelectionGrid implements
       }
 
       // Calculate hidden area for this cell
-      widthOffset =
-          Math.max(widthOffset, DOM.getElementPropertyInt(getCellContainer(td),
-              "offsetWidth")
-              - contentVisibleWidth);
+      widthOffset = Math.max(widthOffset, DOM.getElementPropertyInt(
+          getCellContainer(td), "offsetWidth")
+          - contentVisibleWidth);
 
       // Scroll back if needed
       DOM.setElementPropertyInt(DOM.getFirstChild(td), "scrollLeft", 0);
@@ -404,7 +403,23 @@ public class FixedWidthGrid extends SelectionGrid implements
   }
 
   /**
+<<<<<<< .mine
+   * Gets the new ghost element directly from the table
+   * 
+   * @param table the table
+   * @return the new ghost row
+   */
+  protected native Element getDOMGhostRow(HTMLTable table) /*-{
+    return table.@com.google.gwt.widgetideas.table.client.overrides.HTMLTable::getBodyElement()(table).rows[0];
+  }-*/;
+
+  /**
+   * Directly ask the underlying DOM what the row count is.
+   * 
+   * @return Returns the number of rows in the table
+=======
    * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
+>>>>>>> .r216
    */
   protected int getDOMRowCount() {
     return super.getDOMRowCount() - 1;
