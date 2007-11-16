@@ -1,0 +1,55 @@
+<project name="gwt-incubator" default="build">
+
+  
+  <target name="init" unless="gwt.location">
+    <!-- if gwt.location isn't set, check if it's on the classpath anyway -->
+    <available classname="com.google.gwt.core.client.EntryPoint"
+        property="gwt.location" value="" />
+  </target>
+
+  <target name="findgwt" depends="init">
+    <!-- if gwt.location isn't set after init, fail -->
+    <fail message="can't find gwt, please set gwt.location property"
+          unless="gwt.location" />
+  </target>
+
+  <target name="build" depends="findgwt">
+    <mkdir dir="build/out"/>
+    <javac compiler="javac1.4" listfiles="true" destdir="build/out">
+       <src path="src"/>
+       <classpath location="${gwt.location}/gwt-user.jar"/>
+       <classpath location="${gwt.location}/gwt-dev-linux.jar"/>
+    </javac>
+    <copy todir="build/out">
+       <fileset dir="src">
+          <include name="**/public/**"/>
+          <exclude name="**/.svn/**"/>
+       </fileset>
+    </copy>
+  </target>
+
+  <target name="dist" depends="build">
+    <mkdir dir="build/out/doc"/>
+    <copy todir="build/out/doc">
+       <fileset dir="doc">
+          <exclude name="**/.svn/**"/>
+       </fileset>
+    </copy>
+    <mkdir dir="build/out/demo"/>
+    <copy todir="build/out/demo">
+       <fileset dir="demo">
+          <exclude name="**/.svn/**"/>
+       </fileset>
+    </copy>
+    <mkdir dir="build/dist"/>
+    <jar basedir="build/out" destfile="build/dist/gwt-incubator.jar"/>
+  </target>
+
+  <target name="test" depends="build">
+  </target>
+
+  <target name="clean">
+     <delete dir="build"/>
+  </target>
+
+</project>
