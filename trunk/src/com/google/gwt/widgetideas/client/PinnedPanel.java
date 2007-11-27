@@ -382,16 +382,10 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
   protected void onLoad() {
     refreshWidth();
     // Adjust mover height to include borders.
-    int height = master.getOffsetHeight();
-    master.setHeight(height + "px");
-    int moverHeight = mover.getOffsetHeight();
-    mover.setHeight(height - (moverHeight - height) + "px");
-  }
-
-  private void refreshWidth() {
-    // Now include borders into master..
-    width = mover.getOffsetWidth();
-    master.setWidth(width + "px");
+   // int height = master.getOffsetHeight();
+   // master.setHeight(height + "px");
+   // int moverHeight = mover.getOffsetHeight();
+   // mover.setHeight(height - (moverHeight - height) + "px");
   }
 
   protected void show() {
@@ -400,6 +394,12 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
     hidingTimer.cancel();
     overlayTimer.interval = maxOffshift / NUMBER_OF_INTERVALS;
     overlayTimer.run();
+  }
+
+  private void refreshWidth() {
+    // Now include borders into master..
+    width = mover.getOffsetWidth();
+    master.setWidth(width + "px");
   }
 
   private void setPinned(boolean pinned) {
