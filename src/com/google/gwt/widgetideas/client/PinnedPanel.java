@@ -45,7 +45,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class PinnedPanel extends Composite implements SourcesChangeEvents {
   /**
-   * Hides the {@link PinnedPanel}
+   * Hides the {@link PinnedPanel}.
    */
   class HidingTimer extends SlidingTimer {
     protected void finish() {
@@ -61,7 +61,7 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
   }
 
   /**
-   * Shows the hovering {@link PinnedPanel}
+   * Shows the hovering {@link PinnedPanel}.
    */
   class ShowingTimer extends SlidingTimer {
     protected void finish() {
@@ -129,28 +129,37 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
       mover = pinnedPanel.mover.getElement();
     }
 
+    /**
+     * Go into overlay mode.
+     */
     protected void becomeOverlay() {
       int hoverBarWidth = pin.hoverContainer.getOffsetWidth();
       int aboutHalf = (hoverBarWidth / 2) + 1;
-      int offset = pin.width - aboutHalf - pin.getRightMargin();
       int newWidth = pin.width + aboutHalf;
       pin.maxOffshift = newWidth;
       pin.currentOffshift = pin.width;
-      // Notice that the actual width does not change.
-      pin.setWidth(newWidth + "px");
-      DOM.setStyleAttribute(e, "marginRight", -offset + "px");
+
+      // Width is now hoverBarWidth.
+      pin.setWidth(hoverBarWidth + "px");
+
+      // Looks better to immediately hide (Says the programmer).
+      setPanelPos(0);
+      pin.currentOffshift = 0;
+
+      // clean up state.
       pin.hide();
     }
 
+    /**
+     * Go into pinned in place model
+     */
     protected void becomePinned() {
-      DOM.setStyleAttribute(e, "marginRight", pin.getRightMargin() + "px");
-      DOM.setStyleAttribute(mover, "left", "0px");
-      pin.state.currentState = State.PINNED;
-
       // The master width needs to be readjusted back to it's original size.
       if (pin.isAttached()) {
         pin.refreshWidth();
       }
+      DOM.setStyleAttribute(mover, "left", "0px");
+      pin.state.currentState = State.PINNED;
     }
 
     protected void setPanelPos(int pos) {
@@ -159,7 +168,8 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
   }
 
   /**
-   * Current {@link PinnedPanel} state.
+   * Current {@link PinnedPanel} state. TODO(ECC) change to enumeration once 1.5
+   * is released.
    */
   private static class State {
     static int MUST_HIDE = 0;
@@ -184,7 +194,8 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
   /**
    * Pause between each interval.
    */
-  private static int OVERLAY_SPEED = 1;
+  private static int OVERLAY_SPEED = 2;
+
   /**
    * Number of intervals used to display panel.
    */
@@ -199,15 +210,10 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
    * Default style name.
    */
   private static final String DEFAULT_STYLENAME = "gwt-PinnedPanel";
-
-  ShowingTimer overlayTimer = new ShowingTimer();
-
-  HidingTimer hidingTimer = new HidingTimer();
-
+  private ShowingTimer overlayTimer = new ShowingTimer();
+  private HidingTimer hidingTimer = new HidingTimer();
   private DelayShow delayedShow = new DelayShow();
-
   private State state = new State();
-
   private int userDefinedRightMargin = 0;
   private PinnedPanelImpl impl = new PinnedPanelImpl();
   private int width;
@@ -217,7 +223,8 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
   private SimplePanel hoverContainer;
   private ToggleButton pinnedToggle;
   private AbsolutePanel master;
-  private ChangeListenerCollection changeListeners = new ChangeListenerCollection();
+  private ChangeListenerCollection changeListeners =
+      new ChangeListenerCollection();
 
   /**
    * Constructor.
@@ -230,6 +237,8 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
     this(width, pinnedToggle, contents, new HTML());
   }
 
+
+
   /**
    * Constructor.
    * 
@@ -240,7 +249,6 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
    */
   public PinnedPanel(int width, final ToggleButton pinnedToggle,
       Widget contents, Widget hoverBar) {
-    this.width = width;
 
     // Create the composite widget.
     master = new AbsolutePanel() {
@@ -260,6 +268,11 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
                   delayedShow.cancel();
                   break;
                 }
+                // TODO(ECC): Only old mozilla doesn't always respect
+                // eventGetToElement. Should be fixed in DOM.eventGetToElement
+                if (to == null) {
+                  to = DOM.eventGetTarget(event);
+                }
                 if (to == null || (!DOM.isOrHasChild(this.getElement(), to))) {
                   hide();
                   break;
@@ -270,7 +283,8 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
         super.onBrowserEvent(event);
       }
     };
-    DOM.setStyleAttribute(master.getElement(), "overflow", "hidden");
+
+    DOM.setStyleAttribute(master.getElement(), "overflow", "visible");
     initWidget(master);
     setStyleName(DEFAULT_STYLENAME);
     master.setWidth(width + "px");
@@ -316,7 +330,6 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
     // Process the toggle.
     this.pinnedToggle = pinnedToggle;
     pinnedToggle.addStyleName("toggle");
-
     pinnedToggle.setDown(true);
     pinnedToggle.addClickListener(new ClickListener() {
 
@@ -381,11 +394,6 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
    */
   protected void onLoad() {
     refreshWidth();
-    // Adjust mover height to include borders.
-   // int height = master.getOffsetHeight();
-   // master.setHeight(height + "px");
-   // int moverHeight = mover.getOffsetHeight();
-   // mover.setHeight(height - (moverHeight - height) + "px");
   }
 
   protected void show() {
@@ -396,12 +404,13 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
     overlayTimer.run();
   }
 
+ 
   private void refreshWidth() {
-    // Now include borders into master..
+    // Now include borders into master.
     width = mover.getOffsetWidth();
     master.setWidth(width + "px");
   }
-
+ 
   private void setPinned(boolean pinned) {
     if (isPinned() == pinned) {
       return;
@@ -409,10 +418,9 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
     pinnedToggle.setDown(pinned);
     if (pinned) {
       impl.becomePinned();
-      changeListeners.fireChange(this);
     } else {
-      overlayTimer.fireChangeListeners = true;
       impl.becomeOverlay();
     }
+    changeListeners.fireChange(this);
   }
 }
