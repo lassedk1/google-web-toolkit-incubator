@@ -14,87 +14,154 @@ Example:
 
 = Setup Instructions =
 
-The ScrollTable Widget requires some setup to handle changes in the existing GWT API.  The following changes will override the existing GWT classes.
-
-These changes apply to eclipse:
-  # Right click on the Incubator project and select Properties
-  # In the Java Build Path, click on the "Link Source" button
-  # Enter the location "<path to project>/trunk/src/com/google/gwt/widgetideas/jlabanca"
-  # Enter the folder name "jlabanca" and click Finish
-  # Back in the Java Build Path, click on the src folder and select the Edit option
-  # Add the exclusion pattern "com/google/gwt/widgetideas/jlabanca"
-
 Add these line to your module.gwt.xml file:
 {{{
   <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
   <inherits name='com.google.gwt.widgetideas.ScrollTable'/>
 }}}
 
-The above lines will tell the GWT compiler how to map the super-source files described above.
-
-Sorry about the long setup, but the Incubator doesn't provide an easy method to modify existing classes.
 
 
 = CSS =
 
 Here is an example CSS style for the Scrolltable Widget:
 {{{
+/**
+ * ScrollTable
+ */
 .gwt-ScrollTable {
-  border: 5px solid #C3D9FF;
-  border-right: 5px solid #7AA5D6;
-  border-bottom: 5px solid #7AA5D6;
+  border-color: #aaa;
+  border-style: solid;
+  border-width: 1px 0px 3px 1px;
 }
-.gwt-ScrollTable .gwt-ScrollTable-data tr {
-  background: #EAEAEA;
+
+.gwt-ScrollTable .gwt-ScrollTable-header-wrapper {
+  background: #8bd url(images/bg_header_gradient.gif) repeat-x bottom left;
 }
-.gwt-ScrollTable .gwt-ScrollTable-data tr.gwt-ScrollTable-hover {
-  background: #C3D9FF;
+
+.gwt-ScrollTable .gwt-ScrollTable-footer-wrapper {
+	border-top: 1px solid #aaa;
+  background: #8bd url(images/bg_header_gradient.gif) repeat-x bottom left;
 }
-.gwt-ScrollTable .gwt-ScrollTable-data tr.gwt-ScrollTable-selected {
+
+.gwt-ScrollTable .gwt-ScrollTable-data td,
+.gwt-ScrollTable .gwt-ScrollTable-header td,
+.gwt-ScrollTable .gwt-ScrollTable-footer td {
+  border-color: #aaa;
+  border-style: solid;
+  border-width: 0px 1px 1px 0px;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 3px;
+}
+
+.gwt-ScrollTable .gwt-ScrollTable-header td,
+.gwt-ScrollTable .gwt-ScrollTable-footer td {
+  color: #fff;
+}
+	
+.gwt-ScrollTable .gwt-ScrollTable-data tr.selected {
   background: #7AA5D6;
 }
-.gwt-ScrollTable .gwt-ScrollTable-data tr td {
-  border: 2px solid white;
-  border-bottom: 2px solid #666666;
-  border-right: 2px solid #888888;
-  white-space: nowrap;
-  margin: 0px;
-  overflow: hidden;
+
+.gwt-ScrollTable .gwt-ScrollTable-data tr.hovering {
+  background: #C3D9FF;
 }
-.gwt-ScrollTable .gwt-ScrollTable-header-wrapper {
-  background: #E8EEF7;
-  border-bottom: 1px solid #C3D9FF;
-}
-.gwt-ScrollTable .gwt-ScrollTable-header tr {
-  background: #E8EEF7;
-}
-.gwt-ScrollTable .gwt-ScrollTable-header tr td {
-  border: 2px solid transparent;
-  border-right: 2px solid #7AA5D6;
-  border-bottom: 2px solid #7AA5D6;
-  white-space: nowrap;
-  margin: 0px;
-  overflow: hidden;
+
+.gwt-ScrollTable .gwt-ScrollTable-data td.hovering {
+  border: 1px solid blue;
+  cursor: hand;
+  cursor: pointer;
 }
 }}}
 
 
 = Sample Code =
+See the demo code for a complete sample.
 
 {{{
-    ScrollTable myTable = new ScrollTable();
+  /**
+   * Add a row of data cells each consisting of a string that describes the
+   * row:column coordinates of the new cell. The number of columns in the new
+   * row will match the number of columns in the grid.
+   * 
+   * @param beforeRow the index to add the new row into
+   */
+  public static void insertDataRow(int beforeRow) {
+    // Insert the new row
+    beforeRow = dataTable.insertRow(beforeRow);
 
-    // Setup the formatting
-    myTable.setCellPadding(3);
-    myTable.setCellSpacing(1);
-    myTable.setSize("95%", "40%");
+    // Set the data in the new row
+    int numColumns = dataTable.getColumnCount();
+    for (int column = 0; column < numColumns; column++) {
+      String label = beforeRow + ":" + column;
+      if (column == 0) {
+        dataTable.setWidget(beforeRow, column, new CheckBox(label));
+      } else if (column == 2) {
+        int rand = (int) (Math.random() * 100000);
+        dataTable.setHTML(beforeRow, column, rand + "");
+      } else {
+        dataTable.setHTML(beforeRow, column, label);
+      }
+    }
+  }
+
+  /**
+   * This is the entry point method.
+   */
+  public void onModuleLoad() {
+    // Create the inner tables
+    getHeaderTable();
+    getFooterTable();
+    getDataTable();
     
+    // Add the scroll table to the page
+    headerTable = new FixedWidthFlexTable();;
+    dataTable = new SortableFixedWidthGrid();
+    dataTable.setHoveringPolicy(SelectionGrid.HOVERING_POLICY_ROW);
+    footerTable = new FixedWidthGrid();
+    scrollTable = new ScrollTable(dataTable, headerTable);
+    scrollTable.setFooterTable(footerTable);
+
+    // Setup the header
+    setupScrollTable();
+    
+    // Add some data the data table
+    dataTable.resize(0, 13);
+    for (int i = 0; i < 15; i++) {
+      insertDataRow(i);
+    }
+    
+    // Add some data to the footer table
+    footerTable.resize(1, 13);
+    for (int i = 0; i < 13; i++) {
+      footerTable.setText(0, i, "Col " + i);
+    }
+
+    // Redraw the scroll table
+    scrollTable.redraw();
+    
+    // Add the components to the page
+    RootPanel.get().add(scrollTable);
+    RootPanel.get().add(new HTML("<BR>"));
+    RootPanel.get().add(createTabPanel());
+  }
+
+  /**
+   * Setup the scroll table.
+   */
+  private void setupScrollTable() {
+    // Setup the formatting
+    scrollTable.setSize("95%", "50%");
+    scrollTable.setCellPadding(3);
+    scrollTable.setCellSpacing(1);
+    scrollTable.setResizePolicy(ScrollTable.RESIZE_POLICY_FILL_WIDTH);
+
     // Level 1 headers
-    FlexTable headerTable = myTable.getHeaderTable();
     FlexCellFormatter headerFormatter = headerTable.getFlexCellFormatter();
     headerTable.setHTML(0, 0, "Info Table");
     headerFormatter.setColSpan(0, 0, 13);
-  
+
     // Level 2 headers
     headerTable.setHTML(1, 0, "Group Header 0<BR>Multiline");
     headerFormatter.setColSpan(1, 0, 2);
@@ -111,20 +178,12 @@ Here is an example CSS style for the Scrolltable Widget:
     headerFormatter.setColSpan(1, 4, 3);
     headerTable.setHTML(1, 5, "Group Header 5");
     headerFormatter.setColSpan(1, 5, 3);
-  
-    // Level 3 headers 
+
+    // Level 3 headers
     for (int cell = 0; cell < 9; cell++) {
       headerTable.setHTML(2, cell, "Header " + cell);
     }
-  
-    // Add some default data
-    Grid dataTable = myTable.getDataTable();
-    dataTable.resize(20, 13);
-    for (int row = 0; row < 20; row++) {
-      for (int cell = 0; cell < 13; cell++) {
-        dataTable.setHTML(row, cell, row + ":" + cell);
-      }
-    }
+  }
 }}}
  
  
