@@ -1,4 +1,5 @@
 #summary Date picker
+#labels Type-Widget
 
 = Introduction =
 DatePicker dialogbox widget that displays a small Gregorian calendar dates to select a date by the user.
