@@ -1,5 +1,4 @@
 #summary Date picker
-#labels Type-Widget
 
 = Introduction =
 DatePicker dialogbox widget that displays a small Gregorian calendar dates to select a date by the user.
@@ -165,6 +164,46 @@ It is fully internationalized by the default locale. It has options to display o
       datePicker.setSpecialDate(date, "special"); //use 'special' style
 
 }}}
+= Proposed updated design =
  
+The overall design of the DatePicker will follow the design principals of the SuggestBox. There will be the main DatePicker Widget, which will be responsible for rendering dates as supplied by the DateCellOracle. The DateCellOracle is responsible for supplying dates, month / year names, and week day names properly internationalized. Final date selection will be reported via a DateChangeEvent handled through a ChangeHandler<DateChangeEvent>. The currently selected date will also be available via the getSelectedDate() method of DatePicker.
+
+This design allows for simple default functionality, while still leaving the widget open to implementation of advanced functionality.
+
+
+
+The api would look something like this:
+  * class DatePicker
+    * getSelectedDate() : Date
+  * abstract class DateCellOracle
+    * interface Callback
+      * `onDatesReady(Request, Response) : void`
+    * class Request
+      * `getMonth : int`
+      * `getYear : int`
+      * `setMonth : int`
+      * `setYear : int`
+    * class Response
+      * `getDateCells() : Collection<DateCell>` 
+      * `getWeekDayNames() : Collection<String>`
+      * `setDateCells(Collection<DateCell>) : void`
+      * `setWeekdayNames(Collection<String>) : void`
+  * interface DateCell
+    * `getElement() : Element`
+    * `isEnabled() : boolean`
+    * `getDate() : Date`
+    * `requestDates(Request, Callback) : void`
+  * interface FiresChangeEvents<T>
+    * `addChangeHandler(ChangeHandler<T>) : void`
+    * `removeChangeHandler(ChangeHandler<T>) : void`
+  * class ChangeHandler <T> extends EventListener
+    * `onChange(T event) : void`
+  * class DateChangeEvent<T> extends EventObject<T>
+    * `getWidget() : T`
+    * (Maybe a method to indicate previously picked date?)
+    * (Maybe convenience methods to get new DateCell and Date?)
+  * class DatePicker (all of current methods +) 
+    * `getSelectedDateCell() : DateCell`
+    * `getDateCell(Date d) : DateCell` 
  
  
