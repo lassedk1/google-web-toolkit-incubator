@@ -189,10 +189,10 @@ The api would look something like this:
       * `getWeekDayNames() : Collection<String>`
       * `setDateCells(Collection<DateCell>) : void`
       * `setWeekdayNames(Collection<String>) : void`
-  * interface DateCell
-    * `getElement() : Element`
-    * `isEnabled() : boolean`
-    * `getDate() : Date`
+    * interface DateCell
+      * `getElement() : Element`
+      * `isEnabled() : boolean`
+      * `getDate() : Date`
     * `requestDates(Request, Callback) : void`
   * interface FiresChangeEvents<T>
     * `addChangeHandler(ChangeHandler<T>) : void`
