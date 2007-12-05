@@ -167,33 +167,79 @@ It is fully internationalized by the default locale. It has options to display o
 }}}
 = Proposed updated design =
  
-The overall design of the DatePicker will follow the design principals of the SuggestBox. There will be the main DatePicker Widget, which will be responsible for rendering dates as supplied by the DateCellOracle. The DateCellOracle is responsible for supplying dates, month / year names, and week day names properly internationalized. Final date selection will be reported via a DateChangeEvent handled through a ChangeHandler<DateChangeEvent>. The currently selected date will also be available via the getSelectedDate() method of DatePicker.
+== Supported use cases ==
+=== Subset of Simple Use Cases ===
+*Developer wants a date box*
+{{{
+   DateBox box = new DateBox();
+   box.setSelectedDate(new Date());
+   ....
+}}}
 
-This design allows for simple default functionality, while still leaving the widget open to implementation of advanced functionality.
+*Developer wants a DatePicker for a simple to-from widget*
+ 
+{{{
+  DatePicker from = new DatePicker();
+  DatePicker to = new DatePicker();
+  from.addChangeHandler(new ChangeHandler<DateChangeEvent>()){
+    public void onChange(DateChangeEvent change) {
+      // All dates before and after this date range will not be selectable.
+      from.setDateRange(to.getSelectedDate(), null);
+      from.setSelectedDate(to.getSelectedDate());
+    }
+  }
+
+}}}
 
 
+== Advanced Use Cases ===
+*User wants to disable all weekends and federal holidays*
+{{{
+  class WorkdayOnlyDateCellOracle extends ClientDateCellOracle{
+    public DateCell createDateCell(Date date){
+      DateCell cell = super.createDateCell(date);
+      if (isWeekendOrHoliday(date){
+        cell.setEnabled(false);
+      } 
+      return cell;
+      }
+    }
+  }
 
-The api would look something like this:
-  * class DatePicker
-    * getSelectedDate() : Date
+  DatePicker picker = new DatePicker(new WorkdayOnlyDateCellOracle());
+}}}
+
+
+== Extension cases ==
+User wants to create a DatePicker that shows three months at a time
+User wants to add a custom widget as a cell in a date picker
+
+
+== Design ==
+
+The overall design of the DatePicker will follow the design principals of the SuggestBox. There will be the main DatePicker Widget, which will be responsible for rendering dates as supplied by the DateCellOracle. The DatePicker will separate its functionality into two inner classes, a DateSelectorBar and a DateGrid.  
+
+The DateCellOracle is responsible for supplying DateCells  to display dates.  Final date selection will be reported via a DateChangeEvent handled through a ChangeHandler<DateChangeEvent>. 
+ 
+As the user tabs through the calendar and mousses over dates, those dates become highlighted and a HighlightHandler can be used to listen to those events.
+
+
+This design allows for simple default functionality, while still leaving the widget open to implementation of advanced functionality.  
+
+The api would look something like this (note not all methods are listed):
   * abstract class DateCellOracle
+    * `requestDates(Request, Callback) : void`
     * interface Callback
       * `onDatesReady(Request, Response) : void`
     * class Request
-      * `getMonth : int`
-      * `getYear : int`
-      * `setMonth : int`
-      * `setYear : int`
+      * `(get/set)DateFrom(Date from)`
+      * `(get/set)DateTo(Date to)`
     * class Response
-      * `getDateCells() : Collection<DateCell>` 
-      * `getWeekDayNames() : Collection<String>`
-      * `setDateCells(Collection<DateCell>) : void`
-      * `setWeekdayNames(Collection<String>) : void`
+      * `(get/set)DateCells() : Collection<DateCell>` 
     * interface DateCell
       * `getElement() : Element`
       * `isEnabled() : boolean`
-      * `getDate() : Date`
-    * `requestDates(Request, Callback) : void`
+      * 'addStyleName(String) : void`
   * interface FiresChangeEvents<T>
     * `addChangeHandler(ChangeHandler<T>) : void`
     * `removeChangeHandler(ChangeHandler<T>) : void`
@@ -205,6 +251,10 @@ The api would look something like this:
     * (Maybe convenience methods to get new DateCell and Date?)
   * class DatePicker (all of current methods +) 
     * `getSelectedDateCell() : DateCell`
-    * `getDateCell(Date d) : DateCell` 
+    * `setDateRange(Date from, Date to) : void`
+    * `protected selectHighlightedDate() : void`
+    *  class DateSelectorBar : controls how dates are navigated through
+    *  class DateGrid : controls the actual date grid
+  * class DateBox : Create a TextBox with a DatePicker
  
  
