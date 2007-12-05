@@ -1,5 +1,5 @@
 #summary Date picker
-#labels Type-Widget
+#labels m
 
 = Introduction =
 DatePicker dialogbox widget that displays a small Gregorian calendar dates to select a date by the user.
@@ -192,13 +192,21 @@ It is fully internationalized by the default locale. It has options to display o
 
 
 == Advanced Use Cases ===
+* User wants to highlight federal holidays in 2008 *
+DatePicker<ClientDateCellOracle> picker = new DatePicker<ClientDateCellOracle>();
+for(Date holiday:holidays) {
+  picker.getDateCellOracle().setStyleName(holiday, "holiday");
+}
+
 *User wants to disable all weekends and federal holidays*
+Here, we want to suply a function so we don't have to list all weekends in n years
 {{{
   class WorkdayOnlyDateCellOracle extends ClientDateCellOracle{
     public DateCell createDateCell(Date date){
       DateCell cell = super.createDateCell(date);
       if (isWeekendOrHoliday(date){
         cell.setEnabled(false);
+        cell.setStyleName("non-workday");
       } 
       return cell;
       }
@@ -207,8 +215,8 @@ It is fully internationalized by the default locale. It has options to display o
 
   DatePicker picker = new DatePicker(new WorkdayOnlyDateCellOracle());
 }}}
-
-
+ 
+== 
 == Extension cases ==
 Support the user's ability to create a DatePicker that shows three months at a time
 User wants to add a custom widget as a cell in a date picker
@@ -238,7 +246,11 @@ The api would look something like this (note not all methods are listed):
     * interface DateCell
       * `getElement() : Element`
       * `isEnabled() : boolean`
-      * `addStyleName(String) : void`
+      * `setStyleName(String) : void`
+  * class ClientDateCellOracle
+    * `createDateCell(Date) : Date`
+    * `setEnabled(Date d) : void`
+    * `setStyleName(Date d, String name) : void`
   * interface FiresChangeEvents<T>
     * `addChangeHandler(ChangeHandler<T>) : void`
     * `removeChangeHandler(ChangeHandler<T>) : void`
@@ -254,6 +266,7 @@ The api would look something like this (note not all methods are listed):
     * `protected selectHighlightedDate() : void`
     *  class DateSelectorBar : controls how dates are navigated through
     *  class DateGrid : controls the actual date grid
+  
   * class DateBox : Create a TextBox with a DatePicker
  
  
