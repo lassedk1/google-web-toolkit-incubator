@@ -156,7 +156,6 @@ It is fully internationalized by the default locale. It has options to display o
       DatePicker datePicker = new DatePicker();
       Date date = datePicker.selectedDate();
 
-
       // features that could be enabled programmatically 
       datePicker.showAdjacentMonths(true);
       datePicker.showYearMonthListing(true);
@@ -211,15 +210,15 @@ It is fully internationalized by the default locale. It has options to display o
 
 
 == Extension cases ==
-User wants to create a DatePicker that shows three months at a time
+Support the user's ability to create a DatePicker that shows three months at a time
 User wants to add a custom widget as a cell in a date picker
 
 
 == Design ==
 
-The overall design of the DatePicker will follow the design principals of the SuggestBox. There will be the main DatePicker Widget, which will be responsible for rendering dates as supplied by the DateCellOracle. The DatePicker will separate its functionality into two inner classes, a DateSelectorBar and a DateGrid.  
+The overall design of the DatePicker will follow the design principals of the SuggestBox. There will be the main DatePicker Widget, which will be responsible for rendering dates as supplied by the DateCellOracle. The DatePicker will separate its functionality into two inner classes, a MonthSelectorBar and a DateCellsViewer.  
 
-The DateCellOracle is responsible for supplying DateCells  to display dates.  Final date selection will be reported via a DateChangeEvent handled through a ChangeHandler<DateChangeEvent>. 
+The DateCellOracle is responsible for supplying DateCells to the DatePicker.  Final date selection will be reported via a DateChangeEvent handled through a ChangeHandler<DateChangeEvent>. 
  
 As the user tabs through the calendar and mousses over dates, those dates become highlighted and a HighlightHandler can be used to listen to those events.
 
@@ -239,7 +238,7 @@ The api would look something like this (note not all methods are listed):
     * interface DateCell
       * `getElement() : Element`
       * `isEnabled() : boolean`
-      * 'addStyleName(String) : void`
+      * `addStyleName(String) : void`
   * interface FiresChangeEvents<T>
     * `addChangeHandler(ChangeHandler<T>) : void`
     * `removeChangeHandler(ChangeHandler<T>) : void`
@@ -247,8 +246,8 @@ The api would look something like this (note not all methods are listed):
     * `onChange(T event) : void`
   * class DateChangeEvent<T> extends EventObject<T>
     * `getWidget() : T`
-    * (Maybe a method to indicate previously picked date?)
-    * (Maybe convenience methods to get new DateCell and Date?)
+    * `getOldValue() : T`
+    * `getNewValue() : T`
   * class DatePicker (all of current methods +) 
     * `getSelectedDateCell() : DateCell`
     * `setDateRange(Date from, Date to) : void`
