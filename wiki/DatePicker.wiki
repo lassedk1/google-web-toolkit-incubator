@@ -183,6 +183,8 @@ The api would look something like this (note not all methods are listed):
 * Widget classes *
   * abstract class DateCellOracle
     * `requestDates(Request, Callback) : void`
+    * `setStyleName(Date, String) : void`
+    * `setEnabled(Date, boolean) : void`
     * interface Callback
       * `onDatesReady(Request, Response) : void`
     * class Request
@@ -196,17 +198,22 @@ The api would look something like this (note not all methods are listed):
       * `setStyleName(String) : void`
   * class ClientDateCellOracle extends DateCellOracle
     * `createDateCell(Date) : Date`
-    * `setEnabled(Date d) : void`
-    * `setStyleName(Date d, String name) : void`
   * abstract class CachingRPCDateCellOracle extends DateCellOracle
     * Allows users to cache Date/DateCell pairs.
-  * class DatePicker 
-    * remove the current "special date" related methods  
-    * `getSelectedDateCell() : DateCell`
+  * class DatePicker implements FiresChangeEvents, FiresHighlightChangeEvents 
+    * `getSelectedDate()`
+    * `setSelectedDate()`
+    * `getSelectedDateCell() : DateCell` 
     * `setDateRange(Date from, Date to) : void`
+    * `setStyleName(Date target, String name) : void`
+    * `setEnabled(Date target, boolean enabled) : void`
     * `protected selectHighlightedDate() : void`
     *  class DateSelectorBar : controls how dates are navigated through
     *  class DateGrid : controls the actual date grid 
+    * `getMonthSelectorBar() : MonthSelectorBar'
+    * class MonthSelectorBar
+        * show /AdjacentMonths/TodayButton/WeekOfYear/YearMonthListing`
+    
   * class DateBox : Create a TextBox with a DatePicker
  
 * Events * 
@@ -216,8 +223,8 @@ The api would look something like this (note not all methods are listed):
   * class ChangeHandler <T extends ChangeEvent> extends EventListener
     * `onChange(T event) : void`
   * class ChangeEvent <T>
-    * ` getOldValue : T`
-    * ` getNewValue : T`
+    * ` getOldValue() : T`
+    * ` getNewValue() : T`
   * class HighlightChangeHandler extends ChangeHandler
   * interface FireHighlightChangeEvents<T extends HighlightChangeHandler>
     * `addHighlightChangeHandler(T):void`
@@ -247,16 +254,19 @@ The api would look something like this (note not all methods are listed):
 
 }}}
 
-
-== Advanced Use Cases ===
 * User wants to highlight federal holidays in 2008 *
+
+Note, some custom oracles will probably not support setStyleName. However, the default ones provided by GWT will.
+
 {{{
-  DatePicker<ClientDateCellOracle> picker = new DatePicker<ClientDateCellOracle>();
+  DatePicker  picker = new DatePicker();
   for(Date holiday:holidays) {
-    picker.getDateCellOracle().setStyleName(holiday, "holiday");
+    picker.setStyleName(holiday, "holiday");
   }
   
 }}}
+== Advanced Use Cases ===
+
 
 *User wants to disable all weekends and federal holidays*
 
