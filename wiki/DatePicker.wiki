@@ -166,7 +166,64 @@ It is fully internationalized by the default locale. It has options to display o
 }}}
 = Proposed updated design =
  
-== Supported use cases ==
+
+== Design ==
+
+The overall design of the DatePicker will follow the design principals of the SuggestBox. There will be the main DatePicker Widget, which will be responsible for rendering dates as supplied by the DateCellOracle. The DatePicker will separate its functionality into two inner classes, a MonthSelectorBar and a DateCellsViewer.  
+
+The DateCellOracle is responsible for supplying DateCells to the DatePicker.  Final date selection will be reported via a DateChangeEvent handled through a ChangeHandler<DateChangeEvent>. 
+ 
+As the user tabs through the calendar and mousses over dates, those dates become highlighted and a HighlightHandler can be used to listen to those events.
+
+
+This design allows for simple default functionality, while still leaving the widget open to implementation of advanced functionality.  
+
+The api would look something like this (note not all methods are listed):
+
+* Widget classes *
+  * abstract class DateCellOracle
+    * `requestDates(Request, Callback) : void`
+    * interface Callback
+      * `onDatesReady(Request, Response) : void`
+    * class Request
+      * `(get/set)DateFrom(Date from)`
+      * `(get/set)DateTo(Date to)`
+    * class Response
+      * `(get/set)DateCells() : Collection<DateCell>` 
+    * interface DateCell
+      * `getElement() : Element`
+      * `isEnabled() : boolean`
+      * `setStyleName(String) : void`
+  * class ClientDateCellOracle extends DateCellOracle
+    * `createDateCell(Date) : Date`
+    * `setEnabled(Date d) : void`
+    * `setStyleName(Date d, String name) : void`
+  * abstract class CachingRPCDateCellOracle extends DateCellOracle
+    * Allows users to cache Date/DateCell pairs.
+  * class DatePicker 
+    * remove the current "special date" related methods  
+    * `getSelectedDateCell() : DateCell`
+    * `setDateRange(Date from, Date to) : void`
+    * `protected selectHighlightedDate() : void`
+    *  class DateSelectorBar : controls how dates are navigated through
+    *  class DateGrid : controls the actual date grid 
+  * class DateBox : Create a TextBox with a DatePicker
+ 
+* Events * 
+  * interface FiresChangeEvents<T extends ChangeHandler>
+    * `addChangeHandler(T) : void`
+    * `removeChangeHandler(T) : void`
+  * class ChangeHandler <T extends ChangeEvent> extends EventListener
+    * `onChange(T event) : void`
+  * class ChangeEvent <T>
+    * ` getOldValue : T`
+    * ` getNewValue : T`
+  * class HighlightChangeHandler extends ChangeHandler
+  * interface FireHighlightChangeEvents<T extends HighlightChangeHandler>
+    * `addHighlightChangeHandler(T):void`
+    * `removeHighlightChangeHandler(T):void` 
+
+== use cases ==
 === Subset of Simple Use Cases ===
 *Developer wants a date box*
 {{{
@@ -200,6 +257,7 @@ It is fully internationalized by the default locale. It has options to display o
   }
   
 }}}
+
 *User wants to disable all weekends and federal holidays*
 
 Here, we want to supply a function so we don't have to list all weekends in an arbitrary number of years.
@@ -218,64 +276,12 @@ Here, we want to supply a function so we don't have to list all weekends in an a
 
   DatePicker picker = new DatePicker(new WorkdayOnlyDateCellOracle());
 }}}
- 
+
+* User wants to customize the dates based on server information *
+  # DatePicker requests new DateCells
+  # Custom DateCellOracle sends a query to the server
+  # The server returns, the callback is activated and the DatePicker is populated.  
 
 == Extension cases ==
   * Support the ability to create a DatePicker subclass that shows three months at a time
   * Support the ability to create a DatePicker subclass that uses custom cell widgets. 
-
-
-== Design ==
-
-The overall design of the DatePicker will follow the design principals of the SuggestBox. There will be the main DatePicker Widget, which will be responsible for rendering dates as supplied by the DateCellOracle. The DatePicker will separate its functionality into two inner classes, a MonthSelectorBar and a DateCellsViewer.  
-
-The DateCellOracle is responsible for supplying DateCells to the DatePicker.  Final date selection will be reported via a DateChangeEvent handled through a ChangeHandler<DateChangeEvent>. 
- 
-As the user tabs through the calendar and mousses over dates, those dates become highlighted and a HighlightHandler can be used to listen to those events.
-
-
-This design allows for simple default functionality, while still leaving the widget open to implementation of advanced functionality.  
-
-The api would look something like this (note not all methods are listed):
-
-
-* Widget classes *
-  * abstract class DateCellOracle
-    * `requestDates(Request, Callback) : void`
-    * interface Callback
-      * `onDatesReady(Request, Response) : void`
-    * class Request
-      * `(get/set)DateFrom(Date from)`
-      * `(get/set)DateTo(Date to)`
-    * class Response
-      * `(get/set)DateCells() : Collection<DateCell>` 
-    * interface DateCell
-      * `getElement() : Element`
-      * `isEnabled() : boolean`
-      * `setStyleName(String) : void`
-  * class ClientDateCellOracle
-    * `createDateCell(Date) : Date`
-    * `setEnabled(Date d) : void`
-    * `setStyleName(Date d, String name) : void`
- 
-  * class DatePicker (all of current methods +) 
-    * `getSelectedDateCell() : DateCell`
-    * `setDateRange(Date from, Date to) : void`
-    * `protected selectHighlightedDate() : void`
-    *  class DateSelectorBar : controls how dates are navigated through
-    *  class DateGrid : controls the actual date grid 
-  * class DateBox : Create a TextBox with a DatePicker
- 
-* Events * 
-  * interface FiresChangeEvents<T extends ChangeHandler>
-    * `addChangeHandler(T) : void`
-    * `removeChangeHandler(T) : void`
-  * class ChangeHandler <T extends ChangeEvent> extends EventListener
-    * `onChange(T event) : void`
-  * class ChangeEvent <T>
-    * ` getOldValue : T`
-    * ` getNewValue : T`
-  * class HighlightChangeHandler extends ChangeHandler
-  * interface FireHighlightChangeEvents<T extends HighlightChangeHandler>
-    * `addHighlightChangeHandler(T):void`
-    * `removeHighlightChangeHandler(T):void` 
