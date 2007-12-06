@@ -211,7 +211,7 @@ The api would look something like this (note not all methods are listed):
     * `setStyleName(Date target, String name) : void`
     * `setEnabled(Date target, boolean enabled) : void`
     * `protected selectHighlightedDate() : void`
-    *  class DateGrid : controls the actual date grid 
+    *  class DateCellViewer : Displays the date cells (abstracted out to allow a multi-month DatePicker subclass) 
     * `getMonthSelectorBar() : MonthSelectorBar`
     * class MonthSelectorBar
         * `show /AdjacentMonths/TodayButton/WeekOfYear/YearMonthListing`
