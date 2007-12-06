@@ -202,17 +202,19 @@ The api would look something like this (note not all methods are listed):
     * Allows users to cache Date/DateCell pairs.
   * class DatePicker implements FiresChangeEvents, FiresHighlightChangeEvents 
     * `getSelectedDate()`
-    * `setSelectedDate()`
+    * `setSelectedDate(Date ):void`
+      * sets the currently visible month and shows the given month.
+    * `showMonth(Date d)`
+      * sets the currently visible month
     * `getSelectedDateCell() : DateCell` 
     * `setDateRange(Date from, Date to) : void`
     * `setStyleName(Date target, String name) : void`
     * `setEnabled(Date target, boolean enabled) : void`
     * `protected selectHighlightedDate() : void`
-    *  class DateSelectorBar : controls how dates are navigated through
     *  class DateGrid : controls the actual date grid 
-    * `getMonthSelectorBar() : MonthSelectorBar'
+    * `getMonthSelectorBar() : MonthSelectorBar`
     * class MonthSelectorBar
-        * show /AdjacentMonths/TodayButton/WeekOfYear/YearMonthListing`
+        * `show /AdjacentMonths/TodayButton/WeekOfYear/YearMonthListing`
     
   * class DateBox : Create a TextBox with a DatePicker
  
