@@ -211,7 +211,8 @@ The api would look something like this (note not all methods are listed):
     * `setStyleName(Date target, String name) : void`
     * `setEnabled(Date target, boolean enabled) : void`
     * `protected selectHighlightedDate() : void`
-    *  class DateCellViewer : Displays the date cells (abstracted out to allow a multi-month DatePicker subclass) 
+    *  abstract class DateCellViewer : Displays the date cells (abstracted out to allow a multi-month DatePicker subclass) 
+      * class SimpleDateCellViewer extends DateCellViewer : the simple one month view of date cells
     * `getMonthSelectorBar() : MonthSelectorBar`
     * class MonthSelectorBar
         * `show /AdjacentMonths/TodayButton/WeekOfYear/YearMonthListing`
