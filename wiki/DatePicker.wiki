@@ -225,14 +225,14 @@ The API would look something like this (note not all methods are listed):
   * interface FiresChangeEvents<HandlerType extends ChangeHandler>
     * `addChangeHandler(HandlerType handler) : void`
     * `removeChangeHandler(HandlerType handler) : void`
-  * class `ChangeHandler <Changed,SourceType> extends EventListener
-    * `onChange(ChangeEvent<Changed,SourceType> event) : void`
-    * class ChangeEvent <Changed, SourceType> extends FiresChangeEvents>
-      * ` getOldValue() : Changed`
-      * ` getNewValue() : Changed`
+  * class `ChangeHandler <ValueType,SourceType> extends EventListener`
+    * `onChange(ChangeEvent<ValueType,SourceType> event) : void`
+    * class `ChangeEvent <ValueType, SourceType> extends FiresChangeEvents>`
+      * ` getOldValue() : ValueType`
+      * ` getNewValue() : ValueType`
       * ` getSource() : SourceType`
-  * class HighlightChangeHandler extends ChangeHandler
-  * interface FireHighlightChangeEvents<T extends HighlightChangeHandler>
+  * class `HighlightChangeHandler extends ChangeHandler`
+  * interface `FireHighlightChangeEvents<T extends HighlightChangeHandler>`
     * `addHighlightChangeHandler(T):void`
     * `removeHighlightChangeHandler(T):void` 
 
