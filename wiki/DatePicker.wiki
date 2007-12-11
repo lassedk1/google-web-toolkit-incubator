@@ -169,65 +169,63 @@ It is fully internationalized by the default locale. It has options to display o
 
 == Design ==
 
-The overall design of the DatePicker will follow the design principals of the SuggestBox. There will be the main DatePicker Widget, which will be responsible for rendering dates as supplied by the DateCellOracle. The DatePicker will separate its functionality into two inner classes, a MonthSelectorBar and a DateCellsViewer.  
-
-The DateCellOracle is responsible for supplying DateCells to the DatePicker.  Final date selection will be reported via a DateChangeEvent handled through a ChangeHandler<DateChangeEvent>. 
+The overall design of the DatePicker uses composition heavily.  
+  *  The DatePicker will delegate to a CalendarView to actually render the grid of dates and MonthSelectorBar to render the month selection widget.
+  * The CalendarView will extend composite to allow advanced users to create their own custom views.     
+  * The user may supply a CalendarOracle to customize the styling and behavior of their dates.  Instead of generating a response, users will directly manipulate a CalendarView.
+  * The MonthSelectorBar is the widget used to navigate through the calendar view. 
+  * Final date selection will be reported via a ChangeEvent<Date> handled through a ChangeHandler<Date>. 
  
-As the user tabs through the calendar and mousses over dates, those dates become highlighted and a HighlightHandler can be used to listen to those events.
+As the user tabs through the DatePicker and mousses over dates, those dates become highlighted and a HighlightHandler can be used to listen to those events.
 
 
 This design allows for simple default functionality, while still leaving the widget open to implementation of advanced functionality.  
 
-The api would look something like this (note not all methods are listed):
+The API would look something like this (note not all methods are listed):
 
 * Widget classes *
-  * abstract class DateCellOracle
-    * `requestDates(Request, Callback) : void`
-    * `setStyleName(Date, String) : void`
-    * `setEnabled(Date, boolean) : void`
+  * abstract class CalenderOracle
+    * `requestStylingForDates(Request request, CalendarView view, Callback callback) : void`
     * interface Callback
-      * `onDatesReady(Request, Response) : void`
+      * `onDatesReady(Request request, CalendarView view) : void`
     * class Request
       * `(get/set)DateFrom(Date from)`
       * `(get/set)DateTo(Date to)`
-    * class Response
-      * `(get/set)DateCells() : Collection<DateCell>` 
-    * interface DateCell
-      * `getElement() : Element`
-      * `isEnabled() : boolean`
-      * `setStyleName(String) : void`
-  * class ClientDateCellOracle extends DateCellOracle
-    * `createDateCell(Date) : Date`
-  * abstract class CachingRPCDateCellOracle extends DateCellOracle
+   * class ClientCalenderOracle extends DateCellOracle.  This is a convenience class to allow users to more quickly create oracles. 
+    * `abstract styleDates(Date from, Date to, CalendarView view) : void`
+    * `styleDates(Iterator<Date> Date styleMe, CalendarView view) : void`
+  * abstract class CachingCalenderOracle extends DateCellOracle
     * Allows users to cache Date/DateCell pairs.
-  * class DatePicker implements FiresChangeEvents, FiresHighlightChangeEvents 
+  * class DatePicker implements FiresChangeEvents<ChangeHandler<Date>, FiresHighlightChangeEvents<HighlightChangeHandler<Date>>
     * `getSelectedDate()`
-    * `setSelectedDate(Date ):void`
+    * `setSelectedDate(Date selectedDate):void`
       * sets the currently visible month and shows the given month.
+    * `getHighlightedDate()`
+    * `setHighlightedDate(Date date)`
     * `showMonth(Date d)`
       * sets the currently visible month
-    * `getSelectedDateCell() : DateCell` 
     * `setDateRange(Date from, Date to) : void`
-    * `setStyleName(Date target, String name) : void`
-    * `setEnabled(Date target, boolean enabled) : void`
-    * `protected selectHighlightedDate() : void`
-    *  abstract class DateCellViewer : Displays the date cells (abstracted out to allow a multi-month DatePicker subclass) 
-      * class SimpleDateCellViewer extends DateCellViewer : the simple one month view of date cells
+    * `addChangeHandler(ChangeHandler<Date> handler)`
+    * `addHighlighChangeHandler(HighlightChangeHandler<Date> handler)`
+    *  abstract class CalendarView extends Composite: Displays the date grid. The CalendarView has no state, so only the visible dates can be styled or enabled.
+      * `addStyleName(Date target, String name) : void`
+      * `setEnabled(Date target, boolean enabled) : void`
+      * class SimpleCalendarView extends CalendarView : the simple one month view of date cells
     * `getMonthSelectorBar() : MonthSelectorBar`
     * class MonthSelectorBar
         * `show /AdjacentMonths/TodayButton/WeekOfYear/YearMonthListing`
-    
   * class DateBox : Create a TextBox with a DatePicker
  
 * Events * 
-  * interface FiresChangeEvents<T extends ChangeHandler>
-    * `addChangeHandler(T) : void`
-    * `removeChangeHandler(T) : void`
-  * class ChangeHandler <T extends ChangeEvent> extends EventListener
-    * `onChange(T event) : void`
-  * class ChangeEvent <T>
-    * ` getOldValue() : T`
-    * ` getNewValue() : T`
+  * interface FiresChangeEvents<HandlerType extends ChangeHandler>
+    * `addChangeHandler(HandlerType handler) : void`
+    * `removeChangeHandler(HandlerType handler) : void`
+  * class ChangeHandler <Changed> extends EventListener
+    * `onChange(ChangeEvent<Changed> event) : void`
+    * class ChangeEvent <Changed> <SourceType extends FiresChangeEvents>
+      * ` getOldValue() : Changed`
+      * ` getNewValue() : Changed`
+      * ` getSource() : SourceType`
   * class HighlightChangeHandler extends ChangeHandler
   * interface FireHighlightChangeEvents<T extends HighlightChangeHandler>
     * `addHighlightChangeHandler(T):void`
@@ -247,38 +245,24 @@ The api would look something like this (note not all methods are listed):
 {{{
   DatePicker from = new DatePicker();
   DatePicker to = new DatePicker();
-  from.addChangeHandler(new ChangeHandler<DateChangeEvent>()){
-    public void onChange(DateChangeEvent change) {
+  from.addChangeHandler(new ChangeHandler<Date>()){
+    public void onChange(ChangeEvent<Date> change) {
       // All dates before and after this date range will not be selectable.
       from.setDateRange(to.getSelectedDate(), null);
       from.setSelectedDate(to.getSelectedDate());
     }
   }
-
 }}}
 
-* User wants to highlight federal holidays in 2008 *
-
-Note, some custom oracles will probably not support setStyleName. However, the default ones provided by GWT will.
-
-{{{
-  DatePicker  picker = new DatePicker();
-  for(Date holiday:holidays) {
-    picker.setStyleName(holiday, "holiday");
-  }
-  
-}}}
 == Advanced Use Cases ===
-
 
 *User wants to disable all weekends and federal holidays*
 
 Here, we want to supply a function so we don't have to list all weekends in an arbitrary number of years.
 {{{
-  class WorkdayOnlyDateCellOracle extends ClientDateCellOracle {
-    public DateCell createDateCell(Date date){
-      DateCell cell = super.createDateCell(date);
-      if (isWeekendOrHoliday(date){
+  class WorkdayOnlyCalendarOracle extends ClientCalendarOracle {
+    public void styleDates(Request request, CalendarView view) {
+       if (isWeekendOrHoliday(date){
         cell.setEnabled(false);
         cell.setStyleName("non-workday");
       } 
