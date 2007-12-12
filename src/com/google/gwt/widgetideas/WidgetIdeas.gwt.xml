@@ -20,4 +20,5 @@
 <module>
  	<inherits name='com.google.gwt.widgetideas.BasicTable' />
 	<inherits name='com.google.gwt.widgetideas.ScrollTable' />
+  <inherits name='com.google.gwt.widgetideas.TitledPanel' />
  </module>
