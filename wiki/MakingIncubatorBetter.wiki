@@ -1,7 +1,9 @@
 #summary DRAFT developing with the incubator source
 #labels Type-Guide
 = Introduction =
-This page explains how to develop with the gwt-incubator source.
+This page explains how to develop with the gwt-incubator source.  
+
+One of the most important things to remember is that gwt-incubator should be compiled against the most current *released* version of GWT. So, right now that would be gwt 1.4.
  
 = Setting up the incubator project =
 == Setup for Eclipse ==
