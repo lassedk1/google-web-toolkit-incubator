@@ -23,5 +23,5 @@ package com.google.gwt.libideas.resources.client;
  * @gwt.resourceGenerator com.google.gwt.libideas.resources.rg.ExternalTextResourceGenerator
  */
 public interface ExternalTextResource extends ResourcePrototype {
-  public void getText(TextResourceCallback callback) throws ResourceException;
+  public void getText(ResourceCallback<? super TextResource> callback) throws ResourceException;
 }
