@@ -22,9 +22,9 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.libideas.resources.client.ExternalTextResource;
-import com.google.gwt.libideas.resources.client.ResourceCallback;
 import com.google.gwt.libideas.resources.client.ResourceException;
 import com.google.gwt.libideas.resources.client.TextResource;
+import com.google.gwt.libideas.resources.client.TextResourceCallback;
 
 /**
  * Implements external resource fetching of TextResources.
@@ -35,9 +35,9 @@ public class ExternalTextResourcePrototype implements ExternalTextResource {
    * Maps the HTTP callback onto the ResourceCallback.
    */
   private class ETRCallback implements RequestCallback {
-    final ResourceCallback<? super TextResource> callback;
+    final TextResourceCallback callback;
 
-    public ETRCallback(ResourceCallback<? super TextResource> callback) {
+    public ETRCallback(TextResourceCallback callback) {
       this.callback = callback;
     }
 
@@ -141,7 +141,7 @@ public class ExternalTextResourcePrototype implements ExternalTextResource {
   /**
    * Possibly fire off an HTTPRequest for the text resource.
    */
-  public void getText(ResourceCallback<? super TextResource> callback) throws ResourceException {
+  public void getText(TextResourceCallback callback) throws ResourceException {
 
     // If we've already parsed the JSON bundle, short-circuit.
     if (cache[index] != null) {

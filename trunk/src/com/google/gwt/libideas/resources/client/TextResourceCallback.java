@@ -17,11 +17,8 @@ package com.google.gwt.libideas.resources.client;
 
 /**
  * A callback used when loading external text resources.
- * @deprecated Use {@link ResourceCallback} instead.
  */
-@Deprecated
-public interface TextResourceCallback extends ResourceCallback<TextResource> {
-  // TODO Remove this class before including it in GWT proper
+public interface TextResourceCallback {
   public void onError(ResourceException e);
   public void onSuccess(TextResource resource);
 }
