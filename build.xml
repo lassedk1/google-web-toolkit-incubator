@@ -1,24 +1,73 @@
 <project name="gwt-incubator" default="build">
-
   
-  <target name="init" unless="gwt.location">
-    <!-- if gwt.location isn't set, check if it's on the classpath anyway -->
-    <available classname="com.google.gwt.core.client.EntryPoint"
-        property="gwt.location" value="" />
+  <property environment="env" />
+
+  <target name="inithome" unless="gwt.home">
+    <!-- if gwt.home isn't set, check if env $GWT_HOME is, or gwt.location,
+         or it's on the classpath anyway -->
+    <condition property="gwt.home" value="${env.GWT_HOME}" >
+       <isset property="env.GWT_HOME" />
+    </condition>
+    <condition property="gwt.home" value="${gwt.location}" >
+       <and>
+          <not> <isset property="gwt.home" /> </not>
+          <isset property="gwt.location" />
+       </and>
+    </condition>
+    <condition property="gwt.home" value="" >
+       <and>
+         <not> <isset property="gwt.home" /> </not>
+           <available classname="com.google.gwt.core.client.EntryPoint" />
+       </and>
+    </condition>
+    <fail message="can't find gwt, please set gwt.home property (ant -Dgwt.home=...)"
+          unless="gwt.home" />
   </target>
 
-  <target name="findgwt" depends="init">
-    <!-- if gwt.location isn't set after init, fail -->
-    <fail message="can't find gwt, please set gwt.location property"
-          unless="gwt.location" />
+  <target name="inittools" unless="gwt.tools">
+    <!-- if gwt.tools isn't set, check if env $GWT_TOOLS is -->
+    <condition property="gwt.tools" value="${env.GWT_TOOLS}" >
+       <isset property="env.GWT_TOOLS" />
+    </condition>
+    <fail message="can't find gwt tools, please set gwt.tools property (ant -Dgwt.tools=...)"
+          unless="gwt.tools" />
   </target>
 
-  <target name="build" depends="findgwt">
+  <target name="checksetup" depends="inithome,inittools">
+    <!-- what platform are we on? -->
+    <condition property="gwt.platform" value="windows" >
+       <and>
+          <os family="windows" />
+          <not> <isset property="gwt.platform" /> </not>
+       </and>
+    </condition>
+    <condition property="gwt.platform" value="mac" >
+       <and>
+          <os family="mac" />
+          <not> <isset property="gwt.platform" /> </not>
+       </and>
+    </condition>
+    <condition property="gwt.platform" value="linux" >
+       <and>
+          <os family="unix" />
+          <contains string="${os.name}" substring="linux" 
+              casesensitive="false" />
+          <not> <isset property="gwt.platform" /> </not>
+       </and>
+    </condition>
+    <fail message="unknown platform" unless="gwt.platform" />
+    <echo message="gwt.home = ${gwt.home}" />
+    <echo message="gwt.tools = ${gwt.tools}" />
+    <echo message="gwt.platform = ${gwt.platform}" />
+  </target>
+
+  <target name="build" depends="checksetup">
     <mkdir dir="build/out"/>
     <javac compiler="javac1.4" listfiles="true" destdir="build/out">
        <src path="src"/>
-       <classpath location="${gwt.location}/gwt-user.jar"/>
-       <classpath location="${gwt.location}/gwt-dev-linux.jar"/>
+       <classpath location="${gwt.home}/gwt-user.jar"/>
+       <classpath location="${gwt.home}/gwt-dev-${gwt.platform}.jar"/>
+       <classpath location="${gwt.tools}/lib/javaswf/javaswf-20050404.jar"/>
     </javac>
     <copy todir="build/out">
        <fileset dir="src">
@@ -42,7 +91,10 @@
        </fileset>
     </copy>
     <mkdir dir="build/dist"/>
-    <jar basedir="build/out" destfile="build/dist/gwt-incubator.jar"/>
+    <jar basedir="build/out" destfile="build/dist/gwt-incubator.jar" >
+       <zipfileset src="${gwt.tools}/lib/javaswf/javaswf-20050404.jar" />
+       <zipfileset dir="src" prefix="" defaultexcludes="yes" />
+    </jar>
   </target>
 
   <target name="test" depends="build">
