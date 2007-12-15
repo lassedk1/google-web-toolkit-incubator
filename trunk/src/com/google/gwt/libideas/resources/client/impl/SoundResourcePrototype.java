@@ -83,7 +83,7 @@ public class SoundResourcePrototype implements SoundResource {
   private static SoundPlugin plugin;
 
   public static Element attach(String url) {
-    SoundPlugin p = GWT.create(SoundPlugin.class);
+    SoundPlugin p = (SoundPlugin) GWT.create(SoundPlugin.class);
     return p.attach(url);
   }
 
@@ -102,7 +102,7 @@ public class SoundResourcePrototype implements SoundResource {
     this.duration = duration;
 
     if (plugin == null) {
-      plugin = GWT.create(SoundPlugin.class);
+      plugin = (SoundPlugin) GWT.create(SoundPlugin.class);
     }
   }
 
