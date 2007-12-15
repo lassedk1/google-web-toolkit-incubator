@@ -46,7 +46,7 @@ import com.google.gwt.widgetideas.client.impl.GlassPanelImpl;
  * 
  * <p>
  * <h3>Example</h3>
- * {@example com.google.gwt.demos.glasspanel.GlassPanelExample}
+ * {@example com.google.gwt.examples.GlassPanelExample}
  * </p>
  */
 public class GlassPanel extends FocusPanel implements EventPreview {
