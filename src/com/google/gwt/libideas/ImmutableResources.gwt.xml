@@ -61,4 +61,32 @@
       </any>
     </all>
   </generate-with>
+  
+  <!-- This can be used to disable sound resources -->
+  <define-property name="ResourceBundle.enableSound" values="true,false" />
+  <set-property name="ResourceBundle.enableSound" value="true" />
+
+  <!-- Default case uses an embed tag -->
+  <replace-with class="com.google.gwt.libideas.resources.client.impl.SoundPlugin.PluginEmbed">
+    <when-type-is class="com.google.gwt.libideas.resources.client.impl.SoundPlugin" />
+  </replace-with>
+  
+  <!-- IE uses the object tag -->
+  <replace-with class="com.google.gwt.libideas.resources.client.impl.SoundPlugin.PluginObject">
+    <all>
+      <when-type-is class="com.google.gwt.libideas.resources.client.impl.SoundPlugin" />
+      <any>
+        <when-property-is name="user.agent" value="ie6" />
+        <when-property-is name="user.agent" value="opera" />
+      </any>
+    </all>
+  </replace-with>
+  
+  <!-- Override to disable the use of sound -->
+  <replace-with class="com.google.gwt.libideas.resources.client.impl.SoundPlugin.PluginNull">
+    <all>
+      <when-type-is class="com.google.gwt.libideas.resources.client.impl.SoundPlugin" />
+      <when-property-is name="ResourceBundle.enableSound" value="false" />
+    </all>
+  </replace-with>
 </module>
