@@ -18,8 +18,9 @@ package com.google.gwt.libideas.resources.client;
 /**
  * A callback used when loading external text resources.
  */
-public interface TextResourceCallback {
+public interface SoundResourceCallback {
   // TODO Replace this with a generic ResourceCallback interface
   public void onError(ResourceException e);
-  public void onSuccess(TextResource resource);
+
+  public void onSuccess(SoundResource resource);
 }
