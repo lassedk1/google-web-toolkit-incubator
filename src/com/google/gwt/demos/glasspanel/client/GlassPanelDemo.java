@@ -21,14 +21,12 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.GlassPanel;
@@ -50,13 +48,12 @@ public class GlassPanelDemo implements EntryPoint {
     $doc.body.style.overflow = $doc.documentElement.style.overflow = enable ? '' : 'hidden';
   }-*/;
 
-  private AbsolutePanel absolutePanel1;
-
-  private AbsolutePanel absolutePanel2;
-  private GlassPanel glassPanel1;
-  private GlassPanel glassPanel2;
-
   private GlassPanel glassPanel3;
+  private AbsolutePanel greenAbsolutePanel;
+  private GlassPanel greenGlassPanel;
+  private AbsolutePanel redAbsolutePanel;
+
+  private GlassPanel redGlassPanel;
 
   public void onModuleLoad() {
     // Set the uncaught exception handler
@@ -98,14 +95,18 @@ public class GlassPanelDemo implements EntryPoint {
         new HTML("<code>$doc.compatMode = <b>" + getCompatMode()
             + "</b></code>"));
 
-    absolutePanel1 = new AbsolutePanel();
-    absolutePanel1.setPixelSize(100, 100);
-    RootPanel.get().add(absolutePanel1, 450, 150);
-    absolutePanel1.add(new Label("absolutePanel1"));
+    redAbsolutePanel = new AbsolutePanel();
+    redAbsolutePanel.setPixelSize(130, 130);
+    RootPanel.get().add(redAbsolutePanel, 500, 150);
+    redAbsolutePanel.add(new HTML("This red GlassPanel was created<br>"
+        + "with <code>autoHide</code> set to <code>false</code>."));
 
-    absolutePanel2 = RootPanel.get("cell2");
-    workaroundIssue1813(absolutePanel2.getElement());
-    absolutePanel2.add(new Label("absolutePanel2"));
+    greenAbsolutePanel = RootPanel.get("cell2");
+    workaroundIssue1813(greenAbsolutePanel.getElement());
+    greenAbsolutePanel.add(new HTML("Click or press <code>ESC</code> once<br>"
+        + "to remove the gray GlassPanel.<br><br>"
+        + "Click or press <code>ESC</code> a second<br>"
+        + "time to remove this green GlassPanel."));
 
     Button buttonBodyDefault = new Button("BODY setSize(\"\", \"\")");
     buttonBodyDefault.addClickListener(new ClickListener() {
@@ -181,11 +182,11 @@ public class GlassPanelDemo implements EntryPoint {
   }
 
   private void removeGlassPanel() {
-    if (glassPanel1 != null) {
-      glassPanel1.removeFromParent();
+    if (redGlassPanel != null) {
+      redGlassPanel.removeFromParent();
     }
-    if (glassPanel2 != null) {
-      glassPanel2.removeFromParent();
+    if (greenGlassPanel != null) {
+      greenGlassPanel.removeFromParent();
     }
     if (glassPanel3 != null) {
       glassPanel3.removeFromParent();
@@ -195,13 +196,13 @@ public class GlassPanelDemo implements EntryPoint {
   private void resetGlassPanels() {
     removeGlassPanel();
 
-    glassPanel1 = new GlassPanel(false);
-    glassPanel1.addStyleName("red");
-    absolutePanel1.add(glassPanel1, 0, 0);
+    redGlassPanel = new GlassPanel(false);
+    redGlassPanel.addStyleName("red");
+    redAbsolutePanel.add(redGlassPanel, 0, 0);
 
-    glassPanel2 = new GlassPanel(true);
-    glassPanel2.addStyleName("green");
-    absolutePanel2.add(glassPanel2, 0, 0);
+    greenGlassPanel = new GlassPanel(true);
+    greenGlassPanel.addStyleName("green");
+    greenAbsolutePanel.add(greenGlassPanel, 0, 0);
 
     glassPanel3 = new GlassPanel(true);
     RootPanel.get().add(glassPanel3, 0, 0);
@@ -213,5 +214,8 @@ public class GlassPanelDemo implements EntryPoint {
   private void workaroundIssue1813(Element element) {
     DOM.setStyleAttribute(element, "position", "relative");
     DOM.setStyleAttribute(element, "overflow", "hidden");
+
+    // Needed for TD element in non-IE browsers
+    DOM.setStyleAttribute(element, "display", "block");
   }
 }
