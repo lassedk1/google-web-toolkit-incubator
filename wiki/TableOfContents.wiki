@@ -8,7 +8,7 @@
     * [Widgets]
       * [Tables]
         * [ScrollTable]
-        * [BulkLoadingTable]
+        * [BulkTableRenderers]
       * Panels
         * [TitledPanel]
         * [PinnedPanel]
