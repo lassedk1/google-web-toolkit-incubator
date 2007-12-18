@@ -2,21 +2,21 @@
 #labels Type-Guide
   * Incubator Wiki
     * [Libraries]
-      * DeclarativeUi
-      * ImmutableResourceBundle
-        * StyleInjector
+      * [DeclarativeUi]
+      * [ImmutableResourceBundle]
+        * [StyleInjector]
     * [Widgets]
       * [Tables]
         * [ScrollTable]
-        * BulkLoadingTables
+        * ulkLoadingTable]
       * Panels
-        * TitledPanel
-        * PinnedPanel
-      * SliderBar
-      * ProgressBar
+        * [TitledPanel]
+        * [PinnedPanel]
+      * [SliderBar]
+      * [ProgressBar]
     * [FAQ]
       * [StubbingRPC]
-      * IntegratingWithSpring
+      * [IntegratingWithSpring]
       * [ServerPushFAQ]
       * [PathsHandlingFAQ]
       * [LoginSecurityFAQ]
