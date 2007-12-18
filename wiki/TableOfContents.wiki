@@ -7,7 +7,7 @@
         * StyleInjector
     * [Widgets]
       * [Tables]
-        * ScrollTable
+        * [ScrollTable]
         * BulkLoadingTables
       * Panels
         * TitledPanel
