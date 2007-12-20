@@ -5,8 +5,8 @@
 = Introduction =
 
 A number of use cases are supported by the glass panel widget:
-  * Darken/colorize any `AbsolutePanel`. This includes any subclasses such as `RootPanel`, which leads to additional use cases.
-  * Attach a glass panel to the document body (i.e. `RootPanel.get()`), which effectively shades or darkens the entire web page. Useful when showing modal dialog boxes where interaction with the rest of the page is not desirable.
+  * Darken/colorize any `AbsolutePanel`. This includes any subclasses such as `RootPanel`, which leads to additional use cases:
+  * Attach a glass panel to the document BODY (=`RootPanel.get()`), which effectively shades or darkens the entire web page. Useful when showing modal dialog boxes where interaction with the rest of the page is not desirable.
   * Darken/colorize any `id` based `RootPanel` (i.e. those obtained via `RootPanel.get(id)`) with a semi-transparent layer.
 
 
@@ -19,7 +19,7 @@ Here is a [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/Gla
 = The basics =
 
 
-== Override Default CSS ==
+== How to override the default CSS ==
 {{{
   .gwt-GlassPanel {
 
@@ -55,7 +55,7 @@ Here is a [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/Gla
   // Attach (display) the glass panel
   absolutePanel.add(glassPanel, 0, 0);
 
-  // Some time later remove the glass panel
+  // Some time later remove (hide) the glass panel
   glassPanel.removeFromParent();
 }}}
 
@@ -100,6 +100,7 @@ Here is a [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/Gla
 
 
 == Covering an `id` based `RootPanel` ==
+Start with this example snippet in your HTML page.
 {{{
   <table border="1">
     <tr>
@@ -110,14 +111,16 @@ Here is a [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/Gla
   </table>
 }}}
 
+Use the following code to cover the second cell with a glass panel.
 {{{
-  // Get the RootPanel reference, e.g. a `TD` element
+  // Get the RootPanel reference, e.g. the second `TD` element
   RootPanel rootPanel = RootPanel.get("cell2");
 
   // Add some content to our RootPanel to give it dimensions
   rootPanel.add(new Label("This is 'cell2'.");
 
   // Workaround GWT issue 1813
+  Element element = rootPanel.getElement();
   DOM.setStyleAttribute(element, "position", "relative");
   DOM.setStyleAttribute(element, "overflow", "hidden");
   DOM.setStyleAttribute(element, "display", "block");
