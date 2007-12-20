@@ -1,0 +1,8 @@
+#summary A semi-transparent panel that can be added to any `AbsolutePanel`.
+
+= Introduction =
+
+A number of use cases are supported by the glass panel widget:
+  * Darken/colorize any `AbsolutePanel`. This includes any subclasses such as `RootPanel`, which leads to additional use cases.
+  * Attach a glass panel to the document body (i.e. `RootPanel.get()`), which effectively shades or darkens the entire web page. Useful when showing modal dialog boxes where interaction with the rest of the page is not desirable.
+  * Darken/colorize any `id` based `RootPanel` (i.e. those obtained via `RootPanel.get(id)`) with a semi-transparent layer.
