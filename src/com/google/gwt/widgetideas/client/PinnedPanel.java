@@ -52,11 +52,12 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
       state.currentState = State.IS_HIDDEN;
     }
 
-    protected boolean processSizeChange() {
-      currentOffshift -= interval;
+    protected boolean processSizeChange(float shouldBe) {
+      currentOffshift = (int) (maxOffshift * (float) ((float) 1.0 - shouldBe))
+          - MIN_SLIDE_STEP;
       currentOffshift = Math.max(currentOffshift, 0);
       impl.setPanelPos(currentOffshift);
-      return currentOffshift >= 0;
+      return currentOffshift > 0;
     }
   }
 
@@ -68,8 +69,8 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
       state.currentState = State.IS_SHOWN;
     }
 
-    protected boolean processSizeChange() {
-      currentOffshift += interval;
+    protected boolean processSizeChange(float shouldBe) {
+      currentOffshift = (int) (maxOffshift * shouldBe) + MIN_SLIDE_STEP;
       currentOffshift = Math.min(currentOffshift, maxOffshift);
       impl.setPanelPos(currentOffshift);
       return currentOffshift < maxOffshift;
@@ -80,11 +81,16 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
    * Common code for {@link HidingTimer} and {@link ShowingTimer}.
    */
   abstract class SlidingTimer extends Timer {
-    int interval;
+
+    long started;
+
     boolean fireChangeListeners = false;
 
     public void run() {
-      if (processSizeChange()) {
+      float hasTaken = System.currentTimeMillis() - started;
+      float shouldBe = (float) hasTaken / (float) TIME_TO_SLIDE;
+
+      if (processSizeChange(shouldBe)) {
         this.schedule(OVERLAY_SPEED);
       } else {
         if (fireChangeListeners) {
@@ -97,7 +103,7 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
 
     protected abstract void finish();
 
-    protected abstract boolean processSizeChange();
+    protected abstract boolean processSizeChange(float shouldBe);
   }
 
   /**
@@ -106,6 +112,7 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
   private class DelayShow extends Timer {
 
     public void activate() {
+      state.currentState = State.WILL_SHOW;
       delayedShow.schedule(DELAY_MILLI);
     }
 
@@ -114,6 +121,20 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
     }
   }
 
+  /**
+   * Delays showing of the {@link PinnedPanel}.
+   */
+  private class DelayHide extends Timer {
+
+    public void activate() {
+      state.currentState = State.WILL_HIDE;
+      delayedHide.schedule(DELAY_MILLI);
+    }
+
+    public void run() {
+      hide();
+    }
+  }
   /**
    * Pinned panel implementation. Factored out of {@link PinnedPanel} to allow
    * eventual use of differed bindings.
@@ -172,7 +193,6 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
    * is released.
    */
   private static class State {
-    static int MUST_HIDE = 0;
     static int WILL_HIDE = 1;
     static int HIDING = 2;
     static int IS_HIDDEN = 3;
@@ -199,12 +219,17 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
   /**
    * Number of intervals used to display panel.
    */
-  private static int NUMBER_OF_INTERVALS = 10;
+  private static float TIME_TO_SLIDE = 400;
+
+  /**
+   * Minimum increment change per slide.
+   */
+  private static int MIN_SLIDE_STEP = 20;
 
   /**
    * How many milliseconds to delay a hover event before executing it.
    */
-  private static final int DELAY_MILLI = 200;
+  private static final int DELAY_MILLI = 100;
 
   /**
    * Default style name.
@@ -213,8 +238,8 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
   private ShowingTimer overlayTimer = new ShowingTimer();
   private HidingTimer hidingTimer = new HidingTimer();
   private DelayShow delayedShow = new DelayShow();
+  private DelayHide delayedHide = new DelayHide();
   private State state = new State();
-  private int userDefinedRightMargin = 0;
   private PinnedPanelImpl impl = new PinnedPanelImpl();
   private int width;
   private int maxOffshift;
@@ -223,8 +248,7 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
   private SimplePanel hoverContainer;
   private ToggleButton pinnedToggle;
   private AbsolutePanel master;
-  private ChangeListenerCollection changeListeners =
-      new ChangeListenerCollection();
+  private ChangeListenerCollection changeListeners = new ChangeListenerCollection();
 
   /**
    * Constructor.
@@ -236,8 +260,6 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
   public PinnedPanel(int width, final ToggleButton pinnedToggle, Widget contents) {
     this(width, pinnedToggle, contents, new HTML());
   }
-
-
 
   /**
    * Constructor.
@@ -253,33 +275,43 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
     // Create the composite widget.
     master = new AbsolutePanel() {
       {
-        sinkEvents(Event.ONMOUSEOUT);
+        sinkEvents(Event.ONMOUSEOUT | Event.ONMOUSEOVER);
       }
 
       public void onBrowserEvent(Event event) {
+        if (!PinnedPanel.this.pinnedToggle.isDown()) {
+          switch (DOM.eventGetType(event)) {
+            case Event.ONMOUSEOUT:
+              Element to = DOM.eventGetToElement(event);
+              if (state.currentState == State.WILL_SHOW) {
+                state.currentState = State.HIDING;
+                delayedShow.cancel();
+                break;
+              }
+              // TODO(ECC): Only old mozilla doesn't always respect
+              // eventGetToElement. Should be fixed in DOM.eventGetToElement
+              if (to == null) {
+                to = DOM.eventGetTarget(event);
+              }
+              if (to == null || (!DOM.isOrHasChild(this.getElement(), to))) {
+                delayedHide.activate();
+                break;
+              }
 
-        if (state.shouldHide()) {
-          if (!PinnedPanel.this.pinnedToggle.isDown()) {
-            switch (DOM.eventGetType(event)) {
-              case Event.ONMOUSEOUT:
-                Element to = DOM.eventGetToElement(event);
-                if (state.currentState == State.WILL_SHOW) {
-                  state.currentState = State.HIDING;
-                  delayedShow.cancel();
-                  break;
+            case Event.ONMOUSEOVER:
+              if ((state.shouldShow())) {
+                if (state.currentState == State.WILL_HIDE) {
+                  delayedHide.cancel();
+                  state.currentState = State.SHOWING;
+                } else {
+
+                  delayedShow.activate();
                 }
-                // TODO(ECC): Only old mozilla doesn't always respect
-                // eventGetToElement. Should be fixed in DOM.eventGetToElement
-                if (to == null) {
-                  to = DOM.eventGetTarget(event);
-                }
-                if (to == null || (!DOM.isOrHasChild(this.getElement(), to))) {
-                  hide();
-                  break;
-                }
-            }
+              }
+              break;
           }
         }
+
         super.onBrowserEvent(event);
       }
     };
@@ -290,30 +322,7 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
     master.setWidth(width + "px");
 
     // Create hovering container.
-    hoverContainer = new SimplePanel() {
-      {
-        sinkEvents(Event.ONMOUSEOVER);
-      }
-
-      public void onBrowserEvent(Event event) {
-        if (!PinnedPanel.this.pinnedToggle.isDown()) {
-          switch (DOM.eventGetType(event)) {
-            case Event.ONMOUSEOVER:
-              Element from = DOM.eventGetFromElement(event);
-              maybeShow(from);
-              break;
-          }
-        }
-        super.onBrowserEvent(event);
-      }
-
-      private void maybeShow(Element e) {
-        if ((state.shouldShow())) {
-          state.currentState = State.WILL_SHOW;
-          delayedShow.activate();
-        }
-      }
-    };
+    hoverContainer = new SimplePanel();
     hoverContainer.setWidget(hoverBar);
     hoverContainer.setStyleName("hover-bar");
     master.add(hoverContainer, 0, 0);
@@ -346,10 +355,6 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
     changeListeners.add(listener);
   }
 
-  public int getRightMargin() {
-    return userDefinedRightMargin;
-  }
-
   public ToggleButton getSwitchButton() {
     return pinnedToggle;
   }
@@ -365,26 +370,11 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
     changeListeners.remove(listener);
   }
 
-  /**
-   * As {@link PinnedPanel} needs to manipulate the right margin, the right
-   * margin must be controlled in code.
-   * 
-   * @param rightMargin in px
-   */
-  public void setRightMargin(int rightMargin) {
-    this.userDefinedRightMargin = rightMargin;
-    if (isPinned()) {
-      impl.becomePinned();
-    } else {
-      hide();
-    }
-  }
-
   protected void hide() {
     state.currentState = State.HIDING;
     overlayTimer.cancel();
     hidingTimer.cancel();
-    hidingTimer.interval = maxOffshift / NUMBER_OF_INTERVALS;
+    hidingTimer.started = System.currentTimeMillis();
     hidingTimer.run();
   }
 
@@ -400,17 +390,16 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
     state.currentState = State.SHOWING;
     overlayTimer.cancel();
     hidingTimer.cancel();
-    overlayTimer.interval = maxOffshift / NUMBER_OF_INTERVALS;
+    overlayTimer.started = System.currentTimeMillis();
     overlayTimer.run();
   }
 
- 
   private void refreshWidth() {
     // Now include borders into master.
     width = mover.getOffsetWidth();
     master.setWidth(width + "px");
   }
- 
+
   private void setPinned(boolean pinned) {
     if (isPinned() == pinned) {
       return;
