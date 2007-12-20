@@ -61,6 +61,7 @@ The glass panel widget should work (display) correctly under all combinations of
     padding: 5px 15px 25px 35px;
     margin: 10px 20px 30px 40px;
   }
+
   BODY {
     padding: 3px 13px 23px 33px;
     margin: 12px 22px 32px 42px;
