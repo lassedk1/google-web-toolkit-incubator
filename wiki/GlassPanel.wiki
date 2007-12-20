@@ -1,4 +1,5 @@
 #summary A semi-transparent panel that can be added to any `AbsolutePanel`.
+#labels Type-Widget
 
 
 
