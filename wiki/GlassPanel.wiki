@@ -16,6 +16,61 @@ A number of use cases are supported by the glass panel widget:
 Here is a [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/GlassPanel/GlassPanelDemo.html live demo] with accompanying [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/glasspanel/client/GlassPanelDemo.java demo source code].
 
 
+
+= Implementation goals =
+The glass panel widget should work (display) correctly under all combinations of the following conditions:
+  * On every GWT supported browser/platform
+  * In both Quirks (`BackCompat`) and Strict (`CSS1Compat`) modes
+  * With or without an explicitly sized document BODY
+{{{
+  RootPanel.get().setSize("1000px", "1000px");
+
+  // or
+
+  RootPanel.get().setSize("", "");
+}}}
+  * With or without an explicitly sized HTML element
+{{{
+  Element htmlElement = DOM.getParent(RootPanel.getBodyElement());
+  DOM.setStyleAttribute(htmlElement, "width", "2000px");
+  DOM.setStyleAttribute(htmlElement, "height", "2000px");
+
+  // or
+
+  Element htmlElement = DOM.getParent(RootPanel.getBodyElement());
+  DOM.setStyleAttribute(htmlElement, "width", "");
+  DOM.setStyleAttribute(htmlElement, "height", "");
+}}}
+  * When document scrolling is enabled or disabled
+{{{
+  Window.enableScrolling(true);
+
+  // or
+
+  Window.enableScrolling(false);
+}}}
+  * With margins and/or borders on either the HTML and BODY elements (although negative margins are not properly supported at this time)
+{{{
+  /* To fully test CSS math:
+   *  - Use a different value for each of the four edges
+   *  - Use different values for BODY and HTML elements
+   */
+
+  HTML {
+    padding: 5px 15px 25px 35px;
+    margin: 10px 20px 30px 40px;
+  }
+  BODY {
+    padding: 3px 13px 23px 33px;
+    margin: 12px 22px 32px 42px;
+  }
+}}}
+
+  * Attached to the document BODY (`RootPanel.get()`), various HTML elements (`RootPanel.get(id)`) or instances of `AbsolutePanel`
+  * When the browser window is sized either smaller or larger than the contents of the document body
+  * While the user is resizing the browser window
+
+
 = The basics =
 
 
