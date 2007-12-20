@@ -23,6 +23,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowResizeListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -95,19 +96,13 @@ public class PinnedPanelDemo implements EntryPoint {
     // The actual pinned panel.
     final PinnedPanel pinned = new PinnedPanel(200, toggler, contents);
 
-    // Right margin needs to be set programmatically as it is used to create the
-    // panel slide-out effect.
-    pinned.setRightMargin(10);
-
     RootPanel.get("pinned-panel").add(pinned);
 
     sizePinnedPanel(pinned, Window.getClientHeight());
     Window.addWindowResizeListener(new WindowResizeListener() {
       public void onWindowResized(int width, int height) {
-
         sizePinnedPanel(pinned, height);
       }
-
     });
   }
 
@@ -118,7 +113,11 @@ public class PinnedPanelDemo implements EntryPoint {
     HorizontalPanel panel = new HorizontalPanel();
     panel.setWidth("100%");
     panel.add(toggler);
+    panel.setCellHorizontalAlignment(toggler, HasHorizontalAlignment.ALIGN_LEFT);
+    panel.setCellWidth(toggler, "1px");
     panel.add(title);
+    panel.setCellHorizontalAlignment(title, HorizontalPanel.ALIGN_CENTER);
+
     navBar.add(panel);
 
     panel.setStyleName("nav-tree-title");
@@ -147,8 +146,8 @@ public class PinnedPanelDemo implements EntryPoint {
   }
 
   private ToggleButton createToggleButton() {
-    Image show = new Image("show.jpg");
-    Image hide = new Image("hide.jpg");
+    Image show = new Image("show.gif");
+    Image hide = new Image("hide.gif");
     ToggleButton toggler = new ToggleButton(hide, show);
     return toggler;
   }
