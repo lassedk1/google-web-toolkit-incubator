@@ -1,0 +1,35 @@
+#summary A "sound bundle" using ImmutableResourceBundle
+#labels Type-Library,Phase-Implementation
+
+= Introduction =
+
+  It is desirable to be able to incorporate audible feedback into GWT client-side applications in a manner that is GWT-y.  To this end, the SoundResource has been added to the incubator to provide a runtime API that is easy to use, as well as deployment advantages by bundling multiple sound resources into a single download.
+
+= Use Case =
+
+SoundResource is an ImmutableResourceBundle resource type and is declared in the same manner as any other resource.
+
+{{{
+public interface Resources extends ImmutableResourceBundle {
+  /**
+   * @gwt.resource beep.mp3
+   */
+  public SoundResource beep();
+}
+}}}
+
+  At compile time, every sound sample listed in a bundle definition will be packaged into a single SWF file.  When the bundle class in instantiated via a call to `GWT.create()` a Flash plugin instance will be created.
+
+  Because SWF files are downloaded and processed in a streaming manner, some sound resources will be available before others.  The programmer can register a SoundResourceCallback to be notified when a sound has been loaded or has finished playing.
+
+= Implementation Details =
+
+  Flash 8 or better is required on the client machine.  We use the [http://haxe.org/ Haxe] language to build the [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/libideas/resources/rg/SoundKernel.hx core logic] in the SWF file. Additional frames, one per sample, are appended at compile time with [http://www.anotherbigidea.com/javaswf/ JawaSWF2].
+
+  Sound support can be disabled at compile time by adding
+{{{
+  <set-property name="ResourceBundle.enableSound" value="false" />
+}}}
+  to your `gwt.xml` file.  This will cause the core SoundPlugin to be replaced by a no-op implementation and compiling away.  It may be desirable to provide an additional `gwt.xml` file to add an unbound deferred binding property to be evaluated on the client machine.
+
+  Only MP3 files at 11, 22, and 44KhZ sampling rates are supported.  WAV files are also supported at the same sampling rates.  Encoding or converting sound samples is an explicit non-goal.
