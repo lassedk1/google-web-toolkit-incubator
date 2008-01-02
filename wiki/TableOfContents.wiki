@@ -4,6 +4,7 @@
     * [Libraries]
       * [DeclarativeUi]
       * [ImmutableResourceBundle]
+        * [SoundResource]
         * [StyleInjector]
     * [Widgets]
       * [Tables]
