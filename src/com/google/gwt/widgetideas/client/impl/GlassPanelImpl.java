@@ -24,7 +24,7 @@ import com.google.gwt.widgetideas.client.GlassPanel;
  */
 public abstract class GlassPanelImpl {
   /**
-   * TODO Correctly handle  for undefined $doc.compatMode in Safari
+   * TODO Correctly handle  for undefined $doc.compatMode in Safari.
    */
   protected static native int getWindowScrollHeight()
   /*-{
@@ -33,7 +33,7 @@ public abstract class GlassPanelImpl {
   }-*/;
 
   /**
-   * TODO Correctly handle undefined $doc.compatMode in Safari
+   * TODO Correctly handle undefined $doc.compatMode in Safari.
    */
   protected static native int getWindowScrollWidth()
   /*-{
