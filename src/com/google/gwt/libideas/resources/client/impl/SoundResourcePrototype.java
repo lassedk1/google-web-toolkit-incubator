@@ -49,12 +49,12 @@ public class SoundResourcePrototype implements SoundResource {
       }
     }
 
-    public boolean isComplete() {
-      return complete || (complete = plugin.isComplete(flashElement, handle));
-    }
-
     public long getPosition() {
       return plugin.position(flashElement, handle);
+    }
+
+    public boolean isComplete() {
+      return complete || (complete = plugin.isComplete(flashElement, handle));
     }
 
     public void setPan(int pan) {
@@ -114,6 +114,7 @@ public class SoundResourcePrototype implements SoundResource {
    * This is there for those who need access to the element being used to
    * control the sound. This API exists because it is useful, but isn't
    * supported.
+   * 
    * @deprecated This is an implementation detail, subject to change.
    */
   public Element getElement() {
@@ -132,6 +133,15 @@ public class SoundResourcePrototype implements SoundResource {
     return play(100, 0);
   }
 
+  public Handle play(int volume, int pan) {
+    return new HandleImpl(normalize(volume, MIN_VOLUME, MAX_VOLUME), normalize(
+        pan, PAN_LEFT, PAN_RIGHT));
+  }
+
+  public Handle play(SoundResourceCallback callback) {
+    return play(callback, 100, 0);
+  }
+
   public Handle play(final SoundResourceCallback callback, int volume, int pan) {
     final Handle toReturn = play(volume, pan);
     // XXX Can flash call JS functions?
@@ -144,15 +154,6 @@ public class SoundResourcePrototype implements SoundResource {
       }
     }).scheduleRepeating(1);
     return toReturn;
-  }
-
-  public Handle play(SoundResourceCallback callback) {
-    return play(callback, 100, 0);
-  }
-
-  public Handle play(int volume, int pan) {
-    return new HandleImpl(normalize(volume, MIN_VOLUME, MAX_VOLUME), normalize(
-        pan, PAN_LEFT, PAN_RIGHT));
   }
 
   /**
