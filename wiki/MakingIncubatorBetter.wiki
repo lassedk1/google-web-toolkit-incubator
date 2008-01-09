@@ -1,4 +1,4 @@
-#summary DRAFT developing with the incubator source
+#summary developing with the incubator source
 #labels Type-Guide
 = Introduction =
 This page explains how to develop with the gwt-incubator source.  
@@ -8,10 +8,15 @@ One of the most important things to remember is that gwt-incubator should be com
 = Setting up the incubator project =
 == Setup for Eclipse ==
  # Follow the instructions [http://google-web-toolkit.googlecode.com/svn/trunk/eclipse/README.txt here] to set up your eclipse environment ^note: use IE does not display this page correctly^
- # Download the code from [http://code.google.com/p/google-web-toolkit-incubator/source here]
+ # Check out the following code
+   # The GWT prerequisite tools and third party library code. Use `gwt/tools` directly if you have them installed. Otherwise download them here:
+     {{{~/gwt-incubator$ svn checkout http://google-web-toolkit.googlecode.com/svn/tools/ tools}}}
+   # Check out the Incubator source:
+     {{{~/gwt-incubator$ svn checkout http://google-web-toolkit-incubator.googlecode.com/svn/trunk/ trunk-read-only }}}
  # Create a new eclipse project from the existing source
  # In the properties tab go to Java Build Path --> Libraries. 
-   # Add the gwt-user and gwt-dev jars from [http://code.google.com/webtoolkit/download.html here]
+   # Add the `gwt-user` and `gwt-dev` jars from [http://code.google.com/webtoolkit/download.html here]
+   # Add the `javaswf-20050404.jar` from your downloaded tools directory 
    # Add the junit jar using the eclipse "Add Library option". Select junit3 
 You now should be completely set up. 
 == Setup for other IDEs==
@@ -26,7 +31,7 @@ Before deciding to contribute source code to the incubator project, you should c
     * Fix all critical bugs in your code
     * Answer outstanding design questions
 If the answer to all the questions above is "yes", then your next step is to mail 
-Google-Web-Toolkit-Contributors@googlegroups.com with the little "Looking for Incubator sponsor for <<<synopsis of code>>>".
+Google-Web-Toolkit-Contributors@googlegroups.com with the little "Looking for Incubator sponsor for _synopsis of code_."
 
 example:
   Looking for Incubator sponsor for DatePicker.
