@@ -131,9 +131,9 @@ abstract class SoundPlugin {
   }
 
   // Wait up to one minute for a sample to be ready.
-  private final static int MAX_WAIT = 60000;
+  private static final int MAX_WAIT = 60000;
 
-  private final static int READY_WAIT = 10;
+  private static final int READY_WAIT = 10;
 
   /**
    * Tracks plugins that have already been installed into the page.

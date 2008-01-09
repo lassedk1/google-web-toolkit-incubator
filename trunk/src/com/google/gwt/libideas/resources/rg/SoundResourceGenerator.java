@@ -75,6 +75,28 @@ public class SoundResourceGenerator extends ResourceGenerator {
   }
 
   /**
+   * Create instances of {@link SoundResourcePrototype}.
+   */
+  @Override
+  public void writeAssignment(TreeLogger logger, JMethod method)
+      throws UnableToCompleteException {
+    SourceWriter sw = context.getSourceWriter();
+
+    sw.print("new ");
+    sw.print(SoundResourcePrototype.class.getName());
+    sw.println("(");
+    sw.indent();
+    sw.print("FLASH_ELEMENT, \"");
+    sw.print(method.getName());
+    sw.print("\", ");
+    sw.print(String.valueOf(builder.getIndex(method.getName())));
+    sw.print(", ");
+    sw.print(String.valueOf(builder.getDuration(method.getName())));
+    sw.outdent();
+    sw.println(")");
+  }
+
+  /**
    * Save the plugins's Element in a class field.
    */
   @Override
@@ -95,27 +117,5 @@ public class SoundResourceGenerator extends ResourceGenerator {
     sw.print(".attach(");
     sw.print(urlExpression);
     sw.println(");");
-  }
-
-  /**
-   * Create instances of {@link SoundResourcePrototype}.
-   */
-  @Override
-  public void writeAssignment(TreeLogger logger, JMethod method)
-      throws UnableToCompleteException {
-    SourceWriter sw = context.getSourceWriter();
-
-    sw.print("new ");
-    sw.print(SoundResourcePrototype.class.getName());
-    sw.println("(");
-    sw.indent();
-    sw.print("FLASH_ELEMENT, \"");
-    sw.print(method.getName());
-    sw.print("\", ");
-    sw.print(String.valueOf(builder.getIndex(method.getName())));
-    sw.print(", ");
-    sw.print(String.valueOf(builder.getDuration(method.getName())));
-    sw.outdent();
-    sw.println(")");
   }
 }

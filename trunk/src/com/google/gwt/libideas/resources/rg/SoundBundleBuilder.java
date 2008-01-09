@@ -49,34 +49,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  * Assimilates sound resources into a flash application.
  */
 class SoundBundleBuilder {
-  private final Map<String, SoundDefinition> sounds = new IdentityHashMap<String, SoundDefinition>();
-  private final List<SoundDefinition> orderedSounds = new ArrayList<SoundDefinition>();
-
-  public void assimilate(TreeLogger logger, String name, URL resource)
-      throws UnableToCompleteException {
-    try {
-      SoundDefinition def;
-
-      if (ResourceGeneratorUtil.baseName(resource).endsWith("mp3")) {
-        // MP3's are special-cased
-        def = MP3Helper.getSoundDefinition(resource.openStream());
-
-      } else {
-        // Otherwise, fall back to a helper based on javax.sound
-        ADPCMHelper helper = new ADPCMHelper(resource.openStream(), 30);
-        def = helper.getSoundDefinition();
-      }
-
-      sounds.put(name, def);
-    } catch (IOException e) {
-      logger.log(TreeLogger.ERROR, "Unable to open resource", e);
-      throw new UnableToCompleteException();
-    } catch (UnsupportedAudioFileException e) {
-      logger.log(TreeLogger.ERROR, "Unsupported audio format", e);
-      throw new UnableToCompleteException();
-    }
-  }
-
   /**
    * Appends sound and export tags for each sample.
    */
@@ -101,7 +73,7 @@ class SoundBundleBuilder {
       for (Map.Entry<String, SoundDefinition> entry : sounds.entrySet()) {
         int i = orderedSounds.indexOf(entry.getValue());
         names[i] = entry.getKey();
-      };
+      }
 
       // Place each sound in its own frame.
       for (SoundDefinition def : orderedSounds) {
@@ -124,6 +96,35 @@ class SoundBundleBuilder {
 
       // End the SWF file
       super.tagEnd();
+    }
+  }
+
+  private final Map<String, SoundDefinition> sounds = new IdentityHashMap<String, SoundDefinition>();
+
+  private final List<SoundDefinition> orderedSounds = new ArrayList<SoundDefinition>();
+
+  public void assimilate(TreeLogger logger, String name, URL resource)
+      throws UnableToCompleteException {
+    try {
+      SoundDefinition def;
+
+      if (ResourceGeneratorUtil.baseName(resource).endsWith("mp3")) {
+        // MP3's are special-cased
+        def = MP3Helper.getSoundDefinition(resource.openStream());
+
+      } else {
+        // Otherwise, fall back to a helper based on javax.sound
+        ADPCMHelper helper = new ADPCMHelper(resource.openStream(), 30);
+        def = helper.getSoundDefinition();
+      }
+
+      sounds.put(name, def);
+    } catch (IOException e) {
+      logger.log(TreeLogger.ERROR, "Unable to open resource", e);
+      throw new UnableToCompleteException();
+    } catch (UnsupportedAudioFileException e) {
+      logger.log(TreeLogger.ERROR, "Unsupported audio format", e);
+      throw new UnableToCompleteException();
     }
   }
 
@@ -192,7 +193,6 @@ class SoundBundleBuilder {
     try {
       reader.readFile();
     } catch (IOException e) {
-
     }
 
     // Write the completed sound bundle into the output
