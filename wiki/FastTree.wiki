@@ -1,13 +1,14 @@
 #summary A Fast Tree widget
 = Introduction = 
-
-
 Powerful applications often end up with very large trees in them. The original GWT Tree widget was not designed to handle the sheer number of nodes that are generated in some trees. FastTree has been optimized to handle this case.  
   
-= Summary Table =
+== Summary Table ==
+
+|| *Field* || * Location * ||
 || Demo || _ Blocked by SVN issues_ ||
-|| Sample Code || http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/fasttree/client/FastTreeDemo.java||
-||Module|| `com.google.gwt.widgetideas.FastTree`||
+|| Sample Code || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/fasttree/client/FastTreeDemo.java demo code] ||
+|| Module || `com.google.gwt.widgetideas.FastTree` ||
+
  
 = Details =
 * Warning * FastTree uses css background images to represent leaf nodes. If you chose not to use style injection, either via the `FastTreeaddDefaultCSS` method or by rolling your on using StyleBundle, you *must* include an invisible `treeOpen.gif` and `treeClosed.gif` in your application. Otherwise IE will not cache the images correctly, thereby defeating the purpose of FastTree.
