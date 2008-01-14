@@ -1,4 +1,5 @@
 #summary A fast tree widget meant for large trees.
+#labels Type-Widget
 = Introduction = 
 Powerful applications often end up with very large trees in them. The original GWT Tree widget was not designed to handle the sheer number of nodes that are generated in some trees. FastTree has been optimized to handle this case.  
   
