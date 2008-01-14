@@ -49,9 +49,9 @@ public class FastTreeDemo implements EntryPoint {
     FastTree.addDefaultCSS();
 
     StackPanel p = new StackPanel();
-    // p.add(basicTree(), "Basic tree");
-    // p.add(lazyTree(), "Lazy tree");
-    // p.add(verboseTree(), "Verbose tree");
+    p.add(basicTree(), "Basic tree");
+    p.add(lazyTree(), "Lazy tree");
+    p.add(verboseTree(), "Verbose tree");
     p.add(profileTree(), "Profiling tree");
     return p;
   }
@@ -126,9 +126,9 @@ public class FastTreeDemo implements EntryPoint {
       public void onClick(Widget sender) {
         long time = System.currentTimeMillis();
         Tree t = new Tree();
-        profileCreateTree(t, Integer.parseInt(branches.getText()),
-            Integer.parseInt(nodes.getText()),
-            TreeType.getType(type.getSelectedIndex()));
+        profileCreateTree(t, Integer.parseInt(branches.getText()), Integer
+            .parseInt(nodes.getText()), TreeType.getType(type
+            .getSelectedIndex()));
         table.setWidget(widgetRow, 0, t);
         Window.alert("Elapsed time: " + (System.currentTimeMillis() - time));
       }
@@ -138,9 +138,9 @@ public class FastTreeDemo implements EntryPoint {
       public void onClick(Widget sender) {
         long time = System.currentTimeMillis();
         FastTree t = new FastTree();
-        profileCreateTree(t, Integer.parseInt(branches.getText()),
-            Integer.parseInt(nodes.getText()),
-            TreeType.getType(type.getSelectedIndex()));
+        profileCreateTree(t, Integer.parseInt(branches.getText()), Integer
+            .parseInt(nodes.getText()), TreeType.getType(type
+            .getSelectedIndex()));
         table.setWidget(widgetRow, 1, t);
         Window.alert("Elapsed time: " + (System.currentTimeMillis() - time));
       }
@@ -165,14 +165,14 @@ public class FastTreeDemo implements EntryPoint {
   private void lazyCreateChild(final HasFastTreeItems parent, final int index,
       final int children) {
 
-    FastTreeItem item = new FastTreeItem("child" + index + " (" + children
-        + " children)") {
-      public void ensureChildren() {
-        for (int i = 0; i < children; i++) {
-          lazyCreateChild(this, i, children + (i * 10));
-        }
-      }
-    };
+    FastTreeItem item =
+        new FastTreeItem("child" + index + " (" + children + " children)") {
+          public void ensureChildren() {
+            for (int i = 0; i < children; i++) {
+              lazyCreateChild(this, i, children + (i * 10));
+            }
+          }
+        };
     item.becomeInteriorNode();
     parent.addItem(item);
   }
