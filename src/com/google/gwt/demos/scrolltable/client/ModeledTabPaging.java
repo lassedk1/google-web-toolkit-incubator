@@ -81,6 +81,11 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
   private boolean pagingOptionsVisible = true;
 
   /**
+   * The button used to toggle RPC mode.
+   */
+  private Button rpcModeButton = new Button("Toggle RPC Mode", this);
+
+  /**
    * The button used to set html of a cell.
    */
   private Button togglePagingButton = new Button("Toggle Paging Options", this);
@@ -91,10 +96,8 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
    * @param sender
    */
   public void onClick(Widget sender) {
-    PagingScrollTable scrollTable =
-        PagingScrollTableDemo.getPagingScrollTable();
-    CachedTableController tableController =
-        PagingScrollTableDemo.getTableController();
+    PagingScrollTable scrollTable = PagingScrollTableDemo.getPagingScrollTable();
+    CachedTableController tableController = PagingScrollTableDemo.getTableController();
     DataSourceTableModel tableModel = PagingScrollTableDemo.getTableModel();
     try {
       if (sender == numRowsButton) {
@@ -126,6 +129,15 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
         } else {
           grid.setHTML(3, 1, "enabled");
         }
+      } else if (sender == rpcModeButton) {
+        // Toggle RPC mode
+        boolean enabled = tableModel.isRPCModeEnabled();
+        tableModel.setRPCModeEnabled(!enabled);
+        if (enabled) {
+          grid.setHTML(4, 1, "disabled");
+        } else {
+          grid.setHTML(4, 1, "enabled");
+        }
       }
     } catch (NumberFormatException e) {
       Window.alert("Please enter valid integers for the row and column.");
@@ -133,7 +145,7 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
   }
 
   protected Widget onInitialize() {
-    grid = new Grid(4, 3);
+    grid = new Grid(5, 3);
 
     // Num Rows
     HorizontalPanel panel1 = new HorizontalPanel();
@@ -171,6 +183,12 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
     grid.setHTML(3, 1, "disabled");
     grid.setHTML(3, 2, "If the table model throws an error during a paging "
         + "request, the ScrollTable will display the error gracefully.");
+
+    // RPC mode
+    grid.setWidget(4, 0, rpcModeButton);
+    grid.setHTML(4, 1, "disabled");
+    grid.setHTML(4, 2, "Retrieve data from a server using an RPC request"
+        + " instead of generating data locally. This requests an RPC server.");
 
     return grid;
   }

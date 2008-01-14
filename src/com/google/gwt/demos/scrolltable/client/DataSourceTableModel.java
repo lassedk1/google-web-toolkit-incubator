@@ -15,41 +15,29 @@
  */
 package com.google.gwt.demos.scrolltable.client;
 
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Event;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Random;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.widgetideas.table.client.ClientTableModel;
 
 /**
  * An iterator that serves as the data source for TableOracle requests.
  */
 public class DataSourceTableModel extends ClientTableModel {
-  public static final String[] colleges = {
-      "Georgia", "Connecticut", "Arizona", "Florida", "Wisconsin", "Maryland",
-      "Tennessee", "Arkansas", "Virginia", "Maine", "Texes", "South Carolina"};
+  /**
+   * The source of the data.
+   */
+  private DataSourceData data = new DataSourceData() {
+    public int getRandomInt(int max) {
+      return Random.nextInt(max);
+    }
+  };
 
-  public static final String[] colors = {
-      "red", "blue", "green", "orange", "purple"};
-
-  public static final String[] firstNames = {
-      "Arnold", "Bob", "Cathy", "Dennis", "Earl", "Frank", "George", "Hillary",
-      "Irma", "John", "Kelly", "Michelle", "Natalie", "Oscar", "Paul", "Susan",
-      "Todd"};
-
-  public static final String[] lastNames = {
-      "Anderson", "Billings", "Corper", "Donavon", "Elkins", "Fitzgerald",
-      "Gaskins", "Haskins", "Iterby", "Johnson", "Kellickson", "Lee",
-      "Peterson", "Richardson", "Sauxby", "Wilkinson", "York"};
-
-  public static final String[] sports = {
-      "baseball", "soccor", "football", "basketball", "hockey", "softball",
-      "rugby", "water polo", "golf", "tennis"};
-
-  public static final String[] races = {
-      "African American", "Caucasian", "Hispanic", "Green Alien", "Asian",
-      "Other"};
+  /**
+   * The RPC service used to generate data, if RPC mode is enabled.
+   */
+  private DataSourceServiceAsync dataService = null;
 
   /**
    * A boolean indicating that we should throw an error.
@@ -57,52 +45,18 @@ public class DataSourceTableModel extends ClientTableModel {
   private boolean errorMode = false;
 
   /**
+   * A boolean indicating that we should use an rpc request instead of
+   * generating data locally.
+   */
+  private boolean rpcMode = false;
+
+  /**
    * @see ClientTableModel#getCell(int, int)
    */
   public Object getCell(int rowNum, int colNum) {
-    switch (colNum) {
-      case 0:
-        final String firstName = firstNames[Random.nextInt(firstNames.length)];
-        CheckBox cb = new CheckBox(firstName) {
-          public void onBrowserEvent(Event event) {
-            super.onBrowserEvent(event);
-            if (DOM.eventGetType(event) == Event.ONCLICK) {
-              Window.alert("Hey " + getText());
-            }
-          }
-        };
-        return cb;
-      case 1:
-        return lastNames[Random.nextInt(lastNames.length)];
-      case 2:
-        return Random.nextInt(100) + "";
-      case 3:
-        if (Random.nextBoolean()) {
-          return "male";
-        } else {
-          return "female";
-        }
-      case 4:
-        return races[Random.nextInt(races.length)];
-      case 5:
-        return colors[Random.nextInt(colors.length)];
-      case 6:
-        return sports[Random.nextInt(sports.length)];
-      case 7:
-        return "University of " + colleges[Random.nextInt(colleges.length)];
-      case 8:
-        return (1990 + Random.nextInt(20)) + "";
-      case 9:
-        return (int) (40 * Random.nextDouble()) / 10.0 + "";
-      case 10:
-        return (1000000 + Random.nextInt(8999999)) + "";
-      case 11:
-        return (1000 + Random.nextInt(8999)) + "";
-      default:
-        return null;
-    }
+    return data.getCell(rowNum, colNum);
   }
-  
+
   /**
    * Check if error mode is enabled.
    * 
@@ -110,6 +64,15 @@ public class DataSourceTableModel extends ClientTableModel {
    */
   public boolean isErrorModeEnabled() {
     return errorMode;
+  }
+
+  /**
+   * Check if RPC mode is enabled.
+   * 
+   * @return true if enabled
+   */
+  public boolean isRPCModeEnabled() {
+    return rpcMode;
   }
 
   /**
@@ -133,10 +96,31 @@ public class DataSourceTableModel extends ClientTableModel {
   /**
    * Override that can optionally throw an error.
    */
-  public void requestRows(Request request, Callback callback) {
+  public void requestRows(final Request request, final Callback callback) {
     if (errorMode) {
+      // Return an error
       callback.onFailure(new Exception("An error has occured."));
+    } else if (rpcMode) {
+      // Create the service if needed
+      if (dataService == null) {
+        dataService = (DataSourceServiceAsync) GWT.create(DataSourceService.class);
+        ServiceDefTarget endpoint = (ServiceDefTarget) dataService;
+        String moduleRelativeURL = GWT.getModuleBaseURL() + "datasource";
+        endpoint.setServiceEntryPoint(moduleRelativeURL);
+      }
+
+      // Send RPC request for data
+      dataService.requestRows(request, new AsyncCallback() {
+        public void onFailure(Throwable caught) {
+          callback.onFailure(new Exception("RPC Failure"));
+        }
+
+        public void onSuccess(Object result) {
+          callback.onRowsReady(request, (Response) result);
+        }
+      });
     } else {
+      // Request rows from the local client
       super.requestRows(request, callback);
     }
   }
@@ -148,5 +132,14 @@ public class DataSourceTableModel extends ClientTableModel {
    */
   public void setErrorModeEnabled(boolean enabled) {
     this.errorMode = enabled;
+  }
+
+  /**
+   * Enable or disable rpc mode.
+   * 
+   * @param enabled true to enable
+   */
+  public void setRPCModeEnabled(boolean enabled) {
+    this.rpcMode = enabled;
   }
 }

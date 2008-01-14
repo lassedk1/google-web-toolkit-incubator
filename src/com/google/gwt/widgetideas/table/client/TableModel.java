@@ -18,6 +18,7 @@ package com.google.gwt.widgetideas.table.client;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public abstract class TableModel {
      * @param caught the exception that was thrown
      */
     public void onFailure(Throwable caught);
-    
+
     /**
      * Consume the data created by {@link TableModel} in response to a Request.
      * 
@@ -49,7 +50,7 @@ public abstract class TableModel {
   /**
    * Information about the sort order of a specific column in a table.
    */
-  public static class ColumnSortInfo {
+  public static class ColumnSortInfo implements IsSerializable {
     /**
      * Is the sort ascending.
      */
@@ -59,6 +60,13 @@ public abstract class TableModel {
      * The column index.
      */
     private int column;
+
+    /**
+     * Default Constructor.
+     */
+    public ColumnSortInfo() {
+      this(0, true);
+    }
 
     /**
      * Constructor.
@@ -131,9 +139,10 @@ public abstract class TableModel {
   /**
    * An ordered list of sorting info where each entry tells us how to sort a
    * single column. The first entry is the primary sort order, the second entry
-   * is the first tie-breaket, and so on.
+   * is the first tie-breaker, and so on.
    */
-  public static class ColumnSortList extends ArrayList {
+  public static class ColumnSortList extends ArrayList implements
+      IsSerializable {
     /**
      * Add a {@link ColumnSortInfo} to this list. If the column already exists,
      * it will be removed from its current position and placed at the start of
@@ -262,6 +271,8 @@ public abstract class TableModel {
 
     /**
      * An ordered list of {@link ColumnSortInfo}.
+     * 
+     * @gwt.typeArgs <com.google.gwt.widgetideas.table.client.TableModel.ColumnSortInfo>
      */
     private ColumnSortList columnSortList;
 
@@ -269,6 +280,13 @@ public abstract class TableModel {
      * The first row of table data to request.
      */
     private int startRow;
+
+    /**
+     * Default constructor.
+     */
+    public Request() {
+      this(0, 0, null);
+    }
 
     /**
      * Constructor.
@@ -363,6 +381,107 @@ public abstract class TableModel {
      */
     public List getRowValues() {
       return rowValues;
+    }
+  }
+
+  /**
+   * An {@link Iterator} over a 2D {@link Collection} of column data.
+   */
+  public static class SerializableIterator implements IsSerializable, Iterator {
+    /**
+     * The {@link Collection} of row data. Each row is a {@link Collection} of
+     * column data.
+     * 
+     * @gwt.typeArgs <java.util.Collection>
+     */
+    private Iterator rows;
+
+    /**
+     * Default constructor.
+     */
+    public SerializableIterator() {
+      this(null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param rows the row data
+     */
+    public SerializableIterator(Iterator rows) {
+      this.rows = rows;
+    }
+
+    public boolean hasNext() {
+      if (rows == null) {
+        return false;
+      }
+      return rows.hasNext();
+    }
+
+    public Object next() {
+      if (rows == null) {
+        return null;
+      }
+      Collection next = (Collection) rows.next();
+      if (next == null) {
+        return null;
+      } else {
+        return next.iterator();
+      }
+    }
+
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  /**
+   * A response from the {@link TableModel} that is serializable, and can by
+   * used over RPC.
+   */
+  public static class SerializableResponse extends Response implements
+      IsSerializable {
+    /**
+     * The {@link Collection} of row data. Each row is a {@link Collection} of
+     * column data.
+     * 
+     * @gwt.typeArgs <java.util.Collection>
+     */
+    private Collection rows;
+
+    /**
+     * Default constructor.
+     */
+    public SerializableResponse() {
+      this(null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param rows the row data
+     */
+    public SerializableResponse(Collection rows) {
+      this(rows, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param rows the row data
+     * @param rowValues the values to associate with each row
+     */
+    public SerializableResponse(Collection rows, List rowValues) {
+      super(rowValues);
+      this.rows = rows;
+    }
+
+    public Iterator getIterator() {
+      if (rows == null) {
+        return null;
+      }
+      return new SerializableIterator(rows.iterator());
     }
   }
 

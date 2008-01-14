@@ -298,8 +298,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     // Race cell editor
     ListCellEditor raceEditor = new ListCellEditor();
     ListBox raceBox = raceEditor.getListBox();
-    for (int i = 0; i < DataSourceTableModel.races.length; i++) {
-      raceBox.addItem(DataSourceTableModel.races[i]);
+    for (int i = 0; i < DataSourceData.races.length; i++) {
+      raceBox.addItem(DataSourceData.races[i]);
     }
     gridView.setCellEditor(4, raceEditor);
 
@@ -310,8 +310,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       }
     };
     colorEditor.setLabel("Select a color:");
-    for (int i = 0; i < DataSourceTableModel.colors.length; i++) {
-      colorEditor.addOption(DataSourceTableModel.colors[i]);
+    for (int i = 0; i < DataSourceData.colors.length; i++) {
+      colorEditor.addOption(DataSourceData.colors[i]);
     }
     gridView.setCellEditor(5, colorEditor);
 
@@ -319,8 +319,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     ListCellEditor sportEditor = new ListCellEditor();
     sportEditor.setLabel("Select a sport:");
     ListBox sportBox = sportEditor.getListBox();
-    for (int i = 0; i < DataSourceTableModel.sports.length; i++) {
-      sportBox.addItem(DataSourceTableModel.sports[i]);
+    for (int i = 0; i < DataSourceData.sports.length; i++) {
+      sportBox.addItem(DataSourceData.sports[i]);
     }
     gridView.setCellEditor(6, sportEditor);
 
