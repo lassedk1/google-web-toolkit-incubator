@@ -50,7 +50,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * The base tree item element that will be cloned.
    */
   private static Element TREE_LEEF;
- 
+
   /**
    * Static constructor to set up clonable elements.
    */
@@ -71,7 +71,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   private FastTreeItem parent;
   private FastTree tree;
   private Widget widget;
- 
+
   /**
    * Creates an empty tree item.
    */
@@ -90,7 +90,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     this();
     DOM.setInnerHTML(contentElem, html);
   }
- 
+
   /**
    * Constructs a tree item with the given <code>Widget</code>.
    * 
@@ -347,7 +347,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * 
    * @param open whether the item is open
    * @param fireEvents <code>true</code> to allow open/close events to be
-   *          fired
+   *        fired
    */
   public void setState(boolean open, boolean fireEvents) {
     if (open == isOpen()) {
@@ -388,7 +388,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   /**
    * Called when tree item is being unselected. Returning <code>false</code>
    * cancels the unselection.
-   *  
+   * 
    */
   protected boolean beforeSelectionLost() {
     return true;
@@ -424,10 +424,12 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   }
 
   void dumpTreeItems(List accum) {
-    for (int i = 0; i < children.size(); i++) {
-      FastTreeItem item = (FastTreeItem) children.get(i);
-      accum.add(item);
-      item.dumpTreeItems(accum);
+    if (isInteriorNode()) {
+      for (int i = 0; i < children.size(); i++) {
+        FastTreeItem item = (FastTreeItem) children.get(i);
+        accum.add(item);
+        item.dumpTreeItems(accum);
+      }
     }
   }
 
@@ -447,7 +449,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * Selects or deselects this item.
    * 
    * @param selected <code>true</code> to select the item, <code>false</code>
-   *          to deselect it
+   *        to deselect it
    */
   void setSelection(boolean selected) {
     setStyleName(contentElem, "gwt-TreeItem-selected", selected);
@@ -457,10 +459,22 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   }
 
   void setTree(FastTree newTree) {
-    // Early out.
-    if (tree != null) {
-      throw new IllegalStateException(
-          "Each Tree Item can only be added to one tree");
+    if (newTree == null) {
+      if(widget != null){
+        tree.treeOrphan(widget);
+      }
+      
+    } else {
+      // Early out.
+      if (tree != null) {
+        throw new IllegalStateException(
+            "Each Tree Item can only be added to one tree");
+      }
+
+      if(widget != null) {
+        // Add my widget to the new tree.
+        tree.adopt(widget, this);
+      }
     }
 
     tree = newTree;
@@ -468,11 +482,8 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
       ((FastTreeItem) children.get(i)).setTree(newTree);
     }
 
-    if (tree != null && widget != null) {
-      // Add my widget to the new tree.
-      tree.adopt(widget, this);
-    }
   }
+
 
   void updateState() {
     // No work to be done.
