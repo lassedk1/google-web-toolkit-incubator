@@ -1,4 +1,4 @@
-#summary A Fast Tree widget
+#summary A fast tree widget meant for large trees.
 = Introduction = 
 Powerful applications often end up with very large trees in them. The original GWT Tree widget was not designed to handle the sheer number of nodes that are generated in some trees. FastTree has been optimized to handle this case.  
   
@@ -11,4 +11,4 @@ Powerful applications often end up with very large trees in them. The original G
 
  
 = Details =
-* Warning * FastTree uses css background images to represent leaf nodes. If you chose not to use style injection, either via the `FastTreeaddDefaultCSS` method or by rolling your on using StyleBundle, you *must* include an invisible `treeOpen.gif` and `treeClosed.gif` in your application. Otherwise IE will not cache the images correctly, thereby defeating the purpose of FastTree.
+* Warning * FastTree uses css background images to represent leaf nodes. If you chose not to use style injection, either via the `FastTreeaddDefaultCSS` method or by rolling your on using StyleInjector, you *must* include an invisible `treeOpen.gif` and `treeClosed.gif` in your application. Otherwise IE will not cache the images correctly, thereby defeating the purpose of FastTree.
