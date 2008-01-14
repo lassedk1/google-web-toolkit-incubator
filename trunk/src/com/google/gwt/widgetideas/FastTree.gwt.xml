@@ -1,0 +1,9 @@
+<module>
+	 
+	<!--  All widget classes should inherit basic widget -->
+	<inherits name="com.google.gwt.widgetideas.BasicWidget" />
+
+	<!--  Inherit style injection -->
+	<inherits name='com.google.gwt.libideas.StyleInjector' />
+
+</module>
