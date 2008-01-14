@@ -13,6 +13,7 @@
       * [TitledPanel]
       * [PinnedPanel]
       * [GlassPanel]
+      * [FastTree]
     * [SliderBar]
     * [ProgressBar]
   * [FAQ]
