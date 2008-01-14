@@ -154,6 +154,7 @@ public class PagingScrollTable extends ScrollTable {
     public void onPageLoaded() {
       loadingImage.setVisible(false);
       errorLabel.setHTML("");
+      redraw();
     }
 
     public void onPagingFailure(Throwable caught) {

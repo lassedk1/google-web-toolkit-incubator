@@ -116,22 +116,24 @@ public class CachedTableController extends TableController {
      */
     public void onRowsReady(Request request, Response response) {
       // Save the response data into the cache
-      int curRow = request.getStartRow();
-      Iterator rows = response.getIterator();
-      if (rows != null) {
-        // Save the data to the cache
-        while (rows.hasNext()) {
-          Iterator columnIt = (Iterator) rows.next();
-          List/* Object */rowList = ensureRowList(curRow);
-          if (columnIt != null) {
-            rowList.clear();
-            while (columnIt.hasNext()) {
-              rowList.add(columnIt.next());
+      if (response != null) {
+        int curRow = request.getStartRow();
+        Iterator rows = response.getIterator();
+        if (rows != null) {
+          // Save the data to the cache
+          while (rows.hasNext()) {
+            Iterator columnIt = (Iterator) rows.next();
+            List/* Object */rowList = ensureRowList(curRow);
+            if (columnIt != null) {
+              rowList.clear();
+              while (columnIt.hasNext()) {
+                rowList.add(columnIt.next());
+              }
             }
+  
+            // Go to next row
+            curRow++;
           }
-
-          // Go to next row
-          curRow++;
         }
       }
 

@@ -9,4 +9,7 @@
 	<entry-point class='com.google.gwt.demos.scrolltable.client.PagingScrollTableDemo'/>
   
   <stylesheet src='ScrollTableDemo.css'/>
+  
+  <!-- Define the RPC service -->
+  <servlet path="/datasource" class="com.google.gwt.demos.scrolltable.client.DataSourceServiceImpl"/>
 </module>
