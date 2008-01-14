@@ -4,7 +4,7 @@
 }
 
 .gwt-TreeItem .open,.gwt-TreeItem .closed,.gwt-TreeItem .leaf {
-  padding: 1px;
+  padding: 3px;
   padding-left: 18px;
   padding-right: 5px;
   white-space: nowrap;
@@ -52,4 +52,8 @@
 .gwt-Tree-selection-bar {
   background: #e3e8f3 url('%selectionBar%') repeat-x;
   border: 1px solid black;
+  font-size: 0;
+  position: absolute;
+  width: 100%;
+  left: 0;
 }
