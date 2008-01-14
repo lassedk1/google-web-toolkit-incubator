@@ -9,6 +9,7 @@ Powerful applications often end up with very large trees in them. The original G
 || Demo || _ Blocked by SVN issues_ ||
 || Sample Code || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/fasttree/client/FastTreeDemo.java demo code] ||
 || Module || `com.google.gwt.widgetideas.FastTree` ||
+|| Source starting point || http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/widgetideas/client/FastTree.java ||
 
  
 = Details =
