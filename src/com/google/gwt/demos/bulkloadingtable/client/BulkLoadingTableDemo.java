@@ -45,15 +45,6 @@ public class BulkLoadingTableDemo implements EntryPoint {
   HTMLTable curTable;
   Panel panel;
 
-  public void systemSpeedTest() {
-    long time = System.currentTimeMillis();
-    long current;
-    for (int i = 0; i < 1000; i++) {
-      current = System.currentTimeMillis();
-    }
-    Window.alert("Time is " + (time));
-  }
-
   public void onModuleLoad() {
     panel = new VerticalPanel();
     RootPanel.get().add(panel);
