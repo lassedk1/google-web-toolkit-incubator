@@ -16,12 +16,11 @@
 
 package com.google.gwt.widgetideas.table.client;
 
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
+import com.google.gwt.widgetideas.table.client.overrides.HTMLTable; 
 
 import java.util.Iterator;
 import java.util.List;
@@ -31,22 +30,41 @@ import java.util.List;
  * for bulk rendering should have its own bulk renderer.
  */
 public abstract class TableBulkRenderer {
+  /**
+   * Controls how each cell is rendered. The default implementation calls
+   * toString on the cell data.
+   */
+  public abstract static class CellRenderer {
+
+    /**
+     * Renders the current cell data calling <code>append</code> as needed .
+     * 
+     * @param row cell's row
+     * @param column cell's column
+     * @param cellData data associated with cell
+     * @param accum the string buffer to append to
+     */
+    public abstract void renderCell(int row, int column, Object cellData,
+        StringBuffer accum);
+  }
 
   /**
    * Controls how each cell is rendered. The default implementation calls
    * toString on the cell data.
    */
-  public static class StringCellRenderer {
+  public static class StringCellRenderer extends CellRenderer {
+
     /**
      * Renders the current cell data to a {@link String}.
      * 
      * @param row cell's row
      * @param column cell's column
      * @param cellData data associated with cell
-     * @return the rendered string
+     * @param accum the string buffer to append too
      */
-    public String renderCell(int row, int column, Object cellData) {
-      return cellData.toString();
+    public void renderCell(int row, int column, Object cellData,
+        StringBuffer accum) {
+      accum.append(cellData.toString());
     }
   }
 
@@ -84,7 +102,7 @@ public abstract class TableBulkRenderer {
   /**
    * The default string renderer.
    */
-  private static StringCellRenderer DEFAULT_RENDERER = new StringCellRenderer();
+  private static CellRenderer DEFAULT_RENDERER = new StringCellRenderer();
 
   /**
    * Scratch Element used to render table and row strings.
@@ -104,7 +122,7 @@ public abstract class TableBulkRenderer {
   /**
    * The renderer used to render cell data.
    */
-  private StringCellRenderer renderer = DEFAULT_RENDERER;
+  private CellRenderer renderer;
 
   /**
    * Constructor for the bulk renderer.
@@ -112,7 +130,7 @@ public abstract class TableBulkRenderer {
    * @param table the table to be bulk rendered
    */
   public TableBulkRenderer(HTMLTable table) {
-    this(table, new StringCellRenderer());
+    this(table, DEFAULT_RENDERER);
   }
 
   /**
@@ -121,9 +139,9 @@ public abstract class TableBulkRenderer {
    * @param table the table to be bulk rendered
    * @param renderer the renderer that should be used during bulk rendering
    */
-  public TableBulkRenderer(HTMLTable table, StringCellRenderer renderer) {
+  public TableBulkRenderer(HTMLTable table, CellRenderer renderer) {
     this.table = table;
-    this.setRenderer(renderer);
+    this.setCellRenderer(renderer);
   }
 
   /**
@@ -131,7 +149,7 @@ public abstract class TableBulkRenderer {
    * 
    * @return the renderer
    */
-  public StringCellRenderer getRenderer() {
+  public CellRenderer getCellRenderer() {
     return renderer;
   }
 
@@ -201,7 +219,7 @@ public abstract class TableBulkRenderer {
    * 
    * @param renderer the renderer to set
    */
-  public void setRenderer(StringCellRenderer renderer) {
+  public void setCellRenderer(CellRenderer renderer) {
     this.renderer = renderer;
   }
 
@@ -219,10 +237,10 @@ public abstract class TableBulkRenderer {
    * @param options rendering options for this table
    */
   protected void renderRows(final Iterator rows, final RenderingOptions options) {
-    final JavaScriptObject temp = tempNew();
-    tempAdd(temp, "<table><tbody>");
+    final StringBuffer temp = new StringBuffer();
+    temp.append("<table><tbody>");
     if (options.headerRow != null) {
-      tempAdd(temp, options.headerRow);
+      temp.append(options.headerRow);
     }
     final long endTime = System.currentTimeMillis() + MAX_TIME;
 
@@ -237,7 +255,6 @@ public abstract class TableBulkRenderer {
         }
         int checkRow = ROWS_PER_TIME_CHECK;
         long endSlice = System.currentTimeMillis() + TIME_SLICE;
-
         for (; rows.hasNext(); ++rowIndex) {
           if (options.syncCall == false && --checkRow == 0) {
             checkRow = ROWS_PER_TIME_CHECK;
@@ -252,18 +269,18 @@ public abstract class TableBulkRenderer {
               return true;
             }
           }
-          tempAdd(temp, "<tr>");
+          temp.append("<tr>");
           Iterator row = (Iterator) rows.next();
           for (int cellIndex = 0; row.hasNext(); ++cellIndex) {
-            tempAdd(temp, options.startCell);
+            temp.append(options.startCell);
             Object next = row.next();
-            tempAdd(temp, getRenderer().renderCell(rowIndex, cellIndex, next));
-            tempAdd(temp, options.endCell);
+            getCellRenderer().renderCell(rowIndex, cellIndex, next, temp);
+            temp.append(options.endCell);
           }
-          tempAdd(temp, "</tr>");
+          temp.append("</tr>");
         }
-        tempAdd(temp, "</tbody> </table>");
-        renderRows(toStringTemp(temp));
+        temp.append("</tbody> </table>");
+        renderRows(temp.toString());
         if (options.callback != null) {
           options.callback.onRendered();
         }
@@ -271,10 +288,8 @@ public abstract class TableBulkRenderer {
       }
     }
     RenderTableCommand renderTable = new RenderTableCommand();
-    if (options.syncCall == true) {
-      renderTable.execute();
-    } else {
-      DeferredCommand.addCommand(new RenderTableCommand());
+    if (renderTable.execute()) {
+      DeferredCommand.addCommand(renderTable);
     }
   }
 
@@ -315,7 +330,7 @@ public abstract class TableBulkRenderer {
     var thatChild = thatBody.tBodies[0];
     table.appendChild(thatChild);
     return thatChild;
-  }-*/;
+ }-*/;
 
   /**
    * Short term hack to get protected setBodyElement.
@@ -324,15 +339,4 @@ public abstract class TableBulkRenderer {
     table.@com.google.gwt.widgetideas.table.client.overrides.HTMLTable::setBodyElement(Lcom/google/gwt/user/client/Element;)(newBody);
   }-*/;
 
-  private native void tempAdd(JavaScriptObject temp, String stuff) /*-{
-    temp[temp.length] = stuff;
-  }-*/;
-
-  private native JavaScriptObject tempNew() /*-{
-    return [];
-  }-*/;
-
-  private native String toStringTemp(JavaScriptObject temp) /*-{ 
-    return temp.join("");
-   }-*/;
 }
