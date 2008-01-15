@@ -1,4 +1,4 @@
-<project name="gwt-incubator" default="build">
+<project name="gwt-incubator" default="dist">
   
   <property environment="env" />
 
