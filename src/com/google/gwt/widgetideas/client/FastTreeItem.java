@@ -42,7 +42,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   static final int TREE_NODE_INTERIOR_CLOSED = 3;
 
   private static final String STYLENAME_LEAF = "leaf";
-  private static final String STYLENAME_DEFAULT = "gwt-TreeItem";
+  private static final String STYLENAME_DEFAULT = "gwt-FastTreeItem";
   private static final String STYLENAME_OPEN = "open";
   private static final String STYLENAME_CLOSED = "closed";
 
@@ -347,7 +347,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * 
    * @param open whether the item is open
    * @param fireEvents <code>true</code> to allow open/close events to be
-   *        fired
+   *          fired
    */
   public void setState(boolean open, boolean fireEvents) {
     if (open == isOpen()) {
@@ -449,7 +449,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * Selects or deselects this item.
    * 
    * @param selected <code>true</code> to select the item, <code>false</code>
-   *        to deselect it
+   *          to deselect it
    */
   void setSelection(boolean selected) {
     setStyleName(contentElem, "gwt-TreeItem-selected", selected);
@@ -460,10 +460,10 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
 
   void setTree(FastTree newTree) {
     if (newTree == null) {
-      if(widget != null){
+      if (widget != null) {
         tree.treeOrphan(widget);
       }
-      
+
     } else {
       // Early out.
       if (tree != null) {
@@ -471,7 +471,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
             "Each Tree Item can only be added to one tree");
       }
 
-      if(widget != null) {
+      if (widget != null) {
         // Add my widget to the new tree.
         tree.adopt(widget, this);
       }
@@ -481,9 +481,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     for (int i = 0, n = getChildCount(); i < n; ++i) {
       ((FastTreeItem) children.get(i)).setTree(newTree);
     }
-
   }
-
 
   void updateState() {
     // No work to be done.
