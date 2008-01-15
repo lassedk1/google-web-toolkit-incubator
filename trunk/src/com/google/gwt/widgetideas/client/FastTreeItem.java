@@ -35,11 +35,11 @@ import java.util.List;
  */
 
 public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems {
-  private static final String STYLENAME_CHILDREN = "children";
   static final int TREE_NODE_LEAF = 0;
   static final int TREE_NODE_INTERIOR_NEVER_OPENED = 1;
   static final int TREE_NODE_INTERIOR_OPEN = 2;
   static final int TREE_NODE_INTERIOR_CLOSED = 3;
+  private static final String STYLENAME_CHILDREN = "children";
 
   private static final String STYLENAME_LEAF = "leaf";
   private static final String STYLENAME_DEFAULT = "gwt-FastTreeItem";
@@ -125,7 +125,9 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     DOM.appendChild(childElems, item.getElement());
 
     // Adopt.
-    item.setTree(tree);
+    if (tree != null) {
+      item.setTree(tree);
+    }
 
     if (children.size() == 1) {
       updateState();
@@ -299,7 +301,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     }
 
     // Orphan.
-    item.setTree(null);
+    item.clearTree();
 
     // Physical detach.
     DOM.removeChild(childElems, item.getElement());
@@ -423,6 +425,17 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   protected void onSelected() {
   }
 
+  void clearTree() {
+    if (tree != null) {
+      if (widget != null) {
+        tree.treeOrphan(widget);
+      }
+      for (int i = 0, n = getChildCount(); i < n; ++i) {
+        ((FastTreeItem) children.get(i)).clearTree();
+      }
+    }
+  }
+
   void dumpTreeItems(List accum) {
     if (isInteriorNode()) {
       for (int i = 0; i < children.size(); i++) {
@@ -459,25 +472,22 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   }
 
   void setTree(FastTree newTree) {
-    if (newTree == null) {
-      if (widget != null) {
-        tree.treeOrphan(widget);
-      }
-
-    } else {
-      // Early out.
-      if (tree != null) {
-        throw new IllegalStateException(
-            "Each Tree Item can only be added to one tree");
-      }
-
-      if (widget != null) {
-        // Add my widget to the new tree.
-        tree.adopt(widget, this);
-      }
+    if (tree == newTree) {
+      return;
     }
 
+    // Early out.
+    if (tree != null) {
+      throw new IllegalStateException(
+          "Each Tree Item can only be added to one tree");
+    }
     tree = newTree;
+
+    if (widget != null) {
+      // Add my widget to the new tree.
+      tree.adopt(widget, this);
+    }
+
     for (int i = 0, n = getChildCount(); i < n; ++i) {
       ((FastTreeItem) children.get(i)).setTree(newTree);
     }
