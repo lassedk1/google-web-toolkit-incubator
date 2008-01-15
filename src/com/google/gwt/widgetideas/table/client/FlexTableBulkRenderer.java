@@ -35,4 +35,14 @@ public class FlexTableBulkRenderer extends TableBulkRenderer {
   public FlexTableBulkRenderer(FlexTable table) {
     super(table);
   }
+  
+  /**
+   * Constructor.
+   * 
+   * @param table the table to be bulk loaded
+   * 
+   */
+  public FlexTableBulkRenderer(FlexTable table, CellRenderer renderer) {
+    super(table, renderer);
+  }
 }

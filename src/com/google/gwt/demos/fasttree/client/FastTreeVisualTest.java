@@ -37,7 +37,6 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.FastTree;
 import com.google.gwt.widgetideas.client.FastTreeItem;
-import com.google.gwt.widgetideas.client.HasFastTreeItems;
 
 import java.util.ArrayList;
 
@@ -58,8 +57,22 @@ public class FastTreeVisualTest extends FastTreeDemo implements EntryPoint {
     return p;
   }
 
-  public String getInstructions() {
-    return "Opening both trees should display correctly";
+  public void outdorsStore() {
+    FastTree t = new FastTree();
+    FastTreeItem camping = t.addItem("Camping Gear");
+    camping.addItem("Camping tents");
+    FastTreeItem cooking = camping.addItem("Cooking gear");
+    camping.setState(true);
+
+    t.setSelectedItem(cooking);
+
+    FastTreeItem ap = t.addItem("Apparel");
+    ap.addItem("Jackets");
+    ap.addItem("Shirts");
+    t.addItem("Footwear").becomeInteriorNode();
+    t.addItem("Coolers");
+    System.err.println(DOM.toString(t.getElement()));
+    RootPanel.get().add(t);
   }
 
   public void report(String s) {
@@ -94,23 +107,7 @@ public class FastTreeVisualTest extends FastTreeDemo implements EntryPoint {
     } else {
       throw new RuntimeException("What?");
     }
-  }
-
-  private void createChild(final HasFastTreeItems parent, final int index,
-      final int children) {
-
-    FastTreeItem item = new FastTreeItem("child" + index + " (" + children
-        + " children)") {
-      public void ensureChildren() {
-        for (int i = 0; i < children; i++) {
-          createChild(this, i, children + (i * 10));
-        }
-      }
-    };
-    item.becomeInteriorNode();
-    parent.addItem(item);
-  }
-
+  } 
   private Widget focusTree() {
     // Create a tree with a few items in it.
     FastTreeItem root = new FastTreeItem("root");

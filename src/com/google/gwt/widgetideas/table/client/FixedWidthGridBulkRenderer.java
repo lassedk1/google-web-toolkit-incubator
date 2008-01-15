@@ -42,9 +42,10 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
       // We're saving an extra object creation by calling super rather than
       // chaining them.
       super.localOnRendered();
-      Element e = getBulkLoadedGhostRow(getTable());
+      Element newGhostRow = getBulkLoadedGhostRow(getTable());
+      
       // Set the ghost row to point at correct location
-      ((FixedWidthGrid) getTable()).setGhostRow(e);
+      ((FixedWidthGrid) getTable()).setGhostRow(newGhostRow);
       if (userCallback != null) {
         userCallback.onRendered();
       }
