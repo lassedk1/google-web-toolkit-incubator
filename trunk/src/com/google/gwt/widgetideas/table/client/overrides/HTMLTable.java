@@ -1065,6 +1065,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
     }
   }
 
+
   /**
    * Sets the width of the table's border. This border is displayed around all
    * cells in the table.
@@ -1074,7 +1075,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
   public void setBorderWidth(int width) {
     DOM.setElementProperty(tableElem, "border", "" + width);
   }
-
+  
   /**
    * Sets the amount of padding to be added around all cells.
    * 
@@ -1091,6 +1092,35 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
    */
   public void setCellSpacing(int spacing) {
     DOM.setElementPropertyInt(tableElem, "cellSpacing", spacing);
+  }
+
+  /**
+   * Sets the element within the specified cell.
+   * <p>
+   * Inherited implementations may either throw IndexOutOfBounds exception if
+   * the cell does not exist, or allocate a new cell to store the content.
+   * </p>
+   * <p>
+   * FlexTable will automatically allocate the cell at the correct location and
+   * then set the widget. Grid will set the widget if and only if the cell is
+   * within the Grid's bounding box.
+   * </p>
+   * 
+   * @param widget The widget to be added
+   * @param row the cell's row
+   * @param column the cell's column
+   * @throws IndexOutOfBoundsException
+   */
+  public void setElement(int row, int column, Element element) {
+    prepareCell(row, column);
+    if (element != null) {
+ 
+      // Removes any existing widget.
+      Element td = cleanCell(row, column, true);
+ 
+      // Physical attach.
+      DOM.appendChild(td, element);
+     }
   }
 
   /**
