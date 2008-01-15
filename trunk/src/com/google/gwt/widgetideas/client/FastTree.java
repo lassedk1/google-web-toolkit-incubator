@@ -58,6 +58,9 @@ import java.util.NoSuchElementException;
 public class FastTree extends Panel implements HasWidgets, HasFocus,
     HasFastTreeItems {
 
+  private static final String STYLENAME_DEFAULT = "gwt-FastTree";
+  private static final String STYLENAME_SELECTION = "selection-bar";
+
   /**
    * Resources used.
    */
@@ -123,7 +126,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     focusable = impl.createFocusable();
     DOM.appendChild(getElement(), focusable);
     DOM.setStyleAttribute(getElement(), "position", "relative");
-    setStyleName(focusable, "gwt-Tree-selection-bar");
+    setStyleName(focusable, STYLENAME_SELECTION);
     UIObject.setVisible(focusable, false);
     sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK | Event.KEYEVENTS
         | Event.MOUSEEVENTS);
@@ -159,7 +162,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       }
     };
     root.setTree(this);
-    setStyleName("gwt-Tree");
+    setStyleName(STYLENAME_DEFAULT);
     moveFocusable(curSelection);
   }
 
