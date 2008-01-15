@@ -65,8 +65,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Resources used.
    */
   interface DefaultResources extends ImmutableResourceBundle {
-    public static final DefaultResources INSTANCE =
-        (DefaultResources) GWT.create(DefaultResources.class);
+    public static final DefaultResources INSTANCE = (DefaultResources) GWT.create(DefaultResources.class);
 
     /**
      * @gwt.resource FastTree.css
@@ -517,7 +516,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Selects a specified item.
    * 
    * @param item the item to be selected, or <code>null</code> to deselect all
-   *        items
+   *          items
    */
   public void setSelectedItem(FastTreeItem item) {
     setSelectedItem(item, true);
@@ -527,7 +526,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Selects a specified item.
    * 
    * @param item the item to be selected, or <code>null</code> to deselect all
-   *        items
+   *          items
    * @param fireEvents <code>true</code> to allow selection events to be fired
    */
   public void setSelectedItem(FastTreeItem item, boolean fireEvents) {
@@ -580,6 +579,8 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   }
 
   protected void onLoad() {
+    if (getSelectedItem() != null)
+      moveFocusable(getSelectedItem());
   }
 
   /**
@@ -662,8 +663,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     for (int i = 0, n = root.getChildCount(); i < n; ++i) {
       FastTreeItem child = root.getChild(i);
       if (DOM.compare(child.getElement(), hCurElem)) {
-        FastTreeItem retItem =
-            findItemByChain(chain, idx + 1, root.getChild(i));
+        FastTreeItem retItem = findItemByChain(chain, idx + 1, root.getChild(i));
         if (retItem == null) {
           return child;
         }
@@ -790,16 +790,15 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   }
 
   private native boolean shouldTreeDelegateFocusToElement(Element elem) /*-{
-     var name = elem.nodeName;
-     return ((name == "SELECT") ||
-             (name == "INPUT")  ||
-             (name == "TEXTAREA") ||
-             (name == "OPTION") ||
-             (name == "BUTTON") ||
-              (name == "LABEL"));
-     }-*/;
+       var name = elem.nodeName;
+       return ((name == "SELECT") ||
+               (name == "INPUT")  ||
+               (name == "TEXTAREA") ||
+               (name == "OPTION") ||
+               (name == "BUTTON") ||
+                (name == "LABEL"));
+       }-*/;
 }
-
 
 /**
  * A collection of convenience factories for creating iterators for widgets.
