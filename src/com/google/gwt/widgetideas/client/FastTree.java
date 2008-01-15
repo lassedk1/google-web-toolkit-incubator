@@ -58,9 +58,6 @@ import java.util.NoSuchElementException;
 public class FastTree extends Panel implements HasWidgets, HasFocus,
     HasFastTreeItems {
 
-  private static final String STYLENAME_DEFAULT = "gwt-FastTree";
-  private static final String STYLENAME_SELECTION = "selection-bar";
-
   /**
    * Resources used.
    */
@@ -88,6 +85,9 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
      */
     public DataResource treeOpen();
   }
+  private static final String STYLENAME_DEFAULT = "gwt-FastTree";
+
+  private static final String STYLENAME_SELECTION = "selection-bar";
 
   private static FocusImpl impl = (FocusImpl) GWT.create(FocusImpl.class);
 
@@ -162,7 +162,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     };
     root.setTree(this);
     setStyleName(STYLENAME_DEFAULT);
-    moveFocusable(curSelection);
+    moveSelectionBar(curSelection);
   }
 
   /**
@@ -251,7 +251,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       parent.setState(true);
       parent = parent.getParentItem();
     }
-    moveFocusable(curSelection);
+    moveSelectionBar(curSelection);
   }
 
   public FastTreeItem getChild(int index) {
@@ -578,9 +578,33 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     return true;
   }
 
+  /**
+   * Moves the selection bar around the given {@link FastTreeItem}.
+   * @param item the item to move selection bar to
+   */
+  protected void moveSelectionBar(FastTreeItem item) {
+    if (item == null || item.isShowing() == false) {
+      UIObject.setVisible(focusable, false);
+      return;
+    }
+    // focusable is being used for highlight as well.
+    // Get the location and size of the given item's content element relative
+    // to the tree.
+    Element selectedElem = item.getContentElem();
+
+    int top = DOM.getElementPropertyInt(selectedElem, "offsetTop");
+    int height = DOM.getElementPropertyInt(selectedElem, "offsetHeight");
+
+    // Set the focusable element's position and size to exactly underlap the
+    // item's content element.
+    DOM.setStyleAttribute(focusable, "height", height + "px");
+    DOM.setIntStyleAttribute(focusable, "top", top);
+    UIObject.setVisible(focusable, true);
+  }
+
   protected void onLoad() {
     if (getSelectedItem() != null)
-      moveFocusable(getSelectedItem());
+      moveSelectionBar(getSelectedItem());
   }
 
   /**
@@ -635,7 +659,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
           int targetLeft = item.getAbsoluteLeft();
           if (mouseLeft - targetLeft < item.getControlImageWidth()) {
             item.setState(!item.isOpen(), true);
-            moveFocusable(curSelection);
+            moveSelectionBar(curSelection);
             return false;
           }
         }
@@ -680,7 +704,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * @param selection
    */
   private void moveFocus(FastTreeItem selection) {
-    moveFocusable(selection);
+    moveSelectionBar(selection);
 
     HasFocus focusableWidget = selection.getFocusableWidget();
     if (focusableWidget != null) {
@@ -695,26 +719,6 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       // tree.
       impl.focus(focusable);
     }
-  }
-
-  private void moveFocusable(FastTreeItem selection) {
-    if (selection == null || selection.isShowing() == false) {
-      UIObject.setVisible(focusable, false);
-      return;
-    }
-    // focusable is being used for highlight as well.
-    // Get the location and size of the given item's content element relative
-    // to the tree.
-    Element selectedElem = selection.getContentElem();
-
-    int top = DOM.getElementPropertyInt(selectedElem, "offsetTop");
-    int height = DOM.getElementPropertyInt(selectedElem, "offsetHeight");
-
-    // Set the focusable element's position and size to exactly underlap the
-    // item's content element.
-    DOM.setStyleAttribute(focusable, "height", height + "px");
-    DOM.setIntStyleAttribute(focusable, "top", top);
-    UIObject.setVisible(focusable, true);
   }
 
   /**
@@ -781,7 +785,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         moveFocus(curSelection);
       } else {
         // Move highlight even if we do noeed to move focus.
-        moveFocusable(curSelection);
+        moveSelectionBar(curSelection);
       }
 
       // Select the item and fire the selection event.
