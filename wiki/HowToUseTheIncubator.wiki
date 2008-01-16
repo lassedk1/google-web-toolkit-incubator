@@ -3,9 +3,9 @@
 
 = Instructions =
  # Get an incubator jar:
-   * Download incubator from [http://google-web-toolkit-incubator.googlecode.com/files/incubator.jar here].
-   * Follow the instructions in MakingIncubatorBetter to create your own jar.
- # Add the downloaded jar to your project's classpath.
+   * Download [http://google-web-toolkit-incubator.googlecode.com/files/incubator.jar incubator.jar].
+   * Follow the instructions in MakingIncubatorBetter to create your own incubator.jar.
+ # Add the incubator.jar to your project's classpath.
  # Add the following lines to your module file:
 {{{	
    <inherits name='com.google.gwt.widgetideas.WidgetIdeas' />	
@@ -13,4 +13,4 @@
 }}}
  # Report bugs and enhancement requests  [http://code.google.com/p/google-web-toolkit-incubator/issues/entry here].
 
-And you are done.
+Have fun!
