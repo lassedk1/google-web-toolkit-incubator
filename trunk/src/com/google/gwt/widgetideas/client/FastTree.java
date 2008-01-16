@@ -596,9 +596,9 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     int height = DOM.getElementPropertyInt(selectedElem, "offsetHeight");
 
     // Set the focusable element's position and size to exactly underlap the
-    // item's content element.
+    // item's content element. 
     DOM.setStyleAttribute(focusable, "height", height + "px");
-    DOM.setIntStyleAttribute(focusable, "top", top);
+    DOM.setStyleAttribute(focusable, "top", top + "px");
     UIObject.setVisible(focusable, true);
   }
 
@@ -614,7 +614,6 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   protected void onUnload() {
   }
 
-  // Memory leak as child widgets are added but do to final method not removed.
   void adopt(Widget widget, FastTreeItem treeItem) {
     assert (!childWidgets.containsKey(widget));
     childWidgets.put(widget, treeItem);
@@ -794,14 +793,14 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   }
 
   private native boolean shouldTreeDelegateFocusToElement(Element elem) /*-{
-       var name = elem.nodeName;
-       return ((name == "SELECT") ||
-               (name == "INPUT")  ||
-               (name == "TEXTAREA") ||
-               (name == "OPTION") ||
-               (name == "BUTTON") ||
-                (name == "LABEL"));
-       }-*/;
+    var name = elem.nodeName;
+    return ((name == "SELECT") ||
+        (name == "INPUT")  ||
+        (name == "TEXTAREA") ||
+        (name == "OPTION") ||
+        (name == "BUTTON") ||
+        (name == "LABEL"));
+  }-*/;
 }
 
 /**
