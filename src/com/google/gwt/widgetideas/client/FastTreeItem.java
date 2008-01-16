@@ -35,10 +35,15 @@ import java.util.List;
  */
 
 public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems {
-  static final int TREE_NODE_LEAF = 0;
-  static final int TREE_NODE_INTERIOR_NEVER_OPENED = 1;
-  static final int TREE_NODE_INTERIOR_OPEN = 2;
-  static final int TREE_NODE_INTERIOR_CLOSED = 3;
+  private static final String STYLENAME_SELECTED = "selected";
+
+  // If an element was open, has all of its children removed, then new children
+  // added, it should become open again.
+  private static final int TREE_NODE_LEAF_OPEN = 0;
+  private static final int TREE_NODE_LEAF = 1;
+  private static final int TREE_NODE_INTERIOR_NEVER_OPENED = 2;
+  private static final int TREE_NODE_INTERIOR_OPEN = 3;
+  private static final int TREE_NODE_INTERIOR_CLOSED = 4;
   private static final String STYLENAME_CHILDREN = "children";
 
   private static final String STYLENAME_LEAF = "leaf";
@@ -107,7 +112,9 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
       item.remove();
     }
 
+
     if (children == null) {
+      // Never had children.
       if (isLeafNode()) {
         becomeInteriorNode();
       }
@@ -115,6 +122,15 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
       DOM.appendChild(getElement(), childElems);
       UIObject.setStyleName(childElems, STYLENAME_CHILDREN);
       children = new ArrayList();
+    } else if (isLeafNode()) {
+      // Previously had children.
+      if (state == TREE_NODE_LEAF) {
+        becomeInteriorNode();
+      } else{
+        state = TREE_NODE_INTERIOR_OPEN;
+        updateState();
+      }
+      setVisible(childElems, true);
     }
 
     // Logical attach.
@@ -241,7 +257,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * Is this {@link FastTreeItem} a leaf node?
    */
   public boolean isLeafNode() {
-    return state == TREE_NODE_LEAF;
+    return state <= TREE_NODE_LEAF;
   }
 
   /**
@@ -349,7 +365,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * 
    * @param open whether the item is open
    * @param fireEvents <code>true</code> to allow open/close events to be
-   *          fired
+   *        fired
    */
   public void setState(boolean open, boolean fireEvents) {
     if (open == isOpen()) {
@@ -462,10 +478,10 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * Selects or deselects this item.
    * 
    * @param selected <code>true</code> to select the item, <code>false</code>
-   *          to deselect it
+   *        to deselect it
    */
   void setSelection(boolean selected) {
-    setStyleName(contentElem, "gwt-TreeItem-selected", selected);
+    setStyleName(contentElem, STYLENAME_SELECTED, selected);
     if (selected) {
       onSelected();
     }
@@ -535,7 +551,11 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   }
 
   private void becomeLeaf() {
-    state = TREE_NODE_LEAF;
+    if (isOpen()) {
+      state = TREE_NODE_LEAF_OPEN;
+    } else {
+      state = TREE_NODE_LEAF;
+    }
     setStyleName(contentElem, STYLENAME_LEAF);
   }
 
