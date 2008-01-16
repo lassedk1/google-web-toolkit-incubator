@@ -11,4 +11,6 @@
    <inherits name='com.google.gwt.widgetideas.WidgetIdeas' />	
    <inherits name='com.google.gwt.widgetideas.LibIdeas' />
 }}}
- # Report bugs and enhancement requests  [http://code.google.com/p/google-web-toolkit-incubator/issues/entry here]
+ # Report bugs and enhancement requests  [http://code.google.com/p/google-web-toolkit-incubator/issues/entry here].
+
+And you are done.
