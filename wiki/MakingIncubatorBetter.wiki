@@ -1,12 +1,12 @@
 #summary Contributing to the GWT incubator project
 #labels Type-Guide
-= Introduction =
+= Making GWT Incubator Better =
 This page explains how to develop with the gwt-incubator source.  
 
 One of the most important things to remember is that gwt-incubator should be compiled against the most current *released* version of GWT. So, right now that would be gwt 1.4.
  
-= Setting up the incubator project =
-== Setup for Eclipse ==
+== Setting up the incubator project ==
+=== Setup for Eclipse ===
  # Follow the instructions [http://google-web-toolkit.googlecode.com/svn/trunk/eclipse/README.txt here] to set up your eclipse environment ^note: use IE does not display this page correctly^
  # Check out the following code
    # The GWT prerequisite tools and third party library code. Use `gwt/tools` directly if you have them installed. Otherwise download them here:
@@ -19,9 +19,9 @@ One of the most important things to remember is that gwt-incubator should be com
    # Add the `javaswf-20050404.jar` from your downloaded tools directory 
    # Add the junit jar using the eclipse "Add Library option". Select junit3 
 You now should be completely set up. 
-== Setup for other IDEs==
+=== Setup for other IDEs ===
 We would much appreciate instructions here, if you are motivated to add them, add them as a comment below and I'll pull them up to this section.
-=Contributing to Incubator=
+== Contributing to Incubator= =
 Before deciding to contribute source code to the incubator project, you should consider the questions below
   # Do you have a signed Google Contributors Agreement(found [http://code.google.com/webtoolkit/makinggwtbetter.html#clas here])?
   # Do you believe your source code should become part of the GWT code base?
