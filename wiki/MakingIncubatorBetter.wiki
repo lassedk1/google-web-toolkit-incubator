@@ -7,7 +7,7 @@ One of the most important things to remember is that gwt-incubator should be com
  
 == Setting up the incubator project ==
 === Setup for Eclipse ===
- # Follow the instructions [http://google-web-toolkit.googlecode.com/svn/trunk/eclipse/README.txt here] to set up your eclipse environment ^These linked instructions do not display correctly in IE or notepad.^
+ # Follow the instructions [http://google-web-toolkit.googlecode.com/svn/trunk/eclipse/README.txt here] to set up your eclipse environment.
  # Check out the following code from the gwt-incubator Subversion repository:
    # The GWT prerequisite tools and third party library code. Use `gwt/tools` directly if you have them installed. Otherwise download them here:
      {{{~/gwt-incubator$ svn checkout http://google-web-toolkit.googlecode.com/svn/tools/ tools}}}
