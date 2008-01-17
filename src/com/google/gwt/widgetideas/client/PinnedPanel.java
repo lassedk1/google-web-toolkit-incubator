@@ -43,6 +43,19 @@ import com.google.gwt.user.client.ui.Widget;
  * <p>
  * Planned enhancements: Allow panel to be collapsed in arbitrary direction.
  */
+
+
+/**
+ * {@link PinnedPanel} creates a panel that is, by default, pinned in place.
+ * When the pinned state it toggled, the contents of the panel will display only
+ * when the users mouse hovers over it, otherwise is will collapse to the left.
+ * A {@link ChangeEvent} is fired whenever the {@link PinnedPanel} changes it
+ * pinned state.
+ * <p>
+ * The default style name is gwt-PinnedPanel.
+ * <p>
+ * Planned enhancements: Allow panel to be collapsed in arbitrary direction.
+ */
 public class PinnedPanel extends Composite implements SourcesChangeEvents {
   /**
    * Hides the {@link PinnedPanel}.
@@ -53,8 +66,8 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
     }
 
     protected boolean processSizeChange(float shouldBe) {
-      currentOffshift = (int) (maxOffshift * (float) ((float) 1.0 - shouldBe))
-          - MIN_SLIDE_STEP;
+      currentOffshift =
+          (int) (maxOffshift * ((float) 1.0 - shouldBe)) - MIN_SLIDE_STEP;
       currentOffshift = Math.max(currentOffshift, 0);
       impl.setPanelPos(currentOffshift);
       return currentOffshift > 0;
@@ -88,7 +101,7 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
 
     public void run() {
       float hasTaken = System.currentTimeMillis() - started;
-      float shouldBe = (float) hasTaken / (float) TIME_TO_SLIDE;
+      float shouldBe = hasTaken / TIME_TO_SLIDE;
 
       if (processSizeChange(shouldBe)) {
         this.schedule(OVERLAY_SPEED);
@@ -126,7 +139,7 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
    */
   private class DelayHide extends Timer {
 
-    public void activate() {
+    public void activate() {    
       state.currentState = State.WILL_HIDE;
       delayedHide.schedule(DELAY_MILLI);
     }
@@ -219,7 +232,7 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
   /**
    * Number of intervals used to display panel.
    */
-  private static float TIME_TO_SLIDE = 400;
+  private static float TIME_TO_SLIDE = 200;
 
   /**
    * Minimum increment change per slide.
@@ -229,7 +242,7 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
   /**
    * How many milliseconds to delay a hover event before executing it.
    */
-  private static final int DELAY_MILLI = 100;
+  private static final int DELAY_MILLI = 400;
 
   /**
    * Default style name.
@@ -248,7 +261,8 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
   private SimplePanel hoverContainer;
   private ToggleButton pinnedToggle;
   private AbsolutePanel master;
-  private ChangeListenerCollection changeListeners = new ChangeListenerCollection();
+  private ChangeListenerCollection changeListeners =
+      new ChangeListenerCollection();
 
   /**
    * Constructor.
@@ -288,16 +302,12 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
                 delayedShow.cancel();
                 break;
               }
-              // TODO(ECC): Only old mozilla doesn't always respect
-              // eventGetToElement. Should be fixed in DOM.eventGetToElement
-              if (to == null) {
-                to = DOM.eventGetTarget(event);
-              }
+             
               if (to == null || (!DOM.isOrHasChild(this.getElement(), to))) {
                 delayedHide.activate();
                 break;
-              }
-
+              }  
+              break;
             case Event.ONMOUSEOVER:
               if ((state.shouldShow())) {
                 if (state.currentState == State.WILL_HIDE) {
@@ -320,7 +330,7 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
     initWidget(master);
     setStyleName(DEFAULT_STYLENAME);
     master.setWidth(width + "px");
-
+ 
     // Create hovering container.
     hoverContainer = new SimplePanel();
     hoverContainer.setWidget(hoverBar);
@@ -388,6 +398,7 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
 
   protected void show() {
     state.currentState = State.SHOWING;
+
     overlayTimer.cancel();
     hidingTimer.cancel();
     overlayTimer.started = System.currentTimeMillis();
