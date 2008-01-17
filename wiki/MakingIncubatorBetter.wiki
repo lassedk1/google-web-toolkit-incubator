@@ -27,15 +27,15 @@ We would much appreciate instructions here, if you are motivated to add them, ad
 Before deciding to contribute source code to the incubator project, you should consider the questions below
   # Do you have a signed Google Contributors Agreement(found [http://code.google.com/webtoolkit/makinggwtbetter.html#clas here])?
   # Do you believe your source code should become part of the GWT code base?
-  # Can you provide sample code, unit tests, and javadoc for your code base? 
+  # Can you provide sample code, unit tests, and javadoc for the code you wish to submit? 
   # Does your source code work on Internet Explorer, !FireFox, Opera, and Safari? 
-  # Are you willing, for next couple of months, to  
+  # Are you willing, for the next couple of months following your code submission, to:  
     * Fix all critical bugs in your code
     * Answer outstanding design questions
-If the answer to all the questions above is "yes", then your next step is to mail 
-Google-Web-Toolkit-Contributors@googlegroups.com with the little "Looking for Incubator sponsor for _synopsis of code_."
+If the answer to all the questions above is "yes", then your next step is to email 
+Google-Web-Toolkit-Contributors@googlegroups.com with the subject line "Looking for Incubator sponsor for _synopsis of code_."
 
 example:
   Looking for Incubator sponsor for DatePicker.
 
-At this point someone who already is a committer to gwt-incubator must be willing to sponsor your code. You will work with the sponsor to get the code into shape for submittal.  You may then petition to become a committer to gwt-incubator.
+At this point someone who already is a committer to gwt-incubator must be willing to sponsor your code. You will work with the sponsor to get the code in shape for submittal.  You may then petition to become a committer to gwt-incubator.
