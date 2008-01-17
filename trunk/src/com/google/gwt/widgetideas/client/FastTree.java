@@ -29,11 +29,9 @@ import com.google.gwt.user.client.ui.HasFocus;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerCollection;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MouseListener;
 import com.google.gwt.user.client.ui.MouseListenerCollection;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.impl.FocusImpl;
@@ -65,8 +63,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Resources used.
    */
   interface DefaultResources extends ImmutableResourceBundle {
-    public static final DefaultResources INSTANCE =
-        (DefaultResources) GWT.create(DefaultResources.class);
+    public static final DefaultResources INSTANCE = (DefaultResources) GWT.create(DefaultResources.class);
 
     /**
      * @gwt.resource FastTree.css
@@ -116,6 +113,9 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   private MouseListenerCollection mouseListeners;
   private final FastTreeItem root;
 
+  private Event keyDown;
+
+  private Event lastKeyDown;
 
   /**
    * Constructs a tree.
@@ -141,7 +141,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
 
         // Explicitly set top-level items' parents to null.
         item.setParentItem(null);
-       
+
         // Use no margin on top-most items.
         DOM.setIntStyleAttribute(item.getElement(), "marginLeft", 0);
       }
@@ -250,7 +250,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       parent.setState(true);
       parent = parent.getParentItem();
     }
-    moveSelectionBar(curSelection);
+    moveFocus(curSelection);
   }
 
   public FastTreeItem getChild(int index) {
@@ -296,7 +296,6 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   public int getTabIndex() {
     return impl.getTabIndex(focusable);
   }
-
   public Iterator iterator() {
     final Widget[] widgets = new Widget[childWidgets.size()];
     childWidgets.keySet().toArray(widgets);
@@ -305,6 +304,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
 
   public void onBrowserEvent(Event event) {
     int eventType = DOM.eventGetType(event);
+
     switch (eventType) {
       case Event.ONCLICK: {
         Element e = DOM.eventGetTarget(event);
@@ -375,7 +375,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       }
 
       case Event.ONKEYDOWN:
-
+        keyDown = event;
         // Intentional fallthrough.
       case Event.ONKEYUP:
         if (eventType == Event.ONKEYUP) {
@@ -391,65 +391,28 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
           }
         }
 
-        // Intentional fallthrough.
+        // Intentional fall through.
       case Event.ONKEYPRESS: {
 
         if (keyboardListeners != null) {
           keyboardListeners.fireKeyboardEvent(this, event);
         }
-        if (Event.ONKEYPRESS != eventType) {
-          break;
-        }
-        // If nothing's selected, select the first item.
-        if (curSelection == null) {
-          if (root.getChildCount() > 0) {
-            onSelection(root.getChild(0), true, true);
-          }
-          super.onBrowserEvent(event);
-          return;
-        }
 
-        // Handle keyboard events if keyboard navigation is enabled
-        if (isKeyboardNavigationEnabled(curSelection)) {
-          switch (DOMHelper.standardizeKeycode(DOM.eventGetKeyCode(event))) {
-            case KeyboardListener.KEY_UP: {
-              moveSelectionUp(curSelection);
-              DOM.eventPreventDefault(event);
-              break;
-            }
-            case KeyboardListener.KEY_DOWN: {
-              moveSelectionDown(curSelection, true);
-              DOM.eventPreventDefault(event);
-              break;
-            }
-            case KeyboardListener.KEY_LEFT: {
-              if (curSelection.isOpen()) {
-                curSelection.setState(false);
-              } else {
-                FastTreeItem parent = curSelection.getParentItem();
-                if (parent != null) {
-                  setSelectedItem(parent);
-                }
-              }
-              DOM.eventPreventDefault(event);
-              break;
-            }
-            case KeyboardListener.KEY_RIGHT: {
-              if (!curSelection.isOpen()) {
-                curSelection.setState(true);
-              } else if (curSelection.getChildCount() > 0) {
-                setSelectedItem(curSelection.getChild(0));
-              }
-              DOM.eventPreventDefault(event);
-              break;
-            }
+        // Trying to avoid duplicate key downs and fire navigation despite
+        // missing key downs.
+        if (eventType != Event.ONKEYUP) {
+          if (lastKeyDown == null || (!lastKeyDown.equals(keyDown))) {
+            keyboardNavigation(event);
+          }
+          if (eventType == Event.ONKEYPRESS) {
+            lastKeyDown = null;
+          } else {
+            lastKeyDown = keyDown;
           }
         }
 
         break;
       }
-
-
     }
 
     // We must call SynthesizedWidget's implementation for all other events.
@@ -514,7 +477,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Selects a specified item.
    * 
    * @param item the item to be selected, or <code>null</code> to deselect all
-   *        items
+   *          items
    */
   public void setSelectedItem(FastTreeItem item) {
     setSelectedItem(item, true);
@@ -524,7 +487,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Selects a specified item.
    * 
    * @param item the item to be selected, or <code>null</code> to deselect all
-   *        items
+   *          items
    * @param fireEvents <code>true</code> to allow selection events to be fired
    */
   public void setSelectedItem(FastTreeItem item, boolean fireEvents) {
@@ -602,7 +565,9 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   }
 
   protected void onLoad() {
-    if (getSelectedItem() != null) moveSelectionBar(getSelectedItem());
+    if (getSelectedItem() != null) {
+      moveSelectionBar(getSelectedItem());
+    }
   }
 
   /**
@@ -684,8 +649,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     for (int i = 0, n = root.getChildCount(); i < n; ++i) {
       FastTreeItem child = root.getChild(i);
       if (DOM.compare(child.getElement(), hCurElem)) {
-        FastTreeItem retItem =
-            findItemByChain(chain, idx + 1, root.getChild(i));
+        FastTreeItem retItem = findItemByChain(chain, idx + 1, root.getChild(i));
         if (retItem == null) {
           return child;
         }
@@ -696,6 +660,54 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     return findItemByChain(chain, idx + 1, root);
   }
 
+  private void keyboardNavigation(Event event) {
+    // If nothing's selected, select the first item.
+    if (curSelection == null) {
+      if (root.getChildCount() > 0) {
+        onSelection(root.getChild(0), true, true);
+      }
+      super.onBrowserEvent(event);
+      return;
+    }
+
+    // Handle keyboard events if keyboard navigation is enabled
+    if (isKeyboardNavigationEnabled(curSelection)) {
+      switch (DOMHelper.standardizeKeycode(DOM.eventGetKeyCode(event))) {
+        case KeyboardListener.KEY_UP: {
+          moveSelectionUp(curSelection);
+          DOM.eventPreventDefault(event);
+          break;
+        }
+        case KeyboardListener.KEY_DOWN: {
+          moveSelectionDown(curSelection, true);
+          DOM.eventPreventDefault(event);
+          break;
+        }
+        case KeyboardListener.KEY_LEFT: {
+          if (curSelection.isOpen()) {
+            curSelection.setState(false);
+          } else {
+            FastTreeItem parent = curSelection.getParentItem();
+            if (parent != null) {
+              setSelectedItem(parent);
+            }
+          }
+          DOM.eventPreventDefault(event);
+          break;
+        }
+        case KeyboardListener.KEY_RIGHT: {
+          if (!curSelection.isOpen()) {
+            curSelection.setState(true);
+          } else if (curSelection.getChildCount() > 0) {
+            setSelectedItem(curSelection.getChild(0));
+          }
+          DOM.eventPreventDefault(event);
+          break;
+        }
+      }
+    }
+  }
+
   /**
    * Move the tree focus to the specified selected item.
    * 
@@ -703,16 +715,11 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    */
   private void moveFocus(FastTreeItem selection) {
     moveSelectionBar(selection);
-
+    DOM.scrollIntoView(focusable);
     HasFocus focusableWidget = selection.getFocusableWidget();
     if (focusableWidget != null) {
       focusableWidget.setFocus(true);
-      DOM.scrollIntoView(((Widget) focusableWidget).getElement());
     } else {
-
-      // Scroll it into view.
-      DOM.scrollIntoView(focusable);
-
       // Ensure Focus is set, as focus may have been previously delegated by
       // tree.
       impl.focus(focusable);
@@ -782,7 +789,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       if (moveFocus) {
         moveFocus(curSelection);
       } else {
-        // Move highlight even if we do noeed to move focus.
+        // Move highlight even if we do no not need to move focus.
         moveSelectionBar(curSelection);
       }
 
@@ -792,16 +799,15 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   }
 
   private native boolean shouldTreeDelegateFocusToElement(Element elem) /*-{
-       var name = elem.nodeName;
-       return ((name == "SELECT") ||
-           (name == "INPUT")  ||
-           (name == "TEXTAREA") ||
-           (name == "OPTION") ||
-           (name == "BUTTON") ||
-           (name == "LABEL"));
-     }-*/;
+    var name = elem.nodeName;
+      return ((name == "SELECT") ||
+        (name == "INPUT")  ||
+        (name == "TEXTAREA") ||
+        (name == "OPTION") ||
+        (name == "BUTTON") ||
+        (name == "LABEL"));
+   }-*/;
 }
-
 
 /**
  * A collection of convenience factories for creating iterators for widgets.
