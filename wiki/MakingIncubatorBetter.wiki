@@ -21,7 +21,7 @@ One of the most important things to remember is that gwt-incubator should be com
 You now should be completely set up. 
 === Setup for other IDEs ===
 We would much appreciate instructions here, if you are motivated to add them, add them as a comment below and I'll pull them up to this section.
-== Contributing to Incubator= =
+== Contributing to Incubator ==
 Before deciding to contribute source code to the incubator project, you should consider the questions below
   # Do you have a signed Google Contributors Agreement(found [http://code.google.com/webtoolkit/makinggwtbetter.html#clas here])?
   # Do you believe your source code should become part of the GWT code base?
