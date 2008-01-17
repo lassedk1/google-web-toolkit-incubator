@@ -371,6 +371,10 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     if (open == isOpen()) {
       return;
     }
+    // Cannot open leaf nodes.
+    if (isLeafNode()){
+      return;
+    }
     if (open) {
       if (state == TREE_NODE_INTERIOR_NEVER_OPENED) {
         ensureChildren();

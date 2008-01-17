@@ -29,12 +29,15 @@ import com.google.gwt.user.client.ui.HasFocus;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerCollection;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MouseListener;
 import com.google.gwt.user.client.ui.MouseListenerCollection;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.impl.FocusImpl;
+import com.google.gwt.widgetideas.client.overrides.DOMHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,7 +65,8 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Resources used.
    */
   interface DefaultResources extends ImmutableResourceBundle {
-    public static final DefaultResources INSTANCE = (DefaultResources) GWT.create(DefaultResources.class);
+    public static final DefaultResources INSTANCE =
+        (DefaultResources) GWT.create(DefaultResources.class);
 
     /**
      * @gwt.resource FastTree.css
@@ -85,6 +89,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
      */
     public DataResource treeOpen();
   }
+
   private static final String STYLENAME_DEFAULT = "gwt-FastTree";
 
   private static final String STYLENAME_SELECTION = "selection-bar";
@@ -111,11 +116,6 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   private MouseListenerCollection mouseListeners;
   private final FastTreeItem root;
 
-  /**
-   * Keeps track of the last event type seen. We do this to determine if we have
-   * a duplicate key down.
-   */
-  private int lastEventType;
 
   /**
    * Constructs a tree.
@@ -141,8 +141,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
 
         // Explicitly set top-level items' parents to null.
         item.setParentItem(null);
-        getChildren().add(item);
-
+       
         // Use no margin on top-most items.
         DOM.setIntStyleAttribute(item.getElement(), "marginLeft", 0);
       }
@@ -376,6 +375,31 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       }
 
       case Event.ONKEYDOWN:
+
+        // Intentional fallthrough.
+      case Event.ONKEYUP:
+        if (eventType == Event.ONKEYUP) {
+          // If we got here because of a key tab, then we need to make sure the
+          // current tree item is selected.
+          if (DOM.eventGetKeyCode(event) == KeyboardListener.KEY_TAB) {
+            ArrayList chain = new ArrayList();
+            collectElementChain(chain, getElement(), DOM.eventGetTarget(event));
+            FastTreeItem item = findItemByChain(chain, 0, root);
+            if (item != getSelectedItem()) {
+              setSelectedItem(item, true);
+            }
+          }
+        }
+
+        // Intentional fallthrough.
+      case Event.ONKEYPRESS: {
+
+        if (keyboardListeners != null) {
+          keyboardListeners.fireKeyboardEvent(this, event);
+        }
+        if (Event.ONKEYPRESS != eventType) {
+          break;
+        }
         // If nothing's selected, select the first item.
         if (curSelection == null) {
           if (root.getChildCount() > 0) {
@@ -385,16 +409,9 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
           return;
         }
 
-        if (lastEventType == Event.ONKEYDOWN) {
-          // Two key downs in a row signal a duplicate event. Multiple key
-          // downs can be triggered in the current configuration independent
-          // of the browser.
-          return;
-        }
-
         // Handle keyboard events if keyboard navigation is enabled
         if (isKeyboardNavigationEnabled(curSelection)) {
-          switch (DOM.eventGetKeyCode(event)) {
+          switch (DOMHelper.standardizeKeycode(DOM.eventGetKeyCode(event))) {
             case KeyboardListener.KEY_UP: {
               moveSelectionUp(curSelection);
               DOM.eventPreventDefault(event);
@@ -429,33 +446,14 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
           }
         }
 
-        // Intentional fallthrough.
-      case Event.ONKEYUP:
-        if (eventType == Event.ONKEYUP) {
-          // If we got here because of a key tab, then we need to make sure the
-          // current tree item is selected.
-          if (DOM.eventGetKeyCode(event) == KeyboardListener.KEY_TAB) {
-            ArrayList chain = new ArrayList();
-            collectElementChain(chain, getElement(), DOM.eventGetTarget(event));
-            FastTreeItem item = findItemByChain(chain, 0, root);
-            if (item != getSelectedItem()) {
-              setSelectedItem(item, true);
-            }
-          }
-        }
-
-        // Intentional fallthrough.
-      case Event.ONKEYPRESS: {
-        if (keyboardListeners != null) {
-          keyboardListeners.fireKeyboardEvent(this, event);
-        }
         break;
       }
+
+
     }
 
     // We must call SynthesizedWidget's implementation for all other events.
     super.onBrowserEvent(event);
-    lastEventType = eventType;
   }
 
   public boolean remove(Widget w) {
@@ -516,7 +514,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Selects a specified item.
    * 
    * @param item the item to be selected, or <code>null</code> to deselect all
-   *          items
+   *        items
    */
   public void setSelectedItem(FastTreeItem item) {
     setSelectedItem(item, true);
@@ -526,7 +524,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Selects a specified item.
    * 
    * @param item the item to be selected, or <code>null</code> to deselect all
-   *          items
+   *        items
    * @param fireEvents <code>true</code> to allow selection events to be fired
    */
   public void setSelectedItem(FastTreeItem item, boolean fireEvents) {
@@ -580,6 +578,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
 
   /**
    * Moves the selection bar around the given {@link FastTreeItem}.
+   * 
    * @param item the item to move selection bar to
    */
   protected void moveSelectionBar(FastTreeItem item) {
@@ -596,15 +595,14 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     int height = DOM.getElementPropertyInt(selectedElem, "offsetHeight");
 
     // Set the focusable element's position and size to exactly underlap the
-    // item's content element. 
+    // item's content element.
     DOM.setStyleAttribute(focusable, "height", height + "px");
     DOM.setStyleAttribute(focusable, "top", top + "px");
     UIObject.setVisible(focusable, true);
   }
 
   protected void onLoad() {
-    if (getSelectedItem() != null)
-      moveSelectionBar(getSelectedItem());
+    if (getSelectedItem() != null) moveSelectionBar(getSelectedItem());
   }
 
   /**
@@ -686,7 +684,8 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     for (int i = 0, n = root.getChildCount(); i < n; ++i) {
       FastTreeItem child = root.getChild(i);
       if (DOM.compare(child.getElement(), hCurElem)) {
-        FastTreeItem retItem = findItemByChain(chain, idx + 1, root.getChild(i));
+        FastTreeItem retItem =
+            findItemByChain(chain, idx + 1, root.getChild(i));
         if (retItem == null) {
           return child;
         }
@@ -793,15 +792,16 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   }
 
   private native boolean shouldTreeDelegateFocusToElement(Element elem) /*-{
-    var name = elem.nodeName;
-    return ((name == "SELECT") ||
-        (name == "INPUT")  ||
-        (name == "TEXTAREA") ||
-        (name == "OPTION") ||
-        (name == "BUTTON") ||
-        (name == "LABEL"));
-  }-*/;
+       var name = elem.nodeName;
+       return ((name == "SELECT") ||
+           (name == "INPUT")  ||
+           (name == "TEXTAREA") ||
+           (name == "OPTION") ||
+           (name == "BUTTON") ||
+           (name == "LABEL"));
+     }-*/;
 }
+
 
 /**
  * A collection of convenience factories for creating iterators for widgets.
