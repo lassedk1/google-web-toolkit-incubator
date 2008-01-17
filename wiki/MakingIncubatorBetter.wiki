@@ -1,4 +1,4 @@
-#summary developing with the incubator source
+#summary Contributing to the GWT incubator project
 #labels Type-Guide
 = Introduction =
 This page explains how to develop with the gwt-incubator source.  
