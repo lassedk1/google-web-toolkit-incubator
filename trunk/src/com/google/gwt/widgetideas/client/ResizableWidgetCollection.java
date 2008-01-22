@@ -266,7 +266,7 @@ public class ResizableWidgetCollection implements WindowResizeListener {
    * Check to see if any Widgets have been resized and call their handlers
    * appropriately.
    */
-  private void checkWidgetSize() {
+  public void checkWidgetSize() {
     Iterator it = widgets.entrySet().iterator();
     while (it.hasNext()) {
       Map.Entry entry = (Map.Entry) it.next();
