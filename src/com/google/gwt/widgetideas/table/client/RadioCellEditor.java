@@ -31,17 +31,17 @@ public class RadioCellEditor extends AbstractCellEditor {
    * A unique ID counter so give radio buttons unique names.
    */
   private static int uniqueID = 0;
-  
+
   /**
    * The group name.
    */
   private String groupName;
-  
+
   /**
    * The radio buttons in this editor.
    */
   private List radios = new ArrayList();
-  
+
   /**
    * The vertical panel used to layout the contents.
    */
@@ -62,12 +62,19 @@ public class RadioCellEditor extends AbstractCellEditor {
   public RadioCellEditor(boolean useDefaultButtons) {
     super(new VerticalPanel(), useDefaultButtons);
     vpanel = (VerticalPanel) getContentWidget();
-    
+
     // Assign a unique name
     uniqueID++;
     groupName = "gwtRadioCellEditor" + uniqueID;
   }
-  
+
+  /**
+   * Gets the list of {@link RadioButton} widges associated with this editor.
+   */
+  public List getRadioButtons() {
+    return radios;
+  }
+
   /**
    * Add an option to this editor.
    * 
@@ -94,7 +101,7 @@ public class RadioCellEditor extends AbstractCellEditor {
     }
     return null;
   }
-  
+
   /**
    * Fired when editing a cell, just after the cell is shown.
    * 
