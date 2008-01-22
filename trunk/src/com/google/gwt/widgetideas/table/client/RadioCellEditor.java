@@ -69,13 +69,6 @@ public class RadioCellEditor extends AbstractCellEditor {
   }
 
   /**
-   * Gets the list of {@link RadioButton} widges associated with this editor.
-   */
-  public List getRadioButtons() {
-    return radios;
-  }
-
-  /**
    * Add an option to this editor.
    * 
    * @param label the value of the option
@@ -84,6 +77,13 @@ public class RadioCellEditor extends AbstractCellEditor {
     RadioButton button = new RadioButton(groupName, label);
     radios.add(button);
     vpanel.add(button);
+  }
+
+  /**
+   * Gets the list of {@link RadioButton} widges associated with this editor.
+   */
+  public List getRadioButtons() {
+    return radios;
   }
 
   /**
