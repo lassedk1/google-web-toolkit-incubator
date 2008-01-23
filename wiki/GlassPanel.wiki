@@ -76,7 +76,7 @@ The glass panel widget should work (display) correctly under all combinations of
 
 = The basics =
 
-== Adding GlassPanel to Your Project ==
+== Adding !GlassPanel to Your Project ==
   # Follow the  instructions in the [http://code.google.com/p/google-web-toolkit-incubator/wiki/HowToUseTheIncubator How To User the Incubator wiki]
   # Make sure your IDE, Java Compiler and GWT compile all have access to the compiled classes and source code:
     * If you use Eclipse, modify your launch configuration(s) to include the new jar so that the GWT compiler will be able to locate the Java *source* files
