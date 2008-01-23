@@ -95,7 +95,7 @@ The glass panel widget should work (display) correctly under all combinations of
     /* Override glass panel color to be `green` */
     background-color: green !important;
 
-    /* Override glass panel opacity to be `10%` (=`90%` transparent) */
+    /* Override glass panel to 10% opacity (i.e. 90% transparency) */
     filter: alpha(opacity = 10) !important; /* IE */
     opacity: 0.1 !important; /* non-IE */
 
