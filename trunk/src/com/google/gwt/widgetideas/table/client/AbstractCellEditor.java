@@ -84,17 +84,17 @@ public abstract class AbstractCellEditor extends PopupPanel {
    * The images used for all cell editors.
    */
   private static AbstractCellEditorImages images = (AbstractCellEditorImages) GWT.create(AbstractCellEditorImages.class);
- 
+
   /**
    * The Widget used as an accept button.
    */
   private Widget acceptWidget = null;
-  
+
   /**
    * The Widget used as a cancel button.
    */
   private Widget cancelWidget = null;
-  
+
   /**
    * The current callback.
    */
@@ -207,6 +207,20 @@ public abstract class AbstractCellEditor extends PopupPanel {
   }
 
   /**
+   * Gets the current column.
+   */
+  public int getCurrentColumn() {
+    return curCell;
+  }
+
+  /**
+   * Gets the current row.
+   */
+  public int getCurrentRow() {
+    return curRow;
+  }
+
+  /**
    * Get the label text.
    * 
    * @return the label text
@@ -236,14 +250,14 @@ public abstract class AbstractCellEditor extends PopupPanel {
   public void onBrowserEvent(Event event) {
     if (DOM.eventGetType(event) == Event.ONCLICK) {
       Element target = DOM.eventGetTarget(event);
-      
+
       // Check if this is an accept event
       if (acceptWidget != null) {
         if (DOM.isOrHasChild(acceptWidget.getElement(), target)) {
           accept();
         }
       }
-      
+
       // Check if this is a cancel event
       if (acceptWidget != null) {
         if (DOM.isOrHasChild(cancelWidget.getElement(), target)) {
@@ -252,7 +266,7 @@ public abstract class AbstractCellEditor extends PopupPanel {
       }
     }
   }
-  
+
   /**
    * Fired when the user cancels. Override this method and return false to
    * prevent the user from cancelling.
@@ -274,7 +288,7 @@ public abstract class AbstractCellEditor extends PopupPanel {
   }
 
   /**
-   * Set the widget to use as the accept button.  This cell editor will
+   * Set the widget to use as the accept button. This cell editor will
    * automatically respond to click events originating in the widget.
    * 
    * @param acceptWidget the accept widget
@@ -291,7 +305,7 @@ public abstract class AbstractCellEditor extends PopupPanel {
   }
 
   /**
-   * Set the widget to use as the cancel button.  This cell editor will
+   * Set the widget to use as the cancel button. This cell editor will
    * automatically respond to click events originating in the widget.
    * 
    * @param cancelWidget the cancel widget
@@ -327,18 +341,18 @@ public abstract class AbstractCellEditor extends PopupPanel {
     if (!onAccept(value)) {
       return false;
     }
-  
+
     // Hide the popup
     hide();
-  
+
     // Set the cell's contents
     curCallback.onAccept(curRow, curCell, value);
-  
+
     // Clear out the data
     curCallback = null;
     curRow = -1;
     curCell = -1;
-    
+
     return true;
   }
 
@@ -352,7 +366,7 @@ public abstract class AbstractCellEditor extends PopupPanel {
     if (!onCancel()) {
       return false;
     }
-    
+
     // Hide the popup
     hide();
 
@@ -363,7 +377,7 @@ public abstract class AbstractCellEditor extends PopupPanel {
       curRow = -1;
       curCell = -1;
     }
-    
+
     return true;
   }
 
@@ -406,7 +420,7 @@ public abstract class AbstractCellEditor extends PopupPanel {
       DOM.setEventListener(cancelWidget.getElement(), this);
     }
   }
-  
+
   /**
    * Set the current value in the cell editor.
    * 
