@@ -18,6 +18,9 @@ package com.google.gwt.demos.scrolltable.client;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.widgetideas.table.client.TableModel.Request;
 
+/**
+ * Asynchronous version of {@link DataSourceService}.
+ */
 public interface DataSourceServiceAsync {
   public void requestRows(Request request, AsyncCallback callback);
 }

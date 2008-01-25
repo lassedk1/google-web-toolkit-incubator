@@ -259,7 +259,6 @@ public class FixedWidthGrid extends SelectionGrid implements
       // Get the visible width for all cells in the column
       if (row == 0) {
         int clientWidth = DOM.getElementPropertyInt(td, "clientWidth");
-        int offsetWidth = DOM.getElementPropertyInt(td, "offsetWidth");
         contentVisibleWidth = clientWidth - 2 * getCellPadding();
       }
 

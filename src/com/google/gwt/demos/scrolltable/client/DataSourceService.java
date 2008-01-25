@@ -16,9 +16,13 @@
 package com.google.gwt.demos.scrolltable.client;
 
 import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.widgetideas.table.client.TableModel.SerializableResponse;
 import com.google.gwt.widgetideas.table.client.TableModel.Request;
+import com.google.gwt.widgetideas.table.client.TableModel.SerializableResponse;
 
+/**
+ * A {@link RemoteService} to retrieve row data for the
+ * {@link PagingScrollTableDemo}.
+ */
 public interface DataSourceService extends RemoteService {
   public SerializableResponse requestRows(Request request);
 }
