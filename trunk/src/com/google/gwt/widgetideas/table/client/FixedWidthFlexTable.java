@@ -60,7 +60,6 @@ public class FixedWidthFlexTable extends FlexTable implements
      * @throws IndexOutOfBoundsException
      */
     public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
-      Element tableElem = grid.getElement();
       DOM.setStyleAttribute(grid.getGhostCellElement(column), "width", width
           + "px");
     }
@@ -629,7 +628,6 @@ public class FixedWidthFlexTable extends FlexTable implements
     if (maxRawColumnCount > curNumGhosts) {
       // Add ghosts as needed
       super.addCells(0, maxRawColumnCount - curNumGhosts);
-      CellFormatter formatter = getCellFormatter();
       for (int i = curNumGhosts; i < maxRawColumnCount; i++) {
         Element td = getGhostCellElement(i);
         DOM.setStyleAttribute(td, "height", "0px");

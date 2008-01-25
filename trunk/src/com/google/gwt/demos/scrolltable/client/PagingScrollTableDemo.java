@@ -138,7 +138,6 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
    * @param beforeRow the index to add the new row into
    */
   public static void insertDataRow(int beforeRow) {
-    PagingGrid gridView = (PagingGrid) scrollTable.getDataTable();
     tableController.insertRow(beforeRow);
   }
 

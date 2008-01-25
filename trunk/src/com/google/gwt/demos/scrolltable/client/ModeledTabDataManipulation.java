@@ -20,7 +20,6 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.table.client.CachedTableController;
 import com.google.gwt.widgetideas.table.client.PagingGrid;
-import com.google.gwt.widgetideas.table.client.ScrollTable;
 
 /**
  * Panel with options for manipulating data contents and number of cells.
@@ -34,7 +33,6 @@ public class ModeledTabDataManipulation extends DemoTabDataManipulation
    * @param sender
    */
   public void onClick(Widget sender) {
-    ScrollTable scrollTable = ScrollTableDemo.scrollTable;
     PagingGrid gridView = (PagingGrid) ScrollTableDemo.getDataTable();
     CachedTableController tableController =
         PagingScrollTableDemo.getTableController();

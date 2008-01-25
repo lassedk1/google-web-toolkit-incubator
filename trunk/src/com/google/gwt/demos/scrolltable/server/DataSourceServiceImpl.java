@@ -13,8 +13,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.demos.scrolltable.client;
+package com.google.gwt.demos.scrolltable.server;
 
+import com.google.gwt.demos.scrolltable.client.DataSourceData;
+import com.google.gwt.demos.scrolltable.client.DataSourceService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 import com.google.gwt.widgetideas.table.client.TableModel.SerializableResponse;
@@ -24,8 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Implementation of {@link DataSourceService}.
+ */
 public class DataSourceServiceImpl extends RemoteServiceServlet implements
     DataSourceService {
+  private static final long serialVersionUID = 1L;
+
   /**
    * The source of the data.
    */
@@ -43,8 +50,8 @@ public class DataSourceServiceImpl extends RemoteServiceServlet implements
   public SerializableResponse requestRows(Request request) {
     // Get the sort info, even though we ignore it
     ColumnSortList sortList = request.getColumnSortList();
-    int primarySortColumn = sortList.getPrimaryColumn();
-    boolean ascending = sortList.isPrimaryAscending();
+    sortList.getPrimaryColumn();
+    sortList.isPrimaryAscending();
 
     // Create some fake data
     List rowData = new ArrayList();
