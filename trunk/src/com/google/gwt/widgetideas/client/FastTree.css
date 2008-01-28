@@ -1,5 +1,6 @@
 /* Users usually should override styles in gwt-Tree*/
 .gwt-FastTree {
+  position: relative;
 }
 
 .gwt-FastTreeItem .open,.gwt-FastTreeItem .closed,.gwt-FastTreeItem .leaf
@@ -54,6 +55,6 @@
   border: 1px solid black;
   font-size: 0;
   position: absolute;
-  width: 100%;
   left: 0;
+  width: 100%;
 }
