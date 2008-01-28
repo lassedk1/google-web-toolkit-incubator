@@ -950,8 +950,10 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
               if (headerTable instanceof HasCellSpans) {
                 column = ((HasCellSpans) headerTable).getColumnIndex(row, cell);
               }
-              sortedColumnTrigger = cellElem;
-              ((HasSortableColumns) dataTable).sortColumn(column);
+              if (dataTable.getColumnCount() > column) {
+                sortedColumnTrigger = cellElem;
+                ((HasSortableColumns) dataTable).sortColumn(column);
+              }
             }
           }
         }
@@ -1386,7 +1388,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    * @return the actual amount of distributed width
    */
   private int redistributeWidth(int width, int startColumn) {
-    int numColumns = dataTable.getColumnCount();
+    int numColumns = Math.max(headerTable.getColumnCount(),
+        dataTable.getColumnCount());
     int actualWidth = 0;
     if (startColumn < numColumns) {
       if (width > 0) {
