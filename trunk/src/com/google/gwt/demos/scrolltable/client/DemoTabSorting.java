@@ -121,7 +121,7 @@ public class DemoTabSorting extends DemoTab implements ClickListener {
       } else if (sender == sortColumnButton) {
         // Sort a column
         int column = Integer.parseInt(columnIndexBox.getText());
-        dataTable.sortColumn(column, false);
+        dataTable.sortColumn(column);
       } else if (sender == toggleSortingButton) {
         if (scrollTable.isSortingEnabled()) {
           scrollTable.setSortingEnabled(false);
