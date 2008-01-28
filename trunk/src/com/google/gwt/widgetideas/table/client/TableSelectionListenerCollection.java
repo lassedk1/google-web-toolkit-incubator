@@ -69,7 +69,7 @@ public class TableSelectionListenerCollection extends ArrayList {
   public void fireCellUnhover(int row, int cell) {
     for (Iterator it = iterator(); it.hasNext();) {
       TableSelectionListener listener = (TableSelectionListener) it.next();
-      listener.onCellHover(row, cell);
+      listener.onCellUnhover(row, cell);
     }
   }
 
