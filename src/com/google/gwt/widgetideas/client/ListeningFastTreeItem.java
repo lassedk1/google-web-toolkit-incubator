@@ -50,8 +50,10 @@ public abstract class ListeningFastTreeItem extends FastTreeItem {
     super(widget);
   }
 
-  public abstract void beforeOpen();
+  public abstract void beforeClose();
 
+  public abstract void beforeOpen();
+  
   protected abstract boolean beforeSelectionLost();
 
   protected abstract void ensureChildren();
