@@ -30,45 +30,26 @@ public abstract class TableModel {
   /**
    * An iterator over an array.
    */
-  private static class ArrayIterator implements Iterator {
-    /**
-     * The internal array.
-     */
-    private Object[] array;
+  private static class ImmutableIterator implements Iterator {
+    private Iterator iterator;
 
-    /**
-     * The current index.
-     */
-    private int curIndex = 0;
-
-    /**
-     * The size of the array.
-     */
-    private int size;
-
-    public ArrayIterator(Object[] array, int size) {
-      this.array = array;
-      this.size = size;
+    public ImmutableIterator(Iterator iterator) {
+      this.iterator = iterator;
     }
 
     public boolean hasNext() {
-      return curIndex < size;
+      return iterator.hasNext();
     }
 
     public Object next() {
-      if (!hasNext()) {
-        throw new NoSuchElementException();
-      }
-      Object o = array[curIndex];
-      curIndex++;
-      return o;
+      return iterator.next();
     }
 
     public void remove() {
       throw (new UnsupportedOperationException());
     }
   }
-  
+
   /**
    * An {@link Iterator} over a 2D {@link Collection} of column data.
    */
@@ -104,7 +85,7 @@ public abstract class TableModel {
 
     public Object next() {
       if (!hasNext()) {
-        throw(new NoSuchElementException());
+        throw (new NoSuchElementException());
       }
       Collection next = (Collection) rows.next();
       if (next == null) {
@@ -236,21 +217,11 @@ public abstract class TableModel {
    */
   public static class ColumnSortList implements IsSerializable {
     /**
-     * The number of {@link ColumnSortInfo}s in the list.
-     */
-    private int numInfos = 0;
-
-    /**
-     * The {@link ColumnSortInfo}s.
-     * 
-     * TODO: replace with typed array list
-     */
-    private ColumnSortInfo[] infos = new ColumnSortInfo[100];
-
-    /**
      * A List used to manage the insertion/removal of {@link ColumnSortInfo}.
+     * 
+     * @gwt.typeArgs <com.google.gwt.widgetideas.table.client.TableModel.ColumnSortInfo>
      */
-    private transient List infosT = new ArrayList();
+    private List infos = new ArrayList();
 
     /**
      * Check if this object is equal to another.
@@ -268,13 +239,14 @@ public abstract class TableModel {
       if (obj instanceof ColumnSortList) {
         // Check the size of the lists
         ColumnSortList csl = (ColumnSortList) obj;
-        if (numInfos != csl.numInfos) {
+        if (size() != csl.size()) {
           return false;
         }
 
         // Compare the entries
-        for (int i = 0; i < numInfos; i++) {
-          if (!infos[i].equals(csl.infos[i])) {
+        int size = size();
+        for (int i = 0; i < size; i++) {
+          if (!infos.get(i).equals(csl.infos.get(i))) {
             return false;
           }
         }
@@ -306,8 +278,8 @@ public abstract class TableModel {
      * @return the primary column sort info
      */
     public ColumnSortInfo getPrimaryColumnSortInfo() {
-      if (numInfos > 0) {
-        return infos[0];
+      if (infos.size() > 0) {
+        return (ColumnSortInfo) infos.get(0);
       }
       return null;
     }
@@ -326,7 +298,7 @@ public abstract class TableModel {
     }
 
     public Iterator iterator() {
-      return new ArrayIterator(infos, numInfos);
+      return new ImmutableIterator(infos.iterator());
     }
 
     /**
@@ -335,7 +307,7 @@ public abstract class TableModel {
      * @return the size of the list
      */
     public int size() {
-      return numInfos;
+      return infos.size();
     }
 
     /**
@@ -351,20 +323,16 @@ public abstract class TableModel {
      */
     void add(int column, boolean ascending) {
       // Remove sort info for duplicate columns
-      for (int i = 0; i < infosT.size(); i++) {
-        ColumnSortInfo curInfo = (ColumnSortInfo) infosT.get(i);
+      for (int i = 0; i < infos.size(); i++) {
+        ColumnSortInfo curInfo = (ColumnSortInfo) infos.get(i);
         if (curInfo.getColumn() == column) {
-          infosT.remove(i);
+          infos.remove(i);
           i--;
         }
       }
 
       // Insert the new sort info
-      infosT.add(0, new ColumnSortInfo(column, ascending));
-
-      // Convert the List to an array
-      infosT.toArray(infos);
-      numInfos = infosT.size();
+      infos.add(0, new ColumnSortInfo(column, ascending));
     }
 
     /**
@@ -374,13 +342,11 @@ public abstract class TableModel {
      */
     ColumnSortList copy() {
       ColumnSortList copy = new ColumnSortList();
-      for (int i = 0; i < numInfos; i++) {
-        copy.infosT.add(new ColumnSortInfo(infos[i].getColumn(),
-            infos[i].isAscending()));
+      Iterator it = infos.iterator();
+      while (it.hasNext()) {
+        ColumnSortInfo info = (ColumnSortInfo) it.next();
+        copy.infos.add(new ColumnSortInfo(info.getColumn(), info.isAscending()));
       }
-      // Convert the List to an array
-      copy.infosT.toArray(copy.infos);
-      copy.numInfos = numInfos;
       return copy;
     }
   }
