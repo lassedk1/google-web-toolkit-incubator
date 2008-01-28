@@ -59,7 +59,7 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
      * @param sortList the list of columns to sort by
      * @param trIndexes the row index in their new order
      */
-    protected void onSortingComplete(ColumnSortList sortList, int[] trIndexes) {
+    public void onSortingComplete(ColumnSortList sortList, int[] trIndexes) {
       // Convert indexes to row elements
       FixedWidthGridRowFormatter formatter = getFixedWidthGridRowFormatter();
       Element[] trElems = new Element[trIndexes.length];
@@ -80,7 +80,7 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
      * @param sortList the list of columns to sort by
      * @param trElems the row elements in their new order
      */
-    protected void onSortingComplete(ColumnSortList sortList, Element[] trElems) {
+    public void onSortingComplete(ColumnSortList sortList, Element[] trElems) {
       // Move the rows to their new positions
       Element bodyElem = getBodyElement();
       for (int i = trElems.length - 1; i >= 0; i--) {
