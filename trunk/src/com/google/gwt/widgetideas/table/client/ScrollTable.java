@@ -780,6 +780,9 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    * Adjust all column widths so they take up the maximum amount of space
    * without needing a horizontal scroll bar. The distribution will be
    * proportional to the current width of each column.
+   * 
+   * The {@link ScrollTable} must be visible on the page for this method to
+   * work.
    */
   public void fillWidth() {
     // Calculate how much room we have to work with
