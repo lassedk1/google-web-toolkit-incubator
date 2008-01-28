@@ -16,6 +16,8 @@
 
 package com.google.gwt.widgetideas.client.overrides;
 
+import com.google.gwt.libideas.client.BiDiUtil;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.KeyboardListener;
 
@@ -26,12 +28,21 @@ import com.google.gwt.user.client.ui.KeyboardListener;
  */
 public class DOMHelper {
 
+  public static final int OTHER_KEY_UP = 63232;
+
+  public static final int OTHER_KEY_DOWN = 63233;
+
+  public static final int OTHER_KEY_LEFT = 63234;
+
+  public static final int OTHER_KEY_RIGHT = 63235;
+
   /**
    * Clones a DOM element.
    */
-  public static native Element clone(Element elem, boolean deep) /*-{
-       return elem.cloneNode(deep);
-     }-*/;
+  public static native Element clone(Element elem, boolean deep) 
+  /*-{
+    return elem.cloneNode(deep);
+  }-*/;
 
   /**
    * Displays a message in a modal dialog box. Should eventually be moved to
@@ -39,41 +50,55 @@ public class DOMHelper {
    * 
    * @param msg the message to be displayed.
    */
-  public static native boolean confirm(String msg) /*-{
-       return $wnd.confirm(msg);
-     }-*/;
+  public static native boolean confirm(String msg)
+  /*-{
+    return $wnd.confirm(msg);
+  }-*/;
+
+  public static Element getRecursiveFirstChild(Element elem, int index) {
+    if (index == 0) {
+      return elem;
+    } else {
+      return getRecursiveFirstChild(DOM.getFirstChild(elem), --index);
+    }
+  }
 
   /**
    * Gets the first child. You must *KNOW* that the first child exists and is an
    * element to use this method safely.
    */
-  public static native Element rawFirstChild(Element elem) /*-{
-       return elem.firstChild;
-     }-*/;
-
-
-  public static final int OTHER_KEY_UP = 63232;
-  public static final int OTHER_KEY_DOWN = 63233;
-  public static final int OTHER_KEY_LEFT = 63234;
-  public static final int OTHER_KEY_RIGHT = 63235;
-
+  public static native Element rawFirstChild(Element elem)
+  /*-{
+   return elem.firstChild;
+  }-*/;
 
   /**
-   * Normalized key codes. Needed only for Safari do should only be in
-   * DOMImplSafari once moved.
+   * Normalized key codes. Also switches KEY_RIGHT and KEY_LEFT in RTL
+   * languages.
    */
   public static int standardizeKeycode(int code) {
+
     switch (code) {
       case OTHER_KEY_DOWN:
-        return KeyboardListener.KEY_DOWN;
+        code = KeyboardListener.KEY_DOWN;
+        break;
       case OTHER_KEY_RIGHT:
-        return KeyboardListener.KEY_RIGHT;
+        code = KeyboardListener.KEY_RIGHT;
+        break;
       case OTHER_KEY_UP:
-        return KeyboardListener.KEY_UP;
+        code = KeyboardListener.KEY_UP;
+        break;
       case OTHER_KEY_LEFT:
-        return KeyboardListener.KEY_LEFT;
-      default:
-        return code;
+        code = KeyboardListener.KEY_LEFT;
+        break;
     }
+    if (BiDiUtil.isRightToLeft()) {
+      if (code == KeyboardListener.KEY_RIGHT) {
+        code = KeyboardListener.KEY_LEFT;
+      } else if (code == KeyboardListener.KEY_LEFT) {
+        code = KeyboardListener.KEY_RIGHT;
+      }
+    }
+    return code;
   }
 }
