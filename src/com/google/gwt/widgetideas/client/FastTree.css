@@ -1,16 +1,17 @@
 /* Users usually should override styles in gwt-Tree*/
 .gwt-FastTree {
-  
 }
 
-.gwt-FastTreeItem .open,.gwt-FastTreeItem .closed,.gwt-FastTreeItem .leaf {
+.gwt-FastTreeItem .open,.gwt-FastTreeItem .closed,.gwt-FastTreeItem .leaf
+  {
   padding: 3px;
   padding-left: 18px;
   padding-right: 5px;
   white-space: nowrap;
   cursor: default;
-  position: relative;
   padding-left: 18px;
+  -moz-user-select: none;
+  position:relative;
 }
 
 .gwt-FastTreeItem .open,.gwt-FastTreeItem .closed {
@@ -37,7 +38,6 @@
 }
 
 .gwt-FastTree {
-  position: relative;
   background-color: white;
 }
 
