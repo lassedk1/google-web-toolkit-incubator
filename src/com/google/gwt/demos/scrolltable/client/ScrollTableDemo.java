@@ -140,9 +140,9 @@ public class ScrollTableDemo implements EntryPoint {
     setupScrollTable();
     
     // Add some data the data table
-//    dataTable.resize(0, 13);
+    dataTable.resize(0, 13);
     for (int i = 0; i < 15; i++) {
-//      insertDataRow(i);
+      insertDataRow(i);
     }
     
     // Add some data to the footer table
