@@ -16,6 +16,7 @@
 package com.google.gwt.widgetideas.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.libideas.client.BiDiUtil;
 import com.google.gwt.libideas.client.StyleInjector;
 import com.google.gwt.libideas.resources.client.DataResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
@@ -71,6 +72,11 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     public TextResource css();
 
     /**
+     * @gwt.resource FastTreeRTL.css
+     */
+    public TextResource cssRTL();
+
+    /**
      * @gwt.resource selectionBar.gif
      */
     public DataResource selectionBar();
@@ -97,8 +103,14 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Add the default style sheet and images.
    */
   public static void addDefaultCSS() {
-    StyleInjector.injectStylesheet(DefaultResources.INSTANCE.css().getText(),
-        DefaultResources.INSTANCE);
+    if (BiDiUtil.isRightToLeft()) {
+      StyleInjector.injectStylesheet(
+          DefaultResources.INSTANCE.cssRTL().getText(),
+          DefaultResources.INSTANCE);
+    } else {
+      StyleInjector.injectStylesheet(DefaultResources.INSTANCE.css().getText(),
+          DefaultResources.INSTANCE);
+    }
   }
 
   private boolean lostMouseDown = true;
@@ -108,11 +120,11 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   private final Map childWidgets = new HashMap();
   private FastTreeItem curSelection;
   private final Element focusable;
+  private final Element hiddenFocusable;
   private FocusListenerCollection focusListeners;
   private KeyboardListenerCollection keyboardListeners;
   private MouseListenerCollection mouseListeners;
   private final FastTreeItem root;
-
   private Event keyDown;
 
   private Event lastKeyDown;
@@ -121,15 +133,11 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Constructs a tree.
    */
   public FastTree() {
+
     setElement(DOM.createDiv());
-    focusable = impl.createFocusable();
-    DOM.appendChild(getElement(), focusable);
-    DOM.setStyleAttribute(getElement(), "position", "relative");
-    setStyleName(focusable, STYLENAME_SELECTION);
-    UIObject.setVisible(focusable, false);
+  
     sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK | Event.KEYEVENTS
         | Event.MOUSEEVENTS);
-    DOM.sinkEvents(focusable, Event.FOCUSEVENTS | Event.ONMOUSEDOWN);
 
     // The 'root' item is invisible and serves only as a container
     // for all top-level items.
@@ -143,7 +151,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         item.setParentItem(null);
 
         // Use no margin on top-most items.
-        DOM.setIntStyleAttribute(item.getElement(), "marginLeft", 0);
+        DOM.setIntStyleAttribute(item.getElement(), "margin", 0);
       }
 
       public void removeItem(FastTreeItem item) {
@@ -152,7 +160,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         }
 
         // Update Item state.
-        item.setTree(null);
+        item.clearTree();
         item.setParentItem(null);
         getChildren().remove(item);
 
@@ -160,6 +168,13 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       }
     };
     root.setTree(this);
+    
+    focusable = createFocusElement();
+    setStyleName(focusable, STYLENAME_SELECTION);
+
+    hiddenFocusable = createFocusElement();
+    DOM.setStyleAttribute(getElement(), "position", "relative");
+
     setStyleName(STYLENAME_DEFAULT);
     moveSelectionBar(curSelection);
   }
@@ -296,6 +311,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   public int getTabIndex() {
     return impl.getTabIndex(focusable);
   }
+
   public Iterator iterator() {
     final Widget[] widgets = new Widget[childWidgets.size()];
     childWidgets.keySet().toArray(widgets);
@@ -313,7 +329,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
           // Avoid moving focus back up to the tree (so that focusable widgets
           // attached to TreeItems can receive keyboard events).
         } else {
-          setFocus(true);
+          clickedOnFocus(DOM.eventGetTarget(event));
         }
         break;
       }
@@ -341,7 +357,6 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         if (mouseListeners != null) {
           mouseListeners.fireMouseEvent(this, event);
         }
-
         elementClicked(root, event);
         break;
       }
@@ -519,11 +534,13 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   protected void doAttachChildren() {
     super.doAttachChildren();
     DOM.setEventListener(focusable, this);
+    DOM.setEventListener(hiddenFocusable, this);
   }
 
   protected void doDetachChildren() {
     super.doDetachChildren();
     DOM.setEventListener(focusable, null);
+    DOM.setEventListener(hiddenFocusable, null);
   }
 
   /**
@@ -553,14 +570,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     // Get the location and size of the given item's content element relative
     // to the tree.
     Element selectedElem = item.getContentElem();
-
-    int top = DOM.getElementPropertyInt(selectedElem, "offsetTop");
-    int height = DOM.getElementPropertyInt(selectedElem, "offsetHeight");
-
-    // Set the focusable element's position and size to exactly underlap the
-    // item's content element.
-    DOM.setStyleAttribute(focusable, "height", height + "px");
-    DOM.setStyleAttribute(focusable, "top", top + "px");
+    moveElementOverTarget(focusable, selectedElem);
     UIObject.setVisible(focusable, true);
   }
 
@@ -597,6 +607,13 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     childWidgets.remove(widget);
   }
 
+  private void clickedOnFocus(Element e) {
+    // An element was clicked on that is not focusable, so we use the hidden
+    // focusable to not shift focus.
+    moveElementOverTarget(hiddenFocusable, e);
+    impl.focus(hiddenFocusable);
+  }
+
   /**
    * Collects parents going up the element tree, terminated at the tree root.
    */
@@ -609,24 +626,46 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     chain.add(hElem);
   }
 
+  private Element createFocusElement() {
+    Element e = impl.createFocusable();
+    DOM.setStyleAttribute(e, "position", "absolute");
+    DOM.appendChild(getElement(), e);
+    DOM.sinkEvents(e, Event.FOCUSEVENTS | Event.ONMOUSEDOWN);
+    return e;
+  }
+
+  /**
+   * Disables the selection text on IE.
+   */
+  private native void disableSelection(Element element) /*-{
+      element.onselectstart = function() {
+         return false;
+      };
+   }-*/;
+
   private boolean elementClicked(FastTreeItem root, Event event) {
-    Element hElem = DOM.eventGetTarget(event);
+    Element target = DOM.eventGetTarget(event);
     ArrayList chain = new ArrayList();
-    collectElementChain(chain, getElement(), hElem);
+    collectElementChain(chain, getElement(), target);
     FastTreeItem item = findItemByChain(chain, 0, root);
     if (item != null) {
-      if (DOM.isOrHasChild(item.getElement(), hElem)) {
-        if (item.isInteriorNode()) {
-          int mouseLeft = DOM.eventGetClientX(event);
-          int targetLeft = item.getAbsoluteLeft();
-          if (mouseLeft - targetLeft < item.getControlImageWidth()) {
-            item.setState(!item.isOpen(), true);
-            moveSelectionBar(curSelection);
-            return false;
-          }
+      if (item.isInteriorNode()) {
+        boolean switchState;
+        if (BiDiUtil.isRightToLeft()) {
+          switchState = getStyleName(target).indexOf("placeholder") != -1;
+        } else {
+          int mousePos = DOM.eventGetClientX(event);
+          switchState = item.getContentElem().equals(target)
+              && (mousePos - item.getAbsoluteLeft() < item.getControlImageWidth());
+        }
+        if (switchState) {
+          item.setState(!item.isOpen(), true);
+          moveSelectionBar(curSelection);
+          disableSelection(target);
+          return false;
         }
       }
-      onSelection(item, true, !shouldTreeDelegateFocusToElement(hElem));
+      onSelection(item, true, !shouldTreeDelegateFocusToElement(target));
       return true;
     }
     return false;
@@ -698,6 +737,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         case KeyboardListener.KEY_RIGHT: {
           if (!curSelection.isOpen()) {
             curSelection.setState(true);
+
           } else if (curSelection.getChildCount() > 0) {
             setSelectedItem(curSelection.getChild(0));
           }
@@ -706,6 +746,17 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         }
       }
     }
+  }
+
+  private void moveElementOverTarget(Element movable, Element target) {
+
+    int top = DOM.getElementPropertyInt(target, "offsetTop");
+    int height = DOM.getElementPropertyInt(target, "offsetHeight");
+
+    // Set the element's position and size to exactly underlap the
+    // item's content element.
+    DOM.setStyleAttribute(movable, "height", height + "px");
+    DOM.setStyleAttribute(movable, "top", top + "px");
   }
 
   /**
@@ -805,7 +856,9 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         (name == "TEXTAREA") ||
         (name == "OPTION") ||
         (name == "BUTTON") ||
-        (name == "LABEL"));
+        (name == "LABEL") 
+        )
+        ;
    }-*/;
 }
 
