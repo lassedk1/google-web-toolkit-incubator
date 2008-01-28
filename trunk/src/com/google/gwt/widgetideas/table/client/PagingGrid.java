@@ -576,6 +576,7 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
     if (getColumnSorter() == null) {
       getColumnSortList().add(column, ascending);
       gotoPage(currentPage, true);
+      fireColumnSorted();
     } else {
       super.sortColumn(column, ascending);
     }

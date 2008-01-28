@@ -738,6 +738,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
               } else {
                 images.scrollTableDescending().applyTo(sortedColumnIndicator);
               }
+              sortedColumnTrigger = null;
             }
           }
         }
