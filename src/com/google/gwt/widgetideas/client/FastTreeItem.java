@@ -15,6 +15,7 @@
  */
 package com.google.gwt.widgetideas.client;
 
+import com.google.gwt.libideas.client.BiDiUtil;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.HasFocus;
@@ -68,6 +69,11 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     setStyleName(TREE_LEEF, STYLENAME_DEFAULT);
     setStyleName(contentElem, STYLENAME_LEAF);
     DOM.appendChild(TREE_LEEF, contentElem);
+    if (BiDiUtil.isRightToLeft()) {
+      DOM.setInnerHTML(
+          contentElem,
+          "<table cellspacing=0 cellpading=0><tbody><tr><td class='placeholder'>&nbsp</td><td></td></tr></tbody></table>");
+    }
   }
 
   private int state = TREE_NODE_LEAF;
@@ -93,7 +99,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    */
   public FastTreeItem(String html) {
     this();
-    DOM.setInnerHTML(contentElem, html);
+    DOM.setInnerHTML(getElementToAttach(), html);
   }
 
   /**
@@ -112,25 +118,22 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
       item.remove();
     }
 
-
     if (children == null) {
       // Never had children.
       if (isLeafNode()) {
         becomeInteriorNode();
       }
       childElems = DOM.createDiv();
-      DOM.appendChild(getElement(), childElems);
       UIObject.setStyleName(childElems, STYLENAME_CHILDREN);
       children = new ArrayList();
     } else if (isLeafNode()) {
       // Previously had children.
       if (state == TREE_NODE_LEAF) {
         becomeInteriorNode();
-      } else{
+      } else {
         state = TREE_NODE_INTERIOR_OPEN;
         updateState();
       }
-      setVisible(childElems, true);
     }
 
     // Logical attach.
@@ -143,10 +146,6 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     // Adopt.
     if (tree != null) {
       item.setTree(tree);
-    }
-
-    if (children.size() == 1) {
-      updateState();
     }
   }
 
@@ -205,7 +204,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   }
 
   public String getHTML() {
-    return DOM.getInnerHTML(contentElem);
+    return DOM.getInnerHTML(getElementToAttach());
   }
 
   /**
@@ -218,7 +217,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   }
 
   public String getText() {
-    return DOM.getInnerText(contentElem);
+    return DOM.getInnerText(getElementToAttach());
   }
 
   /**
@@ -327,14 +326,17 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     children.remove(item);
 
     if (children.size() == 0) {
-      if (childElems != null) {
-        UIObject.setVisible(childElems, false);
+      if (isOpen()) {
+        if (childElems != null) {
+          DOM.removeChild(getElement(), childElems);
+        }
+        state = TREE_NODE_LEAF_OPEN;
+      } else {
+        state = TREE_NODE_LEAF;
       }
-      becomeLeaf();
+      setStyleName(contentElem, STYLENAME_LEAF);
       return;
     }
-
-    updateState();
   }
 
   /**
@@ -348,7 +350,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
 
   public void setHTML(String html) {
     clearWidget();
-    DOM.setInnerHTML(contentElem, html);
+    DOM.setInnerHTML(getElementToAttach(), html);
   }
 
   /**
@@ -365,23 +367,24 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * 
    * @param open whether the item is open
    * @param fireEvents <code>true</code> to allow open/close events to be
-   *        fired
+   *          fired
    */
   public void setState(boolean open, boolean fireEvents) {
     if (open == isOpen()) {
       return;
     }
     // Cannot open leaf nodes.
-    if (isLeafNode()){
+    if (isLeafNode()) {
       return;
     }
     if (open) {
       if (state == TREE_NODE_INTERIOR_NEVER_OPENED) {
         ensureChildren();
       }
-      state = TREE_NODE_INTERIOR_OPEN;
       beforeOpen();
+      state = TREE_NODE_INTERIOR_OPEN;
     } else {
+      beforeClose();
       state = TREE_NODE_INTERIOR_CLOSED;
     }
 
@@ -390,15 +393,22 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
 
   public void setText(String text) {
     clearWidget();
-    DOM.setInnerText(contentElem, text);
+    DOM.setInnerText(getElementToAttach(), text);
   }
 
   public void setWidget(Widget widget) {
     // Physical detach old from self.
     // Clear out any existing content before adding a widget.
-    DOM.setInnerHTML(contentElem, "");
+
+    DOM.setInnerHTML(getElementToAttach(), "");
     clearWidget();
     addWidget(widget);
+  }
+
+  /**
+   * Called before the tree item is closed.
+   */
+  protected void beforeClose() {
   }
 
   /**
@@ -450,6 +460,10 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
       if (widget != null) {
         tree.treeOrphan(widget);
       }
+      if (tree.getSelectedItem() == this) {
+        tree.setSelectedItem(null);
+      }
+      tree = null;
       for (int i = 0, n = getChildCount(); i < n; ++i) {
         ((FastTreeItem) children.get(i)).clearTree();
       }
@@ -482,7 +496,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * Selects or deselects this item.
    * 
    * @param selected <code>true</code> to select the item, <code>false</code>
-   *        to deselect it
+   *          to deselect it
    */
   void setSelection(boolean selected) {
     setStyleName(contentElem, STYLENAME_SELECTED, selected);
@@ -499,7 +513,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     // Early out.
     if (tree != null) {
       throw new IllegalStateException(
-          "Each Tree Item can only be added to one tree");
+          "Each Tree Item must be removed from its current tree before being added to another.");
     }
     tree = newTree;
 
@@ -519,13 +533,16 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
       return;
     }
     if (isOpen()) {
+      // IE bug that is triggered by Tree within ScrollTable forces us to
+      // remove/add children rather than hiding them.
       if (getChildCount() > 0) {
+        DOM.appendChild(getElement(), childElems);
         UIObject.setVisible(childElems, true);
       }
       showOpenImage();
     } else {
       if (getChildCount() > 0) {
-        UIObject.setVisible(childElems, false);
+        DOM.removeChild(getElement(), childElems);
       }
       showClosedImage();
     }
@@ -544,9 +561,8 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     widget = newWidget;
 
     if (newWidget != null) {
-      // Physical attach new.
-      DOM.appendChild(contentElem, newWidget.getElement());
-
+      DOM.appendChild(getElementToAttach(), widget.getElement());
+      bidiSupport();
       // Attach child to tree.
       if (tree != null) {
         tree.adopt(widget, this);
@@ -554,13 +570,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     }
   }
 
-  private void becomeLeaf() {
-    if (isOpen()) {
-      state = TREE_NODE_LEAF_OPEN;
-    } else {
-      state = TREE_NODE_LEAF;
-    }
-    setStyleName(contentElem, STYLENAME_LEAF);
+  private void bidiSupport() {
   }
 
   private void clearWidget() {
@@ -568,6 +578,14 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     if (widget != null && tree != null) {
       tree.treeOrphan(widget);
       widget = null;
+    }
+  }
+
+  private Element getElementToAttach() {
+    if (BiDiUtil.isRightToLeft()) {
+      return DOM.getNextSibling(DOMHelper.getRecursiveFirstChild(contentElem, 4));
+    } else {
+      return contentElem;
     }
   }
 
