@@ -15,7 +15,6 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
-import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortInfo;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 import com.google.gwt.widgetideas.table.client.TableModel.Request;
 import com.google.gwt.widgetideas.table.client.TableModel.Response;
@@ -320,14 +319,7 @@ public class CachedTableController extends TableController {
       }
     } else if (!sortList.equals(lastSortList)) {
       dataMap.clear();
-      // Copy the sort list and save it
-      lastSortList = new ColumnSortList();
-      Iterator it = sortList.iterator();
-      while (it.hasNext()) {
-        ColumnSortInfo sortInfo = (ColumnSortInfo) it.next();
-        lastSortList.add(new ColumnSortInfo(sortInfo.getColumn(), sortInfo
-            .isAscending()));
-      }
+      lastSortList = sortList.copy();
     }
 
     // Check if all requested rows are in the cache

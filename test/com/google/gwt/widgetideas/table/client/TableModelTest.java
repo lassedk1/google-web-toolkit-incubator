@@ -37,6 +37,7 @@ public class TableModelTest extends AbstractTableModelTest {
       return new TableModel() {
         public void onRowInserted(int beforeRow) {
         }
+
         public void onRowRemoved(int row) {
         }
 
@@ -48,7 +49,7 @@ public class TableModelTest extends AbstractTableModelTest {
         }
       };
     }
-    
+
     // Normal version
     return new TableModel() {
       public void onRowInserted(int beforeRow) {
@@ -135,7 +136,7 @@ public class TableModelTest extends AbstractTableModelTest {
     assertEquals(0, sortList.size());
 
     // Add one item
-    sortList.addColumnSortInfo(4, false);
+    sortList.add(4, false);
     assertEquals(1, sortList.size());
     assertEquals(4, sortList.getPrimaryColumn());
     assertFalse(sortList.isPrimaryAscending());
@@ -143,25 +144,42 @@ public class TableModelTest extends AbstractTableModelTest {
         new ColumnSortInfo(4, false)));
 
     // Add more items
-    sortList.addColumnSortInfo(6, false);
-    sortList.addColumnSortInfo(8, true);
-    sortList.addColumnSortInfo(10, true);
+    sortList.add(6, false);
+    sortList.add(8, true);
+    sortList.add(10, true);
     assertEquals(4, sortList.size());
     assertEquals(10, sortList.getPrimaryColumn());
     assertTrue(sortList.isPrimaryAscending());
-    assertTrue(sortList.get(0).equals(new ColumnSortInfo(10, true)));
-    assertTrue(sortList.get(1).equals(new ColumnSortInfo(8, true)));
-    assertTrue(sortList.get(2).equals(new ColumnSortInfo(6, false)));
-    assertTrue(sortList.get(3).equals(new ColumnSortInfo(4, false)));
+
+    int count = 0;
+    Iterator it = sortList.iterator();
+    while (it.hasNext()) {
+      ColumnSortInfo info = (ColumnSortInfo) it.next();
+      switch (count) {
+        case 0:
+          assertTrue(info.equals(new ColumnSortInfo(10, true)));
+          break;
+        case 1:
+          assertTrue(info.equals(new ColumnSortInfo(8, true)));
+          break;
+        case 2:
+          assertTrue(info.equals(new ColumnSortInfo(6, false)));
+          break;
+        case 3:
+          assertTrue(info.equals(new ColumnSortInfo(4, false)));
+          break;
+      }
+      count++;
+    }
 
     // Add an existing item
-    sortList.addColumnSortInfo(6, false);
+    sortList.add(6, false);
     assertEquals(4, sortList.size());
     assertEquals(6, sortList.getPrimaryColumn());
     assertFalse(sortList.isPrimaryAscending());
 
     // Add an existing column, different order
-    sortList.addColumnSortInfo(8, false);
+    sortList.add(8, false);
     assertEquals(4, sortList.size());
     assertEquals(8, sortList.getPrimaryColumn());
     assertFalse(sortList.isPrimaryAscending());

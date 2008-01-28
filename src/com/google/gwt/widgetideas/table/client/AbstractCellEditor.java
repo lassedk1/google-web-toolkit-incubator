@@ -409,6 +409,15 @@ public abstract class AbstractCellEditor extends PopupPanel {
   }
 
   /**
+   * Get the layout table used to layout the content.
+   * 
+   * @return the layout table
+   */
+  protected FlexTable getLayoutTable() {
+    return layoutTable;
+  }
+
+  /**
    * Reset the event listener on the Images when this Widget is reattached.
    */
   protected void onAttach() {

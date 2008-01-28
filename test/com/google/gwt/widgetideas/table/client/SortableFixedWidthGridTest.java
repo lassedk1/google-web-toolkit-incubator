@@ -42,7 +42,7 @@ public class SortableFixedWidthGridTest extends GWTTestCase {
     }
 
     public void onColumnSorted(ColumnSortList sortList) {
-      this.sortList = (ColumnSortList) sortList.clone();
+      this.sortList = sortList.copy();
     }
   }
 

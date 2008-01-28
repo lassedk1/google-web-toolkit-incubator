@@ -130,14 +130,14 @@ public abstract class AbstractTableModelTest extends GWTTestCase {
 
     // Request some rows with sorting
     ColumnSortList sortList = new ColumnSortList();
-    sortList.addColumnSortInfo(5, true);
+    sortList.add(5, true);
     TestCallback callback2 = new TestCallback(5, 6, sortList);
     tableModel.requestRows(5, 6, sortList, callback2);
     assertTrue(callback2.isExecuted());
     assertFalse(callback2.isFailed());
 
     // Request some rows with sorting descending
-    sortList.addColumnSortInfo(5, false);
+    sortList.add(5, false);
     TestCallback callback3 = new TestCallback(5, 6, sortList);
     tableModel.requestRows(5, 6, sortList, callback3);
     assertTrue(callback3.isExecuted());

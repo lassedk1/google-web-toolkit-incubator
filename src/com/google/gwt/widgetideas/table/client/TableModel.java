@@ -21,11 +21,104 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * A class to retrieve row data to be used in a table.
  */
 public abstract class TableModel {
+  /**
+   * An iterator over an array.
+   */
+  private static class ArrayIterator implements Iterator {
+    /**
+     * The internal array.
+     */
+    private Object[] array;
+
+    /**
+     * The current index.
+     */
+    private int curIndex = 0;
+
+    /**
+     * The size of the array.
+     */
+    private int size;
+
+    public ArrayIterator(Object[] array, int size) {
+      this.array = array;
+      this.size = size;
+    }
+
+    public boolean hasNext() {
+      return curIndex < size;
+    }
+
+    public Object next() {
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
+      Object o = array[curIndex];
+      curIndex++;
+      return o;
+    }
+
+    public void remove() {
+      throw (new UnsupportedOperationException());
+    }
+  }
+  
+  /**
+   * An {@link Iterator} over a 2D {@link Collection} of column data.
+   */
+  private static class RowsIterator implements Iterator {
+    /**
+     * The {@link Iterator} of row data. Each row is a {@link Collection} of
+     * column data.
+     */
+    private Iterator rows;
+
+    /**
+     * Default constructor.
+     */
+    public RowsIterator() {
+      this(null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param rows the row data
+     */
+    public RowsIterator(Iterator rows) {
+      this.rows = rows;
+    }
+
+    public boolean hasNext() {
+      if (rows == null) {
+        return false;
+      }
+      return rows.hasNext();
+    }
+
+    public Object next() {
+      if (!hasNext()) {
+        throw(new NoSuchElementException());
+      }
+      Collection next = (Collection) rows.next();
+      if (next == null) {
+        return null;
+      } else {
+        return next.iterator();
+      }
+    }
+
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
+  }
+
   /**
    * Callback for {@link TableModel}. Every Request should be associated with a
    * callback that should be called after a Response is generated.
@@ -141,47 +234,23 @@ public abstract class TableModel {
    * single column. The first entry is the primary sort order, the second entry
    * is the first tie-breaker, and so on.
    */
-  public static class ColumnSortList extends ArrayList implements
-      IsSerializable {
+  public static class ColumnSortList implements IsSerializable {
     /**
-     * Add a {@link ColumnSortInfo} to this list. If the column already exists,
-     * it will be removed from its current position and placed at the start of
-     * the list, becoming the primary sort info.
-     * 
-     * This add method inserts an entry at the beginning of the list. It does
-     * not append the entry to the end of the list.
-     * 
-     * @param sortInfo the column sort info
+     * The number of {@link ColumnSortInfo}s in the list.
      */
-    public void addColumnSortInfo(ColumnSortInfo sortInfo) {
-      // Remove existing column sort info
-      int column = sortInfo.getColumn();
-      for (int i = 0; i < size(); i++) {
-        ColumnSortInfo curInfo = (ColumnSortInfo) get(i);
-        if (curInfo.getColumn() == column) {
-          remove(i);
-          i--;
-        }
-      }
-
-      // Insert the new sort info
-      add(0, sortInfo);
-    }
+    private int numInfos = 0;
 
     /**
-     * Add a {@link ColumnSortInfo} to this list. If the column already exists,
-     * it will be removed from its current position and placed at the start of
-     * the list, becoming the primary sort info.
+     * The {@link ColumnSortInfo}s.
      * 
-     * This add method inserts an entry at the beginning of the list. It does
-     * not append the entry to the end of the list.
-     * 
-     * @param column the column index
-     * @param ascending is the sort ascending
+     * TODO: replace with typed array list
      */
-    public void addColumnSortInfo(int column, boolean ascending) {
-      addColumnSortInfo(new ColumnSortInfo(column, ascending));
-    }
+    private ColumnSortInfo[] infos = new ColumnSortInfo[100];
+
+    /**
+     * A List used to manage the insertion/removal of {@link ColumnSortInfo}.
+     */
+    private transient List infosT = new ArrayList();
 
     /**
      * Check if this object is equal to another.
@@ -199,16 +268,13 @@ public abstract class TableModel {
       if (obj instanceof ColumnSortList) {
         // Check the size of the lists
         ColumnSortList csl = (ColumnSortList) obj;
-        int size = size();
-        if (size != csl.size()) {
+        if (numInfos != csl.numInfos) {
           return false;
         }
 
         // Compare the entries
-        for (int i = 0; i < size; i++) {
-          ColumnSortInfo mySortInfo = (ColumnSortInfo) get(i);
-          ColumnSortInfo cslSortInfo = (ColumnSortInfo) csl.get(i);
-          if (!mySortInfo.equals(cslSortInfo)) {
+        for (int i = 0; i < numInfos; i++) {
+          if (!infos[i].equals(csl.infos[i])) {
             return false;
           }
         }
@@ -240,8 +306,8 @@ public abstract class TableModel {
      * @return the primary column sort info
      */
     public ColumnSortInfo getPrimaryColumnSortInfo() {
-      if (size() > 0) {
-        return (ColumnSortInfo) get(0);
+      if (numInfos > 0) {
+        return infos[0];
       }
       return null;
     }
@@ -258,6 +324,65 @@ public abstract class TableModel {
       }
       return primaryInfo.isAscending();
     }
+
+    public Iterator iterator() {
+      return new ArrayIterator(infos, numInfos);
+    }
+
+    /**
+     * Returns the number of {@link ColumnSortInfo} in the list.
+     * 
+     * @return the size of the list
+     */
+    public int size() {
+      return numInfos;
+    }
+
+    /**
+     * Add a {@link ColumnSortInfo} to this list. If the column already exists,
+     * it will be removed from its current position and placed at the start of
+     * the list, becoming the primary sort info.
+     * 
+     * This add method inserts an entry at the beginning of the list. It does
+     * not append the entry to the end of the list.
+     * 
+     * @param column the column index
+     * @param ascending is the sort ascending
+     */
+    void add(int column, boolean ascending) {
+      // Remove sort info for duplicate columns
+      for (int i = 0; i < infosT.size(); i++) {
+        ColumnSortInfo curInfo = (ColumnSortInfo) infosT.get(i);
+        if (curInfo.getColumn() == column) {
+          infosT.remove(i);
+          i--;
+        }
+      }
+
+      // Insert the new sort info
+      infosT.add(0, new ColumnSortInfo(column, ascending));
+
+      // Convert the List to an array
+      infosT.toArray(infos);
+      numInfos = infosT.size();
+    }
+
+    /**
+     * Copy this {@link ColumnSortList}.
+     * 
+     * @return a duplicate of this list
+     */
+    ColumnSortList copy() {
+      ColumnSortList copy = new ColumnSortList();
+      for (int i = 0; i < numInfos; i++) {
+        copy.infosT.add(new ColumnSortInfo(infos[i].getColumn(),
+            infos[i].isAscending()));
+      }
+      // Convert the List to an array
+      copy.infosT.toArray(copy.infos);
+      copy.numInfos = numInfos;
+      return copy;
+    }
   }
 
   /**
@@ -271,8 +396,6 @@ public abstract class TableModel {
 
     /**
      * An ordered list of {@link ColumnSortInfo}.
-     * 
-     * @gwt.typeArgs <com.google.gwt.widgetideas.table.client.TableModel.ColumnSortInfo>
      */
     private ColumnSortList columnSortList;
 
@@ -385,58 +508,6 @@ public abstract class TableModel {
   }
 
   /**
-   * An {@link Iterator} over a 2D {@link Collection} of column data.
-   */
-  public static class SerializableIterator implements IsSerializable, Iterator {
-    /**
-     * The {@link Collection} of row data. Each row is a {@link Collection} of
-     * column data.
-     * 
-     * @gwt.typeArgs <java.util.Collection>
-     */
-    private Iterator rows;
-
-    /**
-     * Default constructor.
-     */
-    public SerializableIterator() {
-      this(null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param rows the row data
-     */
-    public SerializableIterator(Iterator rows) {
-      this.rows = rows;
-    }
-
-    public boolean hasNext() {
-      if (rows == null) {
-        return false;
-      }
-      return rows.hasNext();
-    }
-
-    public Object next() {
-      if (rows == null) {
-        return null;
-      }
-      Collection next = (Collection) rows.next();
-      if (next == null) {
-        return null;
-      } else {
-        return next.iterator();
-      }
-    }
-
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
-  }
-
-  /**
    * A response from the {@link TableModel} that is serializable, and can by
    * used over RPC.
    */
@@ -446,7 +517,7 @@ public abstract class TableModel {
      * The {@link Collection} of row data. Each row is a {@link Collection} of
      * column data.
      * 
-     * @gwt.typeArgs <java.util.Collection>
+     * @gwt.typeArgs <java.util.Collection<com.google.gwt.user.client.rpc.IsSerializable>>
      */
     private Collection rows;
 
@@ -481,7 +552,7 @@ public abstract class TableModel {
       if (rows == null) {
         return null;
       }
-      return new SerializableIterator(rows.iterator());
+      return new RowsIterator(rows.iterator());
     }
   }
 

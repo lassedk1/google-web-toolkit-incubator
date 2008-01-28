@@ -236,7 +236,7 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
     }
 
     // Add the sorting to the list of sorted columns
-    columnSortList.addColumnSortInfo(column, ascending);
+    columnSortList.add(column, ascending);
 
     // Use the onSort method to actually sort the column
     getColumnSorter(true).onSortColumn(this, columnSortList,
@@ -279,9 +279,8 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
         public void onSortColumn(SortableFixedWidthGrid grid,
             ColumnSortList sortList, ColumnSorterCallback callback) {
           // Get the primary column and sort order
-          ColumnSortInfo sortInfo = (ColumnSortInfo) sortList.get(0);
-          int column = sortInfo.getColumn();
-          boolean ascending = sortInfo.isAscending();
+          int column = sortList.getPrimaryColumn();
+          boolean ascending = sortList.isPrimaryAscending();
 
           // Apply the default quicksort algorithm
           FixedWidthGridCellFormatter formatter =
