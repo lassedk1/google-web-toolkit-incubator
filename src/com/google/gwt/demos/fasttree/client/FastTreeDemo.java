@@ -259,6 +259,9 @@ public class FastTreeDemo implements EntryPoint {
 
       FastTreeItem item = new ListeningFastTreeItem("child " + i) {
 
+        public void beforeClose() {
+        }
+
         public void beforeOpen() {
           Window.alert("Open item " + index);
         }
@@ -274,7 +277,6 @@ public class FastTreeDemo implements EntryPoint {
         protected void onSelected() {
           Window.alert("You selected item " + index);
         }
-
       };
       parent.addItem(item);
       verboseTreeItem(item, children - (i + 1));
