@@ -1065,7 +1065,6 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
     }
   }
 
-
   /**
    * Sets the width of the table's border. This border is displayed around all
    * cells in the table.
@@ -1106,7 +1105,6 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
    * within the Grid's bounding box.
    * </p>
    * 
-   * @param widget The widget to be added
    * @param row the cell's row
    * @param column the cell's column
    * @throws IndexOutOfBoundsException

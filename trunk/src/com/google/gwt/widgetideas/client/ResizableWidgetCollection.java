@@ -200,6 +200,30 @@ public class ResizableWidgetCollection implements WindowResizeListener {
   }
 
   /**
+   * Check to see if any Widgets have been resized and call their handlers
+   * appropriately.
+   */
+  public void checkWidgetSize() {
+    Iterator it = widgets.entrySet().iterator();
+    while (it.hasNext()) {
+      Map.Entry entry = (Map.Entry) it.next();
+      ResizableWidget widget = (ResizableWidget) entry.getKey();
+      ResizableWidgetInfo info = (ResizableWidgetInfo) entry.getValue();
+      int curWidth = DOM.getElementPropertyInt(widget.getElement(),
+          "clientWidth");
+      int curHeight = DOM.getElementPropertyInt(widget.getElement(),
+          "clientHeight");
+  
+      // Call the onResize method only if the widget is attached
+      if (info.setClientSize(curWidth, curHeight)) {
+        if (curWidth > 0 && curHeight > 0 && widget.isAttached()) {
+          widget.onResize(curWidth, curHeight);
+        }
+      }
+    }
+  }
+
+  /**
    * Get the delay between resize checks in milliseconds.
    * 
    * @return the resize check delay
@@ -259,30 +283,6 @@ public class ResizableWidgetCollection implements WindowResizeListener {
     } else if (!enabled && resizeCheckingEnabled) {
       resizeCheckingEnabled = false;
       resizeCheckTimer.cancel();
-    }
-  }
-
-  /**
-   * Check to see if any Widgets have been resized and call their handlers
-   * appropriately.
-   */
-  public void checkWidgetSize() {
-    Iterator it = widgets.entrySet().iterator();
-    while (it.hasNext()) {
-      Map.Entry entry = (Map.Entry) it.next();
-      ResizableWidget widget = (ResizableWidget) entry.getKey();
-      ResizableWidgetInfo info = (ResizableWidgetInfo) entry.getValue();
-      int curWidth = DOM.getElementPropertyInt(widget.getElement(),
-          "clientWidth");
-      int curHeight = DOM.getElementPropertyInt(widget.getElement(),
-          "clientHeight");
-
-      // Call the onResize method only if the widget is attached
-      if (info.setClientSize(curWidth, curHeight)) {
-        if (curWidth > 0 && curHeight > 0 && widget.isAttached()) {
-          widget.onResize(curWidth, curHeight);
-        }
-      }
     }
   }
 }
