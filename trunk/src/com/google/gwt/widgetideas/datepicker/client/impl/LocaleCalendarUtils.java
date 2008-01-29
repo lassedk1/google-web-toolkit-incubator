@@ -140,7 +140,8 @@ public class LocaleCalendarUtils extends DatePickerDate {
   private int nextMonthDays;
   private int gridStart;
 
-  private ArrayList specialDates = new ArrayList();
+  // Hack used until the code can be refactored to prevent RPC madness.
+  private transient ArrayList specialDates = new ArrayList();
 
   /**
    * Default constructor for {@link LocaleCalendarUtils}. By default, does not
