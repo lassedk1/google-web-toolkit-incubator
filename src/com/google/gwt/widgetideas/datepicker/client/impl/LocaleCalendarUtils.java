@@ -17,14 +17,14 @@
 package com.google.gwt.widgetideas.datepicker.client.impl;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.widgetideas.datepicker.client.overrides.DateTimeConstants;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Vector;
 
 /**
  * LocaleCalendarUtils public class provides all the tables required to display
@@ -140,7 +140,7 @@ public class LocaleCalendarUtils extends DatePickerDate {
   private int nextMonthDays;
   private int gridStart;
 
-  private Vector specialDates = new Vector();
+  private ArrayList specialDates = new ArrayList();
 
   /**
    * Default constructor for {@link LocaleCalendarUtils}. By default, does not
