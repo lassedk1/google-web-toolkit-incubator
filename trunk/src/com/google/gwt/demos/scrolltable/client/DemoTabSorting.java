@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -56,6 +56,16 @@ public class DemoTabSorting extends DemoTab implements ClickListener {
   private Button toggleSortingButton = new Button("Toggle Sorting", this);
 
   /**
+   * The button used to make a column sortable.
+   */
+  private Button makeSortableButton = new Button("Make Sortable", this);
+
+  /**
+   * The button used to make a column unsortable.
+   */
+  private Button makeUnsortableButton = new Button("Make Unsortable", this);
+
+  /**
    * The button used to move a row up one index.
    */
   private Button moveRowUpButton = new Button("Move Row Up", this);
@@ -98,7 +108,7 @@ public class DemoTabSorting extends DemoTab implements ClickListener {
   public void onClick(Widget sender) {
     ScrollTable scrollTable = ScrollTableDemo.getScrollTable();
     SortableFixedWidthGrid dataTable = ScrollTableDemo.getDataTable();
-    
+
     try {
       if (sender == moveRowUpButton) {
         // Move row up
@@ -122,6 +132,14 @@ public class DemoTabSorting extends DemoTab implements ClickListener {
         // Sort a column
         int column = Integer.parseInt(columnIndexBox.getText());
         dataTable.sortColumn(column);
+      } else if (sender == makeSortableButton) {
+        // Make column sortable
+        int column = Integer.parseInt(columnIndexBox.getText());
+        scrollTable.setColumnSortable(column, true);
+      } else if (sender == makeUnsortableButton) {
+        // Make column unsortable
+        int column = Integer.parseInt(columnIndexBox.getText());
+        scrollTable.setColumnSortable(column, false);
       } else if (sender == toggleSortingButton) {
         if (scrollTable.isSortingEnabled()) {
           scrollTable.setSortingEnabled(false);
@@ -168,6 +186,10 @@ public class DemoTabSorting extends DemoTab implements ClickListener {
     // Column Index
     HorizontalPanel panel3 = new HorizontalPanel();
     panel3.add(sortColumnButton);
+    panel3.add(new HTML("&nbsp;"));
+    panel3.add(makeSortableButton);
+    panel3.add(new HTML("&nbsp;"));
+    panel3.add(makeUnsortableButton);
     columnIndexBox.setWidth("50px");
     columnIndexBox.setText("3");
     grid.setHTML(2, 0, "<B>Column:</B>");
