@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -35,8 +35,10 @@ import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 import com.google.gwt.widgetideas.table.client.overrides.OverrideDOM;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -634,6 +636,11 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   private boolean sortingEnabled = true;
 
   /**
+   * A map of columns that cannot be sorted.
+   */
+  private Map unsortableColumns = new HashMap();
+
+  /**
    * Constructor.
    * 
    * @param dataTable the data table
@@ -893,6 +900,19 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   }
 
   /**
+   * @param column the column index
+   * @return true if the column is sortable, false if it is not sortable
+   */
+  public boolean isColumnSortable(int column) {
+    Boolean sortable = (Boolean) unsortableColumns.get(new Integer(column));
+    if (sortable == null) {
+      return sortingEnabled;
+    } else {
+      return sortable.booleanValue();
+    }
+  }
+
+  /**
    * @return true if scrolling is enabled, false if disabled
    */
   public boolean isScrollingEnabled() {
@@ -944,16 +964,16 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
             scrollTables(false);
           }
 
-          // Sort column on click
-          if (sortingEnabled) {
-            Element cellElem = headerTable.getEventTargetCell(event);
-            if (cellElem != null) {
-              int row = OverrideDOM.getRowIndex(DOM.getParent(cellElem)) - 1;
-              int cell = OverrideDOM.getCellIndex(cellElem);
-              int column = cell;
-              if (headerTable instanceof HasCellSpans) {
-                column = ((HasCellSpans) headerTable).getColumnIndex(row, cell);
-              }
+          // Get the actual column index
+          Element cellElem = headerTable.getEventTargetCell(event);
+          if (cellElem != null) {
+            int row = OverrideDOM.getRowIndex(DOM.getParent(cellElem)) - 1;
+            int cell = OverrideDOM.getCellIndex(cellElem);
+            int column = cell;
+            if (headerTable instanceof HasCellSpans) {
+              column = ((HasCellSpans) headerTable).getColumnIndex(row, cell);
+            }
+            if (isColumnSortable(column)) {
               if (dataTable.getColumnCount() > column) {
                 sortedColumnTrigger = cellElem;
                 ((HasSortableColumns) dataTable).sortColumn(column);
@@ -1065,6 +1085,18 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     if (footerTable != null) {
       footerTable.setCellSpacing(spacing);
     }
+  }
+
+  /**
+   * Enable or disable sorting on a specific column. All columns are sortable by
+   * default. Use {@link #setSortingEnabled(boolean)} to disable sorting on all
+   * columns.
+   * 
+   * @param column the index of the column
+   * @param sortable true to enable sorting for this column, false to disable
+   */
+  public void setColumnSortable(int column, boolean sortable) {
+    unsortableColumns.put(new Integer(column), Boolean.valueOf(sortable));
   }
 
   /**
