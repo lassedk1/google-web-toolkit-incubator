@@ -1,4 +1,4 @@
-#summary New Widget - A two part table with a fixed header and scrollable data area
+#summary A two part table with a fixed header and scrollable data area
 #labels Type-Widget
 
 = Introduction =
