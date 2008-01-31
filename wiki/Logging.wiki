@@ -47,8 +47,12 @@ In some cases, it would be useful to directly access a Logger or Handler and pri
 = Design overview =
 
 == Logger ==
-Logger is a static class. Its API is modeled on the java Logger API.
-
+Logger is a static class. Its API is modeled on the java Logger API. Almost all user interactions should be done through this class to allow compile time removal of logging. It will also include some GWT-specific method.  For instance the methods below:
+{{{
+   isLoggingEnabled();
+   clearLoggingDisplays();
+}}}
+ 
 == Handler ==
 A Handler is a class which actually handles the logging messages.  Its API is modeled in the java Handler class.  Its subclasses will be drawn almost exclusively from the gwt-log  subclasses of AbstractLogger.
 
