@@ -40,6 +40,6 @@ A Handler is a class which actually handles the logging messages.  Its API is mo
 
  
 == Level ==
-Defines the current Debug Level.
+Defines the current logging Level. Based on the java logging Level class.
 
  
