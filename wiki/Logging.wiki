@@ -1,0 +1,45 @@
+#summary DRAFT GWT Logging API.
+
+= Introduction =
+A client side logging API. The GWT logging prototype draws heavily from the [http://java.sun.com/j2se/1.4.2/docs/guide/util/logging/overview.html Java logging API]
+and the [http://code.google.com/p/gwt-log/ gwt log] project by Fred Sauer.
+
+
+= Details =
+ 
+= Design Goals =
+  # No overhead for logging messages when logging is disabled.
+  # Simple lightweight API.  
+  # Familiar to Java Programmers
+
+ 
+= Design Decisions =
+
+==Single on/off deferred binding==
+The Logging api has a single boolean property (logging:on/off).  The other option would be to have a set of predefined levels i.e. logging(off/fine/finer/.../severe). Both are good options, so far we believe the single switch will lead to best full experience.
+
+Advantages for multiple levels:
+  # No overhead for logging levels not used when compiled with a GWT 1.5 compiler
+  # One field can be used to deploy the correct logging levels for automated systems.
+
+
+Advantages of single on/off switch
+  # Simple model: Intuitive easy to understand that logging level comes from runtime and logging support comes from compile time.
+  # Encourages what we believe is the best deployment model:
+    # One production system without logging
+    # One "debug" system with logging
+  # Avoid the big mistake of compiling 10 different variants of the code with 10 different logger levels.
+
+= Design overview =
+
+== Logger ==
+Logger is a static class. Its API is modeled on the java Logger API.
+
+== Handler ==
+A Handler is a class which actually handles the logging messages.  Its API is modeled in the java Handler class.  Its subclasses will be drawn almost exclusively from the gwt-log  subclasses of AbstractLogger.
+
+ 
+== Level ==
+Defines the current Debug Level.
+
+ 
