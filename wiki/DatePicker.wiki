@@ -191,12 +191,12 @@ The API would look something like this (note not all methods are listed):
     * class `Request`
       * `(get/set)DateFrom(Date from)`
       * `(get/set)DateTo(Date to)`
-   * class `ClientCalenderOracle` extends `DateCellOracle`.  This is a convenience class to allow users to more quickly create oracles. 
+   * class `ClientCalenderOracle` extends `CalenderOracle`.  This is a convenience class to allow users to more quickly create oracles. 
      * `abstract styleDates(Date from, Date to, CalendarView view) : void`
      * `iterator getDaysOfWeek(Request request, Collection<Date> daysOfWeek()`
      * `iterator getDaysInYear(Request request, Collection <Date> daysInYear()`
      * `Collection WEEKENDS, WEEKDAYS,...`
-   * abstract class `CachingCalenderOracle extends DateCellOracle`
+   * abstract class `CachingCalenderOracle extends CalenderOracle`
      * Allows users to cache Date/DateCell pairs.
   * class `DatePicker implements FiresChangeEvents<ChangeHandler<Date>, FiresHighlightChangeEvents<HighlightChangeHandler<Date>>`
     * `getSelectedDate()`
