@@ -27,34 +27,6 @@ public class GlassPanelImplMozilla extends GlassPanelImplStandard {
     matchMargins(glassPanel.getElement());
   }
 
-  /**
-   * Borrowed from DOMImplMozilla in GWT 1.5.
-   */
-  protected native int windowGetClientHeight()
-  /*-{
-    // Standards mode: 
-    //    doc.body.clientHeight --> client height with scrollbars.
-    //    doc.documentElement.clientHeight --> client height without scrollbars.
-    // Quirks mode:
-    //    doc.body.clientHeight --> client height without scrollbars.
-    //    doc.documentElement.clientHeight --> document height.
-    // So, must switch value on compatMode.
-    return ($doc.compatMode == 'BackCompat')?
-      $doc.body.clientHeight:
-      $doc.documentElement.clientHeight;
-   }-*/;
-
-  /**
-   * Borrowed from DOMImplMozilla in GWT 1.5.
-   */
-  protected native int windowGetClientWidth()
-  /*-{
-    // See comment for windowGetClientHeight. 
-    return ($doc.compatMode == 'BackCompat')?
-      $doc.body.clientWidth:
-      $doc.documentElement.clientWidth;
-   }-*/;
-
   private native void matchMargins(Element elem)
   /*-{
     // TODO Verify 'negative HTML element margins' case

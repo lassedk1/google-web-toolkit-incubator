@@ -21,6 +21,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -38,14 +39,6 @@ public class GlassPanelDemo implements EntryPoint {
   private static native String getCompatMode()
   /*-{
     return $doc.compatMode;
-  }-*/;
-
-  /**
-   * TODO Replace with {@link com.google.gwt.user.client.Window#enableScrolling(boolean)} in GWT 1.5.
-   */
-  private static native void windowEnableScrolling(boolean enable)
-  /*-{
-    $doc.body.style.overflow = $doc.documentElement.style.overflow = enable ? '' : 'hidden';
   }-*/;
 
   private GlassPanel glassPanel3;
@@ -151,7 +144,7 @@ public class GlassPanelDemo implements EntryPoint {
     buttonScrollingEnable.addClickListener(new ClickListener() {
       public void onClick(Widget sender) {
         removeGlassPanel();
-        windowEnableScrolling(true);
+        Window.enableScrolling(true);
         resetGlassPanels();
       }
     });
@@ -160,7 +153,7 @@ public class GlassPanelDemo implements EntryPoint {
     buttonScrollingDisable.addClickListener(new ClickListener() {
       public void onClick(Widget sender) {
         removeGlassPanel();
-        windowEnableScrolling(false);
+        Window.enableScrolling(false);
         resetGlassPanels();
       }
     });

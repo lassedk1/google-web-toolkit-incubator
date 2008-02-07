@@ -24,37 +24,26 @@ import com.google.gwt.widgetideas.client.GlassPanel;
  */
 public abstract class GlassPanelImpl {
   /**
-   * TODO Correctly handle  for undefined $doc.compatMode in Safari.
+   * TODO Replace with Window.getScrollHeight() when GWT issue 2068 is addressed
    */
   protected static native int getWindowScrollHeight()
   /*-{
-    return $doc.compatMode == 'CSS1Compat' ?
-        $doc.documentElement.scrollHeight : $doc.body.scrollHeight;
+    return @com.google.gwt.user.client.impl.DocumentRootImpl::documentRoot.scrollHeight;
   }-*/;
 
   /**
-   * TODO Correctly handle undefined $doc.compatMode in Safari.
+   * TODO Replace with Window.getScrollWidth() when GWT issue 2068 is addressed
    */
   protected static native int getWindowScrollWidth()
   /*-{
-    return $doc.compatMode == 'CSS1Compat' ?
-        $doc.documentElement.scrollWidth : $doc.body.scrollWidth;
+    return @com.google.gwt.user.client.impl.DocumentRootImpl::documentRoot.scrollWidth;
   }-*/;
 
-  public abstract void matchDocumentSize(GlassPanel glassPanel, boolean dueToResize);
+  public abstract void matchDocumentSize(GlassPanel glassPanel,
+      boolean dueToResize);
 
   public final void matchParentSize(GlassPanel glassPanel, AbsolutePanel parent) {
     DOM.setStyleAttribute(glassPanel.getElement(), "bottom", "0px");
     DOM.setStyleAttribute(glassPanel.getElement(), "right", "0px");
   }
-
-  /**
-   * TODO Use implementation from DOMImpl* in GWT 1.5.
-   */
-  protected abstract int windowGetClientHeight();
-
-  /**
-   * TODO Use implementation from DOMImpl* in GWT 1.5.
-   */
-  protected abstract int windowGetClientWidth();
 }

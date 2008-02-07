@@ -15,6 +15,7 @@
  */
 package com.google.gwt.widgetideas.client.impl;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.widgetideas.client.GlassPanel;
 
@@ -26,8 +27,8 @@ public class GlassPanelImplIE6 extends GlassPanelImpl {
   private int lastDocumentClientHeight = -1;
 
   public void matchDocumentSize(GlassPanel glassPanel, boolean dueToResize) {
-    int clientWidth = windowGetClientWidth();
-    int clientHeight = windowGetClientHeight();
+    int clientWidth = Window.getClientWidth();
+    int clientHeight = Window.getClientHeight();
 
     // Workaround for issue 1934
     // IE fires Window onresize events when the size of the body changes
@@ -47,22 +48,4 @@ public class GlassPanelImplIE6 extends GlassPanelImpl {
       lastDocumentClientHeight = clientHeight;
     }
   }
-
-  /**
-   * Borrowed from DOMImplIE6 in GWT 1.5.
-   */
-  protected native int windowGetClientHeight()
-  /*-{
-    // IE standard mode || IE quirks mode.
-    return $doc.documentElement.clientHeight || $doc.body.clientHeight; 
-  }-*/;
-
-  /**
-   * Borrowed from DOMImplIE6 in GWT 1.5.
-   */
-  protected native int windowGetClientWidth()
-  /*-{
-    // IE standard mode || IE quirks mode.
-    return $doc.documentElement.clientWidth || $doc.body.clientWidth;
-  }-*/;
 }
