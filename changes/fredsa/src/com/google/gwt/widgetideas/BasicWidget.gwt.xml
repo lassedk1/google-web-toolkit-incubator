@@ -1,0 +1,5 @@
+<module>
+	<!--  As new widgets are using style injection, include style injection by 
+	      default to avoid bogus compiler errors -->
+	<inherits name='com.google.gwt.libideas.StyleInjector' />
+</module>
