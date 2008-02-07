@@ -47,6 +47,92 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
   }
 
   /**
+   * The default {@link ColumnSorter} used if no other {@link ColumnSorter} is
+   * specified. This column sorted uses a quicksort algorithm to sort columns.
+   */
+  private static class DefaultColumnSorter extends ColumnSorter {
+    public void onSortColumn(SortableFixedWidthGrid grid,
+        ColumnSortList sortList, ColumnSorterCallback callback) {
+      // Get the primary column and sort order
+      int column = sortList.getPrimaryColumn();
+      boolean ascending = sortList.isPrimaryAscending();
+
+      // Apply the default quicksort algorithm
+      FixedWidthGridCellFormatter formatter = grid.getFixedWidthGridCellFormatter();
+      Element[] tdElems = new Element[grid.getRowCount()];
+      for (int i = 0; i < tdElems.length; i++) {
+        tdElems[i] = formatter.getRawElement(i, column);
+      }
+      quicksort(tdElems, 0, tdElems.length - 1);
+
+      // Convert tdElems to trElems, reversing if needed
+      Element[] trElems = new Element[tdElems.length];
+      if (ascending) {
+        for (int i = 0; i < tdElems.length; i++) {
+          trElems[i] = DOM.getParent(tdElems[i]);
+        }
+      } else {
+        int maxElem = tdElems.length - 1;
+        for (int i = 0; i <= maxElem; i++) {
+          trElems[i] = DOM.getParent(tdElems[maxElem - i]);
+        }
+      }
+
+      // Use the callback to complete the sorting
+      callback.onSortingComplete(trElems);
+    }
+
+    /**
+     * Recursive quicksort algorithm.
+     * 
+     * @param tdElems an array of row elements
+     * @param start the start index to sort
+     * @param end the last index to sort
+     */
+    private void quicksort(Element[] tdElems, int start, int end) {
+      // No need to sort
+      if (start >= end) {
+        return;
+      }
+
+      // Sort this set
+      int i = start + 1;
+      int k = end;
+      String pivot = DOM.getInnerText(tdElems[start]);
+      while (k >= i) {
+        if (DOM.getInnerText(tdElems[i]).compareTo(pivot) < 0) {
+          // Move i until the value is great than the pivot
+          i++;
+        } else if (k == i) {
+          // Don't swap if equal
+          k--;
+        } else if (DOM.getInnerText(tdElems[k]).compareTo(pivot) < 0) {
+          // Swap the elements at k and i
+          Element tr = tdElems[i];
+          tdElems[i] = tdElems[k];
+          tdElems[k] = tr;
+          i++;
+          k--;
+        } else {
+          // Decrement k
+          k--;
+        }
+      }
+
+      // Swap k and pivot
+      if (k != start) {
+        Element tr = tdElems[k];
+        tdElems[k] = tdElems[start];
+        tdElems[start] = tr;
+      }
+
+      // Sort the subsets
+      quicksort(tdElems, start, k - 1);
+      quicksort(tdElems, k + 1, end);
+    }
+  }
+
+  /**
    * Callback that is called when the row sorting is complete.
    */
   public class ColumnSorterCallback {
@@ -56,10 +142,9 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
      * This method takes an array of the row indexes in this Grid, ordered
      * according to their new positions in the Grid.
      * 
-     * @param sortList the list of columns to sort by
      * @param trIndexes the row index in their new order
      */
-    public void onSortingComplete(ColumnSortList sortList, int[] trIndexes) {
+    public void onSortingComplete(int[] trIndexes) {
       // Convert indexes to row elements
       FixedWidthGridRowFormatter formatter = getFixedWidthGridRowFormatter();
       Element[] trElems = new Element[trIndexes.length];
@@ -68,7 +153,7 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
       }
 
       // Call main callback method
-      onSortingComplete(sortList, trElems);
+      onSortingComplete(trElems);
     }
 
     /**
@@ -77,10 +162,9 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
      * This method takes an array of the row elements in this Grid, ordered
      * according to their new positions in the Grid.
      * 
-     * @param sortList the list of columns to sort by
      * @param trElems the row elements in their new order
      */
-    public void onSortingComplete(ColumnSortList sortList, Element[] trElems) {
+    public void onSortingComplete(Element[] trElems) {
       // Move the rows to their new positions
       Element bodyElem = getBodyElement();
       for (int i = trElems.length - 1; i >= 0; i--) {
@@ -91,6 +175,16 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
       }
 
       // Fire the listeners
+      onSortingComplete();
+    }
+
+    /**
+     * Trigger the callback, but do not change the ordering of the rows.
+     * 
+     * Use this method if your {@link ColumnSorter} rearranges the columns
+     * manually.
+     */
+    public void onSortingComplete() {
       fireColumnSorted();
     }
   }
@@ -227,14 +321,6 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
           + ", Column size: " + numColumns);
     }
 
-    // See if column is already sorted
-    if (column == columnSortList.getPrimaryColumn()) {
-      if (ascending != columnSortList.isPrimaryAscending()) {
-        reverseRows();
-      }
-      return;
-    }
-
     // Add the sorting to the list of sorted columns
     columnSortList.add(column, ascending);
 
@@ -266,99 +352,16 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
   }
 
   /**
-   * Get the {@link ColumnSorter}. Optionally create one if it doesn't exist.
-   * The default column sorter uses a quicksort algorithm on the primary sort
-   * column.
+   * Get the {@link ColumnSorter}. Optionally create a
+   * {@link DefaultColumnSorter} if the user hasn't specified one already.
    * 
    * @param createAsNeeded create a default sorter if needed
    * @return the column sorter
    */
   protected ColumnSorter getColumnSorter(boolean createAsNeeded) {
     if ((columnSorter == null) && createAsNeeded) {
-      columnSorter = new ColumnSorter() {
-        public void onSortColumn(SortableFixedWidthGrid grid,
-            ColumnSortList sortList, ColumnSorterCallback callback) {
-          // Get the primary column and sort order
-          int column = sortList.getPrimaryColumn();
-          boolean ascending = sortList.isPrimaryAscending();
-
-          // Apply the default quicksort algorithm
-          FixedWidthGridCellFormatter formatter =
-              grid.getFixedWidthGridCellFormatter();
-          Element[] tdElems = new Element[grid.getRowCount()];
-          for (int i = 0; i < tdElems.length; i++) {
-            tdElems[i] = formatter.getRawElement(i, column);
-          }
-          this.onSortColumnQuickSort(tdElems, 0, tdElems.length - 1);
-
-          // Convert tdElems to trElems, reversing if needed
-          Element[] trElems = new Element[tdElems.length];
-          if (ascending) {
-            for (int i = 0; i < tdElems.length; i++) {
-              trElems[i] = DOM.getParent(tdElems[i]);
-            }
-          } else {
-            int maxElem = tdElems.length - 1;
-            for (int i = 0; i <= maxElem; i++) {
-              trElems[i] = DOM.getParent(tdElems[maxElem - i]);
-            }
-          }
-
-          // Use the callback to complete the sorting
-          callback.onSortingComplete(sortList, trElems);
-        }
-
-        /**
-         * Recursive quicksort algorithm.
-         * 
-         * @param tdElems an array of row elements
-         * @param start the start index to sort
-         * @param end the last index to sort
-         */
-        private void onSortColumnQuickSort(Element[] tdElems, int start, int end) {
-          // No need to sort
-          if (start >= end) {
-            return;
-          }
-
-          // Sort this set
-          int i = start + 1;
-          int k = end;
-          String pivot = DOM.getInnerText(tdElems[start]);
-          while (k >= i) {
-            if (DOM.getInnerText(tdElems[i]).compareTo(pivot) < 0) {
-              // Move i until the value is great than the pivot
-              i++;
-            } else if (k == i) {
-              // Don't swap if equal
-              k--;
-            } else if (DOM.getInnerText(tdElems[k]).compareTo(pivot) < 0) {
-              // Swap the elements at k and i
-              Element tr = tdElems[i];
-              tdElems[i] = tdElems[k];
-              tdElems[k] = tr;
-              i++;
-              k--;
-            } else {
-              // Decrement k
-              k--;
-            }
-          }
-
-          // Swap k and pivot
-          if (k != start) {
-            Element tr = tdElems[k];
-            tdElems[k] = tdElems[start];
-            tdElems[start] = tr;
-          }
-
-          // Sort the subsets
-          onSortColumnQuickSort(tdElems, start, k - 1);
-          onSortColumnQuickSort(tdElems, k + 1, end);
-        }
-      };
+      columnSorter = new DefaultColumnSorter();
     }
-
     return columnSorter;
   }
 
