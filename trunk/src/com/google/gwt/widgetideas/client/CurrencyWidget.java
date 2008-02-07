@@ -1,12 +1,12 @@
 /*
  * Copyright 2008 Google Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -18,30 +18,25 @@ package com.google.gwt.widgetideas.client;
 
 /**
  * Currency Text Widget
- *
+ * 
  * This class provides a text widget implementation for input currency amount.
- * It addresses a few special requirement for currency input, namely,
- * - only digits, decimal separator and group separator should be allowed in
- *   input.
- * - native digits should be handles.
- * - correct currency symbol should be picked according to user's locale.
- * - currency symbol should be displayed on the right side of the box.
- *
- * Usage:
- *    RootPanel rootPanel = RootPanel.get();
- *
- *    CurrencyWidget currencyWidget = new CurrencyWidget();
- *    rootPanel.add(currencyWidget, 180, 32);
- *
- *    clickMeButton = new Button();
- *    rootPanel.add(clickMeButton, 394, 32);
- *    clickMeButton.setText("See what you got!");
- *    clickMeButton.addClickListener(new ClickListener() {
- *      public void onClick(Widget sender) {
- *        Window.alert("You entered: " + Double.toString(currencyWidget.getAmount()));
- *      }
- *    });
- *
+ * It addresses a few special requirement for currency input, namely, - only
+ * digits, decimal separator and group separator should be allowed in input. -
+ * native digits should be handles. - correct currency symbol should be picked
+ * according to user's locale. - currency symbol should be displayed on the
+ * right side of the box.
+ * 
+ * Usage: RootPanel rootPanel = RootPanel.get();
+ * 
+ * CurrencyWidget currencyWidget = new CurrencyWidget();
+ * rootPanel.add(currencyWidget, 180, 32);
+ * 
+ * clickMeButton = new Button(); rootPanel.add(clickMeButton, 394, 32);
+ * clickMeButton.setText("See what you got!");
+ * clickMeButton.addClickListener(new ClickListener() { public void
+ * onClick(Widget sender) { Window.alert("You entered: " +
+ * Double.toString(currencyWidget.getAmount())); } });
+ * 
  */
 
 import com.google.gwt.core.client.GWT;
@@ -61,28 +56,14 @@ import com.google.gwt.widgetideas.client.overrides.DOMHelper;
 
 import java.util.Map;
 
+/**
+ * TODO:Add javadoc
+ */
 public class CurrencyWidget extends Composite {
-  protected static final NumberConstants numberConstants =
-      GWT.create(NumberConstants.class);
-  protected static final CurrencyCodeMapConstants currencyCodeMapConstants =
-      GWT.create(CurrencyCodeMapConstants.class);
+  protected static final NumberConstants numberConstants = (NumberConstants) GWT.create(NumberConstants.class);
+  protected static final CurrencyCodeMapConstants currencyCodeMapConstants = (CurrencyCodeMapConstants) GWT.create(CurrencyCodeMapConstants.class);
   protected static String acceptableCharset = getAcceptedCharset();
-  
-  protected final HorizontalPanel horizontalPanel = new HorizontalPanel();
-  protected final Label currencySymbol;
-  protected final TextBox amountBox = new TextBox();
 
-  protected final NumberFormat formatter = NumberFormat.getFormat(
-      getCurrencyAmountPattern());
-  protected boolean valueInitiated = false;
-
-  /**
-   * Constructs a CurrencyWidget object.
-   */
-  public CurrencyWidget() {
-    this(numberConstants.defCurrencyCode());
-  }
-  
   private static String getAcceptedCharset() {
     StringBuffer strbuf = new StringBuffer();
     strbuf.append("0123456789");
@@ -114,8 +95,24 @@ public class CurrencyWidget extends Composite {
     return strbuf.toString();
   }
 
+  protected final HorizontalPanel horizontalPanel = new HorizontalPanel();
+  protected final Label currencySymbol;
+
+  protected final TextBox amountBox = new TextBox();
+  protected final NumberFormat formatter = NumberFormat.getFormat(getCurrencyAmountPattern());
+
+  protected boolean valueInitiated = false;
+
+  /**
+   * Constructs a CurrencyWidget object.
+   */
+  public CurrencyWidget() {
+    this(numberConstants.defCurrencyCode());
+  }
+
   /**
    * Constructs a CurrencyWidget object with specified currency.
+   * 
    * @param currencyCode International currency code (ISO 4217).
    */
   public CurrencyWidget(String currencyCode) {
@@ -147,6 +144,12 @@ public class CurrencyWidget extends Composite {
     });
 
     amountBox.addKeyboardListener(new KeyboardListenerAdapter() {
+      public void onKeyDown(Widget sender, char keyCode, int modifiers) {
+        if (keyCode == (char) KEY_ENTER) {
+          amountBox.setText(reformatContent());
+        }
+      }
+
       public void onKeyPress(Widget sender, char keyCode, int modifiers) {
         if (acceptableCharset.indexOf(keyCode) == -1) {
           amountBox.cancelKey();
@@ -155,21 +158,19 @@ public class CurrencyWidget extends Composite {
           amountBox.cancelKey();
         }
       }
-
-      public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-        if (keyCode == (char)KEY_ENTER) {
-          amountBox.setText(reformatContent());
-        }
-      }
     });
   }
 
   /*
-   * This method is used to retrieve the amount value user inputed.
-   * @return user inputed value in double.
+   * This method is used to retrieve the amount value user inputed. @return user
+   * inputed value in double.
    */
   public double getAmount() {
     return formatter.parse(amountBox.getText());
+  }
+
+  protected String getCurrencyAmountPattern() {
+    return numberConstants.currencyPattern().replace('\u00a4', ' ').trim();
   }
 
   protected String getCurrencySymbol(String currencyCode) {
@@ -185,10 +186,6 @@ public class CurrencyWidget extends Composite {
     return numberConstants.currencyPattern().startsWith("\u00a4");
   }
 
-  protected String getCurrencyAmountPattern() {
-    return numberConstants.currencyPattern().replace('\u00a4', ' ').trim();
-  }
-
   protected String reformatContent() {
     String str = amountBox.getText();
     if (numberConstants.groupingSeparator().charAt(0) == '\u00a0') {
@@ -197,7 +194,7 @@ public class CurrencyWidget extends Composite {
     double amount;
     try {
       amount = formatter.parse(str);
-    } catch(NumberFormatException e) {
+    } catch (NumberFormatException e) {
       amount = 0.0;
     }
     return formatter.format(amount);

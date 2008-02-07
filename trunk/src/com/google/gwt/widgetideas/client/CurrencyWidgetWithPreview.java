@@ -1,12 +1,12 @@
 /*
  * Copyright 2008 Google Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -18,26 +18,22 @@ package com.google.gwt.widgetideas.client;
 
 /**
  * Currency Text Widget With Preview
- *
- * This class further extends CurrencyWidget with the functionality of 
- * preview. User will be able to see the formatted string with marked
- * visual clue about the value they are inputting. 
- *
- * Usage:
- *    RootPanel rootPanel = RootPanel.get();
- *
- *    CurrencyWidgetWithPreview currencyWidget = new CurrencyWidget();
- *    rootPanel.add(currencyWidget, 180, 32);
- *
- *    clickMeButton = new Button();
- *    rootPanel.add(clickMeButton, 394, 32);
- *    clickMeButton.setText("See what you got!");
- *    clickMeButton.addClickListener(new ClickListener() {
- *      public void onClick(Widget sender) {
- *        Window.alert("You entered: " + Double.toString(currencyWidget.getAmount()));
- *      }
- *    });
- *
+ * 
+ * This class further extends CurrencyWidget with the functionality of preview.
+ * User will be able to see the formatted string with marked visual clue about
+ * the value they are inputting.
+ * 
+ * Usage: RootPanel rootPanel = RootPanel.get();
+ * 
+ * CurrencyWidgetWithPreview currencyWidget = new CurrencyWidget();
+ * rootPanel.add(currencyWidget, 180, 32);
+ * 
+ * clickMeButton = new Button(); rootPanel.add(clickMeButton, 394, 32);
+ * clickMeButton.setText("See what you got!");
+ * clickMeButton.addClickListener(new ClickListener() { public void
+ * onClick(Widget sender) { Window.alert("You entered: " +
+ * Double.toString(currencyWidget.getAmount())); } });
+ * 
  */
 
 import com.google.gwt.core.client.GWT;
@@ -51,10 +47,13 @@ import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * TODO JavaDoc.
+ * 
+ */
 public class CurrencyWidgetWithPreview extends CurrencyWidget {
   interface Resources extends ImmutableResourceBundle {
-    public static final Resources INSTANCE = 
-      (Resources) GWT.create(Resources.class);
+    public static final Resources INSTANCE = (Resources) GWT.create(Resources.class);
 
     /**
      * @gwt.resource CurrencyWidgetPreview.css
@@ -63,20 +62,18 @@ public class CurrencyWidgetWithPreview extends CurrencyWidget {
   }
 
   // private static final String STYLENAME_DEFAULT = "gwt-FastTree";
-  private static final String decimalSeparator = 
-    CurrencyWidget.numberConstants.decimalSeparator();
+  private static final String decimalSeparator = CurrencyWidget.numberConstants.decimalSeparator();
+  CurrencyWidgetWithPreview widget = this;
   private final PopupPanel previewPanel = new PopupPanel();
   private final HTML previewField = new HTML();
-  CurrencyWidgetWithPreview widget = this;
   private final Timer previewTimer = new Timer() {
     public void run() {
-      String  str = reformatContent();
+      String str = reformatContent();
       int pos = str.indexOf(decimalSeparator);
-      previewField.setHTML("<div class='previewPanel'>" +
-          "<span class='integerPart'>" + 
-          str.substring(0, pos + 1) + "</span>" +
-          "<span class='decimalPart'>" + 
-          str.substring(pos + 1) + "</span></div>");
+      previewField.setHTML("<div class='previewPanel'>"
+          + "<span class='integerPart'>" + str.substring(0, pos + 1)
+          + "</span>" + "<span class='decimalPart'>" + str.substring(pos + 1)
+          + "</span></div>");
     }
   };
 
@@ -89,6 +86,7 @@ public class CurrencyWidgetWithPreview extends CurrencyWidget {
 
   /**
    * Constructs a CurrencyWidgetWithPreview object with specified currency.
+   * 
    * @param currencyCode International currency code (ISO 4217).
    */
   public CurrencyWidgetWithPreview(String currencyCode) {
@@ -113,10 +111,9 @@ public class CurrencyWidgetWithPreview extends CurrencyWidget {
       }
     });
 
-    
     amountBox.addKeyboardListener(new KeyboardListenerAdapter() {
       public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-        if (keyCode == (char)KEY_ENTER) {
+        if (keyCode == (char) KEY_ENTER) {
           previewPanel.hide();
           amountBox.setText(widget.reformatContent());
         } else if (keyCode != (char) KEY_TAB) {
