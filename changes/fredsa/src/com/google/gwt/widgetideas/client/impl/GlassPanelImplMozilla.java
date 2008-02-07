@@ -22,8 +22,8 @@ import com.google.gwt.widgetideas.client.GlassPanel;
  * Mozilla implementation of {@link GlassPanelImpl}.
  */
 public class GlassPanelImplMozilla extends GlassPanelImplStandard {
-  public void matchDocumentSize(GlassPanel glassPanel) {
-    super.matchDocumentSize(glassPanel);
+  public void matchDocumentSize(GlassPanel glassPanel, boolean dueToResize) {
+    super.matchDocumentSize(glassPanel, dueToResize);
     matchMargins(glassPanel.getElement());
   }
 

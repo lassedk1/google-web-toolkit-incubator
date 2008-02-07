@@ -22,7 +22,7 @@ import com.google.gwt.widgetideas.client.GlassPanel;
  * standards.
  */
 public abstract class GlassPanelImplStandard extends GlassPanelImpl {
-  public void matchDocumentSize(GlassPanel glassPanel) {
+  public void matchDocumentSize(GlassPanel glassPanel, boolean dueToResize) {
     int clientWidth = windowGetClientWidth();
     int clientHeight = windowGetClientHeight();
 

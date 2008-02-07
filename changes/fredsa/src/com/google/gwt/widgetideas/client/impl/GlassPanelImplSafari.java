@@ -44,7 +44,7 @@ public class GlassPanelImplSafari extends GlassPanelImplStandard {
     elem.style.height = (height + marginTop) + "px";
   }-*/;
 
-  public void matchDocumentSize(GlassPanel glassPanel) {
+  public void matchDocumentSize(GlassPanel glassPanel, boolean dueToResize) {
     implMatchDocumentSize(glassPanel.getElement());
   }
 

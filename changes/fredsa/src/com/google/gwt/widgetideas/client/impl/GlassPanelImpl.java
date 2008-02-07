@@ -41,7 +41,7 @@ public abstract class GlassPanelImpl {
         $doc.documentElement.scrollWidth : $doc.body.scrollWidth;
   }-*/;
 
-  public abstract void matchDocumentSize(GlassPanel glassPanel);
+  public abstract void matchDocumentSize(GlassPanel glassPanel, boolean dueToResize);
 
   public final void matchParentSize(GlassPanel glassPanel, AbsolutePanel parent) {
     DOM.setStyleAttribute(glassPanel.getElement(), "bottom", "0px");

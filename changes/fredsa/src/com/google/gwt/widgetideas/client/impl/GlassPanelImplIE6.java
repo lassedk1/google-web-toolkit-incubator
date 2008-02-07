@@ -25,13 +25,13 @@ public class GlassPanelImplIE6 extends GlassPanelImpl {
   private int lastDocumentClientWidth = -1;
   private int lastDocumentClientHeight = -1;
 
-  public void matchDocumentSize(GlassPanel glassPanel) {
+  public void matchDocumentSize(GlassPanel glassPanel, boolean dueToResize) {
     int clientWidth = windowGetClientWidth();
     int clientHeight = windowGetClientHeight();
 
     // Workaround for issue 1934
     // IE fires Window onresize events when the size of the body changes
-    if (clientWidth != lastDocumentClientWidth
+    if (!dueToResize || clientWidth != lastDocumentClientWidth
         || clientHeight != lastDocumentClientHeight) {
       int offsetWidth = RootPanel.get().getOffsetWidth();
       int offsetHeight = RootPanel.get().getOffsetHeight();
@@ -42,7 +42,7 @@ public class GlassPanelImplIE6 extends GlassPanelImpl {
       int width = Math.max(clientWidth, Math.max(offsetWidth, scrollWidth));
       int height = Math.max(clientHeight, Math.max(offsetHeight, scrollHeight));
       glassPanel.setPixelSize(width, height);
-      
+
       lastDocumentClientWidth = clientWidth;
       lastDocumentClientHeight = clientHeight;
     }

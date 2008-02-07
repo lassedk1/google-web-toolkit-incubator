@@ -41,7 +41,7 @@ public class GlassPanelDemo implements EntryPoint {
   }-*/;
 
   /**
-   * TODO Replace with {@link Window#enableScrolling(boolean)} in GWT 1.5.
+   * TODO Replace with {@link com.google.gwt.user.client.Window#enableScrolling(boolean)} in GWT 1.5.
    */
   private static native void windowEnableScrolling(boolean enable)
   /*-{
@@ -52,7 +52,6 @@ public class GlassPanelDemo implements EntryPoint {
   private AbsolutePanel greenAbsolutePanel;
   private GlassPanel greenGlassPanel;
   private AbsolutePanel redAbsolutePanel;
-
   private GlassPanel redGlassPanel;
 
   public void onModuleLoad() {
@@ -62,7 +61,7 @@ public class GlassPanelDemo implements EntryPoint {
         String text = "Uncaught exception: ";
         while (throwable != null) {
           StackTraceElement[] stackTraceElements = throwable.getStackTrace();
-          text += new String(throwable.toString() + "\n");
+          text += throwable.toString() + "\n";
           for (int i = 0; i < stackTraceElements.length; i++) {
             text += "    at " + stackTraceElements[i] + "\n";
           }

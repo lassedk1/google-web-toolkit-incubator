@@ -50,7 +50,7 @@ import com.google.gwt.widgetideas.client.impl.GlassPanelImpl;
  * </p>
  */
 public class GlassPanel extends FocusPanel implements EventPreview {
-  private static GlassPanelImpl impl = (GlassPanelImpl) GWT.create(GlassPanelImpl.class);
+  private static final GlassPanelImpl impl = GWT.create(GlassPanelImpl.class);
 
   private boolean autoHide;
   private WindowResizeListener resizeListener;
@@ -66,7 +66,7 @@ public class GlassPanel extends FocusPanel implements EventPreview {
   public GlassPanel(boolean autoHide) {
     this.autoHide = autoHide;
     Element elem = getElement();
-    DOM.setStyleAttribute(elem, "backgroundColor", "#000000");
+    DOM.setStyleAttribute(elem, "backgroundColor", "#000");
     DOM.setStyleAttribute(elem, "filter", "alpha(opacity=50)");
     DOM.setStyleAttribute(elem, "opacity", "0.5");
     setStyleName("gwt-GlassPanel");
@@ -102,10 +102,10 @@ public class GlassPanel extends FocusPanel implements EventPreview {
     }
 
     if (parent == RootPanel.get()) {
-      impl.matchDocumentSize(this);
+      impl.matchDocumentSize(this, false);
       resizeListener = new WindowResizeListener() {
         public void onWindowResized(int width, int height) {
-          impl.matchDocumentSize(GlassPanel.this);
+          impl.matchDocumentSize(GlassPanel.this, true);
         }
       };
       Window.addWindowResizeListener(resizeListener);
