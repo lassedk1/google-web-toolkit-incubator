@@ -32,10 +32,6 @@
   color: #fff;
 }
 	
-.gwt-ScrollTable .gwt-ScrollTable-data tr.selected {
-  background: #7AA5D6;
-}
-
 .gwt-ScrollTable .gwt-ScrollTable-data tr.hovering {
   background: #C3D9FF;
 }
@@ -44,6 +40,10 @@
   border: 1px solid blue;
   cursor: hand;
   cursor: pointer;
+}
+
+.gwt-ScrollTable .gwt-ScrollTable-data tr.selected {
+  background: #7AA5D6;
 }
 
 .gwt-ScrollTable .pagingOptions {
