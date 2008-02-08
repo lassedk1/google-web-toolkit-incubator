@@ -1,0 +1,18 @@
+<!-- A file to define the test sets for Incubator testing -->
+
+<project name="testsets">
+
+  <!-- Hosted mode tests: -->
+  <fileset id="default.hosted.tests" dir="${javac.junit.out}" 
+           includes="${gwt.junit.testcase.includes}">
+     <!-- here's how to exclude a given test, if you need to:
+      <exclude name="com/google/gwt/junit/client/ParallelRemoteTest.class" />
+     -->
+  </fileset>
+
+  <!-- Web mode tests: -->
+  <fileset id="default.web.tests" dir="${javac.junit.out}" 
+           includes="${gwt.junit.testcase.includes}">
+  </fileset>
+
+</project>  
