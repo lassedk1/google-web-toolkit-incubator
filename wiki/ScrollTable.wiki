@@ -1,12 +1,38 @@
-#summary A two part table with a fixed header and scrollable data area
+#summary A scrollable table with fixed header and footer sections and a scrollable data area
 #labels Type-Widget
 
 = Introduction =
-The ScrollTable Widget is a two part table consisting of a fixed header table and a scrollable data grid.  The header table is an extension of the FlexTable, so it supports rowspans and colspans.  The data portion is an extension of the grid.
+The ScrollTable Widget is a three part table consisting of a fixed header table, a fixed footer table (optional), and a scrollable data grid.
 
-In addition to the scrolling feature, the ScrollTable supports many other features.  The data portion supports hovering and selecting rows.  Users can decide between a single or multi row selection policy.  The header table supports mouse resizing.  Users can click and drag the edge of a header cell to resize a column.  If the header cell spans multiple columns, the cells will be smartly resized proportional to their original widths.  Double-clicking on a header cell will auto-resize the column to fit all of its data content.  Click on a header cell will sort the data rows based on the selected column.  Clicking on the same cell again will reverse sort the rows.
+= Features =
 
-All of the above features can be enabled or disabled, and they can be accessed programatically.
+In addition to the scrolling feature, the ScrollTable supports many other features as described below.  All of the features can be enabled or disabled, and they can be accessed programatically.
+
+=== Complex Headers and Footers ===
+
+The header and footer tables support colspans and rowspans, which allows you to make them as complex as needed.  For example, you can have a column headers that are grouped into sections.
+
+=== Row Selection ===
+
+The data portion supports selection of rows via the mouse.  If multiple row selection is enabled, users can select multiple rows using the ctrl key, or they can shift click to select a range of rows.
+
+=== Row and Cell Highlighting ===
+
+Rows or cells can be highlighted on mouseover.  This feature can be used with row selection.
+
+=== Column Resizing and Auto Resizing ===
+
+Users can drag the edge of a column header to resize the column.  If the header spans multiple columns, all columns will be resized proportional to their original sizes.  The ScrollTable supports many resize policies as well.  You can allow users to resize the entire grid, or confine the grid to a specific width and allow users to redistribute the space between the columns.
+
+In addition, users can double click on the edge of a header cell to auto resize the column to the minimum width required to fit the content.
+
+=== Multi Column Sorting ===
+
+The ScrollTable supports sorting of multiple columns.  As the user clicks on columns, the grid keeps track of a ColumnSortList, which contains the sequential list of all columns that have been sorted, and their sort order.
+
+You can specify your own ColumnSorter or use the build in ColumnSorter, which sorts using native Javascript comparisons.
+
+
 
 Example:
 [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/ScrollTable/index.html]
