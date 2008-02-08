@@ -1,8 +1,15 @@
 #summary A scrollable table with fixed header and footer sections and a scrollable data area
 #labels Type-Widget
 
+
+
 = Introduction =
 The ScrollTable Widget is a three part table consisting of a fixed header table, a fixed footer table (optional), and a scrollable data grid.
+
+Example:
+[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/ScrollTable/index.html]
+
+
 
 = Features =
 
@@ -34,72 +41,22 @@ You can specify your own ColumnSorter or use the build in ColumnSorter, which so
 
 
 
-Example:
-[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/ScrollTable/index.html]
-
-
 = Setup Instructions =
 
 Add these line to your module.gwt.xml file:
 {{{
   <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
   <inherits name='com.google.gwt.widgetideas.ScrollTable'/>
+
+  <stylesheet src='ScrollTableDemo.css'/>
 }}}
 
+In your public directory, include the following stylesheet:
+[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/ScrollTable/ScrollTableDemo.css ScrollTableDemo.css]
 
+Create a subdirectory called "images" and add the background image:
+[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/ScrollTable/images/bg_header_gradient.gif bg_header_gradient.gif]
 
-= CSS =
-
-Here is an example CSS style for the Scrolltable Widget:
-{{{
-/**
- * ScrollTable
- */
-.gwt-ScrollTable {
-  border-color: #aaa;
-  border-style: solid;
-  border-width: 1px 0px 3px 1px;
-}
-
-.gwt-ScrollTable .gwt-ScrollTable-header-wrapper {
-  background: #8bd url(images/bg_header_gradient.gif) repeat-x bottom left;
-}
-
-.gwt-ScrollTable .gwt-ScrollTable-footer-wrapper {
-	border-top: 1px solid #aaa;
-  background: #8bd url(images/bg_header_gradient.gif) repeat-x bottom left;
-}
-
-.gwt-ScrollTable .gwt-ScrollTable-data td,
-.gwt-ScrollTable .gwt-ScrollTable-header td,
-.gwt-ScrollTable .gwt-ScrollTable-footer td {
-  border-color: #aaa;
-  border-style: solid;
-  border-width: 0px 1px 1px 0px;
-  white-space: nowrap;
-  overflow: hidden;
-  padding: 3px;
-}
-
-.gwt-ScrollTable .gwt-ScrollTable-header td,
-.gwt-ScrollTable .gwt-ScrollTable-footer td {
-  color: #fff;
-}
-	
-.gwt-ScrollTable .gwt-ScrollTable-data tr.selected {
-  background: #7AA5D6;
-}
-
-.gwt-ScrollTable .gwt-ScrollTable-data tr.hovering {
-  background: #C3D9FF;
-}
-
-.gwt-ScrollTable .gwt-ScrollTable-data td.hovering {
-  border: 1px solid blue;
-  cursor: hand;
-  cursor: pointer;
-}
-}}}
 
 
 = Sample Code =
