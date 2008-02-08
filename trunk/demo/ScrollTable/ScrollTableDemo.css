@@ -4,7 +4,7 @@
 .gwt-ScrollTable {
   border-color: #aaa;
   border-style: solid;
-  border-width: 1px 0px 3px 1px;
+  border-width: 1px 0px 1px 1px;
 }
 
 .gwt-ScrollTable .gwt-ScrollTable-header-wrapper {
@@ -32,23 +32,29 @@
   color: #fff;
 }
 	
-.gwt-ScrollTable .gwt-ScrollTable-data tr.selected {
-  background: #7AA5D6;
-}
-
 .gwt-ScrollTable .gwt-ScrollTable-data tr.hovering {
   background: #C3D9FF;
 }
 
 .gwt-ScrollTable .gwt-ScrollTable-data td.hovering {
   border: 1px solid blue;
+  cursor: hand;
+  cursor: pointer;
 }
 
-.gwt-ModeledScrollTable-paging {
+.gwt-ScrollTable .gwt-ScrollTable-data tr.selected {
+  background: #7AA5D6;
+}
+
+.gwt-ScrollTable .pagingOptions {
   background: #e8eef7;
   border-top: 1px solid #aaa;
   border-right: 1px solid #aaa;
   padding: 1px 0px;
+}
+
+.gwt-ScrollTable .pagingOptions .errorLabel {
+	color: red;
 }
 
 .gwt-CellEditor {
