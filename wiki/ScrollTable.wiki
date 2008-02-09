@@ -124,8 +124,10 @@ public class MyEntryPoint implements EntryPoint {
     }
 
     // Set the stats in the footer table
-    footerTable.setHTML(0, 1, (totalAge / numStudents) + "");
-    footerTable.setHTML(0, 3, (totalGPA / numStudents) + "");
+    double averageAge = (100 * totalAge / numStudents) / 100.0;
+    double averageGPA = ((int) (100.0 * totalGPA / numStudents)) / 100.0;
+    footerTable.setHTML(0, 1,  averageAge + "");
+    footerTable.setHTML(0, 3, averageGPA + "");
     footerTable.setHTML(1, 1, numStudents + "");
     
     // Setup some default widths
