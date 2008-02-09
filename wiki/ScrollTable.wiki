@@ -60,8 +60,7 @@ Create a subdirectory called "images" and add the background image:
 
 
 = Sample Code =
-See the demo code for a complete sample.  This sample code produces this output:
-
+See the demo code for a complete sample.  This sample code produces a grid containing data on 100 fictional students, with cumulative averages.
 
 {{{
 /**
