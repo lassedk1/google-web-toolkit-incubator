@@ -60,113 +60,170 @@ Create a subdirectory called "images" and add the background image:
 
 
 = Sample Code =
-See the demo code for a complete sample.
+See the demo code for a complete sample.  This sample code produces this output:
+
 
 {{{
+/**
+ * Entry point classes define <code>onModuleLoad()</code>.
+ */
+public class MyEntryPoint implements EntryPoint {
   /**
-   * Add a row of data cells each consisting of a string that describes the
-   * row:column coordinates of the new cell. The number of columns in the new
-   * row will match the number of columns in the grid.
-   * 
-   * @param beforeRow the index to add the new row into
+   * A list of first names.
    */
-  public static void insertDataRow(int beforeRow) {
-    // Insert the new row
-    beforeRow = dataTable.insertRow(beforeRow);
+  private static final String[] FIRST_NAMES = {
+      "Joel", "John", "Kelly", "Freeland", "Bruce", "Rajeev"};
 
-    // Set the data in the new row
-    int numColumns = dataTable.getColumnCount();
-    for (int column = 0; column < numColumns; column++) {
-      String label = beforeRow + ":" + column;
-      if (column == 0) {
-        dataTable.setWidget(beforeRow, column, new CheckBox(label));
-      } else if (column == 2) {
-        int rand = (int) (Math.random() * 100000);
-        dataTable.setHTML(beforeRow, column, rand + "");
-      } else {
-        dataTable.setHTML(beforeRow, column, label);
-      }
-    }
-  }
+  /**
+   * A list of last names.
+   */
+  private static final String[] LAST_NAMES = {
+      "Smith", "Paterson", "Haterson", "Raterson", "Johnson", "Sonson"};
+
+  /**
+   * A list of towns.
+   */
+  private static final String[] TOWNS = {
+      "Atlanta", "New York", "Dubai", "Moscow", "Venice", "Old York"};
 
   /**
    * This is the entry point method.
    */
   public void onModuleLoad() {
-    // Create the inner tables
-    getHeaderTable();
-    getFooterTable();
-    getDataTable();
-    
-    // Add the scroll table to the page
-    headerTable = new FixedWidthFlexTable();;
-    dataTable = new SortableFixedWidthGrid();
-    dataTable.setHoveringPolicy(SelectionGrid.HOVERING_POLICY_ROW);
-    footerTable = new FixedWidthGrid();
-    scrollTable = new ScrollTable(dataTable, headerTable);
+    // Get the components of the ScrollTable
+    FixedWidthFlexTable headerTable = createHeaderTable();
+    FixedWidthFlexTable footerTable = createFooterTable();
+    FixedWidthGrid dataTable = createDataTable();
+
+    // Combine the components into a ScrollTable
+    ScrollTable scrollTable = new ScrollTable(dataTable, headerTable);
     scrollTable.setFooterTable(footerTable);
 
-    // Setup the header
-    setupScrollTable();
+    // Set some options in the scroll table
+    scrollTable.setSortingEnabled(true);
+    scrollTable.setResizePolicy(ScrollTable.RESIZE_POLICY_FILL_WIDTH);
+    scrollTable.setSize("80%", "80%");
     
-    // Add some data the data table
-    dataTable.resize(0, 13);
-    for (int i = 0; i < 15; i++) {
-      insertDataRow(i);
-    }
-    
-    // Add some data to the footer table
-    footerTable.resize(1, 13);
-    for (int i = 0; i < 13; i++) {
-      footerTable.setText(0, i, "Col " + i);
+    // Add some data to the data table
+    int numStudents = 100;
+    int totalAge = 0;
+    double totalGPA = 0;
+    for (int i = 0; i < numStudents; i++) {
+      // Generate stats
+      int age = (18 + Random.nextInt(4));
+      totalAge += age;
+      double gpa = 1.0 + 3.0 * Random.nextDouble();
+      totalGPA += gpa;
+      
+      // Set the data in the current row
+      dataTable.setHTML(i, 0, LAST_NAMES[Random.nextInt(LAST_NAMES.length)]);
+      dataTable.setHTML(i, 1, FIRST_NAMES[Random.nextInt(FIRST_NAMES.length)]);
+      dataTable.setHTML(i, 2,  age + "");
+      dataTable.setHTML(i, 3, TOWNS[Random.nextInt(TOWNS.length)]);
+      dataTable.setHTML(i, 4, (100000 + Random.nextInt(899999)) + "");
+      dataTable.setHTML(i, 5, ((int) (gpa * 100.0)) / 100.0 + "");
     }
 
-    // Redraw the scroll table
-    scrollTable.redraw();
+    // Set the stats in the footer table
+    footerTable.setHTML(0, 1, (totalAge / numStudents) + "");
+    footerTable.setHTML(0, 3, (totalGPA / numStudents) + "");
+    footerTable.setHTML(1, 1, numStudents + "");
+    
+    // Setup some default widths
+    scrollTable.setColumnWidth(2, 50);
+    scrollTable.setColumnWidth(5, 50);
     
     // Add the components to the page
     RootPanel.get().add(scrollTable);
-    RootPanel.get().add(new HTML("<BR>"));
-    RootPanel.get().add(createTabPanel());
   }
 
   /**
-   * Setup the scroll table.
+   * Create the data table.
+   * 
+   * @return a data table
    */
-  private void setupScrollTable() {
-    // Setup the formatting
-    scrollTable.setSize("95%", "50%");
-    scrollTable.setCellPadding(3);
-    scrollTable.setCellSpacing(1);
-    scrollTable.setResizePolicy(ScrollTable.RESIZE_POLICY_FILL_WIDTH);
+  private FixedWidthGrid createDataTable() {
+    // Create a new table
+    SortableFixedWidthGrid dataTable = new SortableFixedWidthGrid();
+
+    // Set some options in the data table
+    dataTable.setHoveringPolicy(SelectionGrid.HOVERING_POLICY_ROW);
+    dataTable.setSelectionPolicy(SelectionGrid.SELECTION_POLICY_MULTI_ROW);
+    
+    // Return the data table
+    return dataTable;
+  }
+
+  /**
+   * Create the footer table.
+   * 
+   * @return a footer table
+   */
+  private FixedWidthFlexTable createFooterTable() {
+    // Create a new table
+    FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
+    FlexCellFormatter formatter = footerTable.getFlexCellFormatter();
 
     // Level 1 headers
-    FlexCellFormatter headerFormatter = headerTable.getFlexCellFormatter();
-    headerTable.setHTML(0, 0, "Info Table");
-    headerFormatter.setColSpan(0, 0, 13);
+    footerTable.setHTML(0, 0, "<b>Average Age:</b>");
+    formatter.setColSpan(0, 0, 2);
+    formatter.setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_RIGHT);
+    footerTable.setHTML(0, 1, "0");
+    footerTable.setHTML(0, 2, "<b>Average GPA:</b>");
+    formatter.setColSpan(0, 2, 2);
+    formatter.setHorizontalAlignment(0, 2, HasHorizontalAlignment.ALIGN_RIGHT);
+    footerTable.setHTML(0, 3, "0");
 
     // Level 2 headers
-    headerTable.setHTML(1, 0, "Group Header 0<BR>Multiline");
-    headerFormatter.setColSpan(1, 0, 2);
-    headerFormatter.setRowSpan(1, 0, 2);
-    headerTable.setHTML(1, 1, "Group Header 1");
-    headerFormatter.setColSpan(1, 1, 3);
-    headerTable.setHTML(1, 2, "Group Header 2");
-    headerFormatter.setColSpan(1, 2, 1);
-    headerFormatter.setRowSpan(1, 2, 2);
-    headerTable.setHTML(1, 3, "Group Header 3");
-    headerFormatter.setColSpan(1, 3, 1);
-    headerFormatter.setRowSpan(1, 3, 2);
-    headerTable.setHTML(1, 4, "Group Header 4");
-    headerFormatter.setColSpan(1, 4, 3);
-    headerTable.setHTML(1, 5, "Group Header 5");
-    headerFormatter.setColSpan(1, 5, 3);
+    footerTable.setHTML(1, 0, "<b>Number of Students:</b>");
+    formatter.setColSpan(1, 0, 5);
+    formatter.setHorizontalAlignment(1, 0, HasHorizontalAlignment.ALIGN_RIGHT);
+    footerTable.setHTML(1, 1, "0");
+
+    // Return the footer table
+    return footerTable;
+  }
+
+  /**
+   * Create the header table.
+   * 
+   * @return a header table
+   */
+  private FixedWidthFlexTable createHeaderTable() {
+    // Create a new table
+    FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
+    FlexCellFormatter formatter = headerTable.getFlexCellFormatter();
+
+    // Level 1 headers
+    headerTable.setHTML(0, 0, "<b>Student Profiles</b>");
+    formatter.setColSpan(0, 0, 6);
+    formatter.setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER);
+
+    // Level 2 headers
+    headerTable.setHTML(1, 0, "<b>General</b>");
+    formatter.setColSpan(1, 0, 4);
+    formatter.setHorizontalAlignment(1, 0, HasHorizontalAlignment.ALIGN_CENTER);
+    headerTable.setHTML(1, 1, "<b>Student ID</b>");
+    formatter.setRowSpan(1, 1, 2);
+    formatter.setHorizontalAlignment(1, 1, HasHorizontalAlignment.ALIGN_CENTER);
+    headerTable.setHTML(1, 2, "<b>GPA</b>");
+    formatter.setRowSpan(1, 2, 2);
+    formatter.setHorizontalAlignment(1, 2, HasHorizontalAlignment.ALIGN_CENTER);
 
     // Level 3 headers
-    for (int cell = 0; cell < 9; cell++) {
-      headerTable.setHTML(2, cell, "Header " + cell);
-    }
+    headerTable.setHTML(2, 0, "Last Name");
+    formatter.setHorizontalAlignment(2, 0, HasHorizontalAlignment.ALIGN_CENTER);
+    headerTable.setHTML(2, 1, "First Name");
+    formatter.setHorizontalAlignment(2, 1, HasHorizontalAlignment.ALIGN_CENTER);
+    headerTable.setHTML(2, 2, "Age");
+    formatter.setHorizontalAlignment(2, 2, HasHorizontalAlignment.ALIGN_CENTER);
+    headerTable.setHTML(2, 3, "Hometown");
+    formatter.setHorizontalAlignment(3, 3, HasHorizontalAlignment.ALIGN_CENTER);
+
+    // Return the header table
+    return headerTable;
   }
+}
 }}}
  
  
