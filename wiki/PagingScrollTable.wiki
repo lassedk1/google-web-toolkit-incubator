@@ -1,0 +1,58 @@
+#summary A scrollable table with fixed header and footer sections and a scrollable data area that supports paging
+
+
+
+= Introduction =
+The PagingScrollTable Widget is a subclass of the ScrollTable widget.  It supports navigating between pages of data, which can be generated on the client or via an RPC call.  
+
+
+Example:
+[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/PagingScrollTable/index.html]
+
+
+
+= Features =
+
+The PagingScrollTable supports all of the features of the ScrollTable, plus the following:
+
+=== Paging ===
+
+Allow users to page through nearly unlimited data without loading it all at once.  The paging mechanism includes a bar at the bottom where the user can go to the first, last, next, previous, or a specific page.  A loading icon appears between page loads.
+
+If you do not know the total number of pages, you can still use the PagingScrollTable.  The total number of pages will be hidden, but the user can keep hitting the next page button.
+
+=== Cachine ===
+
+Using the CachedTableController, you can automatically prefetch rows, such as the next page.  This can increase the perceived speed considerably.
+
+=== Inline Editing ===
+
+Attach one of the generic cell editors, such as TextCellEditor or ListCellEditor, or create your own editor.  When users click on a cell in the data portion of the table, a popup will appear where they can edit the contents.
+
+=== Server side sorting ===
+
+All requests for additional data include a ColumnSortList, which allows you to send an RPC call to the server to retrieve sorted data.
+
+
+
+= Setup Instructions =
+
+Add these line to your module.gwt.xml file:
+{{{
+  <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
+  <inherits name='com.google.gwt.widgetideas.ScrollTable'/>
+
+  <stylesheet src='ScrollTableDemo.css'/>
+}}}
+
+In your public directory, include the following stylesheet:
+[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/ScrollTable/ScrollTableDemo.css ScrollTableDemo.css]
+
+Create a subdirectory called "images" and add the background image:
+[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/ScrollTable/images/bg_header_gradient.gif bg_header_gradient.gif]
+
+
+
+= Sample Code =
+
+Coming soon...
