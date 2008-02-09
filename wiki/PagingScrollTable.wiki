@@ -21,7 +21,7 @@ Allow users to page through nearly unlimited data without loading it all at once
 
 If you do not know the total number of pages, you can still use the PagingScrollTable.  The total number of pages will be hidden, but the user can keep hitting the next page button.
 
-=== Cachine ===
+=== Caching ===
 
 Using the CachedTableController, you can automatically prefetch rows, such as the next page.  This can increase the perceived speed considerably.
 
@@ -32,6 +32,28 @@ Attach one of the generic cell editors, such as TextCellEditor or ListCellEditor
 === Server side sorting ===
 
 All requests for additional data include a ColumnSortList, which allows you to send an RPC call to the server to retrieve sorted data.
+
+
+
+= Table Models =
+
+In order to use the PagingScrollTable, you need to define a TableModel (see example below).  A TableModel takes a request for data and calls a callback when the data is available.  The example below shows one way of generating random data on the client side, but you can also retrieve data using an RPC request.
+
+=== TableModel ===
+
+Use this TableModel is you want to support inline editing of cells or if you want to add and remove rows and keep the View and backend synced.
+
+=== ReadOnlyTableModel ===
+
+The ReadOnlyTableModel, as its name suggests, is used if you only want to retrieve data.
+
+=== ClientTableModel ===
+
+Use this if you want to generate data on the client side.  You only need to define one method called "getCell" that returns the value given the cell.
+
+=== ListTableModel ===
+
+Another version of the ClientTableModel, this one takes a 2D Collection of values.  You do not need to override any methods.
 
 
 
@@ -55,4 +77,252 @@ Create a subdirectory called "images" and add the background image:
 
 = Sample Code =
 
-Coming soon...
+The following code shows you how to create a TableModel that can be used to retrieve data when a page is requested.  See the TableModel section for more info.
+
+{{{
+/**
+ * Entry point classes define <code>onModuleLoad()</code>.
+ */
+public class MyEntryPoint implements EntryPoint {
+  /**
+   * A list of first names.
+   */
+  private static final String[] FIRST_NAMES = {
+      "Joel", "John", "Kelly", "Freeland", "Bruce", "Rajeev"};
+
+  /**
+   * A list of last names.
+   */
+  private static final String[] LAST_NAMES = {
+      "Smith", "Paterson", "Haterson", "Raterson", "Johnson", "Sonson"};
+
+  /**
+   * A list of towns.
+   */
+  private static final String[] TOWNS = {
+      "Atlanta", "New York", "Dubai", "Moscow", "Venice", "Old York"};
+
+  /**
+   * Information about a student.
+   */
+  private class Student {
+    int age, id;
+    String firstName, lastName, hometown;
+    double gpa;
+  }
+
+  /**
+   * A custom {@link ReadOnlyTableModel} that generates random data. We are
+   * using a {@link CachedTableController}, so a request will only arrive if
+   * the current page isn't cached.
+   */
+  private class MyTableModel extends ReadOnlyTableModel {
+    public void requestRows(Request request, Callback callback) {
+      // Get the data from the request
+      int startRow = request.getStartRow();
+      int numRows = request.getNumRows();
+
+      // Get the sort list. We aren't using it in the demo, but it can be used
+      // for server side sorting.
+      ColumnSortList sortList = request.getColumnSortList();
+
+      // Generate random data. You can use an RPC call instead to retrieve
+      // data from the server. Rows is a 2D collection of string to be displayed
+      // in the grid. students is collection of students objects to be
+      // associated with each row.
+      List rows = new ArrayList();
+      List students = new ArrayList();
+      for (int i = 0; i < numRows; i++) {
+        Student student = generateStudent();
+        students.add(student);
+
+        // Create a list of cell data
+        List cells = new ArrayList();
+        cells.add(student.lastName);
+        cells.add(student.firstName);
+        cells.add(student.age + "");
+        cells.add(student.hometown);
+        cells.add(student.id + "");
+        cells.add(student.gpa + "");
+        rows.add(cells);
+      }
+
+      // Create the response from the 2D collection of strings. Note that
+      // we pass the List of students as well. The PagingGrid will associate
+      // the objects in the students list with the rows.
+      Response response = new SerializableResponse(rows, students);
+
+      // Make the callback
+      callback.onRowsReady(request, response);
+    }
+
+    /**
+     * @return a randomly generated student
+     */
+    private Student generateStudent() {
+      Student student = new Student();
+      student.age = 18 + Random.nextInt(4);
+      student.gpa = 1.0 + 3.0 * Random.nextDouble();
+      student.id = 100000 + Random.nextInt(899999);
+      student.lastName = LAST_NAMES[Random.nextInt(LAST_NAMES.length)];
+      student.firstName = FIRST_NAMES[Random.nextInt(FIRST_NAMES.length)];
+      student.hometown = TOWNS[Random.nextInt(TOWNS.length)];
+      return student;
+    }
+  }
+
+  /**
+   * This is the entry point method.
+   */
+  public void onModuleLoad() {
+    // Get the components of the ScrollTable
+    FixedWidthFlexTable headerTable = createHeaderTable();
+    final FixedWidthFlexTable footerTable = createFooterTable();
+    final PagingGrid dataTable = createDataTable();
+
+    // Add a RowPagingListener to set the footer stats
+    dataTable.addRowPagingListener(new RowPagingListener() {
+      public void onNumPagesChanges(int numPages) {
+      }
+
+      public void onPageChanged(int page) {
+      }
+
+      public void onPageLoaded() {
+        int totalAge = 0;
+        double totalGPA = 0;
+        int numRows = dataTable.getRowCount();
+        for (int i = 0; i < numRows; i++) {
+          // Get the associated Student object
+          Student student = (Student) dataTable.getRowValue(i);
+          totalAge += student.age;
+          totalGPA += student.gpa;
+        }
+        double averageAge = ((int) (100.0 * totalAge / numRows)) / 100.0;
+        double averageGPA = ((int) (100.0 * totalGPA / numRows)) / 100.0;
+        footerTable.setHTML(0, 1, averageAge + "");
+        footerTable.setHTML(0, 3, averageGPA + "");
+        footerTable.setHTML(1, 1, numRows + "");
+      }
+
+      public void onPagingFailure(Throwable caught) {
+      }
+    });
+    
+    // Combine the components into a ScrollTable
+    PagingScrollTable scrollTable = new PagingScrollTable(dataTable,
+        headerTable);
+    scrollTable.setFooterTable(footerTable);
+
+    // Set some options in the scroll table
+    scrollTable.setSortingEnabled(true);
+    scrollTable.setResizePolicy(ScrollTable.RESIZE_POLICY_FILL_WIDTH);
+    scrollTable.setSize("80%", "80%");
+
+    // Setup some default widths
+    scrollTable.setColumnWidth(2, 50);
+    scrollTable.setColumnWidth(5, 50);
+
+    // Add the components to the page
+    RootPanel.get().add(scrollTable);
+  }
+
+  /**
+   * Create the data table.
+   * 
+   * @return a data table
+   */
+  private PagingGrid createDataTable() {
+    // Create a new table that uses a cached controller
+    MyTableModel tableModel = new MyTableModel();
+    CachedTableController tableController = new CachedTableController(
+        tableModel);
+    PagingGrid dataTable = new PagingGrid(tableModel);
+
+    // Set some options in the data table
+    dataTable.setHoveringPolicy(SelectionGrid.HOVERING_POLICY_ROW);
+    dataTable.setSelectionPolicy(SelectionGrid.SELECTION_POLICY_MULTI_ROW);
+
+    // Set the page size and total number of entries
+    dataTable.setPageSize(15);
+    dataTable.setNumRows(272);
+
+    // Cache 1 previous page and 2 next pages
+    tableController.setNumPreCachedRows(15);
+    tableController.setNumPostCachedRows(30);
+
+    // Return the data table
+    return dataTable;
+  }
+
+  /**
+   * Create the footer table.
+   * 
+   * @return a footer table
+   */
+  private FixedWidthFlexTable createFooterTable() {
+    // Create a new table
+    FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
+    FlexCellFormatter formatter = footerTable.getFlexCellFormatter();
+
+    // Level 1 headers
+    footerTable.setHTML(0, 0, "<b>Average Age:</b>");
+    formatter.setColSpan(0, 0, 2);
+    formatter.setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_RIGHT);
+    footerTable.setHTML(0, 1, "0");
+    footerTable.setHTML(0, 2, "<b>Average GPA:</b>");
+    formatter.setColSpan(0, 2, 2);
+    formatter.setHorizontalAlignment(0, 2, HasHorizontalAlignment.ALIGN_RIGHT);
+    footerTable.setHTML(0, 3, "0");
+
+    // Level 2 headers
+    footerTable.setHTML(1, 0, "<b>Number of Students:</b>");
+    formatter.setColSpan(1, 0, 5);
+    formatter.setHorizontalAlignment(1, 0, HasHorizontalAlignment.ALIGN_RIGHT);
+    footerTable.setHTML(1, 1, "0");
+
+    // Return the footer table
+    return footerTable;
+  }
+
+  /**
+   * Create the header table.
+   * 
+   * @return a header table
+   */
+  private FixedWidthFlexTable createHeaderTable() {
+    // Create a new table
+    FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
+    FlexCellFormatter formatter = headerTable.getFlexCellFormatter();
+
+    // Level 1 headers
+    headerTable.setHTML(0, 0, "<b>Student Profiles</b>");
+    formatter.setColSpan(0, 0, 6);
+    formatter.setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER);
+
+    // Level 2 headers
+    headerTable.setHTML(1, 0, "<b>General</b>");
+    formatter.setColSpan(1, 0, 4);
+    formatter.setHorizontalAlignment(1, 0, HasHorizontalAlignment.ALIGN_CENTER);
+    headerTable.setHTML(1, 1, "<b>Student ID</b>");
+    formatter.setRowSpan(1, 1, 2);
+    formatter.setHorizontalAlignment(1, 1, HasHorizontalAlignment.ALIGN_CENTER);
+    headerTable.setHTML(1, 2, "<b>GPA</b>");
+    formatter.setRowSpan(1, 2, 2);
+    formatter.setHorizontalAlignment(1, 2, HasHorizontalAlignment.ALIGN_CENTER);
+
+    // Level 3 headers
+    headerTable.setHTML(2, 0, "Last Name");
+    formatter.setHorizontalAlignment(2, 0, HasHorizontalAlignment.ALIGN_CENTER);
+    headerTable.setHTML(2, 1, "First Name");
+    formatter.setHorizontalAlignment(2, 1, HasHorizontalAlignment.ALIGN_CENTER);
+    headerTable.setHTML(2, 2, "Age");
+    formatter.setHorizontalAlignment(2, 2, HasHorizontalAlignment.ALIGN_CENTER);
+    headerTable.setHTML(2, 3, "Hometown");
+    formatter.setHorizontalAlignment(3, 3, HasHorizontalAlignment.ALIGN_CENTER);
+
+    // Return the header table
+    return headerTable;
+  }
+}
+}}}
