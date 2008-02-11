@@ -2,8 +2,20 @@
 
 = Introduction =
 The logging package is designed to be a simple client side logging API. The GWT logging design draws heavily from the [http://java.sun.com/j2se/1.4.2/docs/guide/util/logging/overview.html Java logging API]
-and the [http://code.google.com/p/gwt-log/ gwt log] project by Fred Sauer.
+and the [http://code.google.com/p/gwt-log/ gwt log] project by Fred Sauer. A special thanks to Fred Sauer for contributing his time to working on the design of this logging system.
 
+
+
+
+
+
+== Summary Table ==
+
+|| *Field* || * Location * ||
+|| Demo || http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/Logging/LoggingDemo.html || 
+|| Sample Code || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/logging/client/LoggingDemo.java demo code] ||
+|| Module || `com.google.gwt.libideas.Logging` ||
+|| Source starting point || http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/libideas/client/logging/Log.java ||
 
 = Details =
  
