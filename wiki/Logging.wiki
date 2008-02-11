@@ -18,16 +18,12 @@ and the [http://code.google.com/p/gwt-log/ gwt log] project by Fred Sauer.
     # Logging to firebug console
  
 == Open Design Decisions ==
-
-=== Should logger calls work on the server side ===
-Some systems have shared code between server and client. 
-Should our Logger.log calls work on the server?
-
  
 = Design Decisions =
 
-==Single on/off deferred binding==
-The Logging api has a single boolean property (logging:on/off).  The other option would be to have a set of predefined levels i.e. logging(off/fine/finer/.../severe). Both are good options, so far we believe the single switch will lead to best full experience.
+==
+==Defferred binding==
+The Logging api has three compiled options(logging:all/none/minimal).  The other option would be to have a set of predefined levels i.e. logging(off/fine/finer/.../severe). Both are good options, so far we believe the single switch will lead to best full experience.
 
 Advantages for multiple levels:
   # No overhead for logging levels not used when compiled with a GWT 1.5 compiler
@@ -36,8 +32,13 @@ Advantages for multiple levels:
 
 Advantages of single on/off switch
   # Simple model: Intuitive easy to understand that logging level comes from runtime and logging support comes from compile time.
+  # Handler Support
+    # Allows users to configure handlers based on the logging mode. 
+    # Allows system defaults to be smarter. For instance, in minimal mode no handlers are added by default.
   # Encourages what we believe is the best deployment model:
-    # One production system without logging
+    # One production system where either
+      # Log only severe messages
+      # Log no error messages.
     # One "debug" system with all logging options.
 
 == Allowing direct access to Logger instances ==
@@ -46,15 +47,15 @@ In some cases, it would be useful to directly access a Logger or Handler and pri
  
 = Design overview =
 
-== Logger ==
-Logger is a static class. Its API is modeled on the java Logger API. Almost all user interactions should be done through this class to allow compile time removal of logging. It will also include some GWT-specific method.  For instance the methods below:
+== Log ==
+Log is a static class. Its API is modeled on the java Logger API. Almost all user interactions should be done through this class to allow compile time removal of logging. It will also include some GWT-specific method.  For instance the methods below:
 {{{
-   isLoggingEnabled();
-   clearLoggingDisplays();
+   Log.isLoggingEnabled();
+   Log.isLoggingMinimal()
 }}}
  
 == Handler ==
-A Handler is a class which actually handles the logging messages.  Its API is modeled in the java Handler class.  Its subclasses will be drawn almost exclusively from the gwt-log  subclasses of AbstractLogger.
+A Handler is a class which actually handles the logging messages.  Its API is modeled in the java Handler class.  Its subclasses will be drawn heavily from the gwt-log subclasses of AbstractLogger.
 
  
 == Level ==
