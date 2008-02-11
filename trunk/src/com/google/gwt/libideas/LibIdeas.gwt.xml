@@ -19,4 +19,5 @@
 <!--                                                                        -->
 <module>
   <inherits name="com.google.gwt.libideas.StyleInjector" />
+  <inherits name="com.google.gwt.libideas.Logging" />
 </module>

@@ -60,8 +60,7 @@ class ImageBundleBuilder {
     }
 
     public boolean equals(Object o) {
-      return ((o instanceof ImageRect) && (((ImageRect) o).strongName
-          .equals(strongName)));
+      return ((o instanceof ImageRect) && (((ImageRect) o).strongName.equals(strongName)));
     }
 
     public int hashCode() {
@@ -80,10 +79,8 @@ class ImageBundleBuilder {
   private static final String BUNDLE_FILE_TYPE = "png";
   private static final String BUNDLE_MIME_TYPE = "image/png";
 
-  private final Map<String, ImageRect> strongNameToRectMap =
-      new HashMap<String, ImageRect>();
-  private final Map<String, ImageRect> nameToRectMap =
-      new HashMap<String, ImageRect>();
+  private final Map<String, ImageRect> strongNameToRectMap = new HashMap<String, ImageRect>();
+  private final Map<String, ImageRect> nameToRectMap = new HashMap<String, ImageRect>();
 
   /**
    * Assimilates the image associated with a particular image method into the
@@ -206,8 +203,7 @@ class ImageBundleBuilder {
 
     // Impose an ordering on the image rectangles, so that we construct
     // the bundled image in a deterministic way.
-    SortedMap<String, ImageRect> sortedNameToRectMap =
-        new TreeMap<String, ImageRect>();
+    SortedMap<String, ImageRect> sortedNameToRectMap = new TreeMap<String, ImageRect>();
     sortedNameToRectMap.putAll(strongNameToRectMap);
     Collection<ImageRect> orderedImageRects = sortedNameToRectMap.values();
 
@@ -222,8 +218,8 @@ class ImageBundleBuilder {
     }
 
     // Create the bundled image.
-    BufferedImage bundledImage =
-        new BufferedImage(nextLeft, maxHeight, BufferedImage.TYPE_INT_ARGB_PRE);
+    BufferedImage bundledImage = new BufferedImage(nextLeft, maxHeight,
+        BufferedImage.TYPE_INT_ARGB_PRE);
     Graphics2D g2d = bundledImage.createGraphics();
 
     for (ImageRect imageRect : orderedImageRects) {
@@ -247,9 +243,8 @@ class ImageBundleBuilder {
   private ImageRect readImage(TreeLogger logger, URL imageUrl)
       throws UnableToCompleteException {
 
-    logger =
-        logger.branch(TreeLogger.TRACE, "Adding image '"
-            + imageUrl.toExternalForm() + "'", null);
+    logger = logger.branch(TreeLogger.TRACE, "Adding image '"
+        + imageUrl.toExternalForm() + "'", null);
 
     // Fetch the image.
     byte[] imageBytes = Util.readURLAsBytes(imageUrl);
@@ -264,16 +259,15 @@ class ImageBundleBuilder {
             && iex.getMessage() != null
             && iex.getStackTrace()[0].getClassName().equals(
                 "javax.imageio.ImageTypeSpecifier$Indexed")) {
-          logger
-              .log(
-                  TreeLogger.ERROR,
-                  "Unable to read image. The image may not be in valid PNG format. "
-                      + "This problem may also be due to a bug in versions of the "
-                      + "JRE prior to 1.6. See "
-                      + "http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5098176 "
-                      + "for more information. If this bug is the cause of the "
-                      + "error, try resaving the image using a different image "
-                      + "program, or upgrade to a newer JRE.", null);
+          logger.log(
+              TreeLogger.ERROR,
+              "Unable to read image. The image may not be in valid PNG format. "
+                  + "This problem may also be due to a bug in versions of the "
+                  + "JRE prior to 1.6. See "
+                  + "http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5098176 "
+                  + "for more information. If this bug is the cause of the "
+                  + "error, try resaving the image using a different image "
+                  + "program, or upgrade to a newer JRE.", null);
           throw new UnableToCompleteException();
         } else {
           throw iex;
