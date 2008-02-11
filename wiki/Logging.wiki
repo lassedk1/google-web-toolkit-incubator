@@ -15,7 +15,7 @@ and the [http://code.google.com/p/gwt-log/ gwt log] project by Fred Sauer. A spe
 || Demo || http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/LoggingDemo/LoggingDemo.html || 
 || Sample Code || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/logging/client/LoggingDemo.java demo code] ||
 || Module || `com.google.gwt.libideas.Logging` ||
-|| Source starting point || http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/libideas/client/logging/Log.java ||
+|| Source starting point || http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/libideas/logging/shared/Log.java ||
 
 = Details =
  
