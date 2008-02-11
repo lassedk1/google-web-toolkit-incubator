@@ -19,8 +19,8 @@ package com.google.gwt.demos.logging.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.libideas.logging.client.DivHandler;
+import com.google.gwt.libideas.logging.client.FireBugHandler;
 import com.google.gwt.libideas.logging.client.GWTHandler;
-import com.google.gwt.libideas.logging.client.JavaScriptConsoleHandler;
 import com.google.gwt.libideas.logging.client.RemoteLoggingHandler;
 import com.google.gwt.libideas.logging.client.TreeHandler;
 import com.google.gwt.libideas.logging.shared.Handler;
@@ -129,7 +129,6 @@ public class LoggingDemo implements EntryPoint {
    * This is the entry point method.
    */
   public void onModuleLoad() {
-    checkingForLevelRemoval();
     if (Log.isLoggingSupported()) {
       Window.alert("Logging loaded, current logging level is "
           + Log.getDefaultLevel() + " Setting it to ALL");
@@ -140,13 +139,13 @@ public class LoggingDemo implements EntryPoint {
       addLevelControls(control);
       addHandlers(control);
     }
+    checkingForLevelRemoval();
   }
 
   private void addHandlers(final FlexTable control) {
     int pos = 0;
     control.setWidget(pos, 0, new HandlerConfig(new TreeHandler(true)));
-    control.setWidget(++pos, 0, new HandlerConfig(
-        new JavaScriptConsoleHandler()));
+    control.setWidget(++pos, 0, new HandlerConfig(new FireBugHandler()));
     control.setWidget(++pos, 0, new HandlerConfig(new DivHandler()));
     control.setWidget(++pos, 0, new HandlerConfig(new GWTHandler()));
     RemoteLoggingHandler handler = new RemoteLoggingHandler();

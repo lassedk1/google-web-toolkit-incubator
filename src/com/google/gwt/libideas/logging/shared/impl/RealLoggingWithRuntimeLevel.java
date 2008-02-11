@@ -19,7 +19,7 @@ package com.google.gwt.libideas.logging.shared.impl;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.libideas.logging.client.GWTHandler;
-import com.google.gwt.libideas.logging.client.JavaScriptConsoleHandler;
+import com.google.gwt.libideas.logging.client.TreeHandler;
 import com.google.gwt.libideas.logging.shared.Level;
 import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.Window;
@@ -87,7 +87,7 @@ public class RealLoggingWithRuntimeLevel extends AbstractRealLogging {
   static {
     readLevel();
     if (GWT.isScript()) {
-      Log.addHandler(new JavaScriptConsoleHandler());
+      Log.addHandler(new TreeHandler(true));
     } else {
       Log.addHandler(new GWTHandler());
     }
