@@ -152,7 +152,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     
     float[] point = applyCurrentTransform(x,y);
     
-    left = (int)(point[0] - this.currentContext.scaleX * radius);
+    left = (int) (point[0] - this.currentContext.scaleX * radius);
     top = (int) (point[1] + this.currentContext.scaleY * radius);
     right = (int) (point[0] + this.currentContext.scaleX * radius);
     bottom = (int) (point[1] - this.currentContext.scaleY * radius);
@@ -169,11 +169,11 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     int startX,startY,endX,endY;
     
     // Convert from polar to cartesian coords
-    startX = (int)(point[0] + radius * Math.cos((double)realStartAngle));
-    startY = (int) ((float)(point[1] + radius * Math.sin((double)realStartAngle)));
+    startX = (int) (point[0] + radius * Math.cos((double) realStartAngle));
+    startY = (int) ((float) (point[1] + radius * Math.sin((double) realStartAngle)));
     
-    endX = (int) ((float)(point[0] + radius * Math.cos((double)realEndAngle)));
-    endY = (int) ((float)(point[1] + radius * Math.sin((double)realEndAngle)));
+    endX = (int) ((float) (point[0] + radius * Math.cos((double) realEndAngle)));
+    endY = (int) ((float) (point[1] + radius * Math.sin((double) realEndAngle)));
     
     this.currentContext.path.append(PathElement.ARC);
     this.currentContext.path.append(left);
@@ -225,17 +225,17 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     float[] p = applyCurrentTransform(x,y);
     
     this.currentContext.path.append(PathElement.CUBIC);
-    this.currentContext.path.append((int)point1[0]);
+    this.currentContext.path.append((int) point1[0]);
     this.currentContext.path.append(",");
-    this.currentContext.path.append((int)point1[1]);
+    this.currentContext.path.append((int) point1[1]);
     this.currentContext.path.append(",");
-    this.currentContext.path.append((int)point2[0]);
+    this.currentContext.path.append((int) point2[0]);
     this.currentContext.path.append(",");
-    this.currentContext.path.append((int)point2[1]);
+    this.currentContext.path.append((int) point2[1]);
     this.currentContext.path.append(",");
-    this.currentContext.path.append((int)p[0]);
+    this.currentContext.path.append((int) p[0]);
     this.currentContext.path.append(",");
-    this.currentContext.path.append((int)p[1]);  
+    this.currentContext.path.append((int) p[1]);  
   }
 
   public void drawImage(ImageHandle img, int sourceX, int sourceY, int sourceWidth,
@@ -251,8 +251,8 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     DOM.setStyleAttribute(elem, "height", String.valueOf(destHeight) + "px");
     DOM.setElementAttribute(elem, "cropleft", String.valueOf(sourceX / fullWidth));
     DOM.setElementAttribute(elem, "croptop", String.valueOf(sourceY / fullHeight));
-    DOM.setElementAttribute(elem, "cropright", String.valueOf( (fullWidth - sourceX - sourceWidth) / fullWidth ));
-    DOM.setElementAttribute(elem, "cropbottom", String.valueOf( (fullHeight - sourceY - sourceHeight) / fullHeight ));  
+    DOM.setElementAttribute(elem, "cropright", String.valueOf((fullWidth - sourceX - sourceWidth) / fullWidth));
+    DOM.setElementAttribute(elem, "cropbottom", String.valueOf((fullHeight - sourceY - sourceHeight) / fullHeight));  
     
     Element group = cloneElement(groupPrototype, true);
     
@@ -277,22 +277,22 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
       filter.append(this.currentContext.transform[1][1]);
       filter.append("',");
       filter.append("Dx='");
-      filter.append((int)(destX + this.currentContext.transform[0][2]));
+      filter.append((int) (destX + this.currentContext.transform[0][2]));
       filter.append("',");
       filter.append("Dy='");
-      filter.append((int)(destY + this.currentContext.transform[1][2]));
+      filter.append((int) (destY + this.currentContext.transform[1][2]));
       filter.append("'");     
       
       // We create a padding bounding box to minimize area that filter is applied to
-      float[] maxCoords = this.applyCurrentTransform((float)destX,(float)destY);
-      float[] topRight = this.applyCurrentTransform((float)destX + destWidth,(float)destY);
-      float[] bottomLeft = this.applyCurrentTransform((float)destX,(float)destY + destHeight);
-      float[] bottomRight = this.applyCurrentTransform((float)destX + destWidth,(float)destY + destHeight);
+      float[] maxCoords = this.applyCurrentTransform((float) destX,(float) destY);
+      float[] topRight = this.applyCurrentTransform((float) destX + destWidth,(float) destY);
+      float[] bottomLeft = this.applyCurrentTransform((float) destX,(float) destY + destHeight);
+      float[] bottomRight = this.applyCurrentTransform((float) destX + destWidth,(float) destY + destHeight);
       
       maxCoords[0] = findMax(maxCoords[0],topRight[0],bottomLeft[0],bottomRight[0]);
       maxCoords[1] = findMax(maxCoords[1],topRight[1],bottomLeft[1],bottomRight[1]);
       
-      DOM.setStyleAttribute(group, "padding", "0 " + (int)maxCoords[0] + "px " + (int)maxCoords[1] + "px 0");
+      DOM.setStyleAttribute(group, "padding", "0 " + (int) maxCoords[0] + "px " + (int) maxCoords[1] + "px 0");
       DOM.setStyleAttribute(group, "filter", "progid:DXImageTransform.Microsoft.Matrix(" + filter.toString() + ", sizingmethod='clip');");
     } else {
       DOM.setStyleAttribute(group, "left", String.valueOf(destX) + "px");
@@ -304,7 +304,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
   }
 
   public void fill() {
-    if (! (this.currentContext.path.length() > 0) ) {
+    if (!(this.currentContext.path.length() > 0)) {
       return;
     }
     
@@ -363,9 +363,9 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
       // It uses its internal coordinate space to get sub pixel coordinates
       float[] point = applyCurrentTransform(x,y);
       
-      this.currentContext.path.append((int)point[0]);
+      this.currentContext.path.append((int) point[0]);
       this.currentContext.path.append(",");
-      this.currentContext.path.append((int)point[1]);
+      this.currentContext.path.append((int) point[1]);
     }
   }
 
@@ -375,9 +375,9 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
       // VML does not use floating point for coords
       // It uses its internal coordinate space to get sub pixel coordinates
       float[] point = applyCurrentTransform(x,y);
-      this.currentContext.path.append((int)point[0]);
+      this.currentContext.path.append((int) point[0]);
       this.currentContext.path.append(",");
-      this.currentContext.path.append((int)point[1]);
+      this.currentContext.path.append((int) point[1]);
     }
   }
 
@@ -386,13 +386,13 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
       float[] control = applyCurrentTransform(cpx,cpy);
       float[] point = applyCurrentTransform(x,y);
       this.currentContext.path.append(PathElement.QUADRATIC);
-      this.currentContext.path.append((int)control[0]);
+      this.currentContext.path.append((int) control[0]);
       this.currentContext.path.append(",");
-      this.currentContext.path.append((int)control[1]);
+      this.currentContext.path.append((int) control[1]);
       this.currentContext.path.append(",");
-      this.currentContext.path.append((int)point[0]);
+      this.currentContext.path.append((int) point[0]);
       this.currentContext.path.append(",");
-      this.currentContext.path.append((int)point[1]);     
+      this.currentContext.path.append((int) point[1]);     
     }
   }
 
@@ -420,7 +420,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     
     float[][] rotMatrix = new float[][]{ {cos,sin,0}, {-sin,cos,0}, {0,0,1} };
     this.currentContext.transform = multiply3x3Matrices(
-        this.currentContext.transform, rotMatrix );
+        this.currentContext.transform, rotMatrix);
   }
 
   public void saveContext() {
@@ -454,7 +454,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
   }
 
   public void setLineWidth(float width) {
-    this.currentContext.lineWidth = (int)(width);
+    this.currentContext.lineWidth = (int) (width);
   }
   
   public void setParentElement(Element g) {
@@ -492,7 +492,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
   }
 
   public void stroke() {
-    if (! (this.currentContext.path.length() > 0) ) {
+    if (!(this.currentContext.path.length() > 0)) {
       return;
     }
     
@@ -539,14 +539,14 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
       float dy) {
     
     float[][] tMatrix = new float[][] { {m11,m12,0}, {m21,m22,0}, {dx,dy,1} };
-    this.currentContext.transform = multiply3x3Matrices( 
+    this.currentContext.transform = multiply3x3Matrices(
         this.currentContext.transform, tMatrix);
   }
   
   public void translate(float x, float y) {
     
     float[][] tMatrix = new float[][] { {1,0,x}, {0,1,y}, {0,0,1} };
-    this.currentContext.transform = multiply3x3Matrices( 
+    this.currentContext.transform = multiply3x3Matrices(
         this.currentContext.transform, tMatrix);
   }
 

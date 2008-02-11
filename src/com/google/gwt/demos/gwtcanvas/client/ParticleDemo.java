@@ -70,7 +70,7 @@ public class ParticleDemo extends SimpleCanvasDemo {
         yDampening = (float) Math.max(yDampening - 0.1,0);
         yVel *=  yDampening;
  
-        if ( (yPos > height - 4) && (Math.abs(yVel) < 0.1) ) {
+        if ((yPos > height - 4) && (Math.abs(yVel) < 0.1)) {
           yPos = height;
           xVel = 0;
           gravity = 0;
@@ -172,7 +172,7 @@ public class ParticleDemo extends SimpleCanvasDemo {
   public void renderingLoop() {
     canvas.clear();
   
-    for (int i = 0; i < particles.length ; i++) {
+    for (int i = 0; i < particles.length; i++) {
       if (particles[i].kill) {
         continue;
       }
@@ -189,7 +189,7 @@ public class ParticleDemo extends SimpleCanvasDemo {
     t.schedule(10);
     // take a benchmark
     if (takeBenchmarks) {
-      ((ParticleDemoControls) this.controls).doBenchmark( Math.max(0,(new Date()).getTime()));
+      ((ParticleDemoControls) this.controls).doBenchmark(Math.max(0,(new Date()).getTime()));
     }
   }
  

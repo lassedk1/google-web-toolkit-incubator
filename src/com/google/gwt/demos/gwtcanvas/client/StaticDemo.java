@@ -92,7 +92,7 @@ public class StaticDemo extends SimpleCanvasDemo {
     canvas.stroke();
 
     canvas.beginPath();
-    canvas.arc(200, 100, 20, 0, (float)Math.PI, false);
+    canvas.arc(200, 100, 20, 0, (float) Math.PI, false);
     canvas.stroke();
 
     canvas.saveContext();
@@ -125,20 +125,20 @@ public class StaticDemo extends SimpleCanvasDemo {
 
     for (int i = 0;i < 7;i++) {
       canvas.beginPath();
-      canvas.arc(75, 75, 10 + (10 * i), 0, (float)Math.PI * 2, false);
+      canvas.arc(75, 75, 10 + (10 * i), 0, (float) Math.PI * 2, false);
       canvas.fill();
     }
 
     canvas.saveContext();
     canvas.setGlobalAlpha(0.8f);
     canvas.beginPath();
-    canvas.arc(75,75,50,0,(float)Math.PI * 2,true); // Outer circle
+    canvas.arc(75,75,50,0,(float) Math.PI * 2,true); // Outer circle
     canvas.moveTo(110,75);
-    canvas.arc(75,75,35,0,(float)Math.PI,false);   // Mouth
+    canvas.arc(75,75,35,0,(float) Math.PI,false);   // Mouth
     canvas.moveTo(65,65);
-    canvas.arc(60,65,5,0,(float)Math.PI * 2,true);  // Left eye
+    canvas.arc(60,65,5,0,(float) Math.PI * 2,true);  // Left eye
     canvas.moveTo(95,65);
-    canvas.arc(90,65,5,0,(float)Math.PI * 2,true);  // Right eye
+    canvas.arc(90,65,5,0,(float) Math.PI * 2,true);  // Right eye
     canvas.stroke();
     canvas.restoreContext();
     
@@ -156,10 +156,10 @@ public class StaticDemo extends SimpleCanvasDemo {
       canvas.setFillStyle(new Color((51 * i),(255 - 51 * i),255));
 
       for (int j = 0;j < i * 6;j++) { // draw individual dots
-        canvas.rotate((float)Math.PI * 2 / ((float)i * 6));
+        canvas.rotate((float) Math.PI * 2 / ((float) i * 6));
         canvas.beginPath();
         
-        canvas.rect(0,((float)i) * 12.5f,5,5);
+        canvas.rect(0,((float) i) * 12.5f,5,5);
         canvas.fill();
       }
       

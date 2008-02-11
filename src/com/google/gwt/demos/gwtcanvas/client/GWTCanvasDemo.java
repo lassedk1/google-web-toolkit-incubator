@@ -74,12 +74,12 @@ public class GWTCanvasDemo implements EntryPoint {
     lb.setStyleName("listBox");
     
     for (int i = 0; i < demos.size(); i++) {
-      lb.addItem(((SimpleCanvasDemo)demos.get(i)).getName()); 
+      lb.addItem(((SimpleCanvasDemo) demos.get(i)).getName()); 
     }
     
     lb.addChangeListener(new ChangeListener() {
       public void onChange(Widget listBox) {
-        int choice = ((ListBox)listBox).getSelectedIndex();
+        int choice = ((ListBox) listBox).getSelectedIndex();
         swapDemo(demos.get(choice));
       }
     });
