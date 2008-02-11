@@ -29,11 +29,9 @@ and the [http://code.google.com/p/gwt-log/ gwt log] project by Fred Sauer. A spe
     # Logging to some predefined widgets
     # Logging to firebug console
  
-== Open Design Decisions ==
  
 = Design Decisions =
 
-==
 ==Defferred binding==
 The Logging api has three compiled options(logging:all/none/minimal).  The other option would be to have a set of predefined levels i.e. logging(off/fine/finer/.../severe). Both are good options, so far we believe the single switch will lead to best full experience.
 
