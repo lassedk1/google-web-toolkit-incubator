@@ -22,24 +22,33 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.widgetideas.client.GlassPanel;
 
+/**
+ * Glass Panel example.
+ */
 public class GlassPanelExample implements EntryPoint {
   public void onModuleLoad() {
     // Create a glass panel covering the entire browser document
-    RootPanel.get().add(new Label("The browser document will be covered by a semi-transparent glass panel."));
-    RootPanel.get().add(new Label("Hit ESC or click anywhere on the glass panel to remove it."));
+    RootPanel.get().add(
+        new Label(
+            "The browser document will be covered by a semi-transparent glass panel."));
+    RootPanel.get().add(
+        new Label("Hit ESC or click anywhere on the glass panel to remove it."));
     RootPanel.get().add(new GlassPanel(true), 0, 0);
 
     // Create a small AbsolutePanel
     AbsolutePanel absolutePanel = new AbsolutePanel();
     absolutePanel.setPixelSize(100, 100);
-    DOM.setStyleAttribute(absolutePanel.getElement(), "border", "1px solid black");
-    absolutePanel.add(new Label("This AbsolutePanel is covered with a semi-transparent green glass panel"));
+    DOM.setStyleAttribute(absolutePanel.getElement(), "border",
+        "1px solid black");
+    absolutePanel.add(new Label(
+        "This AbsolutePanel is covered with a semi-transparent green glass panel"));
 
     // Attach the AbsolutePanel
     RootPanel.get().add(absolutePanel, 50, 50);
 
-    // Attach an absolute panel and style it green using this !important CSS rule:
-    //   .green { background-color: green !important; }
+    // Attach an absolute panel and style it green using this !important CSS
+    // rule:
+    // .green { background-color: green !important; }
     GlassPanel greenGlassPanel = new GlassPanel(false);
     greenGlassPanel.addStyleName("green");
     absolutePanel.add(greenGlassPanel, 0, 0);

@@ -69,11 +69,11 @@ public final class ExternalTextResourceGenerator extends ResourceGenerator {
 
     URL resource = urls[0];
 
-    TreeLogger transformLogger =
-        logger.branch(TreeLogger.DEBUG, "Applying Transformers", null);
-    String toWrite =
-        ResourceGeneratorUtil.applyTransformations(transformLogger, method,
-            String.class, new String(Util.readURLAsChars(resource)));
+    TreeLogger transformLogger = logger.branch(TreeLogger.DEBUG,
+        "Applying Transformers", null);
+    String toWrite = ResourceGeneratorUtil.applyTransformations(
+        transformLogger, method, String.class, new String(
+            Util.readURLAsChars(resource)));
 
     // This de-duplicates strings in the bundle.
     if (!hashes.containsKey(toWrite)) {
@@ -114,9 +114,9 @@ public final class ExternalTextResourceGenerator extends ResourceGenerator {
   public void writeFields(TreeLogger logger) throws UnableToCompleteException {
     data.append(']');
 
-    urlExpression =
-        context.addToOutput(context.getResourceBundleType()
-            .getQualifiedSourceName().replace('.', '_')
+    urlExpression = context.addToOutput(
+        context.getResourceBundleType().getQualifiedSourceName().replace('.',
+            '_')
             + "_jsonbundle.txt", "text/plain", data.toString().getBytes(), true);
 
     SourceWriter sw = context.getSourceWriter();

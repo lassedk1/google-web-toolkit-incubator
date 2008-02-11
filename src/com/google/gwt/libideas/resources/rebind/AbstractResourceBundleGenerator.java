@@ -70,13 +70,12 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
 
     // Pick a name for the generated class to not conflict. Enclosing class
     // names must be preserved.
-    final String generatedSimpleSourceName =
-        generateSimpleSourceName(sourceType.getName()) + locale;
+    final String generatedSimpleSourceName = generateSimpleSourceName(sourceType.getName())
+        + locale;
 
     // Begin writing the generated source.
-    final ClassSourceFileComposerFactory f =
-        new ClassSourceFileComposerFactory(sourceType.getPackage().getName(),
-            generatedSimpleSourceName);
+    final ClassSourceFileComposerFactory f = new ClassSourceFileComposerFactory(
+        sourceType.getPackage().getName(), generatedSimpleSourceName);
 
     // The generated class needs to be able to determine the module base URL
     f.addImport(GWT.class.getName());
@@ -95,9 +94,8 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
     }
 
     // All source gets written through this Writer
-    final PrintWriter out =
-        context.tryCreate(logger, sourceType.getPackage().getName(),
-            generatedSimpleSourceName);
+    final PrintWriter out = context.tryCreate(logger,
+        sourceType.getPackage().getName(), generatedSimpleSourceName);
 
     // Aggregates the field names of the resources for use with
     // ResourceBundle.getResources()
@@ -111,11 +109,10 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
 
       JMethod[] methods = sourceType.getMethods();
 
-      Map<Class<? extends ResourceGenerator>, List<JMethod>> resourceGenerators =
-          new HashMap<Class<? extends ResourceGenerator>, List<JMethod>>();
+      Map<Class<? extends ResourceGenerator>, List<JMethod>> resourceGenerators = new HashMap<Class<? extends ResourceGenerator>, List<JMethod>>();
 
-      ResourceContext resourceContext =
-          createResourceContext(logger, context, sourceType, sw);
+      ResourceContext resourceContext = createResourceContext(logger, context,
+          sourceType, sw);
 
       // First assemble all of the ResourceGenerators that we may need for the
       // type
@@ -127,8 +124,8 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
           throw new UnableToCompleteException();
         }
 
-        Class<? extends ResourceGenerator> clazz =
-            findResourceGenerator(logger, typeOracle, m);
+        Class<? extends ResourceGenerator> clazz = findResourceGenerator(
+            logger, typeOracle, m);
         List<JMethod> generatorMethods;
         if (resourceGenerators.containsKey(clazz)) {
           generatorMethods = resourceGenerators.get(clazz);
@@ -141,8 +138,7 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
       }
 
       // Run the ResourceGenerator code
-      for (Map.Entry<Class<? extends ResourceGenerator>, List<JMethod>> entry : resourceGenerators
-          .entrySet()) {
+      for (Map.Entry<Class<? extends ResourceGenerator>, List<JMethod>> entry : resourceGenerators.entrySet()) {
         Class<? extends ResourceGenerator> generatorClass = entry.getKey();
         List<JMethod> generatorMethods = entry.getValue();
 
