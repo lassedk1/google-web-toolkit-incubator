@@ -30,7 +30,7 @@ and the [http://code.google.com/p/gwt-log/ gwt log] project by Fred Sauer. A spe
     # Logging to firebug console
  
  
-= Design Decisions =
+=Design Decisions=
 
 ==Defferred binding==
 The Logging api has three compiled options(logging:all/none/minimal).  The other option would be to have a set of predefined levels i.e. logging(off/fine/finer/.../severe). Both are good options, so far we believe the single switch will lead to best full experience.
@@ -40,8 +40,9 @@ Advantages for multiple levels:
   # One field can be used to deploy the correct logging levels for automated systems.
 
 
-Advantages of single on/off switch
-  # Simple model: Intuitive easy to understand that logging level comes from runtime and logging support comes from compile time.
+Advantages of compiler all/none/minimal switch
+  # Simple model: Intuitive easy to understand that logging level comes from runtime and logging support comes from compile time. 
+  # Avoids permutation explosion.
   # Handler Support
     # Allows users to configure handlers based on the logging mode. 
     # Allows system defaults to be smarter. For instance, in minimal mode no handlers are added by default.
@@ -54,8 +55,8 @@ Advantages of single on/off switch
 == Allowing direct access to Logger instances ==
 In some cases, it would be useful to directly access a Logger or Handler and print to that one alone.  However, this code would probably not be compiled out in production, so this feature is currently not supported.
 
- 
 = Design overview =
+
 
 == Log ==
 Log is a static class. Its API is modeled on the java Logger API. Almost all user interactions should be done through this class to allow compile time removal of logging. It will also include some GWT-specific method.  For instance the methods below:
@@ -71,4 +72,17 @@ A Handler is a class which actually handles the logging messages.  Its API is mo
 == Level ==
 Defines the current logging Level. Based on the java logging Level class.
 
- 
+== Logging states ==
+=== All ===
+  # Logging is fully enabled
+  # Default handler is GWTHandler in hosted mode, TreeHandler in web
+  # Default log level is read as a argument parameter.
+
+We use a default widget handler in web mode to ensure the first time someone tries to use the logging system they can find their messages.  
+
+Open question: Should the default handlers be configurable in a module definition?
+=== Minimal ===
+  # Only severe error messages are enabled
+  # No default handler
+=== None ===
+No logging support
