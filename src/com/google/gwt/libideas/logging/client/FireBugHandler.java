@@ -31,7 +31,6 @@ public class FireBugHandler extends Handler {
     $wnd.console.info(message); 
   }-*/;
 
-  @Override
   public void publish(String message, Level level, String category, Throwable e) {
     log(format(message, level, category, e));
   }
