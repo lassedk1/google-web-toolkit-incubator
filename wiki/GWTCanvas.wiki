@@ -1,0 +1,41 @@
+#summary Provides cross Browser Vector Graphics support in the spirit of the Javascript canvas element API.
+
+= Introduction =
+
+The GWTCanvas Widget exposes an API for drawing and transforming shapes and images, as well as for defining paths to create custom shapes. 
+
+See the live demo:
+[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/GWTCanvasDemo/GWTCanvasDemo.html]
+
+= Setup Instructions =
+
+Just add the following line to your module.gwt.xml file:
+{{{
+  <inherits name='com.google.gwt.widgetideas.GWTCanvas'/>
+}}}
+
+You can specify your own stylesheet to further customize the look and feel of GWTCanvas.
+
+
+= Using Images =
+
+In order for GWTCanvas to draw images, they must first be loaded by the browser. We provide an ImageLoader class in the same package as GWTCanvas to take care of this for you. Please refer to the Sample Code below for examples on how to use ImageLoader.
+
+= Sample Code =
+
+Please refer to the source code of the live demo (which can be found in the incubator trunk) for more detailed examples.
+
+Drawing a rectangle using the paths.
+{{{
+// samples coming
+}}}
+
+Drawing an image. Scaling *THEN* shifting before drawing.
+{{{
+
+}}}
+
+Drawing two rectangles, with different colors, in different locations.
+{{{
+
+}}}
