@@ -27,15 +27,114 @@ Please refer to the source code of the live demo (which can be found in the incu
 
 Drawing a rectangle using the paths.
 {{{
-// samples coming
+
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.widgetideas.graphics.client.Color;
+import com.google.gwt.widgetideas.graphics.client.GWTCanvas;
+
+/**
+ * Entry point classes define <code>onModuleLoad()</code>.
+ */
+public class MyEntryPoint implements EntryPoint {
+
+  public void onModuleLoad() {
+    // Make a new canvas 400x400 pixels
+    GWTCanvas canvas = new GWTCanvas(400,400);
+    
+    canvas.setLineWidth(1);
+    canvas.setStrokeStyle(Color.GREEN);
+    
+    canvas.beginPath();
+      canvas.moveTo(1,1);
+      canvas.lineTo(1,50);
+      canvas.lineTo(50,50);
+      canvas.lineTo(50, 1);
+      canvas.closePath();
+    canvas.stroke();
+    
+    RootPanel.get().add(canvas);
+    
+  }
+
+}
+
 }}}
 
-Drawing an image. Scaling *THEN* shifting before drawing.
+Drawing an image (Scaling *THEN* shifting before drawing).
 {{{
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.widgetideas.graphics.client.GWTCanvas;
+import com.google.gwt.widgetideas.graphics.client.ImageHandle;
+import com.google.gwt.widgetideas.graphics.client.ImageLoader;
+
+/**
+ * Entry point classes define <code>onModuleLoad()</code>.
+ */
+public class MyEntryPoint implements EntryPoint {
+
+  public void onModuleLoad() {
+    // Make a new canvas 400x400 pixels
+    final GWTCanvas canvas = new GWTCanvas(400,400);
+    
+    String[] urls = new String[] {"gwt_logo.jpg"};
+    
+    ImageLoader.loadImages(urls, new ImageLoader.CallBack() {
+
+      public void onImagesLoaded(ImageHandle[] imageHandles) {
+        ImageHandle img = imageHandles[0];
+        
+        canvas.translate(40, 40);
+        canvas.scale(0.5f, 0.5f);
+        canvas.drawImage(img, 0, 0);
+        
+      }
+      
+    });
+   
+    RootPanel.get().add(canvas);
+  }
+
+}
 
 }}}
 
 Drawing two rectangles, with different colors, in different locations.
 {{{
+
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.widgetideas.graphics.client.Color;
+import com.google.gwt.widgetideas.graphics.client.GWTCanvas;
+
+/**
+ * Entry point classes define <code>onModuleLoad()</code>.
+ */
+public class MyEntryPoint implements EntryPoint {
+
+  public void onModuleLoad() {
+    // Make a new canvas 400x400 pixels
+    GWTCanvas canvas = new GWTCanvas(400,400);
+    
+    canvas.setLineWidth(1);
+    canvas.setStrokeStyle(Color.GREEN);
+    
+    canvas.saveContext();
+
+      canvas.setLineWidth(1);
+      canvas.setStrokeStyle(Color.RED);
+    
+      canvas.translate(100, 100);
+      canvas.strokeRect(0, 0, 100, 100);
+    canvas.restoreContext();
+    
+    canvas.strokeRect(1, 1, 80, 80);
+    
+    RootPanel.get().add(canvas);
+    
+  }
+
+}
 
 }}}
