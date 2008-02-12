@@ -23,6 +23,8 @@ import java.io.Serializable;
  * all the functionality. The JavaDoc is imported directly from Sun. The LogImpl
  * in use sets these fields.
  * 
+ * The logging levels are initialized by the Log class, so a method from Log
+ * must be called before the level fields are used.
  */
 
 public class Level implements Comparable, Serializable {
