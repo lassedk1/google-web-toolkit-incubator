@@ -8,25 +8,21 @@
   padding: 3px;
   padding-left: 18px;
   padding-right: 5px;
-  white-space: nowrap;
   cursor: default;
   padding-left: 18px;
   -moz-user-select: none;
-  position:relative;
+  position: relative;
 }
 
 .gwt-FastTreeItem .open,.gwt-FastTreeItem .closed {
   color: black;
-  font-size: 110%;
 }
 
 .gwt-FastTreeItem .leaf {
   color: black;
-  font-size: 90%;
 }
 
 .gwt-FastTreeItem .children {
-  white-space: nowrap;
   margin-left: 10px;
 }
 
@@ -39,7 +35,7 @@
 }
 
 .gwt-FastTree {
-  background-color: white;
+  
 }
 
 .gwt-FastTree .gwt-FastTreeItem {
