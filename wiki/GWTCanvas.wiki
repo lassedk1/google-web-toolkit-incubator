@@ -62,6 +62,7 @@ public class MyEntryPoint implements EntryPoint {
 }}}
 
 Drawing an image (Scaling *THEN* shifting before drawing).
+Please note that you must put all drawing code involving the image in the supplied callback. Drawing order for images and paths is guaranteed only within the callback method when working with images (since they have to be loaded first, and it can not be known ahead of time how long that will take).
 {{{
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
