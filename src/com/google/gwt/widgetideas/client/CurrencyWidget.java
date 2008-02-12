@@ -60,15 +60,10 @@ import java.util.Map;
  * TODO:Add javadoc
  */
 public class CurrencyWidget extends Composite {
-<<<<<<< .mine
   protected static final NumberConstants numberConstants = (NumberConstants)
       GWT.create(NumberConstants.class);
   protected static final CurrencyCodeMapConstants currencyCodeMapConstants =
       (CurrencyCodeMapConstants)GWT.create(CurrencyCodeMapConstants.class);
-=======
-  protected static final NumberConstants numberConstants = (NumberConstants) GWT.create(NumberConstants.class);
-  protected static final CurrencyCodeMapConstants currencyCodeMapConstants = (CurrencyCodeMapConstants) GWT.create(CurrencyCodeMapConstants.class);
->>>>>>> .r431
   protected static String acceptableCharset = getAcceptedCharset();
 
   private static String getAcceptedCharset() {
