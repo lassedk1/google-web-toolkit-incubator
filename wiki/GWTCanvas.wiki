@@ -25,7 +25,7 @@ In order for GWTCanvas to draw images, they must first be loaded by the browser.
 
 Please refer to the source code of the live demo (which can be found in the incubator trunk) for more detailed examples.
 
-*Drawing a rectangle using the paths.*
+*Drawing a rectangle using paths.*
 {{{
 
 import com.google.gwt.core.client.EntryPoint;
