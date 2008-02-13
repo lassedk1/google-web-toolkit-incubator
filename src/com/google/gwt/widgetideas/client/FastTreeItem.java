@@ -38,9 +38,6 @@ import java.util.List;
 public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems {
   private static final String STYLENAME_SELECTED = "selected";
 
-  // If an element was open, has all of its children removed, then new children
-  // added, it should become open again.
-  private static final int TREE_NODE_LEAF_OPEN = 0;
   private static final int TREE_NODE_LEAF = 1;
   private static final int TREE_NODE_INTERIOR_NEVER_OPENED = 2;
   private static final int TREE_NODE_INTERIOR_OPEN = 3;
@@ -70,9 +67,10 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     setStyleName(contentElem, STYLENAME_LEAF);
     DOM.appendChild(TREE_LEEF, contentElem);
     if (BiDiUtil.isRightToLeft()) {
-      DOM.setInnerHTML(
-          contentElem,
-          "<table cellspacing=0 cellpading=0><tbody><tr><td class='placeholder'>&nbsp</td><td></td></tr></tbody></table>");
+      DOM
+          .setInnerHTML(
+              contentElem,
+              "<table cellspacing=0 cellpading=0><tbody><tr><td class='placeholder'>&nbsp</td><td></td></tr></tbody></table>");
     }
   }
 
@@ -126,14 +124,10 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
       childElems = DOM.createDiv();
       UIObject.setStyleName(childElems, STYLENAME_CHILDREN);
       children = new ArrayList();
+      updateState();
     } else if (isLeafNode()) {
       // Previously had children.
-      if (state == TREE_NODE_LEAF) {
-        becomeInteriorNode();
-      } else {
-        state = TREE_NODE_INTERIOR_OPEN;
-        updateState();
-      }
+      becomeInteriorNode();
     }
 
     // Logical attach.
@@ -166,6 +160,17 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    */
   public void becomeInteriorNode() {
     if (!isInteriorNode()) {
+      state = TREE_NODE_INTERIOR_NEVER_OPENED;
+      setStyleName(contentElem, STYLENAME_CLOSED);
+    }
+  }
+
+  /**
+   * Become a leaf node
+   */
+  public void becomeLeafNode() {
+    if (!isInteriorNode()) {
+      removeItems();
       state = TREE_NODE_INTERIOR_NEVER_OPENED;
       setStyleName(contentElem, STYLENAME_CLOSED);
     }
@@ -309,6 +314,11 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     }
   }
 
+
+  /**
+   * Removes an item from the tree. Note, if you want to switch the node back to
+   * be a leaf node, must call becomeLeaf()
+   */
   public void removeItem(FastTreeItem item) {
     // Validate.
     if (children == null || !children.contains(item)) {
@@ -324,20 +334,8 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     // Logical detach.
     item.setParentItem(null);
     children.remove(item);
-
-    if (children.size() == 0) {
-      if (isOpen()) {
-        if (childElems != null) {
-          DOM.removeChild(getElement(), childElems);
-        }
-        state = TREE_NODE_LEAF_OPEN;
-      } else {
-        state = TREE_NODE_LEAF;
-      }
-      setStyleName(contentElem, STYLENAME_LEAF);
-      return;
-    }
   }
+
 
   /**
    * Removes all of this item's children.
@@ -367,7 +365,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * 
    * @param open whether the item is open
    * @param fireEvents <code>true</code> to allow open/close events to be
-   *          fired
+   *        fired
    */
   public void setState(boolean open, boolean fireEvents) {
     if (open == isOpen()) {
@@ -471,7 +469,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   }
 
   void dumpTreeItems(List accum) {
-    if (isInteriorNode()) {
+    if (isInteriorNode() && getChildCount() > 0) {
       for (int i = 0; i < children.size(); i++) {
         FastTreeItem item = (FastTreeItem) children.get(i);
         accum.add(item);
@@ -496,7 +494,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * Selects or deselects this item.
    * 
    * @param selected <code>true</code> to select the item, <code>false</code>
-   *          to deselect it
+   *        to deselect it
    */
   void setSelection(boolean selected) {
     setStyleName(contentElem, STYLENAME_SELECTED, selected);
@@ -537,7 +535,6 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
       // remove/add children rather than hiding them.
       if (getChildCount() > 0) {
         DOM.appendChild(getElement(), childElems);
-        UIObject.setVisible(childElems, true);
       }
       showOpenImage();
     } else {
@@ -583,7 +580,8 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
 
   private Element getElementToAttach() {
     if (BiDiUtil.isRightToLeft()) {
-      return DOM.getNextSibling(DOMHelper.getRecursiveFirstChild(contentElem, 4));
+      return DOM.getNextSibling(DOMHelper
+          .getRecursiveFirstChild(contentElem, 4));
     } else {
       return contentElem;
     }
