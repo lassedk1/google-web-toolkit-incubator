@@ -2,7 +2,7 @@
 
 = Introduction =
 
-The GWTCanvas Widget exposes an API for drawing and transforming shapes and images, as well as for defining paths to create custom shapes. 
+The GWTCanvas Widget exposes an API for drawing and transforming shapes and images, as well as for defining paths to create custom shapes. _*(Not Compatible with GWT 1.4x. Use latest GWT 1.5x build)*_
 
 See the live demo:
 [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/GWTCanvasDemo/GWTCanvasDemo.html]
