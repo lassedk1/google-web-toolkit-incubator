@@ -17,16 +17,23 @@ and the [http://code.google.com/p/gwt-log/ gwt log] project by Fred Sauer. A spe
 = Details =
  
 == Design Goals ==
-  # No overhead for logging messages when logging is disabled.
-  # Simple lightweight API.
-  # Support categories
-  # Support setting logging level via URL arguments  
-  # Familiar to Java Programmers.
-  # Logging should allow
-    # Logging to System.err
-    # Logging to the server via RPC
-    # Logging to some predefined widgets
-    # Logging to firebug console
+=== Logging API ===
+  * No overhead for logging messages when logging is disabled.
+  * Simple lightweight API
+  * Support categories 
+  * Support setting logging level via URL arguments  
+  * Familiar to Java Programmers
+=== Logging Handler/Appender/Publishing API ===
+   * User configurable logging handlers
+   * Support filtering of handlers via Level
+   * Handlers should have access to category information per log message
+   * The following predefined logging handlers
+     # to System.err/System.out
+     # to the server via RPC
+     # to some predefined widgets
+     # to firebug console
+     # to the GWT hosted mode console
+    
  
  
 =Design Decisions=
