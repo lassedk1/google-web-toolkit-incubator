@@ -1,6 +1,7 @@
 /* Users usually should override styles in gwt-Tree*/
 .gwt-FastTree {
   position: relative;
+  -moz-user-select: none;
 }
 
 .gwt-FastTreeItem .open,.gwt-FastTreeItem .closed,.gwt-FastTreeItem .leaf
@@ -10,7 +11,7 @@
   padding-right: 5px;
   cursor: default;
   padding-left: 18px;
-  -moz-user-select: none;
+
   position: relative;
 }
 
