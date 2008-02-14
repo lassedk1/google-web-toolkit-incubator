@@ -1,4 +1,4 @@
-#summary DRAFT GWT Logging API.
+#summary GWT Logging API.
 #labels Type-Library
 
 = Introduction =
