@@ -33,11 +33,10 @@ public class TreeHandler extends PopupWidgetHandler {
    * TreeHandler, used only in development.
    * 
    * @param autoShow is the tree handler shown when new logging messages are
-   *          added.
+   *        added.
    */
   public TreeHandler(boolean autoShow) {
     super(autoShow);
-    FastTree.addDefaultCSS();
     popup.setWidget(tree);
   }
 
