@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cache-entry>
+	<generated-type-hash class="com.google.gwt.demos.styleinjector.client.StyleInjectorDemo_Resources_inlineBundledefault" hash="9A4B0D752CBBBCA967D1ED09D4B431AA"/>
+	<rebind-decision in="com.google.gwt.user.client.ui.impl.TextBoxImpl" out="com.google.gwt.user.client.ui.impl.TextBoxImpl"/>
+	<rebind-decision in="com.google.gwt.user.client.ui.ListBox.Impl" out="com.google.gwt.user.client.ui.ListBox.ImplSafari"/>
+	<rebind-decision in="com.google.gwt.libideas.client.StyleInjector.StyleInjectorImpl" out="com.google.gwt.libideas.client.StyleInjector.StyleInjectorImpl"/>
+	<rebind-decision in="com.google.gwt.demos.styleinjector.client.StyleInjectorDemo.Resources" out="com.google.gwt.demos.styleinjector.client.StyleInjectorDemo_Resources_inlineBundledefault"/>
+	<rebind-decision in="com.google.gwt.user.client.ui.impl.FocusImpl" out="com.google.gwt.user.client.ui.impl.FocusImplSafari"/>
+	<rebind-decision in="com.google.gwt.demos.styleinjector.client.StyleInjectorDemo" out="com.google.gwt.demos.styleinjector.client.StyleInjectorDemo"/>
+	<rebind-decision in="com.google.gwt.user.client.ui.impl.FormPanelImpl" out="com.google.gwt.user.client.ui.impl.FormPanelImpl"/>
+	<rebind-decision in="com.google.gwt.user.client.impl.HistoryImpl" out="com.google.gwt.user.client.impl.HistoryImplSafari"/>
+	<rebind-decision in="com.google.gwt.user.client.impl.DOMImpl" out="com.google.gwt.user.client.impl.DOMImplSafari"/>
+	<rebind-decision in="com.google.gwt.user.client.ui.impl.PopupImpl" out="com.google.gwt.user.client.ui.impl.PopupImpl"/>
+</cache-entry>
