@@ -26,7 +26,7 @@ import com.google.gwt.widgetideas.client.HasFastTreeItems;
 /**
  * Publishes log messages into a popup tree sorted by category.
  */
-public class TreeHandler extends PopupWidgetHandler {
+public class TreeLogHandler extends PopupWidgetLogHandler {
   private FastTree tree = new FastTree();
 
   /**
@@ -35,7 +35,7 @@ public class TreeHandler extends PopupWidgetHandler {
    * @param autoShow is the tree handler shown when new logging messages are
    *        added.
    */
-  public TreeHandler(boolean autoShow) {
+  public TreeLogHandler(boolean autoShow) {
     super(autoShow);
     popup.setWidget(tree);
   }
@@ -82,7 +82,7 @@ public class TreeHandler extends PopupWidgetHandler {
     parent.addItem(target);
     target.addStyleName(level.getName().toLowerCase());
     if (e != null) {
-      target.addItem(DivHandler.formatMessage("thrown", level, e));
+      target.addItem(DivLogHandler.formatMessage("thrown", level, e));
     }
 
     tree.setSelectedItem(target);

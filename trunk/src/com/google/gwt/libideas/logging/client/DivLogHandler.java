@@ -19,7 +19,7 @@
 package com.google.gwt.libideas.logging.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.libideas.logging.shared.Handler;
+import com.google.gwt.libideas.logging.shared.LogHandler;
 import com.google.gwt.libideas.logging.shared.Level;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
@@ -39,7 +39,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * Logger which outputs to a draggable floating <code>DIV</code>.
  */
-public class DivHandler extends Handler {
+public class DivLogHandler extends LogHandler {
   // CHECKSTYLE_JAVADOC_OFF
 
   private static final String STACKTRACE_ELEMENT_PREFIX = "&nbsp;&nbsp;&nbsp;&nbsp;at&nbsp;";
@@ -80,7 +80,7 @@ public class DivHandler extends Handler {
   /**
    * Default constructor.
    */
-  public DivHandler() {
+  public DivLogHandler() {
     debugTable.addStyleName(STYLE_LOG_PANEL);
     logTextArea.addStyleName(STYLE_LOG_TEXT_AREA);
     scrollPanel.addStyleName(STYLE_LOG_SCROLL_PANEL);

@@ -16,19 +16,19 @@
 
 package com.google.gwt.libideas.logging.client;
 
-import com.google.gwt.libideas.logging.shared.Handler;
+import com.google.gwt.libideas.logging.shared.LogHandler;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Shows a widget handler in a popup.
  */
-public abstract class PopupWidgetHandler extends Handler {
+public abstract class PopupWidgetLogHandler extends LogHandler {
 
   protected PopupPanel popup;
   protected boolean autoShow;
 
-  PopupWidgetHandler(boolean autoShow) {
+  PopupWidgetLogHandler(boolean autoShow) {
     this.popup = new PopupPanel(true);
     popup.setStyleName("gwt-PopupWidgetHandler");
     this.autoShow = autoShow;

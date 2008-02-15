@@ -1,6 +1,5 @@
-// CHECKSTYLE_OFF
 /*
- * Copyright 2008 Fred Sauer
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,25 +12,21 @@
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
- * Modified by Google
  */
+
 package com.google.gwt.libideas.logging.client;
 
-import com.google.gwt.libideas.logging.shared.Handler;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.libideas.logging.shared.LogHandler;
 import com.google.gwt.libideas.logging.shared.Level;
 
-public class FireBugHandler extends Handler {
-
-  public native boolean isSupported() /*-{
-    return !!($wnd.console && $wnd.console.firebug);
-  }-*/;
-
-  native void log(String message) /*-{
-    $wnd.console.info(message); 
-  }-*/;
+/**
+ * Logs messages to the hosted mode development shell logger.
+ */
+public class GWTLogHandler extends LogHandler {
 
   public void publish(String message, Level level, String category, Throwable e) {
-    log(format(message, level, category, e));
+    GWT.log(format(message, level, category, null), e);
   }
+
 }
