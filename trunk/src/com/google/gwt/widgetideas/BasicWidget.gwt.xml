@@ -1,5 +1,5 @@
 <module>
-	<!--  As new widgets are using style injection, include style injection by 
-	      default to avoid bogus compiler errors -->
-	<inherits name='com.google.gwt.libideas.StyleInjector' />
+	<!--  As new widgets are created, they should be able to use all of our incubator libraries -->
+	<inherits name='com.google.gwt.libideas.LibIdeas' />
+ 
 </module>
