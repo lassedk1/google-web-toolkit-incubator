@@ -71,8 +71,8 @@ Log is a static class. Its API is modeled on the java Logger API. Almost all use
    Log.isLoggingMinimal()
 }}}
  
-== Handler ==
-A Handler is a class which actually handles the logging messages.  Its API is modeled in the java Handler class.  Its subclasses will be drawn heavily from the gwt-log subclasses of AbstractLogger.
+== LogHandler ==
+A LogHandler is a class which actually handles the logging messages.  Its API is modeled in the java Handler class.  Its subclasses will be drawn heavily from the gwt-log subclasses of AbstractLogger.
 
  
 == Level ==
