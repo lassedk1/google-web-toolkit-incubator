@@ -18,12 +18,12 @@ package com.google.gwt.demos.logging.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.libideas.logging.client.DivHandler;
-import com.google.gwt.libideas.logging.client.FireBugHandler;
-import com.google.gwt.libideas.logging.client.GWTHandler;
-import com.google.gwt.libideas.logging.client.RemoteLoggingHandler;
-import com.google.gwt.libideas.logging.client.TreeHandler;
-import com.google.gwt.libideas.logging.shared.Handler;
+import com.google.gwt.libideas.logging.client.DivLogHandler;
+import com.google.gwt.libideas.logging.client.FireBugLogHandler;
+import com.google.gwt.libideas.logging.client.GWTLogHandler;
+import com.google.gwt.libideas.logging.client.RemoteLogHandler;
+import com.google.gwt.libideas.logging.client.TreeLogHandler;
+import com.google.gwt.libideas.logging.shared.LogHandler;
 import com.google.gwt.libideas.logging.shared.Level;
 import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.Window;
@@ -49,25 +49,25 @@ public class LoggingDemo implements EntryPoint {
 
   class HandlerConfig extends FlexTable {
     class MyHandlerClickListener implements ClickListener {
-      Handler handler;
+      LogHandler handler;
       boolean added;
 
-      public MyHandlerClickListener(Handler handler) {
+      public MyHandlerClickListener(LogHandler handler) {
         this.handler = handler;
       }
 
       public void onClick(Widget sender) {
         if (added) {
-          Log.removeHandler(handler);
+          Log.removeLogHandler(handler);
           added = false;
         } else {
-          Log.addHandler(handler);
+          Log.addLogHandler(handler);
           added = true;
         }
       }
     }
 
-    HandlerConfig(final Handler handler) {
+    HandlerConfig(final LogHandler handler) {
       this.setStyleName("handler-control");
       final String name = GWT.getTypeName(handler);
       int index = name.lastIndexOf(".") + 1;
@@ -133,7 +133,7 @@ public class LoggingDemo implements EntryPoint {
     if (Log.isLoggingSupported()) {
       Window.alert("Logging loaded, current logging level is "
           + Log.getDefaultLevel() + " Setting it to ALL");
-      Log.clearHandlers();
+      Log.clearLogHandlers();
       Log.setDefaultLevel(Level.ALL);
       final FlexTable control = new FlexTable();
       RootPanel.get().add(control);
@@ -144,11 +144,11 @@ public class LoggingDemo implements EntryPoint {
 
   private void addHandlers(final FlexTable control) {
     int pos = 0;
-    control.setWidget(pos, 0, new HandlerConfig(new TreeHandler(true)));
-    control.setWidget(++pos, 0, new HandlerConfig(new FireBugHandler()));
-    control.setWidget(++pos, 0, new HandlerConfig(new DivHandler()));
-    control.setWidget(++pos, 0, new HandlerConfig(new GWTHandler()));
-    RemoteLoggingHandler handler = new RemoteLoggingHandler();
+    control.setWidget(pos, 0, new HandlerConfig(new TreeLogHandler(true)));
+    control.setWidget(++pos, 0, new HandlerConfig(new FireBugLogHandler()));
+    control.setWidget(++pos, 0, new HandlerConfig(new DivLogHandler()));
+    control.setWidget(++pos, 0, new HandlerConfig(new GWTLogHandler()));
+    RemoteLogHandler handler = new RemoteLogHandler();
     control.setWidget(++pos, 0, new HandlerConfig(handler));
   }
 
