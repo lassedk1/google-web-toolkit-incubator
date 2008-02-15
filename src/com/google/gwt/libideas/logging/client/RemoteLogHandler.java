@@ -17,7 +17,7 @@
 package com.google.gwt.libideas.logging.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.libideas.logging.shared.Handler;
+import com.google.gwt.libideas.logging.shared.LogHandler;
 import com.google.gwt.libideas.logging.shared.Level;
 import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -32,11 +32,11 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
  * due to naming/functionality differences, its design is modeled using the same
  * pattern as the gwt-logs <code>RemoteLogger</code>.
  */
-public class RemoteLoggingHandler extends Handler {
+public class RemoteLogHandler extends LogHandler {
   class DefaultCallback implements AsyncCallback {
 
     public void onFailure(Throwable caught) {
-      Log.removeHandler(RemoteLoggingHandler.this);
+      Log.removeLogHandler(RemoteLogHandler.this);
       Log.severe(
           "Remote logging failed,  remote handler is now removed as a valid handler",
           CATEGORY, caught);
@@ -53,11 +53,11 @@ public class RemoteLoggingHandler extends Handler {
 
   private AsyncCallback callback;
 
-  public RemoteLoggingHandler() {
+  public RemoteLogHandler() {
     this((RemoteLoggingServiceAsync) GWT.create(RemoteLoggingService.class));
   }
 
-  public RemoteLoggingHandler(RemoteLoggingServiceAsync service) {
+  public RemoteLogHandler(RemoteLoggingServiceAsync service) {
     ServiceDefTarget target = (ServiceDefTarget) service;
     target.setServiceEntryPoint(GWT.getModuleBaseURL() + "logging");
     this.service = service;
