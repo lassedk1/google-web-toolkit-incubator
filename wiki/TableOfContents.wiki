@@ -5,6 +5,7 @@
     * [ImmutableResourceBundle]
       * [SoundResource]
       * [StyleInjector]
+    * [Logging]
   * [Widgets]
     * [Tables]
       * [ScrollTable]
