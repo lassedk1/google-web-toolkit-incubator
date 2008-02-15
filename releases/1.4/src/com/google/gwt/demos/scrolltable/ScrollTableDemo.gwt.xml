@@ -1,0 +1,12 @@
+<module>
+
+	<!-- Inherit the core Web Toolkit stuff.                  -->
+	<inherits name='com.google.gwt.user.User'/>
+  <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
+  <inherits name='com.google.gwt.widgetideas.ScrollTable'/>
+
+	<!-- Specify the app entry point class.                   -->
+	<entry-point class='com.google.gwt.demos.scrolltable.client.ScrollTableDemo'/>
+  
+  <stylesheet src='ScrollTableDemo.css'/>
+</module>

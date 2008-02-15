@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cache-entry>
+	<rebind-decision in="com.google.gwt.user.client.ui.impl.TextBoxImpl" out="com.google.gwt.user.client.ui.impl.TextBoxImpl"/>
+	<rebind-decision in="com.google.gwt.user.client.ui.ListBox.Impl" out="com.google.gwt.user.client.ui.ListBox.ImplSafari"/>
+	<rebind-decision in="com.google.gwt.user.client.ui.impl.FocusImpl" out="com.google.gwt.user.client.ui.impl.FocusImplSafari"/>
+	<rebind-decision in="com.google.gwt.user.client.ui.UIObject.DebugIdImpl" out="com.google.gwt.user.client.ui.UIObject.DebugIdImpl"/>
+	<rebind-decision in="com.google.gwt.user.client.impl.WindowImpl" out="com.google.gwt.user.client.impl.WindowImplSafari"/>
+	<rebind-decision in="com.google.gwt.demos.gwtcanvas.client.GWTCanvasDemo" out="com.google.gwt.demos.gwtcanvas.client.GWTCanvasDemo"/>
+	<rebind-decision in="com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImpl" out="com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault"/>
+	<rebind-decision in="com.google.gwt.user.client.ui.impl.FormPanelImpl" out="com.google.gwt.user.client.ui.impl.FormPanelImpl"/>
+	<rebind-decision in="com.google.gwt.user.client.impl.HistoryImpl" out="com.google.gwt.user.client.impl.HistoryImplSafari"/>
+	<rebind-decision in="com.google.gwt.user.client.impl.DocumentRootImpl" out="com.google.gwt.user.client.impl.DocumentRootImplSafari"/>
+	<rebind-decision in="com.google.gwt.user.client.impl.DOMImpl" out="com.google.gwt.user.client.impl.DOMImplSafari"/>
+	<rebind-decision in="com.google.gwt.user.client.ui.impl.PopupImpl" out="com.google.gwt.user.client.ui.impl.PopupImpl"/>
+</cache-entry>
