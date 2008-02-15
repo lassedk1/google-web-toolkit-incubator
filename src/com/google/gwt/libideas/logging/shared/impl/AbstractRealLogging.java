@@ -16,7 +16,7 @@
 
 package com.google.gwt.libideas.logging.shared.impl;
 
-import com.google.gwt.libideas.logging.shared.Handler;
+import com.google.gwt.libideas.logging.shared.LogHandler;
 import com.google.gwt.libideas.logging.shared.Level;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public abstract class AbstractRealLogging {
   private ArrayList handlers = new ArrayList();
   private Level globalLevel;
 
-  public boolean addHandler(Handler handler) {
+  public boolean addLogHandler(LogHandler handler) {
     if (handler.isSupported()) {
       handlers.add(handler);
       return true;
@@ -46,7 +46,7 @@ public abstract class AbstractRealLogging {
     }
   }
 
-  public void clearHandlers() {
+  public void clearLogHandlers() {
     handlers.clear();
   }
 
@@ -99,7 +99,7 @@ public abstract class AbstractRealLogging {
   public void log(Level level, String msg, String category, Throwable e) {
     if (isLoggable(level, category)) {
       for (int i = 0; i < handlers.size(); i++) {
-        Handler handler = (Handler) handlers.get(i);
+        LogHandler handler = (LogHandler) handlers.get(i);
         if (allows(handler.getLevel(), level)) {
           handler.publish(msg, level, category, e);
         }
@@ -122,7 +122,7 @@ public abstract class AbstractRealLogging {
     levels.put(level.getName(), level);
   }
 
-  public void removeHandler(Handler handler) {
+  public void removeLogHandler(LogHandler handler) {
     handlers.remove(handler);
     handler.hideHandler();
   }

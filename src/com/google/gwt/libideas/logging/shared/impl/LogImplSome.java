@@ -16,7 +16,7 @@
 
 package com.google.gwt.libideas.logging.shared.impl;
 
-import com.google.gwt.libideas.logging.shared.Handler;
+import com.google.gwt.libideas.logging.shared.LogHandler;
 import com.google.gwt.libideas.logging.shared.Level;
 
 import java.util.Iterator;
@@ -26,12 +26,12 @@ import java.util.Iterator;
  */
 public abstract class LogImplSome extends LogImpl {
 
-  public boolean addHandler(Handler handler) {
-    return getReal().addHandler(handler);
+  public boolean addLogHandler(LogHandler handler) {
+    return getReal().addLogHandler(handler);
   }
 
-  public void clearHandlers() {
-    getReal().clearHandlers();
+  public void clearLogHandlers() {
+    getReal().clearLogHandlers();
   }
 
   public Level getDefaultLevel() {
@@ -66,14 +66,10 @@ public abstract class LogImplSome extends LogImpl {
     getReal().registerLevel(level);
   }
 
-  public void removehandler(Handler handler) {
-    getReal().removeHandler(handler);
+  public void removeLogHandler(LogHandler handler) {
+    getReal().removeLogHandler(handler);
   }
-
-  public void removeHandler(Handler handler) {
-    getReal().removeHandler(handler);
-  }
-
+ 
   public void setDefaultLevel(Level level) {
     getReal().setDefaultLevel(level);
   }
@@ -91,7 +87,7 @@ public abstract class LogImplSome extends LogImpl {
   }
 
   protected AbstractRealLogging getReal() {
-    return RealLogging.real;
+    return RealLoggingSome.real;
   }
 
   

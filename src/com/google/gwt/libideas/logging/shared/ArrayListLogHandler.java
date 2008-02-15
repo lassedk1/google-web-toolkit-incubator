@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * This handler is used primarily for testing purposes. It stores all messages
  * received in an {@link ArrayList}.
  */
-public class ArrayListHandler extends Handler {
+public class ArrayListLogHandler extends LogHandler {
   private ArrayList messages = new ArrayList();
   private ArrayList categories = new ArrayList();
   private ArrayList throwables = new ArrayList();

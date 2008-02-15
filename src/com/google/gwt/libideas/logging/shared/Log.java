@@ -55,16 +55,16 @@ public class Log {
    * @return whether the handler was added.
    * 
    */
-  public static boolean addHandler(Handler handler) {
-    return impl.addHandler(handler);
+  public static boolean addLogHandler(LogHandler handler) {
+    return impl.addLogHandler(handler);
   }
 
   /**
    * Clear all handlers.
    */
 
-  public static void clearHandlers() {
-    impl.clearHandlers();
+  public static void clearLogHandlers() {
+    impl.clearLogHandlers();
   }
 
   /**
@@ -211,8 +211,8 @@ public class Log {
    * @exception SecurityException if a security manager exists and if the caller
    *              does not have LoggingPermission("control").
    */
-  public static void removeHandler(Handler handler) {
-    impl.removehandler(handler);
+  public static void removeLogHandler(LogHandler handler) {
+    impl.removeLogHandler(handler);
   }
 
   /**

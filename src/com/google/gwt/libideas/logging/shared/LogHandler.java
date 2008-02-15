@@ -32,7 +32,7 @@ package com.google.gwt.libideas.logging.shared;
  * @since 1.4
  */
 
-public abstract class Handler {
+public abstract class LogHandler {
   private Level logLevel;
 
   /**
