@@ -14,28 +14,20 @@
  * the License.
  */
 
-package com.google.gwt.libideas.logging.shared;
+package com.google.gwt.libideas.logging.shared.impl;
 
-import com.google.gwt.core.client.GWT;
 
-import java.io.PrintStream;
 
 /**
- * Handler to print out to the error console. Only works in hosted mode.
+ * The place where the real logging support happens. Does not extend LogImpl as
+ * that seems to confuses our compiler when encapsulated.
  */
-public class PrintStreamHandler extends Handler {
+public class RealLoggingSome extends AbstractRealLogging {
 
-  PrintStream stream;
+  public static AbstractRealLogging real = new RealLoggingSome();
 
-  public PrintStreamHandler(PrintStream stream) {
-    this.stream = stream;
-  }
-
-  public boolean isSupported() {
-    return !GWT.isScript();
-  }
-
-  public void publish(String string, Level level, String category, Throwable e) {
-    stream.println(format(string, level, category, e));
+  RealLoggingSome() {
+    real = this;
+    initializeLevels();
   }
 }

@@ -18,8 +18,9 @@ package com.google.gwt.libideas.logging.shared.impl;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.libideas.logging.client.GWTHandler;
-import com.google.gwt.libideas.logging.client.TreeHandler;
+import com.google.gwt.libideas.logging.client.ConsoleLogHandler;
+import com.google.gwt.libideas.logging.client.FireBugLogHandler;
+import com.google.gwt.libideas.logging.client.GWTLogHandler;
 import com.google.gwt.libideas.logging.shared.Level;
 import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.Window;
@@ -31,7 +32,7 @@ import java.util.Map;
  * Real logging with runtime level support.
  * 
  */
-public class RealLoggingWithRuntimeLevel extends AbstractRealLogging {
+public class RealLoggingAll extends AbstractRealLogging {
 
   /**
    * Copy of Windows.Location from 1.5.
@@ -82,14 +83,25 @@ public class RealLoggingWithRuntimeLevel extends AbstractRealLogging {
     }
   }
 
-  public static AbstractRealLogging real = new RealLoggingWithRuntimeLevel();
+  public static AbstractRealLogging real = new RealLoggingAll();
 
   static {
     readLevel();
     if (GWT.isScript()) {
-      Log.addHandler(new TreeHandler(true));
+      FireBugLogHandler f = new FireBugLogHandler();
+      if (f.isSupported()) {
+        Log.addLogHandler(f);
+      } else {
+        ConsoleLogHandler handler = new ConsoleLogHandler();
+        if (handler.isSupported()) {
+          Log.addLogHandler(handler);
+        } else {
+          // TODO(ecc) create/import popup window manager.
+        }
+      }
+ 
     } else {
-      Log.addHandler(new GWTHandler());
+      Log.addLogHandler(new GWTLogHandler());
     }
   }
 
@@ -106,7 +118,7 @@ public class RealLoggingWithRuntimeLevel extends AbstractRealLogging {
     }
   }
 
-  RealLoggingWithRuntimeLevel() {
+  RealLoggingAll() {
     real = this;
     initializeLevels();
   }

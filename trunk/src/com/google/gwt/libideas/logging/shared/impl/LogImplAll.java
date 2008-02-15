@@ -23,7 +23,7 @@ public class LogImplAll extends LogImplComplete {
 
   protected AbstractRealLogging getReal() {
      
-    return RealLoggingWithRuntimeLevel.real;
+    return RealLoggingAll.real;
   }
 
 }

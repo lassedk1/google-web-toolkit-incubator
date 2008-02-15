@@ -16,7 +16,7 @@
 
 package com.google.gwt.libideas.logging.server.impl;
 
-import com.google.gwt.libideas.logging.shared.Handler;
+import com.google.gwt.libideas.logging.shared.LogHandler;
 import com.google.gwt.libideas.logging.shared.Level;
 import com.google.gwt.libideas.logging.shared.impl.LogImplComplete;
 
@@ -30,7 +30,7 @@ public class LogImplJavaLogging extends LogImplComplete {
 
   Logger gwt = Logger.getLogger("gwt");
 
-  public boolean addHandler(Handler handler) {
+  public boolean addLogHandler(LogHandler handler) {
     throw new UnsupportedOperationException(
         "Cannot add GWT Handlers to java logging, as the reason you are using this class is to use the java logging handlers");
   }

@@ -17,7 +17,7 @@
 package com.google.gwt.libideas.logging.client;
 
 import com.google.gwt.libideas.logging.server.ServerLogManager;
-import com.google.gwt.libideas.logging.shared.ArrayListHandler;
+import com.google.gwt.libideas.logging.shared.ArrayListLogHandler;
 import com.google.gwt.libideas.logging.shared.Level;
 import com.google.gwt.libideas.logging.shared.Log;
 
@@ -33,8 +33,8 @@ public class LogServerTest extends TestCase {
   public void testBasicLogger() {
     ServerLogManager.useBasicLogging();
 
-    ArrayListHandler handler = new ArrayListHandler();
-    Log.addHandler(handler);
+    ArrayListLogHandler handler = new ArrayListLogHandler();
+    Log.addLogHandler(handler);
 
     // Basic Test.
     Log.severe("severe");
@@ -83,7 +83,7 @@ public class LogServerTest extends TestCase {
     // Test removing loggier.
     Log.severe("hello");
     assertEquals("hello", handler.getLastMessage());
-    Log.removeHandler(handler);
+    Log.removeLogHandler(handler);
     Log.severe("don't log");
     assertEquals("hello", handler.getLastMessage());
   }

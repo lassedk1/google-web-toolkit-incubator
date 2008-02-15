@@ -16,7 +16,7 @@
 
 package com.google.gwt.libideas.logging.shared.impl;
 
-import com.google.gwt.libideas.logging.shared.Handler;
+import com.google.gwt.libideas.logging.shared.LogHandler;
 import com.google.gwt.libideas.logging.shared.Level;
 
 import java.util.Iterator;
@@ -27,9 +27,9 @@ import java.util.Iterator;
  */
 public abstract class LogImpl {
 
-  public abstract boolean addHandler(Handler handler);
+  public abstract boolean addLogHandler(LogHandler handler);
 
-  public abstract void clearHandlers();
+  public abstract void clearLogHandlers();
 
   public abstract void config(String msg, String category);
 
@@ -57,7 +57,7 @@ public abstract class LogImpl {
 
   public abstract void registerLevel(Level level);
 
-  public abstract void removehandler(Handler handler);
+  public abstract void removeLogHandler(LogHandler handler);
 
   public abstract void setDefaultLevel(Level newLevel);
 
