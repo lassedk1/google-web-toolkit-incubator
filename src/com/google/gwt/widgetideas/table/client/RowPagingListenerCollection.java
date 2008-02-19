@@ -37,7 +37,7 @@ public class RowPagingListenerCollection extends ArrayList {
   }
 
   /**
-   * Fired when the current page changes.
+   * Fired when the current page changes, but before it is loaded.
    * 
    * @param page the new page
    */
@@ -50,11 +50,13 @@ public class RowPagingListenerCollection extends ArrayList {
 
   /**
    * Fired when the current page has completely finished loading.
+   * 
+   * @param page the new page
    */
-  public void firePageLoaded() {
+  public void firePageLoaded(int page) {
     for (Iterator it = iterator(); it.hasNext();) {
       RowPagingListener listener = (RowPagingListener) it.next();
-      listener.onPageLoaded();
+      listener.onPageLoaded(page);
     }
   }
   

@@ -21,28 +21,33 @@ package com.google.gwt.widgetideas.table.client;
 public interface HasRowPaging extends SourceRowPagingEvents,
     HasFixedColumnWidth {
   /**
+   * @return the current page
+   */
+  int getCurrentPage();
+
+  /**
    * Get the number of pages. If the number of pages is unknown, -1 is returned.
    * 
    * @return the page count
    */
-  public int getNumPages();
+  int getNumPages();
 
   /**
    * Get the number of rows per page.
    * 
    * @return the number of rows per page
    */
-  public int getPageSize();
+  int getPageSize();
 
   /**
    * Go to the first page.
    */
-  public void gotoFirstPage();
+  void gotoFirstPage();
 
   /**
    * Go to the last page.
    */
-  public void gotoLastPage();
+  void gotoLastPage();
 
   /**
    * Set the current page. If the page is out of bounds, it will be
@@ -51,7 +56,7 @@ public interface HasRowPaging extends SourceRowPagingEvents,
    * @param page the page
    * @param forced reload the page even if it is already loaded
    */
-  public void gotoPage(int page, boolean forced);
+  void gotoPage(int page, boolean forced);
 
   /**
    * Set the number of rows per page.
@@ -61,5 +66,5 @@ public interface HasRowPaging extends SourceRowPagingEvents,
    * 
    * @param pageSize the number of rows per page
    */
-  public void setPageSize(int pageSize);
+  void setPageSize(int pageSize);
 }

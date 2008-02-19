@@ -16,7 +16,9 @@
 package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -24,7 +26,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.ImageBundle;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
@@ -42,19 +43,6 @@ import com.google.gwt.user.client.ui.Widget;
  * </ul>
  */
 public class PagingScrollTable extends ScrollTable {
-  /**
-   * An {@link ImageBundle} that provides the loading image, which is an
-   * animition and should not be bundled.
-   */
-  public static interface LoadingImage extends ImageBundle {
-    /**
-     * An image used when loading a page.
-     * 
-     * @return a prototype of this image
-     */
-    AbstractImagePrototype scrollTableLoading();
-  }
-
   /**
    * An {@link com.google.gwt.user.client.ui.ImageBundle} that provides images
    * for {@link PagingScrollTable}.
@@ -99,28 +87,34 @@ public class PagingScrollTable extends ScrollTable {
    */
   private ClickListener imageClickListener = new ClickListener() {
     public void onClick(Widget sender) {
-      HasRowPaging dataTable = (HasRowPaging) getDataTable();
+      // Determine which page to load
+      final HasRowPaging dataTable = (HasRowPaging) getDataTable();
       int numPages = dataTable.getNumPages();
+      int loadPage = -1;
       if (sender == pagingButtonFirst) {
-        // Load first page
-        dataTable.gotoFirstPage();
+        loadPage = 0;
       } else if (sender == pagingButtonLast) {
-        // Load last page
-        dataTable.gotoLastPage();
+        loadPage = numPages - 1;
       } else if (sender == pagingButtonNext) {
-        // Load next page
-        int curPage = getPagingBoxValue();
-        if ((numPages < 0) || (curPage + 1 < numPages)) {
-          rowPagingListener.onPageChanged(curPage + 1);
-          dataTable.gotoPage(getPagingBoxValue(), false);
-        }
+        loadPage = getPagingBoxValue() + 1;
       } else if (sender == pagingButtonPrev) {
-        // Load previous page
-        int curPage = getPagingBoxValue();
-        if (curPage > 0) {
-          rowPagingListener.onPageChanged(curPage - 1);
-          dataTable.gotoPage(getPagingBoxValue(), false);
-        }
+        loadPage = getPagingBoxValue() - 1;
+      }
+      
+      // Load the page
+      int curPage = dataTable.getCurrentPage();
+      if ((loadPage >= 0) && (loadPage < numPages) && (loadPage != curPage)) {
+        // Update the paging bar
+        pagingCurPageBox.setText((loadPage + 1) + "");
+        loadingImage.setVisible(true);
+        errorLabel.setHTML("");
+
+        // Use a DeferredCommand to let the UI update
+        DeferredCommand.addCommand(new Command() {
+          public void execute() {
+            dataTable.gotoPage(getPagingBoxValue(), false);
+          }
+        });
       }
     }
   };
@@ -128,7 +122,7 @@ public class PagingScrollTable extends ScrollTable {
   /**
    * The loading image.
    */
-  private Image loadingImage = new Image();
+  private Image loadingImage = new Image("scrollTableLoading.gif");
 
   /**
    * A listener that listens for page events from the {@link HasRowPaging}.
@@ -146,12 +140,10 @@ public class PagingScrollTable extends ScrollTable {
     }
 
     public void onPageChanged(int page) {
-      pagingCurPageBox.setText((page + 1) + "");
-      loadingImage.setVisible(true);
-      errorLabel.setHTML("");
     }
 
-    public void onPageLoaded() {
+    public void onPageLoaded(int page) {
+      pagingCurPageBox.setText((page + 1) + "");
       loadingImage.setVisible(false);
       errorLabel.setHTML("");
       redraw();
@@ -221,10 +213,6 @@ public class PagingScrollTable extends ScrollTable {
       HasFixedColumnWidth headerTable, PagingScrollTableImages images) {
     super(dataTable, headerTable, images);
     dataTable.addRowPagingListener(rowPagingListener);
-
-    // Create the loading image
-    LoadingImage loadingBundle = (LoadingImage) GWT.create(LoadingImage.class);
-    loadingBundle.scrollTableLoading().applyTo(loadingImage);
 
     // Disallow non-numeric pages
     pagingCurPageBox.addKeyboardListener(new KeyboardListenerAdapter() {

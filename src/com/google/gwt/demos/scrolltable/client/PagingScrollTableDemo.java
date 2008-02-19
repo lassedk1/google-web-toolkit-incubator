@@ -68,12 +68,10 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     public void renderCell(PagingGrid grid, int row, int column, Object data) {
       if (data == null) {
         grid.clearCell(row, column);
+        return;
       }
 
       switch (column) {
-        case 0:
-          grid.setWidget(row, column, (Widget) data);
-          break;
         case 5:
           grid.setHTML(row, column, "<FONT color=\"" + data + "\">" + data
               + "</FONT>");
