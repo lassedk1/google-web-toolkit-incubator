@@ -483,7 +483,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
      * 
      * @return a prototype of this image
      */
-    AbstractImagePrototype fillWidth();
+    AbstractImagePrototype scrollTableFillWidth();
 
     /**
      * An image indicating that a column is sorted in ascending order.
@@ -693,7 +693,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       }
     };
     fillWidthImage.setTitle("Shrink/Expand to fill visible area");
-    images.fillWidth().applyTo(fillWidthImage);
+    images.scrollTableFillWidth().applyTo(fillWidthImage);
     Element fillWidthImageElem = fillWidthImage.getElement();
     DOM.setStyleAttribute(fillWidthImageElem, "cursor", "pointer");
     DOM.setStyleAttribute(fillWidthImageElem, "position", "absolute");

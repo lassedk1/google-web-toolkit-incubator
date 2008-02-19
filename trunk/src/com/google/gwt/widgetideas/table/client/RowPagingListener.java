@@ -24,24 +24,26 @@ public interface RowPagingListener {
    * 
    * @param numPages the new number of pages
    */
-  public void onNumPagesChanges(int numPages);
+  void onNumPagesChanges(int numPages);
   
   /**
-   * Fired when the current page changes.
+   * Fired when the current page changes, but before it is loaded.
    * 
    * @param page the new page
    */
-  public void onPageChanged(int page);
+  void onPageChanged(int page);
   
   /**
    * Fired when the current page has completely finished loading.
+   * 
+   * @param page the new page
    */
-  public void onPageLoaded();
+  void onPageLoaded(int page);
   
   /**
    * Fired when a failure occurs while loading the page.
    * 
    * @param caught the exception that caused the failure
    */
-  public void onPagingFailure(Throwable caught);
+  void onPagingFailure(Throwable caught);
 }

@@ -79,8 +79,12 @@ public abstract class DataSourceData {
         // Graduation year
         return (1990 + getRandomInt(20)) + "";
       case 9:
-        // GOA
-        return (1 + getRandomInt(300) / 100.0) + "";
+        // GPA
+        String gpa = (1 + getRandomInt(300) / 100.0) + "";
+        if (gpa.length() > 4) {
+          return gpa.substring(0, 4);
+        }
+        return gpa;
       case 10:
         // Student ID
         return (1000000 + getRandomInt(8999999)) + "";

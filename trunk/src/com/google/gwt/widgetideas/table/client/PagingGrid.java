@@ -15,8 +15,6 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
@@ -42,7 +40,7 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
      * @param column the column index
      * @param data the data to render
      */
-    public void renderCell(PagingGrid grid, int row, int column, Object data);
+    void renderCell(PagingGrid grid, int row, int column, Object data);
   }
 
   /**
@@ -57,7 +55,7 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
      * @param rows an iterator of iterators of objects
      * @param callback the callback to use when rendering completes
      */
-    public void renderTable(PagingGrid grid, Iterator rows,
+    void renderTable(PagingGrid grid, Iterator rows,
         RendererCallback callback);
   }
 
@@ -312,13 +310,20 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
         rowPagingListeners.firePageChanged(currentPage);
       }
 
-      // Clear the current data in the grid
-      DeferredCommand.addCommand(new Command() {
-        public void execute() {
-          // Resize the grid if needed
-          renderContents();
+      // Clear out existing data if we aren't bulk rendering
+      if (tableRenderer == null) {
+        int rowCount = getLastRow() - getFirstRow() + 1;
+        if (rowCount != getRowCount()) {
+          resizeRows(rowCount);
         }
-      });
+        clearAll();
+      }
+
+      // Request the new data from the controller
+      if (dataRequestListeners != null) {
+        dataRequestListeners.fireRequestData(currentPage * pageSize, pageSize,
+            getColumnSortList());
+      }
     }
   }
 
@@ -587,7 +592,7 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
    */
   protected void firePageLoadedEvent() {
     if (rowPagingListeners != null) {
-      rowPagingListeners.firePageLoaded();
+      rowPagingListeners.firePageLoaded(currentPage);
     }
   }
 
@@ -641,27 +646,6 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
       }
     } else {
       cellRenderer.renderCell(this, row, column, data);
-    }
-  }
-
-  /**
-   * Render the contents of the {@link PagingGrid}.
-   */
-  protected void renderContents() {
-    if (tableRenderer == null) {
-      int rowCount = getLastRow() - getFirstRow() + 1;
-      if (rowCount != getRowCount()) {
-        resizeRows(rowCount);
-      }
-
-      // Clear out existing data
-      clearAll();
-    }
-
-    // Request the new data from the controller
-    if (dataRequestListeners != null) {
-      dataRequestListeners.fireRequestData(currentPage * pageSize, pageSize,
-          getColumnSortList());
     }
   }
 

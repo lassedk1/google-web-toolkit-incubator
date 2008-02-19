@@ -111,7 +111,7 @@ public class PagingGridTest extends GWTTestCase {
       this.curPage = page;
     }
 
-    public void onPageLoaded() {
+    public void onPageLoaded(int page) {
       isPageLoaded = true;
     }
 
@@ -214,7 +214,6 @@ public class PagingGridTest extends GWTTestCase {
     testGrid.setPageSize(10);
     testGrid.setNumRows(100);
     testGrid.gotoPage(3, true);
-    testGrid.renderContents();
 
     // Test listeners
     assertEquals(30, listener1.getFirstRow());
@@ -271,7 +270,6 @@ public class PagingGridTest extends GWTTestCase {
     testGrid.setNumRows(100);
     testGrid.setPageSize(10);
     testGrid.gotoPage(5, true);
-    testGrid.renderContents();
 
     // Sort the column without specifying a ColumnSorter
     TestRowPaginingListener listener1 = new TestRowPaginingListener();
@@ -419,7 +417,6 @@ public class PagingGridTest extends GWTTestCase {
     testGrid.setNumRows(100);
     testGrid.setPageSize(10);
     testGrid.gotoPage(0, true);
-    testGrid.renderContents();
     assertEquals(0, listener1.getCurPage());
     assertEquals(-1, listener2.getCurPage());
     assertEquals(0, listener3.getCurPage());
@@ -491,7 +488,6 @@ public class PagingGridTest extends GWTTestCase {
     testGrid.setNumRows(100);
     testGrid.setPageSize(10);
     testGrid.gotoPage(3, true);
-    testGrid.renderContents();
 
     // Check that the content is based on cell renderer
     for (int row = 0; row < 10; row++) {
@@ -505,7 +501,7 @@ public class PagingGridTest extends GWTTestCase {
     testGrid.setTableRenderer(tableRenderer);
     testGrid.addRowPagingListener(listener);
     assertFalse(listener.isPageLoaded());
-    testGrid.renderContents();
+    testGrid.gotoPage(3, true);
     for (int row = 0; row < 10; row++) {
       for (int col = 0; col < 10; col++) {
         assertEquals((row + 30) + "-" + col, testGrid.getHTML(row, col));

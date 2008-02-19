@@ -38,7 +38,7 @@ public class PagingGridBulkRendererTest extends TableBulkRendererTestBase {
       public void onPageChanged(int page) {
       }
 
-      public void onPageLoaded() {
+      public void onPageLoaded(int page) {
         callback.onRendered();
       }
 
