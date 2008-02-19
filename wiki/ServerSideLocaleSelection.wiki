@@ -33,5 +33,6 @@ This class is used to select the proper locale for a given request.  It is initi
   String locale = localeMatcher.findBestMatch(request.getHeader("Accept-language"));
   // Store the selected locale in the host html page to be served, via
   // <meta name='gwt:property' content='locale=<<locale>>'>
-  // Be sure to include a Vary: Accept-language header in the response header.
+
+  // Be sure to include a Vary: Accept-language header in the response.
  }}}
