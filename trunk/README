@@ -43,6 +43,9 @@ com.google.gwt.libideas.client
 com.google.gwt.libideas.client.impl
 - contains deferred binding sublcasses and other low-level implementation
 
+com.google.gwt.libideas.linker
+- contains build-time support related to linkers
+
 com.google.gwt.libideas.rebind
 - contains deferred binding generators related to libraries
 
