@@ -5,7 +5,7 @@
 
 For internationalized GWT applications, ideally the server would select the default locale based on the user's language preference settings in his/her browser.  These are normally supplied as part of the HTTP request in the Accept-Language header (many users do not have this configured correctly, so you still need to provide a way for the user to change the locale).  Aside from the contents of the Accept-Language header, you also need a list of the locales which the application was compiled with.
 
-This document describes `LocaleListLinker`, which generates a text file containing the compiled locales, and `LocaleMatcher`, which chooses an available locale which best matches the user's preferences.
+This document describes [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/libideas/linker/LocaleListLinker.java LocaleListLinker], which generates a text file containing the compiled locales, and [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/libideas/server/LocaleMatcher.java LocaleMatcher], which chooses an available locale which best matches the user's preferences.
 
 
 = Details =
