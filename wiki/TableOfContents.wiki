@@ -6,6 +6,7 @@
       * [SoundResource]
       * [StyleInjector]
     * [Logging]
+    * [ServerSideLocaleSelection]
   * [Widgets]
     * [Tables]
       * [ScrollTable]
