@@ -63,8 +63,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   /**
    * Resources used.
    */
-  interface DefaultResources extends ImmutableResourceBundle {
-    public static final DefaultResources INSTANCE = (DefaultResources) GWT.create(DefaultResources.class);
+  public interface DefaultResources extends ImmutableResourceBundle {
 
     /**
      * @gwt.resource FastTree.css
@@ -103,13 +102,11 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Add the default style sheet and images.
    */
   public static void addDefaultCSS() {
+    DefaultResources instance = (DefaultResources) GWT.create(DefaultResources.class);
     if (BiDiUtil.isRightToLeft()) {
-      StyleInjector.injectStylesheet(
-          DefaultResources.INSTANCE.cssRTL().getText(),
-          DefaultResources.INSTANCE);
+      StyleInjector.injectStylesheet(instance.cssRTL().getText(), instance);
     } else {
-      StyleInjector.injectStylesheet(DefaultResources.INSTANCE.css().getText(),
-          DefaultResources.INSTANCE);
+      StyleInjector.injectStylesheet(instance.css().getText(), instance);
     }
   }
 
@@ -135,7 +132,11 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   public FastTree() {
 
     setElement(DOM.createDiv());
-  
+
+    focusable = createFocusElement();
+    setStyleName(focusable, STYLENAME_SELECTION);
+
+    hiddenFocusable = createFocusElement();
     sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK | Event.KEYEVENTS
         | Event.MOUSEEVENTS);
 
@@ -168,12 +169,6 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       }
     };
     root.setTree(this);
-    
-    focusable = createFocusElement();
-    setStyleName(focusable, STYLENAME_SELECTION);
-
-    hiddenFocusable = createFocusElement();
-    DOM.setStyleAttribute(getElement(), "position", "relative");
 
     setStyleName(STYLENAME_DEFAULT);
     moveSelectionBar(curSelection);
@@ -749,12 +744,14 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   }
 
   private void moveElementOverTarget(Element movable, Element target) {
+    int containerTop = getAbsoluteTop();
 
-    int top = DOM.getElementPropertyInt(target, "offsetTop");
+    int top = DOM.getAbsoluteTop(target) - containerTop;
     int height = DOM.getElementPropertyInt(target, "offsetHeight");
 
     // Set the element's position and size to exactly underlap the
     // item's content element.
+
     DOM.setStyleAttribute(movable, "height", height + "px");
     DOM.setStyleAttribute(movable, "top", top + "px");
   }
