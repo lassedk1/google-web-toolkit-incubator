@@ -79,6 +79,7 @@ public class GridBulkRenderer extends TableBulkRenderer {
     options.callback = new ChainingCallback(options.callback);
   }
 
+  @Override
   protected void renderRows(Iterator iterator, final RenderingOptions options) {
     addChainingCallback(options);
 

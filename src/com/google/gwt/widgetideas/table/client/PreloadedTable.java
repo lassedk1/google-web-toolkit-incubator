@@ -39,6 +39,7 @@ public class PreloadedTable extends FlexTable {
 
   int curIndex = -1;
 
+  @Override
   public void setHTML(int row, int column, String html) {
     ensureLoaded();
     super.setHTML(row, column, html);
@@ -60,16 +61,19 @@ public class PreloadedTable extends FlexTable {
     ensureCell(l, column, html);
   }
 
+  @Override
   public void setText(int row, int column, String text) {
     ensureLoaded();
     super.setText(row, column, text);
   }
 
+  @Override
   public void setWidget(int row, int column, Widget widget) {
     ensureLoaded();
     super.setWidget(row, column, widget);
   }
 
+  @Override
   protected void onLoad() {
     ensureLoaded();
   }

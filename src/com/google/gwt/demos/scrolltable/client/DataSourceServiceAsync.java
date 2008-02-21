@@ -22,5 +22,5 @@ import com.google.gwt.widgetideas.table.client.TableModel.Request;
  * Asynchronous version of {@link DataSourceService}.
  */
 public interface DataSourceServiceAsync {
-  public void requestRows(Request request, AsyncCallback callback);
+  void requestRows(Request request, AsyncCallback callback);
 }

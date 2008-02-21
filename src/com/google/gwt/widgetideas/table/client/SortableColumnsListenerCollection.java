@@ -18,22 +18,21 @@ package com.google.gwt.widgetideas.table.client;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * A helper class for implementers of the {@link SourceSortableColumnsEvents}
  * interface. This subclass of {@link ArrayList} assumes that all objects added
  * to it will be of type {@link SortableColumnsListener}.
  */
-public class SortableColumnsListenerCollection extends ArrayList {
+public class SortableColumnsListenerCollection extends
+    ArrayList<SortableColumnsListener> {
   /**
    * Fired when the currently sorted column changes.
    * 
    * @param sortList the list of sorted columns
    */
   public void fireColumnSorted(ColumnSortList sortList) {
-    for (Iterator it = iterator(); it.hasNext();) {
-      SortableColumnsListener listener = (SortableColumnsListener) it.next();
+    for (SortableColumnsListener listener : this) {
       listener.onColumnSorted(sortList);
     }
   }

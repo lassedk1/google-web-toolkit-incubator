@@ -29,21 +29,21 @@ public interface HasTableCells {
    * @param row the row whose cells are to be counted
    * @return the number of cells present in the row
    */
-  public int getCellCount(int row);
-  
+  int getCellCount(int row);
+
   /**
    * Gets the amount of padding that is added around all cells.
    * 
    * @return the cell padding, in pixels
    */
-  public int getCellPadding();
+  int getCellPadding();
 
   /**
    * Gets the amount of spacing that is added around all cells.
    * 
    * @return the cell spacing, in pixels
    */
-  public int getCellSpacing();
+  int getCellSpacing();
 
   /**
    * Determines the TD associated with the specified event.
@@ -52,19 +52,19 @@ public interface HasTableCells {
    * @return the TD associated with the event, or <code>null</code> if none is
    *         found.
    */
-  public Element getEventTargetCell(Event event);
- 
+  Element getEventTargetCell(Event event);
+
   /**
    * Sets the amount of padding to be added around all cells.
    * 
    * @param padding the cell padding, in pixels
    */
-  public void setCellPadding(int padding);
+  void setCellPadding(int padding);
 
   /**
    * Sets the amount of spacing to be added around all cells.
    * 
    * @param spacing the cell spacing, in pixels
    */
-  public void setCellSpacing(int spacing); 
+  void setCellSpacing(int spacing);
 }

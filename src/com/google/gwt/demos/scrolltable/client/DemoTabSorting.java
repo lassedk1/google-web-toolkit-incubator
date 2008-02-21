@@ -158,6 +158,7 @@ public class DemoTabSorting extends DemoTab implements ClickListener {
     }
   }
 
+  @Override
   protected Widget onInitialize() {
     grid = new Grid(4, 3);
 

@@ -32,6 +32,7 @@ public abstract class ReadOnlyTableModel extends TableModel {
   /**
    * @see TableModel
    */
+  @Override
   public void onRowInserted(int beforeRow) {
     throwReadOnlyException();
   }
@@ -39,6 +40,7 @@ public abstract class ReadOnlyTableModel extends TableModel {
   /**
    * @see TableModel
    */
+  @Override
   public void onRowRemoved(int row) {
     throwReadOnlyException();
   }
@@ -46,6 +48,7 @@ public abstract class ReadOnlyTableModel extends TableModel {
   /**
    * @see TableModel
    */
+  @Override
   public void onSetData(int row, int cell, Object data) {
     throwReadOnlyException();
   }

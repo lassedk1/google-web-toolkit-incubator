@@ -20,7 +20,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -40,7 +39,7 @@ public class RadioCellEditor extends AbstractCellEditor {
   /**
    * The radio buttons in this editor.
    */
-  private List radios = new ArrayList();
+  private List<RadioButton> radios = new ArrayList<RadioButton>();
 
   /**
    * The vertical panel used to layout the contents.
@@ -82,7 +81,7 @@ public class RadioCellEditor extends AbstractCellEditor {
   /**
    * Gets the list of {@link RadioButton} widges associated with this editor.
    */
-  public List getRadioButtons() {
+  public List<RadioButton> getRadioButtons() {
     return radios;
   }
 
@@ -91,10 +90,9 @@ public class RadioCellEditor extends AbstractCellEditor {
    * 
    * @return the new value
    */
+  @Override
   public Object getValue() {
-    Iterator it = radios.iterator();
-    while (it.hasNext()) {
-      RadioButton radio = (RadioButton) it.next();
+    for (RadioButton radio : radios) {
       if (radio.isChecked()) {
         return radio.getText();
       }
@@ -109,10 +107,9 @@ public class RadioCellEditor extends AbstractCellEditor {
    * @param row the row index
    * @param cell the cell index
    */
+  @Override
   public void onEditCell(HTMLTable table, int row, int cell) {
-    Iterator it = radios.iterator();
-    while (it.hasNext()) {
-      RadioButton radio = (RadioButton) it.next();
+    for (RadioButton radio : radios) {
       if (radio.isChecked()) {
         radio.setFocus(true);
         return;
@@ -125,10 +122,9 @@ public class RadioCellEditor extends AbstractCellEditor {
    * 
    * @param value the current value
    */
+  @Override
   protected void setValue(Object value) {
-    Iterator it = radios.iterator();
-    while (it.hasNext()) {
-      RadioButton radio = (RadioButton) it.next();
+    for (RadioButton radio : radios) {
       if (radio.getText().equals(value)) {
         radio.setChecked(true);
       } else {

@@ -64,6 +64,7 @@ public class TextCellEditor extends AbstractCellEditor {
    * 
    * @return the new value
    */
+  @Override
   public Object getValue() {
     return textBox.getText();
   }
@@ -75,6 +76,7 @@ public class TextCellEditor extends AbstractCellEditor {
    * @param row the row index
    * @param cell the cell index
    */
+  @Override
   public void onEditCell(HTMLTable table, int row, int cell) {
     textBox.setFocus(true);
   }
@@ -84,6 +86,7 @@ public class TextCellEditor extends AbstractCellEditor {
    * 
    * @param value the current value
    */
+  @Override
   protected void setValue(Object value) {
     if (value == null) {
       value = "";

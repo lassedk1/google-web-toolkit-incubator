@@ -24,5 +24,5 @@ import com.google.gwt.widgetideas.table.client.TableModel.SerializableResponse;
  * {@link PagingScrollTableDemo}.
  */
 public interface DataSourceService extends RemoteService {
-  public SerializableResponse requestRows(Request request);
+  SerializableResponse requestRows(Request request);
 }

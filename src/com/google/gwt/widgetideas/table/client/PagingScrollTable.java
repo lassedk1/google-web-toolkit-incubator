@@ -216,6 +216,7 @@ public class PagingScrollTable extends ScrollTable {
 
     // Disallow non-numeric pages
     pagingCurPageBox.addKeyboardListener(new KeyboardListenerAdapter() {
+      @Override
       public void onKeyPress(Widget sender, char keyCode, int modifiers) {
         if (keyCode == (char) KEY_ENTER) {
           HasRowPaging dataTable = (HasRowPaging) getDataTable();
@@ -320,6 +321,7 @@ public class PagingScrollTable extends ScrollTable {
   /**
    * @see ScrollTable
    */
+  @Override
   protected void resizeTablesVerticallyNow() {
     super.resizeTablesVerticallyNow();
 

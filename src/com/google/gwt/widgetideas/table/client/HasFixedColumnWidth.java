@@ -24,22 +24,22 @@ public interface HasFixedColumnWidth extends HasTableCells {
    * 
    * @return the number of columns
    */
-  public int getColumnCount();
-  
+  int getColumnCount();
+
   /**
    * Get the width of a column in pixels.
    * 
    * @param column the column index
    * @return the column width
    */
-  public int getColumnWidth(int column);
+  int getColumnWidth(int column);
 
   /**
    * Get the default width of a column in pixels.
    * 
    * @return the default column width
    */
-  public int getDefaultColumnWidth();
+  int getDefaultColumnWidth();
 
   /**
    * Set the width of a column in pixels.
@@ -47,5 +47,5 @@ public interface HasFixedColumnWidth extends HasTableCells {
    * @param column the column index
    * @param width the column width
    */
-  public void setColumnWidth(int column, int width);
+  void setColumnWidth(int column, int width);
 }

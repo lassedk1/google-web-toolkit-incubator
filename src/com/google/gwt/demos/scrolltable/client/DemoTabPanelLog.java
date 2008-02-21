@@ -139,6 +139,7 @@ public class DemoTabPanelLog extends DemoTab implements TableSelectionListener,
   public void onRowUnhover(int row) {
   }
 
+  @Override
   protected Widget onInitialize() {
     SortableFixedWidthGrid dataTable = ScrollTableDemo.getDataTable();
     label.setHeight("200px");

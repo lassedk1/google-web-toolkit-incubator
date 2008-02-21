@@ -33,27 +33,24 @@ public class DemoTabHighlighting extends DemoTab implements ClickListener {
   /**
    * The description hovering.
    */
-  private static final String DESC_HOVERING =
-      "When hovering is enabled, a "
-          + "special CSS style property will be applied "
-          + "to the current row that the mouse cursor is hovering over.";
+  private static final String DESC_HOVERING = "When hovering is enabled, a "
+      + "special CSS style property will be applied "
+      + "to the current row that the mouse cursor is hovering over.";
 
   /**
    * The description of row selection.
    */
-  private static final String DESC_MIN_ROW =
-      "If your Grid uses the first one "
-          + "or more rows as headers, you can set "
-          + "the minimum selection row so users cannot select or hover the header.";
+  private static final String DESC_MIN_ROW = "If your Grid uses the first one "
+      + "or more rows as headers, you can set "
+      + "the minimum selection row so users cannot select or hover the header.";
 
   /**
    * The description of row selection.
    */
-  private static final String DESC_SELECTION =
-      "Row selection allows the user "
-          + "to select one or more rows from the table "
-          + "using mouse clicks.  Use the ctrl button to add to the selected rows, "
-          + "and use the shift button to select multiple rows in a range.";
+  private static final String DESC_SELECTION = "Row selection allows the user "
+      + "to select one or more rows from the table "
+      + "using mouse clicks.  Use the ctrl button to add to the selected rows, "
+      + "and use the shift button to select multiple rows in a range.";
 
   /**
    * The drop box of selection options.
@@ -83,8 +80,8 @@ public class DemoTabHighlighting extends DemoTab implements ClickListener {
   /**
    * The button used to set the selection policy.
    */
-  private Button selectionPolicyButton =
-      new Button("Set Selection Policy", this);
+  private Button selectionPolicyButton = new Button("Set Selection Policy",
+      this);
 
   /**
    * Handle click events from the buttons in this panel.
@@ -96,34 +93,25 @@ public class DemoTabHighlighting extends DemoTab implements ClickListener {
     try {
       if (sender == hoveringPolicyButton) {
         // Toggle hovering
-        String selection =
-            hoveringPolicyBox.getValue(hoveringPolicyBox.getSelectedIndex());
+        String selection = hoveringPolicyBox.getValue(hoveringPolicyBox.getSelectedIndex());
         if (selection.equals("Row")) {
-          dataTable
-              .setHoveringPolicy(SortableFixedWidthGrid.HOVERING_POLICY_ROW);
+          dataTable.setHoveringPolicy(SortableFixedWidthGrid.HOVERING_POLICY_ROW);
         } else if (selection.equals("Cell")) {
-          dataTable
-              .setHoveringPolicy(SortableFixedWidthGrid.HOVERING_POLICY_CELL);
+          dataTable.setHoveringPolicy(SortableFixedWidthGrid.HOVERING_POLICY_CELL);
         } else if (selection.equals("Editable Cell")) {
-          dataTable
-              .setHoveringPolicy(EditablePagingGrid.HOVERING_POLICY_EDITABLE_CELL);
+          dataTable.setHoveringPolicy(EditablePagingGrid.HOVERING_POLICY_EDITABLE_CELL);
         } else {
-          dataTable
-              .setHoveringPolicy(SortableFixedWidthGrid.HOVERING_POLICY_DISABLED);
+          dataTable.setHoveringPolicy(SortableFixedWidthGrid.HOVERING_POLICY_DISABLED);
         }
       } else if (sender == selectionPolicyButton) {
         // Set Selection Policy
-        String selection =
-            selectionPolicyBox.getValue(selectionPolicyBox.getSelectedIndex());
+        String selection = selectionPolicyBox.getValue(selectionPolicyBox.getSelectedIndex());
         if (selection.equals("Multi Row")) {
-          dataTable
-              .setSelectionPolicy(SortableFixedWidthGrid.SELECTION_POLICY_MULTI_ROW);
+          dataTable.setSelectionPolicy(SortableFixedWidthGrid.SELECTION_POLICY_MULTI_ROW);
         } else if (selection.equals("Single Row")) {
-          dataTable
-              .setSelectionPolicy(SortableFixedWidthGrid.SELECTION_POLICY_ONE_ROW);
+          dataTable.setSelectionPolicy(SortableFixedWidthGrid.SELECTION_POLICY_ONE_ROW);
         } else {
-          dataTable
-              .setSelectionPolicy(SortableFixedWidthGrid.SELECTION_POLICY_DISABLED);
+          dataTable.setSelectionPolicy(SortableFixedWidthGrid.SELECTION_POLICY_DISABLED);
         }
       } else if (sender == setMinRowButton) {
         // Set min row
@@ -137,6 +125,7 @@ public class DemoTabHighlighting extends DemoTab implements ClickListener {
     }
   }
 
+  @Override
   protected Widget onInitialize() {
     Grid grid = new Grid(3, 3);
     grid.setBorderWidth(2);

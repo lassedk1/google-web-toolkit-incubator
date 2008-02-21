@@ -24,12 +24,12 @@ public interface SourceRowPagingEvents {
    * 
    * @param listener the listener
    */
-  public void addRowPagingListener(RowPagingListener listener);
+  void addRowPagingListener(RowPagingListener listener);
 
   /**
    * Remove a {@link RowPagingListener}.
    * 
    * @param listener the listener to remove
    */
-  public void removeRowPagingListener(RowPagingListener listener);
+  void removeRowPagingListener(RowPagingListener listener);
 }

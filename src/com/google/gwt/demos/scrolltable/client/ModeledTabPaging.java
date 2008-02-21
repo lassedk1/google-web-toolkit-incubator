@@ -144,6 +144,7 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
     }
   }
 
+  @Override
   protected Widget onInitialize() {
     grid = new Grid(5, 3);
 

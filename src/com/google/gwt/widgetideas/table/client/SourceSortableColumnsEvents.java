@@ -24,12 +24,12 @@ public interface SourceSortableColumnsEvents {
    * 
    * @param listener the listener
    */
-  public void addSortableColumnsListener(SortableColumnsListener listener);
+  void addSortableColumnsListener(SortableColumnsListener listener);
 
   /**
    * Remove a {@link SortableColumnsListener}bleColumnsListener listener.
    * 
    * @param listener the listener to remove
    */
-  public void removeSortableColumnsListener(SortableColumnsListener listener);
+  void removeSortableColumnsListener(SortableColumnsListener listener);
 }

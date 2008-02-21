@@ -22,6 +22,7 @@ import com.google.gwt.widgetideas.table.client.AbstractCellEditor.Callback;
 import com.google.gwt.widgetideas.table.client.overrides.OverrideDOM;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A {@link PagingGrid} that supports editing cell contents using a cell editor.
@@ -40,7 +41,7 @@ public class EditablePagingGrid extends PagingGrid {
   /**
    * The cell editors for each column.
    */
-  private HashMap/* Integer, AbstractCellEditor */cellEditors = new HashMap();
+  private Map<Integer, AbstractCellEditor> cellEditors = new HashMap<Integer, AbstractCellEditor>();
 
   /**
    * The callback used to save data after editing a cell value.
@@ -87,7 +88,7 @@ public class EditablePagingGrid extends PagingGrid {
    * @return the cell editor
    */
   public AbstractCellEditor getCellEditor(int column) {
-    return (AbstractCellEditor) cellEditors.get(new Integer(column));
+    return cellEditors.get(new Integer(column));
   }
 
   /**
@@ -105,6 +106,7 @@ public class EditablePagingGrid extends PagingGrid {
    * 
    * @param event the generated event
    */
+  @Override
   public void onBrowserEvent(Event event) {
     if ((getHoveringPolicy() == HOVERING_POLICY_EDITABLE_CELL)
         && (DOM.eventGetType(event) == Event.ONMOUSEOVER)) {
@@ -136,6 +138,7 @@ public class EditablePagingGrid extends PagingGrid {
    * @param row the row index
    * @param cell the cell index
    */
+  @Override
   public void onCellClicked(int row, int cell) {
     // Show the new cell editor
     AbstractCellEditor cellEditor = getCellEditor(cell);
@@ -163,6 +166,7 @@ public class EditablePagingGrid extends PagingGrid {
    * 
    * @param hoveringPolicy the hovering policy to use
    */
+  @Override
   public void setHoveringPolicy(int hoveringPolicy) {
     if (hoveringPolicy == HOVERING_POLICY_EDITABLE_CELL) {
       setHoveringPolicyRaw(hoveringPolicy);

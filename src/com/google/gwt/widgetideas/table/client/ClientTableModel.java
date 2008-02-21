@@ -54,6 +54,7 @@ public abstract class ClientTableModel extends TableModel {
      * 
      * @return the rows data
      */
+    @Override
     public Iterator/* <Iterator<Object>> */getIterator() {
       return rows;
     }
@@ -62,6 +63,7 @@ public abstract class ClientTableModel extends TableModel {
   private class ColumnIterator extends StubIterator {
     private int row = 0;
 
+    @Override
     public Object computeNext() {
       return getCell(row, index++);
     }
@@ -79,6 +81,7 @@ public abstract class ClientTableModel extends TableModel {
       }
     }
 
+    @Override
     protected Object computeNext() {
       // Reset column iterator rather than creating new one.
       columnIter.index = 0;
@@ -150,6 +153,7 @@ public abstract class ClientTableModel extends TableModel {
    * 
    * @param beforeRow the row index of the new row
    */
+  @Override
   public void onRowInserted(int beforeRow) {
     ReadOnlyTableModel.throwReadOnlyException();
   }
@@ -159,6 +163,7 @@ public abstract class ClientTableModel extends TableModel {
    * 
    * @param row the row index of the removed row
    */
+  @Override
   public void onRowRemoved(int row) {
     ReadOnlyTableModel.throwReadOnlyException();
   }
@@ -170,6 +175,7 @@ public abstract class ClientTableModel extends TableModel {
    * @param cell the cell index
    * @param data the new contents of the cell
    */
+  @Override
   public void onSetData(int row, int cell, Object data) {
     ReadOnlyTableModel.throwReadOnlyException();
   }
@@ -177,6 +183,7 @@ public abstract class ClientTableModel extends TableModel {
   /**
    * See {@link TableModel}.
    */
+  @Override
   public void requestRows(Request request, Callback callback) {
     RowIterator rowIter = new RowIterator(request);
     callback.onRowsReady(request, new ClientResponse(rowIter));

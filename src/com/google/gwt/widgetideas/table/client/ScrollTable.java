@@ -36,7 +36,6 @@ import com.google.gwt.widgetideas.table.client.overrides.OverrideDOM;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -115,7 +114,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
      * The current columns under the colSpan of the current cell, ordered from
      * narrowest to widest.
      */
-    private List/* ColumnNode */curCellColumns = new ArrayList();
+    private List<ColumnNode> curCellColumns = new ArrayList<ColumnNode>();
 
     /**
      * The index of the current header cell.
@@ -142,6 +141,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
      * will poll for the new row size and resize the columns.
      */
     private Timer resizeTimer = new Timer() {
+      @Override
       public void run() {
         resizeColumn();
         schedule(100);
@@ -307,9 +307,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
 
           // Insert the node into the ordered list by width
           int insertIndex = 0;
-          Iterator it = curCellColumns.iterator();
-          while (it.hasNext()) {
-            ColumnNode curNode = (ColumnNode) it.next();
+          for (ColumnNode curNode : curCellColumns) {
             if (originalWidth > curNode.getOriginalWidth()) {
               insertIndex++;
             } else {
@@ -388,9 +386,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
         int sacrificeColumn = curCellIndex + curCellColSpan;
         int totalDelta = mouseXCurrent - mouseXStart;
         int colSpanRemaining = curCellColSpan;
-        Iterator it = curCellColumns.iterator();
-        while (it.hasNext()) {
-          ColumnNode curNode = (ColumnNode) it.next();
+        for (ColumnNode curNode : curCellColumns) {
           int originalWidth = curNode.getOriginalWidth();
           int column = curNode.getCellIndex();
           int delta = totalDelta / colSpanRemaining;
@@ -429,6 +425,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
      * @param event the event that triggered the new cell
      * @return true if the cell was actually changed
      */
+    @Override
     public boolean setCurrentCell(Event event) {
       // Check if cursor update div is active
       if (DOM.compare(DOM.eventGetTarget(event), cursorUpdateDiv)) {
@@ -458,6 +455,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
      * 
      * @param event the mouse event
      */
+    @Override
     public void startResizing(Event event) {
       removeCursorUpdateDiv();
       super.startResizing(event);
@@ -637,8 +635,12 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
 
   /**
    * A map of columns that cannot be sorted.
+   * 
+   * key = the column index
+   * 
+   * value = true if the column is sortable, false of not
    */
-  private Map unsortableColumns = new HashMap();
+  private Map<Integer, Boolean> unsortableColumns = new HashMap<Integer, Boolean>();
 
   /**
    * Constructor.
@@ -685,6 +687,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
 
     // Create image to fill width
     fillWidthImage = new Image() {
+      @Override
       public void onBrowserEvent(Event event) {
         super.onBrowserEvent(event);
         if (DOM.eventGetType(event) == Event.ONCLICK) {
@@ -904,7 +907,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    * @return true if the column is sortable, false if it is not sortable
    */
   public boolean isColumnSortable(int column) {
-    Boolean sortable = (Boolean) unsortableColumns.get(new Integer(column));
+    Boolean sortable = unsortableColumns.get(new Integer(column));
     if (sortable == null) {
       return sortingEnabled;
     } else {
@@ -929,6 +932,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   /**
    * @see Widget
    */
+  @Override
   public void onBrowserEvent(Event event) {
     super.onBrowserEvent(event);
     Element target = DOM.eventGetTarget(event);
@@ -1036,6 +1040,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    * @return false
    * @throws UnsupportedOperationException
    */
+  @Override
   public boolean remove(Widget child) {
     throw new UnsupportedOperationException(
         "This panel does not support remove()");
@@ -1149,6 +1154,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   /**
    * @see com.google.gwt.user.client.ui.UIObject
    */
+  @Override
   public void setHeight(String height) {
     this.lastHeight = height;
     super.setHeight(height);
@@ -1253,6 +1259,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   /**
    * Resize the widget and redistribute space as needed.
    */
+  @Override
   protected void onAttach() {
     super.onAttach();
     resizeTablesVertically();

@@ -24,5 +24,5 @@ public interface HasSortableColumns extends SourceSortableColumnsEvents {
    * 
    * @param column the column index
    */
-  public void sortColumn(int column);
+  void sortColumn(int column);
 }

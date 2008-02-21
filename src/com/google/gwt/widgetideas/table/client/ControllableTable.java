@@ -28,7 +28,7 @@ public interface ControllableTable extends SourceTableDataRequestEvents {
    * @param beforeRow the row index
    * @param numRows the new number of rows
    */
-  public void insertAbsoluteRow(int beforeRow, int numRows);
+  void insertAbsoluteRow(int beforeRow, int numRows);
 
   /**
    * Remove a row from the table relative to the total number of rows.
@@ -36,7 +36,7 @@ public interface ControllableTable extends SourceTableDataRequestEvents {
    * @param row the row index
    * @param numRows the new number of rows
    */
-  public void removeAbsoluteRow(int row, int numRows);
+  void removeAbsoluteRow(int row, int numRows);
 
   /**
    * Set some arbitrary data in a specific cell.
@@ -45,7 +45,7 @@ public interface ControllableTable extends SourceTableDataRequestEvents {
    * @param column the column index
    * @param data the data to set
    */
-  public void setData(int row, int column, Object data);
+  void setData(int row, int column, Object data);
 
   /**
    * Set a block of data. This method is used when responding to data requests.
@@ -57,20 +57,19 @@ public interface ControllableTable extends SourceTableDataRequestEvents {
    * @param rows the 2D Iterator of data
    * @param rowValues the values associated with the rows
    */
-  public void setData(int firstRow, Iterator/* Iterator<Object> */rows,
-      List rowValues);
-  
+  void setData(int firstRow, Iterator/* Iterator<Object> */rows, List rowValues);
+
   /**
    * Set the total number of rows.
    * 
    * @param numRows the new number of rows
    */
-  public void setNumRows(int numRows);
+  void setNumRows(int numRows);
 
   /**
    * Set the failure condition associated with a page request.
    * 
    * @param caught the exception that led to the failure
    */
-  public void setPagingFailure(Throwable caught);
+  void setPagingFailure(Throwable caught);
 }

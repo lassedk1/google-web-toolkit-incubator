@@ -133,9 +133,9 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
      * @param row the row of the cell whose alignment is to be set
      * @param column the cell whose alignment is to be set
      * @param hAlign the cell's new horizontal alignment as specified in
-     *        {@link com.google.gwt.user.client.ui.HasHorizontalAlignment}
+     *          {@link com.google.gwt.user.client.ui.HasHorizontalAlignment}
      * @param vAlign the cell's new vertical alignment as specified in
-     *        {@link com.google.gwt.user.client.ui.HasVerticalAlignment}
+     *          {@link com.google.gwt.user.client.ui.HasVerticalAlignment}
      * @throws IndexOutOfBoundsException
      */
     public void setAlignment(int row, int column,
@@ -164,7 +164,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
      * @param row the row of the cell whose alignment is to be set
      * @param column the cell whose alignment is to be set
      * @param align the cell's new horizontal alignment as specified in
-     *        {@link com.google.gwt.user.client.ui.HasHorizontalAlignment}.
+     *          {@link com.google.gwt.user.client.ui.HasHorizontalAlignment}.
      * @throws IndexOutOfBoundsException
      */
     public void setHorizontalAlignment(int row, int column,
@@ -207,14 +207,14 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
      * @param row the row of the cell whose alignment is to be set
      * @param column the cell whose alignment is to be set
      * @param align the cell's new vertical alignment as specified in
-     *        {@link com.google.gwt.user.client.ui.HasVerticalAlignment}.
+     *          {@link com.google.gwt.user.client.ui.HasVerticalAlignment}.
      * @throws IndexOutOfBoundsException
      */
     public void setVerticalAlignment(int row, int column,
         VerticalAlignmentConstant align) {
       prepareCell(row, column);
-      DOM.setStyleAttribute(getRawElement(row, column), "verticalAlign", align
-          .getVerticalAlignString());
+      DOM.setStyleAttribute(getRawElement(row, column), "verticalAlign",
+          align.getVerticalAlignString());
     }
 
     /**
@@ -225,7 +225,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
      * @param row the row of the cell whose visibility is to be set
      * @param column the column of the cell whose visibility is to be set
      * @param visible <code>true</code> to show the cell, <code>false</code>
-     *        to hide it
+     *          to hide it
      */
     public void setVisible(int row, int column, boolean visible) {
       Element e = ensureElement(row, column);
@@ -323,9 +323,9 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
      * @return the element
      */
     private native Element getCellElement(Element table, int row, int col) /*-{
-                 var out = table.rows[row].cells[col];
-                 return (out == null ? null : out);
-                 }-*/;
+                    var out = table.rows[row].cells[col];
+                    return (out == null ? null : out);
+                    }-*/;
   }
 
   /**
@@ -555,12 +555,12 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
      * 
      * @param row the row whose alignment is to be set
      * @param align the row's new vertical alignment as specified in
-     *        {@link com.google.gwt.user.client.ui.HasVerticalAlignment}
+     *          {@link com.google.gwt.user.client.ui.HasVerticalAlignment}
      * @throws IndexOutOfBoundsException
      */
     public void setVerticalAlign(int row, VerticalAlignmentConstant align) {
-      DOM.setStyleAttribute(ensureElement(row), "verticalAlign", align
-          .getVerticalAlignString());
+      DOM.setStyleAttribute(ensureElement(row), "verticalAlign",
+          align.getVerticalAlignString());
     }
 
     /**
@@ -568,7 +568,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
      * 
      * @param row the row whose visibility is to be set
      * @param visible <code>true</code> to show the row, <code>false</code>
-     *        to hide it
+     *          to hide it
      */
     public void setVisible(int row, boolean visible) {
       Element e = ensureElement(row);
@@ -599,8 +599,8 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
     }
 
     protected native Element getRow(Element elem, int row) /*-{
-          return elem.rows[row];
-        }-*/;
+             return elem.rows[row];
+           }-*/;
 
     /**
      * Convenience methods to set an attribute on a row.
@@ -632,17 +632,17 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
     }
 
     private static native void clearWidgetIndex(Element elem) /*-{
-                 elem["__widgetID"] = null;
-                 }-*/;
+                    elem["__widgetID"] = null;
+                    }-*/;
 
     private static native int getWidgetIndex(Element elem) /*-{
-                 var index = elem["__widgetID"];
-                 return (index == null) ? -1 : index;
-                 }-*/;
+                    var index = elem["__widgetID"];
+                    return (index == null) ? -1 : index;
+                    }-*/;
 
     private static native void setWidgetIndex(Element elem, int index) /*-{
-                 elem["__widgetID"] = index;
-                 }-*/;
+                    elem["__widgetID"] = index;
+                    }-*/;
 
     private FreeNode freeList = null;
 
@@ -1074,7 +1074,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
   public void setBorderWidth(int width) {
     DOM.setElementProperty(tableElem, "border", "" + width);
   }
-  
+
   /**
    * Sets the amount of padding to be added around all cells.
    * 
@@ -1112,13 +1112,13 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
   public void setElement(int row, int column, Element element) {
     prepareCell(row, column);
     if (element != null) {
- 
+
       // Removes any existing widget.
       Element td = cleanCell(row, column, true);
- 
+
       // Physical attach.
       DOM.appendChild(td, element);
-     }
+    }
   }
 
   /**
@@ -1294,8 +1294,8 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
    * @return number of columns in the row
    */
   protected native int getDOMCellCount(Element tableBody, int row) /*-{
-       return tableBody.rows[row].cells.length;
-       }-*/;
+        return tableBody.rows[row].cells.length;
+        }-*/;
 
   /**
    * Directly ask the underlying DOM what the cell count on the given row is.
@@ -1317,8 +1317,8 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
   }
 
   protected native int getDOMRowCount(Element elem) /*-{
-       return elem.rows.length;
-       }-*/;
+        return elem.rows.length;
+        }-*/;
 
   /**
    * Returns the widgetMap.

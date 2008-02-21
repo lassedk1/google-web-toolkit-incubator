@@ -23,5 +23,5 @@ public interface RendererCallback {
   /**
    * Called when the Widget rendering completes.
    */
-  public void onRendered();
+  void onRendered();
 }

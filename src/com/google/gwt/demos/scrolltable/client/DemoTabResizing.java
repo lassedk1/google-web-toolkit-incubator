@@ -120,6 +120,7 @@ public class DemoTabResizing extends DemoTab implements ClickListener {
     }
   }
 
+  @Override
   protected Widget onInitialize() {
     // Define this as a 2x2 grid
     toggleButtonGrid.setBorderWidth(2);

@@ -69,7 +69,7 @@ public abstract class AbstractCellEditor extends PopupPanel {
      * @param cell the edited cell index
      * @param value the new value of the cell
      */
-    public void onAccept(int row, int cell, Object value);
+     void onAccept(int row, int cell, Object value);
 
     /**
      * Called when the edit is cancelled.
@@ -77,7 +77,7 @@ public abstract class AbstractCellEditor extends PopupPanel {
      * @param row the edited row index
      * @param cell the edited cell index
      */
-    public void onCancel(int row, int cell);
+     void onCancel(int row, int cell);
   }
 
   /**
@@ -247,6 +247,7 @@ public abstract class AbstractCellEditor extends PopupPanel {
     return true;
   }
 
+  @Override
   public void onBrowserEvent(Event event) {
     if (DOM.eventGetType(event) == Event.ONCLICK) {
       Element target = DOM.eventGetTarget(event);
@@ -420,6 +421,7 @@ public abstract class AbstractCellEditor extends PopupPanel {
   /**
    * Reset the event listener on the Images when this Widget is reattached.
    */
+  @Override
   protected void onAttach() {
     super.onAttach();
     if (acceptWidget != null) {

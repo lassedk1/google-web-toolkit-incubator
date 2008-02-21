@@ -28,5 +28,5 @@ public interface TableDataRequestListener {
    * @param rowCount the number of rows of data to request
    * @param sortList detailed information of column sorting
    */
-  public void onRequestData(int firstRow, int rowCount, ColumnSortList sortList);
+  void onRequestData(int firstRow, int rowCount, ColumnSortList sortList);
 }

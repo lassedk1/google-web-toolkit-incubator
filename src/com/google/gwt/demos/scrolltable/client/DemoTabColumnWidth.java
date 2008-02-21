@@ -141,6 +141,7 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
     }
   }
 
+  @Override
   protected Widget onInitialize() {
     grid = new Grid(4, 4);
     grid.setCellSpacing(0);

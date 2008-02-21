@@ -22,7 +22,7 @@ public interface TableSelectionListener {
   /**
    * Fired when all rows are deselected.
    */
-  public void onAllRowsDeselected();
+  void onAllRowsDeselected();
 
   /**
    * Fired when a cell is clicked.
@@ -30,7 +30,7 @@ public interface TableSelectionListener {
    * @param row the row index
    * @param cell the cell index
    */
-  public void onCellClicked(int row, int cell);
+  void onCellClicked(int row, int cell);
 
   /**
    * Fired when a cell is hovered.
@@ -38,15 +38,15 @@ public interface TableSelectionListener {
    * @param row the row index
    * @param cell the cell index
    */
-  public void onCellHover(int row, int cell);
-  
+  void onCellHover(int row, int cell);
+
   /**
    * Fired when a cell is unhovered.
    * 
    * @param row the row index
    * @param cell the cell index
    */
-  public void onCellUnhover(int row, int cell);
+  void onCellUnhover(int row, int cell);
 
   /**
    * Fired when a single row is deselected. This method will not fire when all
@@ -54,14 +54,14 @@ public interface TableSelectionListener {
    * 
    * @param row the row index
    */
-  public void onRowDeselected(int row);
+  void onRowDeselected(int row);
 
   /**
    * Fired when a row is hovered.
    * 
    * @param row the row index
    */
-  public void onRowHover(int row);
+  void onRowHover(int row);
 
   /**
    * Fired when one or more rows are selected.
@@ -69,12 +69,12 @@ public interface TableSelectionListener {
    * @param firstRow the row index of the first row
    * @param numRows the number of selected rows
    */
-  public void onRowsSelected(int firstRow, int numRows);
+  void onRowsSelected(int firstRow, int numRows);
 
   /**
    * Fired when a row is unhovered.
    * 
    * @param row the row index
    */
-  public void onRowUnhover(int row);
+  void onRowUnhover(int row);
 }

@@ -18,14 +18,14 @@ package com.google.gwt.widgetideas.table.client;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * A helper class for implementers of the {@link SourceTableDataRequestEvents}
  * interface. This subclass of {@link ArrayList} assumes that all objects added
  * to it will be of type {@link TableDataRequestListener}.
  */
-public class TableDataRequestListenerCollection extends ArrayList {
+public class TableDataRequestListenerCollection extends
+    ArrayList<TableDataRequestListener> {
   /**
    * Fired when the source requests data.
    * 
@@ -35,8 +35,7 @@ public class TableDataRequestListenerCollection extends ArrayList {
    */
   public void fireRequestData(int firstRow, int rowCount,
       ColumnSortList sortList) {
-    for (Iterator it = iterator(); it.hasNext();) {
-      TableDataRequestListener listener = (TableDataRequestListener) it.next();
+    for (TableDataRequestListener listener : this) {
       listener.onRequestData(firstRow, rowCount, sortList);
     }
   }
