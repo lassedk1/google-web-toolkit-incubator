@@ -1,18 +1,31 @@
-/* Users usually should override styles in gwt-Tree*/
+/**************************************
+ Structural CSS 
+ */
 .gwt-FastTree {
   position: relative;
   -moz-user-select: none;
 }
 
+.gwt-FastTree .gwt-FastTreeItem {
+  width: 100%;
+}
+
+.gwt-FastTree .selection-bar {
+  font-size: 0;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  z-index: -1;
+  outline: none;
+  display: none;
+}
+
+/************************************
+Visual styling
+*/
 .gwt-FastTreeItem .open,.gwt-FastTreeItem .closed,.gwt-FastTreeItem .leaf
   {
-  padding: 3px;
   padding-left: 18px;
-  padding-right: 5px;
-  cursor: default;
-  padding-left: 18px;
-
-  position: relative;
 }
 
 .gwt-FastTreeItem .open,.gwt-FastTreeItem .closed {
@@ -35,23 +48,12 @@
   background: url('%treeClosed%') no-repeat center left;
 }
 
-.gwt-FastTree {
-  
+.gwt-FastTree .content {
+  padding: 3px;
+  display: inline;
+  height: 100%;
 }
 
-.gwt-FastTree .gwt-FastTreeItem {
-  
-}
-
-.gwt-FastTree .gwt-TreeItem-selected {
-  
-}
-
-.gwt-FastTree .selection-bar {
+.gwt-FastTree .selected {
   background: #e3e8f3 url('%selectionBar%') repeat-x;
-  border: 1px solid black;
-  font-size: 0;
-  position: absolute;
-  left: 0;
-  width: 100%;
 }
