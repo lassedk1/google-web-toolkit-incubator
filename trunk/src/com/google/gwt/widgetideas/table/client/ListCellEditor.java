@@ -68,6 +68,7 @@ public class ListCellEditor extends AbstractCellEditor {
    * 
    * @return the new value
    */
+  @Override
   public Object getValue() {
     return listBox.getValue(listBox.getSelectedIndex());
   }
@@ -79,6 +80,7 @@ public class ListCellEditor extends AbstractCellEditor {
    * @param row the row index
    * @param cell the cell index
    */
+  @Override
   public void onEditCell(HTMLTable table, int row, int cell) {
     listBox.setFocus(true);
   }
@@ -88,6 +90,7 @@ public class ListCellEditor extends AbstractCellEditor {
    * 
    * @param value the current value
    */
+  @Override
   protected void setValue(Object value) {
     int numItems = listBox.getItemCount();
     for (int i = 0; i < numItems; i++) {

@@ -55,8 +55,7 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
      * @param rows an iterator of iterators of objects
      * @param callback the callback to use when rendering completes
      */
-    void renderTable(PagingGrid grid, Iterator rows,
-        RendererCallback callback);
+    void renderTable(PagingGrid grid, Iterator rows, RendererCallback callback);
   }
 
   /**
@@ -567,6 +566,7 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
    * @param ascending reverse sort the column
    * @throws IndexOutOfBoundsException
    */
+  @Override
   public void sortColumn(int column, boolean ascending) {
     // Verify the column bounds
     if (column < 0) {
@@ -621,6 +621,7 @@ public class PagingGrid extends SortableFixedWidthGrid implements HasRowPaging,
    * This method is called immediately after a widget becomes attached to the
    * browser's document.
    */
+  @Override
   protected void onLoad() {
     super.onLoad();
 

@@ -24,12 +24,12 @@ public interface SourceTableSelectionEvents {
    * 
    * @param listener the listener
    */
-  public void addTableSelectionListener(TableSelectionListener listener);
+  void addTableSelectionListener(TableSelectionListener listener);
 
   /**
    * Remove a {@link TableSelectionListener}.
    * 
    * @param listener the listener
    */
-  public void removeTableSelectionListener(TableSelectionListener listener);
+  void removeTableSelectionListener(TableSelectionListener listener);
 }

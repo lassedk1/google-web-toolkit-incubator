@@ -28,5 +28,5 @@ public interface SortableColumnsListener extends EventListener {
    * 
    * @param sortList the list of sorted columns
    */
-  public abstract void onColumnSorted(ColumnSortList sortList);
+  void onColumnSorted(ColumnSortList sortList);
 }

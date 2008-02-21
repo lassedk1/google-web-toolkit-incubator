@@ -22,7 +22,6 @@ import com.google.gwt.widgetideas.table.client.overrides.FlexTable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +50,7 @@ public class FixedWidthFlexTable extends FlexTable implements
       DOM.setStyleAttribute(ghostRow, "overflow", "hidden");
       return ghostRow;
     }
-    
+
     /**
      * Set the width of a column.
      * 
@@ -71,12 +70,14 @@ public class FixedWidthFlexTable extends FlexTable implements
    */
   private static class FixedWidthFlexTableImplIE6 extends
       FixedWidthFlexTableImpl {
+    @Override
     public Element createGhostRow() {
       Element ghostRow = super.createGhostRow();
       DOM.setStyleAttribute(ghostRow, "display", "none");
       return ghostRow;
     }
-    
+
+    @Override
     public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
       width += 2 * grid.getCellPadding() + grid.getCellSpacing();
       super.setColumnWidth(grid, column, width);
@@ -89,6 +90,7 @@ public class FixedWidthFlexTable extends FlexTable implements
    */
   private static class FixedWidthFlexTableImplSafari extends
       FixedWidthFlexTableImpl {
+    @Override
     public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
       width += 2 * grid.getCellPadding() + grid.getCellSpacing();
       super.setColumnWidth(grid, column, width);
@@ -102,6 +104,7 @@ public class FixedWidthFlexTable extends FlexTable implements
    */
   private static class FixedWidthFlexTableImplOpera extends
       FixedWidthFlexTableImpl {
+    @Override
     public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
       super.setColumnWidth(grid, column, width);
       Element tableElem = grid.getElement();
@@ -132,6 +135,7 @@ public class FixedWidthFlexTable extends FlexTable implements
      * @param colSpan the cell's column span
      * @throws IndexOutOfBoundsException
      */
+    @Override
     public void setColSpan(int row, int column, int colSpan) {
       colSpan = Math.max(1, colSpan);
       int colSpanDelta = colSpan - getColSpan(row, column);
@@ -153,6 +157,7 @@ public class FixedWidthFlexTable extends FlexTable implements
      * @param rowSpan the cell's row span
      * @throws IndexOutOfBoundsException
      */
+    @Override
     public void setRowSpan(int row, int column, int rowSpan) {
       rowSpan = Math.max(1, rowSpan);
       int curRowSpan = getRowSpan(row, column);
@@ -180,6 +185,7 @@ public class FixedWidthFlexTable extends FlexTable implements
      * @param width the cell's new width, in CSS units
      * @throws UnsupportedOperationException
      */
+    @Override
     public void setWidth(int row, int column, String width) {
       throw new UnsupportedOperationException("setWidth is not supported.  "
           + "Use ExtendedGrid.setColumnWidth(int, int) instead.");
@@ -193,6 +199,7 @@ public class FixedWidthFlexTable extends FlexTable implements
      * @param column the column of the cell to be retrieved
      * @return the column's TD element
      */
+    @Override
     protected Element getRawElement(int row, int column) {
       return super.getRawElement(row + 1, column);
     }
@@ -211,6 +218,7 @@ public class FixedWidthFlexTable extends FlexTable implements
      * @param width the cell's new width, in percentage or pixel units
      * @throws UnsupportedOperationException
      */
+    @Override
     public void setWidth(int column, String width) {
       throw new UnsupportedOperationException("setWidth is not supported.  "
           + "Use ExtendedGrid.setColumnWidth(int, int) instead.");
@@ -227,6 +235,7 @@ public class FixedWidthFlexTable extends FlexTable implements
      * @param row the row to get
      * @return the row element
      */
+    @Override
     protected Element getRawElement(int row) {
       return super.getRawElement(row + 1);
     }
@@ -245,32 +254,32 @@ public class FixedWidthFlexTable extends FlexTable implements
   /**
    * A mapping of column indexes to their widths in pixels.
    * 
-   * (Integer) key = column index
+   * key = column index
    * 
-   * (Integer) value = column width in pixels
+   * value = column width in pixels
    */
-  private Map colWidths = new HashMap();
+  private Map<Integer, Integer> colWidths = new HashMap<Integer, Integer>();
 
   /**
    * A mapping of rows to the number of raw columns (not cells) that they
    * contain.
    * 
-   * (Integer) key = the row index
+   * key = the row index
    * 
-   * (Integer) value = the number of raw columns in the row
+   * value = the number of raw columns in the row
    */
-  private List columnsPerRow = new ArrayList();
+  private List<Integer> columnsPerRow = new ArrayList<Integer>();
 
   /**
    * A mapping of raw columns counts to the number of rows with that column
    * count. For example, if three rows contain a raw column count of five, one
    * of the entries will be (5, 3);
    * 
-   * (Integer) key = number of raw columns
+   * key = number of raw columns
    * 
-   * (Integer) value = number of rows with that many raw columns
+   * value = number of rows with that many raw columns
    */
-  private Map columnCountMap = new HashMap();
+  private Map<Integer, Integer> columnCountMap = new HashMap<Integer, Integer>();
 
   /**
    * The maximum number of raw columns in any single row.
@@ -299,7 +308,7 @@ public class FixedWidthFlexTable extends FlexTable implements
     ghostRow = impl.createGhostRow();
     DOM.insertChild(getBodyElement(), ghostRow, 0);
   }
-  
+
   /**
    * @return the raw number of columns in this table.
    */
@@ -331,10 +340,11 @@ public class FixedWidthFlexTable extends FlexTable implements
   public int getDefaultColumnWidth() {
     return DEFAULT_COLUMN_WIDTH;
   }
-  
+
   /**
    * @see FlexTable
    */
+  @Override
   public Element insertCell(int beforeRow, int beforeColumn) {
     Element td = super.insertCell(beforeRow, beforeColumn);
     DOM.setStyleAttribute(td, "overflow", "hidden");
@@ -345,6 +355,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   /**
    * @see FlexTable
    */
+  @Override
   public int insertRow(int beforeRow) {
     // Get the affected colSpan, which is the number of raw cells created by
     // row spanning cells in rows above the new row.
@@ -396,6 +407,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   /**
    * @see FlexTable
    */
+  @Override
   public void removeCell(int row, int column) {
     int colSpan = getFlexCellFormatter().getColSpan(row, column);
     int rowSpan = getFlexCellFormatter().getRowSpan(row, column);
@@ -410,6 +422,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   /**
    * @see FlexTable
    */
+  @Override
   public void removeRow(int row) {
     // Set the rowspan of everything in this row to 1
     FlexCellFormatter formatter = getFlexCellFormatter();
@@ -479,6 +492,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   /**
    * @see FlexTable
    */
+  @Override
   protected void addCells(int row, int num) {
     // Account for ghost row
     super.addCells(row + 1, num);
@@ -487,6 +501,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   /**
    * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
    */
+  @Override
   protected int getDOMCellCount(int row) {
     // Account for ghost row
     return super.getDOMCellCount(row + 1);
@@ -495,6 +510,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   /**
    * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
    */
+  @Override
   protected int getDOMRowCount() {
     // Account for ghost row
     return super.getDOMRowCount() - 1;
@@ -512,6 +528,7 @@ public class FixedWidthFlexTable extends FlexTable implements
   /**
    * @see com.google.gwt.widgetideas.table.client.overrides.FlexTable
    */
+  @Override
   protected void prepareCell(int row, int column) {
     int curNumCells = 0;
     if (getRowCount() > row) {
@@ -552,7 +569,7 @@ public class FixedWidthFlexTable extends FlexTable implements
     if (columnsPerRow.size() <= row) {
       return 0;
     } else {
-      return ((Integer) columnsPerRow.get(row)).intValue();
+      return columnsPerRow.get(row).intValue();
     }
   }
 
@@ -582,7 +599,7 @@ public class FixedWidthFlexTable extends FlexTable implements
     // Decrement the old number of columns
     boolean oldNumColumnsRemoved = false;
     if (columnCountMap.containsKey(oldNumColumnsI)) {
-      int numRows = ((Integer) columnCountMap.get(oldNumColumnsI)).intValue();
+      int numRows = columnCountMap.get(oldNumColumnsI).intValue();
       if (numRows == 1) {
         columnCountMap.remove(oldNumColumnsI);
         oldNumColumnsRemoved = true;
@@ -594,7 +611,7 @@ public class FixedWidthFlexTable extends FlexTable implements
     // Increment the new number of columns
     if (numColumns > 0) {
       if (columnCountMap.containsKey(numColumnsI)) {
-        int numRows = ((Integer) columnCountMap.get(numColumnsI)).intValue();
+        int numRows = columnCountMap.get(numColumnsI).intValue();
         columnCountMap.put(numColumnsI, new Integer(numRows + 1));
       } else {
         columnCountMap.put(numColumnsI, new Integer(1));
@@ -608,9 +625,7 @@ public class FixedWidthFlexTable extends FlexTable implements
         && (oldNumColumns == maxRawColumnCount) && oldNumColumnsRemoved) {
       // Column count decreased from max count
       maxRawColumnCount = 0;
-      Iterator it = columnCountMap.keySet().iterator();
-      while (it.hasNext()) {
-        Integer curNumColumns = (Integer) it.next();
+      for (Integer curNumColumns : columnCountMap.keySet()) {
         maxRawColumnCount = Math.max(maxRawColumnCount,
             curNumColumns.intValue());
       }

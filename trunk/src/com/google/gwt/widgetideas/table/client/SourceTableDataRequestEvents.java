@@ -24,12 +24,12 @@ public interface SourceTableDataRequestEvents {
    * 
    * @param listener the listener
    */
-  public void addTableDataRequestListener(TableDataRequestListener listener);
+  void addTableDataRequestListener(TableDataRequestListener listener);
 
   /**
    * Remove a {@link TableDataRequestListener}.
    * 
    * @param listener the listener to remove
    */
-  public void removeTableDataRequestListener(TableDataRequestListener listener);
+  void removeTableDataRequestListener(TableDataRequestListener listener);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -25,14 +25,14 @@ public interface ResizableWidget {
   /**
    * Get the widget's element.
    */
-  public abstract Element getElement();
+  Element getElement();
 
   /**
    * Check if this widget is attached to the page.
    * 
    * @return true if the widget is attached to the page
    */
-  public abstract boolean isAttached();
+  boolean isAttached();
 
   /**
    * This method is called when the dimensions of the parent element change.
@@ -41,5 +41,5 @@ public interface ResizableWidget {
    * @param width the new client width of the element
    * @param height the new client height of the element
    */
-  public abstract void onResize(int width, int height);
+  void onResize(int width, int height);
 }

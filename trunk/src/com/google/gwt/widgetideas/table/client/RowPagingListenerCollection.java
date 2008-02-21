@@ -16,22 +16,20 @@
 package com.google.gwt.widgetideas.table.client;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * A helper class for implementers of the {@link SourceRowPagingEvents}
  * interface. This subclass of {@link ArrayList} assumes that all objects added
  * to it will be of type {@link RowPagingListener}.
  */
-public class RowPagingListenerCollection extends ArrayList {
+public class RowPagingListenerCollection extends ArrayList<RowPagingListener> {
   /**
    * Fired when the number of pages changes.
    * 
    * @param numPages the new number of pages
    */
   public void fireNumPagesChanged(int numPages) {
-    for (Iterator it = iterator(); it.hasNext();) {
-      RowPagingListener listener = (RowPagingListener) it.next();
+    for (RowPagingListener listener : this) {
       listener.onNumPagesChanges(numPages);
     }
   }
@@ -42,8 +40,7 @@ public class RowPagingListenerCollection extends ArrayList {
    * @param page the new page
    */
   public void firePageChanged(int page) {
-    for (Iterator it = iterator(); it.hasNext();) {
-      RowPagingListener listener = (RowPagingListener) it.next();
+    for (RowPagingListener listener : this) {
       listener.onPageChanged(page);
     }
   }
@@ -54,20 +51,18 @@ public class RowPagingListenerCollection extends ArrayList {
    * @param page the new page
    */
   public void firePageLoaded(int page) {
-    for (Iterator it = iterator(); it.hasNext();) {
-      RowPagingListener listener = (RowPagingListener) it.next();
+    for (RowPagingListener listener : this) {
       listener.onPageLoaded(page);
     }
   }
-  
+
   /**
    * Fired when the current page has completely finished loading.
    * 
    * @param caught the exception that caused the failure
    */
   public void firePagingFailuire(Throwable caught) {
-    for (Iterator it = iterator(); it.hasNext();) {
-      RowPagingListener listener = (RowPagingListener) it.next();
+    for (RowPagingListener listener : this) {
       listener.onPagingFailure(caught);
     }
   }

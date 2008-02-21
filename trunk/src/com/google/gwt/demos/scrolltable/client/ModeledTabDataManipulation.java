@@ -32,6 +32,7 @@ public class ModeledTabDataManipulation extends DemoTabDataManipulation
    * 
    * @param sender
    */
+  @Override
   public void onClick(Widget sender) {
     PagingGrid gridView = (PagingGrid) ScrollTableDemo.getDataTable();
     CachedTableController tableController =
@@ -74,6 +75,7 @@ public class ModeledTabDataManipulation extends DemoTabDataManipulation
     }
   }
 
+  @Override
   protected Widget onInitialize() {
     Widget w = super.onInitialize();
     setTextButton.setVisible(false);

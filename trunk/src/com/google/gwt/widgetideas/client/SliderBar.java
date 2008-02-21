@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -30,7 +30,6 @@ import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.SourcesChangeEvents;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -102,6 +101,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
      * This method will be called when a timer fires. Override it to implement
      * the timer's logic.
      */
+    @Override
     public void run() {
       // Highlight the knob on first run
       if (firstRun) {
@@ -149,7 +149,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
      * @param value the value the label displays
      * @return the text to display for the label
      */
-    public abstract String formatLabel(SliderBar slider, double value);
+    String formatLabel(SliderBar slider, double value);
   }
 
   /**
@@ -175,7 +175,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
    * The change listeners.
    */
   private ChangeListenerCollection changeListeners;
-  
+
   /**
    * The current value.
    */
@@ -194,7 +194,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
   /**
    * The elements used to display labels above the ticks.
    */
-  private List/* <Element> */labelElements = new ArrayList/* <Element> */();
+  private List<Element> labelElements = new ArrayList<Element>();
 
   /**
    * The formatter used to generate label text.
@@ -257,7 +257,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
    * The elements used to display tick marks, which are the vertical lines along
    * the slider bar.
    */
-  private List/* <Element> */tickElements = new ArrayList/* <Element> */();
+  private List<Element> tickElements = new ArrayList<Element>();
 
   /**
    * Create a slider bar.
@@ -412,6 +412,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
    * 
    * @param event the event that occurred
    */
+  @Override
   public void onBrowserEvent(Event event) {
     super.onBrowserEvent(event);
     switch (DOM.eventGetType(event)) {
@@ -547,7 +548,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
       onResize(width, height);
     }
   }
-  
+
   /**
    * Remove a change listener from this SliderBar.
    * 
@@ -734,6 +735,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
    * This method is called immediately after a widget becomes attached to the
    * browser's document.
    */
+  @Override
   protected void onLoad() {
     // Reset the position attribute of the parent element
     DOM.setStyleAttribute(getElement(), "position", "relative");
@@ -775,7 +777,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
       for (int i = 0; i <= numLabels; i++) {
         Element label = null;
         if (i < labelElements.size()) {
-          label = (Element) labelElements.get(i);
+          label = labelElements.get(i);
         } else { // Create the new label
           label = DOM.createDiv();
           DOM.setStyleAttribute(label, "position", "absolute");
@@ -807,12 +809,11 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
 
       // Hide unused labels
       for (int i = (numLabels + 1); i < labelElements.size(); i++) {
-        DOM.setStyleAttribute((Element) labelElements.get(i), "display", "none");
+        DOM.setStyleAttribute(labelElements.get(i), "display", "none");
       }
     } else { // Hide all labels
-      Iterator it = labelElements.iterator();
-      while (it.hasNext()) {
-        DOM.setStyleAttribute((Element) it.next(), "display", "none");
+      for (Element elem : labelElements) {
+        DOM.setStyleAttribute(elem, "display", "none");
       }
     }
   }
@@ -833,7 +834,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
       for (int i = 0; i <= numTicks; i++) {
         Element tick = null;
         if (i < tickElements.size()) {
-          tick = (Element) tickElements.get(i);
+          tick = tickElements.get(i);
         } else { // Create the new tick
           tick = DOM.createDiv();
           DOM.setStyleAttribute(tick, "position", "absolute");
@@ -857,12 +858,11 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
 
       // Hide unused ticks
       for (int i = (numTicks + 1); i < tickElements.size(); i++) {
-        DOM.setStyleAttribute((Element) tickElements.get(i), "display", "none");
+        DOM.setStyleAttribute(tickElements.get(i), "display", "none");
       }
     } else { // Hide all ticks
-      Iterator it = tickElements.iterator();
-      while (it.hasNext()) {
-        DOM.setStyleAttribute((Element) it.next(), "display", "none");
+      for (Element elem : tickElements) {
+        DOM.setStyleAttribute(elem, "display", "none");
       }
     }
   }

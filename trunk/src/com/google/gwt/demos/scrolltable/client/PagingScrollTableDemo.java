@@ -46,6 +46,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
    */
   private static class CustomBulkRenderer extends
       TableBulkRenderer.CellRenderer {
+    @Override
     public void renderCell(int row, int column, Object cellData, StringBuffer accum) {
       if (cellData == null) {
         return;
@@ -142,6 +143,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   /**
    * This is the entry point method.
    */
+  @Override
   public void onModuleLoad() {
     // Create the inner tables
     getHeaderTable();
@@ -274,6 +276,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     TextBox intOnlyTextBox = new TextBox();
     intOnlyTextBox.setWidth("4em");
     intOnlyTextBox.addKeyboardListener(new KeyboardListenerAdapter() {
+      @Override
       public void onKeyPress(Widget sender, char keyCode, int modifiers) {
         if ((!Character.isDigit(keyCode)) && (keyCode != (char) KEY_TAB)
             && (keyCode != (char) KEY_BACKSPACE)
@@ -304,6 +307,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // Color cell editor
     RadioCellEditor colorEditor = new RadioCellEditor() {
+      @Override
       protected Object getCellValue(HTMLTable table, int row, int cell) {
         return table.getText(row, cell);
       }
@@ -325,11 +329,13 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // College cell editor
     TextCellEditor collegeEditor = new TextCellEditor() {
+      @Override
       public Object getValue() {
         Object value = super.getValue();
         return "University of " + value;
       }
 
+      @Override
       public boolean onAccept(Object value) {
         if (super.getValue().equals("")) {
           Window.alert("You must enter a school");
@@ -338,6 +344,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         return true;
       }
 
+      @Override
       protected Object getCellValue(HTMLTable table, int row, int cell) {
         return table.getText(row, cell).substring(14);
       }

@@ -22,7 +22,6 @@ import com.google.gwt.widgetideas.table.client.overrides.Grid;
 import com.google.gwt.widgetideas.table.client.overrides.OverrideDOM;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,6 +71,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    * This class contains methods used to format a table's rows.
    */
   public class SelectedGridRowFormatter extends RowFormatter {
+    @Override
     protected Element getRawElement(int row) {
       return super.getRawElement(row);
     }
@@ -116,7 +116,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   /**
    * The rows that are currently selected.
    */
-  private Map/* <Integer, Element> */selectedRows = new HashMap();
+  private Map<Integer, Element> selectedRows = new HashMap<Integer, Element>();
 
   /**
    * The selection policy determines if the user can select zero, one, or many
@@ -166,7 +166,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    * @param row the row index
    */
   public void deselectRow(int row) {
-    Element rowElem = (Element) selectedRows.remove(new Integer(row));
+    Element rowElem = selectedRows.remove(new Integer(row));
     if (rowElem != null) {
       deselectRow(row, rowElem);
 
@@ -182,11 +182,9 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    */
   public void deselectRows() {
     // Deselect all rows
-    Iterator it = selectedRows.entrySet().iterator();
-    while (it.hasNext()) {
-      Map.Entry entry = (Map.Entry) it.next();
-      int row = ((Integer) entry.getKey()).intValue();
-      deselectRow(row, (Element) entry.getValue());
+    for (Map.Entry<Integer, Element> entry : selectedRows.entrySet()) {
+      int row = entry.getKey().intValue();
+      deselectRow(row, entry.getValue());
     }
 
     // Fire grid listeners
@@ -215,7 +213,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   /**
    * @return the set of selected row indexes
    */
-  public Set/* <Integer> */getSelectedRows() {
+  public Set<Integer> getSelectedRows() {
     return selectedRows.keySet();
   }
 
@@ -237,6 +235,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   /**
    * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
    */
+  @Override
   public void onBrowserEvent(Event event) {
     super.onBrowserEvent(event);
 
@@ -290,8 +289,8 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
         switch (selectionPolicy) {
           case SELECTION_POLICY_MULTI_ROW:
             boolean shiftKey = DOM.eventGetShiftKey(event);
-            boolean ctrlKey =
-                DOM.eventGetCtrlKey(event) || DOM.eventGetMetaKey(event);
+            boolean ctrlKey = DOM.eventGetCtrlKey(event)
+                || DOM.eventGetMetaKey(event);
 
             // Prevent default text selection
             if (ctrlKey || shiftKey) {
@@ -362,8 +361,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
 
     if (shiftKey && (lastSelectedRowIndex > -1)) {
       // Shift+select rows
-      SelectedGridRowFormatter formatter =
-          (SelectedGridRowFormatter) getRowFormatter();
+      SelectedGridRowFormatter formatter = (SelectedGridRowFormatter) getRowFormatter();
       int firstRow = Math.min(row, lastSelectedRowIndex);
       int lastRow = Math.max(row, lastSelectedRowIndex);
       lastRow = Math.min(lastRow, getRowCount() - 1);
@@ -382,8 +380,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
       lastSelectedRowIndex = row;
     } else {
       // Select the row
-      SelectedGridRowFormatter formatter =
-          (SelectedGridRowFormatter) getRowFormatter();
+      SelectedGridRowFormatter formatter = (SelectedGridRowFormatter) getRowFormatter();
       selectRow(row, formatter.getRawElement(row), false, true);
       lastSelectedRowIndex = row;
     }
@@ -452,7 +449,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   /**
    * @return a map or selected row indexes to their elements
    */
-  protected Map getSelectedRowsMap() {
+  protected Map<Integer, Element> getSelectedRowsMap() {
     return selectedRows;
   }
 
@@ -511,6 +508,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   /**
    * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
    */
+  @Override
   protected int insertRow(int beforeRow) {
     deselectRows();
     return super.insertRow(beforeRow);
@@ -519,6 +517,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   /**
    * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
    */
+  @Override
   protected void removeRow(int row) {
     checkRowBounds(row);
     deselectRows();

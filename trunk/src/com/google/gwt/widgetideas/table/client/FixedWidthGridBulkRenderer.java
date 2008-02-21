@@ -38,6 +38,7 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
       super(userCallback);
     }
 
+    @Override
     public void localOnRendered() {
       // We're saving an extra object creation by calling super rather than
       // chaining them.
@@ -64,6 +65,7 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
     table.resizeColumns(numColumns);
   }
 
+  @Override
   protected void addChainingCallback(final RenderingOptions options) {
     // Set the callback.
     options.callback = new ChainingCallback(options.callback);
@@ -79,6 +81,7 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
     return table.@com.google.gwt.widgetideas.table.client.overrides.HTMLTable::getBodyElement()(table).rows[0];
     }-*/;
 
+  @Override
   protected void renderRows(Iterator iterator, final RenderingOptions options) {
     options.startCell = "<td><span>";
     options.endCell = "</span></td>";

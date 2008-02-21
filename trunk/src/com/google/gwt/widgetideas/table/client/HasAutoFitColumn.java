@@ -27,7 +27,7 @@ public interface HasAutoFitColumn extends HasFixedColumnWidth {
    * @return the new column width
    * @throws IndexOutOfBoundsException
    */
-  public int autoFitColumnWidth(int column);
+  int autoFitColumnWidth(int column);
 
   /**
    * Calculate the width required for a content to fit its contents.
@@ -35,5 +35,5 @@ public interface HasAutoFitColumn extends HasFixedColumnWidth {
    * @param column the column that will be fitted
    * @return the default column width
    */
-  public int getAutoFitColumnWidth(int column);
+  int getAutoFitColumnWidth(int column);
 }

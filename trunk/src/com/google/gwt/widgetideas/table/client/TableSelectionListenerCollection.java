@@ -16,20 +16,19 @@
 package com.google.gwt.widgetideas.table.client;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * A helper class for implementers of the {@link SourceTableSelectionEvents}
  * interface. This subclass of {@link ArrayList} assumes that all objects added
  * to it will be of type {@link TableSelectionListener}.
  */
-public class TableSelectionListenerCollection extends ArrayList {
+public class TableSelectionListenerCollection extends
+    ArrayList<TableSelectionListener> {
   /**
    * Fired when all rows are deselected.
    */
   public void fireAllRowsDeselected() {
-    for (Iterator it = iterator(); it.hasNext();) {
-      TableSelectionListener listener = (TableSelectionListener) it.next();
+    for (TableSelectionListener listener : this) {
       listener.onAllRowsDeselected();
     }
   }
@@ -41,8 +40,7 @@ public class TableSelectionListenerCollection extends ArrayList {
    * @param cell the cell index
    */
   public void fireCellClicked(int row, int cell) {
-    for (Iterator it = iterator(); it.hasNext();) {
-      TableSelectionListener listener = (TableSelectionListener) it.next();
+    for (TableSelectionListener listener : this) {
       listener.onCellClicked(row, cell);
     }
   }
@@ -54,8 +52,7 @@ public class TableSelectionListenerCollection extends ArrayList {
    * @param cell the cell index
    */
   public void fireCellHover(int row, int cell) {
-    for (Iterator it = iterator(); it.hasNext();) {
-      TableSelectionListener listener = (TableSelectionListener) it.next();
+    for (TableSelectionListener listener : this) {
       listener.onCellHover(row, cell);
     }
   }
@@ -67,8 +64,7 @@ public class TableSelectionListenerCollection extends ArrayList {
    * @param cell the cell index
    */
   public void fireCellUnhover(int row, int cell) {
-    for (Iterator it = iterator(); it.hasNext();) {
-      TableSelectionListener listener = (TableSelectionListener) it.next();
+    for (TableSelectionListener listener : this) {
       listener.onCellUnhover(row, cell);
     }
   }
@@ -80,8 +76,7 @@ public class TableSelectionListenerCollection extends ArrayList {
    * @param row the row index
    */
   public void fireRowDeselected(int row) {
-    for (Iterator it = iterator(); it.hasNext();) {
-      TableSelectionListener listener = (TableSelectionListener) it.next();
+    for (TableSelectionListener listener : this) {
       listener.onRowDeselected(row);
     }
   }
@@ -92,8 +87,7 @@ public class TableSelectionListenerCollection extends ArrayList {
    * @param row the row index
    */
   public void fireRowHover(int row) {
-    for (Iterator it = iterator(); it.hasNext();) {
-      TableSelectionListener listener = (TableSelectionListener) it.next();
+    for (TableSelectionListener listener : this) {
       listener.onRowHover(row);
     }
   }
@@ -105,8 +99,7 @@ public class TableSelectionListenerCollection extends ArrayList {
    * @param numRows the number of selected rows
    */
   public void fireRowsSelected(int firstRow, int numRows) {
-    for (Iterator it = iterator(); it.hasNext();) {
-      TableSelectionListener listener = (TableSelectionListener) it.next();
+    for (TableSelectionListener listener : this) {
       listener.onRowsSelected(firstRow, numRows);
     }
   }
@@ -117,8 +110,7 @@ public class TableSelectionListenerCollection extends ArrayList {
    * @param row the row index
    */
   public void fireRowUnhover(int row) {
-    for (Iterator it = iterator(); it.hasNext();) {
-      TableSelectionListener listener = (TableSelectionListener) it.next();
+    for (TableSelectionListener listener : this) {
       listener.onRowUnhover(row);
     }
   }

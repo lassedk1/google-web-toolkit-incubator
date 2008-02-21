@@ -29,6 +29,7 @@ public class DataSourceTableModel extends ClientTableModel {
    * The source of the data.
    */
   private DataSourceData data = new DataSourceData() {
+    @Override
     public int getRandomInt(int max) {
       return Random.nextInt(max);
     }
@@ -53,6 +54,7 @@ public class DataSourceTableModel extends ClientTableModel {
   /**
    * @see ClientTableModel#getCell(int, int)
    */
+  @Override
   public Object getCell(int rowNum, int colNum) {
     return data.getCell(rowNum, colNum);
   }
@@ -78,24 +80,28 @@ public class DataSourceTableModel extends ClientTableModel {
   /**
    * Allow, but do nothing.
    */
+  @Override
   public void onRowInserted(int beforeRow) {
   }
 
   /**
    * Allow, but do nothing.
    */
+  @Override
   public void onRowRemoved(int row) {
   }
 
   /**
    * Allow, but do nothing.
    */
+  @Override
   public void onSetData(int row, int cell, Object data) {
   }
 
   /**
    * Override that can optionally throw an error.
    */
+  @Override
   public void requestRows(final Request request, final Callback callback) {
     if (errorMode) {
       // Return an error

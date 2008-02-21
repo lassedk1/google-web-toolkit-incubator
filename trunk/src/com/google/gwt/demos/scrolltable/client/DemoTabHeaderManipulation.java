@@ -153,6 +153,7 @@ public class DemoTabHeaderManipulation extends DemoTab implements ClickListener 
     }
   }
 
+  @Override
   protected Widget onInitialize() {
     Grid grid = new Grid(5, 3);
 

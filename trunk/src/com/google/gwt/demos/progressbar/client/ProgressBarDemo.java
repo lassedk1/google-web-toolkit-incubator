@@ -50,6 +50,7 @@ public class ProgressBarDemo implements EntryPoint {
    * The main progress bar at the top of the page.
    */
   private ProgressBar mainProgressBar = new ProgressBar(0.0, 2100.0, 0.0) {
+    @Override
     protected String generateText(double curProgress) {
       if (useCustomText) {
         if (getPercent() >= 1.0) {
@@ -82,6 +83,7 @@ public class ProgressBarDemo implements EntryPoint {
    * A timer used for simulations.
    */
   private Timer simulationTimer = new Timer() {
+    @Override
     public void run() {
       if (mainProgressBar.getPercent() >= 1.0) {
         cancel();

@@ -28,5 +28,5 @@ public interface HasCellSpans {
    * @return the cell's column index
    * @throws IndexOutOfBoundsException
    */
-  public int getColumnIndex(int row, int column);
+  int getColumnIndex(int row, int column);
 }
