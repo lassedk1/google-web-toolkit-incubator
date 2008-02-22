@@ -22,38 +22,10 @@ import com.google.gwt.widgetideas.client.GlassPanel;
  * Mozilla implementation of {@link GlassPanelImpl}.
  */
 public class GlassPanelImplMozilla extends GlassPanelImplStandard {
-  public void matchDocumentSize(GlassPanel glassPanel) {
-    super.matchDocumentSize(glassPanel);
+  public void matchDocumentSize(GlassPanel glassPanel, boolean dueToResize) {
+    super.matchDocumentSize(glassPanel, dueToResize);
     matchMargins(glassPanel.getElement());
   }
-
-  /**
-   * Borrowed from DOMImplMozilla in GWT 1.5.
-   */
-  protected native int windowGetClientHeight()
-  /*-{
-    // Standards mode: 
-    //    doc.body.clientHeight --> client height with scrollbars.
-    //    doc.documentElement.clientHeight --> client height without scrollbars.
-    // Quirks mode:
-    //    doc.body.clientHeight --> client height without scrollbars.
-    //    doc.documentElement.clientHeight --> document height.
-    // So, must switch value on compatMode.
-    return ($doc.compatMode == 'BackCompat')?
-      $doc.body.clientHeight:
-      $doc.documentElement.clientHeight;
-   }-*/;
-
-  /**
-   * Borrowed from DOMImplMozilla in GWT 1.5.
-   */
-  protected native int windowGetClientWidth()
-  /*-{
-    // See comment for windowGetClientHeight. 
-    return ($doc.compatMode == 'BackCompat')?
-      $doc.body.clientWidth:
-      $doc.documentElement.clientWidth;
-   }-*/;
 
   private native void matchMargins(Element elem)
   /*-{

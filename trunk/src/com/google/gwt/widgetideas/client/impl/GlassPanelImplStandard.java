@@ -15,6 +15,7 @@
  */
 package com.google.gwt.widgetideas.client.impl;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.widgetideas.client.GlassPanel;
 
 /**
@@ -22,9 +23,9 @@ import com.google.gwt.widgetideas.client.GlassPanel;
  * standards.
  */
 public abstract class GlassPanelImplStandard extends GlassPanelImpl {
-  public void matchDocumentSize(GlassPanel glassPanel) {
-    int clientWidth = windowGetClientWidth();
-    int clientHeight = windowGetClientHeight();
+  public void matchDocumentSize(GlassPanel glassPanel, boolean dueToResize) {
+    int clientWidth = Window.getClientWidth();
+    int clientHeight = Window.getClientHeight();
 
     int scrollWidth = getWindowScrollWidth();
     int scrollHeight = getWindowScrollHeight();

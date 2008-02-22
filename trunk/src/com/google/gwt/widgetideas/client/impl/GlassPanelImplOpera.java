@@ -19,19 +19,4 @@ package com.google.gwt.widgetideas.client.impl;
  * Opera implementation of {@link GlassPanelImpl}.
  */
 public class GlassPanelImplOpera extends GlassPanelImplStandard {
-  /**
-   * Borrowed from DOMImplOpera in GWT 1.5.
-   */
-  protected native int windowGetClientHeight()
-  /*-{
-     return $doc.body.clientHeight;
-   }-*/;
-
-  /**
-   * Borrowed from DOMImplOpera in GWT 1.5.
-   */
-  protected native int windowGetClientWidth()
-  /*-{
-    return $doc.body.clientWidth;
-  }-*/;
 }
