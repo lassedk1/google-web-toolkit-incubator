@@ -14,12 +14,12 @@
   font-size: 0;
   position: absolute;
   left: 0;
-  width: 100%;
+  width: 1px;
   z-index: -1;
   outline: none;
-  display: none;
+  -moz-outline: none; 
+ 
 }
-
 /************************************
 Visual styling
 */
