@@ -39,7 +39,7 @@ public class DOMHelper {
   /**
    * Clones a DOM element.
    */
-  public static native Element clone(Element elem, boolean deep) 
+  public static native Element clone(Element elem, boolean deep)
   /*-{
     return elem.cloneNode(deep);
   }-*/;
@@ -100,5 +100,22 @@ public class DOMHelper {
       }
     }
     return code;
+  }
+
+  public static boolean isArrowKey(int code) {
+    switch (code) {
+      case OTHER_KEY_DOWN:
+      case OTHER_KEY_RIGHT:
+      case OTHER_KEY_UP:
+      case OTHER_KEY_LEFT:
+      case KeyboardListener.KEY_DOWN:
+      case KeyboardListener.KEY_RIGHT:
+      case KeyboardListener.KEY_UP:
+      case KeyboardListener.KEY_LEFT:
+        return true;
+      default:
+        return false;
+    }
+
   }
 }
