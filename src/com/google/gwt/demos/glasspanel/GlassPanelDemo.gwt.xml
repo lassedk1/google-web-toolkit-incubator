@@ -6,6 +6,9 @@
   <!-- Inherit GlassPanel module                       -->
   <inherits name='com.google.gwt.widgetideas.GlassPanel'/>
 
+  <!-- Prevent GWT compiler complaints during development -->
+  <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
+
 	<!-- Specify the app entry point class.                                      -->
 	<entry-point class='com.google.gwt.demos.glasspanel.client.GlassPanelDemo'/>
   

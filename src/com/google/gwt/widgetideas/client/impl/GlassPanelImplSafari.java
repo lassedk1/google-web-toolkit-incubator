@@ -24,8 +24,6 @@ import com.google.gwt.widgetideas.client.GlassPanel;
 public class GlassPanelImplSafari extends GlassPanelImplStandard {
   private static native void implMatchDocumentSize(Element elem)
   /*-{
-    // TODO Safari does not yet define $doc.compatMode, so we always see $doc.body scroll sizes here
-    // This works, but may be producing slightly larger glass panels than strictly necessary
     var scrollWidth = @com.google.gwt.widgetideas.client.impl.GlassPanelImpl::getWindowScrollWidth()();
     var scrollHeight = @com.google.gwt.widgetideas.client.impl.GlassPanelImpl::getWindowScrollHeight()();
 
@@ -44,23 +42,7 @@ public class GlassPanelImplSafari extends GlassPanelImplStandard {
     elem.style.height = (height + marginTop) + "px";
   }-*/;
 
-  public void matchDocumentSize(GlassPanel glassPanel) {
+  public void matchDocumentSize(GlassPanel glassPanel, boolean dueToResize) {
     implMatchDocumentSize(glassPanel.getElement());
   }
-
-  /**
-   * Borrowed from DOMImplSafari in GWT 1.5.
-   */
-  protected native int windowGetClientHeight()
-  /*-{
-    return $wnd.innerHeight;
-  }-*/;
-
-  /**
-   * Borrowed from DOMImplSafari in GWT 1.5.
-   */
-  protected native int windowGetClientWidth()
-  /*-{
-    return $wnd.innerWidth;
-  }-*/;
 }
