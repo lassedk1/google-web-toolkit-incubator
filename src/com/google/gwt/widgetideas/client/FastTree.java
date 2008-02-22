@@ -117,7 +117,6 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   private final Map childWidgets = new HashMap();
   private FastTreeItem curSelection;
   private final Element focusable;
-  private final Element hiddenFocusable;
   private FocusListenerCollection focusListeners;
   private KeyboardListenerCollection keyboardListeners;
   private MouseListenerCollection mouseListeners;
@@ -136,7 +135,6 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     focusable = createFocusElement();
     setStyleName(focusable, STYLENAME_SELECTION);
 
-    hiddenFocusable = createFocusElement();
     sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK | Event.KEYEVENTS
         | Event.MOUSEEVENTS);
 
@@ -420,6 +418,10 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
             lastKeyDown = keyDown;
           }
         }
+        if (DOMHelper.isArrowKey(eventType)) {
+          DOM.eventCancelBubble(event, true);
+          DOM.eventPreventDefault(event);
+        }
 
         break;
       }
@@ -529,26 +531,13 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   protected void doAttachChildren() {
     super.doAttachChildren();
     DOM.setEventListener(focusable, this);
-    DOM.setEventListener(hiddenFocusable, this);
+
   }
 
   protected void doDetachChildren() {
     super.doDetachChildren();
     DOM.setEventListener(focusable, null);
-    DOM.setEventListener(hiddenFocusable, null);
-  }
 
-  /**
-   * Indicates if keyboard navigation is enabled for the Tree and for a given
-   * TreeItem. Subclasses of Tree can override this function to selectively
-   * enable or disable keyboard navigation.
-   * 
-   * @param currentItem the currently selected TreeItem
-   * @return <code>true</code> if the Tree will response to arrow keys by
-   *         changing the currently selected item
-   */
-  protected boolean isKeyboardNavigationEnabled(FastTreeItem currentItem) {
-    return true;
   }
 
   /**
@@ -605,8 +594,8 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   private void clickedOnFocus(Element e) {
     // An element was clicked on that is not focusable, so we use the hidden
     // focusable to not shift focus.
-    moveElementOverTarget(hiddenFocusable, e);
-    impl.focus(hiddenFocusable);
+    moveElementOverTarget(focusable, e);
+    impl.focus(focusable);
   }
 
   /**
@@ -626,6 +615,8 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     DOM.setStyleAttribute(e, "position", "absolute");
     DOM.appendChild(getElement(), e);
     DOM.sinkEvents(e, Event.FOCUSEVENTS | Event.ONMOUSEDOWN);
+    // Needed for IE only
+    DOM.setElementAttribute(e, "focus", "false");
     return e;
   }
 
@@ -633,10 +624,10 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Disables the selection text on IE.
    */
   private native void disableSelection(Element element) /*-{
-      element.onselectstart = function() {
-         return false;
-      };
-   }-*/;
+           element.onselectstart = function() {
+              return false;
+           };
+        }-*/;
 
   private boolean elementClicked(FastTreeItem root, Event event) {
     Element target = DOM.eventGetTarget(event);
@@ -701,20 +692,17 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         onSelection(root.getChild(0), true, true);
       }
       super.onBrowserEvent(event);
-      return;
-    }
+    } else {
 
-    // Handle keyboard events if keyboard navigation is enabled
-    if (isKeyboardNavigationEnabled(curSelection)) {
+      // Handle keyboard events if keyboard navigation is enabled
+
       switch (DOMHelper.standardizeKeycode(DOM.eventGetKeyCode(event))) {
         case KeyboardListener.KEY_UP: {
           moveSelectionUp(curSelection);
-          DOM.eventPreventDefault(event);
           break;
         }
         case KeyboardListener.KEY_DOWN: {
           moveSelectionDown(curSelection, true);
-          DOM.eventPreventDefault(event);
           break;
         }
         case KeyboardListener.KEY_LEFT: {
@@ -726,21 +714,19 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
               setSelectedItem(parent);
             }
           }
-          DOM.eventPreventDefault(event);
           break;
         }
         case KeyboardListener.KEY_RIGHT: {
           if (!curSelection.isOpen()) {
             curSelection.setState(true);
-
-          } else if (curSelection.getChildCount() > 0) {
-            setSelectedItem(curSelection.getChild(0));
-          }
-          DOM.eventPreventDefault(event);
+          } 
+          // Do nothing if the element is already open.
           break;
         }
       }
+
     }
+    DOM.eventPreventDefault(event);
   }
 
   private void moveElementOverTarget(Element movable, Element target) {
@@ -848,14 +834,13 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
 
   private native boolean shouldTreeDelegateFocusToElement(Element elem) /*-{
     var name = elem.nodeName;
-      return ((name == "SELECT") ||
-        (name == "INPUT")  ||
-        (name == "TEXTAREA") ||
-        (name == "OPTION") ||
-        (name == "BUTTON") ||
-        (name == "LABEL") 
-        )
-        ;
+    return ((name == "SELECT") ||
+      (name == "INPUT")  ||
+      (name == "TEXTAREA") ||
+      (name == "OPTION") ||
+      (name == "BUTTON") ||
+      (name == "LABEL") 
+    );
    }-*/;
 }
 
