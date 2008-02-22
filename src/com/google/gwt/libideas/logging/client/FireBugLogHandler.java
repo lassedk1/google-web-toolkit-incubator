@@ -24,7 +24,8 @@ import com.google.gwt.libideas.logging.shared.Level;
 public class FireBugLogHandler extends LogHandler {
 
   public native boolean isSupported() /*-{
-    return ($wnd.console && $wnd.console.firebug);
+    return ($wnd.console && $wnd.console.firebug) || false;
+    
   }-*/;
 
   native void log(String message) /*-{
