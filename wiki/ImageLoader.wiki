@@ -1,4 +1,4 @@
-#summary Loader class which invokes a callback when the specified image resources are loaded in the browser.
+#summary Loader class which invokes a callback when the specified image resources are finished loading in the browser.
 
 = Code Examples =
 
