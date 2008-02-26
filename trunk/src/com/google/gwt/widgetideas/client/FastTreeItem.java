@@ -170,7 +170,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   }
 
   /**
-   * Become a leaf node
+   * Become a leaf node.
    */
   public void becomeLeafNode() {
     if (!isInteriorNode()) {
@@ -488,6 +488,14 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     return contentElem;
   }
 
+  Element getElementToAttach() {
+    if (BiDiUtil.isRightToLeft()) {
+      return DOM.getNextSibling(DOMHelper.getRecursiveFirstChild(contentElem, 4));
+    } else {
+      return DOM.getFirstChild(contentElem);
+    }
+  }
+
   void setParentItem(FastTreeItem parent) {
     this.parent = parent;
   }
@@ -577,14 +585,6 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     if (widget != null && tree != null) {
       tree.treeOrphan(widget);
       widget = null;
-    }
-  }
-
-  private Element getElementToAttach() {
-    if (BiDiUtil.isRightToLeft()) {
-      return DOM.getNextSibling(DOMHelper.getRecursiveFirstChild(contentElem, 4));
-    } else {
-      return DOM.getFirstChild(contentElem);
     }
   }
 

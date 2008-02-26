@@ -531,13 +531,11 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   protected void doAttachChildren() {
     super.doAttachChildren();
     DOM.setEventListener(focusable, this);
-
   }
 
   protected void doDetachChildren() {
     super.doDetachChildren();
     DOM.setEventListener(focusable, null);
-
   }
 
   /**
@@ -724,7 +722,6 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
           break;
         }
       }
-
     }
     DOM.eventPreventDefault(event);
   }

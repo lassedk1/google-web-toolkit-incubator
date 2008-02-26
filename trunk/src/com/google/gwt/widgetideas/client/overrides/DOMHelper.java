@@ -63,6 +63,22 @@ public class DOMHelper {
     }
   }
 
+  public static boolean isArrowKey(int code) {
+    switch (code) {
+      case OTHER_KEY_DOWN:
+      case OTHER_KEY_RIGHT:
+      case OTHER_KEY_UP:
+      case OTHER_KEY_LEFT:
+      case KeyboardListener.KEY_DOWN:
+      case KeyboardListener.KEY_RIGHT:
+      case KeyboardListener.KEY_UP:
+      case KeyboardListener.KEY_LEFT:
+        return true;
+      default:
+        return false;
+    }
+  }
+
   /**
    * Gets the first child. You must *KNOW* that the first child exists and is an
    * element to use this method safely.
@@ -100,22 +116,5 @@ public class DOMHelper {
       }
     }
     return code;
-  }
-
-  public static boolean isArrowKey(int code) {
-    switch (code) {
-      case OTHER_KEY_DOWN:
-      case OTHER_KEY_RIGHT:
-      case OTHER_KEY_UP:
-      case OTHER_KEY_LEFT:
-      case KeyboardListener.KEY_DOWN:
-      case KeyboardListener.KEY_RIGHT:
-      case KeyboardListener.KEY_UP:
-      case KeyboardListener.KEY_LEFT:
-        return true;
-      default:
-        return false;
-    }
-
   }
 }
