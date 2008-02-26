@@ -432,6 +432,9 @@ public class GWTCanvas extends Widget {
   } */
   
   /**
+   * @deprecated Not supported in all browsers with native canvas implementation.
+   * Will be removed shortly.
+   * 
    * The <code>setTransform(m11, m12, m21, m22, dx, dy)</code> method resets the 
    * current transform to the identity matrix, and then invoke the 
    * <code>transform(m11, m12, m21, m22, dx, dy)</code> method with the same arguments.
@@ -448,7 +451,8 @@ public class GWTCanvas extends Widget {
    */
   public void setTransform(float m11, float m12, float m21,
       float m22, float dx, float dy) {
-    impl.setTransform(m11, m12, m21, m22, dx, dy);
+    // Make it a no-op until Javadoc is fixed.
+    // impl.setTransform(m11, m12, m21, m22, dx, dy);
   }
  
   /**
