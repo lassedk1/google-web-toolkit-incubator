@@ -538,6 +538,10 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     DOM.setEventListener(focusable, null);
   }
 
+  protected FastTreeItem getRoot() {
+    return root;
+  }
+
   /**
    * Moves the selection bar around the given {@link FastTreeItem}.
    * 
@@ -559,6 +563,36 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   protected void onLoad() {
     if (getSelectedItem() != null) {
       moveSelectionBar(getSelectedItem());
+    }
+  }
+
+  protected void onSelection(FastTreeItem item, boolean fireEvents,
+      boolean moveFocus) {
+    // 'root' isn't a real item, so don't let it be selected
+    // (some cases in the keyboard handler will try to do this)
+    if (item == root) {
+      return;
+    }
+
+    if (curSelection != null) {
+      if (curSelection.beforeSelectionLost() == false) {
+        return;
+      }
+      curSelection.setSelection(false);
+    }
+
+    curSelection = item;
+
+    if (curSelection != null) {
+      if (moveFocus) {
+        moveFocus(curSelection);
+      } else {
+        // Move highlight even if we do no not need to move focus.
+        moveSelectionBar(curSelection);
+      }
+
+      // Select the item and fire the selection event.
+      curSelection.setSelection(true);
     }
   }
 
@@ -796,36 +830,6 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       onSelection(findDeepestOpenChild(sibling), true, true);
     } else {
       onSelection(parent, true, true);
-    }
-  }
-
-  private void onSelection(FastTreeItem item, boolean fireEvents,
-      boolean moveFocus) {
-    // 'root' isn't a real item, so don't let it be selected
-    // (some cases in the keyboard handler will try to do this)
-    if (item == root) {
-      return;
-    }
-
-    if (curSelection != null) {
-      if (curSelection.beforeSelectionLost() == false) {
-        return;
-      }
-      curSelection.setSelection(false);
-    }
-
-    curSelection = item;
-
-    if (curSelection != null) {
-      if (moveFocus) {
-        moveFocus(curSelection);
-      } else {
-        // Move highlight even if we do no not need to move focus.
-        moveSelectionBar(curSelection);
-      }
-
-      // Select the item and fire the selection event.
-      curSelection.setSelection(true);
     }
   }
 
