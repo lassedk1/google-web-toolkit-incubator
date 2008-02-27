@@ -16,7 +16,7 @@
 package com.google.gwt.widgetideas.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.libideas.client.BiDiUtil;
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.libideas.client.StyleInjector;
 import com.google.gwt.libideas.resources.client.DataResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
@@ -103,7 +103,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    */
   public static void addDefaultCSS() {
     DefaultResources instance = (DefaultResources) GWT.create(DefaultResources.class);
-    if (BiDiUtil.isRightToLeft()) {
+    if (LocaleInfo.getCurrentLocale().isRTL()) {
       StyleInjector.injectStylesheet(instance.cssRTL().getText(), instance);
     } else {
       StyleInjector.injectStylesheet(instance.css().getText(), instance);
@@ -418,11 +418,10 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
             lastKeyDown = keyDown;
           }
         }
-        if (DOMHelper.isArrowKey(eventType)) {
+        if (DOMHelper.isArrowKey(DOM.eventGetKeyCode(event))) {
           DOM.eventCancelBubble(event, true);
           DOM.eventPreventDefault(event);
         }
-
         break;
       }
     }
@@ -574,6 +573,9 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       return;
     }
 
+    if (curSelection == item) {
+      return;
+    }
     if (curSelection != null) {
       if (curSelection.beforeSelectionLost() == false) {
         return;
@@ -669,11 +671,11 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     if (item != null) {
       if (item.isInteriorNode()) {
         boolean switchState;
-        if (BiDiUtil.isRightToLeft()) {
+        if (LocaleInfo.getCurrentLocale().isRTL()) {
           switchState = getStyleName(target).indexOf("placeholder") != -1;
         } else {
           int mousePos = DOM.eventGetClientX(event);
-          switchState = item.getContentElem().equals(target)
+          switchState = DOM.isOrHasChild(item.getControlElement(), target)
               && (mousePos - item.getAbsoluteLeft() < item.getControlImageWidth());
         }
         if (switchState) {
@@ -751,13 +753,12 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         case KeyboardListener.KEY_RIGHT: {
           if (!curSelection.isOpen()) {
             curSelection.setState(true);
-          } 
+          }
           // Do nothing if the element is already open.
           break;
         }
       }
     }
-    DOM.eventPreventDefault(event);
   }
 
   private void moveElementOverTarget(Element movable, Element target) {

@@ -1,59 +1,64 @@
-/* Users usually should override styles in gwt-Tree*/
+/**************************************
+ Structural CSS 
+ */
 .gwt-FastTree {
-  
-}
-
-.gwt-FastTreeItem .open,.gwt-FastTreeItem .closed,.gwt-FastTreeItem .leaf
-  {
-  cursor: default;
   -moz-user-select: none;
   position: relative;
-  white-space: nowrap;
-}
-.gwt-FastTreeItem .open,.gwt-FastTreeItem .closed {
-  color: black;
-  font-size: 110%;
 }
 
-.gwt-FastTreeItem .gwt-CheckBox {
-  
-}
-
-.gwt-FastTreeItem .leaf {
-  color: black;
-  font-size: 90%;
-}
-
-.gwt-FastTreeItem .children {
-  white-space: nowrap;
-  margin-right: 10px;
-}
-
-.gwt-FastTree .placeholder {
-  width: 12px;
-  height: 100%;
-}
-
-.gwt-FastTreeItem .open .placeholder {
-  background: url('%treeOpen%') no-repeat center right;
-}
-
-.gwt-FastTreeItem .closed .placeholder {
-  background: url('%treeClosed%') no-repeat center right;
-}
-
-.gwt-FastTree .gwt-FastTreeItem {
-  
-}
-
-.gwt-FastTree .gwt-TreeItem-selected {
-  
+.gwt-FastTreeItem {
+  min-width: 18px;
 }
 
 .gwt-FastTree .selection-bar {
-  background: #e3e8f3 url('%selectionBar%') repeat-x;
   font-size: 0;
   position: absolute;
-  width: 100%;
-  border: 1px solid black;
+  right: 0;
+  width: 1px;
+  z-index: -1;
+  outline: none;
+  -moz-outline: none;
+}
+
+.gwt-FastTree .selection-bar :focus {
+  outline: none
+}
+
+/************************************
+Visual styling
+*/
+.gwt-FastTreeItem .open,.gwt-FastTreeItem .closed {
+  padding-right: 18px;
+}
+
+.gwt-FastTreeItem-leaf {
+  display: block;
+  padding: 2px;
+  padding-right: 18px;
+}
+
+.gwt-FastTreeItem .children {
+  margin-right: 10px;
+}
+
+.gwt-FastTreeItem .open,.gwt-FastTreeItem .closed,.gwt-FastTreeItem-leaf
+  {
+  color: black;
+}
+
+.gwt-FastTreeItem .open {
+  background: url('%treeOpen%') no-repeat center right;
+}
+
+.gwt-FastTreeItem .closed {
+  background: url('%treeClosed%') no-repeat center right;
+}
+
+.gwt-FastTree .content {
+  padding: 2px;
+}
+
+.gwt-FastTree
+  .selected,.gwt-FastTreeItem-leaf-selected {
+  background: #e3e8f3 url('%selectionBar%') repeat-x;
 }

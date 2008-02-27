@@ -2,12 +2,12 @@
  Structural CSS 
  */
 .gwt-FastTree {
-  position: relative;
   -moz-user-select: none;
+  position: relative;
 }
 
-.gwt-FastTree .gwt-FastTreeItem {
-  width: 100%;
+.gwt-FastTreeItem {
+  min-width: 18px;
 }
 
 .gwt-FastTree .selection-bar {
@@ -17,27 +17,33 @@
   width: 1px;
   z-index: -1;
   outline: none;
-  -moz-outline: none; 
- 
+  -moz-outline: none;
 }
+
+.gwt-FastTree .selection-bar :focus {
+  outline: none
+}
+
 /************************************
 Visual styling
 */
-.gwt-FastTreeItem .open,.gwt-FastTreeItem .closed,.gwt-FastTreeItem .leaf
-  {
+.gwt-FastTreeItem .open,.gwt-FastTreeItem .closed {
   padding-left: 18px;
 }
 
-.gwt-FastTreeItem .open,.gwt-FastTreeItem .closed {
-  color: black;
-}
-
-.gwt-FastTreeItem .leaf {
-  color: black;
+.gwt-FastTreeItem-leaf {
+  display: block;
+  padding: 2px;
+  padding-left: 18px;
 }
 
 .gwt-FastTreeItem .children {
   margin-left: 10px;
+}
+
+.gwt-FastTreeItem .open,.gwt-FastTreeItem .closed,.gwt-FastTreeItem-leaf
+  {
+  color: black;
 }
 
 .gwt-FastTreeItem .open {
@@ -49,11 +55,10 @@ Visual styling
 }
 
 .gwt-FastTree .content {
-  padding: 3px;
-  display: inline;
-  height: 100%;
+  padding: 2px;
 }
 
-.gwt-FastTree .selected {
+.gwt-FastTree
+  .selected,.gwt-FastTreeItem-leaf-selected {
   background: #e3e8f3 url('%selectionBar%') repeat-x;
 }
