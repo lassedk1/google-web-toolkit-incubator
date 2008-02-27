@@ -28,6 +28,7 @@ public class PagingGridBulkRendererTest extends TableBulkRendererTestBase {
   }
 
   protected void doTest(TableModel model, final TestCallback callback) {
+    delayTestFinish(TIME_OUT);
     PagingGrid table = new PagingGrid(model);
     callback.table = table;
     table.addRowPagingListener(new RowPagingListener() {
@@ -49,7 +50,6 @@ public class PagingGridBulkRendererTest extends TableBulkRendererTestBase {
     // In a real bulk renderer the number of columns would have to be correct.
     new PagingGridBulkRenderer(table, 5);
     table.gotoFirstPage();
-    delayTestFinish(TIME_OUT);
   }
 
 }

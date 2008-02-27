@@ -27,9 +27,9 @@ import java.util.List;
 /**
  * Tests methods in the {@link TableModel} class.
  */
-public class TableModelTest extends AbstractTableModelTest {
+public class TableModelTest extends TableModelTestBase {
   /**
-   * @see AbstractTableModelTest
+   * @see TableModelTestBase
    */
   public TableModel getTableModel(boolean failureMode) {
     // Failure mode version

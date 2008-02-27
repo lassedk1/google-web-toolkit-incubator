@@ -52,7 +52,7 @@ public class ScrollTableTest extends GWTTestCase {
   public void testAccessors() {
     // Initialize the table
     ScrollTable table = getScrollTable();
-    
+
     // Accessible tables
     assertEquals(headerTable, table.getHeaderTable());
     assertEquals(dataTable, table.getDataTable());
@@ -82,8 +82,8 @@ public class ScrollTableTest extends GWTTestCase {
     table.setResizePolicy(ScrollTable.RESIZE_POLICY_FLOW);
     assertEquals(ScrollTable.RESIZE_POLICY_FLOW, table.getResizePolicy());
     table.setResizePolicy(ScrollTable.RESIZE_POLICY_UNCONSTRAINED);
-    assertEquals(ScrollTable.RESIZE_POLICY_UNCONSTRAINED, table
-        .getResizePolicy());
+    assertEquals(ScrollTable.RESIZE_POLICY_UNCONSTRAINED,
+        table.getResizePolicy());
     try {
       table.setResizePolicy(1000);
       fail("Expected IllegalArgumentException");

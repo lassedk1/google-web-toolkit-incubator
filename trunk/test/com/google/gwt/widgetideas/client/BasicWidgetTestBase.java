@@ -21,16 +21,10 @@ import com.google.gwt.junit.client.GWTTestCase;
 /**
  * Test for the {@link PinnedPanel}.
  */
-public abstract class BasicWidgetTest extends GWTTestCase {
+public abstract class BasicWidgetTestBase extends GWTTestCase {
 
   public String getModuleName() {
-    return "com.google.gwt.widgetideas.BasicWidget";
+    return "com.google.gwt.widgetideas.WidgetIdeas";
   }
 
-  /*
-   * public void testBasicCreate() { ToggleButton testOne = new
-   * ToggleButton("You will never see me"); HTML hello = new HTML("hello");
-   * PinnedPanel p = new PinnedPanel(200, 300, testOne, hello);
-   * RootPanel.get().add(p); assertEquals(20, p.getOffsetWidth()); }
-   */
 }

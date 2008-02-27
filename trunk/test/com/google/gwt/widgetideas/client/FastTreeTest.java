@@ -28,8 +28,7 @@ import java.util.Iterator;
  * Tests {@link FastTree}.
  * 
  */
-public class FastTreeTest extends BasicWidgetTest {
-
+public class FastTreeTest extends BasicWidgetTestBase {
 
   public void testFastTree() {
     // Simple widget
@@ -92,7 +91,6 @@ public class FastTreeTest extends BasicWidgetTest {
     assertFalse(childFastTree.getChildWidgets().containsKey(eLabel.getParent()));
   }
 
-  
   public void testSwap() {
     FastTree t = new FastTree();
 
@@ -119,11 +117,10 @@ public class FastTreeTest extends BasicWidgetTest {
     widgetItem.addItem(item);
     assertEquals(goodbyeWidget, item.getWidget());
     assertEquals(t, goodbyeWidget.getParent());
-    
 
     // Set back to text.
     item.setText("aloha");
-    assertEquals("aloha", DOM.getInnerHTML(item.getContentElem()));
+    assertEquals("aloha", DOM.getInnerHTML(item.getElementToAttach()));
     assertNull(goodbyeWidget.getParent());
     assertNull(item.getWidget());
   }

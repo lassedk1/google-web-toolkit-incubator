@@ -138,14 +138,14 @@ public class SelectionGridTest extends GWTTestCase {
 
     // Selection policy
     testGrid.setSelectionPolicy(SelectionGrid.SELECTION_POLICY_DISABLED);
-    assertEquals(SelectionGrid.SELECTION_POLICY_DISABLED, testGrid
-        .getSelectionPolicy());
+    assertEquals(SelectionGrid.SELECTION_POLICY_DISABLED,
+        testGrid.getSelectionPolicy());
     testGrid.setSelectionPolicy(SelectionGrid.SELECTION_POLICY_ONE_ROW);
-    assertEquals(SelectionGrid.SELECTION_POLICY_ONE_ROW, testGrid
-        .getSelectionPolicy());
+    assertEquals(SelectionGrid.SELECTION_POLICY_ONE_ROW,
+        testGrid.getSelectionPolicy());
     testGrid.setSelectionPolicy(SelectionGrid.SELECTION_POLICY_MULTI_ROW);
-    assertEquals(SelectionGrid.SELECTION_POLICY_MULTI_ROW, testGrid
-        .getSelectionPolicy());
+    assertEquals(SelectionGrid.SELECTION_POLICY_MULTI_ROW,
+        testGrid.getSelectionPolicy());
     try {
       testGrid.setSelectionPolicy(100);
       fail("Expected IllegalArgumentException");
@@ -155,14 +155,14 @@ public class SelectionGridTest extends GWTTestCase {
 
     // Hover policy
     testGrid.setHoveringPolicy(SelectionGrid.HOVERING_POLICY_DISABLED);
-    assertEquals(SelectionGrid.HOVERING_POLICY_DISABLED, testGrid
-        .getHoveringPolicy());
+    assertEquals(SelectionGrid.HOVERING_POLICY_DISABLED,
+        testGrid.getHoveringPolicy());
     testGrid.setHoveringPolicy(SelectionGrid.HOVERING_POLICY_CELL);
-    assertEquals(SelectionGrid.HOVERING_POLICY_CELL, testGrid
-        .getHoveringPolicy());
+    assertEquals(SelectionGrid.HOVERING_POLICY_CELL,
+        testGrid.getHoveringPolicy());
     testGrid.setHoveringPolicy(SelectionGrid.HOVERING_POLICY_ROW);
-    assertEquals(SelectionGrid.HOVERING_POLICY_ROW, testGrid
-        .getHoveringPolicy());
+    assertEquals(SelectionGrid.HOVERING_POLICY_ROW,
+        testGrid.getHoveringPolicy());
     try {
       testGrid.setHoveringPolicy(100);
       fail("Expected IllegalArgumentException");

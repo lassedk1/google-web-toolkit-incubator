@@ -41,7 +41,7 @@ public abstract class TableBulkRendererTestBase extends GWTTestCase {
     public abstract void test(HTMLTable table);
   }
 
-  protected static final int TIME_OUT = 500;
+  protected static final int TIME_OUT = 1000;
 
   public static void assertEquals(Object[] x, Object[] y) {
     assertEquals(x.length, y.length);
@@ -147,13 +147,12 @@ public abstract class TableBulkRendererTestBase extends GWTTestCase {
   protected abstract Object[] createTableAndRenderer();
 
   protected void doTest(TableModel model, TestCallback callback) {
-  
+    delayTestFinish(TIME_OUT);
     Object[] local = createTableAndRenderer();
     HTMLTable table = (HTMLTable) local[0];
     TableBulkRenderer renderer = (TableBulkRenderer) local[1];
     callback.table = table;
     renderer.renderRows(model, callback);
-    delayTestFinish(TIME_OUT);
   }
 
   private String cellContents(int rowNum, int cellNum) {

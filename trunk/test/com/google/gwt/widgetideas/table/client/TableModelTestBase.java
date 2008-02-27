@@ -24,7 +24,7 @@ import com.google.gwt.widgetideas.table.client.TableModel.Response;
 /**
  * Tests methods used for all {@link TableModel} class.
  */
-public abstract class AbstractTableModelTest extends GWTTestCase {
+public abstract class TableModelTestBase extends GWTTestCase {
   /**
    * A {@link Callback} used for testing.
    */
