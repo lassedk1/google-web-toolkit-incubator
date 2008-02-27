@@ -28,6 +28,7 @@ import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.StackPanel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -46,8 +47,10 @@ import java.util.ArrayList;
 public class FastTreeDemo implements EntryPoint {
 
   public StackPanel createDemo() {
+    FastTree.addDefaultCSS();
 
     StackPanel p = new StackPanel();
+
     p.add(basicTree(), "Basic tree");
     p.add(lazyTree(), "Lazy tree");
     p.add(verboseTree(), "Verbose tree");
@@ -63,12 +66,29 @@ public class FastTreeDemo implements EntryPoint {
    * This is the entry point method.
    */
   public void onModuleLoad() {
-    FastTree.addDefaultCSS();
-    RootPanel.get().add(createDemo());
+    // FastTreeScrollBugDemo.run();
+    RootPanel.get().add(new FastTreeRTLDemo().createDemo());
   }
 
   public void report(String s) {
     RootPanel.get().add(new HTML(s));
+  }
+
+  public void store() {
+    FastTree t = new FastTree();
+    FastTreeItem camping = t.addItem("Camping Gear");
+    camping.addItem("Camping tents");
+    FastTreeItem cooking = camping.addItem("Cooking gear");
+    camping.setState(true);
+
+    t.setSelectedItem(cooking);
+
+    FastTreeItem ap = t.addItem("Apparel");
+    ap.addItem("Jackets");
+    ap.addItem("Shirts");
+    t.addItem("Footwear").becomeInteriorNode();
+    t.addItem("Coolers");
+    RootPanel.get().add(t);
   }
 
   protected Widget basicTree() {
@@ -78,7 +98,10 @@ public class FastTreeDemo implements EntryPoint {
     FastTreeItem aXb = a.addItem("Another child");
     aXb.addItem("a grand child");
     FastTreeItem widgetBranch = a.addItem(new CheckBox("A checkbox child"));
-    widgetBranch.addItem("A TextBox parent").addItem(new TextBox());
+    FastTreeItem textBoxParent = widgetBranch.addItem("A TextBox parent");
+    textBoxParent.addItem(new TextBox());
+    textBoxParent.addItem("and another one...");
+    textBoxParent.addItem(new TextArea());
 
     ListBox lb = new ListBox();
     for (int i = 0; i < 100; i++) {
@@ -260,6 +283,7 @@ public class FastTreeDemo implements EntryPoint {
       FastTreeItem item = new ListeningFastTreeItem("child " + i) {
 
         public void beforeClose() {
+          Window.alert("Close item" + index);
         }
 
         public void beforeOpen() {

@@ -16,7 +16,7 @@
 
 package com.google.gwt.widgetideas.client.overrides;
 
-import com.google.gwt.libideas.client.BiDiUtil;
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.KeyboardListener;
@@ -39,8 +39,7 @@ public class DOMHelper {
   /**
    * Clones a DOM element.
    */
-  public static native Element clone(Element elem, boolean deep)
-  /*-{
+  public static native Element clone(Element elem, boolean deep) /*-{
     return elem.cloneNode(deep);
   }-*/;
 
@@ -50,8 +49,7 @@ public class DOMHelper {
    * 
    * @param msg the message to be displayed.
    */
-  public static native boolean confirm(String msg)
-  /*-{
+  public static native boolean confirm(String msg) /*-{
     return $wnd.confirm(msg);
   }-*/;
 
@@ -83,8 +81,7 @@ public class DOMHelper {
    * Gets the first child. You must *KNOW* that the first child exists and is an
    * element to use this method safely.
    */
-  public static native Element rawFirstChild(Element elem)
-  /*-{
+  public static native Element rawFirstChild(Element elem) /*-{
    return elem.firstChild;
   }-*/;
 
@@ -108,7 +105,7 @@ public class DOMHelper {
         code = KeyboardListener.KEY_LEFT;
         break;
     }
-    if (BiDiUtil.isRightToLeft()) {
+    if (LocaleInfo.getCurrentLocale().isRTL()) {
       if (code == KeyboardListener.KEY_RIGHT) {
         code = KeyboardListener.KEY_LEFT;
       } else if (code == KeyboardListener.KEY_LEFT) {

@@ -19,11 +19,7 @@ package com.google.gwt.demos.fasttree.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.demos.fasttree.client.TreeBenchmarkHelper.TreeType;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ListBox;
@@ -46,49 +42,29 @@ import java.util.ArrayList;
 public class FastTreeVisualTest extends FastTreeDemo implements EntryPoint {
 
   public StackPanel createDemo() {
-    StackPanel p = super.createDemo();
+    StackPanel p = new StackPanel();
     p.add(treeInTree(), "Internal tree");
     p.add(focusTree(), "Focus");
     p.add(treeWithVarietyWidgets(), "Widgets");
-    p.add(treeWithCustomImages(), "Custom Images");
     p.add(textTreeInScroll(), "In scroll");
     p.add(widgetTreeInScroll(), "Widget tree in scroll");
-    p.add(timingTests(), "Timing tests");
     return p;
-  }
-
-  public void outdorsStore() {
-    FastTree t = new FastTree();
-    FastTreeItem camping = t.addItem("Camping Gear");
-    camping.addItem("Camping tents");
-    FastTreeItem cooking = camping.addItem("Cooking gear");
-    camping.setState(true);
-
-    t.setSelectedItem(cooking);
-
-    FastTreeItem ap = t.addItem("Apparel");
-    ap.addItem("Jackets");
-    ap.addItem("Shirts");
-    t.addItem("Footwear").becomeInteriorNode();
-    t.addItem("Coolers");
-    System.err.println(DOM.toString(t.getElement()));
-    RootPanel.get().add(t);
   }
 
   public void report(String s) {
     RootPanel.get().add(new HTML(s));
   }
 
-  private FastTreeItem add(FastTreeItem parent, TreeType type) {
+  private FastTreeItem add(FastTreeItem parent, String value, TreeType type) {
     if (type == TreeType.TEXT) {
-      return parent.addItem("text");
+      return parent.addItem(value);
     } else if (type == TreeType.HTML) {
       FastTreeItem item = new FastTreeItem();
-      item.setHTML("<h1>html</h1>");
+      item.setHTML("<h1>" + value + "</h1>");
       parent.addItem(item);
       return item;
     } else if (type == TreeType.CHECKBOX) {
-      return parent.addItem(new CheckBox("myBox"));
+      return parent.addItem(new CheckBox(value));
     } else {
       throw new RuntimeException("What?");
     }
@@ -107,7 +83,8 @@ public class FastTreeVisualTest extends FastTreeDemo implements EntryPoint {
     } else {
       throw new RuntimeException("What?");
     }
-  } 
+  }
+
   private Widget focusTree() {
     // Create a tree with a few items in it.
     FastTreeItem root = new FastTreeItem("root");
@@ -146,15 +123,15 @@ public class FastTreeVisualTest extends FastTreeDemo implements EntryPoint {
     FastTreeItem root = t.addItem("root");
 
     ArrayList front = new ArrayList();
-    front.add(add(root, type));
+    front.add(add(root, "first child", type));
     int count = 0;
     while (true) {
       ArrayList newFront = new ArrayList();
       for (int i = 0; i < front.size(); i++) {
         for (int j = 0; j < numBranches; j++) {
-          newFront.add(add((FastTreeItem) front.get(i), type));
+          newFront.add(add((FastTreeItem) front.get(i), "Tree item" + i + ","
+              + j, type));
           if (++count == numNodes) {
-            RootPanel.get().add(t);
             return;
           }
         }
@@ -188,44 +165,8 @@ public class FastTreeVisualTest extends FastTreeDemo implements EntryPoint {
     FastTree tree = new FastTree();
     populateTree(tree, 4, 100, TreeType.TEXT);
     ScrollPanel sp = new ScrollPanel(tree);
-    sp.setSize("500px", "200px");
-    sp.setAlwaysShowScrollBars(true);
+    sp.setSize("200px", "200px");
     return sp;
-  }
-
-  private Widget timingTests() {
-    final FlexTable table = new FlexTable();
-    final TextBox branches = new TextBox();
-    table.setWidget(0, 0, branches);
-    branches.setText("10");
-    branches.setTitle("Number of branches");
-    final TextBox nodes = new TextBox();
-    table.setWidget(0, 1, nodes);
-    nodes.setText("200");
-    table.setTitle("Number of nodes");
-
-    table.setWidget(1, 0, new Button("Normal tree", new ClickListener() {
-      public void onClick(Widget sender) {
-        long time = System.currentTimeMillis();
-        Tree t = new Tree();
-        populateTree(t, Integer.parseInt(branches.getText()),
-            Integer.parseInt(nodes.getText()), TreeType.CHECKBOX);
-        table.setWidget(2, 0, t);
-        Window.alert("Elapsed time:" + (System.currentTimeMillis() - time));
-      }
-    }));
-
-    table.setWidget(1, 1, new Button("Fast tree", new ClickListener() {
-      public void onClick(Widget sender) {
-        long time = System.currentTimeMillis();
-        FastTree t = new FastTree();
-        populateTree(t, Integer.parseInt(branches.getText()),
-            Integer.parseInt(nodes.getText()), TreeType.CHECKBOX);
-        table.setWidget(2, 1, t);
-        Window.alert("Elapsed time:" + (System.currentTimeMillis() - time));
-      }
-    }));
-    return table;
   }
 
   private Widget treeInTree() {
@@ -251,13 +192,6 @@ public class FastTreeVisualTest extends FastTreeDemo implements EntryPoint {
     root.addItem(item);
     t.addItem(root);
 
-    return t;
-  }
-
-  private Widget treeWithCustomImages() {
-    FastTree t = new FastTree();
-    populateTree(t, 4, 5, TreeType.CHECKBOX);
-    // now change style names;
     return t;
   }
 
