@@ -42,27 +42,6 @@
   </target>
 
   <target name="checksetup" depends="inithome,inittools">
-    <!-- what platform are we on? -->
-    <condition property="gwt.platform" value="windows" >
-       <and>
-          <os family="windows" />
-          <not> <isset property="gwt.platform" /> </not>
-       </and>
-    </condition>
-    <condition property="gwt.platform" value="mac" >
-       <and>
-          <os family="mac" />
-          <not> <isset property="gwt.platform" /> </not>
-       </and>
-    </condition>
-    <condition property="gwt.platform" value="linux" >
-       <and>
-          <os family="unix" />
-          <contains string="${os.name}" substring="linux" 
-              casesensitive="false" />
-          <not> <isset property="gwt.platform" /> </not>
-       </and>
-    </condition>
     <fail message="unknown platform" unless="gwt.platform" />
     <echo message="gwt.home = ${gwt.home}" />
     <echo message="gwt.tools = ${gwt.tools}" />
@@ -70,14 +49,14 @@
   </target>
 
   <target name="build" depends="checksetup">
-    <mkdir dir="build/out"/>
-    <javac compiler="javac1.4" listfiles="true" destdir="build/out">
+    <mkdir dir="${javac.out}"/>
+    <javac compiler="javac1.4" listfiles="true" destdir="${javac.out}">
        <src path="src"/>
-       <classpath location="${gwt.home}/gwt-user.jar"/>
-       <classpath location="${gwt.home}/gwt-dev-${gwt.platform}.jar"/>
+       <classpath location="${gwt.user.jar}"/>
+       <classpath location="${gwt.dev.jar}"/>
        <classpath location="${gwt.tools}/lib/javaswf/javaswf-20050404.jar"/>
     </javac>
-    <copy todir="build/out">
+    <copy todir="${javac.out}">
        <fileset dir="src">
           <include name="**/public/**"/>
           <exclude name="**/.svn/**"/>
@@ -86,20 +65,23 @@
   </target>
 
   <target name="dist" depends="build">
-    <mkdir dir="build/out/doc"/>
-    <copy todir="build/out/doc">
+    <mkdir dir="${project.build}/doc"/>
+    <copy todir="${project.build}/doc">
        <fileset dir="doc">
           <exclude name="**/.svn/**"/>
        </fileset>
     </copy>
-    <mkdir dir="build/out/demo"/>
-    <copy todir="build/out/demo">
+    <mkdir dir="${project.build}/demo"/>
+    <copy todir="${project.build}/demo">
        <fileset dir="demo">
           <exclude name="**/.svn/**"/>
        </fileset>
     </copy>
     <mkdir dir="build/dist"/>
-    <jar basedir="build/out" destfile="build/dist/gwt-incubator.jar" >
+    <jar destfile="build/dist/gwt-incubator.jar" >
+       <zipfileset dir="${javac.out}" />
+       <zipfileset dir="${project.build}/demo" prefix="demo/" />
+       <zipfileset dir="${project.build}/doc" prefix="doc/" />
        <zipfileset src="${gwt.tools}/lib/javaswf/javaswf-20050404.jar" />
        <zipfileset dir="src" prefix="" defaultexcludes="yes" />
     </jar>
@@ -107,22 +89,20 @@
 
   <import file="testsets.ant.xml" />
 
-  <target name="build.tests" 
+  <target name="build.tests" depends="build"
           description="Compiles the test code for this project">
      <mkdir dir="${javac.junit.out}" />
-     <echo message="dev is ${gwt.home}/gwt-dev-${gwt.platform}.jar"/>
+     <echo message="dev is ${gwt.dev.jar}"/>
 
      <gwt.javac destdir="${javac.junit.out}">
         <classpath>
-	   <pathelement location="./src" />
-	   <pathelement location="./test" />
+	   <pathelement location="${javac.out}" />
            <pathelement location="${gwt.tools.lib}/junit/junit-3.8.1.jar" />
-           <pathelement location="${gwt.home}/gwt-user.jar"/>
-           <pathelement location="${gwt.home}/gwt-dev-${gwt.platform}.jar"/>
+           <pathelement location="${gwt.user.jar}"/>
+           <pathelement location="${gwt.dev.jar}"/>
            <pathelement location="${gwt.tools}/lib/javaswf/javaswf-20050404.jar"/>
         </classpath>
         <src>
-	   <pathelement location="./src" />
 	   <pathelement location="./test" />
         </src>
      </gwt.javac>
@@ -141,13 +121,13 @@
   </target>
 
   <target name="test.hosted" depends="build, build.tests">
-     <gwt.junit test.out="${junit.out}/${build.host.platform}-hosted-mode" test.cases="default.hosted.tests" />
+     <gwt.junit test.out="${junit.out}/${gwt.platform}-hosted-mode" test.cases="default.hosted.tests" />
   </target>
 
   <target name="test.web" depends="build, build.tests" 
           description="Run only web-mode tests, locally, for this project.">
      <gwt.junit test.args="-out www -web" 
-                test.out="${junit.out}/${build.host.platform}-web-mode" 
+                test.out="${junit.out}/${gwt.platform}-web-mode" 
                 test.cases="default.web.tests" />
   </target>
 
