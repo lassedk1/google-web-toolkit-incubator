@@ -18,14 +18,14 @@ package com.google.gwt.widgetideas.table.client;
 /**
  * Tests methods in the {@link ReadOnlyTableModel} class.
  */
-public class ReadOnlyTableModelTest extends AbstractTableModelTest {
+public class ReadOnlyTableModelTest extends TableModelTestBase {
   /**
    * The table model to test.
    */
   private ReadOnlyTableModel tableModel = null;
 
   /**
-   * @see AbstractTableModelTest
+   * @see TableModelTestBase
    */
   public TableModel getTableModel(boolean failureMode) {
     if (failureMode) {

@@ -16,9 +16,21 @@
 
 package com.google.gwt.widgetideas.client;
 
-/**
- * Test for the {@link PinnedPanel}. 
- */
-public class PinnedPanelTest extends BasicWidgetTest {
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.ToggleButton;
 
+/**
+ * Test for the {@link PinnedPanel}.
+ */
+public class PinnedPanelTest extends BasicWidgetTestBase {
+  public void testBasic() {
+    int width = 30;
+    ToggleButton b = new ToggleButton();
+    Label l = new Label("hello");
+    PinnedPanel p = new PinnedPanel(width, b, l);
+    assertEquals(b, p.getSwitchButton());
+    RootPanel.get().add(p);
+    assertEquals(width, p.getOffsetWidth());
+  }
 }

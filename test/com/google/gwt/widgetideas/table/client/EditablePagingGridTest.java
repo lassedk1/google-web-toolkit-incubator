@@ -77,12 +77,11 @@ public class EditablePagingGridTest extends GWTTestCase {
     assertNull(testGrid.getCellEditor(2));
 
     // Hovering policy
-    testGrid
-        .setHoveringPolicy(EditablePagingGrid.HOVERING_POLICY_EDITABLE_CELL);
-    assertEquals(EditablePagingGrid.HOVERING_POLICY_EDITABLE_CELL, testGrid
-        .getHoveringPolicy());
+    testGrid.setHoveringPolicy(EditablePagingGrid.HOVERING_POLICY_EDITABLE_CELL);
+    assertEquals(EditablePagingGrid.HOVERING_POLICY_EDITABLE_CELL,
+        testGrid.getHoveringPolicy());
     testGrid.setHoveringPolicy(PagingGrid.HOVERING_POLICY_DISABLED);
-    assertEquals(PagingGrid.HOVERING_POLICY_DISABLED, testGrid
-        .getHoveringPolicy());
+    assertEquals(PagingGrid.HOVERING_POLICY_DISABLED,
+        testGrid.getHoveringPolicy());
   }
 }

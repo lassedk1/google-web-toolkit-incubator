@@ -24,7 +24,7 @@ import java.util.Iterator;
 /**
  * Tests methods in the {@link ClientTableModel} class.
  */
-public class ClientTableModelTest extends AbstractTableModelTest {
+public class ClientTableModelTest extends TableModelTestBase {
   /**
    * The number of columns in the underlying data.
    */
@@ -85,7 +85,7 @@ public class ClientTableModelTest extends AbstractTableModelTest {
   };
 
   /**
-   * @see AbstractTableModelTest
+   * @see TableModelTestBase
    */
   public TableModel getTableModel(boolean failureMode) {
     if (failureMode) {

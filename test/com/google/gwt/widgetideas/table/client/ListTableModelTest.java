@@ -28,7 +28,7 @@ public class ListTableModelTest extends ClientTableModelTest {
   private ListTableModel tableModel = null;
 
   /**
-   * @see AbstractTableModelTest
+   * @see TableModelTestBase
    */
   public TableModel getTableModel() {
     if (tableModel == null) {
