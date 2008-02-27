@@ -96,7 +96,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
 
   private static final String STYLENAME_SELECTION = "selection-bar";
 
-  private static FocusImpl impl = (FocusImpl) GWT.create(FocusImpl.class);
+  private static FocusImpl impl = (FocusImpl) FocusImpl.getFocusImplForWidget();
 
   /**
    * Add the default style sheet and images.
