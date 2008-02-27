@@ -148,7 +148,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     if (!isInteriorNode()) {
       state = TREE_NODE_INTERIOR_NEVER_OPENED;
 
-      Element mine = DOM.clone(this.getElement(), false);
+      Element mine = DOMHelper.clone(this.getElement(), false);
       setElement(mine);
       setStyleName(getStylePrimaryName());
       Element wrapper = DOM.createDiv();
@@ -324,7 +324,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     if (childElems != null) {
       DOM.removeChild(childElems, item.getElement());
     }
-    
+
     // Logical detach.
     item.setParentItem(null);
     children.remove(item);
