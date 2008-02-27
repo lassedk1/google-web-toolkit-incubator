@@ -63,7 +63,7 @@
 			</not>
 		</and>
 	</condition>
-	<condition property="build.host.platform" value="linux">
+	<condition property="gwt.platform" value="linux">
 		<isset property="build.host.islinux" />
 	</condition>
 
@@ -73,24 +73,24 @@
 			<contains string="${os.name}" substring="mac" casesensitive="false" />
 		</and>
 	</condition>
-	<condition property="build.host.platform" value="mac">
+	<condition property="gwt.platform" value="mac">
 		<isset property="build.host.ismac" />
 	</condition>
 
 	<condition property="build.host.iswindows">
 		<os family="windows" />
 	</condition>
-	<condition property="build.host.platform" value="windows">
+	<condition property="gwt.platform" value="windows">
 		<isset property="build.host.iswindows" />
 	</condition>
-	<fail unless="build.host.platform" message="Building on ${os.name} is not supported" />
+	<fail unless="gwt.platform" message="Building on ${os.name} is not supported" />
 
 	<condition property="junit.platform.args" value="-XstartOnFirstThread" else="">
-		<equals arg1="${build.host.platform}" arg2="mac" casesensitive="false" />
+		<equals arg1="${gwt.platform}" arg2="mac" casesensitive="false" />
 	</condition>
 
 	<!-- JUnit support -->
-	<property name="gwt.dev.jar" location="${gwt.home}/gwt-dev-${build.host.platform}.jar" />
+	<property name="gwt.dev.jar" location="${gwt.home}/gwt-dev-${gwt.platform}.jar" />
 	<property name="gwt.user.jar" location="${gwt.home}/gwt-user.jar" />
 	<property name="gwt.junit.port" value="auto" />
 	<property name="gwt.junit.testcase.includes" value="**/*Test.class"/>
@@ -120,7 +120,7 @@
 	</presetdef>
 
 	<presetdef name="gwt.javac">
-		<javac srcdir="src:test" destdir="${javac.out}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" source="${javac.source}" target="${javac.target}" nowarn="${javac.nowarn}" encoding="${javac.encoding}" />
+		<javac destdir="${javac.out}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" source="${javac.source}" target="${javac.target}" nowarn="${javac.nowarn}" encoding="${javac.encoding}" />
 	</presetdef>
 
 	<presetdef name="gwt.jar">
@@ -134,7 +134,7 @@
 		<attribute name="test.reports" default="@{test.out}/reports" />
 		<attribute name="test.cases" default="" />
 		<sequential>
-			<taskdef name="myjunit" 
+			<taskdef name="gwtjunit" 
                                  classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
 				<classpath>
                                         <pathelement location="${gwt.user.jar}"/>
@@ -149,7 +149,9 @@
 			<mkdir dir="@{test.reports}" />
 
 			<echo message="${javac.out} ${javac.junit.out}" />
-			<myjunit dir="@{test.out}" fork="yes" printsummary="yes" haltonfailure="false">
+			<gwtjunit dir="@{test.out}" fork="yes" 
+                                  printsummary="yes" haltonfailure="false"
+                                  timeout="300000"> <!-- 5min -->
 				<jvmarg line="${junit.platform.args}" />
 				<jvmarg line="-Xmx256m" />
 				<sysproperty key="gwt.args" value="@{test.args}" />
@@ -172,7 +174,7 @@
 				<batchtest todir="@{test.reports}">
 					<fileset refid="@{test.cases}" />
 				</batchtest>
-			</myjunit>
+			</gwtjunit>
 		</sequential>
 	</macrodef>
 
