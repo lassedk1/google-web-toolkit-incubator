@@ -66,8 +66,7 @@ public class FastTreeDemo implements EntryPoint {
    * This is the entry point method.
    */
   public void onModuleLoad() {
-    // FastTreeScrollBugDemo.run();
-    RootPanel.get().add(new FastTreeRTLDemo().createDemo());
+    RootPanel.get().add(new FastTreeDemo().createDemo());
   }
 
   public void report(String s) {
