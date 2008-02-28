@@ -250,6 +250,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
         if (targetCell == null) {
           return;
         }
+        targetRow = DOM.getParent(targetCell);
         int rowIndex = getRowIndex(targetRow);
         int cellIndex = OverrideDOM.getCellIndex(targetCell);
         onCellClicked(rowIndex, cellIndex);
