@@ -43,8 +43,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   private static final int TREE_NODE_INTERIOR_CLOSED = 4;
   private static final String STYLENAME_CHILDREN = "children";
 
-  private static final String STYLENAME_LEAF_DEFAULT =
-      "gwt-FastTreeItem gwt-FastTreeItem-leaf";
+  private static final String STYLENAME_LEAF_DEFAULT = "gwt-FastTreeItem gwt-FastTreeItem-leaf";
   private static final String STYLENAME_OPEN = "open";
   private static final String STYLENAME_CLOSED = "closed";
   private static final String STYLENAME_LEAF = "leaf";
@@ -54,7 +53,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   /**
    * The base tree item element that will be cloned.
    */
-  private static Element TREE_LEEF;
+  private static Element TREE_LEAF;
 
   /**
    * Static constructor to set up clonable elements.
@@ -62,9 +61,12 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   static {
 
     // Create the base element that will be cloned
-    TREE_LEEF = DOM.createDiv();
+    TREE_LEAF = DOM.createDiv();
     // leaf contents.
-    setStyleName(TREE_LEEF, STYLENAME_LEAF_DEFAULT);
+    setStyleName(TREE_LEAF, STYLENAME_LEAF_DEFAULT);
+    Element content = DOM.createDiv();
+    setStyleName(content, STYLENAME_CONTENT);
+    DOM.appendChild(TREE_LEAF, content);
   }
 
   private int state = TREE_NODE_LEAF;
@@ -78,9 +80,9 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * Creates an empty tree item.
    */
   public FastTreeItem() {
-    Element elem = DOMHelper.clone(TREE_LEEF, false);
+    Element elem = DOMHelper.clone(TREE_LEAF, true);
     setElement(elem);
-    contentElem = elem;
+    contentElem = DOMHelper.rawFirstChild(elem);
   }
 
   /**
@@ -149,14 +151,11 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     if (!isInteriorNode()) {
       state = TREE_NODE_INTERIOR_NEVER_OPENED;
 
-      Element mine = DOMHelper.clone(this.getElement(), false);
-      setElement(mine);
-      setStyleName(getStylePrimaryName());
-      Element wrapper = DOM.createDiv();
-      setStyleName(wrapper, STYLENAME_CLOSED);
-      DOM.appendChild(mine, wrapper);
-      DOM.appendChild(wrapper, contentElem);
-      setStyleName(contentElem, STYLENAME_CONTENT);
+      removeStyleDependentName(STYLENAME_LEAF);
+      Element control = DOM.createDiv();
+      setStyleName(control, STYLENAME_CLOSED);
+      DOM.appendChild(control, contentElem);
+      DOM.appendChild(getElement(), control);
     }
   }
 
@@ -360,7 +359,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * 
    * @param open whether the item is open
    * @param fireEvents <code>true</code> to allow open/close events to be
-   *        fired
+   *          fired
    */
   public void setState(boolean open, boolean fireEvents) {
     if (open == isOpen()) {
@@ -505,19 +504,10 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * Selects or deselects this item.
    * 
    * @param selected <code>true</code> to select the item, <code>false</code>
-   *        to deselect it
+   *          to deselect it
    */
   void setSelection(boolean selected) {
-    if (isLeafNode()) {
-      if (selected) {
-        addStyleDependentName("leaf-" + STYLENAME_SELECTED);
-      } else {
-        removeStyleDependentName("leaf-" + STYLENAME_SELECTED);
-      }
-    } else {
-      setStyleName(getContentElem(), STYLENAME_SELECTED, selected);
-    }
-
+    setStyleName(getContentElem(), STYLENAME_SELECTED, selected);
     if (selected) {
       onSelected();
     }
