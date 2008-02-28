@@ -132,7 +132,8 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
     setRowFormatter(new SelectedGridRowFormatter());
 
     // Sink hover and selection events
-    sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEDOWN | Event.ONCLICK);
+    sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEOUT | Event.ONMOUSEDOWN
+        | Event.ONCLICK);
   }
 
   /**
@@ -238,18 +239,15 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   @Override
   public void onBrowserEvent(Event event) {
     super.onBrowserEvent(event);
-
-    // Get the target cell and row
     Element targetRow = null;
-    Element targetCell = getEventTargetCell(event);
-    if (targetCell != null) {
-      targetRow = DOM.getParent(targetCell);
-    }
+    Element targetCell = null;
 
     switch (DOM.eventGetType(event)) {
       // Fire event on cell click
       case Event.ONCLICK:
-        if (targetRow == null) {
+        // Get the target row
+        targetCell = getEventTargetCell(event);
+        if (targetCell == null) {
           return;
         }
         int rowIndex = getRowIndex(targetRow);
@@ -262,6 +260,13 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
 
       // Highlight a row on mouse over
       case Event.ONMOUSEOVER:
+        // Get the target cell and row
+        targetCell = getEventTargetCell(event);
+        if (targetCell != null) {
+          targetRow = DOM.getParent(targetCell);
+        }
+
+        // Select the appropriate row or cell
         switch (hoveringPolicy) {
           case HOVERING_POLICY_ROW:
             if (!DOM.compare(targetRow, hoveringElement)) {
@@ -278,14 +283,26 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
         }
         break;
 
+      // Unhover on mouse out
+      case Event.ONMOUSEOUT:
+        if (hoveringElement != null) {
+          Element toElem = DOM.eventGetToElement(event);
+          if (toElem == null || !DOM.isOrHasChild(hoveringElement, toElem)) {
+            unhover();
+          }
+        }
+        break;
+
       // Select a row on click
       case Event.ONMOUSEDOWN:
-        // Check the target row
-        if (targetRow == null) {
+        // Get the target row
+        targetCell = getEventTargetCell(event);
+        if (targetCell == null) {
           return;
         }
+        targetRow = DOM.getParent(targetCell);
         int targetRowIndex = getRowIndex(targetRow);
-
+        
         switch (selectionPolicy) {
           case SELECTION_POLICY_MULTI_ROW:
             boolean shiftKey = DOM.eventGetShiftKey(event);
