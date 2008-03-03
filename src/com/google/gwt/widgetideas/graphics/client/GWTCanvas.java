@@ -31,7 +31,6 @@ import com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImpl;
 public class GWTCanvas extends Widget {
   
   private final GWTCanvasImpl impl = (GWTCanvasImpl) GWT.create(GWTCanvasImpl.class);
-  // private final GradientFactory gradientFactoryImpl = (GradientFactory) GWT.create(GradientFactory.class);
   
   private int coordHeight = 0;
   private int coordWidth = 0;
@@ -131,36 +130,6 @@ public class GWTCanvas extends Widget {
   public void closePath() {
     impl.closePath();
   }
-  
-  /*
-   * TODO: Awaiting me fixing IE6 gradients...
-   * Creates a LinearGradient Object for use as a fill or stroke style.
-   * 
-   * @param x0 x coord of start point of gradient
-   * @param y0 y coord of start point of gradient
-   * @param x1 x coord of end point of gradient
-   * @param y1 y coord of end point of gradient
-   * @return returns the CanvasGradient
-   *
-  public CanvasGradient createLinearGradient(float x0, float y0, float x1, float y1) {
-     return gradientFactoryImpl.createLinearGradient(x0, y0, x1, y1, getElement());
-  } */
-   
-  /*
-   * TODO: Awaiting me fixing IE6 gradients...
-   * Creates a RadialGradient Object for use as a fill or stroke style.
-   * 
-   * @param x0 x coord of origin of start circle
-   * @param y0 y coord of origin of start circle
-   * @param r0 radius of start circle
-   * @param x1 x coord of origin of end circle
-   * @param y1 y coord of origin of end circle
-   * @param r1 radius of the end circle
-   * @return returns the CanvasGradient
-   *
-  public CanvasGradient createRadialGradient(float x0, float y0, float r0, float x1, float y1, float r1) {
-     return gradientFactoryImpl.createRadialGradient(x0, y0, r0, x1, y1, r1, getElement());
-  } */
   
   /**
    *
@@ -373,14 +342,6 @@ public class GWTCanvas extends Widget {
     impl.setFillStyle(color.toString());
   }
   
-  /* TODO: Awaiting me fixing IE6 gradients...
-   * Set the current Fill Style to the specified color gradient. 
-   * @param grad {@link CanvasGradient} 
-   *
-  public void setFillStyle(CanvasGradient grad) {
-    impl.setFillStyle(grad);
-  } */
-  
   /**
    * Set the global transparency to the specified alpha.
    * @param alpha alpha value
@@ -421,38 +382,6 @@ public class GWTCanvas extends Widget {
    */
   public void setStrokeStyle(Color color) {
     impl.setStrokeStyle(color.toString());
-  }
-  
-  /* TODO: Awaiting me fixing IE6 gradients...
-   * Set the current Stroke Style to the specified color gradient. 
-   * @param grad {@link CanvasGradient} 
-   *
-  public void setStrokeStyle(CanvasGradient grad) {
-    impl.setStrokeStyle(grad);
-  } */
-  
-  /**
-   * @deprecated Not supported in all browsers with native canvas implementation.
-   * Will be removed shortly.
-   * 
-   * The <code>setTransform(m11, m12, m21, m22, dx, dy)</code> method resets the 
-   * current transform to the identity matrix, and then invoke the 
-   * <code>transform(m11, m12, m21, m22, dx, dy)</code> method with the same arguments.
-   *
-   * <p>m11 - m22 define the rotation component of the 2x2 transform matrix, which may include
-   * scaling.</p>
-   *
-   * @param m11 top left cell of 2x2 rotation matrix
-   * @param m12 top right cell of 2x2 rotation matrix
-   * @param m21 bottom left cell of 2x2 rotation matrix
-   * @param m22 bottom right cell of 2x2 rotation matrix
-   * @param dx Translation in X direction
-   * @param dy Translation in Y direction
-   */
-  public void setTransform(float m11, float m12, float m21,
-      float m22, float dx, float dy) {
-    // Make it a no-op until Javadoc is fixed.
-    // impl.setTransform(m11, m12, m21, m22, dx, dy);
   }
  
   /**
@@ -503,6 +432,4 @@ public class GWTCanvas extends Widget {
     impl.translate(x, y);
   }
   
-  // TODO: Implement strokeCircle and fillCircle convenience methods.
- 
 }

@@ -22,6 +22,10 @@ import com.google.gwt.core.client.JavaScriptObject;
  */
 public class ImageHandle extends JavaScriptObject {
 
+  protected ImageHandle() {
+    super();
+  }
+  
   public final native int getHeight()/*-{
     return this.height;
   }-*/;
