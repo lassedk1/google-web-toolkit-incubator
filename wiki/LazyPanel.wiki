@@ -1,0 +1,16 @@
+#summary A panel that helps implement delayed rendering.
+#labels Phase-Design,Type-Widget
+
+= Introduction =
+
+
+||Demo:|| Not created yet||
+||Sample Code:|| Not created yet||
+||Module:||[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/widgetideas/WidgetIdeas.gwt.xml WidgetIdeas]||
+
+
+= Details =
+By default, the LazyPanel is not displayed. Only when `setVisible(true)` is called on the LazyPanel is the underlying widget created. 
+
+This class primarily should be used in conjunction with `StackPanel`, `DisclosurePanel`, and `TabPanel` when the child panels contain relatively heavy weight contents. Using LazyPanel to wrap the creation of those contents can significantly improve user experience.
+  
