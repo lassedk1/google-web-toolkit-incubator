@@ -1321,6 +1321,14 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
         }-*/;
 
   /**
+   * @param rowElem the row element
+   * @return the index of a row
+   */
+  protected int getRowIndex(Element rowElem) {
+    return OverrideDOM.getRowIndex(rowElem);
+  }
+  
+  /**
    * Returns the widgetMap.
    * 
    * @return the widget map

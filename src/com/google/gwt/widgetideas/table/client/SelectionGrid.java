@@ -38,39 +38,19 @@ import java.util.Set;
  */
 public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   /**
-   * Enable hovering of a cell.
+   * This class contains methods used to format a table's cells.
    */
-  public static final int HOVERING_POLICY_CELL = 0;
-
-  /**
-   * Disable hovering.
-   */
-  public static final int HOVERING_POLICY_DISABLED = 1;
-
-  /**
-   * Enable hovering of a row.
-   */
-  public static final int HOVERING_POLICY_ROW = 2;
-
-  /**
-   * Disable row selection.
-   */
-  public static final int SELECTION_POLICY_DISABLED = 3;
-
-  /**
-   * Allow multiple rows to be selected.
-   */
-  public static final int SELECTION_POLICY_MULTI_ROW = 4;
-
-  /**
-   * Allow only one row to be selected at a time.
-   */
-  public static final int SELECTION_POLICY_ONE_ROW = 5;
+  public class SelectionGridCellFormatter extends CellFormatter {
+    @Override
+    protected Element getRawElement(int row, int column) {
+      return super.getRawElement(row, column);
+    }
+  }
 
   /**
    * This class contains methods used to format a table's rows.
    */
-  public class SelectedGridRowFormatter extends RowFormatter {
+  public class SelectionGridRowFormatter extends RowFormatter {
     @Override
     protected Element getRawElement(int row) {
       return super.getRawElement(row);
@@ -78,14 +58,22 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   }
 
   /**
-   * The {@link TableSelectionListener}s attached to this grid.
+   * Selection policies.
+   * 
+   * <ul>
+   * <li>DISABLED - selection is disabled</li>
+   * <li>ONE_ROW - one row can be selected at a time</li>
+   * <li>MULTI_ROW - multiple rows can be selected at a time</li>
+   * </ul>
    */
-  private TableSelectionListenerCollection tableSelectionListeners = null;
+  public static enum SelectionPolicy {
+    DISABLED, ONE_ROW, MULTI_ROW
+  }
 
   /**
-   * The current hovering policy.
+   * The cell element currently being hovered.
    */
-  private int hoveringPolicy = HOVERING_POLICY_CELL;
+  private Element hoveringCellElem = null;
 
   /**
    * The index of the cell currently being hovered.
@@ -93,9 +81,9 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   private int hoveringCellIndex = -1;
 
   /**
-   * The current element being hovered.
+   * The row element currently being hovered.
    */
-  private Element hoveringElement = null;
+  private Element hoveringRowElem = null;
 
   /**
    * The index of the row currently being hovered.
@@ -108,12 +96,6 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   private int lastSelectedRowIndex = -1;
 
   /**
-   * The minimum row index that can be hovered or selected. Used to add header
-   * rows to the grid.
-   */
-  private int minHoverRowIndex = 0;
-
-  /**
    * The rows that are currently selected.
    */
   private Map<Integer, Element> selectedRows = new HashMap<Integer, Element>();
@@ -122,18 +104,23 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    * The selection policy determines if the user can select zero, one, or many
    * rows.
    */
-  private int selectionPolicy = SELECTION_POLICY_MULTI_ROW;
+  private SelectionPolicy selectionPolicy = SelectionPolicy.MULTI_ROW;
+
+  /**
+   * The {@link TableSelectionListener}s attached to this grid.
+   */
+  private TableSelectionListenerCollection tableSelectionListeners = null;
 
   /**
    * Constructor.
    */
   public SelectionGrid() {
     super();
-    setRowFormatter(new SelectedGridRowFormatter());
+    setCellFormatter(new SelectionGridCellFormatter());
+    setRowFormatter(new SelectionGridRowFormatter());
 
     // Sink hover and selection events
-    sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEOUT | Event.ONMOUSEDOWN
-        | Event.ONCLICK);
+    sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEOUT | Event.ONMOUSEDOWN);
   }
 
   /**
@@ -169,11 +156,9 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   public void deselectRow(int row) {
     Element rowElem = selectedRows.remove(new Integer(row));
     if (rowElem != null) {
-      deselectRow(row, rowElem);
-
-      // Fire grid listeners
+      setStyleName(rowElem, "selected", false);
       if (tableSelectionListeners != null) {
-        tableSelectionListeners.fireRowDeselected(row);
+        tableSelectionListeners.fireRowDeselected(this, row);
       }
     }
   }
@@ -184,31 +169,16 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   public void deselectRows() {
     // Deselect all rows
     for (Map.Entry<Integer, Element> entry : selectedRows.entrySet()) {
-      int row = entry.getKey().intValue();
-      deselectRow(row, entry.getValue());
+      setStyleName(entry.getValue(), "selected", false);
     }
 
     // Fire grid listeners
     if (tableSelectionListeners != null) {
-      tableSelectionListeners.fireAllRowsDeselected();
+      tableSelectionListeners.fireAllRowsDeselected(this);
     }
 
     // Clear out the rows
     selectedRows.clear();
-  }
-
-  /**
-   * @return the hovering policy
-   */
-  public int getHoveringPolicy() {
-    return hoveringPolicy;
-  }
-
-  /**
-   * @return the minimum row that can be hovered or selected.
-   */
-  public int getMinHoverRow() {
-    return minHoverRowIndex;
   }
 
   /**
@@ -219,9 +189,31 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   }
 
   /**
+   * Explicitly gets the {@link SelectionGridCellFormatter}. The results of
+   * {@link com.google.gwt.widgetideas.table.client.overrides.HTMLTable#getCellFormatter()}
+   * may also be downcast to a {@link SelectionGridCellFormatter}.
+   * 
+   * @return the FlexTable's cell formatter
+   */
+  public SelectionGridCellFormatter getSelectionGridCellFormatter() {
+    return (SelectionGridCellFormatter) getCellFormatter();
+  }
+
+  /**
+   * Explicitly gets the {@link SelectionGridRowFormatter}. The results of
+   * {@link com.google.gwt.widgetideas.table.client.overrides.HTMLTable#getRowFormatter()}
+   * may also be downcast to a {@link SelectionGridRowFormatter}.
+   * 
+   * @return the FlexTable's cell formatter
+   */
+  public SelectionGridRowFormatter getSelectionGridRowFormatter() {
+    return (SelectionGridRowFormatter) getRowFormatter();
+  }
+
+  /**
    * @return the selection policy
    */
-  public int getSelectionPolicy() {
+  public SelectionPolicy getSelectionPolicy() {
     return selectionPolicy;
   }
 
@@ -243,54 +235,17 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
     Element targetCell = null;
 
     switch (DOM.eventGetType(event)) {
-      // Fire event on cell click
-      case Event.ONCLICK:
-        // Get the target row
-        targetCell = getEventTargetCell(event);
-        if (targetCell == null) {
-          return;
-        }
-        targetRow = DOM.getParent(targetCell);
-        int rowIndex = getRowIndex(targetRow);
-        int cellIndex = OverrideDOM.getCellIndex(targetCell);
-        onCellClicked(rowIndex, cellIndex);
-        if (tableSelectionListeners != null) {
-          tableSelectionListeners.fireCellClicked(rowIndex, cellIndex);
-        }
-        break;
-
-      // Highlight a row on mouse over
+      // Hover the cell on mouse over
       case Event.ONMOUSEOVER:
-        // Get the target cell and row
-        targetCell = getEventTargetCell(event);
-        if (targetCell != null) {
-          targetRow = DOM.getParent(targetCell);
-        }
-
-        // Select the appropriate row or cell
-        switch (hoveringPolicy) {
-          case HOVERING_POLICY_ROW:
-            if (!DOM.compare(targetRow, hoveringElement)) {
-              unhover();
-              hoverRow(targetRow);
-            }
-            break;
-          case HOVERING_POLICY_CELL:
-            if (!DOM.compare(targetCell, hoveringElement)) {
-              unhover();
-              hoverCell(targetCell, targetRow);
-            }
-            break;
-        }
+        hoverCell(getEventTargetCell(event));
         break;
 
       // Unhover on mouse out
       case Event.ONMOUSEOUT:
-        if (hoveringElement != null) {
-          Element toElem = DOM.eventGetToElement(event);
-          if (toElem == null || !DOM.isOrHasChild(hoveringElement, toElem)) {
-            unhover();
-          }
+        Element toElem = DOM.eventGetToElement(event);
+        if (hoveringRowElem != null
+            && (toElem == null || !DOM.isOrHasChild(hoveringRowElem, toElem))) {
+          hoverCell(null);
         }
         break;
 
@@ -303,37 +258,27 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
         }
         targetRow = DOM.getParent(targetCell);
         int targetRowIndex = getRowIndex(targetRow);
-        
-        switch (selectionPolicy) {
-          case SELECTION_POLICY_MULTI_ROW:
-            boolean shiftKey = DOM.eventGetShiftKey(event);
-            boolean ctrlKey = DOM.eventGetCtrlKey(event)
-                || DOM.eventGetMetaKey(event);
 
-            // Prevent default text selection
-            if (ctrlKey || shiftKey) {
-              DOM.eventPreventDefault(event);
-            }
+        // Select the row
+        if (selectionPolicy == SelectionPolicy.MULTI_ROW) {
+          boolean shiftKey = DOM.eventGetShiftKey(event);
+          boolean ctrlKey = DOM.eventGetCtrlKey(event)
+              || DOM.eventGetMetaKey(event);
 
-            // Select the rows
-            selectRow(targetRowIndex, ctrlKey, shiftKey);
-            break;
-          case SELECTION_POLICY_ONE_ROW:
-            selectRow(-1, targetRow, true, true);
-            lastSelectedRowIndex = targetRowIndex;
-            break;
+          // Prevent default text selection
+          if (ctrlKey || shiftKey) {
+            DOM.eventPreventDefault(event);
+          }
+
+          // Select the rows
+          selectRow(targetRowIndex, ctrlKey, shiftKey);
+        } else if (selectionPolicy == SelectionPolicy.ONE_ROW) {
+          selectRow(-1, targetRow, true, true);
+          lastSelectedRowIndex = targetRowIndex;
+          break;
         }
         break;
     }
-  }
-
-  /**
-   * Handle cell click events.
-   * 
-   * @param row the row index
-   * @param cell the cell index
-   */
-  public void onCellClicked(int row, int cell) {
   }
 
   /**
@@ -379,7 +324,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
 
     if (shiftKey && (lastSelectedRowIndex > -1)) {
       // Shift+select rows
-      SelectedGridRowFormatter formatter = (SelectedGridRowFormatter) getRowFormatter();
+      SelectionGridRowFormatter formatter = getSelectionGridRowFormatter();
       int firstRow = Math.min(row, lastSelectedRowIndex);
       int lastRow = Math.max(row, lastSelectedRowIndex);
       lastRow = Math.min(lastRow, getRowCount() - 1);
@@ -389,8 +334,8 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
 
       // Fire grid listeners
       if (tableSelectionListeners != null) {
-        tableSelectionListeners.fireRowsSelected(firstRow, lastRow - firstRow
-            + 1);
+        tableSelectionListeners.fireRowsSelected(this, firstRow, lastRow
+            - firstRow + 1);
       }
     } else if (selectedRows.containsKey(new Integer(row))) {
       // Ctrl+unselect a selected row
@@ -398,36 +343,10 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
       lastSelectedRowIndex = row;
     } else {
       // Select the row
-      SelectedGridRowFormatter formatter = (SelectedGridRowFormatter) getRowFormatter();
+      SelectionGridRowFormatter formatter = getSelectionGridRowFormatter();
       selectRow(row, formatter.getRawElement(row), false, true);
       lastSelectedRowIndex = row;
     }
-  }
-
-  /**
-   * Set the hovering policy.
-   * 
-   * @param hoveringPolicy the hovering policy to use
-   */
-  public void setHoveringPolicy(int hoveringPolicy) {
-    // Check the hovering policy
-    if (hoveringPolicy != HOVERING_POLICY_DISABLED
-        && hoveringPolicy != HOVERING_POLICY_CELL
-        && hoveringPolicy != HOVERING_POLICY_ROW) {
-      throw new IllegalArgumentException("Invalid hoveringPolicy");
-    }
-
-    setHoveringPolicyRaw(hoveringPolicy);
-  }
-
-  /**
-   * Set the index of the first row that can be hovered or selected. Use this
-   * option if the first one or more rows of your Grid are used as headers.
-   * 
-   * @param minRow the min row that can be hovered
-   */
-  public void setMinHoverRow(int minRow) {
-    minHoverRowIndex = Math.max(0, minRow);
   }
 
   /**
@@ -436,32 +355,11 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    * 
    * @param selectionPolicy the selection policy
    */
-  public void setSelectionPolicy(int selectionPolicy) {
-    // Check the selection policy
-    if (selectionPolicy != SELECTION_POLICY_DISABLED
-        && selectionPolicy != SELECTION_POLICY_ONE_ROW
-        && selectionPolicy != SELECTION_POLICY_MULTI_ROW) {
-      throw new IllegalArgumentException("Invalid selectionPolicy");
+  public void setSelectionPolicy(SelectionPolicy selectionPolicy) {
+    if (this.selectionPolicy != selectionPolicy) {
+      deselectRows();
+      this.selectionPolicy = selectionPolicy;
     }
-
-    // Set selection policy
-    deselectRows();
-    this.selectionPolicy = selectionPolicy;
-  }
-
-  /**
-   * @return the element that is currently being hovered
-   */
-  protected Element getHoveringElement() {
-    return hoveringElement;
-  }
-
-  /**
-   * @param rowElem the row element
-   * @return the index of a row
-   */
-  protected int getRowIndex(Element rowElem) {
-    return OverrideDOM.getRowIndex(rowElem);
   }
 
   /**
@@ -475,50 +373,54 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    * Set the current hovering cell.
    * 
    * @param cellElem the cell element
-   * @param rowElem the row element to hover
    */
-  protected void hoverCell(Element cellElem, Element rowElem) {
-    // Check for null cell element
-    if ((cellElem == null) || (rowElem == null)) {
+  protected void hoverCell(Element cellElem) {
+    // Ignore if the cell is already being hovered
+    if (DOM.compare(cellElem, hoveringCellElem)) {
       return;
     }
 
-    int row = getRowIndex(rowElem);
-    if (row >= minHoverRowIndex) {
-      // Highlight the row if not selected
-      setStyleName(cellElem, "hovering", true);
-      hoveringElement = cellElem;
-      hoveringRowIndex = row;
-      hoveringCellIndex = OverrideDOM.getCellIndex(cellElem);
+    // Get the row element
+    Element rowElem = null;
+    if (cellElem != null) {
+      rowElem = DOM.getParent(cellElem);
+    }
 
-      // Fire grid listeners
+    // Unhover the current cell
+    if (hoveringCellElem != null) {
+      setStyleName(hoveringCellElem, "hovering", false);
       if (tableSelectionListeners != null) {
-        tableSelectionListeners.fireCellHover(row, hoveringCellIndex);
+        tableSelectionListeners.fireCellUnhover(this, hoveringRowIndex,
+            hoveringCellIndex);
+      }
+      hoveringCellElem = null;
+      hoveringCellIndex = -1;
+
+      // Unhover the current row if it changed
+      if (!DOM.compare(rowElem, hoveringRowElem)) {
+        setStyleName(hoveringRowElem, "hovering", false);
+        hoveringRowElem = null;
+        hoveringRowIndex = -1;
       }
     }
-  }
 
-  /**
-   * Set the current hovering row.
-   * 
-   * @param rowElem the row element
-   */
-  protected void hoverRow(Element rowElem) {
-    // Check for null row element
-    if (rowElem == null) {
-      return;
-    }
+    // Hover the cell
+    if (cellElem != null) {
+      setStyleName(cellElem, "hovering", true);
+      hoveringCellElem = cellElem;
+      hoveringCellIndex = OverrideDOM.getCellIndex(cellElem);
 
-    int row = getRowIndex(rowElem);
-    if (row >= minHoverRowIndex) {
-      // Highlight the row if not selected
-      setStyleName(rowElem, "hovering", true);
-      hoveringElement = rowElem;
-      hoveringRowIndex = row;
+      // Hover the row if it changed
+      if (hoveringRowElem == null) {
+        setStyleName(rowElem, "hovering", true);
+        hoveringRowElem = rowElem;
+        hoveringRowIndex = getRowIndex(hoveringRowElem);
+      }
 
-      // Fire grid listeners
+      // Fire listeners
       if (tableSelectionListeners != null) {
-        tableSelectionListeners.fireRowHover(row);
+        tableSelectionListeners.fireCellHover(this, hoveringRowIndex,
+            hoveringCellIndex);
       }
     }
   }
@@ -537,10 +439,8 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    */
   @Override
   protected void removeRow(int row) {
-    checkRowBounds(row);
-    deselectRows();
     super.removeRow(row);
-    numRows--;
+    deselectRows();
   }
 
   /**
@@ -553,82 +453,29 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    */
   protected void selectRow(int row, Element rowElem, boolean unselectAll,
       boolean fireEvent) {
-    // Deselect current rows
-    if (unselectAll) {
-      deselectRows();
-    }
-
     // Get the row index if needed
     if (row < 0) {
       row = getRowIndex(rowElem);
     }
 
-    // Select the new row
+    // Ignore request if row already selected
     Integer rowI = new Integer(row);
     if (selectedRows.containsKey(rowI)) {
-      // Ignore request if row already selected
-      return;
-    } else if (row >= minHoverRowIndex) {
-      selectedRows.put(rowI, rowElem);
-      setStyleName(rowElem, "selected", true);
-
-      // Fire grid listeners
-      if (fireEvent && tableSelectionListeners != null) {
-        tableSelectionListeners.fireRowsSelected(row, 1);
-      }
-    }
-  }
-
-  /**
-   * Set the hovering policy without checking that it is valid.
-   * 
-   * @param hoveringPolicy the new hovering policy
-   */
-  protected void setHoveringPolicyRaw(int hoveringPolicy) {
-    if (this.hoveringPolicy != hoveringPolicy) {
-      unhover();
-      this.hoveringPolicy = hoveringPolicy;
-    }
-  }
-
-  /**
-   * Unhighlight the currently hovering row or cell.
-   */
-  protected void unhover() {
-    // Nothing to unhover
-    if (hoveringElement == null) {
       return;
     }
 
-    // Unhighlight the element
-    setStyleName(hoveringElement, "hovering", false);
-    hoveringElement = null;
+    // Deselect current rows
+    if (unselectAll) {
+      deselectRows();
+    }
+
+    // Select the new row
+    selectedRows.put(rowI, rowElem);
+    setStyleName(rowElem, "selected", true);
 
     // Fire grid listeners
-    if (tableSelectionListeners != null) {
-      if (hoveringCellIndex >= 0) {
-        // Unhover the cell
-        tableSelectionListeners.fireCellUnhover(hoveringRowIndex,
-            hoveringCellIndex);
-      } else {
-        // Unhover the row
-        tableSelectionListeners.fireRowUnhover(hoveringRowIndex);
-      }
+    if (fireEvent && tableSelectionListeners != null) {
+      tableSelectionListeners.fireRowsSelected(this, row, 1);
     }
-
-    // Reset the hovering integers
-    hoveringRowIndex = -1;
-    hoveringCellIndex = -1;
-  }
-
-  /**
-   * Deselect a row in the data table. This method does not remove the element
-   * from the selected rows index.
-   * 
-   * @param row the row index
-   * @param rowElem the row element
-   */
-  private void deselectRow(int row, Element rowElem) {
-    DOM.setElementProperty(rowElem, "className", "");
   }
 }

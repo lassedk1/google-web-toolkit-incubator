@@ -20,10 +20,13 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.SourcesTableEvents;
+import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.table.client.SortableColumnsListener;
 import com.google.gwt.widgetideas.table.client.SortableFixedWidthGrid;
+import com.google.gwt.widgetideas.table.client.SourceTableSelectionEvents;
 import com.google.gwt.widgetideas.table.client.TableSelectionListener;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 
@@ -31,7 +34,7 @@ import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
  * Logs events fired by the ScrollTable.
  */
 public class DemoTabPanelLog extends DemoTab implements TableSelectionListener,
-    ClickListener, SortableColumnsListener {
+    ClickListener, SortableColumnsListener, TableListener {
   /**
    * The button used to clear the log.
    */
@@ -52,24 +55,18 @@ public class DemoTabPanelLog extends DemoTab implements TableSelectionListener,
    */
   ScrollPanel scrollPanel = new ScrollPanel(label);
 
-  public void onAllRowsDeselected() {
+  public void onAllRowsDeselected(SourceTableSelectionEvents sender) {
     addText("all rows deselected", "green");
   }
 
-  /**
-   * Fired when a cell is clicked.
-   * 
-   * @param row the row index
-   * @param cell the cell index
-   */
-  public void onCellClicked(int row, int cell) {
+  public void onCellClicked(SourcesTableEvents sender, int row, int cell) {
     addText("cell clicked: (" + row + "," + cell + ")", "#ff00ff");
   }
 
-  public void onCellHover(int row, int cell) {
+  public void onCellHover(SourceTableSelectionEvents sender, int row, int cell) {
   }
 
-  public void onCellUnhover(int row, int cell) {
+  public void onCellUnhover(SourceTableSelectionEvents sender, int row, int cell) {
   }
 
   /**
@@ -108,16 +105,8 @@ public class DemoTabPanelLog extends DemoTab implements TableSelectionListener,
    * 
    * @param row the row index
    */
-  public void onRowDeselected(int row) {
+  public void onRowDeselected(SourceTableSelectionEvents sender, int row) {
     addText("row deselected: " + row, "green");
-  }
-
-  /**
-   * Fired when a row is hovered.
-   * 
-   * @param row the row index
-   */
-  public void onRowHover(int row) {
   }
 
   /**
@@ -126,17 +115,10 @@ public class DemoTabPanelLog extends DemoTab implements TableSelectionListener,
    * @param firstRow the row index of the first row
    * @param numRows the number of selected rows
    */
-  public void onRowsSelected(int firstRow, int numRows) {
+  public void onRowsSelected(SourceTableSelectionEvents sender, int firstRow,
+      int numRows) {
     int lastRow = firstRow + numRows - 1;
     addText("rows selected: " + firstRow + " through " + lastRow, "blue");
-  }
-
-  /**
-   * Fired when a row is unhovered.
-   * 
-   * @param row the row index
-   */
-  public void onRowUnhover(int row) {
   }
 
   @Override
