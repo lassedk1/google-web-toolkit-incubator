@@ -15,11 +15,9 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.SourcesTableEvents;
+import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.widgetideas.table.client.AbstractCellEditor.Callback;
-import com.google.gwt.widgetideas.table.client.overrides.OverrideDOM;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,7 +66,17 @@ public class EditablePagingGrid extends PagingGrid {
   public EditablePagingGrid(TableController tableController) {
     super(tableController);
     this.tableController = tableController;
-    initialize();
+
+    // Show the new cell editor
+    addTableListener(new TableListener() {
+      public void onCellClicked(SourcesTableEvents sender, int row, int cell) {
+        AbstractCellEditor cellEditor = getCellEditor(cell);
+        if (cellEditor != null) {
+          cellEditor.editCell(EditablePagingGrid.this, row - 1, cell,
+              cellEditorCallback);
+        }
+      }
+    });
   }
 
   /**
@@ -78,7 +86,6 @@ public class EditablePagingGrid extends PagingGrid {
    */
   public EditablePagingGrid(TableModel tableModel) {
     this(new TableController(tableModel));
-    initialize();
   }
 
   /**
@@ -102,52 +109,6 @@ public class EditablePagingGrid extends PagingGrid {
   }
 
   /**
-   * Method to process events generated from the browser.
-   * 
-   * @param event the generated event
-   */
-  @Override
-  public void onBrowserEvent(Event event) {
-    if ((getHoveringPolicy() == HOVERING_POLICY_EDITABLE_CELL)
-        && (DOM.eventGetType(event) == Event.ONMOUSEOVER)) {
-      // Get the target cell and row
-      int cellIndex = -1;
-      Element targetRow = null;
-      Element targetCell = getEventTargetCell(event);
-      if (targetCell != null) {
-        targetRow = DOM.getParent(targetCell);
-        cellIndex = OverrideDOM.getCellIndex(targetCell);
-      }
-
-      // Only hover if we have an editor
-      if (!DOM.compare(targetCell, getHoveringElement())) {
-        unhover();
-        if (hasCellEditor(cellIndex)) {
-          hoverCell(targetCell, targetRow);
-        }
-      }
-    } else {
-      // Let super class handle the event instead
-      super.onBrowserEvent(event);
-    }
-  }
-
-  /**
-   * Handle cell click events.
-   * 
-   * @param row the row index
-   * @param cell the cell index
-   */
-  @Override
-  public void onCellClicked(int row, int cell) {
-    // Show the new cell editor
-    AbstractCellEditor cellEditor = getCellEditor(cell);
-    if (cellEditor != null) {
-      cellEditor.editCell(this, row, cell, cellEditorCallback);
-    }
-  }
-
-  /**
    * Set the cell editor for a column.
    * 
    * @param column the column index
@@ -159,27 +120,5 @@ public class EditablePagingGrid extends PagingGrid {
     } else {
       cellEditors.put(new Integer(column), editor);
     }
-  }
-
-  /**
-   * Set the hovering policy.
-   * 
-   * @param hoveringPolicy the hovering policy to use
-   */
-  @Override
-  public void setHoveringPolicy(int hoveringPolicy) {
-    if (hoveringPolicy == HOVERING_POLICY_EDITABLE_CELL) {
-      setHoveringPolicyRaw(hoveringPolicy);
-    } else {
-      super.setHoveringPolicy(hoveringPolicy);
-    }
-  }
-
-  /**
-   * Setup the default properties of this Grid.
-   */
-  private void initialize() {
-    setHoveringPolicy(HOVERING_POLICY_EDITABLE_CELL);
-    setSelectionPolicy(SELECTION_POLICY_DISABLED);
   }
 }

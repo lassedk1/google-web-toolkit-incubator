@@ -62,7 +62,7 @@ public class FixedWidthGrid extends SelectionGrid implements
   /**
    * This class contains methods used to format a table's rows.
    */
-  public class FixedWidthGridRowFormatter extends SelectedGridRowFormatter {
+  public class FixedWidthGridRowFormatter extends SelectionGridRowFormatter {
     @Override
     protected Element getRawElement(int row) {
       return super.getRawElement(row + 1);
