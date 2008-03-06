@@ -10,6 +10,10 @@
   min-width: 18px;
 }
 
+gwt-FastTreeItem .open,.gwt-FastTreeItem .closed {
+  width: 100%;
+}
+
 .gwt-FastTree .selection-bar {
   font-size: 0;
   position: absolute;
@@ -27,8 +31,10 @@
 /************************************
 Visual styling
 */
-.gwt-FastTreeItem .open,.gwt-FastTreeItem .closed {
-  padding-left: 18px;
+.
+.gwt-FastTreeItem .open .treeItemContent,.gwt-FastTreeItem .closed .treeItemContent
+  {
+  margin-left: 18px;
 }
 
 .gwt-FastTreeItem-leaf {
@@ -54,7 +60,7 @@ Visual styling
   background: url('%treeClosed%') no-repeat center left;
 }
 
-.gwt-FastTree .content {
+.gwt-FastTree .treeItemContent {
   padding: 2px;
 }
 
