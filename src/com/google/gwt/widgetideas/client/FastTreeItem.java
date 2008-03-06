@@ -37,6 +37,8 @@ import java.util.List;
 public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems {
   private static final String STYLENAME_SELECTED = "selected";
 
+  // TODO(ECC) change states to enums and move style names to FastTree where
+  // they below.
   private static final int TREE_NODE_LEAF = 1;
   private static final int TREE_NODE_INTERIOR_NEVER_OPENED = 2;
   private static final int TREE_NODE_INTERIOR_OPEN = 3;
@@ -48,7 +50,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   private static final String STYLENAME_CLOSED = "closed";
   private static final String STYLENAME_LEAF = "leaf";
 
-  private static final String STYLENAME_CONTENT = "content";
+  private static final String STYLENAME_CONTENT = "treeItemContent";
 
   /**
    * The base tree item element that will be cloned.
