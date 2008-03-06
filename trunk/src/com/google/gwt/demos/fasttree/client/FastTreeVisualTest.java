@@ -19,9 +19,11 @@ package com.google.gwt.demos.fasttree.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.demos.fasttree.client.TreeBenchmarkHelper.TreeType;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -30,11 +32,13 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.FastTree;
 import com.google.gwt.widgetideas.client.FastTreeItem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Dumping ground for {@link FastTree} visual tests.
@@ -42,12 +46,15 @@ import java.util.ArrayList;
 public class FastTreeVisualTest extends FastTreeDemo implements EntryPoint {
 
   public StackPanel createDemo() {
+    FastTree.addDefaultCSS();
+
     StackPanel p = new StackPanel();
     p.add(treeInTree(), "Internal tree");
     p.add(focusTree(), "Focus");
     p.add(treeWithVarietyWidgets(), "Widgets");
     p.add(textTreeInScroll(), "In scroll");
     p.add(widgetTreeInScroll(), "Widget tree in scroll");
+    p.add(zoomingTree(), "zooming tree");
     return p;
   }
 
@@ -60,7 +67,7 @@ public class FastTreeVisualTest extends FastTreeDemo implements EntryPoint {
       return parent.addItem(value);
     } else if (type == TreeType.HTML) {
       FastTreeItem item = new FastTreeItem();
-      item.setHTML("<h1>" + value + "</h1>");
+      item.setHTML("<a>" + value + "</a>");
       parent.addItem(item);
       return item;
     } else if (type == TreeType.CHECKBOX) {
@@ -218,4 +225,55 @@ public class FastTreeVisualTest extends FastTreeDemo implements EntryPoint {
     sp.setAlwaysShowScrollBars(true);
     return sp;
   }
+
+  private Widget zoomingTree() {
+    VerticalPanel p = new VerticalPanel();
+    final TextBox b = new TextBox();
+
+    p.add(b);
+    final FastTree tree = new FastTree();
+    final HashMap<String, FastTreeItem> treeItems = new HashMap<String, FastTreeItem>();
+
+    b.addKeyboardListener(new KeyboardListener() {
+
+      public void onKeyDown(Widget sender, char keyCode, int modifiers) {
+        if (keyCode == KEY_ENTER) {
+          String value = b.getText().trim();
+          FastTreeItem chosen = treeItems.get(value);
+          if (chosen == null) {
+            Window.alert("No such tree item exists");
+          }
+          tree.setSelectedItem(chosen);
+          tree.ensureSelectedItemVisible();
+        }
+      }
+
+      public void onKeyPress(Widget sender, char keyCode, int modifiers) {
+      }
+
+      public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+      }
+    });
+    ScrollPanel scroller = new ScrollPanel();
+
+    for (int i = 0; i < 10; i++) {
+      FastTreeItem item = tree.addItem("" + i);
+      treeItems.put("" + i, item);
+      for (int j = 0; j < 5; j++) {
+        String value = "" + i + "." + j;
+        FastTreeItem subItem = item.addItem(value);
+        treeItems.put(value, subItem);
+        for (int k = 0; k < 2; k++) {
+          String newValue = i + "." + j + "." + k;
+          treeItems.put(newValue, subItem.addItem(newValue));
+        }
+      }
+    }
+    scroller.setWidget(tree);
+    scroller.setHeight("200px");
+    scroller.setWidth("100px");
+    p.add(scroller);
+    return p;
+  }
+
 }
