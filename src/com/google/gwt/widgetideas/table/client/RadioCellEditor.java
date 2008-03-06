@@ -79,7 +79,7 @@ public class RadioCellEditor extends AbstractCellEditor {
   }
 
   /**
-   * Gets the list of {@link RadioButton} widgets associated with this editor.
+   * Gets the list of {@link RadioButton} widges associated with this editor.
    */
   public List<RadioButton> getRadioButtons() {
     return radios;
