@@ -3,13 +3,11 @@
 */
 .gwt-ToggleButton {
   color: #fff;
- 
   text-align: center;
   cursor: pointer;
   cursor: hand;
   font-size: 80%;
   white-space: nowrap;
- 
 }
 
 div:focus {
@@ -25,63 +23,67 @@ body {
   margin-left: 0;
 }
 
-/* ---------------------------------------------------------------------------
- * Tree
- */
-.gwt-TreeItem,.gwt-TreeItem-selected {
-  
-}
-
-.gwt-Tree {
-  position: relative;
-}
-
-.gwt-TreeItem {
-  color: black;
-  white-space: normal;
-}
-
-.gwt-TreeItem-selected {
-  background-color: #59d;
-  color: white;
-}
-
-.gwt-PinnedPanel {
+.gwt-CollapsablePanel {
   margin: 0px;
   margin-right: 10px;
   float: left;
 }
 
-.gwt-PinnedPanel .hover-bar {
+.gwt-CollapsablePanel .hover-bar {
   position: relative;
   background-color: gray;
   width: 30px;
   height: 100%;
 }
 
-.gwt-PinnedPanel .hover-bar div {
+.gwt-CollapsablePanel .hover-bar div {
   height: 100%;
 }
 
-.gwt-PinnedPanel .mover {
+.gwt-CollapsablePanel .mover {
   border-right: 1px solid #59d;
   border-bottom: 1px solid #59d;
   background-color: white;
-  position: relative;
-  z-index: 100;
-  height:100%;
-}
-
-.gwt-PinnedPanel .gwt-StackPanel {
-  padding-left: 8px;
-}
-
-.gwt-PinnedPanel .content {
   height: 100%;
+  position: relative;
+}
+
+.gwt-CollapsablePanel .gwt-StackPanel {
+  padding-left: 8px;
 }
 
 .nav-tree-title {
   height: 30px;
   background-color: #26a;
 }
+
+/**
+ * Applied to the stack panel, a vertical menu widget that reveals one
+ * category at a time.
+ */
+.gwt-StackPanel {
+  border-spacing: 0px;
+  border: 1px solid #666666;
+  width: 200px;
+  height: 100%;
+}
+
+.gwt-StackPanel .gwt-StackPanelItem {
+  background: #e3e8f3 url(bg_headergradient.gif) repeat-x;
+  color: #666666;
+  border: 1px solid #e3e8f3;
+  padding: 3px 3px 5px 3px;
+  cursor: pointer;
+  cursor: hand;
+  font-size: 14px;
+}
+
+.gwt-StackPanel .gwt-StackPanelItem-selected {
+  color: black;
+  cursor: default;
+}
+
+.gwt-StackPanel .gwt-StackPanelContent {
+  padding: 2px 2px 10px 5px;
+  height:100%;
 }

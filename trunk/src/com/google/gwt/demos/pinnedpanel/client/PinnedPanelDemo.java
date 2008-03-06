@@ -21,20 +21,22 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowResizeListener;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.user.client.ui.Tree;
-import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.client.PinnedPanel;
+import com.google.gwt.widgetideas.client.CollapsiblePanel;
+import com.google.gwt.widgetideas.client.FastTree;
+import com.google.gwt.widgetideas.client.FastTreeItem;
 
 import java.util.ArrayList;
 
@@ -80,24 +82,22 @@ public class PinnedPanelDemo implements EntryPoint {
     }
   }
 
-  MyStackPanel wrapper;
+  ToggleButton controlButton;
 
   /**
    * This is the entry point method.
    */
   public void onModuleLoad() {
 
-    // The toggle Button.
-    ToggleButton toggler = createToggleButton();
-
     // Some random contents to make the tree interesting.
-    Widget contents = createSchoolNavBar(toggler);
+    Panel contents = createSchoolNavBar();
+    FastTree.addDefaultCSS();
 
     // The actual pinned panel.
-    final PinnedPanel pinned = new PinnedPanel(200, toggler, contents);
-
+    final CollapsiblePanel pinned = new CollapsiblePanel();
     RootPanel.get("pinned-panel").add(pinned);
-
+    pinned.initContents(contents);
+    pinned.hookupControlToggle(controlButton);
     sizePinnedPanel(pinned, Window.getClientHeight());
     Window.addWindowResizeListener(new WindowResizeListener() {
       public void onWindowResized(int width, int height) {
@@ -106,42 +106,54 @@ public class PinnedPanelDemo implements EntryPoint {
     });
   }
 
-  private Widget createSchoolNavBar(ToggleButton toggler) {
+  private Panel createSchoolNavBar() {
+    controlButton = createToggleButton();
+    MyStackPanel wrapper = new MyStackPanel();
     FlowPanel navBar = new FlowPanel();
-    navBar.setSize("100%", "100%");
-    HTML title = new HTML("School Directory");
+    navBar.setSize("200px", "100%");
+    final HTML title = new HTML("School Directory");
+
     HorizontalPanel panel = new HorizontalPanel();
     panel.setWidth("100%");
-    panel.add(toggler);
-    panel.setCellHorizontalAlignment(toggler, HasHorizontalAlignment.ALIGN_LEFT);
-    panel.setCellWidth(toggler, "1px");
+    panel.add(controlButton);
+    panel.setCellHorizontalAlignment(controlButton,
+        HasHorizontalAlignment.ALIGN_LEFT);
+    panel.setCellWidth(controlButton, "1px");
     panel.add(title);
     panel.setCellHorizontalAlignment(title, HorizontalPanel.ALIGN_CENTER);
 
     navBar.add(panel);
 
-    panel.setStyleName("nav-tree-title");
+    panel.setStyleName("nav-Tree-title");
     wrapper = new MyStackPanel();
     wrapper.setHeight("250px");
-    Tree contents = new Tree();
+
+    final FastTree contents = new FastTree();
     wrapper.add(contents, "<b>People</b>", true);
 
     wrapper.add(new Label("None"), "<b>Academics</b>", true);
     navBar.add(wrapper);
 
-    TreeItem students = contents.addItem("Students");
+    FastTreeItem students = contents.addItem("Students");
     students.addItem("Jill");
     students.addItem("Jack");
     students.addItem("Molly");
     students.addItem("Ms. Muffat");
 
-    TreeItem teachers = contents.addItem("Teachers");
+    FastTreeItem teachers = contents.addItem("Teachers");
     teachers.addItem("Mrs Black");
     teachers.addItem("Mr White");
 
-    TreeItem admin = contents.addItem("Administrators");
+    FastTreeItem admin = contents.addItem("Administrators");
     admin.addItem("The Soup Nazi");
     admin.addItem("The Grand High Supreme Master Pubba");
+    title.addClickListener(new ClickListener() {
+
+      public void onClick(Widget sender) {
+        Window.alert("this:" + contents.getAbsoluteLeft());
+      }
+
+    });
     return navBar;
   }
 
@@ -152,10 +164,7 @@ public class PinnedPanelDemo implements EntryPoint {
     return toggler;
   }
 
-  private void sizePinnedPanel(final PinnedPanel pinned, int height) {
-    // TODO(ECC) remove magic numbers when I have time to pound in it.
-    pinned.setHeight(height - 120 + "px");
-    wrapper.setHeight(height - 160 + "px");
-    wrapper.showStack(wrapper.getSelectedIndex());
+  private void sizePinnedPanel(final CollapsiblePanel pinned, int height) {
+    pinned.setHeight(height - 10 + "px");
   }
 }
