@@ -17,16 +17,20 @@ package com.google.gwt.widgetideas.datepicker.client.impl;
 
 import com.google.gwt.user.client.ui.Label;
 
+import java.util.Date;
+import java.util.HashMap;
+
 /**
- * Public class DatePickerCell is being used by DatePicker class to keep
- * the labels of controls and dates in the grid. It has the facility to attach
- * and retrieve integer type and value fields. The type and value fields
- * could be used by DatePicker to attach the type and specific nature of
- * actions on click. 
+ * Public class DatePickerCell is being used by DatePicker class to keep the
+ * labels of controls and dates in the grid. It has the facility to attach and
+ * retrieve integer type and value fields. The type and value fields could be
+ * used by DatePicker to attach the type and specific nature of actions on
+ * click.
  * 
  */
 
 public class DatePickerCell extends Label {
+  private static HashMap<Date, DatePickerCell> map = new HashMap<Date, DatePickerCell>();
 
   private int type;
   private int value;
@@ -34,12 +38,13 @@ public class DatePickerCell extends Label {
   /**
    * Default constructor.
    */
-  public DatePickerCell() { }
+  public DatePickerCell() {
+  }
 
   /**
    * Constructor of DatePickerCell.
    * 
-   * @param text - string to be set to the label 
+   * @param text - string to be set to the label
    */
   public DatePickerCell(String text) {
     this.setText(text);
@@ -48,8 +53,8 @@ public class DatePickerCell extends Label {
   /**
    * Constructor of DatePickerCell.
    * 
-   * @param text  - string to be set to the label 
-   * @param type  - type to be associated to the label
+   * @param text - string to be set to the label
+   * @param type - type to be associated to the label
    * @param value - value to be associated to the label
    */
   public DatePickerCell(String text, int type, int value) {
@@ -61,12 +66,12 @@ public class DatePickerCell extends Label {
   /**
    * Creates a clone of the DatePickerCell object.
    * 
-   * @return Object - with the text, 
+   * @return Object - with the text,
    */
   public Object clone() {
 
-    DatePickerCell newCell =
-      new DatePickerCell( this.getText(), this.type, this.value);
+    DatePickerCell newCell = new DatePickerCell(this.getText(), this.type,
+        this.value);
 
     return newCell;
   }
