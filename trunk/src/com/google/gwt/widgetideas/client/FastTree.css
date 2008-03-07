@@ -10,7 +10,7 @@
   min-width: 18px;
 }
 
-gwt-FastTreeItem .open,.gwt-FastTreeItem .closed {
+.gwt-FastTreeItem .open,.gwt-FastTreeItem .closed {
   width: 100%;
 }
 
@@ -31,8 +31,7 @@ gwt-FastTreeItem .open,.gwt-FastTreeItem .closed {
 /************************************
 Visual styling
 */
-.
-.gwt-FastTreeItem .open .treeItemContent,.gwt-FastTreeItem .closed .treeItemContent
+.gwt-FastTree .open .treeItemContent,.gwt-FastTree  .closed .treeItemContent
   {
   margin-left: 18px;
 }
