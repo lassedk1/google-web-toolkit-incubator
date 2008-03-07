@@ -28,7 +28,9 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentC
 import com.google.gwt.user.client.ui.HasVerticalAlignment.VerticalAlignmentConstant;
 import com.google.gwt.widgetideas.table.client.HasTableCells;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * This class should replace the actual class of the same name.
@@ -615,6 +617,135 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
   }
 
   /**
+   * Creates a mapping from elements to their associated widgets.
+   */
+  protected static class WidgetMapper {
+
+    private static class FreeNode {
+      int index;
+      FreeNode next;
+
+      public FreeNode(int index, FreeNode next) {
+        this.index = index;
+        this.next = next;
+      }
+    }
+
+    private static native void clearWidgetIndex(Element elem) /*-{
+                    elem["__widgetID"] = null;
+                    }-*/;
+
+    private static native int getWidgetIndex(Element elem) /*-{
+                    var index = elem["__widgetID"];
+                    return (index == null) ? -1 : index;
+                    }-*/;
+
+    private static native void setWidgetIndex(Element elem, int index) /*-{
+                    elem["__widgetID"] = index;
+                    }-*/;
+
+    private FreeNode freeList = null;
+
+    private final ArrayList widgetList = new ArrayList();
+
+    /**
+     * Returns the widget associated with the given element.
+     * 
+     * @param elem widget's element
+     * @return the widget
+     */
+    public Widget getWidget(Element elem) {
+      int index = getWidgetIndex(elem);
+      if (index < 0) {
+        return null;
+      }
+      return (Widget) widgetList.get(index);
+    }
+
+    /**
+     * Adds the Widget.
+     * 
+     * @param widget widget to add
+     */
+    public void putWidget(Widget widget) {
+      int index;
+      if (freeList == null) {
+        index = widgetList.size();
+        widgetList.add(widget);
+      } else {
+        index = freeList.index;
+        widgetList.set(index, widget);
+        freeList = freeList.next;
+      }
+      setWidgetIndex(widget.getElement(), index);
+    }
+
+    /**
+     * Remove the widget associated with the given element.
+     * 
+     * @param elem the widget's element
+     */
+    public void removeWidgetByElement(Element elem) {
+      int index = getWidgetIndex(elem);
+      removeImpl(elem, index);
+    }
+
+    /**
+     * Creates an iterator of widgets.
+     * 
+     * @return the iterator
+     */
+    public Iterator widgetIterator() {
+      // TODO: look at using the WidgetIterators class!
+      return new Iterator() {
+        int lastIndex = -1;
+        int nextIndex = -1;
+        {
+          findNext();
+        }
+
+        public boolean hasNext() {
+          return nextIndex < widgetList.size();
+        }
+
+        public Object next() {
+          if (!hasNext()) {
+            throw new NoSuchElementException();
+          }
+          Object result = widgetList.get(nextIndex);
+          lastIndex = nextIndex;
+          findNext();
+          return result;
+        }
+
+        public void remove() {
+          if (lastIndex < 0) {
+            throw new IllegalStateException();
+          }
+          Widget w = (Widget) widgetList.get(lastIndex);
+          assert (w.getParent() instanceof HTMLTable);
+          w.removeFromParent();
+          lastIndex = -1;
+        }
+
+        private void findNext() {
+          while (++nextIndex < widgetList.size()) {
+            if (widgetList.get(nextIndex) != null) {
+              return;
+            }
+          }
+        }
+      };
+    }
+
+    private void removeImpl(Element elem, int index) {
+      clearWidgetIndex(elem);
+      widgetList.set(index, null);
+      freeList = new FreeNode(index, freeList);
+    }
+  }
+
+  /**
    * Table's body.
    */
   private Element bodyElem;
@@ -649,7 +780,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
    */
   private TableListenerCollection tableListeners;
 
-  private ElementMapper<Widget> widgetMap = new ElementMapper<Widget>();
+  private WidgetMapper widgetMap = new WidgetMapper();
 
   /**
    * Create a new empty HTML Table.
@@ -867,7 +998,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
    * @return the iterator
    */
   public Iterator iterator() {
-    return widgetMap.iterator();
+    return widgetMap.widgetIterator();
   }
 
   /**
@@ -919,7 +1050,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
     DOM.removeChild(DOM.getParent(elem), elem);
 
     // Logical detach.
-    widgetMap.removeByElement(elem);
+    widgetMap.removeWidgetByElement(elem);
     return true;
   }
 
@@ -1049,7 +1180,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
       DOM.setInnerHTML(getCellContainer(td), "");
 
       // Logical attach.
-      widgetMap.put(widget);
+      widgetMap.putWidget(widget);
 
       // Physical attach.
       DOM.appendChild(getCellContainer(td), widget.getElement());
@@ -1190,19 +1321,11 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
         }-*/;
 
   /**
-   * @param rowElem the row element
-   * @return the index of a row
-   */
-  protected int getRowIndex(Element rowElem) {
-    return OverrideDOM.getRowIndex(rowElem);
-  }
-  
-  /**
    * Returns the widgetMap.
    * 
    * @return the widget map
    */
-  protected ElementMapper getWidgetMap() {
+  protected WidgetMapper getWidgetMap() {
     return widgetMap;
   }
 
@@ -1268,7 +1391,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
     Element maybeChild = DOM.getFirstChild(container);
     Widget widget = null;
     if (maybeChild != null) {
-      widget = widgetMap.get(maybeChild);
+      widget = widgetMap.getWidget(maybeChild);
     }
     if (widget != null) {
       // If there is a widget, remove it.
@@ -1394,7 +1517,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
     while (widgets.hasNext()) {
       orphan((Widget) widgets.next());
     }
-    widgetMap = new ElementMapper();
+    widgetMap = new WidgetMapper();
   }
 
   /**
@@ -1410,7 +1533,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
     if (child == null) {
       return null;
     } else {
-      return widgetMap.get(child);
+      return widgetMap.getWidget(child);
     }
   }
 }

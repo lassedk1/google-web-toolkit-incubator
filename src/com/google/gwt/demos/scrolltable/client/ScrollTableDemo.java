@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.widgetideas.table.client.FixedWidthFlexTable;
 import com.google.gwt.widgetideas.table.client.FixedWidthGrid;
 import com.google.gwt.widgetideas.table.client.ScrollTable;
+import com.google.gwt.widgetideas.table.client.SelectionGrid;
 import com.google.gwt.widgetideas.table.client.SortableFixedWidthGrid;
 import com.google.gwt.widgetideas.table.client.overrides.FlexTable.FlexCellFormatter;
 
@@ -58,6 +59,7 @@ public class ScrollTableDemo implements EntryPoint {
   public static SortableFixedWidthGrid getDataTable() {
     if (dataTable == null) {
       dataTable = new SortableFixedWidthGrid();
+      dataTable.setHoveringPolicy(SelectionGrid.HOVERING_POLICY_ROW);
     }
     return dataTable;
   }
