@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Google Inc.
+ * Copyright 2007 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,45 +21,60 @@ package com.google.gwt.widgetideas.table.client;
 public interface TableSelectionListener {
   /**
    * Fired when all rows are deselected.
-   * 
-   * @param sender the source of the event
    */
-  void onAllRowsDeselected(SourceTableSelectionEvents sender);
+  void onAllRowsDeselected();
+
+  /**
+   * Fired when a cell is clicked.
+   * 
+   * @param row the row index
+   * @param cell the cell index
+   */
+  void onCellClicked(int row, int cell);
 
   /**
    * Fired when a cell is hovered.
    * 
-   * @param sender the source of the event
    * @param row the row index
    * @param cell the cell index
    */
-  void onCellHover(SourceTableSelectionEvents sender, int row, int cell);
+  void onCellHover(int row, int cell);
 
   /**
    * Fired when a cell is unhovered.
    * 
-   * @param sender the source of the event
    * @param row the row index
    * @param cell the cell index
    */
-  void onCellUnhover(SourceTableSelectionEvents sender, int row, int cell);
+  void onCellUnhover(int row, int cell);
 
   /**
    * Fired when a single row is deselected. This method will not fire when all
    * rows are deselected. In that case, use the onAllRowsDeselected events.
    * 
-   * @param sender the source of the event
    * @param row the row index
    */
-  void onRowDeselected(SourceTableSelectionEvents sender, int row);
+  void onRowDeselected(int row);
+
+  /**
+   * Fired when a row is hovered.
+   * 
+   * @param row the row index
+   */
+  void onRowHover(int row);
 
   /**
    * Fired when one or more rows are selected.
    * 
-   * @param sender the source of the event
    * @param firstRow the row index of the first row
    * @param numRows the number of selected rows
    */
-  void onRowsSelected(SourceTableSelectionEvents sender, int firstRow,
-      int numRows);
+  void onRowsSelected(int firstRow, int numRows);
+
+  /**
+   * Fired when a row is unhovered.
+   * 
+   * @param row the row index
+   */
+  void onRowUnhover(int row);
 }
