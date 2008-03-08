@@ -90,8 +90,8 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     }
 
     protected boolean processSizeChange(float shouldBe) {
-      currentOffshift =
-          (int) (maxOffshift * ((float) 1.0 - shouldBe)) - MIN_SLIDE_STEP;
+      currentOffshift = (int) (maxOffshift * ((float) 1.0 - shouldBe))
+          - MIN_SLIDE_STEP;
       currentOffshift = Math.max(currentOffshift, 0);
       setPanelPos(currentOffshift);
       return currentOffshift > 0;
@@ -194,15 +194,13 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   private DelayHide delayedHide = new DelayHide();
 
   private int width;
-
   private int maxOffshift;
   private int currentOffshift;
   private Panel mover;
   private SimplePanel hoverBar;
   private ToggleButton collapseToggle;
   private AbsolutePanel master;
-  private ChangeListenerCollection changeListeners =
-      new ChangeListenerCollection();
+  private ChangeListenerCollection changeListeners = new ChangeListenerCollection();
   private Widget contents;
 
   /**
@@ -225,7 +223,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
         if (!CollapsiblePanel.this.collapseToggle.isDown()) {
           switch (DOM.eventGetType(event)) {
 
-            case Event.ONMOUSEOUT:    
+            case Event.ONMOUSEOUT:
               Element to = DOM.eventGetToElement(event);
               if (to != null && DOM.isOrHasChild(master.getElement(), to)) {
                 break;
@@ -270,8 +268,8 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     // Create the contents container.
     mover = new SimplePanel();
     mover.setStyleName("mover");
-
     master.add(mover, 0, 0);
+    master.setStyleName("gwt-CollapsiblePanel");
 
     state = State.EXPANDED;
   }
@@ -329,7 +327,6 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     this.contents = contents;
     mover.add((Widget) contents);
 
-
     if (isAttached()) {
       refreshWidth();
     }
@@ -367,12 +364,12 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
       throw new IllegalStateException(
           "Cannot set the width of the collapsible panel before its contents are initialized");
     }
-    mover.setWidth(width);
+    contents.setWidth(width);
     refreshWidth();
   }
 
   /**
-   * Display this panel in its collaped state.
+   * Display this panel in its collapsed state.
    */
   protected void becomeCollapsed() {
     int hoverBarWidth = hoverBar.getOffsetWidth();
