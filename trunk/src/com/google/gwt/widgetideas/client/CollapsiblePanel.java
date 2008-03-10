@@ -51,6 +51,12 @@ import java.util.Iterator;
 public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     HasWidgets {
 
+  public static class Styles {
+    static String DEFAULT = "gwt-CollapsiblePanel";
+    static String CONTAINER = "container";
+    static String HOVER_BAR = "hover-bar";
+  }
+
   /**
    * Delays showing of the {@link CollapsiblePanel}.
    */
@@ -178,11 +184,6 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    */
   private static final int DELAY_MILLI = 400;
 
-  /**
-   * Default style name.
-   */
-  private static final String DEFAULT_STYLENAME = "gwt-CollapsablePanel";
-
   State state;
 
   private ShowingTimer overlayTimer = new ShowingTimer();
@@ -196,7 +197,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   private int width;
   private int maxOffshift;
   private int currentOffshift;
-  private Panel mover;
+  private Panel container;
   private SimplePanel hoverBar;
   private ToggleButton collapseToggle;
   private AbsolutePanel master;
@@ -258,19 +259,17 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
 
     DOM.setStyleAttribute(master.getElement(), "overflow", "visible");
     initWidget(master);
-    setStyleName(DEFAULT_STYLENAME);
+    setStyleName(Styles.DEFAULT);
 
     // Create hovering container.
     hoverBar = new SimplePanel();
-    hoverBar.setStyleName("hover-bar");
+    hoverBar.setStyleName(Styles.HOVER_BAR);
     master.add(hoverBar, 0, 0);
 
     // Create the contents container.
-    mover = new SimplePanel();
-    mover.setStyleName("mover");
-    master.add(mover, 0, 0);
-    master.setStyleName("gwt-CollapsiblePanel");
-
+    container = new SimplePanel();
+    container.setStyleName(Styles.CONTAINER);
+    master.add(container, 0, 0);
     state = State.EXPANDED;
   }
 
@@ -325,7 +324,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     }
 
     this.contents = contents;
-    mover.add((Widget) contents);
+    container.add(contents);
 
     if (isAttached()) {
       refreshWidth();
@@ -397,7 +396,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     if (isAttached()) {
       refreshWidth();
     }
-    DOM.setStyleAttribute(mover.getElement(), "left", "0px");
+    DOM.setStyleAttribute(container.getElement(), "left", "0px");
     state = State.EXPANDED;
   }
 
@@ -420,7 +419,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   }
 
   protected void setPanelPos(int pos) {
-    DOM.setStyleAttribute(mover.getElement(), "left", pos - width + "px");
+    DOM.setStyleAttribute(container.getElement(), "left", pos - width + "px");
   }
 
   protected void show() {
@@ -435,10 +434,10 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   private void refreshWidth() {
 
     // Now include borders into master.
-    width = mover.getOffsetWidth();
+    width = container.getOffsetWidth();
     if (width == 0) {
       throw new IllegalStateException(
-          "The underlying content width cannot be 0");
+          "The underlying content width cannot be 0. Please ensure that the .container css style has a fixed width");
     }
     master.setWidth(width + "px");
   }
