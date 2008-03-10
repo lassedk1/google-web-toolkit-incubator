@@ -102,8 +102,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Add the default style sheet and images.
    */
   public static void addDefaultCSS() {
-    DefaultResources instance =
-        (DefaultResources) GWT.create(DefaultResources.class);
+    DefaultResources instance = (DefaultResources) GWT.create(DefaultResources.class);
     if (LocaleInfo.getCurrentLocale().isRTL()) {
       StyleInjector.injectStylesheet(instance.cssRTL().getText(), instance);
     } else {
@@ -489,7 +488,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Selects a specified item.
    * 
    * @param item the item to be selected, or <code>null</code> to deselect all
-   *        items
+   *          items
    */
   public void setSelectedItem(FastTreeItem item) {
     setSelectedItem(item, true);
@@ -499,7 +498,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Selects a specified item.
    * 
    * @param item the item to be selected, or <code>null</code> to deselect all
-   *        items
+   *          items
    * @param fireEvents <code>true</code> to allow selection events to be fired
    */
   public void setSelectedItem(FastTreeItem item, boolean fireEvents) {
@@ -507,7 +506,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       if (curSelection == null) {
         return;
       }
-      curSelection.setSelection(false);
+      curSelection.setSelection(false,fireEvents);
       curSelection = null;
       return;
     }
@@ -581,7 +580,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       if (curSelection.beforeSelectionLost() == false) {
         return;
       }
-      curSelection.setSelection(false);
+      curSelection.setSelection(false, fireEvents);
     }
 
     curSelection = item;
@@ -595,7 +594,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       }
 
       // Select the item and fire the selection event.
-      curSelection.setSelection(true);
+      curSelection.setSelection(true, fireEvents);
     }
   }
 
@@ -659,10 +658,10 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Disables the selection text on IE.
    */
   private native void disableSelection(Element element) /*-{
-            element.onselectstart = function() {
-               return false;
-            };
-         }-*/;
+                      element.onselectstart = function() {
+                         return false;
+                      };
+                   }-*/;
 
   private boolean elementClicked(FastTreeItem root, Event event) {
     Element target = DOM.eventGetTarget(event);
@@ -670,23 +669,12 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     collectElementChain(chain, getElement(), target);
     FastTreeItem item = findItemByChain(chain, 0, root);
     if (item != null) {
-      if (item.isInteriorNode()) {
-        boolean switchState;
-        if (LocaleInfo.getCurrentLocale().isRTL()) {
-          switchState = getStyleName(target).indexOf("placeholder") != -1;
-        } else {
-          int mousePos = DOM.eventGetClientX(event);
-          switchState =
-              DOM.isOrHasChild(item.getControlElement(), target)
-                  && (mousePos - item.getAbsoluteLeft() < item
-                      .getControlImageWidth());
-        }
-        if (switchState) {
-          item.setState(!item.isOpen(), true);
-          moveSelectionBar(curSelection);
-          disableSelection(target);
-          return false;
-        }
+      if (item.isInteriorNode()
+          && item.getControlElement().equals(target)) {
+        item.setState(!item.isOpen(), true);
+        moveSelectionBar(curSelection);
+        disableSelection(target);
+        return false;
       }
       onSelection(item, true, !shouldTreeDelegateFocusToElement(target));
       return true;
@@ -711,8 +699,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     for (int i = 0, n = root.getChildCount(); i < n; ++i) {
       FastTreeItem child = root.getChild(i);
       if (DOM.compare(child.getElement(), hCurElem)) {
-        FastTreeItem retItem =
-            findItemByChain(chain, idx + 1, root.getChild(i));
+        FastTreeItem retItem = findItemByChain(chain, idx + 1, root.getChild(i));
         if (retItem == null) {
           return child;
         }
@@ -839,17 +826,16 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   }
 
   private native boolean shouldTreeDelegateFocusToElement(Element elem) /*-{
-     var name = elem.nodeName;
-     return ((name == "SELECT") ||
-       (name == "INPUT")  ||
-       (name == "TEXTAREA") ||
-       (name == "OPTION") ||
-       (name == "BUTTON") ||
-       (name == "LABEL") 
-     );
-    }-*/;
+               var name = elem.nodeName;
+               return ((name == "SELECT") ||
+                 (name == "INPUT")  ||
+                 (name == "TEXTAREA") ||
+                 (name == "OPTION") ||
+                 (name == "BUTTON") ||
+                 (name == "LABEL") 
+               );
+              }-*/;
 }
-
 
 /**
  * A collection of convenience factories for creating iterators for widgets.

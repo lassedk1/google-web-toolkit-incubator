@@ -508,9 +508,9 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * @param selected <code>true</code> to select the item, <code>false</code>
    *          to deselect it
    */
-  void setSelection(boolean selected) {
-    setStyleName(getContentElem(), STYLENAME_SELECTED, selected);
-    if (selected) {
+  void setSelection(boolean selected, boolean fireEvents) {
+    setStyleName(getControlElement(), STYLENAME_SELECTED, selected);
+    if (selected && fireEvents) {
       onSelected();
     }
   }
@@ -585,11 +585,14 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   }
 
   private void showClosedImage() {
-    setStyleName(getControlElement(), STYLENAME_CLOSED);
+    setStyleName(getControlElement(), STYLENAME_OPEN, false);
+    setStyleName(getControlElement(), STYLENAME_CLOSED, true);
+
   }
 
   private void showOpenImage() {
-    setStyleName(getControlElement(), STYLENAME_OPEN);
+    setStyleName(getControlElement(), STYLENAME_CLOSED, false);
+    setStyleName(getControlElement(), STYLENAME_OPEN, true);
   }
 
 }

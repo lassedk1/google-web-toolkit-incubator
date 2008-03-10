@@ -63,6 +63,6 @@ Visual styling
   padding: 2px;
 }
 
-.gwt-FastTree .selected {
+.gwt-FastTree .selected .treeItemContent {
   background: #e3e8f3 url('%selectionBar%') repeat-x;
 }
