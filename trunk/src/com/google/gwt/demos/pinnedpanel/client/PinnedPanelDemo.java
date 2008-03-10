@@ -74,8 +74,8 @@ public class PinnedPanelDemo implements EntryPoint {
       if (this.isAttached()) {
         ScrollPanel me = (ScrollPanel) scrollers.get(index);
         me.setHeight("1px");
-        Element tr = DOM.getChild(DOM.getFirstChild(getElement()),
-            index * 2 + 1);
+        Element tr =
+            DOM.getChild(DOM.getFirstChild(getElement()), index * 2 + 1);
         int trHeight = DOM.getElementPropertyInt(tr, "offsetHeight");
         me.setHeight(trHeight + "px");
       }
@@ -97,6 +97,7 @@ public class PinnedPanelDemo implements EntryPoint {
     final CollapsiblePanel pinned = new CollapsiblePanel();
     RootPanel.get("pinned-panel").add(pinned);
     pinned.initContents(contents);
+    pinned.setWidth("200px");
     pinned.hookupControlToggle(controlButton);
     sizePinnedPanel(pinned, Window.getClientHeight());
     Window.addWindowResizeListener(new WindowResizeListener() {
