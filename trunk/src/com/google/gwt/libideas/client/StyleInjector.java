@@ -47,8 +47,7 @@ public class StyleInjector {
      }-*/;
   }
 
-  private static final StyleInjectorImpl IMPL =
-      (StyleInjectorImpl) GWT.create(StyleInjectorImpl.class);
+  private static final StyleInjectorImpl IMPL = (StyleInjectorImpl) GWT.create(StyleInjectorImpl.class);
 
   /**
    * Add a stylesheet to the document.
@@ -75,9 +74,8 @@ public class StyleInjector {
       for (int i = 0; i < prototypes.length; i++) {
         ResourcePrototype p = prototypes[i];
         if (p instanceof DataResource) {
-          contents =
-              contents.replaceAll("%" + p.getName() + "%", ((DataResource) p)
-                  .getUrl());
+          contents = contents.replaceAll("%" + p.getName() + "%",
+              ((DataResource) p).getUrl());
         }
       }
     }
