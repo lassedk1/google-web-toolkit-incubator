@@ -51,6 +51,10 @@ import java.util.Iterator;
 public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     HasWidgets {
 
+  /**
+   * {@link CollapsiblePanel} styles.
+   * 
+   */
   public static class Styles {
     static String DEFAULT = "gwt-CollapsiblePanel";
     static String CONTAINER = "container";
@@ -127,8 +131,6 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
 
     long started;
 
-    boolean fireChangeListeners = false;
-
     public void run() {
       float hasTaken = System.currentTimeMillis() - started;
       float shouldBe = hasTaken / TIME_TO_SLIDE;
@@ -136,10 +138,6 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
       if (processSizeChange(shouldBe)) {
         this.schedule(OVERLAY_SPEED);
       } else {
-        if (fireChangeListeners) {
-          changeListeners.fireChange(CollapsiblePanel.this);
-          fireChangeListeners = false;
-        }
         finish();
       }
     }
