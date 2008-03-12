@@ -21,6 +21,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowResizeListener;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -74,8 +75,8 @@ public class PinnedPanelDemo implements EntryPoint {
       if (this.isAttached()) {
         ScrollPanel me = (ScrollPanel) scrollers.get(index);
         me.setHeight("1px");
-        Element tr =
-            DOM.getChild(DOM.getFirstChild(getElement()), index * 2 + 1);
+        Element tr = DOM.getChild(DOM.getFirstChild(getElement()),
+            index * 2 + 1);
         int trHeight = DOM.getElementPropertyInt(tr, "offsetHeight");
         me.setHeight(trHeight + "px");
       }
@@ -97,8 +98,15 @@ public class PinnedPanelDemo implements EntryPoint {
     final CollapsiblePanel pinned = new CollapsiblePanel();
     RootPanel.get("pinned-panel").add(pinned);
     pinned.initContents(contents);
-    pinned.setWidth("200px");
     pinned.hookupControlToggle(controlButton);
+    pinned.addChangeListener(new ChangeListener() {
+
+      public void onChange(Widget sender) {
+        RootPanel.get().add(
+            new Label("Pinned panel collapsed:" + pinned.isCollapsed()));
+      }
+
+    });
     sizePinnedPanel(pinned, Window.getClientHeight());
     Window.addWindowResizeListener(new WindowResizeListener() {
       public void onWindowResized(int width, int height) {

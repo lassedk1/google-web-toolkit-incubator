@@ -23,9 +23,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
-
 import com.google.gwt.widgetideas.client.CurrencyWidget;
 import com.google.gwt.widgetideas.client.CurrencyWidgetWithPreview;
 

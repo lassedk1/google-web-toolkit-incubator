@@ -30,6 +30,15 @@ import java.util.Iterator;
  */
 public class FastTreeTest extends BasicWidgetTestBase {
 
+  public void testPreserveCustomStyleNames() {
+    FastTree t = new FastTree();
+    FastTreeItem item = t.addItem("hello");
+    item.setStylePrimaryName("myStyle");
+    assertTrue(item.getStyleName().contains("myStyle"));
+    assertTrue(item.getStyleName().contains("myStyle-leaf"));
+    item.addItem("a new child");
+  }
+
   public void testFastTree() {
     // Simple widget
     FastTree t = new FastTree();
