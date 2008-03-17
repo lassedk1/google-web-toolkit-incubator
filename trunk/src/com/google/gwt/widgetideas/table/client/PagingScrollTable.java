@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,280 +16,464 @@
 package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.TextBoxBase;
+import com.google.gwt.user.client.ui.SourcesTableEvents;
+import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.widgetideas.table.client.AbstractCellEditor.CellEditInfo;
+import com.google.gwt.widgetideas.table.client.SortableGrid.ColumnSorter;
+import com.google.gwt.widgetideas.table.client.SortableGrid.ColumnSorterCallback;
+import com.google.gwt.widgetideas.table.client.TableModel.Callback;
+import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
+import com.google.gwt.widgetideas.table.client.TableModel.Request;
+import com.google.gwt.widgetideas.table.client.TableModel.Response;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * A {@link ScrollTable} that acts as a view for an underlying
  * {@link TableModel}.
  * 
- * <h3>CSS Style Rules</h3>
- * <ul class="css">
- * <li> .gwt-ScrollTable .pagingOptions { paging options panel } </li>
- * <li> .gwt-ScrollTable .pagingOptions .errorLabel { error text in paging
- * options }</li>
- * </ul>
+ * @param <R> the data type of the row values
  */
-public class PagingScrollTable extends ScrollTable {
+public class PagingScrollTable<R> extends ScrollTable implements
+    SourceRowPagingEvents {
   /**
-   * An {@link com.google.gwt.user.client.ui.ImageBundle} that provides images
-   * for {@link PagingScrollTable}.
+   * The renderer used to set cell contents.
    */
-  public static interface PagingScrollTableImages extends ScrollTableImages {
+  public static interface CellRenderer {
     /**
-     * An image used to navigate to the first page.
+     * Render the contents of a cell.
      * 
-     * @return a prototype of this image
+     * @param grid the grid to render the contents in
+     * @param row the row index
+     * @param column the column index
+     * @param data the data to render
      */
-    AbstractImagePrototype scrollTableViewFirstPage();
-
-    /**
-     * An image used to navigate to the last page.
-     * 
-     * @return a prototype of this image
-     */
-    AbstractImagePrototype scrollTableViewLastPage();
-
-    /**
-     * An image used to navigate to the next page.
-     * 
-     * @return a prototype of this image
-     */
-    AbstractImagePrototype scrollTableViewNextPage();
-
-    /**
-     * An image used to navigate to the previous page.
-     * 
-     * @return a prototype of this image
-     */
-    AbstractImagePrototype scrollTableViewPrevPage();
+    void renderCell(FixedWidthGrid grid, int row, int column, Object data);
   }
 
   /**
-   * The label used to display errors.
+   * An iterator over the visible rows in an iterator over many rows.
    */
-  private HTML errorLabel = new HTML();
+  private static class VisibleRowsIterator implements
+      Iterator<Iterator<Object>> {
+    /**
+     * The iterator of row data.
+     */
+    private Iterator<Iterator<Object>> rows;
+
+    /**
+     * The current row of the rows iterator.
+     */
+    private int curRow;
+
+    /**
+     * The last visible row in the grid.
+     */
+    private int lastVisibleRow;
+
+    /**
+     * Constructor.
+     * 
+     * @param rows the iterator over row data
+     * @param firstRow the first absolute row of the rows iterator
+     * @param firstVisibleRow the first visible row in this grid
+     * @param lastVisibleRow the last visible row in this grid
+     */
+    public VisibleRowsIterator(Iterator<Iterator<Object>> rows, int firstRow,
+        int firstVisibleRow, int lastVisibleRow) {
+      this.curRow = firstRow;
+      this.lastVisibleRow = lastVisibleRow;
+
+      // Iterate up to the first row
+      while (curRow < firstVisibleRow && rows.hasNext()) {
+        rows.next();
+        curRow++;
+      }
+      this.rows = rows;
+    }
+
+    public boolean hasNext() {
+      return (curRow <= lastVisibleRow && rows.hasNext());
+    }
+
+    public Iterator<Object> next() {
+      // Check that the next row exists
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
+      return rows.next();
+    }
+
+    public void remove() {
+      throw new UnsupportedOperationException("Remove not supported");
+    }
+  }
 
   /**
-   * Listens for click events from the images that allow navigation.
+   * The callback used with cell editors.
    */
-  private ClickListener imageClickListener = new ClickListener() {
-    public void onClick(Widget sender) {
-      // Determine which page to load
-      final HasRowPaging dataTable = (HasRowPaging) getDataTable();
-      int numPages = dataTable.getNumPages();
-      int loadPage = -1;
-      if (sender == pagingButtonFirst) {
-        loadPage = 0;
-      } else if (sender == pagingButtonLast) {
-        loadPage = numPages - 1;
-      } else if (sender == pagingButtonNext) {
-        loadPage = getPagingBoxValue() + 1;
-      } else if (sender == pagingButtonPrev) {
-        loadPage = getPagingBoxValue() - 1;
-      }
-      
-      // Load the page
-      int curPage = dataTable.getCurrentPage();
-      if ((loadPage >= 0) && (loadPage < numPages) && (loadPage != curPage)) {
-        // Update the paging bar
-        pagingCurPageBox.setText((loadPage + 1) + "");
-        loadingImage.setVisible(true);
-        errorLabel.setHTML("");
+  private AbstractCellEditor.Callback<R> cellEditorCallback = null;
 
-        // Use a DeferredCommand to let the UI update
-        DeferredCommand.addCommand(new Command() {
-          public void execute() {
-            dataTable.gotoPage(getPagingBoxValue(), false);
-          }
-        });
+  /**
+   * The cell editors for each column.
+   */
+  private Map<Integer, AbstractCellEditor<R>> cellEditors = null;
+
+  /**
+   * The cell renderer used on the data table.
+   */
+  private CellRenderer cellRenderer = null;
+
+  /**
+   * The current visible page.
+   */
+  private int currentPage = -1;
+
+  /**
+   * The old page count, used to detect when the number of pages changes.
+   */
+  private int oldPageCount;
+
+  /**
+   * The number of rows per page. If the number of rows per page is equal to the
+   * number of rows, paging is disabled because only one page exists.
+   */
+  private int pageSize = 0;
+
+  /**
+   * The callback that handles page requests.
+   */
+  private Callback<R> pagingCallback = new Callback<R>() {
+    public void onFailure(Throwable caught) {
+      if (rowPagingListeners != null) {
+        rowPagingListeners.firePagingFailuire(caught);
+      }
+    }
+
+    public void onRowsReady(Request request, Response<R> response) {
+      setData(request.getStartRow(), response.getIterator(),
+          response.getRowValues());
+      if (rowPagingListeners != null) {
+        rowPagingListeners.firePageLoaded(currentPage);
       }
     }
   };
 
   /**
-   * The loading image.
+   * The listeners attached to this table.
    */
-  private Image loadingImage = new Image("scrollTableLoading.gif");
+  private RowPagingListenerCollection rowPagingListeners = null;
 
   /**
-   * A listener that listens for page events from the {@link HasRowPaging}.
+   * The values associated with each row. This is an optional list of data that
+   * ties the visible content in each row to an underlying object.
    */
-  private RowPagingListener rowPagingListener = new RowPagingListener() {
-    public void onNumPagesChanges(int numPages) {
-      if (numPages < 0) {
-        pagingNumPagesLabel.setHTML("");
-        pagingButtonLast.setVisible(false);
-      } else {
-        pagingNumPagesLabel.setHTML("of&nbsp;&nbsp;" + numPages);
-        pagingNumPagesLabel.setVisible(true);
-        pagingButtonLast.setVisible(true);
-      }
-    }
-
-    public void onPageChanged(int page) {
-    }
-
-    public void onPageLoaded(int page) {
-      pagingCurPageBox.setText((page + 1) + "");
-      loadingImage.setVisible(false);
-      errorLabel.setHTML("");
-      redraw();
-    }
-
-    public void onPagingFailure(Throwable caught) {
-      loadingImage.setVisible(false);
-      errorLabel.setHTML(caught.getMessage());
-    }
-  };
+  private List<R> rowValues = null;
 
   /**
-   * The button used to go to the first page.
+   * The underlying table model.
    */
-  private Image pagingButtonFirst = new Image();
+  private TableModel<R> tableModel;
 
   /**
-   * The button used to go to the last page.
+   * The bulk render used to render the contents of this table.
    */
-  private Image pagingButtonLast = new Image();
-
+  private FixedWidthGridBulkRenderer bulkRenderer = null;
   /**
-   * The button used to go to the next page.
+   * The {@link RendererCallback} used when table rendering completes.
    */
-  private Image pagingButtonNext = new Image();
-
-  /**
-   * The button used to go to the previous page.
-   */
-  private Image pagingButtonPrev = new Image();
-
-  /**
-   * The box that contains the current page number.
-   */
-  private TextBox pagingCurPageBox = new TextBox();
-
-  /**
-   * The HTML field that contains the number of pages.
-   */
-  private HTML pagingNumPagesLabel = new HTML();
-
-  /**
-   * The wrapper that contains the buttons and text used for paging.
-   */
-  private Element pagingWrapper = DOM.createDiv();
+  private RendererCallback tableRendererCallback = null;
 
   /**
    * Constructor.
    * 
-   * @param dataTable the {@link HasRowPaging} used in as the data table
+   * @param tableModel the underlying table model
+   * @param dataTable the table used to display data
    * @param headerTable the header table
    */
-  public PagingScrollTable(HasRowPaging dataTable,
-      HasFixedColumnWidth headerTable) {
-    this(dataTable, headerTable,
-        (PagingScrollTableImages) GWT.create(PagingScrollTableImages.class));
+  public PagingScrollTable(TableModel<R> tableModel, FixedWidthGrid dataTable,
+      FixedWidthFlexTable headerTable) {
+    this(tableModel, dataTable, headerTable,
+        GWT.<ScrollTableImages> create(ScrollTableImages.class));
   }
 
   /**
    * Constructor.
    * 
-   * @param dataTable the {@link HasRowPaging} used in as the data table
+   * @param tableModel the underlying table model
+   * @param dataTable the table used to display data
    * @param headerTable the header table
    * @param images the images to use in the table
    */
-  public PagingScrollTable(HasRowPaging dataTable,
-      HasFixedColumnWidth headerTable, PagingScrollTableImages images) {
+  public PagingScrollTable(TableModel<R> tableModel, FixedWidthGrid dataTable,
+      FixedWidthFlexTable headerTable, ScrollTableImages images) {
     super(dataTable, headerTable, images);
-    dataTable.addRowPagingListener(rowPagingListener);
+    this.tableModel = tableModel;
+    oldPageCount = getNumPages();
 
-    // Disallow non-numeric pages
-    pagingCurPageBox.addKeyboardListener(new KeyboardListenerAdapter() {
-      @Override
-      public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-        if (keyCode == (char) KEY_ENTER) {
-          HasRowPaging dataTable = (HasRowPaging) getDataTable();
-          dataTable.gotoPage(getPagingBoxValue(), false);
-        } else if ((!Character.isDigit(keyCode)) && (keyCode != (char) KEY_TAB)
-            && (keyCode != (char) KEY_BACKSPACE)
-            && (keyCode != (char) KEY_DELETE) && (keyCode != (char) KEY_ENTER)
-            && (keyCode != (char) KEY_HOME) && (keyCode != (char) KEY_END)
-            && (keyCode != (char) KEY_LEFT) && (keyCode != (char) KEY_UP)
-            && (keyCode != (char) KEY_RIGHT) && (keyCode != (char) KEY_DOWN)) {
-          ((TextBox) sender).cancelKey();
+    // Listen to table model events
+    tableModel.addTableModelListener(new TableModelListener() {
+      public void onRowCountChanged(int rowCount) {
+        int pageCount = getNumPages();
+        if (pageCount != oldPageCount && rowPagingListeners != null) {
+          oldPageCount = pageCount;
+          rowPagingListeners.fireNumPagesChanged(pageCount);
         }
+      }
+
+      public void onRowInserted(int beforeRow) {
+        insertAbsoluteRow(beforeRow);
+      }
+
+      public void onRowRemoved(int row) {
+        removeAbsoluteRow(row);
+      }
+
+      public void onSetData(int row, int cell, Object data) {
+        setAbsoluteData(row, cell, data);
       }
     });
 
-    // Create the paging widget
-    errorLabel.setStylePrimaryName("errorLabel");
-    loadingImage.setVisible(false);
-    pagingCurPageBox.setWidth("3em");
-    pagingCurPageBox.setText("1");
-    pagingCurPageBox.setTextAlignment(TextBoxBase.ALIGN_RIGHT);
-    setStylePrimaryName(pagingWrapper, "pagingOptions");
-    HorizontalPanel pagingWrapperPanel = new HorizontalPanel();
-    pagingWrapperPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    pagingWrapperPanel.add(new HTML("&nbsp;&nbsp;"));
-    pagingWrapperPanel.add(pagingButtonFirst);
-    pagingWrapperPanel.add(new HTML("&nbsp;&nbsp;"));
-    pagingWrapperPanel.add(pagingButtonPrev);
-    pagingWrapperPanel.add(new HTML("&nbsp;&nbsp;"));
-    pagingWrapperPanel.add(pagingCurPageBox);
-    pagingWrapperPanel.add(new HTML("&nbsp;&nbsp;"));
-    pagingWrapperPanel.add(pagingNumPagesLabel);
-    pagingWrapperPanel.add(new HTML("&nbsp;&nbsp;"));
-    pagingWrapperPanel.add(pagingButtonNext);
-    pagingWrapperPanel.add(new HTML("&nbsp;&nbsp;"));
-    pagingWrapperPanel.add(pagingButtonLast);
-    pagingWrapperPanel.add(new HTML("&nbsp;&nbsp;"));
-    pagingWrapperPanel.add(loadingImage);
-    pagingWrapperPanel.add(errorLabel);
+    // Listen for cell click events
+    dataTable.addTableListener(new TableListener() {
+      public void onCellClicked(SourcesTableEvents sender, int row, int cell) {
+        editCell(row, cell);
+      }
+    });
 
-    // Apply the images
-    images.scrollTableViewFirstPage().applyTo(pagingButtonFirst);
-    pagingButtonFirst.setTitle("First Page");
-    pagingButtonFirst.addClickListener(imageClickListener);
-    DOM.setStyleAttribute(pagingButtonFirst.getElement(), "cursor", "pointer");
-    images.scrollTableViewLastPage().applyTo(pagingButtonLast);
-    pagingButtonLast.setTitle("Last Page");
-    pagingButtonLast.addClickListener(imageClickListener);
-    DOM.setStyleAttribute(pagingButtonLast.getElement(), "cursor", "pointer");
-    images.scrollTableViewNextPage().applyTo(pagingButtonNext);
-    pagingButtonNext.setTitle("Next Page");
-    pagingButtonNext.addClickListener(imageClickListener);
-    DOM.setStyleAttribute(pagingButtonNext.getElement(), "cursor", "pointer");
-    images.scrollTableViewPrevPage().applyTo(pagingButtonPrev);
-    pagingButtonPrev.setTitle("Previous Page");
-    pagingButtonPrev.addClickListener(imageClickListener);
-    DOM.setStyleAttribute(pagingButtonPrev.getElement(), "cursor", "pointer");
+    // Override the column sorter
+    if (dataTable.getColumnSorter() == null) {
+      ColumnSorter sorter = new ColumnSorter() {
+        @Override
+        public void onSortColumn(SortableGrid grid, ColumnSortList sortList,
+            ColumnSorterCallback callback) {
+          reloadPage();
+          callback.onSortingComplete();
+        }
+      };
+      dataTable.setColumnSorter(sorter);
+    }
+  }
 
-    // Adopt the paging widget into the table
-    getChildren().add(pagingWrapperPanel);
-    DOM.appendChild(getElement(), pagingWrapper);
-    DOM.appendChild(pagingWrapper, pagingWrapperPanel.getElement());
-    adopt(pagingWrapperPanel);
+  /**
+   * Add a new {@link RowPagingListener}.
+   * 
+   * @param listener the listener
+   */
+  public void addRowPagingListener(RowPagingListener listener) {
+    if (rowPagingListeners == null) {
+      rowPagingListeners = new RowPagingListenerCollection();
+    }
+    rowPagingListeners.add(listener);
+  }
 
-    // Set the page size
-    rowPagingListener.onNumPagesChanges(dataTable.getNumPages());
+  /**
+   * Get the column editor for a column.
+   * 
+   * @param column the column index
+   * @return the cell editor
+   */
+  public AbstractCellEditor<R> getCellEditor(int column) {
+    if (cellEditors == null) {
+      return null;
+    }
+    return cellEditors.get(new Integer(column));
+  }
+
+  /**
+   * @return the {@link CellRenderer} used to render cells.
+   */
+  public CellRenderer getCellRenderer() {
+    return cellRenderer;
+  }
+
+  /**
+   * @return the current page
+   */
+  public int getCurrentPage() {
+    return currentPage;
+  }
+
+  /**
+   * @return the number of pages, or -1 if not known
+   */
+  public int getNumPages() {
+    if (pageSize < 1) {
+      return 1;
+    } else {
+      int numDataRows = tableModel.getRowCount();
+      if (numDataRows < 0) {
+        return -1;
+      }
+      return (int) Math.ceil(numDataRows / (pageSize + 0.0));
+    }
   }
 
   /**
    * @return the number of rows per page
    */
   public int getPageSize() {
-    return ((HasRowPaging) getDataTable()).getPageSize();
+    return pageSize;
+  }
+
+  /**
+   * Get the value associated with a row.
+   * 
+   * @param row the row index
+   * @return the value associated with the row
+   */
+  public R getRowValue(int row) {
+    if (rowValues == null || rowValues.size() <= row) {
+      return null;
+    }
+    return rowValues.get(row);
+  }
+
+  /**
+   * @return the table model
+   */
+  public TableModel<R> getTableModel() {
+    return tableModel;
+  }
+
+  /**
+   * Go to the first page.
+   */
+  public void gotoFirstPage() {
+    gotoPage(0, false);
+  }
+
+  /**
+   * Go to the last page. If the number of pages is not known, this method is
+   * ignored.
+   */
+  public void gotoLastPage() {
+    if (getNumPages() >= 0) {
+      gotoPage(getNumPages(), false);
+    }
+  }
+
+  /**
+   * Go to the next page.
+   */
+  public void gotoNextPage() {
+    gotoPage(currentPage + 1, false);
+  }
+
+  /**
+   * Set the current page. If the page is out of bounds, it will be
+   * automatically set to zero or the last page without throwing any errors.
+   * 
+   * @param page the page
+   * @param forced reload the page even if it is already loaded
+   */
+  public void gotoPage(int page, boolean forced) {
+    int oldPage = currentPage;
+    int numPages = getNumPages();
+    if (numPages >= 0) {
+      currentPage = Math.max(0, Math.min(page, numPages - 1));
+    } else {
+      currentPage = page;
+    }
+
+    if (currentPage != oldPage || forced) {
+      // Deselect rows when switching pages
+      FixedWidthGrid dataTable = getDataTable();
+      dataTable.deselectRows();
+
+      // Fire listeners
+      if (rowPagingListeners != null) {
+        rowPagingListeners.firePageChanged(currentPage);
+      }
+
+      // Clear out existing data if we aren't bulk rendering
+      if (bulkRenderer == null) {
+        int rowCount = getLastRow() - getFirstRow() + 1;
+        if (rowCount != dataTable.getRowCount()) {
+          dataTable.resizeRows(rowCount);
+        }
+        dataTable.clearAll();
+      }
+
+      // Request the new data from the table model
+      Request request = new Request(currentPage * pageSize, pageSize,
+          dataTable.getColumnSortList());
+      tableModel.requestRows(request, pagingCallback);
+    }
+  }
+
+  /**
+   * Go to the previous page.
+   */
+  public void gotoPreviousPage() {
+    gotoPage(currentPage - 1, false);
+  }
+
+  /**
+   * Check whether a column has a cell editor.
+   * 
+   * @param column the column index
+   * @return true if a cell editor is assigned
+   */
+  public boolean hasCellEditor(int column) {
+    if (cellEditors == null) {
+      return false;
+    }
+    return cellEditors.containsKey(new Integer(column));
+  }
+
+  /**
+   * Reload the current page.
+   */
+  public void reloadPage() {
+    if (currentPage >= 0) {
+      gotoPage(currentPage, true);
+    } else {
+      gotoPage(0, true);
+    }
+  }
+
+  /**
+   * Remove a {@link RowPagingListener}.
+   * 
+   * @param listener the listener to remove
+   */
+  public void removeRowPagingListener(RowPagingListener listener) {
+    if (rowPagingListeners != null) {
+      rowPagingListeners.remove(listener);
+    }
+  }
+
+  /**
+   * Set the cell editor for a column.
+   * 
+   * @param column the column index
+   * @param editor the cell editor
+   */
+  public void setCellEditor(int column, AbstractCellEditor<R> editor) {
+    if (cellEditors == null) {
+      cellEditors = new HashMap<Integer, AbstractCellEditor<R>>();
+    }
+    if (editor == null) {
+      cellEditors.remove(new Integer(column));
+    } else {
+      cellEditors.put(new Integer(column), editor);
+    }
+  }
+
+  /**
+   * Set the {@link CellRenderer} used to render cell contents.
+   * 
+   * @param cellRenderer the new renderer
+   */
+  public void setCellRenderer(CellRenderer cellRenderer) {
+    this.cellRenderer = cellRenderer;
   }
 
   /**
@@ -301,71 +485,250 @@ public class PagingScrollTable extends ScrollTable {
    * @param pageSize the number of rows per page
    */
   public void setPageSize(int pageSize) {
-    ((HasRowPaging) getDataTable()).setPageSize(pageSize);
-  }
+    pageSize = Math.max(0, pageSize);
+    this.pageSize = pageSize;
 
-  /**
-   * Show or hide the paging options.
-   * 
-   * @param visible true to show paging options, false to hide them
-   */
-  public void setPagingOptionsVisible(boolean visible) {
-    if (visible) {
-      DOM.setStyleAttribute(pagingWrapper, "display", "");
-    } else {
-      DOM.setStyleAttribute(pagingWrapper, "display", "none");
+    int pageCount = getNumPages();
+    if (pageCount != oldPageCount && rowPagingListeners != null) {
+      oldPageCount = pageCount;
+      rowPagingListeners.fireNumPagesChanged(pageCount);
     }
-    resizeTablesVertically();
+
+    // Reset the page
+    if (currentPage >= 0) {
+      gotoPage(currentPage, true);
+    }
   }
 
   /**
-   * @see ScrollTable
+   * Associate a row in the table with a value.
+   * 
+   * @param row the row index
+   * @param value the value to associate
+   */
+  public void setRowValue(int row, R value) {
+    // Make sure the list can fit the row
+    if (rowValues == null) {
+      rowValues = new ArrayList<R>(row + 1);
+    }
+    for (int i = rowValues.size(); i <= row; i++) {
+      rowValues.add(null);
+    }
+
+    // Set the row value
+    rowValues.set(row, value);
+  }
+
+  /**
+   * Set the bulk table renderer.
+   * 
+   * @param bulkRenderer the table renderer
+   */
+  public void setBulkRenderer(FixedWidthGridBulkRenderer bulkRenderer) {
+    this.bulkRenderer = bulkRenderer;
+    if (bulkRenderer != null && tableRendererCallback == null) {
+      tableRendererCallback = new RendererCallback() {
+        public void onRendered() {
+          if (rowPagingListeners != null) {
+            rowPagingListeners.firePageLoaded(currentPage);
+          }
+        }
+      };
+    }
+  }
+
+  /**
+   * Invoke the cell editor on a cell, if one is set. If a cell editor is not
+   * specified, this method has no effect.
+   */
+  protected void editCell(int row, int column) {
+    AbstractCellEditor<R> cellEditor = getCellEditor(column);
+    if (cellEditor == null) {
+      return;
+    }
+    CellEditInfo<R> editInfo = new CellEditInfo<R>(getDataTable(), row, column,
+        getRowValue(row));
+    cellEditor.editCell(editInfo, getCellEditorCallback());
+  }
+
+  /**
+   * @return the cell editor callback.
+   */
+  protected AbstractCellEditor.Callback<R> getCellEditorCallback() {
+    if (cellEditorCallback == null) {
+      cellEditorCallback = new AbstractCellEditor.Callback<R>() {
+        public void onCancel(CellEditInfo<R> cellEditInfo) {
+        }
+
+        public void onComplete(CellEditInfo<R> cellEditInfo, Object value) {
+          renderCell(cellEditInfo.getRow(), cellEditInfo.getCell(), value);
+        }
+      };
+    }
+    return cellEditorCallback;
+  }
+
+  /**
+   * Get the first visible row index.
+   * 
+   * @return the first row index
+   */
+  protected int getFirstRow() {
+    return currentPage * pageSize;
+  }
+
+  /**
+   * Get the last visible row index.
+   * 
+   * @return the last row index
+   */
+  protected int getLastRow() {
+    if (tableModel.getRowCount() < 0) {
+      return (currentPage + 1) * pageSize - 1;
+    }
+    return Math.min(tableModel.getRowCount(), (currentPage + 1) * pageSize) - 1;
+  }
+
+  /**
+   * Insert a row into the table relative to the total number of rows.
+   * 
+   * @param beforeRow the row index
+   */
+  protected void insertAbsoluteRow(int beforeRow) {
+    // Physically insert the row
+    int lastRow = getLastRow() + 1;
+    if (beforeRow <= lastRow) {
+      int firstRow = getFirstRow();
+      if (beforeRow >= firstRow) {
+        // Insert row in the middle of the page
+        getDataTable().insertRow(beforeRow - firstRow);
+      } else {
+        // Insert zero row because row is before this page
+        getDataTable().insertRow(0);
+      }
+      if (getDataTable().getRowCount() > pageSize) {
+        getDataTable().removeRow(pageSize);
+      }
+    }
+  }
+
+  /**
+   * This method is called immediately after a widget becomes attached to the
+   * browser's document.
    */
   @Override
-  protected void resizeTablesVerticallyNow() {
-    super.resizeTablesVerticallyNow();
+  protected void onLoad() {
+    super.onLoad();
 
-    Element dataWrapper = getDataWrapper();
-    if (isScrollingEnabled()) {
-      // Take some space from the data table to make room for the paging div
-      int pagingHeight = DOM.getElementPropertyInt(pagingWrapper,
-          "offsetHeight");
-      int dataHeight = DOM.getElementPropertyInt(dataWrapper, "offsetHeight")
-          - pagingHeight;
-      DOM.setStyleAttribute(dataWrapper, "height", dataHeight + "px");
-      DOM.setStyleAttribute(dataWrapper, "overflow", "hidden");
-      DOM.setStyleAttribute(dataWrapper, "overflow", "auto");
-    } else {
-      DOM.setStyleAttribute(dataWrapper, "overflow", "hidden");
-      DOM.setStyleAttribute(dataWrapper, "overflow", "");
+    // If we have not loaded any pages, load one now
+    if (currentPage < 0) {
+      gotoPage(0, true);
     }
-
-    // Scroll tables to be safe
-    scrollTables(true);
   }
 
   /**
-   * Get the value of in the page box. If the value is invalid, it will be set
-   * to 1 automatically.
+   * Remove a row from the table relative to the total number of rows.
    * 
-   * @return the value in the page box
+   * @param row the row index
    */
-  private int getPagingBoxValue() {
-    int page = 0;
-    try {
-      page = Integer.parseInt(pagingCurPageBox.getText()) - 1;
-    } catch (NumberFormatException e) {
-      // This will catch an empty box
-      pagingCurPageBox.setText("1");
+  protected void removeAbsoluteRow(int row) {
+    // Physically remove the row
+    int lastRow = getLastRow();
+    if (row <= lastRow) {
+      int firstRow = getFirstRow();
+      if (row >= firstRow) {
+        // Remove a row in the middle of the page
+        getDataTable().removeRow(row - firstRow);
+      } else {
+        // Remove first row because row is before this page
+        getDataTable().removeRow(0);
+      }
+      getDataTable().insertRow(pageSize - 1);
     }
+  }
 
-    // Replace values less than 1
-    if (page < 1) {
-      pagingCurPageBox.setText("1");
-      page = 0;
+  /**
+   * Render the contents of the cell.
+   * 
+   * @param row the row index
+   * @param column the column index
+   * @param data the data to render
+   */
+  protected void renderCell(int row, int column, Object data) {
+    if (cellRenderer == null) {
+      if (data instanceof Widget) {
+        getDataTable().setWidget(row, column, (Widget) data);
+      } else {
+        getDataTable().setHTML(row, column, data + "");
+      }
+    } else {
+      cellRenderer.renderCell(getDataTable(), row, column, data);
     }
+  }
 
-    // Return the 0 based page, not the 1 based visible value
-    return page;
+  /**
+   * Set the data in a cell. The data object will be rendered using the
+   * {@link CellRenderer}, if one is specified.
+   * 
+   * The row index in this method is relative to the total number of rows across
+   * all pages. It is not the same as the row index passed into setHTML, which
+   * is relative to the current page.
+   * 
+   * @param row the row index
+   * @param column the column index
+   * @param data the data to set
+   */
+  protected void setAbsoluteData(int row, int column, Object data) {
+    int firstRow = getFirstRow();
+    if ((row >= firstRow) && (row <= getLastRow())) {
+      renderCell(row - firstRow, column, data);
+    }
+  }
+
+  /**
+   * Set a block of data. This method is used when responding to data requests.
+   * 
+   * This method takes an iterator of iterators, where each iterator represents
+   * one row of data starting with the first row.
+   * 
+   * @param firstRow the row index
+   * @param rows the 2D Iterator of data
+   * @param rowValues the values associated with each row
+   */
+  protected void setData(int firstRow, Iterator<Iterator<Object>> rows,
+      List<R> rowValues) {
+    this.rowValues = rowValues;
+    if (rows != null) {
+      // Get an iterator over the visible rows
+      int firstVisibleRow = getFirstRow();
+      int lastVisibleRow = getLastRow();
+      Iterator<Iterator<Object>> visibleIter = new VisibleRowsIterator(rows,
+          firstRow, firstVisibleRow, lastVisibleRow);
+
+      // Use the table renderer
+      if (bulkRenderer != null) {
+        bulkRenderer.renderRows(visibleIter, tableRendererCallback);
+        return;
+      }
+
+      // Render the cells the default way
+      int rowCount = 0;
+      int colCount = 0;
+      while (visibleIter.hasNext()) {
+        Iterator<Object> columnIt = visibleIter.next();
+        int curColumn = 0;
+        while (columnIt.hasNext()) {
+          renderCell(rowCount, curColumn, columnIt.next());
+          curColumn++;
+        }
+
+        // Increment the number of rows and cells
+        rowCount++;
+        colCount = Math.max(colCount, curColumn);
+      }
+
+      // Get rid of uneeded rows
+      getDataTable().resize(rowCount, colCount);
+    }
   }
 }

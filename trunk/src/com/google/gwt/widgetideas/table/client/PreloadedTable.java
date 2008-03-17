@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -28,14 +28,14 @@ import java.util.List;
  * tables.
  */
 public class PreloadedTable extends FlexTable {
-  List rows = new ArrayList();
+  List<List<Object>> rows = new ArrayList<List<Object>>();
   boolean isFilledIn = false;
 
   /*
    * As often users manipulate a single row at a time, caching the current row
    * and index for speed;
    */
-  List curRow;
+  List<Object> curRow;
 
   int curIndex = -1;
 
@@ -57,7 +57,7 @@ public class PreloadedTable extends FlexTable {
       throw new UnsupportedOperationException(
           "Cannot call setPendingHTML after either setWidget/setText/setHTML has been called or the table has been attached to the DOM");
     }
-    List l = ensureRow(row);
+    List<Object> l = ensureRow(row);
     ensureCell(l, column, html);
   }
 
@@ -78,7 +78,7 @@ public class PreloadedTable extends FlexTable {
     ensureLoaded();
   }
 
-  private void ensureCell(List row, int column, String value) {
+  private void ensureCell(List<Object> row, int column, String value) {
     if (column == row.size()) {
       row.add(value);
     } else {
@@ -92,21 +92,21 @@ public class PreloadedTable extends FlexTable {
   private void ensureLoaded() {
     if (!isFilledIn) {
       isFilledIn = true;
-      new FlexTableBulkRenderer(this).renderRows(rows);
+      new FlexTableBulkRenderer(this).renderRows(rows, null);
     }
   }
 
-  private List ensureRow(int row) {
+  private List<Object> ensureRow(int row) {
     if (row == curIndex) {
       return curRow;
     }
     for (int i = rows.size(); i < row + 1; i++) {
-      curRow = new ArrayList();
+      curRow = new ArrayList<Object>();
       curRow.add("");
       rows.add(curRow);
     }
-    curRow = (List) rows.get(row);
+    curRow = rows.get(row);
     curIndex = row;
-    return (List) rows.get(row);
+    return rows.get(row);
   }
 }

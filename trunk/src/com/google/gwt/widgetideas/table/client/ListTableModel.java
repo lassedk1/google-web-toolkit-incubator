@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,21 +20,23 @@ import java.util.List;
 
 /**
  * A class to retrieve row data to be used in a table.
+ * 
+ * @param <R> the data type of the row values
  */
-public class ListTableModel extends ClientTableModel {
+public class ListTableModel<R> extends ClientTableModel<R> {
   /**
    * The row data.
    */
-  private List rows;
+  private List<List<Object>> rows;
 
   /**
-   * 
    * Constructor.
    * 
    * @param rows the data that this model feeds from
    */
-  public ListTableModel(List rows) {
+  public ListTableModel(List<List<Object>> rows) {
     this.rows = rows;
+    setRowCount(rows.size());
   }
 
   /**
@@ -43,7 +45,7 @@ public class ListTableModel extends ClientTableModel {
   @Override
   public Object getCell(int rowNum, int cellNum) {
     // Get the row List
-    List row = getList(rowNum);
+    List<Object> row = getList(rowNum);
     if (row == null) {
       return null;
     }
@@ -55,39 +57,26 @@ public class ListTableModel extends ClientTableModel {
     return row.get(cellNum);
   }
 
-  /**
-   * @see TableModel
-   */
   @Override
-  public void onRowInserted(int beforeRow) {
-    if (beforeRow <= rows.size()) {
-      // Insert new row
+  protected boolean onRowInserted(int beforeRow) {
+    if (beforeRow < rows.size()) {
       rows.add(beforeRow, null);
-    } else {
-      // Expand to fit row
-      for (int i = rows.size(); i <= beforeRow; i++) {
-        rows.add(null);
-      }
     }
+    return true;
   }
 
-  /**
-   * @see TableModel
-   */
   @Override
-  public void onRowRemoved(int row) {
+  protected boolean onRowRemoved(int row) {
     if (row < rows.size()) {
       rows.remove(row);
     }
+    return true;
   }
 
-  /**
-   * @see TableModel
-   */
   @Override
-  public void onSetData(int row, int cell, Object data) {
+  protected boolean onSetData(int row, int cell, Object data) {
     // Get the row list
-    List rowList = getList(row);
+    List<Object> rowList = getList(row);
     if (rowList == null) {
       // Expand to fit row
       for (int i = rows.size(); i <= row; i++) {
@@ -95,7 +84,7 @@ public class ListTableModel extends ClientTableModel {
       }
 
       // Create the rowList
-      rowList = new ArrayList();
+      rowList = new ArrayList<Object>();
       rows.set(row, rowList);
     }
 
@@ -104,6 +93,8 @@ public class ListTableModel extends ClientTableModel {
       rowList.add(null);
     }
     rowList.set(cell, data);
+
+    return true;
   }
 
   /**
@@ -111,10 +102,10 @@ public class ListTableModel extends ClientTableModel {
    * 
    * @param rowIndex the row index
    */
-  private List getList(int rowIndex) {
+  private List<Object> getList(int rowIndex) {
     if (rowIndex >= rows.size()) {
       return null;
     }
-    return (List) rows.get(rowIndex);
+    return rows.get(rowIndex);
   }
 }

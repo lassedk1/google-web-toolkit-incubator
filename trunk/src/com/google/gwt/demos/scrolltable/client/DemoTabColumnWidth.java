@@ -124,14 +124,18 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
       } else if (sender == resizePolicyButton) {
         // Set the resize policy
         String selection = resizePolicyBox.getValue(resizePolicyBox.getSelectedIndex());
-        if (selection.equals("Unconstrained")) {
-          scrollTable.setResizePolicy(ScrollTable.RESIZE_POLICY_UNCONSTRAINED);
+        if (selection.equals("Disabled")) {
+          scrollTable.setResizePolicy(ScrollTable.ResizePolicy.DISABLED);
+        } else if (selection.equals("Unconstrained")) {
+          scrollTable.setResizePolicy(ScrollTable.ResizePolicy.UNCONSTRAINED);
         } else if (selection.equals("Flow")) {
-          scrollTable.setResizePolicy(ScrollTable.RESIZE_POLICY_FLOW);
+          scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FLOW);
         } else if (selection.equals("Fixed")) {
-          scrollTable.setResizePolicy(ScrollTable.RESIZE_POLICY_FIXED_WIDTH);
+          scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FIXED_WIDTH);
         } else if (selection.equals("Fill")) {
-          scrollTable.setResizePolicy(ScrollTable.RESIZE_POLICY_FILL_WIDTH);
+          scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
+        } else if (selection.equals("Fill Disabled")) {
+          scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH_DISABLED);
         }
       }
     } catch (IndexOutOfBoundsException e) {
@@ -172,11 +176,13 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
     grid.setHTML(2, 3, DESC_HIDE);
 
     // Fixed width options
+    resizePolicyBox.addItem("Disabled");
     resizePolicyBox.addItem("Unconstrained");
     resizePolicyBox.addItem("Flow");
     resizePolicyBox.addItem("Fixed");
     resizePolicyBox.addItem("Fill");
-    resizePolicyBox.setSelectedIndex(1);
+    resizePolicyBox.addItem("Fill Disabled");
+    resizePolicyBox.setSelectedIndex(3);
     grid.setHTML(3, 0, "<BR>");
     grid.setWidget(3, 1, resizePolicyButton);
     grid.setWidget(3, 2, resizePolicyBox);

@@ -83,6 +83,7 @@ public class Grid extends HTMLTable {
    * Return number of columns. For grid, row argument is ignored as all grids
    * are rectangular.
    */
+  @Override
   public int getCellCount(int row) {
     return numColumns;
   }
@@ -99,6 +100,7 @@ public class Grid extends HTMLTable {
   /**
    * Return number of rows.
    */
+  @Override
   public int getRowCount() {
     return numRows;
   }
@@ -176,6 +178,7 @@ public class Grid extends HTMLTable {
   /**
    * Creates a new, empty cell.
    */
+  @Override
   protected Element createCell() {
     Element td = super.createCell();
 
@@ -186,12 +189,23 @@ public class Grid extends HTMLTable {
   }
 
   /**
+   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
+   */
+  @Override
+  protected int insertRow(int beforeRow) {
+    int index = super.insertRow(beforeRow);
+    numRows++;
+    return index;
+  }
+
+  /**
    * Checks that a cell is a valid cell in the table.
    * 
    * @param row the cell's row
    * @param column the cell's column
    * @throws IndexOutOfBoundsException
    */
+  @Override
   protected void prepareCell(int row, int column) {
     // Ensure that the indices are not negative.
     prepareRow(row);
@@ -212,6 +226,7 @@ public class Grid extends HTMLTable {
    * @param column The column index to be checked
    * @throws IndexOutOfBoundsException if the column is negative
    */
+  @Override
   protected void prepareColumn(int column) {
     // Ensure that the indices are not negative.
     if (column < 0) {
@@ -235,6 +250,7 @@ public class Grid extends HTMLTable {
    * @param row The row index to be checked
    * @throws IndexOutOfBoundsException if the row is negative
    */
+  @Override
   protected void prepareRow(int row) {
     // Ensure that the indices are not negative.
     if (row < 0) {
@@ -250,5 +266,14 @@ public class Grid extends HTMLTable {
       throw new IndexOutOfBoundsException("Row index: " + row + ", Row size: "
           + numRows);
     }
+  }
+  
+  /**
+   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
+   */
+  @Override
+  protected void removeRow(int row) {
+    super.removeRow(row);
+    numRows--;
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -23,6 +23,8 @@ import java.util.ArrayList;
  * to it will be of type {@link RowPagingListener}.
  */
 public class RowPagingListenerCollection extends ArrayList<RowPagingListener> {
+  private static final long serialVersionUID = -2749626828317431636L;
+  
   /**
    * Fired when the number of pages changes.
    * 

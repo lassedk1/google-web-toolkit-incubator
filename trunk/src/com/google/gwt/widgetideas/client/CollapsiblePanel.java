@@ -40,7 +40,7 @@ import java.util.Iterator;
  * default, the contents are fully expanded. When collapsed, the contents of the
  * panel will be displayed only when the user mouse hovers over the hover bar,
  * otherwise is will stay collapsed to the left. A change event is fired
- * whenever the {@link CollapsablePanel} switched between its expanded and
+ * whenever the {@link CollapsiblePanel} switched between its expanded and
  * collapsed states.
  * <p>
  * The default style name is gwt-CollapsiblePanel.
@@ -71,6 +71,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
       delayedHide.schedule(DELAY_MILLI);
     }
 
+    @Override
     public void run() {
       hide();
     }
@@ -86,6 +87,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
       delayedShow.schedule(DELAY_MILLI);
     }
 
+    @Override
     public void run() {
       show();
     }
@@ -95,10 +97,12 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    * Hides the {@link CollapsiblePanel}.
    */
   private class HidingTimer extends SlidingTimer {
+    @Override
     protected void finish() {
       state = State.IS_HIDDEN;
     }
 
+    @Override
     protected boolean processSizeChange(float shouldBe) {
       currentOffshift = (int) (maxOffshift * ((float) 1.0 - shouldBe))
           - MIN_SLIDE_STEP;
@@ -112,10 +116,12 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    * Shows the hovering {@link CollapsiblePanel}.
    */
   private class ShowingTimer extends SlidingTimer {
+    @Override
     protected void finish() {
       state = State.IS_SHOWN;
     }
 
+    @Override
     protected boolean processSizeChange(float shouldBe) {
       currentOffshift = (int) (maxOffshift * shouldBe) + MIN_SLIDE_STEP;
       currentOffshift = Math.min(currentOffshift, maxOffshift);
@@ -131,6 +137,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
 
     long started;
 
+    @Override
     public void run() {
       float hasTaken = System.currentTimeMillis() - started;
       float shouldBe = hasTaken / TIME_TO_SLIDE;
@@ -150,7 +157,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   /**
    * Current {@link CollapsiblePanel} state.
    */
-  private enum State {
+  protected enum State {
     WILL_HIDE, HIDING, IS_HIDDEN, WILL_SHOW, SHOWING, IS_SHOWN, EXPANDED;
 
     public boolean shouldHide() {
@@ -214,6 +221,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
         sinkEvents(Event.ONMOUSEOUT | Event.ONMOUSEOVER);
       }
 
+      @Override
       public void onBrowserEvent(Event event) {
         // Cannot handle browser events until contents are initialized.
         if (contents == null) {
@@ -410,6 +418,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    * This method is called immediately after a widget becomes attached to the
    * browser's document.
    */
+  @Override
   protected void onLoad() {
     if (contents != null) {
       refreshWidth();

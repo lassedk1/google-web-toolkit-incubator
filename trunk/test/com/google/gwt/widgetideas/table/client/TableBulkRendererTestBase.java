@@ -62,6 +62,7 @@ public abstract class TableBulkRendererTestBase extends GWTTestCase {
     }
   }
 
+  @Override
   public String getModuleName() {
     return "com.google.gwt.widgetideas.WidgetIdeas";
   }
@@ -69,6 +70,7 @@ public abstract class TableBulkRendererTestBase extends GWTTestCase {
   public void testContents() {
     doTest(createOracle(4, 4), new TestCallback() {
 
+      @Override
       public void test(HTMLTable table) {
         int rows = table.getRowCount();
         for (int i = 0; i < rows; i++) {
@@ -83,6 +85,7 @@ public abstract class TableBulkRendererTestBase extends GWTTestCase {
 
   public void testIterator() {
     doTest(createEmptyOracle(5, 5), new TestCallback() {
+      @Override
       public void test(HTMLTable t) {
         Label l = new Label("hello");
         t.setWidget(0, 0, l);
@@ -120,6 +123,7 @@ public abstract class TableBulkRendererTestBase extends GWTTestCase {
 
   public void testStyles() {
     doTest(createEmptyOracle(4, 4), new TestCallback() {
+      @Override
       public void test(HTMLTable t) throws Error {
         t.getCellFormatter().setStyleName(2, 2, "hello");
         assertEquals("hello", t.getCellFormatter().getStyleName(2, 2));
@@ -146,7 +150,7 @@ public abstract class TableBulkRendererTestBase extends GWTTestCase {
 
   protected abstract Object[] createTableAndRenderer();
 
-  protected void doTest(TableModel model, TestCallback callback) {
+  protected void doTest(TableModel<Object> model, TestCallback callback) {
     delayTestFinish(TIME_OUT);
     Object[] local = createTableAndRenderer();
     HTMLTable table = (HTMLTable) local[0];
@@ -159,8 +163,10 @@ public abstract class TableBulkRendererTestBase extends GWTTestCase {
     return "cell " + rowNum + ", " + cellNum;
   }
 
-  private TableModel createEmptyOracle(final int numRows, final int numColumns) {
-    ClientTableModel oracle = new ClientTableModel() {
+  private TableModel<Object> createEmptyOracle(final int numRows,
+      final int numColumns) {
+    ClientTableModel<Object> oracle = new ClientTableModel<Object>() {
+      @Override
       public Object getCell(int rowNum, int cellNum) {
         if (rowNum >= numRows | cellNum >= numColumns) {
           return null;
@@ -168,15 +174,29 @@ public abstract class TableBulkRendererTestBase extends GWTTestCase {
         return "";
       }
 
-      public void onSetData(int row, int cell, Object data) {
+      @Override
+      protected boolean onRowInserted(int beforeRow) {
+        return false;
+      }
+
+      @Override
+      protected boolean onRowRemoved(int row) {
+        return false;
+      }
+
+      @Override
+      protected boolean onSetData(int row, int cell, Object data) {
         RootPanel.get().add(new Label("Setting cell: " + data));
+        return false;
       }
     };
     return oracle;
   }
 
-  private TableModel createOracle(final int numRows, final int numColumns) {
-    ClientTableModel oracle = new ClientTableModel() {
+  private TableModel<Object> createOracle(final int numRows,
+      final int numColumns) {
+    ClientTableModel<Object> oracle = new ClientTableModel<Object>() {
+      @Override
       public Object getCell(int rowNum, int cellNum) {
         if (rowNum >= numRows | cellNum >= numColumns) {
           return null;
@@ -184,8 +204,20 @@ public abstract class TableBulkRendererTestBase extends GWTTestCase {
         return cellContents(rowNum, cellNum);
       }
 
-      public void onSetData(int row, int cell, Object data) {
+      @Override
+      protected boolean onRowInserted(int beforeRow) {
+        return false;
+      }
+
+      @Override
+      protected boolean onRowRemoved(int row) {
+        return false;
+      }
+
+      @Override
+      protected boolean onSetData(int row, int cell, Object data) {
         RootPanel.get().add(new Label("Setting cell: " + data));
+        return false;
       }
     };
     return oracle;

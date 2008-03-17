@@ -23,8 +23,10 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.table.client.CachedTableController;
+import com.google.gwt.widgetideas.table.client.CachedTableModel;
 import com.google.gwt.widgetideas.table.client.PagingScrollTable;
+
+import java.io.Serializable;
 
 /**
  * Panel with options for paging.
@@ -76,19 +78,9 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
   private Button pageSizeButton = new Button("Set Page Size", this);
 
   /**
-   * Keep track of the paging options.
-   */
-  private boolean pagingOptionsVisible = true;
-
-  /**
    * The button used to toggle RPC mode.
    */
   private Button rpcModeButton = new Button("Toggle RPC Mode", this);
-
-  /**
-   * The button used to set html of a cell.
-   */
-  private Button togglePagingButton = new Button("Toggle Paging Options", this);
 
   /**
    * Handle click events from the buttons in this panel.
@@ -96,30 +88,26 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
    * @param sender
    */
   public void onClick(Widget sender) {
-    PagingScrollTable scrollTable = PagingScrollTableDemo.getPagingScrollTable();
-    CachedTableController tableController = PagingScrollTableDemo.getTableController();
+    PagingScrollTable<Serializable> scrollTable = PagingScrollTableDemo.getPagingScrollTable();
     DataSourceTableModel tableModel = PagingScrollTableDemo.getTableModel();
+    CachedTableModel<Serializable> cachedTableModel = PagingScrollTableDemo.getCachedTableModel();
     try {
       if (sender == numRowsButton) {
         // Set number of rows
-        int row = Integer.parseInt(numRowsBox.getText());
-        tableController.setNumRows(row);
+        int numRows = Integer.parseInt(numRowsBox.getText());
+        cachedTableModel.setRowCount(numRows);
       } else if (sender == pageSizeButton) {
         // Set page size
         int pageSize = Integer.parseInt(pageSizeBox.getText());
         scrollTable.setPageSize(pageSize);
-      } else if (sender == togglePagingButton) {
-        // Toggle paging options
-        pagingOptionsVisible = !pagingOptionsVisible;
-        scrollTable.setPagingOptionsVisible(pagingOptionsVisible);
       } else if (sender == cachePreSizeButton) {
         // Set Precached rows
         int cacheSize = Integer.parseInt(cacheSizeBox.getText());
-        tableController.setNumPreCachedRows(cacheSize);
+        cachedTableModel.setPreCachedRowCount(cacheSize);
       } else if (sender == cachePostSizeButton) {
         // Set Post cached rows
         int cacheSize = Integer.parseInt(cacheSizeBox.getText());
-        tableController.setNumPostCachedRows(cacheSize);
+        cachedTableModel.setPostCachedRowCount(cacheSize);
       } else if (sender == errorModeButton) {
         // Toggle error mode
         boolean enabled = tableModel.isErrorModeEnabled();
@@ -151,8 +139,6 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
     // Num Rows
     HorizontalPanel panel1 = new HorizontalPanel();
     panel1.add(numRowsButton);
-    panel1.add(new HTML("&nbsp;"));
-    panel1.add(togglePagingButton);
     numRowsBox.setWidth("50px");
     numRowsBox.setText("1000");
     grid.setHTML(0, 0, "<B>Num Rows:</B>");

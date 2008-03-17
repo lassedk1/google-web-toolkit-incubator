@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -17,31 +17,13 @@ package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.widgetideas.table.client.ScrollTable.ScrollPolicy;
 
 /**
  * Tests methods in the {@link ScrollTable} class.
  */
 public class ScrollTableTest extends GWTTestCase {
-  /**
-   * The header table.
-   */
-  protected FixedWidthGrid headerTable = null;
-
-  /**
-   * The footer table.
-   */
-  protected FixedWidthGrid footerTable = null;
-
-  /**
-   * The data table.
-   */
-  protected FixedWidthGrid dataTable = null;
-
-  /**
-   * The scroll table.
-   */
-  private ScrollTable scrollTable = null;
-
+  @Override
   public String getModuleName() {
     return "com.google.gwt.widgetideas.WidgetIdeas";
   }
@@ -51,7 +33,10 @@ public class ScrollTableTest extends GWTTestCase {
    */
   public void testAccessors() {
     // Initialize the table
-    ScrollTable table = getScrollTable();
+    FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
+    FixedWidthGrid dataTable = new FixedWidthGrid();
+    FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
+    ScrollTable table = getScrollTable(headerTable, dataTable, footerTable);
 
     // Accessible tables
     assertEquals(headerTable, table.getHeaderTable());
@@ -75,21 +60,10 @@ public class ScrollTableTest extends GWTTestCase {
     assertEquals(headerTable.getCellPadding(), 3);
 
     // Resize policy
-    table.setResizePolicy(ScrollTable.RESIZE_POLICY_FILL_WIDTH);
-    assertEquals(ScrollTable.RESIZE_POLICY_FILL_WIDTH, table.getResizePolicy());
-    table.setResizePolicy(ScrollTable.RESIZE_POLICY_FIXED_WIDTH);
-    assertEquals(ScrollTable.RESIZE_POLICY_FIXED_WIDTH, table.getResizePolicy());
-    table.setResizePolicy(ScrollTable.RESIZE_POLICY_FLOW);
-    assertEquals(ScrollTable.RESIZE_POLICY_FLOW, table.getResizePolicy());
-    table.setResizePolicy(ScrollTable.RESIZE_POLICY_UNCONSTRAINED);
-    assertEquals(ScrollTable.RESIZE_POLICY_UNCONSTRAINED,
-        table.getResizePolicy());
-    try {
-      table.setResizePolicy(1000);
-      fail("Expected IllegalArgumentException");
-    } catch (IllegalArgumentException e) {
-      assertTrue(true);
-    }
+    table.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
+    assertEquals(ScrollTable.ResizePolicy.FILL_WIDTH, table.getResizePolicy());
+    table.setResizePolicy(ScrollTable.ResizePolicy.FIXED_WIDTH);
+    assertEquals(ScrollTable.ResizePolicy.FIXED_WIDTH, table.getResizePolicy());
 
     // Auto fit enabled
     table.setAutoFitEnabled(true);
@@ -97,11 +71,16 @@ public class ScrollTableTest extends GWTTestCase {
     table.setAutoFitEnabled(false);
     assertFalse(table.isAutoFitEnabled());
 
+    // Min widget
+    assertEquals(-1, table.getMinWidth());
+    table.setMinWidth(100);
+    assertEquals(100, table.getMinWidth());
+
     // Scrolling enabled
-    table.setScrollingEnabled(true);
-    assertTrue(table.isScrollingEnabled());
-    table.setScrollingEnabled(false);
-    assertFalse(table.isScrollingEnabled());
+    table.setScrollPolicy(ScrollPolicy.HORIZONTAL);
+    assertEquals(ScrollPolicy.HORIZONTAL, table.getScrollPolicy());
+    table.setScrollPolicy(ScrollPolicy.BOTH);
+    assertEquals(ScrollPolicy.BOTH, table.getScrollPolicy());
 
     // Sorting enabled
     table.setSortingEnabled(true);
@@ -110,13 +89,14 @@ public class ScrollTableTest extends GWTTestCase {
     assertFalse(table.isSortingEnabled());
 
     // Default Column width
-    int defaultWidth = dataTable.getDefaultColumnWidth();
+    int defaultWidth = FixedWidthGrid.DEFAULT_COLUMN_WIDTH;
     assertEquals(defaultWidth, table.getColumnWidth(2));
     assertEquals(defaultWidth, headerTable.getColumnWidth(2));
     assertEquals(defaultWidth, dataTable.getColumnWidth(2));
     assertEquals(defaultWidth, footerTable.getColumnWidth(2));
 
     // Set column width
+    table.setResizePolicy(ScrollTable.ResizePolicy.UNCONSTRAINED);
     table.setColumnWidth(2, 100);
     table.setColumnWidth(3, 20);
     assertEquals(100, table.getColumnWidth(2));
@@ -142,7 +122,10 @@ public class ScrollTableTest extends GWTTestCase {
    */
   public void testAutoFit() {
     // Initialize the table
-    ScrollTable table = getScrollTable();
+    FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
+    FixedWidthGrid dataTable = new FixedWidthGrid();
+    FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
+    ScrollTable table = getScrollTable(headerTable, dataTable, footerTable);
     RootPanel.get().add(table);
     for (int row = 0; row < 5; row++) {
       for (int cell = 0; cell < 5; cell++) {
@@ -159,25 +142,14 @@ public class ScrollTableTest extends GWTTestCase {
   }
 
   /**
-   * Create the tables used in the scroll table.
-   */
-  protected void createTables() {
-    headerTable = new FixedWidthGrid();
-    footerTable = new FixedWidthGrid();
-  }
-
-  /**
    * Get the scroll table.
    * 
    * @return the scroll table
    */
-  protected ScrollTable getScrollTable() {
-    if (scrollTable == null) {
-      createTables();
-      dataTable = new SortableFixedWidthGrid();
-      scrollTable = new ScrollTable(dataTable, headerTable);
-      scrollTable.setFooterTable(footerTable);
-    }
+  protected ScrollTable getScrollTable(FixedWidthFlexTable headerTable,
+      FixedWidthGrid dataTable, FixedWidthFlexTable footerTable) {
+    ScrollTable scrollTable = new ScrollTable(dataTable, headerTable);
+    scrollTable.setFooterTable(footerTable);
     return scrollTable;
   }
 }

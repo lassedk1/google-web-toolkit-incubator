@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -26,16 +26,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A variation of the
- * {@link com.google.gwt.widgetideas.table.client.overrides.Grid} that resizes
- * columns using a fixed table width.
+ * A variation of the {@link com.google.gwt.widgetideas.table.client.overrides.Grid} that
+ * resizes columns using a fixed table width.
  */
-public class FixedWidthGrid extends SelectionGrid implements
-    HasFixedColumnWidth, HasAutoFitColumn {
+public class FixedWidthGrid extends SortableGrid {
   /**
    * This class contains methods used to format a table's cells.
    */
-  public class FixedWidthGridCellFormatter extends CellFormatter {
+  public class FixedWidthGridCellFormatter extends SelectionGridCellFormatter {
     @Override
     public void setWidth(int row, int column, String width) {
       throw new UnsupportedOperationException("setWidth is not supported.  "
@@ -62,7 +60,7 @@ public class FixedWidthGrid extends SelectionGrid implements
   /**
    * This class contains methods used to format a table's rows.
    */
-  public class FixedWidthGridRowFormatter extends SelectedGridRowFormatter {
+  public class FixedWidthGridRowFormatter extends SelectionGridRowFormatter {
     @Override
     protected Element getRawElement(int row) {
       return super.getRawElement(row + 1);
@@ -82,23 +80,23 @@ public class FixedWidthGrid extends SelectionGrid implements
      * @param columns the number of columns per row
      */
     public native void addRows(Element table, int rows, int columns) /*-{
-                     var span = $doc.createElement("span");
-                     span.style["padding"] = "0px";
-                     span.innerHTML = "&nbsp;";
-                     var td = $doc.createElement("td");
-                     td.style["overflow"] = "hidden";
-                     td.appendChild(span);
+     var span = $doc.createElement("span");
+     span.style["padding"] = "0px";
+     span.innerHTML = "&nbsp;";
+     var td = $doc.createElement("td");
+     td.style["overflow"] = "hidden";
+     td.appendChild(span);
 
-                     var row = $doc.createElement("tr");
-                     for(var cellNum = 0; cellNum < columns; cellNum++) {
-                       var cell = td.cloneNode(true);
-                       row.appendChild(cell);
-                     }
-                     table.appendChild(row);
-                     for(var rowNum = 1; rowNum < rows; rowNum++) {  
-                       table.appendChild(row.cloneNode(true));
-                     }
-                   }-*/;
+     var row = $doc.createElement("tr");
+     for(var cellNum = 0; cellNum < columns; cellNum++) {
+     var cell = td.cloneNode(true);
+     row.appendChild(cell);
+     }
+     table.appendChild(row);
+     for(var rowNum = 1; rowNum < rows; rowNum++) {  
+     table.appendChild(row.cloneNode(true));
+     }
+     }-*/;
 
     /**
      * Create the ghost row.
@@ -132,6 +130,7 @@ public class FixedWidthGrid extends SelectionGrid implements
    * IE6 version of the implementation. IE6 sets the overall column width
    * instead of the innerWidth, so we need to add the padding and spacing.
    */
+  @SuppressWarnings("unused")
   private static class FixedWidthGridImplIE6 extends FixedWidthGridImpl {
     @Override
     public Element createGhostRow() {
@@ -152,6 +151,7 @@ public class FixedWidthGrid extends SelectionGrid implements
    * column size takes effect. Without the display refresh, the column width
    * doesn't update in the browser.
    */
+  @SuppressWarnings("unused")
   private static class FixedWidthGridImplOpera extends FixedWidthGridImpl {
     @Override
     public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
@@ -174,6 +174,7 @@ public class FixedWidthGrid extends SelectionGrid implements
    * Safari version of the implementation. Safari sets the overall column width
    * instead of the innerWidth, so we need to add the padding and spacing.
    */
+  @SuppressWarnings("unused")
   private static class FixedWidthGridImplSafari extends FixedWidthGridImpl {
     @Override
     public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
@@ -195,7 +196,7 @@ public class FixedWidthGrid extends SelectionGrid implements
   /**
    * The implementation class.
    */
-  private static FixedWidthGridImpl impl = (FixedWidthGridImpl) GWT.create(FixedWidthGridImpl.class);
+  private static FixedWidthGridImpl impl = GWT.create(FixedWidthGridImpl.class);
 
   /**
    * A mapping of column indexes to their widths in pixels.
@@ -230,6 +231,18 @@ public class FixedWidthGrid extends SelectionGrid implements
 
     // Sink hover and selection events
     sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEDOWN | Event.ONCLICK);
+  }
+
+  /**
+   * Constructs a {@link FixedWidthGrid} with the requested size.
+   * 
+   * @param rows the number of rows
+   * @param columns the number of columns
+   * @throws IndexOutOfBoundsException
+   */
+  public FixedWidthGrid(int rows, int columns) {
+    this();
+    resize(rows, columns);
   }
 
   /**
@@ -296,14 +309,10 @@ public class FixedWidthGrid extends SelectionGrid implements
   public int getColumnWidth(int column) {
     Integer colWidth = colWidths.get(new Integer(column));
     if (colWidth == null) {
-      return getDefaultColumnWidth();
+      return DEFAULT_COLUMN_WIDTH;
     } else {
       return colWidth.intValue();
     }
-  }
-
-  public int getDefaultColumnWidth() {
-    return DEFAULT_COLUMN_WIDTH;
   }
 
   /**
@@ -423,8 +432,8 @@ public class FixedWidthGrid extends SelectionGrid implements
    * @return the new ghost row
    */
   protected native Element getDOMGhostRow(HTMLTable table) /*-{
-         return table.@com.google.gwt.widgetideas.table.client.overrides.HTMLTable::getBodyElement()(table).rows[0];
-       }-*/;
+   return table.@com.google.gwt.widgetideas.table.client.overrides.HTMLTable::getBodyElement()(table).rows[0];
+   }-*/;
 
   /**
    * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
@@ -567,6 +576,22 @@ public class FixedWidthGrid extends SelectionGrid implements
       for (int i = 0; i < cellsToRemove; i++) {
         Element td = getGhostCellElement(numColumns);
         DOM.removeChild(ghostRow, td);
+      }
+    }
+  }
+
+  /**
+   * @see SortableGrid#applySort(Element[])
+   */
+  @Override
+  void applySort(Element[] trElems) {
+    // Move the rows to their new positions
+    Element bodyElem = getBodyElement();
+    for (int i = trElems.length - 1; i >= 0; i--) {
+      if (trElems[i] != null) {
+        DOM.removeChild(bodyElem, trElems[i]);
+        // Need to insert below the ghost row
+        DOM.insertChild(bodyElem, trElems[i], 1);
       }
     }
   }

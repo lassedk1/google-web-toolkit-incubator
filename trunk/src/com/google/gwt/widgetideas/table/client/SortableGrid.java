@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -19,8 +19,8 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortInfo;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
+import com.google.gwt.widgetideas.table.client.overrides.OverrideDOM;
 
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -29,8 +29,7 @@ import java.util.Map;
  * many more options such as lazy row and column creation, row movement,
  * hovering, row selection, and better column resizing.
  */
-public class SortableFixedWidthGrid extends FixedWidthGrid implements
-    HasSortableColumns {
+public class SortableGrid extends SelectionGrid {
   /**
    * The column sorter defines an algorithm to sort columns.
    */
@@ -42,7 +41,7 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
      * @param sortList the list of columns to sort by
      * @param callback the callback object when sorting is complete
      */
-    public abstract void onSortColumn(SortableFixedWidthGrid grid,
+    public abstract void onSortColumn(SortableGrid grid,
         ColumnSortList sortList, ColumnSorterCallback callback);
   }
 
@@ -51,14 +50,15 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
    * specified. This column sorted uses a quicksort algorithm to sort columns.
    */
   private static class DefaultColumnSorter extends ColumnSorter {
-    public void onSortColumn(SortableFixedWidthGrid grid,
-        ColumnSortList sortList, ColumnSorterCallback callback) {
+    @Override
+    public void onSortColumn(SortableGrid grid, ColumnSortList sortList,
+        ColumnSorterCallback callback) {
       // Get the primary column and sort order
       int column = sortList.getPrimaryColumn();
       boolean ascending = sortList.isPrimaryAscending();
 
       // Apply the default quicksort algorithm
-      FixedWidthGridCellFormatter formatter = grid.getFixedWidthGridCellFormatter();
+      SelectionGridCellFormatter formatter = grid.getSelectionGridCellFormatter();
       Element[] tdElems = new Element[grid.getRowCount()];
       for (int i = 0; i < tdElems.length; i++) {
         tdElems[i] = formatter.getRawElement(i, column);
@@ -146,7 +146,7 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
      */
     public void onSortingComplete(int[] trIndexes) {
       // Convert indexes to row elements
-      FixedWidthGridRowFormatter formatter = getFixedWidthGridRowFormatter();
+      SelectionGridRowFormatter formatter = getSelectionGridRowFormatter();
       Element[] trElems = new Element[trIndexes.length];
       for (int i = 0; i < trElems.length; i++) {
         trElems[i] = formatter.getRawElement(trIndexes[i]);
@@ -166,13 +166,7 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
      */
     public void onSortingComplete(Element[] trElems) {
       // Move the rows to their new positions
-      Element bodyElem = getBodyElement();
-      for (int i = trElems.length - 1; i >= 0; i--) {
-        if (trElems[i] != null) {
-          DOM.removeChild(bodyElem, trElems[i]);
-          DOM.insertChild(bodyElem, trElems[i], 1);
-        }
-      }
+      applySort(trElems);
 
       // Fire the listeners
       onSortingComplete();
@@ -203,6 +197,25 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
    * Information about the sorted columns.
    */
   private ColumnSortList columnSortList = new ColumnSortList();
+
+  /**
+   * Constructor.
+   */
+  public SortableGrid() {
+    super();
+  }
+
+  /**
+   * Constructs a {@link SortableGrid} with the requested size.
+   * 
+   * @param rows the number of rows
+   * @param columns the number of columns
+   * @throws IndexOutOfBoundsException
+   */
+  public SortableGrid(int rows, int columns) {
+    this();
+    resize(rows, columns);
+  }
 
   /**
    * Add a {@link SortableColumnsListener} listener.
@@ -272,9 +285,7 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
     }
 
     // Set the column sorting as reversed
-    Iterator it = columnSortList.iterator();
-    while (it.hasNext()) {
-      ColumnSortInfo sortInfo = (ColumnSortInfo) it.next();
+    for (ColumnSortInfo sortInfo : columnSortList) {
       sortInfo.setAscending(!sortInfo.isAscending());
     }
     fireColumnSorted();
@@ -372,45 +383,69 @@ public class SortableFixedWidthGrid extends FixedWidthGrid implements
    * @param row2 the second row to swap
    */
   protected void swapRowsRaw(int row1, int row2) {
+    Element tbody = getBodyElement();
     if (row1 == row2 + 1) {
       // Just move row1 up one
-      Element tr = getFixedWidthGridRowFormatter().getRawElement(row1);
-      DOM.removeChild(getBodyElement(), tr);
-      DOM.insertChild(getBodyElement(), tr, row2 + 1);
+      Element tr = getSelectionGridRowFormatter().getRawElement(row1);
+      int index = OverrideDOM.getRowIndex(tr);
+      DOM.removeChild(tbody, tr);
+      DOM.insertChild(tbody, tr, index - 1);
     } else if (row2 == row1 + 1) {
       // Just move row2 up one
-      Element tr = getFixedWidthGridRowFormatter().getRawElement(row2);
-      DOM.removeChild(getBodyElement(), tr);
-      DOM.insertChild(getBodyElement(), tr, row1 + 1);
+      Element tr = getSelectionGridRowFormatter().getRawElement(row2);
+      int index = OverrideDOM.getRowIndex(tr);
+      DOM.removeChild(tbody, tr);
+      DOM.insertChild(tbody, tr, index - 1);
     } else if (row1 == row2) {
       // Do nothing if rows are the same
       return;
     } else {
       // Remove both rows
-      Element tr1 = getFixedWidthGridRowFormatter().getRawElement(row1);
-      Element tr2 = getFixedWidthGridRowFormatter().getRawElement(row2);
-      DOM.removeChild(getBodyElement(), tr1);
-      DOM.removeChild(getBodyElement(), tr2);
+      Element tr1 = getSelectionGridRowFormatter().getRawElement(row1);
+      Element tr2 = getSelectionGridRowFormatter().getRawElement(row2);
+      int index1 = OverrideDOM.getRowIndex(tr1);
+      int index2 = OverrideDOM.getRowIndex(tr2);
+      DOM.removeChild(tbody, tr1);
+      DOM.removeChild(tbody, tr2);
 
       // Reinsert them into the table
       if (row1 > row2) {
-        DOM.insertChild(getBodyElement(), tr1, row2 + 1);
-        DOM.insertChild(getBodyElement(), tr2, row1 + 1);
+        DOM.insertChild(tbody, tr1, index2);
+        DOM.insertChild(tbody, tr2, index1);
       } else if (row1 < row2) {
-        DOM.insertChild(getBodyElement(), tr2, row1 + 1);
-        DOM.insertChild(getBodyElement(), tr1, row2 + 1);
+        DOM.insertChild(tbody, tr2, index1);
+        DOM.insertChild(tbody, tr1, index2);
       }
     }
 
     // Update the selected rows table
-    Map selectedRows = getSelectedRowsMap();
-    Element tr1 = (Element) selectedRows.remove(new Integer(row1));
-    Element tr2 = (Element) selectedRows.remove(new Integer(row2));
+    Map<Integer, Element> selectedRows = getSelectedRowsMap();
+    Element tr1 = selectedRows.remove(new Integer(row1));
+    Element tr2 = selectedRows.remove(new Integer(row2));
     if (tr1 != null) {
       selectedRows.put(new Integer(row2), tr1);
     }
     if (tr2 != null) {
       selectedRows.put(new Integer(row1), tr2);
+    }
+  }
+
+  /**
+   * Set the order of all rows after a column sort request.
+   * 
+   * This method takes an array of the row elements in this Grid, ordered
+   * according to their new positions in the Grid.
+   * 
+   * @param trElems the row elements in their new order
+   */
+  void applySort(Element[] trElems) {
+    // Move the rows to their new positions
+    Element bodyElem = getBodyElement();
+    for (int i = trElems.length - 1; i >= 0; i--) {
+      if (trElems[i] != null) {
+        DOM.removeChild(bodyElem, trElems[i]);
+        DOM.insertChild(bodyElem, trElems[i], 0);
+      }
     }
   }
 }

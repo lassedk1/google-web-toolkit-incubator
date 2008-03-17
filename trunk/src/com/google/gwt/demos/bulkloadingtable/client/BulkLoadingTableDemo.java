@@ -28,8 +28,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.table.client.FlexTableBulkRenderer;
 import com.google.gwt.widgetideas.table.client.ClientTableModel;
+import com.google.gwt.widgetideas.table.client.FlexTableBulkRenderer;
 import com.google.gwt.widgetideas.table.client.PreloadedTable;
 import com.google.gwt.widgetideas.table.client.RendererCallback;
 import com.google.gwt.widgetideas.table.client.overrides.FlexTable;
@@ -37,7 +37,8 @@ import com.google.gwt.widgetideas.table.client.overrides.Grid;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 
 /**
- * Demo of {@link PreloadedTable} and {@link BulkLoadedTable}.
+ * Demo of {@link PreloadedTable} and
+ * {@link com.google.gwt.widgetideas.table.client.TableBulkRenderer}.
  */
 public class BulkLoadingTableDemo implements EntryPoint {
   int numColumns = 15;
@@ -162,12 +163,28 @@ public class BulkLoadingTableDemo implements EntryPoint {
       }
     };
 
-    ClientTableModel tableModel = new ClientTableModel() {
+    ClientTableModel<Object> tableModel = new ClientTableModel<Object>() {
+      @Override
       public Object getCell(int rowNum, int cellNum) {
         if (rowNum >= numRows | cellNum >= numColumns) {
           return null;
         }
         return "cell " + rowNum + ", " + cellNum;
+      }
+
+      @Override
+      protected boolean onRowInserted(int beforeRow) {
+        return false;
+      }
+
+      @Override
+      protected boolean onRowRemoved(int row) {
+        return false;
+      }
+
+      @Override
+      protected boolean onSetData(int row, int cell, Object data) {
+        return false;
       }
     };
     FlexTableBulkRenderer renderer = new FlexTableBulkRenderer(table);

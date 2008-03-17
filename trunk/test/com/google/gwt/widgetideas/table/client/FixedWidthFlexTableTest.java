@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -31,6 +31,7 @@ public class FixedWidthFlexTableTest extends GWTTestCase {
     return new FixedWidthFlexTable();
   }
 
+  @Override
   public String getModuleName() {
     return "com.google.gwt.widgetideas.WidgetIdeas";
   }
@@ -41,10 +42,7 @@ public class FixedWidthFlexTableTest extends GWTTestCase {
   public void testAccessors() {
     // Initialize the grid
     FixedWidthFlexTable testTable = getFixedWidthFlexTable();
-
-    // Default column width
-    int defaultWidth = testTable.getDefaultColumnWidth();
-    assertEquals(FixedWidthFlexTable.DEFAULT_COLUMN_WIDTH, defaultWidth);
+    int defaultWidth = FixedWidthFlexTable.DEFAULT_COLUMN_WIDTH;
 
     // Column width
     assertEquals(defaultWidth, testTable.getColumnWidth(4));

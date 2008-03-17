@@ -17,14 +17,13 @@ package com.google.gwt.widgetideas.table.client.overrides;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.widgetideas.table.client.HasCellSpans;
 
 /**
  * This class should replace the actual class of the same name.
  * 
  * TODO: Incorporate changes into actual class.
  */
-public class FlexTable extends HTMLTable implements HasCellSpans {
+public class FlexTable extends HTMLTable {
 
   /**
    * FlexTable-specific implementation of {@link HTMLTable.CellFormatter}. The
@@ -127,6 +126,7 @@ public class FlexTable extends HTMLTable implements HasCellSpans {
    * @return the number of cells present
    * @throws IndexOutOfBoundsException
    */
+  @Override
   public int getCellCount(int row) {
     checkRowBounds(row);
     return getDOMCellCount(row);
@@ -162,6 +162,7 @@ public class FlexTable extends HTMLTable implements HasCellSpans {
    * 
    * @return number of rows
    */
+  @Override
   public int getRowCount() {
     return getDOMRowCount();
   }
@@ -173,6 +174,7 @@ public class FlexTable extends HTMLTable implements HasCellSpans {
    * @param beforeColumn the cell's column
    * @return the element
    */
+  @Override
   public Element insertCell(int beforeRow, int beforeColumn) {
     return super.insertCell(beforeRow, beforeColumn);
   }
@@ -182,6 +184,7 @@ public class FlexTable extends HTMLTable implements HasCellSpans {
    * 
    * @param beforeRow the row to insert
    */
+  @Override
   public int insertRow(int beforeRow) {
     return super.insertRow(beforeRow);
   }
@@ -193,6 +196,7 @@ public class FlexTable extends HTMLTable implements HasCellSpans {
    * @param column the column of cell to remove
    * @throws IndexOutOfBoundsException
    */
+  @Override
   public void removeCell(int row, int column) {
     super.removeCell(row, column);
   }
@@ -211,6 +215,7 @@ public class FlexTable extends HTMLTable implements HasCellSpans {
     }
   }
 
+  @Override
   public void removeRow(int row) {
     super.removeRow(row);
   }
@@ -232,6 +237,7 @@ public class FlexTable extends HTMLTable implements HasCellSpans {
    * @param column the column to prepare.
    * @throws IndexOutOfBoundsException if the row is negative
    */
+  @Override
   protected void prepareCell(int row, int column) {
     prepareRow(row);
     if (column < 0) {
@@ -253,6 +259,7 @@ public class FlexTable extends HTMLTable implements HasCellSpans {
    * @param row The row to prepare.
    * @throws IndexOutOfBoundsException if the row is negative
    */
+  @Override
   protected void prepareRow(int row) {
     if (row < 0) {
       throw new IndexOutOfBoundsException(

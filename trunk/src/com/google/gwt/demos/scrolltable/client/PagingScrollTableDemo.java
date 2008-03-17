@@ -19,23 +19,25 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.table.client.CachedTableController;
-import com.google.gwt.widgetideas.table.client.EditablePagingGrid;
+import com.google.gwt.widgetideas.table.client.CachedTableModel;
+import com.google.gwt.widgetideas.table.client.FixedWidthGrid;
+import com.google.gwt.widgetideas.table.client.FixedWidthGridBulkRenderer;
 import com.google.gwt.widgetideas.table.client.ListCellEditor;
-import com.google.gwt.widgetideas.table.client.PagingGrid;
-import com.google.gwt.widgetideas.table.client.PagingGridBulkRenderer;
+import com.google.gwt.widgetideas.table.client.PagingOptions;
 import com.google.gwt.widgetideas.table.client.PagingScrollTable;
 import com.google.gwt.widgetideas.table.client.RadioCellEditor;
 import com.google.gwt.widgetideas.table.client.ScrollTable;
 import com.google.gwt.widgetideas.table.client.TableBulkRenderer;
 import com.google.gwt.widgetideas.table.client.TextCellEditor;
-import com.google.gwt.widgetideas.table.client.PagingGrid.CellRenderer;
-import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
+import com.google.gwt.widgetideas.table.client.PagingScrollTable.CellRenderer;
 import com.google.gwt.widgetideas.table.client.overrides.FlexTable.FlexCellFormatter;
+
+import java.io.Serializable;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -47,17 +49,19 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   private static class CustomBulkRenderer extends
       TableBulkRenderer.CellRenderer {
     @Override
-    public void renderCell(int row, int column, Object cellData, StringBuffer accum) {
+    public void renderCell(int row, int column, Object cellData,
+        StringBuffer accum) {
       if (cellData == null) {
         return;
       }
 
       switch (column) {
         case 5:
-          accum.append("<FONT color=\"" + cellData + "\">" + cellData + "</FONT>");
+          accum.append("<FONT color=\"" + cellData + "\">" + cellData
+              + "</FONT>");
           return;
         default:
-          accum.append(cellData.toString());
+          accum.append(cellData + "");
       }
     }
   }
@@ -66,7 +70,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
    * A custom cell renderer.
    */
   private static class CustomCellRenderer implements CellRenderer {
-    public void renderCell(PagingGrid grid, int row, int column, Object data) {
+    public void renderCell(FixedWidthGrid grid, int row, int column, Object data) {
       if (data == null) {
         grid.clearCell(row, column);
         return;
@@ -84,9 +88,9 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   }
 
   /**
-   * The {@link CachedTableController} used in the {@link PagingScrollTable}.
+   * The {@link CachedTableModel} around the main table model.
    */
-  protected static CachedTableController tableController = null;
+  protected static CachedTableModel<Serializable> cachedTableModel = null;
 
   /**
    * The {@link DataSourceTableModel}.
@@ -94,12 +98,12 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   protected static DataSourceTableModel tableModel = null;
 
   /**
-   * Get the data table.
+   * Get the cached table model.
    * 
-   * @return the data table.
+   * @return the cached table model
    */
-  public static EditablePagingGrid getEditableGridView() {
-    return (EditablePagingGrid) dataTable;
+  public static CachedTableModel<Serializable> getCachedTableModel() {
+    return cachedTableModel;
   }
 
   /**
@@ -107,17 +111,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
    * 
    * @return the scroll table.
    */
-  public static PagingScrollTable getPagingScrollTable() {
-    return (PagingScrollTable) scrollTable;
-  }
-
-  /**
-   * Get the table controller.
-   * 
-   * @return the table controller
-   */
-  public static CachedTableController getTableController() {
-    return tableController;
+  public static PagingScrollTable<Serializable> getPagingScrollTable() {
+    return (PagingScrollTable<Serializable>) scrollTable;
   }
 
   /**
@@ -137,7 +132,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
    * @param beforeRow the index to add the new row into
    */
   public static void insertDataRow(int beforeRow) {
-    tableController.insertRow(beforeRow);
+    getCachedTableModel().insertRow(beforeRow);
   }
 
   /**
@@ -151,29 +146,29 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // Setup the controller
     tableModel = new DataSourceTableModel();
-    tableController = new CachedTableController(tableModel);
-    tableController.setNumRows(10000);
-    tableController.setNumPreCachedRows(20);
-    tableController.setNumPostCachedRows(20);
+    cachedTableModel = new CachedTableModel<Serializable>(tableModel);
+    cachedTableModel.setPreCachedRowCount(20);
+    cachedTableModel.setPostCachedRowCount(20);
+    cachedTableModel.setRowCount(1000);
 
     // Setup the view
-    EditablePagingGrid gridView = new EditablePagingGrid(tableController);
-    dataTable = gridView;
-    gridView.setCellRenderer(new CustomCellRenderer());
-    setupCellEditors(gridView);
-
-    // Setup the renderer
-    PagingGridBulkRenderer dataRenderer = new PagingGridBulkRenderer(gridView,
-        12);
-    dataRenderer.setCellRenderer(new CustomBulkRenderer());
+    dataTable = new FixedWidthGrid();
 
     // Create the scroll table
-    scrollTable = new PagingScrollTable(gridView, headerTable);
+    scrollTable = new PagingScrollTable<Serializable>(cachedTableModel,
+        dataTable, headerTable);
+    getPagingScrollTable().setCellRenderer(new CustomCellRenderer());
     getPagingScrollTable().setPageSize(20);
     scrollTable.setFooterTable(getFooterTable());
+    setupCellEditors(getPagingScrollTable());
+
+    // Setup the bulk renderer
+    FixedWidthGridBulkRenderer bulkRenderer = new FixedWidthGridBulkRenderer(
+        dataTable, DataSourceTableModel.COLUMN_COUNT);
+    bulkRenderer.setCellRenderer(new CustomBulkRenderer());
+    getPagingScrollTable().setBulkRenderer(bulkRenderer);
 
     // Add some data to the footer table
-    footerTable.resize(1, 12);
     for (int i = 0; i < 12; i++) {
       footerTable.setText(0, i, "Col " + i);
     }
@@ -182,8 +177,12 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     // Setup the scroll table
     setupScrollTable();
 
+    // Create an options panel
+    PagingOptions pagingOptions = new PagingOptions(getPagingScrollTable());
+
     // Add the table to the page
     RootPanel.get().add(scrollTable);
+    RootPanel.get().add(pagingOptions);
     RootPanel.get().add(new HTML("<BR>"));
     RootPanel.get().add(createTabPanel());
   }
@@ -220,7 +219,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     scrollTable.setCellPadding(3);
     scrollTable.setCellSpacing(0);
     scrollTable.setSize("95%", "50%");
-    scrollTable.setResizePolicy(ScrollTable.RESIZE_POLICY_FILL_WIDTH);
+    scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
 
     // Set column widths
     scrollTable.setColumnWidth(1, 100);
@@ -271,7 +270,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   /**
    * Setup the cell editors on the scroll table.
    */
-  private void setupCellEditors(EditablePagingGrid gridView) {
+  private void setupCellEditors(PagingScrollTable<Serializable> table) {
     // Integer only cell editor for age
     TextBox intOnlyTextBox = new TextBox();
     intOnlyTextBox.setWidth("4em");
@@ -288,56 +287,62 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         }
       }
     });
-    gridView.setCellEditor(2, new TextCellEditor(intOnlyTextBox));
+    table.setCellEditor(2, new TextCellEditor<Serializable>(intOnlyTextBox));
 
     // Gender cell editor
-    RadioCellEditor genderEditor = new RadioCellEditor();
+    RadioCellEditor<Serializable> genderEditor = new RadioCellEditor<Serializable>();
     genderEditor.setLabel("Select a gender:");
-    genderEditor.addOption("male");
-    genderEditor.addOption("female");
-    gridView.setCellEditor(3, genderEditor);
+    genderEditor.addRadioButton(new RadioButton("editorGender", "male"));
+    genderEditor.addRadioButton(new RadioButton("editorGender", "female"));
+    table.setCellEditor(3, genderEditor);
 
     // Race cell editor
-    ListCellEditor raceEditor = new ListCellEditor();
+    ListCellEditor<Serializable> raceEditor = new ListCellEditor<Serializable>();
     ListBox raceBox = raceEditor.getListBox();
     for (int i = 0; i < DataSourceData.races.length; i++) {
       raceBox.addItem(DataSourceData.races[i]);
     }
-    gridView.setCellEditor(4, raceEditor);
+    table.setCellEditor(4, raceEditor);
 
     // Color cell editor
-    RadioCellEditor colorEditor = new RadioCellEditor() {
+    RadioCellEditor<Serializable> colorEditor = new RadioCellEditor<Serializable>() {
+      /**
+       * An element used to string the HTML portion of the color.
+       */
+      private HTML html = new HTML();
+
       @Override
-      protected Object getCellValue(HTMLTable table, int row, int cell) {
-        return table.getText(row, cell);
+      protected void setValue(Object value) {
+        html.setHTML(value.toString());
+        super.setValue(html.getText());
       }
     };
     colorEditor.setLabel("Select a color:");
     for (int i = 0; i < DataSourceData.colors.length; i++) {
-      colorEditor.addOption(DataSourceData.colors[i]);
+      String color = DataSourceData.colors[i];
+      colorEditor.addRadioButton(new RadioButton("editorColor", color));
     }
-    gridView.setCellEditor(5, colorEditor);
+    table.setCellEditor(5, colorEditor);
 
     // Sport cell editor
-    ListCellEditor sportEditor = new ListCellEditor();
+    ListCellEditor<Serializable> sportEditor = new ListCellEditor<Serializable>();
     sportEditor.setLabel("Select a sport:");
     ListBox sportBox = sportEditor.getListBox();
     for (int i = 0; i < DataSourceData.sports.length; i++) {
       sportBox.addItem(DataSourceData.sports[i]);
     }
-    gridView.setCellEditor(6, sportEditor);
+    table.setCellEditor(6, sportEditor);
 
     // College cell editor
-    TextCellEditor collegeEditor = new TextCellEditor() {
+    TextCellEditor<Serializable> collegeEditor = new TextCellEditor<Serializable>() {
       @Override
-      public Object getValue() {
-        Object value = super.getValue();
-        return "University of " + value;
+      protected Object getValue() {
+        return "University of " + super.getValue();
       }
 
       @Override
-      public boolean onAccept(Object value) {
-        if (super.getValue().equals("")) {
+      public boolean onAccept() {
+        if (getValue().equals("")) {
           Window.alert("You must enter a school");
           return false;
         }
@@ -345,11 +350,11 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       }
 
       @Override
-      protected Object getCellValue(HTMLTable table, int row, int cell) {
-        return table.getText(row, cell).substring(14);
+      protected void setValue(Object value) {
+        super.setValue(value.toString().substring(14));
       }
     };
     collegeEditor.setLabel("University of");
-    gridView.setCellEditor(7, collegeEditor);
+    table.setCellEditor(7, collegeEditor);
   }
 }

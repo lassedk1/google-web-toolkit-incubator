@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -17,75 +17,67 @@ package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
-import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 
 /**
  * A text editor used to edit a single line of text.
+ * 
+ * @param <R> the type of the row value associated with the editor
  */
-public class TextCellEditor extends AbstractCellEditor {
+public class TextCellEditor<R> extends InlineCellEditor<R> {
   /**
    * The text field used in this editor.
    */
   private TextBoxBase textBox;
-  
+
   /**
    * Constructor.
    */
   public TextCellEditor() {
     this(new TextBox());
   }
-  
+
   /**
    * Constructor.
-   * 
-   * Create a new TextCellEditor using a custom defined text box.
    * 
    * @param textBox the text box to use
    */
   public TextCellEditor(TextBoxBase textBox) {
-    this(textBox, true);
-  }
-  
-  /**
-   * Constructor.
-   * 
-   * Create a new TextCellEditor using a custom defined text box.
-   * 
-   * @param textBox the text box to use
-   * @param useDefaultButtons true to use default accept/cancel buttons
-   */
-  public TextCellEditor(TextBoxBase textBox, boolean useDefaultButtons) {
-    super(textBox, useDefaultButtons);
+    super(textBox);
     this.textBox = textBox;
-  }
-  
-  /**
-   * Get the new value from the cell editor.
-   * 
-   * @return the new value
-   */
-  @Override
-  public Object getValue() {
-    return textBox.getText();
   }
 
   /**
-   * Fired when editing a cell, just after the cell is shown.
+   * Constructor.
    * 
-   * @param table the table that contains the cell
-   * @param row the row index
-   * @param cell the cell index
+   * @param textBox the text box to use
+   * @param images the images to use for the accept/cancel buttons
+   */
+  public TextCellEditor(TextBoxBase textBox, InlineCellEditorImages images) {
+    super(textBox, images);
+    this.textBox = textBox;
+  }
+
+  /**
+   * @see AbstractCellEditor#editCell(CellEditInfo, Callback)
    */
   @Override
-  public void onEditCell(HTMLTable table, int row, int cell) {
+  public void editCell(CellEditInfo<R> cellEditInfo, Callback<R> callback) {
+    super.editCell(cellEditInfo, callback);
     textBox.setFocus(true);
   }
-  
+
   /**
-   * Set the current value in the cell editor.
-   * 
-   * @param value the current value
+   * @return the text box used in the editor
    */
+  protected TextBoxBase getTextBox() {
+    return textBox;
+  }
+
+  @Override
+  protected Object getValue() {
+    return textBox.getText();
+  }
+
   @Override
   protected void setValue(Object value) {
     if (value == null) {

@@ -23,8 +23,6 @@ import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.widgetideas.table.client.FixedWidthFlexTable;
 import com.google.gwt.widgetideas.table.client.FixedWidthGrid;
 import com.google.gwt.widgetideas.table.client.ScrollTable;
-import com.google.gwt.widgetideas.table.client.SelectionGrid;
-import com.google.gwt.widgetideas.table.client.SortableFixedWidthGrid;
 import com.google.gwt.widgetideas.table.client.overrides.FlexTable.FlexCellFormatter;
 
 /**
@@ -34,12 +32,12 @@ public class ScrollTableDemo implements EntryPoint {
   /**
    * The data portion of the {@link ScrollTable}.
    */
-  protected static SortableFixedWidthGrid dataTable = null;
+  protected static FixedWidthGrid dataTable = null;
   
   /**
    * The footer portion of the  {@link ScrollTable} .
    */
-  protected static FixedWidthGrid footerTable = null;
+  protected static FixedWidthFlexTable footerTable = null;
 
   /**
    * The header portion of the {@link ScrollTable}.
@@ -56,10 +54,9 @@ public class ScrollTableDemo implements EntryPoint {
    * 
    * @return the data table.
    */
-  public static SortableFixedWidthGrid getDataTable() {
+  public static FixedWidthGrid getDataTable() {
     if (dataTable == null) {
-      dataTable = new SortableFixedWidthGrid();
-      dataTable.setHoveringPolicy(SelectionGrid.HOVERING_POLICY_ROW);
+      dataTable = new FixedWidthGrid();
     }
     return dataTable;
   }
@@ -69,9 +66,9 @@ public class ScrollTableDemo implements EntryPoint {
    * 
    * @return the footer table.
    */
-  public static FixedWidthGrid getFooterTable() {
+  public static FixedWidthFlexTable getFooterTable() {
     if (footerTable == null) {
-      footerTable = new FixedWidthGrid();
+      footerTable = new FixedWidthFlexTable();
     }
     return footerTable;
   }
@@ -146,7 +143,6 @@ public class ScrollTableDemo implements EntryPoint {
     }
     
     // Add some data to the footer table
-    footerTable.resize(1, 13);
     for (int i = 0; i < 13; i++) {
       footerTable.setText(0, i, "Col " + i);
     }
@@ -191,7 +187,7 @@ public class ScrollTableDemo implements EntryPoint {
     scrollTable.setSize("95%", "50%");
     scrollTable.setCellPadding(3);
     scrollTable.setCellSpacing(1);
-    scrollTable.setResizePolicy(ScrollTable.RESIZE_POLICY_FILL_WIDTH);
+    scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
 
     // Level 1 headers
     FlexCellFormatter headerFormatter = headerTable.getFlexCellFormatter();

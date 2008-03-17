@@ -18,8 +18,10 @@ package com.google.gwt.demos.scrolltable.client;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.table.client.CachedTableController;
-import com.google.gwt.widgetideas.table.client.PagingGrid;
+import com.google.gwt.widgetideas.table.client.FixedWidthGrid;
+import com.google.gwt.widgetideas.table.client.TableModel;
+
+import java.io.Serializable;
 
 /**
  * Panel with options for manipulating data contents and number of cells.
@@ -34,15 +36,14 @@ public class ModeledTabDataManipulation extends DemoTabDataManipulation
    */
   @Override
   public void onClick(Widget sender) {
-    PagingGrid gridView = (PagingGrid) ScrollTableDemo.getDataTable();
-    CachedTableController tableController =
-        PagingScrollTableDemo.getTableController();
+    FixedWidthGrid gridView = ScrollTableDemo.getDataTable();
+    TableModel<Serializable> tableModel = PagingScrollTableDemo.getCachedTableModel();
     try {
       if (sender == setHtmlButton) {
         // Set cell HTML
         int column = Integer.parseInt(columnIndexBox.getText());
         int row = Integer.parseInt(rowIndexBox.getText());
-        tableController.setData(row, column, textBox.getText());
+        tableModel.setData(row, column, textBox.getText());
       } else if (sender == add1RowButton) {
         // Insert 1 row
         int row = Integer.parseInt(rowIndexBox.getText());
@@ -62,7 +63,7 @@ public class ModeledTabDataManipulation extends DemoTabDataManipulation
       } else if (sender == removeRowButton) {
         // Remove a row
         int row = Integer.parseInt(rowIndexBox.getText());
-        tableController.removeRow(row);
+        tableModel.removeRow(row);
       } else if (sender == resizeColumnCountButton) {
         // Set column count
         int column = Integer.parseInt(columnIndexBox.getText());

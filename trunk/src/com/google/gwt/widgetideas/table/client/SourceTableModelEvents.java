@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,17 +16,20 @@
 package com.google.gwt.widgetideas.table.client;
 
 /**
- * An interface for tables that support column and row spans.
+ * An interface for {@link TableModel} that trigger events.
  */
-public interface HasCellSpans {
+public interface SourceTableModelEvents {
   /**
-   * Gets the overall column index of this cell as if this table were a grid, as
-   * determined by the rowspan and colspan of other cells in the table.
+   * Add a new {@link TableModelListener}.
    * 
-   * @param row the cell's row
-   * @param column the cell's column
-   * @return the cell's column index
-   * @throws IndexOutOfBoundsException
+   * @param listener the listener
    */
-  int getColumnIndex(int row, int column);
+  void addTableModelListener(TableModelListener listener);
+
+  /**
+   * Remove a {@link TableModelListener}.
+   * 
+   * @param listener the listener to remove
+   */
+  void removeTableModelListener(TableModelListener listener);
 }

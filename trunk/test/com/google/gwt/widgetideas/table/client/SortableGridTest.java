@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,16 +15,15 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
-import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.widgetideas.table.client.SortableFixedWidthGrid.ColumnSorter;
-import com.google.gwt.widgetideas.table.client.SortableFixedWidthGrid.ColumnSorterCallback;
+import com.google.gwt.widgetideas.table.client.SortableGrid.ColumnSorter;
+import com.google.gwt.widgetideas.table.client.SortableGrid.ColumnSorterCallback;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 
 /**
- * Tests methods used for all {@link SortableFixedWidthGrid} class.
+ * Tests methods used for all {@link SortableGrid} class.
  */
-public class SortableFixedWidthGridTest extends GWTTestCase {
+public class SortableGridTest extends SelectionGridTest {
   /**
    * A version of {@link SortableColumnsListener} used for testing.
    */
@@ -46,13 +45,19 @@ public class SortableFixedWidthGridTest extends GWTTestCase {
     }
   }
 
-  /**
-   * The grid to test.
-   */
-  private SortableFixedWidthGrid grid = null;
-
+  @Override
   public String getModuleName() {
     return "com.google.gwt.widgetideas.WidgetIdeas";
+  }
+
+  /**
+   * Get the selection grid.
+   * 
+   * @return the grid
+   */
+  @Override
+  public SelectionGrid getSelectionGrid() {
+    return getSortableGrid();
   }
 
   /**
@@ -60,32 +65,29 @@ public class SortableFixedWidthGridTest extends GWTTestCase {
    * 
    * @return the grid
    */
-  public SortableFixedWidthGrid getSortableGrid() {
-    if (grid == null) {
-      grid = new SortableFixedWidthGrid();
-      grid.resize(10, 10);
+  public SortableGrid getSortableGrid() {
+    SortableGrid grid = new SortableGrid(10, 10);
 
-      // Set some data (0-9) in each column
-      for (int row = 0; row < 10; row++) {
-        for (int col = 0; col < 10; col++) {
-          grid.setHTML(row, col, row + "");
-        }
+    // Set some data (0-9) in each column
+    for (int row = 0; row < 10; row++) {
+      for (int col = 0; col < 10; col++) {
+        grid.setHTML(row, col, row + "");
       }
     }
+
     return grid;
   }
 
   /**
    * Test accessors.
-   * 
-   * Uses columns: 3
    */
   public void testAccessor() {
     // Initialize the grid
-    SortableFixedWidthGrid testGrid = getSortableGrid();
+    SortableGrid testGrid = getSortableGrid();
     ColumnSorter mySorter = new ColumnSorter() {
-      public void onSortColumn(SortableFixedWidthGrid grid,
-          ColumnSortList sortList, ColumnSorterCallback callback) {
+      @Override
+      public void onSortColumn(SortableGrid grid, ColumnSortList sortList,
+          ColumnSorterCallback callback) {
       }
     };
 
@@ -127,12 +129,10 @@ public class SortableFixedWidthGridTest extends GWTTestCase {
 
   /**
    * Test the {@link TestSortableColumnsListener}s.
-   * 
-   * Uses columns: 4, 5
    */
   public void testListener() {
     // Initialize the grid
-    SortableFixedWidthGrid testGrid = getSortableGrid();
+    SortableGrid testGrid = getSortableGrid();
     ColumnSortList sortList = testGrid.getColumnSortList();
 
     // Create some listeners
@@ -173,13 +173,10 @@ public class SortableFixedWidthGridTest extends GWTTestCase {
 
   /**
    * Test moving rows.
-   * 
-   * Uses columns: 6
    */
   public void testMoveRows() {
     // Initialize the grid
-    SortableFixedWidthGrid testGrid = getSortableGrid();
-    testGrid.sortColumn(6);
+    SortableGrid testGrid = getSortableGrid();
 
     // Move a row up
     testGrid.moveRowUp(5);
@@ -237,12 +234,10 @@ public class SortableFixedWidthGridTest extends GWTTestCase {
 
   /**
    * Test built in client side quick sorting.
-   * 
-   * Uses columns: 1, 2
    */
   public void testSorting() {
     // Initialize the grid
-    SortableFixedWidthGrid testGrid = getSortableGrid();
+    SortableGrid testGrid = getSortableGrid();
     ColumnSortList sortList = testGrid.getColumnSortList();
 
     // Sort ascending using default sort

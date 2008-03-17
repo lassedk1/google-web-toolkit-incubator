@@ -22,7 +22,9 @@ import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 import com.google.gwt.widgetideas.table.client.TableModel.SerializableResponse;
 import com.google.gwt.widgetideas.table.client.TableModel.Request;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -37,6 +39,7 @@ public class DataSourceServiceImpl extends RemoteServiceServlet implements
    * The source of the data.
    */
   private DataSourceData data = new DataSourceData() {
+    @Override
     public int getRandomInt(int max) {
       return random.nextInt(max);
     }
@@ -47,18 +50,18 @@ public class DataSourceServiceImpl extends RemoteServiceServlet implements
    */
   private Random random = new Random();
 
-  public SerializableResponse requestRows(Request request) {
+  public SerializableResponse<Serializable> requestRows(Request request) {
     // Get the sort info, even though we ignore it
     ColumnSortList sortList = request.getColumnSortList();
     sortList.getPrimaryColumn();
     sortList.isPrimaryAscending();
 
     // Create some fake data
-    List rowData = new ArrayList();
+    List<Collection<Serializable>> rowData = new ArrayList<Collection<Serializable>>();
     int startRow = request.getStartRow();
     int lastRow = startRow + request.getNumRows();
     for (int row = startRow; row < lastRow; row++) {
-      List cellData = new ArrayList();
+      List<Serializable> cellData = new ArrayList<Serializable>();
       for (int col = 0; col < 12; col++) {
         cellData.add(data.getCell(row, col));
       }
@@ -66,6 +69,6 @@ public class DataSourceServiceImpl extends RemoteServiceServlet implements
     }
 
     // Return the data in a Default Response
-    return new SerializableResponse(rowData);
+    return new SerializableResponse<Serializable>(rowData);
   }
 }

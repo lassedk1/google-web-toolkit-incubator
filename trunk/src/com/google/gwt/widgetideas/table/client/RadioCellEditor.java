@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,101 +15,68 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
+import com.google.gwt.user.client.ui.Widget;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 
 /**
  * A cell editor that lists its options as radio buttons.
+ * 
+ * @param <R> the type of the row value associated with the editor
  */
-public class RadioCellEditor extends AbstractCellEditor {
-  /**
-   * A unique ID counter so give radio buttons unique names.
-   */
-  private static int uniqueID = 0;
-
-  /**
-   * The group name.
-   */
-  private String groupName;
-
-  /**
-   * The radio buttons in this editor.
-   */
-  private List<RadioButton> radios = new ArrayList<RadioButton>();
-
+public class RadioCellEditor<R> extends InlineCellEditor<R> {
   /**
    * The vertical panel used to layout the contents.
    */
-  private VerticalPanel vpanel;
+  private VerticalPanel vpanel = new VerticalPanel();
 
   /**
    * Constructor.
    */
   public RadioCellEditor() {
-    this(true);
+    this(GWT.<InlineCellEditorImages> create(InlineCellEditorImages.class));
   }
 
   /**
    * Constructor.
    * 
-   * @param useDefaultButtons true to use default accept/cancel buttons
+   * @param images the images to use for the accept/cancel buttons
    */
-  public RadioCellEditor(boolean useDefaultButtons) {
-    super(new VerticalPanel(), useDefaultButtons);
-    vpanel = (VerticalPanel) getContentWidget();
-
-    // Assign a unique name
-    uniqueID++;
-    groupName = "gwtRadioCellEditor" + uniqueID;
+  public RadioCellEditor(InlineCellEditorImages images) {
+    this(new VerticalPanel(), images);
   }
 
   /**
-   * Add an option to this editor.
+   * Constructor.
    * 
-   * @param label the value of the option
+   * @param images the images to use for the accept/cancel buttons
    */
-  public void addOption(String label) {
-    RadioButton button = new RadioButton(groupName, label);
-    radios.add(button);
-    vpanel.add(button);
+  private RadioCellEditor(VerticalPanel vPanel, InlineCellEditorImages images) {
+    super(vPanel, images);
+    this.vpanel = vPanel;
   }
 
   /**
-   * Gets the list of {@link RadioButton} widges associated with this editor.
-   */
-  public List<RadioButton> getRadioButtons() {
-    return radios;
-  }
-
-  /**
-   * Get the new value from the cell editor.
+   * Add a radio button to the editor.
    * 
-   * @return the new value
+   * @param radio the radio button to add
+   */
+  public void addRadioButton(RadioButton radio) {
+    vpanel.add(radio);
+  }
+
+  /**
+   * @see AbstractCellEditor#editCell(CellEditInfo, Callback)
    */
   @Override
-  public Object getValue() {
-    for (RadioButton radio : radios) {
-      if (radio.isChecked()) {
-        return radio.getText();
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Fired when editing a cell, just after the cell is shown.
-   * 
-   * @param table the table that contains the cell
-   * @param row the row index
-   * @param cell the cell index
-   */
-  @Override
-  public void onEditCell(HTMLTable table, int row, int cell) {
-    for (RadioButton radio : radios) {
+  public void editCell(CellEditInfo<R> cellEditInfo, Callback<R> callback) {
+    super.editCell(cellEditInfo, callback);
+    Iterator<Widget> it = vpanel.iterator();
+    while (it.hasNext()) {
+      RadioButton radio = (RadioButton) it.next();
       if (radio.isChecked()) {
         radio.setFocus(true);
         return;
@@ -118,13 +85,31 @@ public class RadioCellEditor extends AbstractCellEditor {
   }
 
   /**
-   * Set the current value in the cell editor.
+   * Remove a radio button to the editor.
    * 
-   * @param value the current value
+   * @param radio the radio button to remove
    */
+  public void removeRadioButton(RadioButton radio) {
+    vpanel.remove(radio);
+  }
+
+  @Override
+  protected Object getValue() {
+    Iterator<Widget> it = vpanel.iterator();
+    while (it.hasNext()) {
+      RadioButton radio = (RadioButton) it.next();
+      if (radio.isChecked()) {
+        return radio.getText();
+      }
+    }
+    return null;
+  }
+
   @Override
   protected void setValue(Object value) {
-    for (RadioButton radio : radios) {
+    Iterator<Widget> it = vpanel.iterator();
+    while (it.hasNext()) {
+      RadioButton radio = (RadioButton) it.next();
       if (radio.getText().equals(value)) {
         radio.setChecked(true);
       } else {
