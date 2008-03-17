@@ -20,7 +20,6 @@
 <module>
 	<inherits name='com.google.gwt.widgetideas.BasicTable' />
 	<inherits name='com.google.gwt.widgetideas.ScrollTable' />
-	<inherits name='com.google.gwt.widgetideas.TitledPanel' />
 	<inherits name='com.google.gwt.widgetideas.GlassPanel' />
 	<inherits name='com.google.gwt.widgetideas.CurrencyWidget' />
 	<inherits name='com.google.gwt.widgetideas.DatePicker' />
