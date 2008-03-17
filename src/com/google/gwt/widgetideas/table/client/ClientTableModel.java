@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,18 +20,20 @@ import java.util.NoSuchElementException;
 
 /**
  * A {@link TableModel} used when the data source can be accessed synchronously.
+ * 
+ * @param <R> the data type of the row values
+ * 
  */
-public abstract class ClientTableModel extends TableModel {
-
+public abstract class ClientTableModel<R> extends TableModel<R> {
   /**
-   * A {@link Response} that can be used when the response is not going over a
-   * RPC request.
+   * A Response that can be used when the response is not going over a RPC
+   * request.
    */
-  public static class ClientResponse extends Response {
+  public static class ClientResponse<R> extends Response<R> {
     /**
      * An iterator over the rows of data.
      */
-    private Iterator/* <Iterator<Object>> */rows = null;
+    private Iterator<Iterator<Object>> rows = null;
 
     /**
      * Constructor.
@@ -45,7 +47,7 @@ public abstract class ClientTableModel extends TableModel {
      * 
      * @param rows the data for the table
      */
-    public ClientResponse(Iterator/* <Iterator<Object>> */rows) {
+    public ClientResponse(Iterator<Iterator<Object>> rows) {
       this.rows = rows;
     }
 
@@ -55,12 +57,12 @@ public abstract class ClientTableModel extends TableModel {
      * @return the rows data
      */
     @Override
-    public Iterator/* <Iterator<Object>> */getIterator() {
+    public Iterator<Iterator<Object>> getIterator() {
       return rows;
     }
   }
 
-  private class ColumnIterator extends StubIterator {
+  private class ColumnIterator extends StubIterator<Object> {
     private int row = 0;
 
     @Override
@@ -69,7 +71,7 @@ public abstract class ClientTableModel extends TableModel {
     }
   }
 
-  private class RowIterator extends StubIterator {
+  private class RowIterator extends StubIterator<Iterator<Object>> {
     int max;
 
     public RowIterator(Request request) {
@@ -82,7 +84,7 @@ public abstract class ClientTableModel extends TableModel {
     }
 
     @Override
-    protected Object computeNext() {
+    protected Iterator<Object> computeNext() {
       // Reset column iterator rather than creating new one.
       columnIter.index = 0;
       columnIter.row = index++;
@@ -100,12 +102,12 @@ public abstract class ClientTableModel extends TableModel {
   /**
    * Convenience class to support custom iterators.
    */
-  private abstract class StubIterator implements Iterator {
+  private abstract class StubIterator<E> implements Iterator<E> {
     int index;
-    Object next;
+    E next;
     boolean done = false;
 
-    protected abstract Object computeNext();
+    protected abstract E computeNext();
 
     public boolean hasNext() {
       if (done) {
@@ -121,11 +123,11 @@ public abstract class ClientTableModel extends TableModel {
       return true;
     }
 
-    public Object next() {
+    public E next() {
       if (!hasNext()) {
         throw new NoSuchElementException();
       } else {
-        Object accum = next;
+        E accum = next;
         next = null;
         return accum;
       }
@@ -149,44 +151,11 @@ public abstract class ClientTableModel extends TableModel {
   public abstract Object getCell(int rowNum, int colNum);
 
   /**
-   * Event fired when a row is inserted.
-   * 
-   * @param beforeRow the row index of the new row
-   */
-  @Override
-  public void onRowInserted(int beforeRow) {
-    ReadOnlyTableModel.throwReadOnlyException();
-  }
-
-  /**
-   * Event fired when a row is removed.
-   * 
-   * @param row the row index of the removed row
-   */
-  @Override
-  public void onRowRemoved(int row) {
-    ReadOnlyTableModel.throwReadOnlyException();
-  }
-
-  /**
-   * Event fired when the local data changes.
-   * 
-   * @param row the row index
-   * @param cell the cell index
-   * @param data the new contents of the cell
-   */
-  @Override
-  public void onSetData(int row, int cell, Object data) {
-    ReadOnlyTableModel.throwReadOnlyException();
-  }
-
-  /**
    * See {@link TableModel}.
    */
   @Override
-  public void requestRows(Request request, Callback callback) {
+  public void requestRows(Request request, Callback<R> callback) {
     RowIterator rowIter = new RowIterator(request);
-    callback.onRowsReady(request, new ClientResponse(rowIter));
+    callback.onRowsReady(request, new ClientResponse<R>(rowIter));
   }
-
 }

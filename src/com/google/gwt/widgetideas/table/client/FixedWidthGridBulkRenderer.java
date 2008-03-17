@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -44,7 +44,7 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
       // chaining them.
       super.localOnRendered();
       Element newGhostRow = getBulkLoadedGhostRow(getTable());
-      
+
       // Set the ghost row to point at correct location
       ((FixedWidthGrid) getTable()).setGhostRow(newGhostRow);
       if (userCallback != null) {
@@ -79,10 +79,11 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
    */
   protected native Element getBulkLoadedGhostRow(HTMLTable table) /*-{
     return table.@com.google.gwt.widgetideas.table.client.overrides.HTMLTable::getBodyElement()(table).rows[0];
-    }-*/;
+  }-*/;
 
   @Override
-  protected void renderRows(Iterator iterator, final RenderingOptions options) {
+  protected void renderRows(Iterator<Iterator<Object>> iterator,
+      final RenderingOptions options) {
     options.startCell = "<td><span>";
     options.endCell = "</span></td>";
     FixedWidthGrid table = (FixedWidthGrid) super.getTable();

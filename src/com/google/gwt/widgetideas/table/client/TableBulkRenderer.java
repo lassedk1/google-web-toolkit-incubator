@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,7 +20,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.widgetideas.table.client.overrides.HTMLTable; 
+import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 
 import java.util.Iterator;
 import java.util.List;
@@ -62,6 +62,7 @@ public abstract class TableBulkRenderer {
      * @param cellData data associated with cell
      * @param accum the string buffer to append too
      */
+    @Override
     public void renderCell(int row, int column, Object cellData,
         StringBuffer accum) {
       accum.append(cellData.toString());
@@ -161,7 +162,8 @@ public abstract class TableBulkRenderer {
    * @param rows iterator of row iterators
    * @param callback callback to be called after the rows are rendered
    */
-  public final void renderRows(Iterator rows, RendererCallback callback) {
+  public final void renderRows(Iterator<Iterator<Object>> rows,
+      RendererCallback callback) {
     RenderingOptions options = new RenderingOptions();
     options.callback = callback;
     renderRows(rows, options);
@@ -176,11 +178,14 @@ public abstract class TableBulkRenderer {
    * </p>
    * 
    * @param rows list of rows. Each row itself must be another list
+   * @param callback callback to be called after the rows are rendered
    */
-  public final void renderRows(List rows) {
-    ListTableModel tableModel = new ListTableModel(rows);
+  public final void renderRows(List<List<Object>> rows,
+      RendererCallback callback) {
+    ListTableModel<Object> tableModel = new ListTableModel<Object>(rows);
     RenderingOptions options = new RenderingOptions();
     options.syncCall = true;
+    options.callback = callback;
     renderRows(tableModel, options);
   }
 
@@ -194,7 +199,7 @@ public abstract class TableBulkRenderer {
    *          indicates all of them *
    * @param callback callback to call after the table is finished being rendered
    */
-  public final void renderRows(TableModel tableModel, int startRow,
+  public final void renderRows(TableModel<?> tableModel, int startRow,
       int numRows, RendererCallback callback) {
     RenderingOptions options = new RenderingOptions();
     options.startRow = startRow;
@@ -210,7 +215,8 @@ public abstract class TableBulkRenderer {
    * @param tableModel the table model
    * @param callback callback to call after the table is finished being rendered
    */
-  public final void renderRows(TableModel tableModel, RendererCallback callback) {
+  public final void renderRows(TableModel<?> tableModel,
+      RendererCallback callback) {
     renderRows(tableModel, 0, TableModel.ALL_ROWS, callback);
   }
 
@@ -224,7 +230,7 @@ public abstract class TableBulkRenderer {
   }
 
   /**
-   * Returns the current html table.
+   * @returns the current html table.
    */
   protected HTMLTable getTable() {
     return table;
@@ -236,7 +242,8 @@ public abstract class TableBulkRenderer {
    * @param rows Iterator of row iterators
    * @param options rendering options for this table
    */
-  protected void renderRows(final Iterator rows, final RenderingOptions options) {
+  protected void renderRows(final Iterator<Iterator<Object>> rows,
+      final RenderingOptions options) {
     final StringBuffer temp = new StringBuffer();
     temp.append("<table><tbody>");
     if (options.headerRow != null) {
@@ -270,7 +277,7 @@ public abstract class TableBulkRenderer {
             }
           }
           temp.append("<tr>");
-          Iterator row = (Iterator) rows.next();
+          Iterator<Object> row = rows.next();
           for (int cellIndex = 0; row.hasNext(); ++cellIndex) {
             temp.append(options.startCell);
             Object next = row.next();
@@ -299,20 +306,23 @@ public abstract class TableBulkRenderer {
    * @param tableModel table model
    * @param options options
    */
-  protected final void renderRows(TableModel tableModel,
+  protected final void renderRows(TableModel<?> tableModel,
       final RenderingOptions options) {
 
-    tableModel.requestRows(new TableModel.Request(options.startRow,
-        options.numRows), new TableModel.Callback() {
+    // Create a callback to handle the request
+    TableModel.Callback requestCallback = new TableModel.Callback() {
       public void onFailure(Throwable caught) {
       }
 
       public void onRowsReady(TableModel.Request request,
           final TableModel.Response response) {
-        final Iterator rows = response.getIterator();
+        final Iterator<Iterator<Object>> rows = response.getIterator();
         renderRows(rows, options);
       }
-    });
+    };
+
+    tableModel.requestRows(new TableModel.Request(options.startRow,
+        options.numRows), requestCallback);
   }
 
   private void renderRows(String rawHTMLTable) {
@@ -330,7 +340,7 @@ public abstract class TableBulkRenderer {
     var thatChild = thatBody.tBodies[0];
     table.appendChild(thatChild);
     return thatChild;
- }-*/;
+  }-*/;
 
   /**
    * Short term hack to get protected setBodyElement.

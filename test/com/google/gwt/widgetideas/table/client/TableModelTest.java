@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -19,8 +19,11 @@ import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortInfo;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 import com.google.gwt.widgetideas.table.client.TableModel.Request;
 import com.google.gwt.widgetideas.table.client.TableModel.Response;
+import com.google.gwt.widgetideas.table.client.TableModel.SerializableResponse;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,46 +32,231 @@ import java.util.List;
  */
 public class TableModelTest extends TableModelTestBase {
   /**
-   * @see TableModelTestBase
+   * A {@link TableModelListener} used for testing.
    */
-  public TableModel getTableModel(boolean failureMode) {
+  private static class TestTableModelListener implements TableModelListener {
+    /**
+     * The cell that data was set into.
+     */
+    private int dataCell = -1;
+
+    /**
+     * The row that data was set into.
+     */
+    private int dataRow = -1;
+
+    /**
+     * The value that was set into the cell.
+     */
+    private Object dataValue = null;
+
+    /**
+     * The row that was last inserted.
+     */
+    private int insertedRow = -1;
+
+    /**
+     * The row that was last removed.
+     */
+    private int removedRow = -1;
+
+    /**
+     * The row count.
+     */
+    private int rowCount = TableModel.UNKNOWN_ROW_COUNT;
+
+    public void assertDataValue(int row, int cell, Object value) {
+      assertEquals(dataRow, row);
+      assertEquals(dataCell, cell);
+      assertEquals(dataValue, value);
+    }
+
+    public void assertRowCount(int rowCount) {
+      assertEquals(rowCount, this.rowCount);
+    }
+
+    public void assertRowInserted(int row) {
+      assertEquals(insertedRow, row);
+    }
+
+    public void assertRowRemoved(int row) {
+      assertEquals(removedRow, row);
+    }
+
+    public void onRowCountChanged(int rowCount) {
+      this.rowCount = rowCount;
+    }
+
+    public void onRowInserted(int beforeRow) {
+      insertedRow = beforeRow;
+    }
+
+    public void onRowRemoved(int row) {
+      removedRow = row;
+    }
+
+    public void onSetData(int row, int cell, Object data) {
+      dataRow = row;
+      dataCell = cell;
+      dataValue = data;
+    }
+  }
+
+  @Override
+  public String getModuleName() {
+    return "com.google.gwt.widgetideas.WidgetIdeas";
+  }
+
+  /**
+   * @see TableModelTestBase#getTableModel(boolean)
+   */
+  @Override
+  public <R> TableModel<R> getTableModel(boolean failureMode) {
     // Failure mode version
     if (failureMode) {
-      return new TableModel() {
-        public void onRowInserted(int beforeRow) {
-        }
-
-        public void onRowRemoved(int row) {
-        }
-
-        public void onSetData(int row, int cell, Object data) {
-        }
-
-        public void requestRows(Request request, Callback callback) {
+      return new TableModel<R>() {
+        @Override
+        public void requestRows(Request request, Callback<R> callback) {
           callback.onFailure(new Exception());
+        }
+
+        @Override
+        protected boolean onRowInserted(int beforeRow) {
+          return false;
+        }
+
+        @Override
+        protected boolean onRowRemoved(int row) {
+          return false;
+        }
+
+        @Override
+        protected boolean onSetData(int row, int cell, Object data) {
+          return false;
         }
       };
     }
 
     // Normal version
-    return new TableModel() {
-      public void onRowInserted(int beforeRow) {
-      }
-
-      public void onRowRemoved(int row) {
-      }
-
-      public void onSetData(int row, int cell, Object data) {
-      }
-
-      public void requestRows(Request request, Callback callback) {
+    return new TableModel<R>() {
+      @Override
+      public void requestRows(Request request, Callback<R> callback) {
         callback.onRowsReady(request, null);
+      }
+
+      @Override
+      protected boolean onRowInserted(int beforeRow) {
+        return true;
+      }
+
+      @Override
+      protected boolean onRowRemoved(int row) {
+        return true;
+      }
+
+      @Override
+      protected boolean onSetData(int row, int cell, Object data) {
+        return true;
       }
     };
   }
 
   /**
-   * Test {@link Request} object.
+   * Test the listeners when the row count is unknown.
+   */
+  public void testListenersWithoutRowCount() {
+    // Create a table model
+    TableModel<String> tableModel = getTableModel(false);
+
+    // Add some listeners
+    TestTableModelListener l1 = new TestTableModelListener();
+    TestTableModelListener l2 = new TestTableModelListener();
+    TestTableModelListener l3 = new TestTableModelListener();
+    tableModel.addTableModelListener(l1);
+    tableModel.addTableModelListener(l2);
+    tableModel.addTableModelListener(l3);
+    tableModel.removeTableModelListener(l2);
+
+    // Insert a row
+    tableModel.insertRow(5);
+    l1.assertRowInserted(5);
+    l2.assertRowInserted(-1);
+    l3.assertRowInserted(5);
+    l1.assertRowCount(TableModel.UNKNOWN_ROW_COUNT);
+    l2.assertRowCount(TableModel.UNKNOWN_ROW_COUNT);
+    l3.assertRowCount(TableModel.UNKNOWN_ROW_COUNT);
+
+    // Remove a row
+    tableModel.removeRow(8);
+    l1.assertRowRemoved(8);
+    l2.assertRowRemoved(-1);
+    l3.assertRowRemoved(8);
+    l1.assertRowCount(TableModel.UNKNOWN_ROW_COUNT);
+    l2.assertRowCount(TableModel.UNKNOWN_ROW_COUNT);
+    l3.assertRowCount(TableModel.UNKNOWN_ROW_COUNT);
+
+    // Set some data past the last row
+    tableModel.setData(30, 2, "test");
+    l1.assertDataValue(30, 2, "test");
+    l2.assertDataValue(-1, -1, null);
+    l3.assertDataValue(30, 2, "test");
+    l1.assertRowCount(TableModel.UNKNOWN_ROW_COUNT);
+    l2.assertRowCount(TableModel.UNKNOWN_ROW_COUNT);
+    l3.assertRowCount(TableModel.UNKNOWN_ROW_COUNT);
+  }
+
+  /**
+   * Test the listeners when the row count is known.
+   */
+  public void testListenersWithRowCount() {
+    // Create a table model
+    TableModel<String> tableModel = getTableModel(false);
+
+    // Add some listeners
+    TestTableModelListener l1 = new TestTableModelListener();
+    TestTableModelListener l2 = new TestTableModelListener();
+    TestTableModelListener l3 = new TestTableModelListener();
+    tableModel.addTableModelListener(l1);
+    tableModel.addTableModelListener(l2);
+    tableModel.addTableModelListener(l3);
+    tableModel.removeTableModelListener(l2);
+
+    // Set the row count
+    tableModel.setRowCount(22);
+    l1.assertRowCount(22);
+    l2.assertRowCount(TableModel.UNKNOWN_ROW_COUNT);
+    l3.assertRowCount(22);
+
+    // Insert a row
+    tableModel.insertRow(5);
+    l1.assertRowInserted(5);
+    l2.assertRowInserted(-1);
+    l3.assertRowInserted(5);
+    l1.assertRowCount(23);
+    l2.assertRowCount(TableModel.UNKNOWN_ROW_COUNT);
+    l3.assertRowCount(23);
+
+    // Remove a row
+    tableModel.removeRow(8);
+    l1.assertRowRemoved(8);
+    l2.assertRowRemoved(-1);
+    l3.assertRowRemoved(8);
+    l1.assertRowCount(22);
+    l2.assertRowCount(TableModel.UNKNOWN_ROW_COUNT);
+    l3.assertRowCount(22);
+
+    // Set some data past the last row
+    tableModel.setData(30, 2, "test");
+    l1.assertDataValue(30, 2, "test");
+    l2.assertDataValue(-1, -1, null);
+    l3.assertDataValue(30, 2, "test");
+    l1.assertRowCount(31);
+    l2.assertRowCount(TableModel.UNKNOWN_ROW_COUNT);
+    l3.assertRowCount(31);
+  }
+
+  /**
+   * Test the accessors in {@link Request}.
    */
   public void testRequest() {
     // Without sort index
@@ -86,24 +274,64 @@ public class TableModelTest extends TableModelTestBase {
   }
 
   /**
-   * Test {@link Response} object.
+   * Test the row values in a {@link Response}.
    */
   public void testResponse() {
-    // Craete row values
-    List rowValues = new ArrayList();
+    // Create row values
+    List<String> rowValues = new ArrayList<String>();
     for (int i = 0; i < 10; i++) {
       rowValues.add("value" + i);
     }
 
     // Create a Response
-    Response response = new Response(rowValues) {
-      public Iterator getIterator() {
+    Response<String> response = new Response<String>(rowValues) {
+      @Override
+      public Iterator<Iterator<Object>> getIterator() {
         return null;
       }
     };
 
     // Get the rowValues
     assertEquals(rowValues, response.getRowValues());
+  }
+
+  /**
+   * Test the row values in a {@link Response}.
+   */
+  public void testSerializableResponse() {
+    // Create row values and cell data
+    List<String> rowValues = new ArrayList<String>();
+    Collection<Collection<Serializable>> cellData = new ArrayList<Collection<Serializable>>();
+    for (int row = 0; row < 10; row++) {
+      rowValues.add("value" + row);
+      List<Serializable> rowData = new ArrayList<Serializable>();
+      for (int cell = 0; cell < 4; cell++) {
+        rowData.add(row + ":" + cell);
+      }
+      cellData.add(rowData);
+    }
+
+    // Create a Response
+    Response<String> response = new SerializableResponse<String>(cellData,
+        rowValues);
+
+    // Get the rowValues
+    assertEquals(rowValues, response.getRowValues());
+
+    // Get the data
+    Iterator<Iterator<Object>> rowIt = response.getIterator();
+    int row = 0;
+    while (rowIt.hasNext()) {
+      Iterator<Object> cellIt = rowIt.next();
+      int cell = 0;
+      while (cellIt.hasNext()) {
+        assertEquals(cellIt.next(), row + ":" + cell);
+        cell++;
+      }
+      assertEquals(4, cell);
+      row++;
+    }
+    assertEquals(10, row);
   }
 
   /**
@@ -151,10 +379,9 @@ public class TableModelTest extends TableModelTestBase {
     assertEquals(10, sortList.getPrimaryColumn());
     assertTrue(sortList.isPrimaryAscending());
 
+    // Check all of the entries in the sort lise
     int count = 0;
-    Iterator it = sortList.iterator();
-    while (it.hasNext()) {
-      ColumnSortInfo info = (ColumnSortInfo) it.next();
+    for (ColumnSortInfo info : sortList) {
       switch (count) {
         case 0:
           assertTrue(info.equals(new ColumnSortInfo(10, true)));
@@ -183,5 +410,27 @@ public class TableModelTest extends TableModelTestBase {
     assertEquals(4, sortList.size());
     assertEquals(8, sortList.getPrimaryColumn());
     assertFalse(sortList.isPrimaryAscending());
+
+    // Compare two lists
+    ColumnSortList sortList1 = new ColumnSortList();
+    sortList1.add(1, true);
+    sortList1.add(2, false);
+    sortList1.add(3, true);
+    ColumnSortList sortList2 = new ColumnSortList();
+    sortList2.add(1, true);
+    sortList2.add(2, false);
+    sortList2.add(3, true);
+    ColumnSortList sortList3 = new ColumnSortList();
+    sortList3.add(1, true);
+    sortList3.add(4, false);
+    sortList3.add(3, true);
+    ColumnSortList sortList4 = new ColumnSortList();
+    sortList4.add(1, true);
+    sortList4.add(2, true);
+    sortList4.add(3, true);
+    assertTrue(sortList1.equals(sortList2));
+    assertFalse(sortList1.equals(sortList3));
+    assertFalse(sortList1.equals(sortList4));
+    assertFalse(sortList3.equals(sortList4));
   }
 }

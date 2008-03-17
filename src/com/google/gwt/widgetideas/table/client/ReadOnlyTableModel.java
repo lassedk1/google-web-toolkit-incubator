@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,40 +16,39 @@
 package com.google.gwt.widgetideas.table.client;
 
 /**
- * A class to manage the connection between the local table and an external
- * source of data that supports manipulation.
+ * A read-only version of the {@link TableModel}. If any modification methods
+ * are called, an exception is thrown.
+ * 
+ * @param <R> the data type of the row values
  */
-public abstract class ReadOnlyTableModel extends TableModel {
+public abstract class ReadOnlyTableModel<R> extends TableModel<R> {
   /**
    * Error message used when calling a write operation.
    */
   public static final String READ_ONLY_ERROR = "TableModel is read only.";
 
-  static void throwReadOnlyException() {
+  /**
+   * Throw an exception if a read-only method is called.
+   */
+  static void throwReadOnlyException() throws UnsupportedOperationException {
     throw new UnsupportedOperationException(READ_ONLY_ERROR);
   }
 
-  /**
-   * @see TableModel
-   */
   @Override
-  public void onRowInserted(int beforeRow) {
+  protected boolean onRowInserted(int beforeRow) {
     throwReadOnlyException();
+    return false;
   }
 
-  /**
-   * @see TableModel
-   */
   @Override
-  public void onRowRemoved(int row) {
+  protected boolean onRowRemoved(int row) {
     throwReadOnlyException();
+    return false;
   }
 
-  /**
-   * @see TableModel
-   */
   @Override
-  public void onSetData(int row, int cell, Object data) {
+  protected boolean onSetData(int row, int cell, Object data) {
     throwReadOnlyException();
+    return false;
   }
 }

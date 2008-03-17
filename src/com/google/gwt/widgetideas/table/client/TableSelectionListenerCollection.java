@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -24,48 +24,43 @@ import java.util.ArrayList;
  */
 public class TableSelectionListenerCollection extends
     ArrayList<TableSelectionListener> {
-  /**
-   * Fired when all rows are deselected.
-   */
-  public void fireAllRowsDeselected() {
-    for (TableSelectionListener listener : this) {
-      listener.onAllRowsDeselected();
-    }
-  }
+  private static final long serialVersionUID = 4417155253362518990L;
 
   /**
-   * Fired when a cell is clicked.
+   * Fired when all rows are deselected.
    * 
-   * @param row the row index
-   * @param cell the cell index
+   * @param sender the source of the event
    */
-  public void fireCellClicked(int row, int cell) {
+  public void fireAllRowsDeselected(SourceTableSelectionEvents sender) {
     for (TableSelectionListener listener : this) {
-      listener.onCellClicked(row, cell);
+      listener.onAllRowsDeselected(sender);
     }
   }
 
   /**
    * Fired when a cell is hovered.
    * 
+   * @param sender the source of the event
    * @param row the row index
    * @param cell the cell index
    */
-  public void fireCellHover(int row, int cell) {
+  public void fireCellHover(SourceTableSelectionEvents sender, int row, int cell) {
     for (TableSelectionListener listener : this) {
-      listener.onCellHover(row, cell);
+      listener.onCellHover(sender, row, cell);
     }
   }
 
   /**
    * Fired when a cell is unhovered.
    * 
+   * @param sender the source of the event
    * @param row the row index
    * @param cell the cell index
    */
-  public void fireCellUnhover(int row, int cell) {
+  public void fireCellUnhover(SourceTableSelectionEvents sender, int row,
+      int cell) {
     for (TableSelectionListener listener : this) {
-      listener.onCellUnhover(row, cell);
+      listener.onCellUnhover(sender, row, cell);
     }
   }
 
@@ -73,45 +68,50 @@ public class TableSelectionListenerCollection extends
    * Fired when a single row is deselected. This method will not fire when all
    * rows are deselected. In that case, use the onAllRowsDeselected events.
    * 
+   * @param sender the source of the event
    * @param row the row index
    */
-  public void fireRowDeselected(int row) {
+  public void fireRowDeselected(SourceTableSelectionEvents sender, int row) {
     for (TableSelectionListener listener : this) {
-      listener.onRowDeselected(row);
+      listener.onRowDeselected(sender, row);
     }
   }
 
   /**
    * Fired when a row is hovered.
    * 
+   * @param sender the source of the event
    * @param row the row index
    */
-  public void fireRowHover(int row) {
+  public void fireRowHover(SourceTableSelectionEvents sender, int row) {
     for (TableSelectionListener listener : this) {
-      listener.onRowHover(row);
+      listener.onRowHover(sender, row);
     }
   }
 
   /**
    * Fired when one or more rows are selected.
    * 
+   * @param sender the source of the event
    * @param firstRow the row index of the first row
    * @param numRows the number of selected rows
    */
-  public void fireRowsSelected(int firstRow, int numRows) {
+  public void fireRowsSelected(SourceTableSelectionEvents sender, int firstRow,
+      int numRows) {
     for (TableSelectionListener listener : this) {
-      listener.onRowsSelected(firstRow, numRows);
+      listener.onRowsSelected(sender, firstRow, numRows);
     }
   }
 
   /**
    * Fired when a row is unhovered.
    * 
+   * @param sender the source of the event
    * @param row the row index
    */
-  public void fireRowUnhover(int row) {
+  public void fireRowUnhover(SourceTableSelectionEvents sender, int row) {
     for (TableSelectionListener listener : this) {
-      listener.onRowUnhover(row);
+      listener.onRowUnhover(sender, row);
     }
   }
 }

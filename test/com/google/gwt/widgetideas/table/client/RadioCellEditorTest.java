@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,27 +15,56 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
+import com.google.gwt.user.client.ui.RadioButton;
+
 /**
  * Tests methods used for all {@link RadioCellEditor} class.
  */
-public class RadioCellEditorTest extends AbstractCellEditorTest {
-  /**
-   * An editor used for testing.
-   */
-  private RadioCellEditor radioEditor = null;
+public class RadioCellEditorTest extends InlineCellEditorTest {
+  @Override
+  public InlineCellEditor<Object> getCellEditor() {
+    return getRadioCellEditor();
+  }
 
   /**
-   * Get the cell editor.
+   * Get a new {@link RadioCellEditor}.
    * 
-   * @return the cell editor to test
+   * @return a radio cell editor
    */
-  public AbstractCellEditor getCellEditor() {
-    if (radioEditor == null) {
-      radioEditor = new RadioCellEditor();
-      radioEditor.addOption("test");
-      radioEditor.addOption("value");
-      radioEditor.addOption("test2");
-    }
+  public RadioCellEditor<Object> getRadioCellEditor() {
+    RadioCellEditor<Object> radioEditor = new RadioCellEditor<Object>();
+    radioEditor.addRadioButton(new RadioButton("testgroup", "test"));
+    radioEditor.addRadioButton(new RadioButton("testgroup", "value"));
+    radioEditor.addRadioButton(new RadioButton("testgroup", "test2"));
     return radioEditor;
+  }
+
+  /**
+   * Test adding and removing buttons.
+   */
+  public void testAddRadioButtons() {
+    // Get a cell editor
+    RadioCellEditor<Object> editor = new RadioCellEditor<Object>();
+
+    // We cannot set the value if we have no radio buttons
+    editor.setValue("test");
+    assertNull(editor.getValue());
+
+    // Add a button and set the value
+    RadioButton r1 = new RadioButton("testgroup", "radio1");
+    editor.addRadioButton(r1);
+    editor.setValue("radio1");
+    assertEquals("radio1", editor.getValue());
+
+    // Add another button
+    RadioButton r2 = new RadioButton("testgroup", "radio2");
+    editor.addRadioButton(r2);
+    editor.setValue("radio2");
+    assertEquals("radio2", editor.getValue());
+
+    // Remove a button
+    editor.removeRadioButton(r1);
+    editor.setValue("radio1");
+    assertNull(editor.getValue());
   }
 }

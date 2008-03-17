@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,7 +16,7 @@
 package com.google.gwt.widgetideas.table.client;
 
 /**
- * Event listener interface for {@link HasRowPaging} events.
+ * Event listener interface for {@link SourceRowPagingEvents}.
  */
 public interface RowPagingListener {
   /**
@@ -25,21 +25,21 @@ public interface RowPagingListener {
    * @param numPages the new number of pages
    */
   void onNumPagesChanges(int numPages);
-  
+
   /**
    * Fired when the current page changes, but before it is loaded.
    * 
    * @param page the new page
    */
   void onPageChanged(int page);
-  
+
   /**
    * Fired when the current page has completely finished loading.
    * 
    * @param page the new page
    */
   void onPageLoaded(int page);
-  
+
   /**
    * Fired when a failure occurs while loading the page.
    * 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,55 +20,58 @@ package com.google.gwt.widgetideas.table.client;
  */
 public class ReadOnlyTableModelTest extends TableModelTestBase {
   /**
-   * The table model to test.
+   * @see TableModelTestBase#getTableModel(boolean)
    */
-  private ReadOnlyTableModel tableModel = null;
-
-  /**
-   * @see TableModelTestBase
-   */
-  public TableModel getTableModel(boolean failureMode) {
+  @Override
+  public <R> TableModel<R> getTableModel(boolean failureMode) {
+    // Failure mode version
     if (failureMode) {
-      return new ReadOnlyTableModel() {
-        public void requestRows(Request request, Callback callback) {
+      return new ReadOnlyTableModel<R>() {
+        @Override
+        public void requestRows(Request request, Callback<R> callback) {
           callback.onFailure(new Exception());
         }
       };
     }
-    if (tableModel == null) {
-      tableModel = new ReadOnlyTableModel() {
-        public void requestRows(Request request, Callback callback) {
-          callback.onRowsReady(request, null);
-        }
-      };
-    }
-    return tableModel;
+
+    // Normal version
+    return new ReadOnlyTableModel<R>() {
+      @Override
+      public void requestRows(Request request, Callback<R> callback) {
+        callback.onRowsReady(request, null);
+      }
+    };
   }
 
   /**
-   * Test Unsupported Opertions that are not read only.
+   * Test Unsupported Operations that are not read only.
    */
   public void testUnsupportedOperations() {
-    getTableModel(false);
-    
+    // Create the table model
+    TableModel<String> tableModel = getTableModel(false);
+    tableModel.setRowCount(10);
+
     // Try calling unsupported operations
     try {
       tableModel.onRowInserted(0);
       fail("UnsupportedOperationException expected");
     } catch (UnsupportedOperationException e) {
       assertEquals(e.getMessage(), ReadOnlyTableModel.READ_ONLY_ERROR);
+      assertEquals(10, tableModel.getRowCount());
     }
     try {
       tableModel.onRowRemoved(0);
       fail("UnsupportedOperationException expected");
     } catch (UnsupportedOperationException e) {
       assertEquals(e.getMessage(), ReadOnlyTableModel.READ_ONLY_ERROR);
+      assertEquals(10, tableModel.getRowCount());
     }
     try {
-      tableModel.onSetData(0, 0, null);
+      tableModel.onSetData(20, 0, null);
       fail("UnsupportedOperationException expected");
     } catch (UnsupportedOperationException e) {
       assertEquals(e.getMessage(), ReadOnlyTableModel.READ_ONLY_ERROR);
+      assertEquals(10, tableModel.getRowCount());
     }
   }
 }

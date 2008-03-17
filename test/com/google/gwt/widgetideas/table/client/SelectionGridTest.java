@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,6 +16,8 @@
 package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.junit.client.GWTTestCase;
+import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.CellFormatter;
+import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.RowFormatter;
 
 import java.util.Set;
 
@@ -26,16 +28,27 @@ public class SelectionGridTest extends GWTTestCase {
   /**
    * A custom version of {@link TableSelectionListener} used for testing.
    */
-  private class TestTableSelectionListener implements TableSelectionListener {
+  private static class TestTableSelectionListener implements
+      TableSelectionListener {
+    /**
+     * Indicates that onAllRowsDeselected fired.
+     */
+    private boolean allRowsDeselectedCalled = false;
+
     /**
      * The last row that was deselected.
      */
     private int deselectedRow = -1;
 
     /**
-     * Indicates that onAllRowsDeselected fired.
+     * The last cell that was hovered.
      */
-    private boolean allRowsDeselectedCalled = false;
+    private int hoveringCell = -1;
+
+    /**
+     * The last row that was hovered.
+     */
+    private int hoveringRow = -1;
 
     /**
      * The last row that was selected.
@@ -49,6 +62,14 @@ public class SelectionGridTest extends GWTTestCase {
 
     public int getDeselectedRow() {
       return deselectedRow;
+    }
+
+    public int getHoveringCell() {
+      return hoveringCell;
+    }
+
+    public int getHoveringRow() {
+      return hoveringRow;
     }
 
     public int getSelectedRow() {
@@ -68,40 +89,39 @@ public class SelectionGridTest extends GWTTestCase {
       return allRowsDeselectedCalled;
     }
 
-    public void onAllRowsDeselected() {
+    public void onAllRowsDeselected(SourceTableSelectionEvents sender) {
       allRowsDeselectedCalled = true;
     }
 
-    public void onCellClicked(int row, int cell) {
+    public void onCellHover(SourceTableSelectionEvents sender, int row, int cell) {
+      hoveringCell = cell;
     }
 
-    public void onCellHover(int row, int cell) {
+    public void onCellUnhover(SourceTableSelectionEvents sender, int row,
+        int cell) {
+      hoveringCell = -1;
     }
 
-    public void onCellUnhover(int row, int cell) {
-    }
-
-    public void onRowDeselected(int row) {
+    public void onRowDeselected(SourceTableSelectionEvents sender, int row) {
       deselectedRow = row;
     }
 
-    public void onRowHover(int row) {
+    public void onRowHover(SourceTableSelectionEvents sender, int row) {
+      hoveringRow = row;
     }
 
-    public void onRowsSelected(int firstRow, int numRows) {
+    public void onRowsSelected(SourceTableSelectionEvents sender, int firstRow,
+        int numRows) {
       selectedRow = firstRow;
       selectedRowRange = numRows;
     }
 
-    public void onRowUnhover(int row) {
+    public void onRowUnhover(SourceTableSelectionEvents sender, int row) {
+      hoveringRow = -1;
     }
   }
 
-  /**
-   * The selection grid.
-   */
-  private SelectionGrid grid = null;
-
+  @Override
   public String getModuleName() {
     return "com.google.gwt.widgetideas.WidgetIdeas";
   }
@@ -112,10 +132,7 @@ public class SelectionGridTest extends GWTTestCase {
    * @return the grid
    */
   public SelectionGrid getSelectionGrid() {
-    if (grid == null) {
-      grid = new SelectionGrid(10, 10);
-    }
-    return grid;
+    return new SelectionGrid(10, 10);
   }
 
   /**
@@ -125,50 +142,13 @@ public class SelectionGridTest extends GWTTestCase {
     // Initialize the grid
     SelectionGrid testGrid = getSelectionGrid();
 
-    // Min hover row
-    assertEquals(0, testGrid.getMinHoverRow());
-    testGrid.setMinHoverRow(1);
-    assertEquals(1, testGrid.getMinHoverRow());
-    testGrid.setMinHoverRow(100);
-    assertEquals(100, testGrid.getMinHoverRow());
-    testGrid.setMinHoverRow(-1);
-    assertEquals(0, testGrid.getMinHoverRow());
-    testGrid.setMinHoverRow(0);
-    assertEquals(0, testGrid.getMinHoverRow());
-
     // Selection policy
-    testGrid.setSelectionPolicy(SelectionGrid.SELECTION_POLICY_DISABLED);
-    assertEquals(SelectionGrid.SELECTION_POLICY_DISABLED,
+    testGrid.setSelectionPolicy(SelectionGrid.SelectionPolicy.DISABLED);
+    assertEquals(SelectionGrid.SelectionPolicy.DISABLED,
         testGrid.getSelectionPolicy());
-    testGrid.setSelectionPolicy(SelectionGrid.SELECTION_POLICY_ONE_ROW);
-    assertEquals(SelectionGrid.SELECTION_POLICY_ONE_ROW,
+    testGrid.setSelectionPolicy(SelectionGrid.SelectionPolicy.ONE_ROW);
+    assertEquals(SelectionGrid.SelectionPolicy.ONE_ROW,
         testGrid.getSelectionPolicy());
-    testGrid.setSelectionPolicy(SelectionGrid.SELECTION_POLICY_MULTI_ROW);
-    assertEquals(SelectionGrid.SELECTION_POLICY_MULTI_ROW,
-        testGrid.getSelectionPolicy());
-    try {
-      testGrid.setSelectionPolicy(100);
-      fail("Expected IllegalArgumentException");
-    } catch (IllegalArgumentException e) {
-      assertTrue(true);
-    }
-
-    // Hover policy
-    testGrid.setHoveringPolicy(SelectionGrid.HOVERING_POLICY_DISABLED);
-    assertEquals(SelectionGrid.HOVERING_POLICY_DISABLED,
-        testGrid.getHoveringPolicy());
-    testGrid.setHoveringPolicy(SelectionGrid.HOVERING_POLICY_CELL);
-    assertEquals(SelectionGrid.HOVERING_POLICY_CELL,
-        testGrid.getHoveringPolicy());
-    testGrid.setHoveringPolicy(SelectionGrid.HOVERING_POLICY_ROW);
-    assertEquals(SelectionGrid.HOVERING_POLICY_ROW,
-        testGrid.getHoveringPolicy());
-    try {
-      testGrid.setHoveringPolicy(100);
-      fail("Expected IllegalArgumentException");
-    } catch (IllegalArgumentException e) {
-      assertTrue(true);
-    }
   }
 
   /**
@@ -182,22 +162,22 @@ public class SelectionGridTest extends GWTTestCase {
     testGrid.deselectRows();
     testGrid.selectRow(3, true);
     assertTrue(testGrid.isRowSelected(3));
-    assertSelected(new int[] {3});
+    assertSelected(testGrid, new int[] {3});
     testGrid.selectRow(5, true);
     assertFalse(testGrid.isRowSelected(3));
     assertTrue(testGrid.isRowSelected(5));
-    assertSelected(new int[] {5});
+    assertSelected(testGrid, new int[] {5});
     testGrid.selectRow(7, true);
-    assertSelected(new int[] {7});
+    assertSelected(testGrid, new int[] {7});
 
     // Selection without deselect
     testGrid.deselectRows();
     testGrid.selectRow(3, false);
-    assertSelected(new int[] {3});
+    assertSelected(testGrid, new int[] {3});
     testGrid.selectRow(5, false);
-    assertSelected(new int[] {3, 5});
+    assertSelected(testGrid, new int[] {3, 5});
     testGrid.selectRow(7, false);
-    assertSelected(new int[] {3, 5, 7});
+    assertSelected(testGrid, new int[] {3, 5, 7});
 
     // Deselection
     testGrid.deselectRows();
@@ -232,11 +212,47 @@ public class SelectionGridTest extends GWTTestCase {
   }
 
   /**
+   * Test that hovering a cell correctly sets the style.
+   */
+  public void testHover() {
+    // Initialize the grid
+    SelectionGrid testGrid = getSelectionGrid();
+    RowFormatter rowFormatter = testGrid.getRowFormatter();
+    CellFormatter cellFormatter = testGrid.getCellFormatter();
+
+    // Hover a cell
+    assertEquals(rowFormatter.getStyleName(1), "");
+    assertEquals(cellFormatter.getStyleName(1, 1), "");
+    testGrid.hoverCell(cellFormatter.getElement(1, 1));
+    assertEquals(rowFormatter.getStyleName(1), "hovering");
+    assertEquals(cellFormatter.getStyleName(1, 1), "hovering");
+
+    // Hover a cell in the same row
+    testGrid.hoverCell(cellFormatter.getElement(1, 3));
+    assertEquals(rowFormatter.getStyleName(1), "hovering");
+    assertEquals(cellFormatter.getStyleName(1, 1), "");
+    assertEquals(cellFormatter.getStyleName(1, 3), "hovering");
+
+    // Hover a cell in a different row
+    testGrid.hoverCell(cellFormatter.getElement(2, 4));
+    assertEquals(rowFormatter.getStyleName(1), "");
+    assertEquals(cellFormatter.getStyleName(1, 3), "");
+    assertEquals(rowFormatter.getStyleName(2), "hovering");
+    assertEquals(cellFormatter.getStyleName(2, 4), "hovering");
+
+    // Unhover the cell
+    testGrid.hoverCell(null);
+    assertEquals(rowFormatter.getStyleName(2), "");
+    assertEquals(cellFormatter.getStyleName(2, 4), "");
+  }
+
+  /**
    * Test the {@link TableSelectionListener}.
    */
   public void testListeners() {
     // Initialize the grid
     SelectionGrid testGrid = getSelectionGrid();
+    CellFormatter cellFormatter = testGrid.getCellFormatter();
 
     // Create some listener
     TestTableSelectionListener listener1 = new TestTableSelectionListener();
@@ -268,6 +284,18 @@ public class SelectionGridTest extends GWTTestCase {
     testGrid.deselectRow(4);
     assertEquals(4, listener1.getDeselectedRow());
     assertEquals(4, listener3.getDeselectedRow());
+    
+    // Fire hover row and cell
+    assertEquals(-1, listener1.getHoveringRow());
+    assertEquals(-1, listener1.getHoveringCell());
+    testGrid.hoverCell(cellFormatter.getElement(4, 2));
+    assertEquals(4, listener1.getHoveringRow());
+    assertEquals(2, listener1.getHoveringCell());
+
+    // Fire unhover row and cell
+    testGrid.hoverCell(null);
+    assertEquals(-1, listener1.getHoveringRow());
+    assertEquals(-1, listener1.getHoveringCell());
   }
 
   /**
@@ -281,31 +309,31 @@ public class SelectionGridTest extends GWTTestCase {
     testGrid.deselectRows();
     testGrid.selectRow(4, false, false);
     testGrid.selectRow(8, true, false);
-    assertSelected(new int[] {4, 8});
+    assertSelected(testGrid, new int[] {4, 8});
     testGrid.selectRow(6, true, false);
-    assertSelected(new int[] {4, 6, 8});
+    assertSelected(testGrid, new int[] {4, 6, 8});
     testGrid.selectRow(6, true, false);
-    assertSelected(new int[] {4, 8});
+    assertSelected(testGrid, new int[] {4, 8});
 
     // Select rows using shift
     testGrid.deselectRows();
     testGrid.selectRow(2, false, false);
     testGrid.selectRow(4, false, true);
-    assertSelected(new int[] {2, 3, 4});
+    assertSelected(testGrid, new int[] {2, 3, 4});
     testGrid.selectRow(6, false, true);
-    assertSelected(new int[] {2, 3, 4, 5, 6});
+    assertSelected(testGrid, new int[] {2, 3, 4, 5, 6});
     testGrid.selectRow(0, false, true);
-    assertSelected(new int[] {0, 1, 2});
+    assertSelected(testGrid, new int[] {0, 1, 2});
 
     // Select rows using ctrl + shift
     testGrid.deselectRows();
     testGrid.selectRow(2, false, false);
     testGrid.selectRow(4, false, true);
-    assertSelected(new int[] {2, 3, 4});
+    assertSelected(testGrid, new int[] {2, 3, 4});
     testGrid.selectRow(6, true, false);
-    assertSelected(new int[] {2, 3, 4, 6});
+    assertSelected(testGrid, new int[] {2, 3, 4, 6});
     testGrid.selectRow(8, true, true);
-    assertSelected(new int[] {2, 3, 4, 6, 7, 8});
+    assertSelected(testGrid, new int[] {2, 3, 4, 6, 7, 8});
   }
 
   /**
@@ -313,8 +341,8 @@ public class SelectionGridTest extends GWTTestCase {
    * 
    * @param expected the rows that are expected to be selected
    */
-  private void assertSelected(int[] expected) {
-    Set selected = getSelectionGrid().getSelectedRows();
+  private void assertSelected(SelectionGrid grid, int[] expected) {
+    Set<Integer> selected = grid.getSelectedRows();
     assertEquals(expected.length, selected.size());
     for (int i = 0; i < expected.length; i++) {
       assertTrue(selected.contains(new Integer(expected[i])));

@@ -19,10 +19,12 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.widgetideas.table.client.TableModel.Request;
 import com.google.gwt.widgetideas.table.client.TableModel.SerializableResponse;
 
+import java.io.Serializable;
+
 /**
  * A {@link RemoteService} to retrieve row data for the
  * {@link PagingScrollTableDemo}.
  */
 public interface DataSourceService extends RemoteService {
-  SerializableResponse requestRows(Request request);
+  SerializableResponse<Serializable> requestRows(Request request);
 }

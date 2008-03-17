@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -22,13 +22,15 @@ import com.google.gwt.widgetideas.table.client.TableModel.Request;
 import com.google.gwt.widgetideas.table.client.TableModel.Response;
 
 /**
- * Tests methods used for all {@link TableModel} class.
+ * Tests methods in the {@link TableModel} class.
  */
 public abstract class TableModelTestBase extends GWTTestCase {
   /**
    * A {@link Callback} used for testing.
+   * 
+   * @param <R> the data type of the row values
    */
-  private class TestCallback implements Callback {
+  protected static class TestCallback<R> implements Callback<R> {
     /**
      * A boolean indicating that this callback has been executed.
      */
@@ -38,12 +40,12 @@ public abstract class TableModelTestBase extends GWTTestCase {
      * Expected num rows in Request.
      */
     private int numRows;
-    
+
     /**
      * A boolean indicating that a failure occured.
      */
     private boolean failed = false;
-    
+
     /**
      * Column sort infot.
      */
@@ -75,7 +77,7 @@ public abstract class TableModelTestBase extends GWTTestCase {
     public boolean isExecuted() {
       return executed;
     }
-    
+
     /**
      * Check if this callback failed.
      * 
@@ -89,13 +91,13 @@ public abstract class TableModelTestBase extends GWTTestCase {
       failed = true;
     }
 
-    public void onRowsReady(Request request, Response response) {
+    public void onRowsReady(Request request, Response<R> response) {
       executed = true;
       assertEquals(request.getStartRow(), startRow);
       assertEquals(request.getNumRows(), numRows);
       if (sortList == null) {
         if (request.getColumnSortList() != null) {
-          fail("inconsistent sortLists");
+          fail("Request has a sortList, but none expected");
         }
       } else {
         assertTrue(sortList.equals(request.getColumnSortList()));
@@ -103,6 +105,7 @@ public abstract class TableModelTestBase extends GWTTestCase {
     }
   }
 
+  @Override
   public String getModuleName() {
     return "com.google.gwt.widgetideas.WidgetIdeas";
   }
@@ -113,40 +116,44 @@ public abstract class TableModelTestBase extends GWTTestCase {
    * @param failureMode if true, all requests should return an error
    * @return the table model
    */
-  public abstract TableModel getTableModel(boolean failureMode);
+  public abstract <R> TableModel<R> getTableModel(boolean failureMode);
 
   /**
    * Test requestRows method.
    */
   public void testRequestRows() {
     // Get the table model
-    TableModel tableModel = getTableModel(false);
+    TableModel<String> tableModel = getTableModel(false);
 
     // Request some rows without sorting
-    TestCallback callback1 = new TestCallback(10, 20, null);
-    tableModel.requestRows(10, 20, callback1);
+    TestCallback<String> callback1 = new TestCallback<String>(10, 20, null);
+    Request request1 = new Request(10, 20);
+    tableModel.requestRows(request1, callback1);
     assertTrue(callback1.isExecuted());
     assertFalse(callback1.isFailed());
 
     // Request some rows with sorting
     ColumnSortList sortList = new ColumnSortList();
     sortList.add(5, true);
-    TestCallback callback2 = new TestCallback(5, 6, sortList);
-    tableModel.requestRows(5, 6, sortList, callback2);
+    TestCallback<String> callback2 = new TestCallback<String>(5, 6, sortList);
+    Request request2 = new Request(5, 6, sortList);
+    tableModel.requestRows(request2, callback2);
     assertTrue(callback2.isExecuted());
     assertFalse(callback2.isFailed());
 
     // Request some rows with sorting descending
     sortList.add(5, false);
-    TestCallback callback3 = new TestCallback(5, 6, sortList);
-    tableModel.requestRows(5, 6, sortList, callback3);
+    TestCallback<String> callback3 = new TestCallback<String>(5, 6, sortList);
+    Request request3 = new Request(5, 6, sortList);
+    tableModel.requestRows(request3, callback3);
     assertTrue(callback3.isExecuted());
     assertFalse(callback3.isFailed());
-    
+
     // Request some rows and fail to return them
-    TableModel failureModel = getTableModel(true);
-    TestCallback callback4 = new TestCallback(-1, -1, null);
-    failureModel.requestRows(5, 6, sortList, callback4);
+    TableModel<String> failureModel = getTableModel(true);
+    TestCallback<String> callback4 = new TestCallback<String>(-1, -1, null);
+    Request request4 = new Request(5, 6, sortList);
+    failureModel.requestRows(request4, callback4);
     assertFalse(callback4.isExecuted());
     assertTrue(callback4.isFailed());
   }

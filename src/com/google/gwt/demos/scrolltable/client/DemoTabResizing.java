@@ -27,18 +27,26 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.ResizableWidgetCollection;
 import com.google.gwt.widgetideas.table.client.ScrollTable;
+import com.google.gwt.widgetideas.table.client.ScrollTable.ScrollPolicy;
 
 /**
  * Panel full of resizing options.
  */
 public class DemoTabResizing extends DemoTab implements ClickListener {
   /**
+   * The description of min width.
+   */
+  private static final String DESC_MIN_WIDTH = "If the minimum width is set to"
+      + "a value greater than -1, the table will not be allowed to become smaller"
+      + "than the minimum width.";
+
+  /**
    * The description of scrolling.
    */
   private static final String DESC_SCROLLING = "Enable scrolling to confine "
-    + "the data area to a scrollable window.  Disable scrolling to allow the "
-    + "data area to grow as needed to fit its content.";
-  
+      + "the data area to a scrollable window.  Disable scrolling to allow the "
+      + "data area to grow as needed to fit its content.";
+
   /**
    * The description of static resize checking.
    */
@@ -66,6 +74,16 @@ public class DemoTabResizing extends DemoTab implements ClickListener {
   private TextBox heightWidthText = new TextBox();
 
   /**
+   * The button used to set the min width.
+   */
+  private Button minWidthButton = new Button("Set Min Width", this);
+
+  /**
+   * Text box used to set the min width.
+   */
+  private TextBox minWidthText = new TextBox();
+
+  /**
    * Redraw the table.
    */
   private Button redrawButton = new Button("Redraw Scroll Table", this);
@@ -73,7 +91,7 @@ public class DemoTabResizing extends DemoTab implements ClickListener {
   /**
    * The grid that holds the toggle buttons.
    */
-  private Grid toggleButtonGrid = new Grid(2, 3);
+  private Grid toggleButtonGrid = new Grid(4, 3);
 
   /**
    * The button used to toggle static resize checking.
@@ -82,11 +100,15 @@ public class DemoTabResizing extends DemoTab implements ClickListener {
       "Toggle Resize Checking", this);
 
   /**
-   * The button used to toggle scrolling.
+   * The list box used to select the scrolling policy.
    */
-  private Button toggleScrollingButton = new Button(
-      "Toggle Scrolling", this);
-  
+  private ListBox scrollingBox = new ListBox();
+
+  /**
+   * The button used to set the scrolling policy.
+   */
+  private Button scrollingButton = new Button("Set Scroll Policy", this);
+
   /**
    * Handle click events from the buttons in this panel.
    * 
@@ -102,14 +124,12 @@ public class DemoTabResizing extends DemoTab implements ClickListener {
         ResizableWidgetCollection.get().setResizeCheckingEnabled(true);
         toggleButtonGrid.setHTML(0, 1, "enabled");
       }
-    } else if (sender == toggleScrollingButton) {
-      boolean scrollEnabled = scrollTable.isScrollingEnabled();
-      if (scrollEnabled) {
-        scrollTable.setScrollingEnabled(false);
-        toggleButtonGrid.setHTML(1, 1, "disabled");
-      } else {
-        scrollTable.setScrollingEnabled(true);
-        toggleButtonGrid.setHTML(1, 1, "enabled");
+    } else if (sender == scrollingButton) {
+      String policy = scrollingBox.getValue(scrollingBox.getSelectedIndex());
+      if (policy.equals("horizontal")) {
+        scrollTable.setScrollPolicy(ScrollPolicy.HORIZONTAL);
+      } else if (policy.equals("both")) {
+        scrollTable.setScrollPolicy(ScrollPolicy.BOTH);
       }
     } else if (sender == redrawButton) {
       scrollTable.redraw();
@@ -117,6 +137,9 @@ public class DemoTabResizing extends DemoTab implements ClickListener {
       DOM.setStyleAttribute(scrollTable.getElement(),
           heightWidthBox.getValue(heightWidthBox.getSelectedIndex()),
           heightWidthText.getText());
+    } else if (sender == minWidthButton) {
+      int minWidth = Integer.parseInt(minWidthText.getText());
+      scrollTable.setMinWidth(minWidth);
     }
   }
 
@@ -133,10 +156,23 @@ public class DemoTabResizing extends DemoTab implements ClickListener {
     toggleButtonGrid.setHTML(0, 2, DESC_STATIC_CHECKING);
 
     // Toggle scrolling button
-    toggleButtonGrid.setWidget(1, 0, toggleScrollingButton);
-    toggleButtonGrid.setHTML(1, 1, "enabled");
+    scrollingBox.addItem("horizontal");
+    scrollingBox.addItem("both");
+    scrollingBox.setSelectedIndex(1);
+    toggleButtonGrid.setWidget(1, 0, scrollingButton);
+    toggleButtonGrid.setWidget(1, 1, scrollingBox);
     toggleButtonGrid.setHTML(1, 2, DESC_SCROLLING);
-    
+
+    // Min width button
+    minWidthText.setText("-1");
+    minWidthText.setWidth("80px");
+    toggleButtonGrid.setWidget(2, 0, minWidthButton);
+    toggleButtonGrid.setWidget(2, 1, minWidthText);
+    toggleButtonGrid.setHTML(2, 2, DESC_MIN_WIDTH);
+
+    // Redraw button
+    toggleButtonGrid.setWidget(3, 0, redrawButton);
+
     // Set the overall table height or width
     heightWidthBox.addItem("height");
     heightWidthBox.addItem("width");
@@ -152,7 +188,6 @@ public class DemoTabResizing extends DemoTab implements ClickListener {
 
     VerticalPanel panel = new VerticalPanel();
     panel.add(toggleButtonGrid);
-    panel.add(redrawButton);
     panel.add(new HTML(
         "<BR><B>Change the overall height/width of the table:</B>"));
     panel.add(styleHolder);

@@ -19,11 +19,15 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.SourcesTableEvents;
+import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.widgetideas.table.client.FixedWidthGrid;
 import com.google.gwt.widgetideas.table.client.SortableColumnsListener;
-import com.google.gwt.widgetideas.table.client.SortableFixedWidthGrid;
+import com.google.gwt.widgetideas.table.client.SourceTableSelectionEvents;
 import com.google.gwt.widgetideas.table.client.TableSelectionListener;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 
@@ -31,45 +35,46 @@ import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
  * Logs events fired by the ScrollTable.
  */
 public class DemoTabPanelLog extends DemoTab implements TableSelectionListener,
-    ClickListener, SortableColumnsListener {
+    ClickListener, SortableColumnsListener, TableListener {
   /**
    * The button used to clear the log.
    */
   Button clearButton = new Button("Clear Log", this);
 
   /**
+   * The label used to display the currently hovering cell.
+   */
+  private Label hoveringCellLabel = new Label("Hovering cell: none");
+
+  /**
    * The label that contains the log info.
    */
-  HTML label = new HTML();
+  private HTML logLabel = new HTML();
 
   /**
    * The line count in the log.
    */
-  int lineCount = 0;
+  private int lineCount = 0;
 
   /**
    * The scroll panel that holds the log.
    */
-  ScrollPanel scrollPanel = new ScrollPanel(label);
+  private ScrollPanel scrollPanel = new ScrollPanel(logLabel);
 
-  public void onAllRowsDeselected() {
+  public void onAllRowsDeselected(SourceTableSelectionEvents sender) {
     addText("all rows deselected", "green");
   }
 
-  /**
-   * Fired when a cell is clicked.
-   * 
-   * @param row the row index
-   * @param cell the cell index
-   */
-  public void onCellClicked(int row, int cell) {
+  public void onCellClicked(SourcesTableEvents sender, int row, int cell) {
     addText("cell clicked: (" + row + "," + cell + ")", "#ff00ff");
   }
 
-  public void onCellHover(int row, int cell) {
+  public void onCellHover(SourceTableSelectionEvents sender, int row, int cell) {
+    hoveringCellLabel.setText("Hovering cell: (" + row + "," + cell + ")");
   }
 
-  public void onCellUnhover(int row, int cell) {
+  public void onCellUnhover(SourceTableSelectionEvents sender, int row, int cell) {
+    hoveringCellLabel.setText("Hovering cell: none");
   }
 
   /**
@@ -79,7 +84,7 @@ public class DemoTabPanelLog extends DemoTab implements TableSelectionListener,
    */
   public void onClick(Widget sender) {
     if (sender == clearButton) {
-      label.setHTML("");
+      logLabel.setHTML("");
       lineCount = 0;
     }
   }
@@ -103,49 +108,29 @@ public class DemoTabPanelLog extends DemoTab implements TableSelectionListener,
     }
   }
 
-  /**
-   * Fired when a row is deselected.
-   * 
-   * @param row the row index
-   */
-  public void onRowDeselected(int row) {
+  public void onRowDeselected(SourceTableSelectionEvents sender, int row) {
     addText("row deselected: " + row, "green");
   }
 
-  /**
-   * Fired when a row is hovered.
-   * 
-   * @param row the row index
-   */
-  public void onRowHover(int row) {
+  public void onRowHover(SourceTableSelectionEvents sender, int row) {
   }
 
-  /**
-   * Fired when one or more rows are selected.
-   * 
-   * @param firstRow the row index of the first row
-   * @param numRows the number of selected rows
-   */
-  public void onRowsSelected(int firstRow, int numRows) {
+  public void onRowsSelected(SourceTableSelectionEvents sender, int firstRow,
+      int numRows) {
     int lastRow = firstRow + numRows - 1;
     addText("rows selected: " + firstRow + " through " + lastRow, "blue");
   }
 
-  /**
-   * Fired when a row is unhovered.
-   * 
-   * @param row the row index
-   */
-  public void onRowUnhover(int row) {
+  public void onRowUnhover(SourceTableSelectionEvents sender, int row) {
   }
 
   @Override
   protected Widget onInitialize() {
-    SortableFixedWidthGrid dataTable = ScrollTableDemo.getDataTable();
-    label.setHeight("200px");
+    FixedWidthGrid dataTable = ScrollTableDemo.getDataTable();
+    logLabel.setHeight("200px");
     scrollPanel.setWidth("95%");
     scrollPanel.setHeight("200px");
-    DOM.setStyleAttribute(label.getElement(), "font", "8pt/10pt courier");
+    DOM.setStyleAttribute(logLabel.getElement(), "font", "8pt/10pt courier");
     DOM.setStyleAttribute(scrollPanel.getElement(), "border", "1px solid black");
     dataTable.addTableSelectionListener(this);
     dataTable.addSortableColumnsListener(this);
@@ -154,6 +139,7 @@ public class DemoTabPanelLog extends DemoTab implements TableSelectionListener,
     panel.setWidth("100%");
     panel.add(scrollPanel);
     panel.add(clearButton);
+    panel.add(hoveringCellLabel);
     return panel;
   }
 
@@ -165,8 +151,8 @@ public class DemoTabPanelLog extends DemoTab implements TableSelectionListener,
    */
   private void addText(String text, String color) {
     text = "<B>" + lineCount + ":</B> " + "<FONT color=\"" + color + "\">"
-        + text + "</FONT>" + "<BR>" + label.getHTML();
-    label.setHTML(text);
+        + text + "</FONT>" + "<BR>" + logLabel.getHTML();
+    logLabel.setHTML(text);
     lineCount++;
   }
 }

@@ -21,10 +21,17 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.widgetideas.table.client.ClientTableModel;
 
+import java.io.Serializable;
+
 /**
  * An iterator that serves as the data source for TableOracle requests.
  */
-public class DataSourceTableModel extends ClientTableModel {
+public class DataSourceTableModel extends ClientTableModel<Serializable> {
+  /**
+   * The column count.
+   */
+  public static final int COLUMN_COUNT = 12;
+  
   /**
    * The source of the data.
    */
@@ -78,31 +85,11 @@ public class DataSourceTableModel extends ClientTableModel {
   }
 
   /**
-   * Allow, but do nothing.
-   */
-  @Override
-  public void onRowInserted(int beforeRow) {
-  }
-
-  /**
-   * Allow, but do nothing.
-   */
-  @Override
-  public void onRowRemoved(int row) {
-  }
-
-  /**
-   * Allow, but do nothing.
-   */
-  @Override
-  public void onSetData(int row, int cell, Object data) {
-  }
-
-  /**
    * Override that can optionally throw an error.
    */
   @Override
-  public void requestRows(final Request request, final Callback callback) {
+  public void requestRows(final Request request,
+      final Callback<Serializable> callback) {
     if (errorMode) {
       // Return an error
       callback.onFailure(new Exception("An error has occured."));
@@ -116,15 +103,16 @@ public class DataSourceTableModel extends ClientTableModel {
       }
 
       // Send RPC request for data
-      dataService.requestRows(request, new AsyncCallback() {
-        public void onFailure(Throwable caught) {
-          callback.onFailure(new Exception("RPC Failure"));
-        }
+      dataService.requestRows(request,
+          new AsyncCallback<SerializableResponse<Serializable>>() {
+            public void onFailure(Throwable caught) {
+              callback.onFailure(new Exception("RPC Failure"));
+            }
 
-        public void onSuccess(Object result) {
-          callback.onRowsReady(request, (Response) result);
-        }
-      });
+            public void onSuccess(SerializableResponse<Serializable> result) {
+              callback.onRowsReady(request, result);
+            }
+          });
     } else {
       // Request rows from the local client
       super.requestRows(request, callback);
@@ -147,5 +135,20 @@ public class DataSourceTableModel extends ClientTableModel {
    */
   public void setRPCModeEnabled(boolean enabled) {
     this.rpcMode = enabled;
+  }
+
+  @Override
+  protected boolean onRowInserted(int beforeRow) {
+    return true;
+  }
+
+  @Override
+  protected boolean onRowRemoved(int row) {
+    return true;
+  }
+
+  @Override
+  protected boolean onSetData(int row, int cell, Object data) {
+    return true;
   }
 }

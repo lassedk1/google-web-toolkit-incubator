@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,36 +16,36 @@
 package com.google.gwt.widgetideas.table.client;
 
 /**
- * An interface for tables that manipulate columns using a fixed table width.
+ * Event listener for {@link TableModel} class.
  */
-public interface HasFixedColumnWidth extends HasTableCells {
+public interface TableModelListener {
   /**
-   * Gets the number of columns in this table.
+   * Event fired when the number of rows changes.
    * 
-   * @return the number of columns
+   * @param rowCount the row count
    */
-  int getColumnCount();
+  void onRowCountChanged(int rowCount);
 
   /**
-   * Get the width of a column in pixels.
+   * Event fired when a row is inserted.
    * 
-   * @param column the column index
-   * @return the column width
+   * @param beforeRow the row index of the new row
    */
-  int getColumnWidth(int column);
+  void onRowInserted(int beforeRow);
 
   /**
-   * Get the default width of a column in pixels.
+   * Event fired when a row is removed.
    * 
-   * @return the default column width
+   * @param row the row index of the removed row
    */
-  int getDefaultColumnWidth();
+  void onRowRemoved(int row);
 
   /**
-   * Set the width of a column in pixels.
+   * Event fired when the data changes.
    * 
-   * @param column the column index
-   * @param width the column width
+   * @param row the row index
+   * @param cell the cell index
+   * @param data the new contents of the cell
    */
-  void setColumnWidth(int column, int width);
+  void onSetData(int row, int cell, Object data);
 }

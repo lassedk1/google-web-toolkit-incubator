@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -66,62 +66,98 @@ public class ClientTableModelTest extends TableModelTestBase {
      * @param row the row index
      * @param column the column index
      */
-    public void confirmPair(int row, int column) {
+    public void assertPair(int row, int column) {
       assertEquals(this.row, row);
       assertEquals(this.column, column);
     }
   }
 
   /**
-   * The table model to test.
+   * @see TableModelTestBase#getTableModel(boolean)
    */
-  private ClientTableModel tableModel = new ClientTableModel() {
-    public Object getCell(int rowNum, int colNum) {
-      if (colNum < NUM_COLUMNS && rowNum < NUM_ROWS) {
-        return new CellPair(rowNum, colNum);
-      }
-      return null;
-    }
-  };
-
-  /**
-   * @see TableModelTestBase
-   */
-  public TableModel getTableModel(boolean failureMode) {
+  @Override
+  public <R> TableModel<R> getTableModel(boolean failureMode) {
+    // Failure mode version
     if (failureMode) {
-      return new ClientTableModel() {
+      return new ClientTableModel<R>() {
+        @Override
         public Object getCell(int rowNum, int colNum) {
           return null;
         }
 
-        public void requestRows(Request request, Callback callback) {
+        @Override
+        public void requestRows(Request request, Callback<R> callback) {
           callback.onFailure(new Exception());
+        }
+
+        @Override
+        protected boolean onRowInserted(int beforeRow) {
+          return false;
+        }
+
+        @Override
+        protected boolean onRowRemoved(int row) {
+          return false;
+        }
+
+        @Override
+        protected boolean onSetData(int row, int cell, Object data) {
+          return false;
         }
       };
     }
-    return tableModel;
+
+    // Normal version
+    return new ClientTableModel<R>() {
+      @Override
+      public Object getCell(int rowNum, int colNum) {
+        if (colNum < NUM_COLUMNS && rowNum < NUM_ROWS) {
+          return new CellPair(rowNum, colNum);
+        }
+        return null;
+      }
+
+      @Override
+      protected boolean onRowInserted(int beforeRow) {
+        return true;
+      }
+
+      @Override
+      protected boolean onRowRemoved(int row) {
+        return true;
+      }
+
+      @Override
+      protected boolean onSetData(int row, int cell, Object data) {
+        return true;
+      }
+    };
   }
 
   /**
    * Test requestRows method return values.
    */
-  public void testRequestRows() {
-    getTableModel(false).requestRows(0, NUM_ROWS, new Callback() {
+  public void testRequestRowsValues() {
+    // Create the table model
+    TableModel<String> tableModel = getTableModel(false);
+
+    // Create a callback for testing
+    Callback<String> callback = new Callback<String>() {
       public void onFailure(Throwable caught) {
       }
 
-      public void onRowsReady(Request request, Response response) {
+      public void onRowsReady(Request request, Response<String> response) {
         // Iterate the rows
         int row = 0;
-        Iterator rowIt = response.getIterator();
+        Iterator<Iterator<Object>> rowIt = response.getIterator();
         while (rowIt.hasNext()) {
           // Iterate the columns
           int column = 0;
-          Iterator colIt = (Iterator) rowIt.next();
+          Iterator<Object> colIt = rowIt.next();
           while (colIt.hasNext()) {
             // Check the cell values
             CellPair cellPair = (CellPair) colIt.next();
-            cellPair.confirmPair(row, column);
+            cellPair.assertPair(row, column);
             column++;
           }
 
@@ -133,31 +169,10 @@ public class ClientTableModelTest extends TableModelTestBase {
         // Check the number of rows
         assertEquals(NUM_ROWS, row);
       }
-    });
-  }
+    };
 
-  /**
-   * Test Unsupported Opertions that are not read only.
-   */
-  public void testUnsupportedOperations() {
-    // Try calling unsupported operations
-    try {
-      getTableModel(false).onRowInserted(0);
-      fail("UnsupportedOperationException expected");
-    } catch (UnsupportedOperationException e) {
-      assertEquals(e.getMessage(), ReadOnlyTableModel.READ_ONLY_ERROR);
-    }
-    try {
-      getTableModel(false).onRowRemoved(0);
-      fail("UnsupportedOperationException expected");
-    } catch (UnsupportedOperationException e) {
-      assertEquals(e.getMessage(), ReadOnlyTableModel.READ_ONLY_ERROR);
-    }
-    try {
-      getTableModel(false).onSetData(0, 0, null);
-      fail("UnsupportedOperationException expected");
-    } catch (UnsupportedOperationException e) {
-      assertEquals(e.getMessage(), ReadOnlyTableModel.READ_ONLY_ERROR);
-    }
+    // Send a request
+    Request request = new Request(0, NUM_ROWS);
+    tableModel.requestRows(request, callback);
   }
 }

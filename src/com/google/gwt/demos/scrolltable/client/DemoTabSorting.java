@@ -25,7 +25,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.table.client.ScrollTable;
-import com.google.gwt.widgetideas.table.client.SortableFixedWidthGrid;
+import com.google.gwt.widgetideas.table.client.SortableGrid;
 
 /**
  * Panel full of data sorting and movement options.
@@ -107,7 +107,7 @@ public class DemoTabSorting extends DemoTab implements ClickListener {
    */
   public void onClick(Widget sender) {
     ScrollTable scrollTable = ScrollTableDemo.getScrollTable();
-    SortableFixedWidthGrid dataTable = ScrollTableDemo.getDataTable();
+    SortableGrid dataTable = ScrollTableDemo.getDataTable();
 
     try {
       if (sender == moveRowUpButton) {

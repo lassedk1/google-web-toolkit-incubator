@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,17 +16,18 @@
 package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 
 /**
  * A cell editor that lists its options in a drop down box.
+ * 
+ * @param <R> the type of the row value associated with the editor
  */
-public class ListCellEditor extends AbstractCellEditor {
+public class ListCellEditor<R> extends InlineCellEditor<R> {
   /**
    * The list box of options.
    */
   private ListBox listBox;
-  
+
   /**
    * Constructor.
    */
@@ -40,20 +41,31 @@ public class ListCellEditor extends AbstractCellEditor {
    * @param listBox a custom {@link ListBox} to use
    */
   public ListCellEditor(ListBox listBox) {
-    this(listBox, true);
+    super(listBox);
+    this.listBox = listBox;
   }
 
   /**
    * Constructor.
    * 
    * @param listBox a custom {@link ListBox} to use
-   * @param useDefaultButtons true to use default accept/cancel buttons
+   * @param images the images to use for the accept/cancel buttons
    */
-  public ListCellEditor(ListBox listBox, boolean useDefaultButtons) {
-    super(listBox, useDefaultButtons);
+  public ListCellEditor(ListBox listBox, InlineCellEditorImages images) {
+    super(listBox, images);
     this.listBox = listBox;
   }
-  
+
+  /**
+   * @see AbstractCellEditor#editCell(CellEditInfo, Callback)
+   */
+  @Override
+  public void editCell(CellEditInfo<R> cellEditInfo,
+      Callback<R> callback) {
+    super.editCell(cellEditInfo, callback);
+    listBox.setFocus(true);
+  }
+
   /**
    * Get the {@link ListBox} of options.
    * 
@@ -63,33 +75,11 @@ public class ListCellEditor extends AbstractCellEditor {
     return listBox;
   }
 
-  /**
-   * Get the new value from the cell editor.
-   * 
-   * @return the new value
-   */
   @Override
-  public Object getValue() {
+  protected Object getValue() {
     return listBox.getValue(listBox.getSelectedIndex());
   }
 
-  /**
-   * Fired when editing a cell, just after the cell is shown.
-   * 
-   * @param table the table that contains the cell
-   * @param row the row index
-   * @param cell the cell index
-   */
-  @Override
-  public void onEditCell(HTMLTable table, int row, int cell) {
-    listBox.setFocus(true);
-  }
-  
-  /**
-   * Set the current value in the cell editor.
-   * 
-   * @param value the current value
-   */
   @Override
   protected void setValue(Object value) {
     int numItems = listBox.getItemCount();

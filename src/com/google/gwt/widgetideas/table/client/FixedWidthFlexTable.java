@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -30,8 +30,7 @@ import java.util.Map;
  * options. Unlike the {@link FlexTable}, columns resized in the
  * {@link FixedWidthFlexTable} class are guaranteed to be resized correctly.
  */
-public class FixedWidthFlexTable extends FlexTable implements
-    HasFixedColumnWidth {
+public class FixedWidthFlexTable extends FlexTable {
   /**
    * An implementation used accommodate differences in column width
    * implementations between browsers.
@@ -68,6 +67,7 @@ public class FixedWidthFlexTable extends FlexTable implements
    * IE6 version of the implementation. IE6 sets the overall column width
    * instead of the innerWidth, so we need to add the padding and spacing.
    */
+  @SuppressWarnings("unused")
   private static class FixedWidthFlexTableImplIE6 extends
       FixedWidthFlexTableImpl {
     @Override
@@ -88,6 +88,7 @@ public class FixedWidthFlexTable extends FlexTable implements
    * Safari version of the implementation. Safari sets the overall column width
    * instead of the innerWidth, so we need to add the padding and spacing.
    */
+  @SuppressWarnings("unused")
   private static class FixedWidthFlexTableImplSafari extends
       FixedWidthFlexTableImpl {
     @Override
@@ -102,6 +103,7 @@ public class FixedWidthFlexTable extends FlexTable implements
    * column size takes effect. Without the display refresh, the column width
    * doesn't update in the browser.
    */
+  @SuppressWarnings("unused")
   private static class FixedWidthFlexTableImplOpera extends
       FixedWidthFlexTableImpl {
     @Override
@@ -326,19 +328,10 @@ public class FixedWidthFlexTable extends FlexTable implements
   public int getColumnWidth(int column) {
     Object colWidth = colWidths.get(new Integer(column));
     if (colWidth == null) {
-      return getDefaultColumnWidth();
+      return DEFAULT_COLUMN_WIDTH;
     } else {
       return ((Integer) colWidth).intValue();
     }
-  }
-
-  /**
-   * Get the default width of a column in pixels.
-   * 
-   * @return the default column width
-   */
-  public int getDefaultColumnWidth() {
-    return DEFAULT_COLUMN_WIDTH;
   }
 
   /**
