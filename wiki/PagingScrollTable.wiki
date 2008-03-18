@@ -193,14 +193,10 @@ public class MyEntryPoint implements EntryPoint {
 
     // Combine the components into a ScrollTable
     final PagingScrollTable<Student> scrollTable = new PagingScrollTable<Student>(
-        tableModel, dataTable, headerTable);
-    /*
-     * TODO: use the cachedModel when rowValues are correctly cached
-     * final PagingScrollTable<Student> scrollTable = new PagingScrollTable<Student>(
-     * cachedModel, dataTable, headerTable);
-     */
+        cachedModel, dataTable, headerTable);
     scrollTable.setFooterTable(footerTable);
     scrollTable.setPageSize(15);
+    scrollTable.setScrollPolicy(ScrollTable.ScrollPolicy.HORIZONTAL);
 
     // Add a RowPagingListener to set the footer stats
     scrollTable.addRowPagingListener(new RowPagingListener() {
@@ -234,14 +230,18 @@ public class MyEntryPoint implements EntryPoint {
     // Set some options in the scroll table
     scrollTable.setSortingEnabled(true);
     scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
-    scrollTable.setSize("80%", "80%");
+    scrollTable.setWidth("80%");
 
     // Setup some default widths
     scrollTable.setColumnWidth(2, 50);
     scrollTable.setColumnWidth(5, 50);
 
+    // Create some paging options
+    PagingOptions options = new PagingOptions(scrollTable);
+    
     // Add the components to the page
     RootPanel.get().add(scrollTable);
+    RootPanel.get().add(options);
   }
 
   /**
