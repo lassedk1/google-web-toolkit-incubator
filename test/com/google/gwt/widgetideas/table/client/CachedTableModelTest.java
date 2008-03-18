@@ -15,9 +15,12 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
+import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 import com.google.gwt.widgetideas.table.client.TableModel.Request;
+import com.google.gwt.widgetideas.table.client.TableModel.Response;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -25,9 +28,33 @@ import java.util.List;
  */
 public class CachedTableModelTest extends ClientTableModelTest {
   /**
+   * A callback specifically designed to test caching.
+   */
+  private static class CacheTestCallback extends TestCallback<Integer> {
+    public CacheTestCallback(int startRow, int numRows, ColumnSortList sortList) {
+      super(startRow, numRows, sortList);
+    }
+
+    @Override
+    public void onRowsReady(Request request, Response<Integer> response) {
+      super.onRowsReady(request, response);
+      
+      // Test that the row values are correct
+      List<?> rowValues = response.getRowValues();
+      assertNotNull(rowValues);
+      assertEquals(getNumRows(), rowValues.size());
+      int curRow = getStartRow();
+      for (Object rowValue : rowValues) {
+        assertEquals(new Integer(curRow), rowValue);
+        curRow++;
+      }
+    }
+  }
+
+  /**
    * A table model that records its previous requests.
    */
-  private static class TestTableModel<R> extends ListTableModel<R> {
+  private static class TestTableModel extends ListTableModel<Integer> {
     /**
      * The last request received.
      */
@@ -50,9 +77,28 @@ public class CachedTableModelTest extends ClientTableModelTest {
     }
 
     @Override
-    public void requestRows(Request request, Callback<R> callback) {
+    public void requestRows(Request request, final Callback<Integer> callback) {
       lastRequest = request;
-      super.requestRows(request, callback);
+      super.requestRows(request, new Callback<Integer>() {
+        public void onFailure(Throwable caught) {
+          callback.onFailure(caught);
+        }
+
+        public void onRowsReady(Request request, Response<Integer> response) {
+          // Create some row values
+          int startRow = request.getStartRow();
+          int numRows = request.getNumRows();
+          List<Integer> rowValues = new ArrayList<Integer>();
+          for (int i = startRow; i < startRow + numRows; i++) {
+            rowValues.add(new Integer(i));
+          }
+
+          // Return the response wrapped with the rowValues
+          Response<Integer> wrapper = new ResponseWrapper<Integer>(response,
+              rowValues);
+          callback.onRowsReady(request, wrapper);
+        }
+      });
     }
 
     @Override
@@ -68,6 +114,24 @@ public class CachedTableModelTest extends ClientTableModelTest {
     @Override
     protected boolean onSetData(int row, int cell, Object data) {
       return true;
+    }
+  }
+
+  /**
+   * A wrapper around the response that allows row values to be added to any
+   * response.
+   */
+  private static class ResponseWrapper<R> extends Response<R> {
+    private Response<R> inner;
+
+    public ResponseWrapper(Response<R> inner, List<R> rowValues) {
+      super(rowValues);
+      this.inner = inner;
+    }
+
+    @Override
+    public Iterator<Iterator<Object>> getIterator() {
+      return inner.getIterator();
     }
   }
 
@@ -121,17 +185,17 @@ public class CachedTableModelTest extends ClientTableModelTest {
         columnList.add(new CellPair(row, column));
       }
     }
-    
+
     // Create a table model
-    TestTableModel<String> innerModel = new TestTableModel<String>(rowList);
-    CachedTableModel<String> tableModel = new CachedTableModel<String>(
+    TestTableModel innerModel = new TestTableModel(rowList);
+    CachedTableModel<Integer> tableModel = new CachedTableModel<Integer>(
         innerModel);
     assertEquals(rowList.size(), tableModel.getRowCount());
     Request lastRequest = null;
 
     // Send a request
     Request request1 = new Request(10, 5);
-    TestCallback<String> callback1 = new TestCallback<String>(10, 5, null);
+    CacheTestCallback callback1 = new CacheTestCallback(10, 5, null);
     tableModel.requestRows(request1, callback1);
     assertTrue(callback1.isExecuted());
     lastRequest = innerModel.getLastRequest();
@@ -140,7 +204,7 @@ public class CachedTableModelTest extends ClientTableModelTest {
 
     // Send a request for the same data
     Request request2 = new Request(10, 5);
-    TestCallback<String> callback2 = new TestCallback<String>(10, 5, null);
+    CacheTestCallback callback2 = new CacheTestCallback(10, 5, null);
     tableModel.requestRows(request2, callback2);
     assertTrue(callback2.isExecuted());
     assertEquals(lastRequest, innerModel.getLastRequest());
@@ -149,14 +213,14 @@ public class CachedTableModelTest extends ClientTableModelTest {
     tableModel.setPreCachedRowCount(10);
     tableModel.setPostCachedRowCount(10);
     Request request3 = new Request(10, 5);
-    TestCallback<String> callback3 = new TestCallback<String>(10, 5, null);
+    CacheTestCallback callback3 = new CacheTestCallback(10, 5, null);
     tableModel.requestRows(request3, callback3);
     assertTrue(callback3.isExecuted());
     assertEquals(lastRequest, innerModel.getLastRequest());
 
     // Send a request with pre and post caching, but we do not have the data
     Request request4 = new Request(25, 5);
-    TestCallback<String> callback4 = new TestCallback<String>(25, 5, null);
+    CacheTestCallback callback4 = new CacheTestCallback(25, 5, null);
     tableModel.requestRows(request4, callback4);
     assertTrue(callback4.isExecuted());
     assertNotSame(lastRequest, innerModel.getLastRequest());
@@ -166,14 +230,14 @@ public class CachedTableModelTest extends ClientTableModelTest {
 
     // Verify that rows were pre cached
     Request request5 = new Request(15, 5);
-    TestCallback<String> callback5 = new TestCallback<String>(15, 5, null);
+    CacheTestCallback callback5 = new CacheTestCallback(15, 5, null);
     tableModel.requestRows(request5, callback5);
     assertTrue(callback5.isExecuted());
     assertEquals(lastRequest, innerModel.getLastRequest());
 
     // Verify that rows were post cached
     Request request6 = new Request(35, 5);
-    TestCallback<String> callback6 = new TestCallback<String>(35, 5, null);
+    CacheTestCallback callback6 = new CacheTestCallback(35, 5, null);
     tableModel.requestRows(request6, callback6);
     assertTrue(callback6.isExecuted());
     assertEquals(lastRequest, innerModel.getLastRequest());
