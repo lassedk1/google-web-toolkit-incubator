@@ -24,7 +24,7 @@ If you do not know the total number of pages, you can still use the PagingScroll
 
 === Caching ===
 
-Using the CachedTableController, you can automatically prefetch rows, such as the next page.  This can increase the perceived speed considerably.
+Using the CachedTableModel, you can automatically prefetch rows, such as the next page.  This can increase the perceived speed considerably.
 
 === Inline Editing ===
 
@@ -106,7 +106,7 @@ public class MyEntryPoint implements EntryPoint {
   /**
    * Information about a student.
    */
-  private class Student {
+  private class Student implements Serializable {
     int age, id;
     String firstName, lastName, hometown;
     double gpa;
@@ -114,11 +114,12 @@ public class MyEntryPoint implements EntryPoint {
 
   /**
    * A custom {@link ReadOnlyTableModel} that generates random data. We are
-   * using a {@link CachedTableController}, so a request will only arrive if
-   * the current page isn't cached.
+   * using a {@link CachedTableModel}, so a request will only arrive if the
+   * current page isn't cached.
    */
-  private class MyTableModel extends ReadOnlyTableModel {
-    public void requestRows(Request request, Callback callback) {
+  private class MyTableModel extends ReadOnlyTableModel<Student> {
+    @Override
+    public void requestRows(Request request, Callback<Student> callback) {
       // Get the data from the request
       int startRow = request.getStartRow();
       int numRows = request.getNumRows();
@@ -131,14 +132,14 @@ public class MyEntryPoint implements EntryPoint {
       // data from the server. Rows is a 2D collection of string to be displayed
       // in the grid. students is collection of students objects to be
       // associated with each row.
-      List rows = new ArrayList();
-      List students = new ArrayList();
+      Collection<Collection<Serializable>> rows = new ArrayList<Collection<Serializable>>();
+      List<Student> students = new ArrayList<Student>();
       for (int i = 0; i < numRows; i++) {
         Student student = generateStudent();
         students.add(student);
 
         // Create a list of cell data
-        List cells = new ArrayList();
+        List<Serializable> cells = new ArrayList<Serializable>();
         cells.add(student.lastName);
         cells.add(student.firstName);
         cells.add(student.age + "");
@@ -151,7 +152,8 @@ public class MyEntryPoint implements EntryPoint {
       // Create the response from the 2D collection of strings. Note that
       // we pass the List of students as well. The PagingGrid will associate
       // the objects in the students list with the rows.
-      Response response = new SerializableResponse(rows, students);
+      Response<Student> response = new SerializableResponse<Student>(rows,
+          students);
 
       // Make the callback
       callback.onRowsReady(request, response);
@@ -179,23 +181,42 @@ public class MyEntryPoint implements EntryPoint {
     // Get the components of the ScrollTable
     FixedWidthFlexTable headerTable = createHeaderTable();
     final FixedWidthFlexTable footerTable = createFooterTable();
-    final PagingGrid dataTable = createDataTable();
+    final FixedWidthGrid dataTable = createDataTable();
+
+    // Setup the table model
+    MyTableModel tableModel = new MyTableModel();
+    tableModel.setRowCount(272);
+    CachedTableModel<Student> cachedModel = new CachedTableModel<Student>(
+        tableModel);
+    cachedModel.setPostCachedRowCount(15);
+    cachedModel.setPostCachedRowCount(30);
+
+    // Combine the components into a ScrollTable
+    final PagingScrollTable<Student> scrollTable = new PagingScrollTable<Student>(
+        tableModel, dataTable, headerTable);
+    /*
+     * TODO: use the cachedModel when rowValues are correctly cached
+     * final PagingScrollTable<Student> scrollTable = new PagingScrollTable<Student>(
+     * cachedModel, dataTable, headerTable);
+     */
+    scrollTable.setFooterTable(footerTable);
+    scrollTable.setPageSize(15);
 
     // Add a RowPagingListener to set the footer stats
-    dataTable.addRowPagingListener(new RowPagingListener() {
+    scrollTable.addRowPagingListener(new RowPagingListener() {
       public void onNumPagesChanges(int numPages) {
       }
 
       public void onPageChanged(int page) {
       }
 
-      public void onPageLoaded() {
+      public void onPageLoaded(int page) {
         int totalAge = 0;
         double totalGPA = 0;
         int numRows = dataTable.getRowCount();
         for (int i = 0; i < numRows; i++) {
           // Get the associated Student object
-          Student student = (Student) dataTable.getRowValue(i);
+          Student student = scrollTable.getRowValue(i);
           totalAge += student.age;
           totalGPA += student.gpa;
         }
@@ -209,15 +230,10 @@ public class MyEntryPoint implements EntryPoint {
       public void onPagingFailure(Throwable caught) {
       }
     });
-    
-    // Combine the components into a ScrollTable
-    PagingScrollTable scrollTable = new PagingScrollTable(dataTable,
-        headerTable);
-    scrollTable.setFooterTable(footerTable);
 
     // Set some options in the scroll table
     scrollTable.setSortingEnabled(true);
-    scrollTable.setResizePolicy(ScrollTable.RESIZE_POLICY_FILL_WIDTH);
+    scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
     scrollTable.setSize("80%", "80%");
 
     // Setup some default widths
@@ -233,24 +249,12 @@ public class MyEntryPoint implements EntryPoint {
    * 
    * @return a data table
    */
-  private PagingGrid createDataTable() {
-    // Create a new table that uses a cached controller
-    MyTableModel tableModel = new MyTableModel();
-    CachedTableController tableController = new CachedTableController(
-        tableModel);
-    PagingGrid dataTable = new PagingGrid(tableModel);
+  private FixedWidthGrid createDataTable() {
+    // Create a new table
+    FixedWidthGrid dataTable = new FixedWidthGrid();
 
     // Set some options in the data table
-    dataTable.setHoveringPolicy(SelectionGrid.HOVERING_POLICY_ROW);
-    dataTable.setSelectionPolicy(SelectionGrid.SELECTION_POLICY_MULTI_ROW);
-
-    // Set the page size and total number of entries
-    dataTable.setPageSize(15);
-    dataTable.setNumRows(272);
-
-    // Cache 1 previous page and 2 next pages
-    tableController.setNumPreCachedRows(15);
-    tableController.setNumPostCachedRows(30);
+    dataTable.setSelectionPolicy(SelectionGrid.SelectionPolicy.MULTI_ROW);
 
     // Return the data table
     return dataTable;
