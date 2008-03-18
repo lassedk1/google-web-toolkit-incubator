@@ -49,15 +49,9 @@ import java.util.NoSuchElementException;
  * </p>
  * <h1>Limitations</h1>
  * <p>
- * This cache model has some significant limitations. Row values are not cached
- * for performance reasons and are not passed to the Controlled Tables, even on
- * new requests to the model. You need to set them manually or keep track of
- * them separately if they are important to you.
- * </p>
- * <p>
- * Additionally, the cache is cleared every time the sort order changes.
- * However, if you disallow column sorting or expect that the user will not sort
- * the columns repeatedly, the cache will still improve paging performance.
+ * The cache is cleared every time the sort order changes. However, if you
+ * disallow column sorting or expect that the user will not sort the columns
+ * repeatedly, the cache will still improve paging performance.
  * </p>
  * 
  * @param <R> the data type of the row values
@@ -109,10 +103,10 @@ public class CachedTableModel<R> extends TableModel<R> {
     public void onRowsReady(Request request, Response<R> response) {
       // Save the response data into the cache
       if (response != null) {
-        int curRow = request.getStartRow();
+        // Save the data for the cells
         Iterator<Iterator<Object>> rows = response.getIterator();
         if (rows != null) {
-          // Save the data to the cache
+          int curRow = request.getStartRow();
           while (rows.hasNext()) {
             Iterator<Object> columnIt = rows.next();
             List<Object> rowList = ensureRowList(curRow);
@@ -124,6 +118,16 @@ public class CachedTableModel<R> extends TableModel<R> {
             }
 
             // Go to next row
+            curRow++;
+          }
+        }
+
+        // Save the row values for each row
+        List<R> rowValues = response.getRowValues();
+        if (rowValues != null) {
+          int curRow = request.getStartRow();
+          for (R rowValue : rowValues) {
+            rowValuesMap.put(new Integer(curRow), rowValue);
             curRow++;
           }
         }
@@ -187,15 +191,43 @@ public class CachedTableModel<R> extends TableModel<R> {
    * A response that comes directly from the cache.
    */
   private class CacheResponse extends Response<R> {
+    /**
+     * The first row of data to be retrieved, inclusively.
+     */
+    private int firstRow;
+
+    /**
+     * The first row of data to be retrieved, inclusively.
+     */
+    private int lastRow;
+
     private CacheIterator it;
 
+    /**
+     * The row values associated with the data.
+     */
+    private List<R> rowValues = null;
+
     public CacheResponse(int firstRow, int lastRow) {
+      this.firstRow = firstRow;
+      this.lastRow = lastRow;
       it = new CacheIterator(firstRow, lastRow);
     }
 
     @Override
     public Iterator<Iterator<Object>> getIterator() {
       return it;
+    }
+
+    @Override
+    public List<R> getRowValues() {
+      if (rowValues == null) {
+        rowValues = new ArrayList<R>();
+        for (int i = firstRow; i <= lastRow; i++) {
+          rowValues.add(rowValuesMap.get(new Integer(i)));
+        }
+      }
+      return rowValues;
     }
   }
 
@@ -226,6 +258,11 @@ public class CachedTableModel<R> extends TableModel<R> {
   private int preCacheRows = 0;
 
   /**
+   * The cached row values.
+   */
+  private HashMap<Integer, R> rowValuesMap = new HashMap<Integer, R>();
+
+  /**
    * The underlying, non-cached table model.
    */
   private TableModel<R> tableModel;
@@ -238,6 +275,14 @@ public class CachedTableModel<R> extends TableModel<R> {
   public CachedTableModel(TableModel<R> tableModel) {
     this.tableModel = tableModel;
     setRowCount(tableModel.getRowCount());
+  }
+
+  /**
+   * Clear all data from the cache.
+   */
+  public void clearCache() {
+    dataMap.clear();
+    rowValuesMap.clear();
   }
 
   /**
@@ -260,11 +305,11 @@ public class CachedTableModel<R> extends TableModel<R> {
     ColumnSortList sortList = request.getColumnSortList();
     if (sortList == null) {
       if (lastSortList != null) {
-        dataMap.clear();
+        clearCache();
         lastSortList = null;
       }
     } else if (!sortList.equals(lastSortList)) {
-      dataMap.clear();
+      clearCache();
       lastSortList = sortList.copy();
     }
 
@@ -345,13 +390,13 @@ public class CachedTableModel<R> extends TableModel<R> {
 
   @Override
   protected boolean onRowInserted(int beforeRow) {
-    dataMap.clear();
+    clearCache();
     return tableModel.onRowInserted(beforeRow);
   }
 
   @Override
   protected boolean onRowRemoved(int row) {
-    dataMap.clear();
+    clearCache();
     return tableModel.onRowRemoved(row);
   }
 

@@ -70,6 +70,20 @@ public abstract class TableModelTestBase extends GWTTestCase {
     }
 
     /**
+     * @return the number of rows.
+     */
+    public int getNumRows() {
+      return numRows;
+    }
+
+    /**
+     * @return the start row
+     */
+    public int getStartRow() {
+      return startRow;
+    }
+
+    /**
      * Check if this callback has been executed.
      * 
      * @return true if executed
