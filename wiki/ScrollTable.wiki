@@ -100,9 +100,9 @@ public class MyEntryPoint implements EntryPoint {
 
     // Set some options in the scroll table
     scrollTable.setSortingEnabled(true);
-    scrollTable.setResizePolicy(ScrollTable.RESIZE_POLICY_FILL_WIDTH);
+    scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
     scrollTable.setSize("80%", "80%");
-    
+
     // Add some data to the data table
     int numStudents = 100;
     int totalAge = 0;
@@ -113,11 +113,11 @@ public class MyEntryPoint implements EntryPoint {
       totalAge += age;
       double gpa = 1.0 + 3.0 * Random.nextDouble();
       totalGPA += gpa;
-      
+
       // Set the data in the current row
       dataTable.setHTML(i, 0, LAST_NAMES[Random.nextInt(LAST_NAMES.length)]);
       dataTable.setHTML(i, 1, FIRST_NAMES[Random.nextInt(FIRST_NAMES.length)]);
-      dataTable.setHTML(i, 2,  age + "");
+      dataTable.setHTML(i, 2, age + "");
       dataTable.setHTML(i, 3, TOWNS[Random.nextInt(TOWNS.length)]);
       dataTable.setHTML(i, 4, (100000 + Random.nextInt(899999)) + "");
       dataTable.setHTML(i, 5, ((int) (gpa * 100.0)) / 100.0 + "");
@@ -126,14 +126,14 @@ public class MyEntryPoint implements EntryPoint {
     // Set the stats in the footer table
     double averageAge = (100 * totalAge / numStudents) / 100.0;
     double averageGPA = ((int) (100.0 * totalGPA / numStudents)) / 100.0;
-    footerTable.setHTML(0, 1,  averageAge + "");
+    footerTable.setHTML(0, 1, averageAge + "");
     footerTable.setHTML(0, 3, averageGPA + "");
     footerTable.setHTML(1, 1, numStudents + "");
-    
+
     // Setup some default widths
     scrollTable.setColumnWidth(2, 50);
     scrollTable.setColumnWidth(5, 50);
-    
+
     // Add the components to the page
     RootPanel.get().add(scrollTable);
   }
@@ -145,12 +145,11 @@ public class MyEntryPoint implements EntryPoint {
    */
   private FixedWidthGrid createDataTable() {
     // Create a new table
-    SortableFixedWidthGrid dataTable = new SortableFixedWidthGrid();
+    FixedWidthGrid dataTable = new FixedWidthGrid();
 
     // Set some options in the data table
-    dataTable.setHoveringPolicy(SelectionGrid.HOVERING_POLICY_ROW);
-    dataTable.setSelectionPolicy(SelectionGrid.SELECTION_POLICY_MULTI_ROW);
-    
+    dataTable.setSelectionPolicy(SelectionGrid.SelectionPolicy.MULTI_ROW);
+
     // Return the data table
     return dataTable;
   }
