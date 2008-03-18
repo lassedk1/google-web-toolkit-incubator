@@ -17,33 +17,33 @@
 package com.google.gwt.widgetideas.datepicker.client;
 
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.widgetideas.datepicker.client.impl.CalendarModel;
 
-import java.util.Date;
-
-abstract class DatePickerComponent<MyDatePicker extends AbstractDatePicker>
-    extends Composite {
-  protected MyDatePicker datePicker;
+abstract class DatePickerComponent<MyDatePicker extends DatePicker> extends
+    Composite {
+  private MyDatePicker datePicker;
 
   public CalendarModel getModel() {
     return datePicker.getModel();
   }
 
   protected void addMonths(int numMonths) {
-    getModel().shiftMonths(numMonths);
+    getModel().shiftCurrentMonth(numMonths);
     getDatePicker().refresh();
-  }
-
-  protected void fireHighlightChangeEvent(ChangeEvent<Date, MyDatePicker> event) {
-    datePicker.highlightChangeHandlers.fire(event);
   }
 
   protected MyDatePicker getDatePicker() {
     return datePicker;
   }
 
+  /**
+   * Refresh the component. Usually called because the model's current date has
+   * changed.
+   */
   protected abstract void refresh();
 
+  /**
+   * Set up the component.
+   */
   protected abstract void setup();
 
   void setDatePicker(MyDatePicker dp) {

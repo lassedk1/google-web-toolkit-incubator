@@ -16,6 +16,7 @@
 
 package com.google.gwt.widgetideas.client;
 
+import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
@@ -67,7 +68,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   private class DelayHide extends Timer {
 
     public void activate() {
-      state = State.WILL_HIDE;
+      setState(State.WILL_HIDE);
       delayedHide.schedule(DELAY_MILLI);
     }
 
@@ -82,7 +83,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   private class DelayShow extends Timer {
 
     public void activate() {
-      state = State.WILL_SHOW;
+      setState(State.WILL_SHOW);
       delayedShow.schedule(DELAY_MILLI);
     }
 
@@ -96,7 +97,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    */
   private class HidingTimer extends SlidingTimer {
     protected void finish() {
-      state = State.IS_HIDDEN;
+      setState(State.IS_HIDDEN);
     }
 
     protected boolean processSizeChange(float shouldBe) {
@@ -113,7 +114,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    */
   private class ShowingTimer extends SlidingTimer {
     protected void finish() {
-      state = State.IS_SHOWN;
+      setState(State.IS_SHOWN);
     }
 
     protected boolean processSizeChange(float shouldBe) {
@@ -152,14 +153,6 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    */
   private enum State {
     WILL_HIDE, HIDING, IS_HIDDEN, WILL_SHOW, SHOWING, IS_SHOWN, EXPANDED;
-
-    public boolean shouldHide() {
-      return this == SHOWING || this == WILL_SHOW || this == IS_SHOWN;
-    }
-
-    public boolean shouldShow() {
-      return this == WILL_HIDE || this == HIDING || this == IS_HIDDEN;
-    }
   }
 
   /**
@@ -182,7 +175,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    */
   private static final int DELAY_MILLI = 400;
 
-  State state;
+  private State state;
 
   private ShowingTimer overlayTimer = new ShowingTimer();
 
@@ -193,7 +186,9 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   private DelayHide delayedHide = new DelayHide();
 
   private int width;
+
   private int maxOffshift;
+
   private int currentOffshift;
   private Panel container;
   private SimplePanel hoverBar;
@@ -227,22 +222,21 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
               if (to != null && DOM.isOrHasChild(master.getElement(), to)) {
                 break;
               }
-              if (state == State.WILL_SHOW) {
-                state = State.HIDING;
+
+              if (getState() == State.WILL_SHOW) {
+                setState(State.IS_HIDDEN);
                 delayedShow.cancel();
                 break;
               }
-
-              if (to == null || (!DOM.isOrHasChild(this.getElement(), to))) {
+              if (shouldHide()) {
                 delayedHide.activate();
-                break;
               }
               break;
             case Event.ONMOUSEOVER:
-              if ((state.shouldShow())) {
+              if ((shouldShow(DOM.eventGetToElement(event)))) {
                 if (state == State.WILL_HIDE) {
                   delayedHide.cancel();
-                  state = State.SHOWING;
+                  setState(State.IS_SHOWN);
                 } else {
                   delayedShow.activate();
                 }
@@ -268,7 +262,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     container = new SimplePanel();
     container.setStyleName(Styles.CONTAINER);
     master.add(container, 0, 0);
-    state = State.EXPANDED;
+    setState(State.EXPANDED);
   }
 
   /**
@@ -333,7 +327,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    * Is the panel currently in its collapsed state.
    */
   public boolean isCollapsed() {
-    return state != State.EXPANDED;
+    return getState() != State.EXPANDED;
   }
 
   public Iterator<Widget> iterator() {
@@ -374,16 +368,11 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     int newWidth = width + aboutHalf;
     maxOffshift = newWidth;
     currentOffshift = width;
-
-    // Width is now hoverBarWidth.
     master.setWidth(hoverBarWidth + "px");
 
-    // Looks better to immediately hide (Says the programmer).
-    setPanelPos(0);
-    currentOffshift = 0;
-
-    // clean up state.
-    hide();
+    // Width is now hoverBarWidth.
+    setPanelPos(maxOffshift);
+    setState(State.IS_SHOWN);
   }
 
   /**
@@ -395,11 +384,11 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
       refreshWidth();
     }
     DOM.setStyleAttribute(container.getElement(), "left", "0px");
-    state = State.EXPANDED;
+    setState(State.EXPANDED);
   }
 
   protected void hide() {
-    state = State.HIDING;
+    setState(State.HIDING);
     overlayTimer.cancel();
     hidingTimer.cancel();
     hidingTimer.started = System.currentTimeMillis();
@@ -421,12 +410,28 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   }
 
   protected void show() {
-    state = State.SHOWING;
+    setState(State.SHOWING);
 
     overlayTimer.cancel();
     hidingTimer.cancel();
     overlayTimer.started = System.currentTimeMillis();
     overlayTimer.run();
+  }
+
+  State getState() {
+    return state;
+  }
+
+  void setState(State state) {
+    if ((this.state == State.IS_HIDDEN && state == State.WILL_HIDE)
+        || ((this.state != State.WILL_HIDE && state == State.HIDING))
+        || ((this.state != State.WILL_SHOW && state == State.SHOWING))) {
+      Log.severe("state: " + this.state + "->" + state + " is illegal");
+      throw new IllegalStateException();
+    } else {
+      Log.fine("state: " + this.state + "->" + state);
+    }
+    this.state = state;
   }
 
   private void refreshWidth() {
@@ -453,5 +458,20 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
       becomeExpanded();
     }
     changeListeners.fireChange(this);
+  }
+
+  private boolean shouldHide() {
+    return state == State.WILL_SHOW || state == State.SHOWING
+        || state == State.IS_SHOWN;
+  }
+
+  private boolean shouldShow(Element e) {
+    if (state == State.IS_HIDDEN || state == State.WILL_HIDE) {
+      return true;
+    } else if (state == State.HIDING) {
+      return (e != null && e.equals(hoverBar.getElement()));
+    } else {
+      return false;
+    }
   }
 }

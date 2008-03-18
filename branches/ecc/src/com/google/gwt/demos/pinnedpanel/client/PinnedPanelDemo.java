@@ -17,6 +17,9 @@
 package com.google.gwt.demos.pinnedpanel.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.libideas.logging.client.SimpleLogHandler;
+import com.google.gwt.libideas.logging.shared.Level;
+import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
@@ -89,7 +92,12 @@ public class PinnedPanelDemo implements EntryPoint {
    * This is the entry point method.
    */
   public void onModuleLoad() {
-
+    // Force init to work around logging bug.
+    Log.getDefaultLevel();
+    Log.setDefaultLevel(Level.FINE);
+ 
+    Log.addLogHandler(new SimpleLogHandler(true));
+    Log.fine("test");
     // Some random contents to make the tree interesting.
     Panel contents = createSchoolNavBar();
     FastTree.addDefaultCSS();

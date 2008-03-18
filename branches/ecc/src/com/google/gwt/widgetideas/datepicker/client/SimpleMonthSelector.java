@@ -16,33 +16,39 @@
 
 package com.google.gwt.widgetideas.datepicker.client;
 
+import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.datepicker.client.AbstractDatePicker.Styles;
+import com.google.gwt.widgetideas.datepicker.client.DatePicker.Styles;
 
 import java.util.Date;
 
 /**
  * A simple {@link MonthSelector} used for the default date picker.
  */
-public class SimpleMonthSelector extends MonthSelector<AbstractDatePicker> {
+public class SimpleMonthSelector extends MonthSelector<DatePicker> {
 
   PushButton backwards = new PushButton("<<");
   PushButton forwards = new PushButton(">>");
   Label label = new Label();
+  Date from;
+  Date to;
 
   public SimpleMonthSelector() {
   }
 
   public void setAllowableDateRange(Date from, Date to) {
-    // TODO(ecc).
+    this.from = from;
+    this.to = to;
+    Log.info("setAllowableDateRange is not yet implemented");
   }
 
   protected void refresh() {
-    label.setText(getModel().formatMonth());
+    String text = getModel().formatCurrentMonth();
+    label.setText(text);
   }
 
   @Override

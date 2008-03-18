@@ -14,35 +14,51 @@
  * the License.
  */
 
-package com.google.gwt.widgetideas.datepicker.client;
-
-import com.google.gwt.widgetideas.client.AbstractEvent;
-
-import java.io.Serializable;
+package com.google.gwt.widgetideas.datepicker.client.events;
 
 /**
- * Change event
+ * Change event.
  * 
  * @param <Value> value type
- * @param <S> source type
  */
-public class ChangeEvent<Value, S extends FiresChangeEvents> extends
-    AbstractEvent<S> implements Serializable {
+public class ChangeEvent<Value> extends
+    AbstractEvent<FiresChangeEvents, ChangeHandler<Value>> {
   private Value oldValue;
   private Value newValue;
 
-  public ChangeEvent(S source, Value oldValue, Value newValue) {
+  /**
+   * Contructor.
+   * 
+   * @param source source
+   * @param oldValue old value
+   * @param newValue new value
+   */
+  public ChangeEvent(FiresChangeEvents source, Value oldValue, Value newValue) {
     super(source);
     this.oldValue = oldValue;
     this.newValue = newValue;
   }
 
+  @Override
+  public void fire(ChangeHandler e) {
+    e.onChange(this);
+  }
+
+  /**
+   * Gets the new value that will be set.
+   * 
+   * @return the new value
+   */
   public Value getNewValue() {
     return newValue;
   }
 
+  /**
+   * Gets the old value.
+   * 
+   * @return the old value.
+   */
   public Value getOldValue() {
     return oldValue;
   }
-
 }

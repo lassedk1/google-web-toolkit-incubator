@@ -636,7 +636,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Collects parents going up the element tree, terminated at the tree root.
    */
   private void collectElementChain(ArrayList chain, Element hRoot, Element hElem) {
-    if ((hElem == null) || DOM.compare(hElem, hRoot)) {
+    if ((hElem == null) || hElem.equals(hRoot)) {
       return;
     }
 
@@ -698,7 +698,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     Element hCurElem = (Element) chain.get(idx);
     for (int i = 0, n = root.getChildCount(); i < n; ++i) {
       FastTreeItem child = root.getChild(i);
-      if (DOM.compare(child.getElement(), hCurElem)) {
+      if (child.getElement().equals(hCurElem)) {
         FastTreeItem retItem = findItemByChain(chain, idx + 1, root.getChild(i));
         if (retItem == null) {
           return child;
@@ -826,15 +826,15 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   }
 
   private native boolean shouldTreeDelegateFocusToElement(Element elem) /*-{
-               var name = elem.nodeName;
-               return ((name == "SELECT") ||
-                 (name == "INPUT")  ||
-                 (name == "TEXTAREA") ||
-                 (name == "OPTION") ||
-                 (name == "BUTTON") ||
-                 (name == "LABEL") 
-               );
-              }-*/;
+    var name = elem.nodeName;
+    return ((name == "SELECT") ||
+      (name == "INPUT")  ||
+      (name == "TEXTAREA") ||
+      (name == "OPTION") ||
+      (name == "BUTTON") ||
+      (name == "LABEL") 
+    );
+  }-*/;
 }
 
 /**

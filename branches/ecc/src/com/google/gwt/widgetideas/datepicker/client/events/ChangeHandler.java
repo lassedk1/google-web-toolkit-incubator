@@ -13,18 +13,18 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.widgetideas.datepicker.client;
 
-import java.util.Date;
+package com.google.gwt.widgetideas.datepicker.client.events;
 
 /**
- * Abstract month selector widget.
+ * Change handler.
  * 
- * @param <MyDatePicker> date picker used with this month selector
+ * @param <ChangeType> type which changed.
  */
-public abstract class MonthSelector<MyDatePicker extends DatePicker>
-    extends DatePickerComponent<MyDatePicker> {
+public interface ChangeHandler<ChangeType> extends EventHandler {
 
-  public abstract void setAllowableDateRange(Date from, Date to);
-
+  /**
+   * On change.
+   */
+  void onChange(ChangeEvent<ChangeType> event);
 }

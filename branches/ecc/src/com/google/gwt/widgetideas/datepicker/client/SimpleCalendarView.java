@@ -19,12 +19,12 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.UIObject;
-import com.google.gwt.widgetideas.datepicker.client.AbstractDatePicker.Styles;
+import com.google.gwt.widgetideas.datepicker.client.DatePicker.Styles;
 import com.google.gwt.widgetideas.datepicker.client.SimpleCalendarView.CellGrid.Cell;
-import com.google.gwt.widgetideas.datepicker.client.impl.CalendarModel;
 import com.google.gwt.widgetideas.table.client.overrides.ElementMapper;
 import com.google.gwt.widgetideas.table.client.overrides.Grid;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.CellFormatter;
+import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.ColumnFormatter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,40 +40,65 @@ public class SimpleCalendarView extends CalendarView {
     class Cell extends UIObject {
       int index;
       Date date = new Date();
+      boolean enabled = true;
 
       Cell(Element td, int column) {
         index = cellList.size();
         cellList.add(this);
         setElement(td);
         cellMap.put(this);
-
-        setStyleName(Styles.DATE_CELL);
-        if (getModel().isWeekend(column)) {
-          addStyleName(Styles.WEEKEND);
-        }
       }
 
       public Date getDate() {
         return date;
       }
 
-      public void onClick(Event event) {
+      public boolean isFiller() {
+        return !getModel().isInCurrentMonth(date);
+      }
 
+      public void onClick(Event event) {
+        if (enabled == false) {
+          return;
+        }
         if (isFiller()) {
           getDatePicker().showDate(date);
+        } else {
+          getDatePicker().setSelectedDate(date);
         }
-        datePicker.setSelectedDate(date);
+      }
+
+      public void onHover() {
+        if (enabled == false) {
+          return;
+        }
+        updateHighlightedDate(date);
+      }
+
+      public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        if (enabled) {
+          removeStyleName(Styles.DISABLED);
+        } else {
+          addStyleName(Styles.DISABLED);
+        }
       }
 
       public void update(Date current) {
+        enabled = true;
         this.date.setTime(current.getTime());
         String value = getModel().formatDayOfMonth(date);
         setText(value);
+        if (isFiller()) {
+          setStyleName(Styles.FILLER);
+        } else {
+          setStyleName(Styles.DAY);
+        }
         setStyleName(this.getElement(), Styles.FILLER, isFiller());
-      }
-
-      boolean isFiller() {
-        return this.date.getMonth() != getModel().getMonthAndYear().getMonth();
+        String extraStyle = getDatePicker().getGlobalDateStyle(date);
+        if (extraStyle != null) {
+          setStyleName(this.getElement(), extraStyle, true);
+        }
       }
 
       private void setText(String value) {
@@ -109,11 +134,14 @@ public class SimpleCalendarView extends CalendarView {
         }
         case Event.ONMOUSEOUT: {
           Element e = DOM.eventGetFromElement(event);
-          Element target = DOM.eventGetToElement(event);
           if (e != null) {
             Cell cell = cellMap.get(e);
-            if (cell != null && cellMap.get(target) == null) {
-              getDatePicker().setHighlightedDate(null);
+            if (cell != null) {
+              cell.removeStyleName(Styles.HIGHLIGHTED);
+              Element target = DOM.eventGetToElement(event);
+              if (target != null && cellMap.get(target) == null) {
+                updateHighlightedDate(null);
+              }
             }
           }
           break;
@@ -123,7 +151,8 @@ public class SimpleCalendarView extends CalendarView {
           if (e != null) {
             Cell cell = cellMap.get(e);
             if (cell != null) {
-              getDatePicker().setHighlightedDate(cell.getDate());
+              cell.addStyleName(Styles.HIGHLIGHTED);
+              cell.onHover();
             }
           }
           break;
@@ -152,6 +181,11 @@ public class SimpleCalendarView extends CalendarView {
   }
 
   @Override
+  public void addDateStyle(Date date, String styleName) {
+    getCell(date).addStyleName(styleName);
+  }
+
+  @Override
   public Date getFirstVisibleDate() {
     return firstDisplayed;
   }
@@ -161,15 +195,20 @@ public class SimpleCalendarView extends CalendarView {
     return lastDisplayed;
   }
 
+  @Override
+  public boolean isDateEnabled(Date d) {
+    return getCell(d).enabled;
+  }
+
   public void refresh() {
-    firstDisplayed = getModel().getFirstDayOfFirstWeek();
+    firstDisplayed = getModel().getFirstDayOfCurrentFirstWeek();
 
     lastDisplayed.setTime(firstDisplayed.getTime());
 
     for (int i = 0; i < grid.cellList.size(); i++) {
       Cell cell = grid.cellList.get(i);
       cell.update(lastDisplayed);
-      getModel().shiftDays(lastDisplayed, 1);
+      CalendarModel.shiftDays(lastDisplayed, 1);
     }
   }
 
@@ -179,8 +218,8 @@ public class SimpleCalendarView extends CalendarView {
   }
 
   @Override
-  public void setEnabled(Date date, boolean enabled) {
-    // TODO Auto-generated method stub
+  public void setDateEnabled(Date date, boolean enabled) {
+    getCell(date).setEnabled(enabled);
   }
 
   @Override
@@ -199,19 +238,20 @@ public class SimpleCalendarView extends CalendarView {
     }
     initWidget(grid);
     setStyleName(Styles.CALENDAR_VIEW);
-  }
-
-  @Override
-  public void showStyleName(Date date, String styleName) {
-    getCell(date).addStyleName(styleName);
+    ColumnFormatter columnFormatter = grid.getColumnFormatter();
+    for (int i = 0; i < 7; i++) {
+      if (getModel().isWeekend(i)) {
+        columnFormatter.addStyleName(i, Styles.WEEKEND);
+      }
+    }
   }
 
   private Cell getCell(Date d) {
-    int index = getModel().diffDates(firstDisplayed, d);
+    int index = CalendarModel.diffDays(firstDisplayed, d);
     Cell cell = grid.getCell(index);
-    if (cell.date.equals(d) == false) {
+    if (cell.date.getDate() != d.getDate()) {
       throw new IllegalStateException(d + " cannot be associated with cell "
-          + cell);
+          + cell + " as it has date " + cell.date);
     }
     return cell;
   }

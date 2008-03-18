@@ -14,18 +14,27 @@
  * the License.
  */
 
-package com.google.gwt.widgetideas.datepicker.client;
+package com.google.gwt.widgetideas.datepicker.client.events;
 
 /**
  * Fires change events.
  * 
- * @param <ValueType> type of change event
- * @param <FiresType> type implementing this interface
+ * @param <ChangeType> type which changed.
  */
-public interface FiresChangeEvents<ValueType, FiresType extends FiresChangeEvents> {
+public interface FiresChangeEvents<ChangeType> {
 
-  void addChangeHandler(Handler<ChangeEvent<ValueType, FiresType>> handler);
+  /**
+   * Adds a change handler.
+   * 
+   * @param handler the handler
+   */
+  void addChangeHandler(ChangeHandler<ChangeType> handler);
 
-  void removeChangeHandler(Handler<ChangeEvent<ValueType, FiresType>> handler);
+  /**
+   * Removes a change handler.
+   * 
+   * @param handler the handler
+   */
+  void removeChangeHandler(ChangeHandler<ChangeType> handler);
 
 }

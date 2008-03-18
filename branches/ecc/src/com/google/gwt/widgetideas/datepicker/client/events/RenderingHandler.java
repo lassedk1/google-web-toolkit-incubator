@@ -14,15 +14,16 @@
  * the License.
  */
 
-package com.google.gwt.widgetideas.datepicker.client;
-
-import com.google.gwt.widgetideas.client.AbstractEvent;
+package com.google.gwt.widgetideas.datepicker.client.events;
 
 /**
- * Abstract event handler.
- * @param <E> event type
+ * Rendering handler.
  */
-public interface Handler<E extends AbstractEvent> {
-
-  public void fire(E event);
+public interface RenderingHandler extends EventHandler {
+  /**
+   * handles rendering events.
+   * 
+   * @param event the event
+   */
+  void onRendered(RenderingEvent event);
 }

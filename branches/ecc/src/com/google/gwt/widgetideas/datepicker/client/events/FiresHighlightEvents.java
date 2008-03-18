@@ -14,19 +14,25 @@
  * the License.
  */
 
-package com.google.gwt.widgetideas.datepicker.client;
- 
+package com.google.gwt.widgetideas.datepicker.client.events;
+
 /**
  * Fires Highlight change events.
- *
+ * 
  * @param <ValueType> change type
- * @param <FiresType> widget type
  */
-public interface FiresHighlightChangeEvents<ValueType, FiresType extends FiresChangeEvents> {
-  void addHighlightChangeHandler(
-      Handler<ChangeEvent<ValueType, FiresType>> handler);
+public interface FiresHighlightEvents<ValueType> {
+  /**
+   * Adds the highlight handler.
+   * 
+   * @param handler the handler
+   */
+  void addHighlightHandler(HighlightHandler<ValueType> handler);
 
-  void removeHighlightChangeHandler(
-      Handler<ChangeEvent<ValueType, FiresType>> handler);
-
+  /**
+   * Removes the highlight handler.
+   * 
+   * @param handler the handler
+   */
+  void removeHighlightHandler(HighlightHandler<ValueType> handler);
 }

@@ -14,31 +14,19 @@
  * the License.
  */
 
-package com.google.gwt.widgetideas.client;
+package com.google.gwt.widgetideas.datepicker.client.events;
 
 /**
- * Abstract event type.
+ * Fires {@link HighlightEvent}s.
  * 
- * @param <S> source of the event
+ * @param <HighlightType> type which will be highlighted
  */
-public class AbstractEvent<S> {
-  private S source;
-  private boolean canceled;
+public interface HighlightHandler<HighlightType> extends EventHandler {
 
-  protected AbstractEvent(S source) {
-    this.source = source;
-  }
-
-  public S getSource() {
-    return source;
-  }
-
-  public boolean isCanceled() {
-    return this.canceled;
-  }
-
-  protected void setCanceled(boolean canceled) {
-    this.canceled = canceled;
-  }
-
+  /**
+   * handles highlight events.
+   * 
+   * @param event the event
+   */
+  void onHighlight(HighlightEvent<HighlightType> event);
 }
