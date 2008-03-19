@@ -57,7 +57,8 @@ public class SimpleLogHandler extends PopupWidgetLogHandler {
   public void publish(String message, Level level, String category, Throwable e) {
     String output = category == null ? message : category + ": " + message;
     Label l = new Label(output);
-    l.setTitle("level:" + level);
+    l.setStyleName("." + level.toString().toLowerCase());
+    l.setTitle("level: " + level);
     contents.add(l);
     if (e != null) {
       Label eLabel = new Label("&nbsp;&nbsp;&nbsp;&nbsp;" + e.getMessage());
