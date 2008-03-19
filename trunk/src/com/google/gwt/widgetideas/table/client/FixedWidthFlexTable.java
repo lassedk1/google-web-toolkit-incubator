@@ -251,7 +251,7 @@ public class FixedWidthFlexTable extends FlexTable {
   /**
    * The implementation class.
    */
-  private static FixedWidthFlexTableImpl impl = (FixedWidthFlexTableImpl) GWT.create(FixedWidthFlexTableImpl.class);
+  private static FixedWidthFlexTableImpl impl = GWT.create(FixedWidthFlexTableImpl.class);
 
   /**
    * A mapping of column indexes to their widths in pixels.

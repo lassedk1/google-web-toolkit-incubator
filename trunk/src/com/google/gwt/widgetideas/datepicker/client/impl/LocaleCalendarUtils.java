@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -93,7 +93,7 @@ public class LocaleCalendarUtils extends DatePickerDate {
    */
   public static final int TYPE_CONTROL = 2;
 
-  private static final DateTimeConstants intlConstants = (DateTimeConstants) GWT.create(DateTimeConstants.class);
+  private static final DateTimeConstants intlConstants = GWT.create(DateTimeConstants.class);
 
   /**
    * dayOfWeekNames is kept as strings because used only once for initial

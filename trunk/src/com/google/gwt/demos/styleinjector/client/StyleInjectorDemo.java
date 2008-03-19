@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -33,7 +33,7 @@ public class StyleInjectorDemo implements EntryPoint {
    * Resources used.
    */
   public interface Resources extends ImmutableResourceBundle {
-    public static final Resources INSTANCE = (Resources) GWT.create(Resources.class);
+    public static final Resources INSTANCE = GWT.create(Resources.class);
 
     /**
      * @gwt.resource StyleInjectorDemo.jpg

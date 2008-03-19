@@ -616,7 +616,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   /**
    * The worker that helps with mouse resize events.
    */
-  private MouseResizeWorker resizeWorker = (MouseResizeWorker) GWT.create(MouseResizeWorker.class);
+  private MouseResizeWorker resizeWorker = GWT.create(MouseResizeWorker.class);
 
   /**
    * A Deferred command used to resize tables vertically. Using this command

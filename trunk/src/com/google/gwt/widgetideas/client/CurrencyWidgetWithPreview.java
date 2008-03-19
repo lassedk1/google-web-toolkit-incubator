@@ -53,7 +53,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class CurrencyWidgetWithPreview extends CurrencyWidget {
   interface Resources extends ImmutableResourceBundle {
-    public static final Resources INSTANCE = (Resources) GWT.create(Resources.class);
+    public static final Resources INSTANCE = GWT.create(Resources.class);
 
     /**
      * @gwt.resource CurrencyWidgetPreview.css

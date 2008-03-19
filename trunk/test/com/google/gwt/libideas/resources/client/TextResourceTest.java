@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -53,7 +53,7 @@ public class TextResourceTest extends GWTTestCase {
   }
 
   public void testExternal() throws ResourceException {
-    final Resources r = (Resources) GWT.create(Resources.class);
+    final Resources r = GWT.create(Resources.class);
 
     TextResourceCallback c = new TextResourceCallback() {
 
@@ -74,13 +74,13 @@ public class TextResourceTest extends GWTTestCase {
   }
 
   public void testInline() {
-    Resources r = (Resources) GWT.create(Resources.class);
+    Resources r = GWT.create(Resources.class);
     assertEquals(HELLO, r.helloWorldRelative().getText());
     assertEquals(HELLO, r.helloWorldAbsolute().getText());
   }
 
   public void testMeta() {
-    Resources r = (Resources) GWT.create(Resources.class);
+    Resources r = GWT.create(Resources.class);
     assertEquals("helloWorldAbsolute", r.helloWorldAbsolute().getName());
     assertEquals("helloWorldRelative", r.helloWorldRelative().getName());
     assertEquals("helloWorldExternal", r.helloWorldExternal().getName());
@@ -91,7 +91,7 @@ public class TextResourceTest extends GWTTestCase {
   }
   
   public void testTransformer() {
-    Resources r = (Resources) GWT.create(Resources.class);
+    Resources r = GWT.create(Resources.class);
     assertEquals(HELLO.toUpperCase(), r.helloWorldUpper().getText());
   }
 }

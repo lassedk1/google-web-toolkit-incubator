@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -83,7 +83,7 @@ public class SoundResourcePrototype implements SoundResource {
   private static SoundPlugin plugin;
 
   public static Element attach(String url) {
-    SoundPlugin p = (SoundPlugin) GWT.create(SoundPlugin.class);
+    SoundPlugin p = GWT.create(SoundPlugin.class);
     return p.attach(url);
   }
 
@@ -102,7 +102,7 @@ public class SoundResourcePrototype implements SoundResource {
     this.duration = duration;
 
     if (plugin == null) {
-      plugin = (SoundPlugin) GWT.create(SoundPlugin.class);
+      plugin = GWT.create(SoundPlugin.class);
     }
   }
 

@@ -28,7 +28,7 @@ public class OverrideDOM extends DOM {
   private static OverrideDOMImpl impl2;
 
   static {
-    impl2 = (OverrideDOMImpl) GWT.create(OverrideDOMImpl.class);
+    impl2 = GWT.create(OverrideDOMImpl.class);
   }
   
   /**
