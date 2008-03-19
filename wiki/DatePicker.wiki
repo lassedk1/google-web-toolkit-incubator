@@ -2,6 +2,7 @@
 #labels Type-Widget
 
 ||Demo:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/DatePicker/DatePickerDemo.html live demo]||
+||Java doc: || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/datepicker/client/DatePicker.html java doc]||
 ||Sample Code:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/datepicker/client/DatePickerDemo.java sample code] ||
 ||Module:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/widgetideas/DatePicker.gwt.xml DatePicker]||
 
