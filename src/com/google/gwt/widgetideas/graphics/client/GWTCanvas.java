@@ -30,7 +30,7 @@ import com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImpl;
  */
 public class GWTCanvas extends Widget {
   
-  private final GWTCanvasImpl impl = (GWTCanvasImpl) GWT.create(GWTCanvasImpl.class);
+  private final GWTCanvasImpl impl = GWT.create(GWTCanvasImpl.class);
   
   private int coordHeight = 0;
   private int coordWidth = 0;

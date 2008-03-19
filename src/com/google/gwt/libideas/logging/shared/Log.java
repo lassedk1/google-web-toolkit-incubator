@@ -38,7 +38,7 @@ public class Log {
 
   static {
     try {
-      impl = (LogImpl) GWT.create(LogImpl.class);
+      impl = GWT.create(LogImpl.class);
     } catch (UnsupportedOperationException ex) {
       // You must be in server mode;
     }

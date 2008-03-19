@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -112,7 +112,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Add the default style sheet and images.
    */
   public static void addDefaultCSS() {
-    DefaultResources instance = (DefaultResources) GWT.create(DefaultResources.class);
+    DefaultResources instance = GWT.create(DefaultResources.class);
     if (LocaleInfo.getCurrentLocale().isRTL()) {
       StyleInjector.injectStylesheet(instance.cssRTL().getText(), instance);
     } else {
