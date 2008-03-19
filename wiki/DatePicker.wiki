@@ -5,252 +5,24 @@
 DatePicker dialogbox widget that displays a small Gregorian calendar dates to select a date by the user.
 
 It is fully internationalized by the default locale. It has options to display of dates form the adjacent dates months. If needed, special formatting can be added for a given day. Any date can be choosen the start date and the month grid. Today's date is the default selection and also the default displayed month.
-
-= CSS =
-== Hooks ==
-|| .goog-date-picker ||	Entire widget ||	
-|| .goog-date-picker .grid || Grid in the DatePicker. This includes week names and the date numbers. ||	
-|| .goog-date-picker .title || Month and Year titles on the top ||	
-|| .goog-date-picker .control || Month and year increment and decrement buttons ||	
-|| .goog-date-picker .control-menu || Month and year list available by clicking on them ||	
-|| .goog-date-picker .control-block || The block of month/year display with its increment decrement controls ||	
-|| .goog-date-picker .control-pane || Top area containing month and year controls ||	
-|| .goog-date-picker .control-today || Clickable today button ||	
-|| .goog-date-picker .weekday || Any date ||	
-|| .goog-date-picker .week-names || Weekday names ||	
-|| .goog-date-picker .week-numbers || Week of the year number ||	
-|| .goog-date-picker .weekend-start || Weekend startdate ||	
-|| .goog-date-picker .weekend-end || Weekend end date ||	
-|| .goog-date-picker .today || Special formatting for today ||	
-|| .goog-date-picker .selected || Special formatting for the selected date ||	
-|| .goog-date-picker .other-month || Opacity reducing formatting for the adjacent months ||	
-
-== Example CSS style ==
-{{{
-  .goog-date-picker {
-    border: 1px solid black;
-    text-align: center;
-    vertical-align: middle; 
-  }
-  .goog-date-picker .grid { 
-    font: menu;
-	border-collapse: collapse;
-  }
-  .goog-date-picker .grid { 
-    font: menu;
-	border-collapse: collapse;
-  }
-
-  .goog-date-picker .grid td {
-	border-width: 1px;
-	padding: 0px;
-	border-style: solid;
-	border-color: white;
-	height: 20px;
-	width: 4ex;
-  }
-  .goog-date-picker .week-names {
-   color: gray;
-   text-align: center;
-   font-size: 0.8em;
-  }
-
-  .goog-date-picker .week-numbers {
-   color: gray;
-   text-align: center;
-  }
-
-  .goog-date-picker .control {
-    font: san-serif;
-	font-size: 12pt;
-	text-align: center;
-  	padding: 2px 2px 2px 2px;
-  	margin: 0px 1px 0px 1px ;
-   }
-   
-  .goog-date-picker .title {
-    border: 1px solid gray;
-    background: buttonface;
-    font: san-serif;
-	text-align: center;
-	vertical-align: middle;
-	width: 8ex;
-	font-size: 10pt;
-  	padding: 1px 2px 1px 2px;
-   }
-   
-   .goog-date-picker .control-today {
-    border: 1px solid gray;
-    background: buttonface;
-    font: san-serif;
-	text-align: center;
-	vertical-align: middle;
-	width: 25ex;
-	font-size: 10pt;
-   }
-   
-   
-  .goog-date-picker .control-menu {
-  	margin: 0px 1px 0px 1px ;
-   }
-  
-  .goog-date-picker .control-block {
-  	margin: 1px 1px 1px 1px ;
-   }
-  
-  .goog-date-picker .control-pane {
-  	margin: 1px 1px 1px 1px ;
-   }
-     
-  .goog-date-picker .control-submenu {
-  	font: menu;
-   }
-  
-  .goog-date-picker .weekday {
-    text-align: center;   
-    vertical-align: middle; 
-    font: menu;
-  }
-  
-  .goog-date-picker .weekend-start {
-    background-color: rgb(255, 204, 204);
-    text-align: center;   
-    vertical-align: middle; 
-    font: menu;
-  }
-
-  .goog-date-picker .weekend-end {
-    background-color: rgb(255, 204, 204);
-    text-align: center;   
-    vertical-align: middle; 
-    font: menu;
-    color: red;
-  }
-
-  .goog-date-picker .today {
-    font: menu;
-    font-weight: bold !important; 
-  }
-
-  .goog-date-picker .selected {
-    font: menu;
-    background-color: rgb(204, 204, 255);
-    color: blue;
-  }
-  
-  .goog-date-picker .special {
-    font-weight: bold !important; 
-    background: #FF6347;
-  }
-  
-  .goog-date-picker .other-month {
-    filter: Alpha(Opacity=30); 
-    opacity: 0.3;
-  }
-}}}
-
-
-= Sample Code =
-
-{{{
-      DatePicker datePicker = new DatePicker();
-      Date date = datePicker.selectedDate();
-
-      // features that could be enabled programmatically 
-      datePicker.showAdjacentMonths(true);
-      datePicker.showYearMonthListing(true);
-      datePicker.showTodayButton(true);
-      datePicker.setFullDate(new Date(1, 2, 3));
-      datePicker.setSpecialDate(date, "special"); //use 'special' style
-
-}}}
-= Proposed updated design =
  
-
 == Design ==
 
-The overall design of the DatePicker uses composition heavily.  
-  *  The DatePicker will delegate to a CalendarView to actually render the grid of dates and MonthSelectorBar to render the month selection widget.
-  * The CalendarView will extend composite to allow advanced users to create their own custom views.     
-  * The user may supply a CalendarOracle to customize the styling and behavior of their dates.  Instead of generating a response, users will directly manipulate a CalendarView.
-  * The MonthSelectorBar is the widget used to navigate through the calendar view. 
-  * Final date selection will be reported via a ChangeEvent<Date> handled through a ChangeHandler<Date>. 
- 
-As the user tabs through the DatePicker and mousses over dates, those dates become highlighted and a HighlightHandler can be used to listen to those events.
 
-
-This design allows for simple default functionality, while still leaving the widget open to implementation of advanced functionality.  
-
-The API would look something like this (note not all methods are listed):
-
-* Widget classes *
-  * abstract class `CalenderOracle`
-    * `requestStylingForDates(Request request, CalendarView view, Callback callback) : void`
-    * interface `Callback`
-      * `onDatesReady(Request request, CalendarView view) : void`
-    * class `Request`
-      * `(get/set)DateFrom(Date from)`
-      * `(get/set)DateTo(Date to)`
-   * class `ClientCalenderOracle` extends `CalenderOracle`.  This is a convenience class to allow users to more quickly create oracles. 
-     * `abstract styleDates(Date from, Date to, CalendarView view) : void`
-     * `iterator getDaysOfWeek(Request request, Collection<Date> daysOfWeek()`
-     * `iterator getDaysInYear(Request request, Collection <Date> daysInYear()`
-     * `Collection WEEKENDS, WEEKDAYS,...`
-   * abstract class `CachingCalenderOracle extends CalenderOracle`
-     * Allows users to cache Date/DateCell pairs.
-  * class `DatePicker implements FiresChangeEvents<ChangeHandler<Date>, FiresHighlightChangeEvents<HighlightChangeHandler<Date>>`
-    * `getSelectedDate()`
-    * `setSelectedDate(Date selectedDate):void`
-      * sets the currently visible month and shows the given month.
-    * `getHighlightedDate()`
-    * `setHighlightedDate(Date date)`
-    * `showMonth(Date d)`
-      * sets the currently visible month
-    * `setDateRange(Date from, Date to) : void`
-    * `addChangeHandler(ChangeHandler<Date> handler)`
-    * `addHighlighChangeHandler(HighlightChangeHandler<Date> handler)`
-    *  abstract class `CalendarView extends Composite`: Displays the date grid. The `CalendarView` has no state, so only the visible dates can be styled or enabled.
-      * `showDates(Date to, Date from)`
-      * `addStyleName(Date target, String name) : void`
-      * `final addStyleName(Iterator targets, String name):void`
-      * `setEnabled(Date target, boolean enabled) : void`
-      * `setEnabled(Iterator targets, boolean enabled) : void`
-    * class `SimpleCalendarView extends CalendarView` : the simple one month view of date cells
-    * `getMonthSelectorBar() : MonthSelectorBar`
-    * class `MonthSelectorBar`
-        * `show /AdjacentMonths/TodayButton/WeekOfYear/YearMonthListing`
-  * class `DateBox` : Create a `TextBox` with a `DatePicker`
- 
-* Events * 
-  * interface FiresChangeEvents<HandlerType extends ChangeHandler>
-    * `addChangeHandler(HandlerType handler) : void`
-    * `removeChangeHandler(HandlerType handler) : void`
-  * class `ChangeHandler <ValueType,SourceType> extends EventListener`
-    * `onChange(ChangeEvent<ValueType,SourceType> event) : void`
-    * class `ChangeEvent <ValueType, SourceType> extends FiresChangeEvents>`
-      * ` getOldValue() : ValueType`
-      * ` getNewValue() : ValueType`
-      * ` getSource() : SourceType`
-  * class `HighlightChangeHandler extends ChangeHandler`
-  * interface `FireHighlightChangeEvents<T extends HighlightChangeHandler>`
-    * `addHighlightChangeHandler(T):void`
-    * `removeHighlightChangeHandler(T):void` 
-
-== use cases ==
-=== Subset of Simple Use Cases ===
-*Developer wants a date box*
+== Selected Use Cases ==
+=== Simple Use Cases ===
+==== Developer wants a date box ====
 {{{
    DateBox box = new DateBox();
-   box.setSelectedDate(new Date());
-   ....
+    ....
 }}}
 
-*Developer wants a DatePicker for a simple to-from widget*
+==== Developer wants a DatePicker for a simple to-from widget ====
  
 {{{
   DatePicker from = new DatePicker();
   DatePicker to = new DatePicker();
-  from.addChangeHandler(new ChangeHandler<Date>()){
+  to.addChangeHandler(new ChangeHandler<Date>()){
     public void onChange(ChangeEvent<Date> change) {
       // All dates before and after this date range will not be selectable.
       from.setDateRange(to.getSelectedDate(), null);
@@ -259,35 +31,12 @@ The API would look something like this (note not all methods are listed):
   }
 }}}
 
-== Advanced Use Cases ===
+=== Advanced Use Cases ====
 
-*User wants to disable all weekends and federal holidays*
-
-Here, we want to supply a function so we don't have to list all weekends in an arbitrary number of years.
-{{{
-  class WorkdayOnlyCalendarOracle extends ClientCalendarOracle {
-    Collection<date> myHolidays = {user set};
-
-    public void styleDates(Request request, CalendarView view) {
-      Iterator<Date> holidays = getDaysOfYear(request, myHolidays);
-      view.setEnabled(holidays, false);
-      Iterator<Date> weekends = getDaysInWeek(request, WEEKENDS);
-      view.setEnabled(weekends,false);
-
-
-      }
-    // User implements findWeekendsAndHolidays from built in methods.
-    }
-  }
-
-  DatePicker picker = new DatePicker(new WorkdayOnlyDateCellOracle());
-}}}
-
-* User wants to customize the dates based on server information *
-  # DatePicker requests new DateCells
-  # Custom DateCellOracle sends a query to the server
-  # The server returns, the callback is activated and the DatePicker is populated.  
-
-== Extension cases ==
-  * Support the ability to create a DatePicker subclass that shows three months at a time
-  * Support the ability to create a DatePicker subclass that uses custom cell widgets. 
+==== User wants to disable all weekends and federal holidays ====
+ 
+==== User wants to customize the dates based on server information ====
+ 
+=== Extension Use Cases ===
+==== Support the ability to create a DatePicker subclass that shows three months at a time====
+==== Support the ability to create a DatePicker subclass that uses custom cell widgets. ==== 
