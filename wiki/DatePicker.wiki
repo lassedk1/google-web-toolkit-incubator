@@ -1,13 +1,17 @@
 #summary Date picker
 #labels Type-Widget
 
+||Demo:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/DatePicker/DatePickerDemo.html live demo]||
+||Sample Code:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/datepicker/client/DatePickerDemo.java sample code] ||
+||Module:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/widgetideas/DatePicker.gwt.xml DatePicker]||
+
 = Introduction =
 DatePicker dialogbox widget that displays a small Gregorian calendar dates to select a date by the user.
 
 It is fully internationalized by the default locale. It has options to display of dates form the adjacent dates months. If needed, special formatting can be added for a given day. Any date can be choosen the start date and the month grid. Today's date is the default selection and also the default displayed month.
  
 == Design ==
-<img src="http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/DatePickerDesignDiagram.jpg"/>
+http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/DatePickerDesignDiagram.jpg
 == Selected Use Cases ==
 === Simple Use Cases ===
 ==== Developer wants a date box ====
@@ -15,6 +19,7 @@ It is fully internationalized by the default locale. It has options to display o
    DateBox box = new DateBox();
     ....
 }}}
+
 
 ==== Developer wants a DatePicker for a simple to-from widget ====
  
