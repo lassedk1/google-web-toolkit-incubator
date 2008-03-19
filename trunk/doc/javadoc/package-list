@@ -10,6 +10,7 @@ com.google.gwt.libideas.resources.rebind.context
 com.google.gwt.libideas.resources.rg
 com.google.gwt.libideas.server
 com.google.gwt.widgetideas.client
+com.google.gwt.widgetideas.client.events
 com.google.gwt.widgetideas.client.overrides
 com.google.gwt.widgetideas.datepicker.client
 com.google.gwt.widgetideas.datepicker.client.overrides
