@@ -66,30 +66,40 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   public interface DefaultResources extends ImmutableResourceBundle {
 
     /**
+     * The css file.
+     * 
      * @gwt.resource FastTree.css
      */
-    public TextResource css();
+    TextResource css();
 
     /**
+     * The rtl css file.
+     * 
      * @gwt.resource FastTreeRTL.css
      */
-    public TextResource cssRTL();
+    TextResource cssRTL();
 
     /**
+     * The gif used to highlight selection.
+     * 
      * @gwt.resource selectionBar.gif
      */
-    public DataResource selectionBar();
+    DataResource selectionBar();
 
     /**
+     * "+" gif.
+     * 
      * @gwt.resource treeClosed.gif
      */
 
-    public DataResource treeClosed();
+    DataResource treeClosed();
 
     /**
+     * "-" gif.
+     * 
      * @gwt.resource treeOpen.gif
      */
-    public DataResource treeOpen();
+    DataResource treeOpen();
   }
 
   private static final String STYLENAME_DEFAULT = "gwt-FastTree";
@@ -506,7 +516,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       if (curSelection == null) {
         return;
       }
-      curSelection.setSelection(false,fireEvents);
+      curSelection.setSelection(false, fireEvents);
       curSelection = null;
       return;
     }
@@ -636,7 +646,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * Collects parents going up the element tree, terminated at the tree root.
    */
   private void collectElementChain(ArrayList chain, Element hRoot, Element hElem) {
-    if ((hElem == null) || DOM.compare(hElem, hRoot)) {
+    if ((hElem == null) || hElem.equals(hRoot)) {
       return;
     }
 
@@ -657,11 +667,12 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   /**
    * Disables the selection text on IE.
    */
-  private native void disableSelection(Element element) /*-{
-                      element.onselectstart = function() {
-                         return false;
-                      };
-                   }-*/;
+  private native void disableSelection(Element element)
+  /*-{
+    element.onselectstart = function() {
+      return false;
+    };  
+  }-*/;
 
   private boolean elementClicked(FastTreeItem root, Event event) {
     Element target = DOM.eventGetTarget(event);
@@ -669,8 +680,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     collectElementChain(chain, getElement(), target);
     FastTreeItem item = findItemByChain(chain, 0, root);
     if (item != null) {
-      if (item.isInteriorNode()
-          && item.getControlElement().equals(target)) {
+      if (item.isInteriorNode() && item.getControlElement().equals(target)) {
         item.setState(!item.isOpen(), true);
         moveSelectionBar(curSelection);
         disableSelection(target);
@@ -698,7 +708,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     Element hCurElem = (Element) chain.get(idx);
     for (int i = 0, n = root.getChildCount(); i < n; ++i) {
       FastTreeItem child = root.getChild(i);
-      if (DOM.compare(child.getElement(), hCurElem)) {
+      if (child.getElement().equals(hCurElem)) {
         FastTreeItem retItem = findItemByChain(chain, idx + 1, root.getChild(i));
         if (retItem == null) {
           return child;
@@ -825,16 +835,17 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     }
   }
 
-  private native boolean shouldTreeDelegateFocusToElement(Element elem) /*-{
-               var name = elem.nodeName;
-               return ((name == "SELECT") ||
-                 (name == "INPUT")  ||
-                 (name == "TEXTAREA") ||
-                 (name == "OPTION") ||
-                 (name == "BUTTON") ||
-                 (name == "LABEL") 
-               );
-              }-*/;
+  private native boolean shouldTreeDelegateFocusToElement(Element elem)
+  /*-{
+    var name = elem.nodeName;
+    return ((name == "SELECT") ||
+       (name == "INPUT")  ||
+       (name == "TEXTAREA") ||
+       (name == "OPTION") ||
+       (name == "BUTTON") ||
+       (name == "LABEL") 
+    );
+  }-*/;
 }
 
 /**
@@ -904,7 +915,7 @@ class WidgetIterators {
     };
   }
 
-  private static final Widget[] copyWidgetArray(final Widget[] widgets) {
+  private static Widget[] copyWidgetArray(final Widget[] widgets) {
     final Widget[] clone = new Widget[widgets.length];
     for (int i = 0; i < widgets.length; i++) {
       clone[i] = widgets[i];
