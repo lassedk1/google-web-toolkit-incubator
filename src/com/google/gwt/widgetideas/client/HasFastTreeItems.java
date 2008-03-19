@@ -31,7 +31,7 @@ public interface HasFastTreeItems {
    * @param item the item to be added
    */
 
-  public abstract void addItem(FastTreeItem item);
+  void addItem(FastTreeItem item);
 
   /**
    * Adds a child tree item containing the specified text.
@@ -39,7 +39,7 @@ public interface HasFastTreeItems {
    * @param itemText the text to be added
    * @return the item that was added
    */
-  public abstract FastTreeItem addItem(String itemText);
+  FastTreeItem addItem(String itemText);
 
   /**
    * Adds a child tree item containing the specified widget.
@@ -47,7 +47,7 @@ public interface HasFastTreeItems {
    * @param widget the widget to be added
    * @return the item that was added
    */
-  public abstract FastTreeItem addItem(Widget widget);
+  FastTreeItem addItem(Widget widget);
 
   /**
    * Gets the child at the specified index.
@@ -57,7 +57,7 @@ public interface HasFastTreeItems {
    * @return the item at that index
    */
 
-  public abstract FastTreeItem getChild(int index);
+  FastTreeItem getChild(int index);
 
   /**
    * Gets the number of children contained in this item.
@@ -65,7 +65,7 @@ public interface HasFastTreeItems {
    * @return this item's child count.
    */
 
-  public abstract int getChildCount();
+  int getChildCount();
 
   /**
    * Gets the index of the specified child item.
@@ -74,7 +74,7 @@ public interface HasFastTreeItems {
    * @return the child's index, or <code>-1</code> if none is found
    */
 
-  public abstract int getChildIndex(FastTreeItem child);
+  int getChildIndex(FastTreeItem child);
 
   /**
    * Removes one of this item's children.
@@ -82,6 +82,6 @@ public interface HasFastTreeItems {
    * @param item the item to be removed
    */
 
-  public abstract void removeItem(FastTreeItem item);
+  void removeItem(FastTreeItem item);
 
 }
