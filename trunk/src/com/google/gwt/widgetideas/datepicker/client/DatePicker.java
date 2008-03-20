@@ -344,8 +344,15 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
    * Sets the selected date.
    */
   public final void setSelectedDate(Date date) {
+    setSelectedDate(date, true);
+  }
+
+  /**
+   * Sets the selected date.
+   */
+  public final void setSelectedDate(Date date, boolean fireEvents) {
     Date old = selectedDate;
-    if (changeHandlers != null) {
+    if (fireEvents && changeHandlers != null) {
       ChangeEvent event = new ChangeEvent(this, old, date);
       changeHandlers.fire(event);
       if (event.isCanceled()) {
