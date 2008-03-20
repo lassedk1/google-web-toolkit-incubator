@@ -17,11 +17,10 @@
 package com.google.gwt.demos.pinnedpanel.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.WindowResizeListener;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -74,8 +73,8 @@ public class PinnedPanelDemo implements EntryPoint {
       if (this.isAttached()) {
         ScrollPanel me = (ScrollPanel) scrollers.get(index);
         me.setHeight("1px");
-        Element tr =
-            DOM.getChild(DOM.getFirstChild(getElement()), index * 2 + 1);
+        Element tr = DOM.getChild(DOM.getFirstChild(getElement()),
+            index * 2 + 1);
         int trHeight = DOM.getElementPropertyInt(tr, "offsetHeight");
         me.setHeight(trHeight + "px");
       }
@@ -88,27 +87,29 @@ public class PinnedPanelDemo implements EntryPoint {
    * This is the entry point method.
    */
   public void onModuleLoad() {
+    try {
 
-    // Some random contents to make the tree interesting.
-    Panel contents = createSchoolNavBar();
-    FastTree.addDefaultCSS();
+      // Some random contents to make the tree interesting.
+      Panel contents = createSchoolNavBar();
+      FastTree.addDefaultCSS();
 
-    // The actual pinned panel.
-    final CollapsiblePanel pinned = new CollapsiblePanel();
-    RootPanel.get("pinned-panel").add(pinned);
-    pinned.initContents(contents);
-    pinned.setWidth("200px");
-    pinned.hookupControlToggle(controlButton);
-    sizePinnedPanel(pinned, Window.getClientHeight());
-    Window.addWindowResizeListener(new WindowResizeListener() {
-      public void onWindowResized(int width, int height) {
-        sizePinnedPanel(pinned, height);
+      // The actual pinned panel.
+      final CollapsiblePanel pinned = new CollapsiblePanel();
+      RootPanel.get("pinned-panel").add(pinned);
+      pinned.add(contents);
+      pinned.setWidth("200px");
+      pinned.hookupControlToggle(controlButton);
+    } catch (RuntimeException e) {
+      if (GWT.isScript()) {
+        Log.severe(e.getMessage());
       }
-    });
+      throw e;
+    }
   }
 
   private Panel createSchoolNavBar() {
     controlButton = createToggleButton();
+
     MyStackPanel wrapper = new MyStackPanel();
     FlowPanel navBar = new FlowPanel();
     navBar.setSize("200px", "100%");
@@ -116,11 +117,13 @@ public class PinnedPanelDemo implements EntryPoint {
 
     HorizontalPanel panel = new HorizontalPanel();
     panel.setWidth("100%");
-    panel.add(controlButton);
+
     panel.setCellHorizontalAlignment(controlButton,
         HasHorizontalAlignment.ALIGN_LEFT);
-    panel.setCellWidth(controlButton, "1px");
+
     panel.add(title);
+    panel.add(controlButton);
+    panel.setCellWidth(controlButton, "1px");
     panel.setCellHorizontalAlignment(title, HorizontalPanel.ALIGN_CENTER);
 
     navBar.add(panel);
@@ -148,24 +151,14 @@ public class PinnedPanelDemo implements EntryPoint {
     FastTreeItem admin = contents.addItem("Administrators");
     admin.addItem("The Soup Nazi");
     admin.addItem("The Grand High Supreme Master Pubba");
-    title.addClickListener(new ClickListener() {
-
-      public void onClick(Widget sender) {
-        Window.alert("this:" + contents.getAbsoluteLeft());
-      }
-
-    });
     return navBar;
   }
 
   private ToggleButton createToggleButton() {
-    Image show = new Image("show.gif");
-    Image hide = new Image("hide.gif");
+    Image show = new Image("unpinned.gif");
+    Image hide = new Image("pinned.gif");
     ToggleButton toggler = new ToggleButton(hide, show);
     return toggler;
   }
 
-  private void sizePinnedPanel(final CollapsiblePanel pinned, int height) {
-    pinned.setHeight(height - 10 + "px");
-  }
 }
