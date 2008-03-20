@@ -20,11 +20,13 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.animation.WidgetAnimation;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ChangeListenerCollection;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HasAnimation;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -49,8 +51,7 @@ import java.util.Iterator;
  * 
  */
 public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
-    HasWidgets {
-
+    HasWidgets, HasAnimation {
   /**
    * {@link CollapsiblePanel} styles.
    * 
@@ -62,13 +63,61 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   }
 
   /**
+   * Current {@link CollapsiblePanel} state.
+   */
+  enum State {
+    WILL_HIDE, HIDING, IS_HIDDEN, WILL_SHOW, SHOWING, IS_SHOWN, EXPANDED;
+
+    public static void checkTo(State from, State to) {
+      boolean valid = check(from, to);
+      if (!valid) {
+        throw new IllegalStateException(from + " -> " + to
+            + " is an illegal state transition");
+      }
+    }
+
+    private static boolean check(State from, State to) {
+
+      if (to == EXPANDED || from == null) {
+        return true;
+      }
+      switch (from) {
+        case WILL_HIDE:
+          return (to == IS_SHOWN || to == HIDING);
+        case HIDING:
+          return (to == IS_HIDDEN || to == SHOWING);
+        case IS_HIDDEN:
+          return (to == WILL_SHOW);
+        case WILL_SHOW:
+          return (to == SHOWING || to == IS_HIDDEN);
+        case SHOWING:
+          return (to == IS_SHOWN || to == HIDING);
+        case IS_SHOWN:
+          return to == WILL_HIDE;
+        case EXPANDED:
+          return to == HIDING;
+        default:
+          throw new IllegalStateException("Unknown state");
+      }
+    }
+
+    public boolean shouldHide() {
+      return this == SHOWING || this == IS_SHOWN;
+    }
+
+    public boolean shouldShow() {
+      return this == HIDING || this == IS_HIDDEN;
+    }
+  }
+
+  /**
    * Delays showing of the {@link CollapsiblePanel}.
    */
   private class DelayHide extends Timer {
 
     public void activate() {
-      state = State.WILL_HIDE;
-      delayedHide.schedule(DELAY_MILLI);
+      setState(State.WILL_HIDE);
+      delayedHide.schedule(getDelayBeforeHide());
     }
 
     @Override
@@ -83,8 +132,8 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   private class DelayShow extends Timer {
 
     public void activate() {
-      state = State.WILL_SHOW;
-      delayedShow.schedule(DELAY_MILLI);
+      setState(State.WILL_SHOW);
+      delayedShow.schedule(getDelayBeforeShow());
     }
 
     @Override
@@ -93,107 +142,84 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     }
   }
 
-  /**
-   * Hides the {@link CollapsiblePanel}.
-   */
-  private class HidingTimer extends SlidingTimer {
+  private class HidingAnimation extends WidgetAnimation {
     @Override
-    protected void finish() {
-      state = State.IS_HIDDEN;
+    public void onCancel() {
     }
 
     @Override
-    protected boolean processSizeChange(float shouldBe) {
-      currentOffshift = (int) (maxOffshift * ((float) 1.0 - shouldBe))
-          - MIN_SLIDE_STEP;
-      currentOffshift = Math.max(currentOffshift, 0);
-      setPanelPos(currentOffshift);
-      return currentOffshift > 0;
+    public void onComplete() {
+      setPanelPos(0);
+      setState(State.IS_HIDDEN);
+    }
+
+    @Override
+    public void onInstantaneousRun() {
+      onComplete();
+    }
+
+    @Override
+    public void onStart() {
+    }
+
+    @Override
+    public void onUpdate(double progress) {
+      int slide = (int) (startFrom - (progress * startFrom));
+      setPanelPos(slide);
     }
   }
 
-  /**
-   * Shows the hovering {@link CollapsiblePanel}.
-   */
-  private class ShowingTimer extends SlidingTimer {
+  private class ShowingAnimation extends WidgetAnimation {
+
     @Override
-    protected void finish() {
-      state = State.IS_SHOWN;
+    public void onCancel() {
+      // Do nothing, must now be hiding.
     }
 
     @Override
-    protected boolean processSizeChange(float shouldBe) {
-      currentOffshift = (int) (maxOffshift * shouldBe) + MIN_SLIDE_STEP;
-      currentOffshift = Math.min(currentOffshift, maxOffshift);
-      setPanelPos(currentOffshift);
-      return currentOffshift < maxOffshift;
+    public void onComplete() {
+      setPanelPos(maxOffshift);
+      setState(State.IS_SHOWN);
     }
-  }
-
-  /**
-   * Common code for {@link HidingTimer} and {@link ShowingTimer}.
-   */
-  private abstract class SlidingTimer extends Timer {
-
-    long started;
 
     @Override
-    public void run() {
-      float hasTaken = System.currentTimeMillis() - started;
-      float shouldBe = hasTaken / TIME_TO_SLIDE;
-
-      if (processSizeChange(shouldBe)) {
-        this.schedule(OVERLAY_SPEED);
-      } else {
-        finish();
-      }
+    public void onInstantaneousRun() {
+      onComplete();
     }
 
-    protected abstract void finish();
-
-    protected abstract boolean processSizeChange(float shouldBe);
-  }
-
-  /**
-   * Current {@link CollapsiblePanel} state.
-   */
-  protected enum State {
-    WILL_HIDE, HIDING, IS_HIDDEN, WILL_SHOW, SHOWING, IS_SHOWN, EXPANDED;
-
-    public boolean shouldHide() {
-      return this == SHOWING || this == WILL_SHOW || this == IS_SHOWN;
+    @Override
+    public void onStart() {
     }
 
-    public boolean shouldShow() {
-      return this == WILL_HIDE || this == HIDING || this == IS_HIDDEN;
+    @Override
+    public void onUpdate(double progress) {
+      int pos = (int) ((double) (maxOffshift - startFrom) * progress);
+      setPanelPos(pos + startFrom);
     }
   }
 
-  /**
-   * Pause between each interval.
-   */
-  private static int OVERLAY_SPEED = 2;
+  private boolean animate = true;
 
   /**
    * Number of intervals used to display panel.
    */
-  private static float TIME_TO_SLIDE = 200;
-
-  /**
-   * Minimum increment change per slide.
-   */
-  private static int MIN_SLIDE_STEP = 20;
+  private int timeToSlide = 150;
 
   /**
    * How many milliseconds to delay a hover event before executing it.
    */
-  private static final int DELAY_MILLI = 400;
+  private int delayBeforeShow = 300;
 
-  State state;
+  /**
+   * How many milliseconds to delay a hide event before executing it.
+   */
+  private int delayBeforeHide = 200;
 
-  private ShowingTimer overlayTimer = new ShowingTimer();
+  private State state;
 
-  private HidingTimer hidingTimer = new HidingTimer();
+  private ShowingAnimation overlayTimer = new ShowingAnimation();
+
+  private HidingAnimation hidingTimer = new HidingAnimation();
 
   private DelayShow delayedShow = new DelayShow();
 
@@ -202,6 +228,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   private int width;
   private int maxOffshift;
   private int currentOffshift;
+  private int startFrom;
   private Panel container;
   private SimplePanel hoverBar;
   private ToggleButton collapseToggle;
@@ -229,37 +256,33 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
         }
         if (!CollapsiblePanel.this.collapseToggle.isDown()) {
           switch (DOM.eventGetType(event)) {
-
             case Event.ONMOUSEOUT:
               Element to = DOM.eventGetToElement(event);
               if (to != null && DOM.isOrHasChild(master.getElement(), to)) {
                 break;
               }
-              if (state == State.WILL_SHOW) {
-                state = State.HIDING;
-                delayedShow.cancel();
-                break;
-              }
-
-              if (to == null || (!DOM.isOrHasChild(this.getElement(), to))) {
-                delayedHide.activate();
-                break;
+              switch (state) {
+                case WILL_SHOW:
+                  setState(State.IS_HIDDEN);
+                  delayedShow.cancel();
+                  break;
+                case SHOWING:
+                  hide();
+                  break;
+                case IS_SHOWN:
+                  delayedHide.activate();
+                  break;
               }
               break;
             case Event.ONMOUSEOVER:
-              if ((state.shouldShow())) {
-                if (state == State.WILL_HIDE) {
-                  delayedHide.cancel();
-                  state = State.SHOWING;
-                } else {
-                  delayedShow.activate();
-                }
+              if (state == State.WILL_HIDE) {
+                setState(State.IS_SHOWN);
+                delayedHide.cancel();
               }
               break;
           }
+          super.onBrowserEvent(event);
         }
-
-        super.onBrowserEvent(event);
       }
     };
 
@@ -268,7 +291,37 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     setStyleName(Styles.DEFAULT);
 
     // Create hovering container.
-    hoverBar = new SimplePanel();
+    // Create the composite widget.
+    hoverBar = new SimplePanel() {
+      {
+        sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEDOWN);
+      }
+
+      @Override
+      public void onBrowserEvent(Event event) {
+        // Cannot handle browser events until contents are initialized.
+        if (contents == null) {
+          return;
+        }
+        if (!CollapsiblePanel.this.collapseToggle.isDown()) {
+          switch (DOM.eventGetType(event)) {
+            case Event.ONMOUSEOVER:
+              switch (state) {
+                case HIDING:
+                  show();
+                  break;
+                case IS_HIDDEN:
+                  delayedShow.activate();
+                  break;
+              }
+              break;
+            case Event.ONMOUSEDOWN:
+              setCollapsed(false);
+          }
+        }
+      }
+    };
+
     hoverBar.setStyleName(Styles.HOVER_BAR);
     master.add(hoverBar, 0, 0);
 
@@ -276,15 +329,15 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     container = new SimplePanel();
     container.setStyleName(Styles.CONTAINER);
     master.add(container, 0, 0);
-    state = State.EXPANDED;
+    setState(State.EXPANDED);
   }
 
   /**
-   * 
+   * Constructor.
    */
-  public CollapsiblePanel(Widget widget) {
+  public CollapsiblePanel(Widget contents) {
     this();
-    initContents(widget);
+    initContents(contents);
   }
 
   public void add(Widget w) {
@@ -305,6 +358,33 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   }
 
   /**
+   * Gets the delay before hiding.
+   * 
+   * @return the delayBeforeHide
+   */
+  public int getDelayBeforeHide() {
+    return delayBeforeHide;
+  }
+
+  /**
+   * Gets the delay before showing the panel.
+   * 
+   * @return the delayBeforeShow
+   */
+  public int getDelayBeforeShow() {
+    return delayBeforeShow;
+  }
+
+  /**
+   * Gets the time to slide the panel out.
+   * 
+   * @return the timeToSlide
+   */
+  public int getTimeToSlide() {
+    return timeToSlide;
+  }
+
+  /**
    * Uses the given toggle button to control whether the panel is collapsed or
    * not.
    * 
@@ -319,29 +399,15 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     });
   }
 
-  /**
-   * Initialize the panel's contents.
-   * 
-   * @param contents contents
-   */
-  public void initContents(Widget contents) {
-    if (this.contents != null) {
-      throw new IllegalStateException("Contents have already be set");
-    }
-
-    this.contents = contents;
-    container.add(contents);
-
-    if (isAttached()) {
-      refreshWidth();
-    }
+  public boolean isAnimationEnabled() {
+    return animate;
   }
 
   /**
    * Is the panel currently in its collapsed state.
    */
   public boolean isCollapsed() {
-    return state != State.EXPANDED;
+    return getState() != State.EXPANDED;
   }
 
   public Iterator<Widget> iterator() {
@@ -356,11 +422,44 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     changeListeners.remove(listener);
   }
 
+  public void setAnimationEnabled(boolean enable) {
+    animate = enable;
+  }
+
+  /**
+   * Sets the delay before the collapsible panel hides the panel after the user
+   * leaves the panel.
+   * 
+   * @param delayBeforeHide the delayBeforeHide to set
+   */
+  public void setDelayBeforeHide(int delayBeforeHide) {
+    this.delayBeforeHide = delayBeforeHide;
+  }
+
+  /**
+   * Set delay before showing the panel after the user has hovered over the
+   * hover bar.
+   * 
+   * @param delayBeforeShow the delayBeforeShow to set
+   */
+  public void setDelayBeforeShow(int delayBeforeShow) {
+    this.delayBeforeShow = delayBeforeShow;
+  }
+
   /**
    * Sets the contents of the hover bar.
    */
   public void setHoverBarContents(Widget bar) {
     hoverBar.setWidget(bar);
+  }
+
+  /**
+   * Sets the time to slide the panel out.
+   * 
+   * @param timeToSlide the timeToSlide to set
+   */
+  public void setTimeToSlide(int timeToSlide) {
+    this.timeToSlide = timeToSlide;
   }
 
   @Override
@@ -381,16 +480,12 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     int aboutHalf = (hoverBarWidth / 2) + 1;
     int newWidth = width + aboutHalf;
     maxOffshift = newWidth;
-    currentOffshift = width;
 
     // Width is now hoverBarWidth.
     master.setWidth(hoverBarWidth + "px");
 
-    // Looks better to immediately hide (Says the programmer).
-    setPanelPos(0);
-    currentOffshift = 0;
-
     // clean up state.
+    currentOffshift = width;
     hide();
   }
 
@@ -398,20 +493,22 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    * Display this panel in its expanded state.
    */
   protected void becomeExpanded() {
+    delayedHide.cancel();
+    delayedShow.cancel();
     // The master width needs to be readjusted back to it's original size.
     if (isAttached()) {
       refreshWidth();
     }
     DOM.setStyleAttribute(container.getElement(), "left", "0px");
-    state = State.EXPANDED;
+    setState(State.EXPANDED);
   }
 
   protected void hide() {
-    state = State.HIDING;
+    setState(State.HIDING);
     overlayTimer.cancel();
     hidingTimer.cancel();
-    hidingTimer.started = System.currentTimeMillis();
-    hidingTimer.run();
+    startFrom = currentOffshift;
+    hidingTimer.run(timeToSlide);
   }
 
   /**
@@ -426,16 +523,46 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   }
 
   protected void setPanelPos(int pos) {
+    currentOffshift = pos;
     DOM.setStyleAttribute(container.getElement(), "left", pos - width + "px");
   }
 
   protected void show() {
-    state = State.SHOWING;
-
+    setState(State.SHOWING);
     overlayTimer.cancel();
     hidingTimer.cancel();
-    overlayTimer.started = System.currentTimeMillis();
-    overlayTimer.run();
+    startFrom = currentOffshift;
+    overlayTimer.run(this.getTimeToSlide());
+  }
+
+  State getState() {
+    return state;
+  }
+
+  void setState(State state) {
+    if (isAnimationEnabled()) {
+      State.checkTo(this.state, state);
+    }
+
+    this.state = state;
+  }
+
+  /**
+   * Initialize the panel's contents.
+   * 
+   * @param contents contents
+   */
+  private void initContents(Widget contents) {
+    if (this.contents != null) {
+      throw new IllegalStateException("Contents have already be set");
+    }
+
+    this.contents = contents;
+    container.add(contents);
+
+    if (isAttached()) {
+      refreshWidth();
+    }
   }
 
   private void refreshWidth() {
