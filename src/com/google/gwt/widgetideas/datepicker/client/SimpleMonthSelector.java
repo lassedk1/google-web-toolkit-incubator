@@ -31,13 +31,15 @@ import java.util.Date;
  */
 public class SimpleMonthSelector extends MonthSelector<DatePicker> {
 
-  PushButton backwards = new PushButton("<<");
-  PushButton forwards = new PushButton(">>");
+  PushButton backwards = new PushButton();
+  PushButton forwards = new PushButton();
   Label label = new Label();
   Date from;
   Date to;
 
   public SimpleMonthSelector() {
+    backwards.getUpFace().setHTML("&laquo;");
+    forwards.getUpFace().setHTML("&raquo;");
   }
 
   public void setAllowableDateRange(Date from, Date to) {

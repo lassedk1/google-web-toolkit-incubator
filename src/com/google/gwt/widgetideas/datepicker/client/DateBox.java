@@ -22,13 +22,11 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusListener;
-import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.DropDownPanel;
 import com.google.gwt.widgetideas.client.events.ChangeEvent;
 import com.google.gwt.widgetideas.client.events.ChangeHandler;
-import com.google.gwt.widgetideas.client.overrides.DOMHelper;
 
 import java.util.Date;
 
@@ -66,9 +64,10 @@ public class DateBox extends Composite {
     setStyleName(Styles.DEFAULT);
     picker.addChangeHandler(new ChangeHandler<Date>() {
       public void onChange(ChangeEvent<Date> event) {
-        box.setText(formatter.format(event.getNewValue()));
+        setText(event.getNewValue());
         hideDatePicker();
       }
+
     });
     box.addFocusListener(new FocusListener() {
       public void onFocus(Widget sender) {
@@ -84,22 +83,6 @@ public class DateBox extends Composite {
         showDatePicker();
       }
     });
-    box.addKeyboardListener(new KeyboardListener() {
-
-      public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-        int key = DOMHelper.standardizeKeycode(keyCode);
-        if (key == KEY_DOWN) {
-          showDatePicker();
-        }
-      }
-
-      public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-      }
-
-      public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-      }
-
-    });
   }
 
   /**
@@ -113,6 +96,48 @@ public class DateBox extends Composite {
 
   public void hideDatePicker() {
     popup.hide();
+  }
+
+  /**
+   * Sets the date box's 'access key'. This key is used (in conjunction with a
+   * browser-specific modifier key) to automatically focus the widget.
+   * 
+   * @param key the date box's access key
+   */
+  public void setAccessKey(char key) {
+    box.setAccessKey(key);
+  }
+
+  /**
+   * Explicitly focus/unfocus this widget. Only one widget can have focus at a
+   * time, and the widget that does will receive all keyboard events.
+   * 
+   * @param focused whether this widget should take focus or release it
+   */
+  public void setFocus(boolean focused) {
+    box.setFocus(focused);
+  }
+
+  /**
+   * Sets the date box's position in the tab index. If more than one widget has
+   * the same tab index, each such widget will receive focus in an arbitrary
+   * order. Setting the tab index to <code>-1</code> will cause this widget to
+   * be removed from the tab order.
+   * 
+   * @param index the date box's tab index
+   */
+  public void setTabIndex(int index) {
+    box.setTabIndex(index);
+  }
+
+  /**
+   * Show the given date in the date picker.
+   * 
+   * @param date picker
+   */
+  public void showDate(Date date) {
+    picker.setSelectedDate(date, false);
+    setText(date);
   }
 
   public void showDatePicker() {
@@ -133,4 +158,18 @@ public class DateBox extends Composite {
     picker.showDate(current);
     popup.showBelow(this);
   }
+
+  /**
+   * Gets the date box's position in the tab index.
+   * 
+   * @return the date box's tab index
+   */
+  int getTabIndex() {
+    return box.getTabIndex();
+  }
+
+  private void setText(Date value) {
+    box.setText(formatter.format(value));
+  }
+
 }

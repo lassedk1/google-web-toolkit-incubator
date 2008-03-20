@@ -24,6 +24,8 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -43,6 +45,8 @@ import java.util.Date;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class DatePickerDemo implements EntryPoint {
+
+  DateBox start = new DateBox();
 
   /**
    * This is the entry point method.
@@ -92,19 +96,34 @@ public class DatePickerDemo implements EntryPoint {
     }, "date range");
 
     panel.selectTab(0);
+    panel.addTabListener(new TabListener() {
+
+      public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
+
+        return true;
+      }
+
+      public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
+        if (tabIndex == 3) {
+          start.setFocus(true);
+        }
+      }
+
+    });
     RootPanel.get().add(master);
   }
 
   private Widget dateRange() {
     HorizontalPanel p = new HorizontalPanel();
-    DateBox start = new DateBox();
+    start = new DateBox();
     DateBox end = new DateBox();
+    start.showDate(new Date());
+
     p.add(start);
     Label l = new Label(" - ");
     l.setStyleName("filler");
     p.add(l);
     p.add(end);
-
     return p;
   }
 
@@ -225,22 +244,6 @@ public class DatePickerDemo implements EntryPoint {
     return select;
   }
 
-  private CheckBox toggleRenderingHandler(String title,
-      final DatePicker picker, final RenderingHandler handler) {
-    final CheckBox select = new CheckBox(title);
-    select.addClickListener(new ClickListener() {
-
-      public void onClick(Widget sender) {
-        if (select.isChecked()) {
-          picker.addRenderingHandler(handler);
-        } else {
-          picker.removeRenderingHandler(handler);
-        }
-      }
-    });
-    return select;
-  }
-
   private CheckBox toggleHighlightHandler(String title,
       final DatePicker picker, final HighlightHandler handler) {
     final CheckBox select = new CheckBox(title);
@@ -251,6 +254,22 @@ public class DatePickerDemo implements EntryPoint {
           picker.addHighlightHandler(handler);
         } else {
           picker.removeHighlightHandler(handler);
+        }
+      }
+    });
+    return select;
+  }
+
+  private CheckBox toggleRenderingHandler(String title,
+      final DatePicker picker, final RenderingHandler handler) {
+    final CheckBox select = new CheckBox(title);
+    select.addClickListener(new ClickListener() {
+
+      public void onClick(Widget sender) {
+        if (select.isChecked()) {
+          picker.addRenderingHandler(handler);
+        } else {
+          picker.removeRenderingHandler(handler);
         }
       }
     });
