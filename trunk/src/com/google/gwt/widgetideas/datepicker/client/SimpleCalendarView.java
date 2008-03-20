@@ -35,7 +35,12 @@ import java.util.Date;
  */
 public class SimpleCalendarView extends CalendarView {
 
-  class CellGrid extends Grid {
+  /* note the fully-qualified extends classname above: a bug in JDK1.5 (at 
+   * least 1.5.0_10 & 12) can't find the symbol "Grid" if unqualified, despite
+   * the identical import (on line 25 as a write this, but subject to change).
+   *     --fabbott, 20mar08
+   */
+  class CellGrid extends com.google.gwt.widgetideas.table.client.overrides.Grid {
 
     class Cell extends UIObject {
       int index;
