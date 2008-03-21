@@ -258,6 +258,10 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
           switch (DOM.eventGetType(event)) {
             case Event.ONMOUSEOUT:
               Element to = DOM.eventGetToElement(event);
+              if (to == null && state == State.SHOWING) {
+                //Linux hosted mode hack.
+                return;
+              }
               if (to != null && DOM.isOrHasChild(master.getElement(), to)) {
                 break;
               }
