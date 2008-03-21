@@ -11,9 +11,9 @@ Default styling for CollapsiblePanel code.
   margin-right: 10px;
   float: left;
   height: 500px;
+  width: 200px;
 }
 
-.
 .gwt-CollapsiblePanel .hover-bar {
   position: relative;
   background-color: gray;
