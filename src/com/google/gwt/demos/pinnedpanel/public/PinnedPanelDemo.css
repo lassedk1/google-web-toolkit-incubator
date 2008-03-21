@@ -30,6 +30,7 @@ Default styling for CollapsiblePanel code.
   z-index: 100;
   position: relative;
   background-color: white;
+	width:199px;
 }
 
 .gwt-CollapsiblePanel .gwt-ToggleButton {
