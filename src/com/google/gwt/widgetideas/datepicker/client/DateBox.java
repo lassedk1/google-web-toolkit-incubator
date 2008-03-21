@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusListener;
+import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.DropDownPanel;
@@ -38,6 +39,7 @@ public class DateBox extends Composite {
     public static String DEFAULT = "gwt-DateBox";
   }
 
+  private boolean dirtyText = false;
   private DropDownPanel popup = new DropDownPanel();
   private TextBox box = new TextBox();
   private DatePicker picker;
@@ -75,13 +77,39 @@ public class DateBox extends Composite {
       }
 
       public void onLostFocus(Widget sender) {
+        if (dirtyText) {
+          updateDateFromTextBox();
+        }
       }
+
     });
 
     box.addClickListener(new ClickListener() {
       public void onClick(Widget sender) {
         showDatePicker();
       }
+    });
+
+    box.addKeyboardListener(new KeyboardListener() {
+
+      public void onKeyDown(Widget sender, char keyCode, int modifiers) {
+        dirtyText = true;
+        switch (keyCode) {
+          case KEY_ENTER:
+          case KEY_TAB:
+          case KEY_ESCAPE:
+          case KEY_DOWN: {
+            updateDateFromTextBox();
+          }
+        }
+      }
+
+      public void onKeyPress(Widget sender, char keyCode, int modifiers) {
+      }
+
+      public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+      }
+
     });
   }
 
@@ -137,7 +165,9 @@ public class DateBox extends Composite {
    */
   public void showDate(Date date) {
     picker.setSelectedDate(date, false);
+    picker.showDate(date);
     setText(date);
+    dirtyText = false;
   }
 
   public void showDatePicker() {
@@ -148,7 +178,7 @@ public class DateBox extends Composite {
       try {
         current = formatter.parse(value);
       } catch (IllegalArgumentException e) {
-        Log.info("date formatter could not parse " + value);
+        Log.info("cannot parse as date: " + value);
       }
     }
 
@@ -170,6 +200,21 @@ public class DateBox extends Composite {
 
   private void setText(Date value) {
     box.setText(formatter.format(value));
+    dirtyText = false;
+  }
+
+  private void updateDateFromTextBox() {
+    try {
+      String text = box.getText().trim();
+      if (text.equals("")) {
+        return;
+      }
+      Date d = formatter.parse(text);
+      showDate(d);
+    } catch (IllegalArgumentException exception) {
+      Log.info("Could not parse " + box.getText());
+    }
+    dirtyText = false;
   }
 
 }
