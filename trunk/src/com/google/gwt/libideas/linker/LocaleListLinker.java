@@ -16,37 +16,31 @@
 
 package com.google.gwt.libideas.linker;
 
+import com.google.gwt.core.ext.LinkerContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
-import com.google.gwt.dev.linker.Linker;
-import com.google.gwt.dev.linker.LinkerContext;
-import com.google.gwt.dev.linker.SelectionProperty;
+import com.google.gwt.core.ext.linker.AbstractLinker;
+import com.google.gwt.core.ext.linker.ArtifactSet;
+import com.google.gwt.core.ext.linker.LinkerOrder;
+import com.google.gwt.core.ext.linker.SelectionProperty;
+import com.google.gwt.core.ext.linker.LinkerOrder.Order;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
 /**
  * Produces a list of locales as a linker artifact for use by server-side code.
  * 
  * The locale list, which will include the default locale, will be stored in a
- * text file locale-list.txt in the linker output directory (which will be based
- * on the name used in the define-linker directive).
+ * text file no-deploy/locale-list.txt in the temporary linker output directory
  * 
  * Example .gwt.xml usage:
  * <pre>
  *  <define-linker name="localeList" class="com.google.gwt.libideas.linker.LocaleListLinker"/>
- *  <set-linker name="std,localeList"/>
+ *  <add-linker name="localeList"/>
  * </pre>
  */
-public class LocaleListLinker extends Linker {
-
-  /**
-   * Output file name.
-   */
-  private static final String LOCALE_LIST_OUTPUT_FILE = "locale-list.txt";
+@LinkerOrder(Order.PRE)
+public class LocaleListLinker extends AbstractLinker {
 
   @Override
   public String getDescription() {
@@ -54,40 +48,30 @@ public class LocaleListLinker extends Linker {
   }
 
   @Override
-  public void link(TreeLogger logger, LinkerContext context)
+  public ArtifactSet link(TreeLogger logger, LinkerContext context, ArtifactSet inArtifacts)
       throws UnableToCompleteException {
     for (SelectionProperty property : context.getProperties()) {
       if (property.getName().equals("locale")) {
-        // Create output file.
-        OutputStream str = context.tryCreateArtifact(logger, LOCALE_LIST_OUTPUT_FILE);
-        OutputStreamWriter writer;
-        try {
-          writer = new OutputStreamWriter(str, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-          logger.log(TreeLogger.ERROR, "UTF-8 encoding not supported", e);
-          throw new UnableToCompleteException();
-        }
-        
-        // Print supported locales (including default), one per line.
-        PrintWriter print = new PrintWriter(writer);
+        StringBuffer buf = new StringBuffer();
         for (String locale : property.getPossibleValues()) {
-          print.println(locale);
+          buf.append(locale);
+          buf.append('\n');
         }
-        
-        print.close();
+        ArtifactSet artifacts = new ArtifactSet(inArtifacts);
         try {
-          writer.close();
-        } catch (IOException e) {
-          logger.log(TreeLogger.ERROR, "I/O error writing locale list", e);
+          artifacts.add(emitBytes(logger, buf.toString().getBytes("UTF-8"),
+              "no-deploy/locale-list.txt"));
+        } catch (UnsupportedEncodingException e) {
+          logger.log(TreeLogger.ERROR, "LocaleListLinker - UTF-8 encoding not supported", e);
           throw new UnableToCompleteException();
         }
-        context.commit(logger, str);
-        return;
+        return artifacts;
       }
     }
     logger.log(
         TreeLogger.WARN,
         "LocaleListLinker - No locale property defined, did you inherit the i18n module?",
         null);
+    return inArtifacts;
   }
 }
