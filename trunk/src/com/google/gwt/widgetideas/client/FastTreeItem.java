@@ -587,7 +587,6 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   private void showClosedImage() {
     setStyleName(getControlElement(), STYLENAME_OPEN, false);
     setStyleName(getControlElement(), STYLENAME_CLOSED, true);
-
   }
 
   private void showOpenImage() {
