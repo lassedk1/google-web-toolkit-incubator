@@ -71,7 +71,7 @@ public class ScrollTableTest extends GWTTestCase {
     table.setAutoFitEnabled(false);
     assertFalse(table.isAutoFitEnabled());
 
-    // Min widget
+    // Min width
     assertEquals(-1, table.getMinWidth());
     table.setMinWidth(100);
     assertEquals(100, table.getMinWidth());
@@ -107,6 +107,13 @@ public class ScrollTableTest extends GWTTestCase {
     assertEquals(20, headerTable.getColumnWidth(3));
     assertEquals(20, dataTable.getColumnWidth(3));
     assertEquals(20, footerTable.getColumnWidth(3));
+
+    // Set guaranteed column width
+    assertFalse(table.isColumnWidthGuaranteed(2));
+    table.setGuaranteedColumnWidth(2, 100);
+    assertTrue(table.isColumnWidthGuaranteed(2));
+    table.setColumnWidth(2, 100);
+    assertFalse(table.isColumnWidthGuaranteed(2));
 
     // Remove widget not supported
     try {
