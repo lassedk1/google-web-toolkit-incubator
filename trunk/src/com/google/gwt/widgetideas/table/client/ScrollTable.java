@@ -36,8 +36,10 @@ import com.google.gwt.widgetideas.table.client.overrides.OverrideDOM;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -106,11 +108,6 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     private Element curCell = null;
 
     /**
-     * The current cell's colSpan.
-     */
-    private int curCellColSpan = 0;
-
-    /**
      * The current columns under the colSpan of the current cell, ordered from
      * narrowest to widest.
      */
@@ -154,6 +151,11 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     private boolean resizing = false;
 
     /**
+     * The column that will be sacrificed.
+     */
+    private int sacrificeColumn = -1;
+    
+    /**
      * The table that this worker affects.
      */
     private ScrollTable table = null;
@@ -171,7 +173,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       FixedWidthGrid dataTable = table.getDataTable();
       FixedWidthFlexTable footerTable = table.getFooterTable();
       int colspan = DOM.getElementPropertyInt(curCell, "colSpan");
-      int sacrificeColumn = curCellIndex + colspan;
+      sacrificeColumn = curCellIndex + colspan;
       ResizePolicy resizePolicy = table.getResizePolicy();
       if (resizePolicy == ResizePolicy.FIXED_WIDTH
           || resizePolicy == ResizePolicy.FILL_WIDTH) {
@@ -185,7 +187,11 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       int diff = 0;
       for (int i = 0; i < colspan; i++) {
         int actualColumn = curCellIndex + i;
-        newWidths[i] = dataTable.getAutoFitColumnWidth(actualColumn);
+        if (table.isColumnWidthGuaranteed(actualColumn)) {
+          newWidths[i] = dataTable.getColumnWidth(actualColumn);
+        } else {
+          newWidths[i] = dataTable.getAutoFitColumnWidth(actualColumn);
+        }
         diff += (newWidths[i] - table.getColumnWidth(actualColumn));
       }
 
@@ -268,7 +274,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
         curCell = cell;
         if (curCell != null) {
           curCellIndex = getCellIndex(curCell);
-          if (table.guarenteedColumns.contains(new Integer(curCellIndex))) {
+          if (table.isColumnWidthGuaranteed(curCellIndex)) {
             curCell = null;
             return false;
           }
@@ -304,24 +310,27 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
         mouseXCurrent = mouseXStart;
 
         // Get the columns under this cell's colspan
-        curCellColSpan = DOM.getElementPropertyInt(curCell, "colSpan");
-        for (int i = 0; i < curCellColSpan; i++) {
+        int colSpan = DOM.getElementPropertyInt(curCell, "colSpan");
+        sacrificeColumn = curCellIndex + colSpan;
+        for (int i = 0; i < colSpan; i++) {
           int newCellIndex = curCellIndex + i;
-          int originalWidth = table.dataTable.getColumnWidth(newCellIndex);
+          if (!table.isColumnWidthGuaranteed(newCellIndex)) {
+            int originalWidth = table.dataTable.getColumnWidth(newCellIndex);
 
-          // Insert the node into the ordered list by width
-          int insertIndex = 0;
-          for (ColumnNode curNode : curCellColumns) {
-            if (originalWidth > curNode.getOriginalWidth()) {
-              insertIndex++;
-            } else {
-              break;
+            // Insert the node into the ordered list by width
+            int insertIndex = 0;
+            for (ColumnNode curNode : curCellColumns) {
+              if (originalWidth > curNode.getOriginalWidth()) {
+                insertIndex++;
+              } else {
+                break;
+              }
             }
-          }
 
-          // Add the node at the correct index
-          curCellColumns.add(insertIndex, new ColumnNode(newCellIndex,
-              originalWidth));
+            // Add the node at the correct index
+            curCellColumns.add(insertIndex, new ColumnNode(newCellIndex,
+                originalWidth));
+          }
         }
 
         // Start the timer and listen for changes
@@ -343,15 +352,6 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
         resizeTimer.cancel();
         resizeColumn();
       }
-    }
-
-    /**
-     * Get the width of the scrollbars.
-     * 
-     * @return the scroll bar width
-     */
-    protected int getScrollBarWidth() {
-      return 15;
     }
 
     /**
@@ -383,18 +383,17 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       if (mouseXLast != mouseXCurrent) {
         mouseXLast = mouseXCurrent;
 
-        int sacrificeColumn = curCellIndex + curCellColSpan;
+        int columnsRemaining = curCellColumns.size();
         int totalDelta = mouseXCurrent - mouseXStart;
-        int colSpanRemaining = curCellColSpan;
         for (ColumnNode curNode : curCellColumns) {
           int originalWidth = curNode.getOriginalWidth();
           int column = curNode.getCellIndex();
-          int delta = totalDelta / colSpanRemaining;
+          int delta = totalDelta / columnsRemaining;
           int colWidth = table.setColumnWidth(column, originalWidth + delta,
-              sacrificeColumn, false);
+              sacrificeColumn);
 
           totalDelta -= (colWidth - originalWidth);
-          colSpanRemaining--;
+          columnsRemaining--;
         }
       }
     }
@@ -546,9 +545,9 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   private boolean autoFitEnabled = true;
 
   /**
-   * Columns which have guarenteed sizes.
+   * Columns which have guaranteed sizes.
    */
-  private List<Integer> guarenteedColumns = new ArrayList<Integer>();
+  private Set<Integer> guaranteedColumns = new HashSet<Integer>();
 
   /**
    * The data table.
@@ -754,7 +753,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
         }
 
         // Remove the sorted column indicator
-        if (sortingEnabled) {
+        if (isColumnSortable(column)) {
           Element parent = DOM.getParent(sortedColumnWrapper);
           if (parent != null) {
             DOM.removeChild(parent, sortedColumnWrapper);
@@ -830,29 +829,37 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     ResizePolicy tempResizePolicy = getResizePolicy();
     resizePolicy = ResizePolicy.UNCONSTRAINED;
 
-    // Calculate the total width of the cells
+    // Calculate the total width of the columns that aren't guaranteed
     int totalWidth = 0;
     int numColumns = dataTable.getColumnCount();
     int[] colWidths = new int[numColumns];
     for (int i = 0; i < numColumns; i++) {
-      colWidths[i] = dataTable.getColumnWidth(i);
+      if (isColumnWidthGuaranteed(i)) {
+        colWidths[i] = 0;
+      } else {
+        colWidths[i] = dataTable.getColumnWidth(i);
+      }
       totalWidth += colWidths[i];
     }
 
     // Distribute the difference across all columns, weighted by current size
     int remainingDiff = diff;
     for (int i = 0; i < numColumns; i++) {
-      int colDiff = (int) (diff * (colWidths[i] / (float) totalWidth));
-      colDiff = setColumnWidth(i, colWidths[i] + colDiff) - colWidths[i];
-      remainingDiff -= colDiff;
-      colWidths[i] += colDiff;
+      if (colWidths[i] > 0) {
+        int colDiff = (int) (diff * (colWidths[i] / (float) totalWidth));
+        colDiff = setColumnWidth(i, colWidths[i] + colDiff) - colWidths[i];
+        remainingDiff -= colDiff;
+        colWidths[i] += colDiff;
+      }
     }
 
     // Spread out remaining diff however possible
     if (remainingDiff != 0) {
       for (int i = 0; i < numColumns && remainingDiff != 0; i++) {
-        int colWidth = setColumnWidth(i, colWidths[i] + remainingDiff);
-        remainingDiff -= (colWidth - colWidths[i]);
+        if (!isColumnWidthGuaranteed(i)) {
+          int colWidth = setColumnWidth(i, colWidths[i] + remainingDiff);
+          remainingDiff -= (colWidth - colWidths[i]);
+        }
       }
     }
 
@@ -944,6 +951,14 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     } else {
       return sortable.booleanValue();
     }
+  }
+
+  /**
+   * @param column the column index
+   * @return true if the column width is guaranteed
+   */
+  public boolean isColumnWidthGuaranteed(int column) {
+    return guaranteedColumns.contains(new Integer(column));
   }
 
   /**
@@ -1141,7 +1156,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
 
   /**
    * Set the width of a column. If the column has already been set using the
-   * {@link #setGuarenteedColumnWidth(int, int)} method, the column will no
+   * {@link #setGuaranteedColumnWidth(int, int)} method, the column will no
    * longer have a guarenteed column width.
    * 
    * @param column the index of the column
@@ -1149,8 +1164,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    * @return the new column width
    */
   public int setColumnWidth(int column, int width) {
-    guarenteedColumns.remove(new Integer(column));
-    return setColumnWidth(column, width, column + 1, false);
+    guaranteedColumns.remove(new Integer(column));
+    return setColumnWidth(column, width, column + 1);
   }
 
   /**
@@ -1190,6 +1205,19 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   }
 
   /**
+   * Set the width of a column and guarantees that the width will not change,
+   * regardless of the resize policy.
+   * 
+   * @param column the index of the column
+   * @param width the width in pixels
+   * @return the new column width
+   */
+  public int setGuaranteedColumnWidth(int column, int width) {
+    guaranteedColumns.add(new Integer(column));
+    return setColumnWidth(column, width, column + 1);
+  }
+
+  /**
    * @see com.google.gwt.user.client.ui.UIObject
    */
   @Override
@@ -1211,6 +1239,10 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    */
   public void setMinWidth(int minWidth) {
     this.minWidth = minWidth;
+    if (resizePolicy == ResizePolicy.FILL_WIDTH
+        || resizePolicy == ResizePolicy.FILL_WIDTH_DISABLED) {
+      fillWidth();
+    }
   }
 
   /**
@@ -1353,12 +1385,10 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    * @param column the index of the column
    * @param width the width in pixels
    * @param sacrificeColumn the column that will be shrunk to maintain the width
-   * @param guarenteed if true, the column width cannot be changed
    * @return the new column width
    */
-  protected int setColumnWidth(int column, int width, int sacrificeColumn,
-      boolean guarenteed) {
-    // Calculate the difference in size
+  protected int setColumnWidth(int column, int width, int sacrificeColumn) {
+    // A zero width will render improperly, so the width must be at least 1
     width = Math.max(width, 1);
 
     // Try to constrain the size of the grid
@@ -1456,21 +1486,42 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    * @return the actual amount of distributed width
    */
   private int redistributeWidth(int width, int startColumn) {
+    // Make sure we have a column to distribute to
     int numColumns = Math.max(headerTable.getColumnCount(),
         dataTable.getColumnCount());
-    int actualWidth = 0;
-    if (startColumn < numColumns) {
-      if (width > 0) {
-        int startWidth = getColumnWidth(startColumn);
-        int newWidth = startWidth + width;
-        dataTable.setColumnWidth(startColumn, newWidth);
-        headerTable.setColumnWidth(startColumn, newWidth);
-        if (footerTable != null) {
-          footerTable.setColumnWidth(startColumn, newWidth);
+    if (startColumn >= numColumns) {
+      return 0;
+    }
+
+    // Find the first column with a non-guaranteed width
+    if (isColumnWidthGuaranteed(startColumn)) {
+      boolean columnFound = false;
+      for (int i = startColumn + 1; i < numColumns; i++) {
+        if (!isColumnWidthGuaranteed(i)) {
+          startColumn = i;
+          columnFound = true;
+          break;
         }
-        actualWidth = width;
-      } else if (width < 0) {
-        for (int i = startColumn; i < numColumns && width < 0; i++) {
+      }
+      if (!columnFound) {
+        return 0;
+      }
+    }
+
+    // Redistribute the width across the columns
+    int actualWidth = 0;
+    if (width > 0) {
+      int startWidth = getColumnWidth(startColumn);
+      int newWidth = startWidth + width;
+      dataTable.setColumnWidth(startColumn, newWidth);
+      headerTable.setColumnWidth(startColumn, newWidth);
+      if (footerTable != null) {
+        footerTable.setColumnWidth(startColumn, newWidth);
+      }
+      actualWidth = width;
+    } else if (width < 0) {
+      for (int i = startColumn; i < numColumns && width < 0; i++) {
+        if (!isColumnWidthGuaranteed(i)) {
           int startWidth = getColumnWidth(i);
           int newWidth = startWidth + width;
           dataTable.setColumnWidth(i, newWidth);

@@ -17,10 +17,12 @@ package com.google.gwt.demos.scrolltable.client;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.table.client.ScrollTable;
 
@@ -69,6 +71,11 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
   private Grid grid;
 
   /**
+   * The checkbox used to select guaranteed sizing.
+   */
+  private CheckBox guaranteedCheck = new CheckBox("Guaranteed");
+
+  /**
    * The button used to hide a column.
    */
   private Button hideButton = new Button("Hide Column", this);
@@ -110,7 +117,11 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
         // Resize the column
         int column = Integer.parseInt(columnIndexBox.getText());
         int width = Integer.parseInt(columnWidthBox.getText());
-        scrollTable.setColumnWidth(column, width);
+        if (guaranteedCheck.isChecked()) {
+          scrollTable.setGuaranteedColumnWidth(column, width);
+        } else {
+          scrollTable.setColumnWidth(column, width);
+        }
       } else if (sender == stretchButton) {
         // Stretch to fit contents
         int column = Integer.parseInt(columnIndexBox.getText());
@@ -160,10 +171,13 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
     grid.setHTML(0, 3, DESC_STRETCH);
 
     // Width options
+    VerticalPanel widthContainer = new VerticalPanel();
+    widthContainer.add(columnWidthBox);
+    widthContainer.add(guaranteedCheck);
     columnWidthBox.setWidth("70px");
     columnWidthBox.setText("10");
     grid.setHTML(1, 0, "<B>Width:</B>");
-    grid.setWidget(1, 1, columnWidthBox);
+    grid.setWidget(1, 1, widthContainer);
     grid.setWidget(1, 2, resizeButton);
     grid.setHTML(1, 3, DESC_RESIZE);
 

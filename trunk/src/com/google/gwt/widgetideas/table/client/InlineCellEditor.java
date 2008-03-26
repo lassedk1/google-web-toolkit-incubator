@@ -253,14 +253,18 @@ public abstract class InlineCellEditor<R> extends PopupPanel implements
    * @return the Widget that is used to accept the current value.
    */
   protected Widget getAcceptWidget() {
-    return layoutTable.getWidget(1, 1);
+    ClickDecoratorPanel clickPanel = (ClickDecoratorPanel) layoutTable.getWidget(
+        1, 1);
+    return clickPanel.getWidget();
   }
 
   /**
    * @return the Widget that is used to cancel editing.
    */
   protected Widget getCancelWidget() {
-    return layoutTable.getWidget(1, 2);
+    ClickDecoratorPanel clickPanel = (ClickDecoratorPanel) layoutTable.getWidget(
+        1, 2);
+    return clickPanel.getWidget();
   }
 
   /**
