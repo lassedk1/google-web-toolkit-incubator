@@ -819,7 +819,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     } else {
       clientWidth = DOM.getElementPropertyInt(dataWrapper, "clientWidth");
     }
-    if (clientWidth < 0) {
+    if (clientWidth <= 0) {
       return;
     }
     clientWidth = Math.max(clientWidth, minWidth);
