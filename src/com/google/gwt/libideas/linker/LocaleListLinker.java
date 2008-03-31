@@ -23,15 +23,15 @@ import com.google.gwt.core.ext.linker.AbstractLinker;
 import com.google.gwt.core.ext.linker.ArtifactSet;
 import com.google.gwt.core.ext.linker.LinkerOrder;
 import com.google.gwt.core.ext.linker.SelectionProperty;
+import com.google.gwt.core.ext.linker.SyntheticArtifact;
 import com.google.gwt.core.ext.linker.LinkerOrder.Order;
-
-import java.io.UnsupportedEncodingException;
 
 /**
  * Produces a list of locales as a linker artifact for use by server-side code.
  * 
  * The locale list, which will include the default locale, will be stored in a
- * text file no-deploy/locale-list.txt in the temporary linker output directory
+ * text file [linkerName]/locale-list.txt in the module's auxilliary output
+ * directory (typically www/moduleName-aux/localeList/locale-list.txt).
  * 
  * Example .gwt.xml usage:
  * <pre>
@@ -58,13 +58,10 @@ public class LocaleListLinker extends AbstractLinker {
           buf.append('\n');
         }
         ArtifactSet artifacts = new ArtifactSet(inArtifacts);
-        try {
-          artifacts.add(emitBytes(logger, buf.toString().getBytes("UTF-8"),
-              "no-deploy/locale-list.txt"));
-        } catch (UnsupportedEncodingException e) {
-          logger.log(TreeLogger.ERROR, "LocaleListLinker - UTF-8 encoding not supported", e);
-          throw new UnableToCompleteException();
-        }
+        SyntheticArtifact localeListArtifact = emitString(logger, buf.toString(),
+            "locale-list.txt");
+        localeListArtifact.setPrivate(true);
+        artifacts.add(localeListArtifact);
         return artifacts;
       }
     }
