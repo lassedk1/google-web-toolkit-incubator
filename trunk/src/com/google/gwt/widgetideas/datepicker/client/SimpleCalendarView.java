@@ -22,7 +22,6 @@ import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.widgetideas.datepicker.client.DatePicker.Styles;
 import com.google.gwt.widgetideas.datepicker.client.SimpleCalendarView.CellGrid.Cell;
 import com.google.gwt.widgetideas.table.client.overrides.ElementMapper;
-import com.google.gwt.widgetideas.table.client.overrides.Grid;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.CellFormatter;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.ColumnFormatter;
 
@@ -33,7 +32,7 @@ import java.util.Date;
  * Simple calendar view.
  * 
  */
-public class SimpleCalendarView extends CalendarView {
+public class SimpleCalendarView extends CalendarView<DatePicker> {
 
   /* note the fully-qualified extends classname above: a bug in JDK1.5 (at 
    * least 1.5.0_10 & 12) can't find the symbol "Grid" if unqualified, despite
