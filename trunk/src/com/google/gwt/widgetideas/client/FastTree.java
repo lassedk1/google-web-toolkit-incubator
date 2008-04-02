@@ -615,6 +615,21 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   protected void onUnload() {
   }
 
+  /**
+   * This is called when a valid selectable element is clicked in the tree.
+   * Subclasses can override this method to decide whether or not FastTree
+   * should keep processing the element clicked. For example, a subclass may
+   * decide to return false for this method if selecting a new item in the tree
+   * is subject to asynchronous approval from other components of the
+   * application.
+   * 
+   * @returns true if element should be processed normally, false otherwise.
+   *          Default returns true.
+   */
+  protected boolean processElementClicked(FastTreeItem item) {
+    return true;
+  }
+
   void adopt(Widget widget, FastTreeItem treeItem) {
     assert (!childWidgets.containsKey(widget));
     childWidgets.put(widget, treeItem);
@@ -686,8 +701,10 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         disableSelection(target);
         return false;
       }
-      onSelection(item, true, !shouldTreeDelegateFocusToElement(target));
-      return true;
+      if (processElementClicked(item)) {
+        onSelection(item, true, !shouldTreeDelegateFocusToElement(target));
+        return true;
+      }
     }
     return false;
   }
