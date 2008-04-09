@@ -15,10 +15,10 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
-import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.widgetideas.client.WidgetTestBase;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.RowFormatter;
 
@@ -29,7 +29,7 @@ import java.util.List;
  * Base test for HTMLTable derived classes copied from gwt user for use in table
  * testing.
  */
-public abstract class TableBulkRendererTestBase extends GWTTestCase {
+public abstract class TableBulkRendererTestBase extends WidgetTestBase {
   abstract class TestCallback implements RendererCallback {
     HTMLTable table;
 
@@ -61,12 +61,7 @@ public abstract class TableBulkRendererTestBase extends GWTTestCase {
       assertEquals(target.get(i), array[i]);
     }
   }
-
-  @Override
-  public String getModuleName() {
-    return "com.google.gwt.widgetideas.WidgetIdeas";
-  }
-
+ 
   public void testContents() {
     doTest(createOracle(4, 4), new TestCallback() {
 

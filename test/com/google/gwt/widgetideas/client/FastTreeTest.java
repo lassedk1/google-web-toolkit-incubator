@@ -28,7 +28,7 @@ import java.util.Iterator;
  * Tests {@link FastTree}.
  * 
  */
-public class FastTreeTest extends BasicWidgetTestBase {
+public class FastTreeTest extends WidgetTestBase {
 
   public void testFastTree() {
     // Simple widget

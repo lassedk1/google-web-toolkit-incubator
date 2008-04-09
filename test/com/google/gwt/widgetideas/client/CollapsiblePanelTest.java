@@ -16,20 +16,18 @@
 
 package com.google.gwt.widgetideas.client;
 
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
  * Test for the {@link PinnedPanel}.
  */
-public class PinnedPanelTest extends BasicWidgetTestBase {
+public class CollapsiblePanelTest extends WidgetTestBase {
   public void testBasic() {
     int width = 30;
-    ToggleButton b = new ToggleButton();
-    Label l = new Label("hello");
-    PinnedPanel p = new PinnedPanel(width, b, l);
-    assertEquals(b, p.getSwitchButton());
+    SimplePanel simple = new SimplePanel();
+    simple.setSize("30px", "30px");
+    CollapsiblePanel p = new CollapsiblePanel(simple);
     RootPanel.get().add(p);
     assertEquals(width, p.getOffsetWidth());
   }

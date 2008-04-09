@@ -20,7 +20,7 @@ import com.google.gwt.user.client.DOM;
 /**
  * Tests the ProgressBar widget.
  */
-public class ProgressBarTest extends BasicWidgetTestBase {
+public class ProgressBarTest extends WidgetTestBase {
 
   /**
    * Test that the accessors correctly adjust the progress and relative percent

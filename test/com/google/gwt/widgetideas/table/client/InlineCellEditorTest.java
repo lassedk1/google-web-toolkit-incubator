@@ -15,16 +15,16 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
-import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.widgetideas.client.WidgetTestBase;
 import com.google.gwt.widgetideas.table.client.AbstractCellEditor.CellEditInfo;
 import com.google.gwt.widgetideas.table.client.overrides.Grid;
 
 /**
  * Tests methods used for all {@link AbstractCellEditor} class.
  */
-public class InlineCellEditorTest extends GWTTestCase {
+public class InlineCellEditorTest extends WidgetTestBase {
   /**
    * A callback used for testing.
    */
@@ -82,12 +82,7 @@ public class InlineCellEditorTest extends GWTTestCase {
       completed = true;
     }
   }
-
-  @Override
-  public String getModuleName() {
-    return "com.google.gwt.widgetideas.WidgetIdeas";
-  }
-
+ 
   /**
    * Get the cell editor.
    * 

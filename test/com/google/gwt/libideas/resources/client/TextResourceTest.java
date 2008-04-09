@@ -16,15 +16,15 @@
 package com.google.gwt.libideas.resources.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.junit.client.GWTTestCase;
+import com.google.gwt.libideas.client.LibTestBase;
 
 /**
  * Tests for TextResource assembly and use.
  */
-public class TextResourceTest extends GWTTestCase {
+public class TextResourceTest extends LibTestBase {
 
   private static final String HELLO = "Hello World!";
-  
+
   static interface Resources extends ImmutableResourceBundle {
     /**
      * @gwt.resource com/google/gwt/libideas/resources/client/hello.txt
@@ -40,16 +40,12 @@ public class TextResourceTest extends GWTTestCase {
      * @gwt.resource hello.txt
      */
     TextResource helloWorldRelative();
-    
+
     /**
      * @gwt.resource hello.txt
      * @gwt.transformer com.google.gwt.libideas.resources.rebind.UpperTransformer
      */
     TextResource helloWorldUpper();
-  }
-  
-  public String getModuleName() {
-    return "com.google.gwt.libideas.ImmutableResources";
   }
 
   public void testExternal() throws ResourceException {
@@ -89,7 +85,7 @@ public class TextResourceTest extends GWTTestCase {
     ResourcePrototype[] resources = r.getResources();
     assertEquals(4, resources.length);
   }
-  
+
   public void testTransformer() {
     Resources r = GWT.create(Resources.class);
     assertEquals(HELLO.toUpperCase(), r.helloWorldUpper().getText());

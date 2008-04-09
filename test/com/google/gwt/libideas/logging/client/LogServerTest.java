@@ -26,7 +26,7 @@ import junit.framework.TestCase;
 import java.util.logging.Logger;
 
 /**
- * We test logging using
+ * We test logging using junit as it is much faster that way.
  */
 public class LogServerTest extends TestCase {
 

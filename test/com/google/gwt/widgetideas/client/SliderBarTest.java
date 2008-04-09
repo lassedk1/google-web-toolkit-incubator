@@ -20,7 +20,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 /**
  * Tests the ProgressBar widget.
  */
-public class SliderBarTest extends BasicWidgetTestBase {
+public class SliderBarTest extends WidgetTestBase {
 
   public String getModuleName() {
     return "com.google.gwt.widgetideas.BasicWidget";

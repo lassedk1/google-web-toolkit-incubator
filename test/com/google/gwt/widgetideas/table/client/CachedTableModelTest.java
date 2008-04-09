@@ -38,7 +38,7 @@ public class CachedTableModelTest extends ClientTableModelTest {
     @Override
     public void onRowsReady(Request request, Response<Integer> response) {
       super.onRowsReady(request, response);
-      
+
       // Test that the row values are correct
       List<?> rowValues = response.getRowValues();
       assertNotNull(rowValues);

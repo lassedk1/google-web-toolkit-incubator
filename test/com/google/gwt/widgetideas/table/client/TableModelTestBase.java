@@ -15,7 +15,7 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
-import com.google.gwt.junit.client.GWTTestCase;
+import com.google.gwt.widgetideas.client.WidgetTestBase;
 import com.google.gwt.widgetideas.table.client.TableModel.Callback;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 import com.google.gwt.widgetideas.table.client.TableModel.Request;
@@ -24,7 +24,7 @@ import com.google.gwt.widgetideas.table.client.TableModel.Response;
 /**
  * Tests methods in the {@link TableModel} class.
  */
-public abstract class TableModelTestBase extends GWTTestCase {
+public abstract class TableModelTestBase extends WidgetTestBase {
   /**
    * A {@link Callback} used for testing.
    * 
@@ -117,11 +117,6 @@ public abstract class TableModelTestBase extends GWTTestCase {
         assertTrue(sortList.equals(request.getColumnSortList()));
       }
     }
-  }
-
-  @Override
-  public String getModuleName() {
-    return "com.google.gwt.widgetideas.WidgetIdeas";
   }
 
   /**

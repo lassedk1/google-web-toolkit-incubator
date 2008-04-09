@@ -36,43 +36,6 @@ public class ClientTableModelTest extends TableModelTestBase {
   public static final int NUM_ROWS = 10;
 
   /**
-   * A row/column pairing used for confirming values.
-   */
-  protected class CellPair {
-    /**
-     * The row index.
-     */
-    private int row;
-
-    /**
-     * The column index.
-     */
-    private int column;
-
-    /**
-     * Constructor.
-     * 
-     * @param row the row index
-     * @param column the column index
-     */
-    public CellPair(int row, int column) {
-      this.row = row;
-      this.column = column;
-    }
-
-    /**
-     * Confirm that this pair equals the specified pair.
-     * 
-     * @param row the row index
-     * @param column the column index
-     */
-    public void assertPair(int row, int column) {
-      assertEquals(this.row, row);
-      assertEquals(this.column, column);
-    }
-  }
-
-  /**
    * @see TableModelTestBase#getTableModel(boolean)
    */
   @Override
