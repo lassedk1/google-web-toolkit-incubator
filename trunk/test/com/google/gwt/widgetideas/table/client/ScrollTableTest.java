@@ -15,18 +15,14 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
-import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.widgetideas.client.WidgetTestBase;
 import com.google.gwt.widgetideas.table.client.ScrollTable.ScrollPolicy;
 
 /**
  * Tests methods in the {@link ScrollTable} class.
  */
-public class ScrollTableTest extends GWTTestCase {
-  @Override
-  public String getModuleName() {
-    return "com.google.gwt.widgetideas.WidgetIdeas";
-  }
+public class ScrollTableTest extends WidgetTestBase {
 
   /**
    * Test accessors and modifiers.

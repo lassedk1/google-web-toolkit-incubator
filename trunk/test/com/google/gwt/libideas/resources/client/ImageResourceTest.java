@@ -16,7 +16,7 @@
 package com.google.gwt.libideas.resources.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.junit.client.GWTTestCase;
+import com.google.gwt.libideas.client.LibTestBase;
 import com.google.gwt.libideas.resources.client.impl.ImageResourcePrototype;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.LoadListener;
@@ -26,7 +26,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * Tests ImageResource generation.
  */
-public class ImageResourceTest extends GWTTestCase {
+public class ImageResourceTest extends LibTestBase {
 
   static interface Resources extends ImmutableResourceBundle {
     /**
@@ -65,18 +65,13 @@ public class ImageResourceTest extends GWTTestCase {
     ImageResource largeLossy();
   }
 
-  public String getModuleName() {
-    return "com.google.gwt.libideas.ImmutableResources";
-  }
-
   public void testPacking() {
     Resources r = GWT.create(Resources.class);
 
     // Cast to impl type for testing
     ImageResourcePrototype i64 = (ImageResourcePrototype) r.i64x64();
     ImageResourcePrototype lossy = (ImageResourcePrototype) r.largeLossy();
-    ImageResourcePrototype lossless =
-        (ImageResourcePrototype) r.largeLossless();
+    ImageResourcePrototype lossless = (ImageResourcePrototype) r.largeLossless();
 
     // The large, lossless image should be bundled
     assertEquals(i64.getURL(), lossless.getURL());

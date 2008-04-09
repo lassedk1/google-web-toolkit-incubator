@@ -15,7 +15,7 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
-import com.google.gwt.junit.client.GWTTestCase;
+import com.google.gwt.widgetideas.client.WidgetTestBase;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.CellFormatter;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.RowFormatter;
 
@@ -24,7 +24,7 @@ import java.util.Set;
 /**
  * Tests methods used for all {@link SelectionGrid} class.
  */
-public class SelectionGridTest extends GWTTestCase {
+public class SelectionGridTest extends WidgetTestBase {
   /**
    * A custom version of {@link TableSelectionListener} used for testing.
    */
@@ -120,12 +120,7 @@ public class SelectionGridTest extends GWTTestCase {
       hoveringRow = -1;
     }
   }
-
-  @Override
-  public String getModuleName() {
-    return "com.google.gwt.widgetideas.WidgetIdeas";
-  }
-
+ 
   /**
    * Get the selection grid.
    * 
@@ -284,7 +279,7 @@ public class SelectionGridTest extends GWTTestCase {
     testGrid.deselectRow(4);
     assertEquals(4, listener1.getDeselectedRow());
     assertEquals(4, listener3.getDeselectedRow());
-    
+
     // Fire hover row and cell
     assertEquals(-1, listener1.getHoveringRow());
     assertEquals(-1, listener1.getHoveringCell());

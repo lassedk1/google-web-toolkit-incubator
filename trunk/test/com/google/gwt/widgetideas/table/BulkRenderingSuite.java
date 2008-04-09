@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,17 +14,23 @@
  * the License.
  */
 
-package com.google.gwt.widgetideas.client;
+package com.google.gwt.widgetideas.table;
 
-import com.google.gwt.junit.client.GWTTestCase;
+import com.google.gwt.widgetideas.table.client.FlexTableBulkRendererTest;
+import com.google.gwt.widgetideas.table.client.GridBulkRendererTest;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
- * Test for the {@link PinnedPanel}.
+ * Tests the bulk rendering table code.
  */
-public abstract class BasicWidgetTestBase extends GWTTestCase {
+public class BulkRenderingSuite {
+  public static Test suite() {
+    TestSuite suite = new TestSuite("Test for bulk loading tables");
+    suite.addTestSuite(FlexTableBulkRendererTest.class);
+    suite.addTestSuite(GridBulkRendererTest.class);
 
-  public String getModuleName() {
-    return "com.google.gwt.widgetideas.WidgetIdeas";
+    return suite;
   }
-
 }

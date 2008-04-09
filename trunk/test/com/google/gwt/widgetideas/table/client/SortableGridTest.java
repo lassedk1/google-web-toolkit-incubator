@@ -45,11 +45,6 @@ public class SortableGridTest extends SelectionGridTest {
     }
   }
 
-  @Override
-  public String getModuleName() {
-    return "com.google.gwt.widgetideas.WidgetIdeas";
-  }
-
   /**
    * Get the selection grid.
    * 

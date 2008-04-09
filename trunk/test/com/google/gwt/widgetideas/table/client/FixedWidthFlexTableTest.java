@@ -15,13 +15,13 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
-import com.google.gwt.junit.client.GWTTestCase;
+import com.google.gwt.widgetideas.client.WidgetTestBase;
 import com.google.gwt.widgetideas.table.client.overrides.FlexTable.FlexCellFormatter;
 
 /**
  * Tests methods used for all {@link FixedWidthFlexTable} class.
  */
-public class FixedWidthFlexTableTest extends GWTTestCase {
+public class FixedWidthFlexTableTest extends WidgetTestBase {
   /**
    * Get the table.
    * 
@@ -29,11 +29,6 @@ public class FixedWidthFlexTableTest extends GWTTestCase {
    */
   public FixedWidthFlexTable getFixedWidthFlexTable() {
     return new FixedWidthFlexTable();
-  }
-
-  @Override
-  public String getModuleName() {
-    return "com.google.gwt.widgetideas.WidgetIdeas";
   }
 
   /**
@@ -123,7 +118,7 @@ public class FixedWidthFlexTableTest extends GWTTestCase {
     cellFormatter.setRowSpan(0, 1, 1);
     assertGhostCount(3, testTable);
   }
-  
+
   /**
    * Assert the expected number of columns in the ghost row of the table.
    * 
