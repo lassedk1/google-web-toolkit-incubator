@@ -29,39 +29,25 @@ import com.google.gwt.user.client.ui.Widget;
 public class ImageResourceTest extends LibTestBase {
 
   static interface Resources extends ImmutableResourceBundle {
-    /**
-     * @gwt.resource 16x16.png
-     */
+    @Resource("16x16.png")
     ImageResource i16x16();
 
-    /**
-     * @gwt.resource 32x32.png
-     */
+    @Resource("32x32.png")
     ImageResource i32x32();
 
-    /**
-     * @gwt.resource 64x64.png
-     */
+    @Resource("64x64.png")
     ImageResource i64x64();
 
-    /**
-     * @gwt.resource 64x64.png
-     */
+    @Resource("64x64.png")
     ImageResource i64x64Dup();
 
-    /**
-     * @gwt.resource 64x64-dup.png
-     */
+    @Resource("64x64-dup.png")
     ImageResource i64x64Dup2();
 
-    /**
-     * @gwt.resource largeLossless.png
-     */
+    @Resource("largeLossless.png")
     ImageResource largeLossless();
 
-    /**
-     * @gwt.resource largeLossy.jpg
-     */
+    @Resource("largeLossy.jpg")
     ImageResource largeLossy();
   }
 

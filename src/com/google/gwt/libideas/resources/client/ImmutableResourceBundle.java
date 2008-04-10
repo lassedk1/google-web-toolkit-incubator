@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,15 +15,37 @@
  */
 package com.google.gwt.libideas.resources.client;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
+
 /**
  * The use of this interface is similar to that of ImageBundle. Declare
  * no-argument functions that return subclasses of {@link ResourcePrototype},
- * which are annotated with <code>gwt.resource</code> annotations specifying
- * the classpath location of the resource to include in the output. At runtime,
- * the functions will return an object that can be used to access the data in
- * the original resource.
+ * which are annotated with {@link ImmutableResourceBundle.Resource} annotations
+ * specifying the classpath location of the resource to include in the output.
+ * At runtime, the functions will return an object that can be used to access
+ * the data in the original resource.
  */
 public interface ImmutableResourceBundle {
+
+  /**
+   * Specifies the classpath location of the resource or resources associated
+   * with the {@link ResourcePrototype}.
+   */
+  @Target(ElementType.METHOD)
+  public @interface Resource {
+    String[] value();
+  }
+
+  /**
+   * Specifies a sequence of transformation to be applied to the resource. The
+   * transformation may be a well-known short name or a fully-qualified class
+   * name.
+   */
+  @Target(ElementType.METHOD)
+  public @interface Transform {
+    String[] value();
+  }
 
   /**
    * Find a resource by the name of the function in which it is declared.
