@@ -26,25 +26,17 @@ public class TextResourceTest extends LibTestBase {
   private static final String HELLO = "Hello World!";
 
   static interface Resources extends ImmutableResourceBundle {
-    /**
-     * @gwt.resource com/google/gwt/libideas/resources/client/hello.txt
-     */
+    @Resource("com/google/gwt/libideas/resources/client/hello.txt")
     TextResource helloWorldAbsolute();
 
-    /**
-     * @gwt.resource hello.txt
-     */
+    @Resource("hello.txt")
     ExternalTextResource helloWorldExternal();
 
-    /**
-     * @gwt.resource hello.txt
-     */
+    @Resource("hello.txt")
     TextResource helloWorldRelative();
 
-    /**
-     * @gwt.resource hello.txt
-     * @gwt.transformer com.google.gwt.libideas.resources.rebind.UpperTransformer
-     */
+    @Resource("hello.txt")
+    @Transform("com.google.gwt.libideas.resources.rebind.UpperTransformer")
     TextResource helloWorldUpper();
   }
 

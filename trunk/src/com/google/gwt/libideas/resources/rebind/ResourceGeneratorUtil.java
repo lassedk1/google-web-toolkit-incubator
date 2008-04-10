@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,6 +20,8 @@ import com.google.gwt.core.ext.PropertyOracle;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
+import com.google.gwt.libideas.resources.client.ImmutableResourceBundle.Resource;
+import com.google.gwt.libideas.resources.client.ImmutableResourceBundle.Transform;
 
 import java.net.URL;
 
@@ -32,9 +34,9 @@ public final class ResourceGeneratorUtil {
 
   /**
    * Apply Transformers to a resource. The presence of one or more
-   * <code>gwt.transformer</code> annotations will specify the
-   * {@link Transformer} class to use. Multiple transformations will be applied
-   * in their declared order.
+   * {@link Transform} annotation values will specify the {@link Transformer}
+   * class to use. Multiple transformations will be applied in their declared
+   * order.
    * 
    * @param <T> the Java type that encapsulates the value of the resource
    * @param logger the TreeLogger context
@@ -44,21 +46,40 @@ public final class ResourceGeneratorUtil {
    * @return the transformed value.
    * @throws UnableToCompleteException
    */
+  @SuppressWarnings("unchecked")
   public static <T> T applyTransformations(TreeLogger logger, JMethod method,
       Class<T> baseType, T input) throws UnableToCompleteException {
-    String[][] md = method.getMetaData(TRANSFORMER_TAG);
+    String[] transformerNames;
 
-    logger =
-        logger.branch(TreeLogger.DEBUG, "Applying transformations for method "
-            + method.getName(), null);
+    if (method.getAnnotation(Transform.class) != null) {
+      transformerNames = method.getAnnotation(Transform.class).value();
+    } else {
+      String[][] md = method.getMetaData(TRANSFORMER_TAG);
+      transformerNames = new String[md.length];
+
+      if (md.length > 0) {
+        // Emit a deprecation warning about metadata:
+        logger.log(TreeLogger.WARN, "Method " + method.getName() + " uses a "
+            + "deprecated @gwt.transformer metadata annotation.  Convert to @"
+            + Transform.class.getName(), null);
+
+        int index = 0;
+        for (String[] elt : md) {
+          transformerNames[index++] = elt[0];
+        }
+      }
+    }
+
+    logger = logger.branch(TreeLogger.DEBUG,
+        "Applying transformations for method " + method.getName(), null);
 
     try {
-      for (int i = 0; i < md.length; i++) {
-        String className = md[i][0];
+      // TODO Implement a short-name system
+      for (String className : transformerNames) {
 
         // This may throw a ClassCastException, which we trap below
-        Class<? extends Transformer> clazz =
-            Class.forName(className).asSubclass(Transformer.class);
+        Class<? extends Transformer> clazz = Class.forName(className).asSubclass(
+            Transformer.class);
 
         Transformer<?> t = clazz.newInstance();
 
@@ -108,12 +129,32 @@ public final class ResourceGeneratorUtil {
   public static URL[] findResources(TreeLogger logger, ResourceContext context,
       JMethod method) throws UnableToCompleteException {
     logger = logger.branch(TreeLogger.DEBUG, "Finding resources", null);
-    String[][] md = method.getMetaData(METADATA_TAG);
 
-    if (md.length == 0) {
-      logger.log(TreeLogger.ERROR, "Method " + method.getName()
-          + " does not have any @" + METADATA_TAG + " annotations.", null);
-      throw new UnableToCompleteException();
+    String[] resources;
+    // Check for Resource annotations first:
+    if (method.getAnnotation(Resource.class) != null) {
+      Resource resource = method.getAnnotation(Resource.class);
+      resources = resource.value();
+    } else {
+      String[][] md = method.getMetaData(METADATA_TAG);
+
+      if (md.length == 0) {
+        logger.log(TreeLogger.ERROR,
+            "Method " + method.getName() + " does not have a @"
+                + Resource.class.getName() + " annotations.", null);
+        throw new UnableToCompleteException();
+      }
+
+      // Emit a deprecation warning about metadata:
+      logger.log(TreeLogger.WARN, "Method " + method.getName() + " uses a "
+          + "deprecated @gwt.resources metadata annotation.  Convert to @"
+          + Resource.class.getName(), null);
+
+      resources = new String[md.length];
+      for (int tagIndex = 0; tagIndex < md.length; tagIndex++) {
+        int lastIndex = md[tagIndex].length - 1;
+        resources[tagIndex] = md[tagIndex][lastIndex];
+      }
     }
 
     String locale;
@@ -124,31 +165,30 @@ public final class ResourceGeneratorUtil {
       locale = null;
     }
 
-    URL[] toReturn = new URL[md.length];
+    URL[] toReturn = new URL[resources.length];
 
     boolean error = false;
-    for (int tagIndex = 0; tagIndex < toReturn.length; tagIndex++) {
-      int lastValueIndex = md[tagIndex].length - 1;
-      String resourceNameFromMetaData = md[tagIndex][lastValueIndex];
+    int tagIndex = 0;
+    for (String resource : resources) {
 
       // Make sure the name is either absolute or package-relative.
-      if (resourceNameFromMetaData.indexOf("/") == -1) {
+      if (resource.indexOf("/") == -1) {
         String pkgName = method.getEnclosingType().getPackage().getName();
+
         // This construction handles the default package correctly, too.
-        resourceNameFromMetaData =
-            pkgName.replace('.', '/') + "/" + resourceNameFromMetaData;
+        resource = pkgName.replace('.', '/') + "/" + resource;
       }
 
-      URL resourceURL = tryFindResource(resourceNameFromMetaData, locale);
+      URL resourceURL = tryFindResource(resource, locale);
 
       if (resourceURL == null) {
-        logger.log(TreeLogger.ERROR, "Resource " + resourceNameFromMetaData
-            + " not found on classpath. "
-            + "Is the name specified as Class.getResource() would expect?",
-            null);
+        logger.log(TreeLogger.ERROR, "Resource " + resource
+            + " not found on classpath. Is the name specified as "
+            + "Class.getResource() would expect?", null);
         error = true;
       }
-      toReturn[tagIndex] = resourceURL;
+
+      toReturn[tagIndex++] = resourceURL;
     }
 
     if (error) {
