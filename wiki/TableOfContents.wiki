@@ -12,7 +12,7 @@
       * [ScrollTable]
       * [BulkTableRenderers]
     * Panels
-      * [TitledPanel]
+      * TitledPanel
       * [PinnedPanel]
       * [GlassPanel]
       * [FastTree]
