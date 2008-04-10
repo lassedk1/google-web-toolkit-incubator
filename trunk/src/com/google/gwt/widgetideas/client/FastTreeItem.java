@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -44,14 +44,12 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   private static final int TREE_NODE_INTERIOR_OPEN = 3;
   private static final int TREE_NODE_INTERIOR_CLOSED = 4;
   private static final String STYLENAME_CHILDREN = "children";
-
   private static final String STYLENAME_LEAF_DEFAULT = "gwt-FastTreeItem gwt-FastTreeItem-leaf";
   private static final String STYLENAME_OPEN = "open";
   private static final String STYLENAME_CLOSED = "closed";
   private static final String STYLENAME_LEAF = "leaf";
-
+  
   private static final String STYLENAME_CONTENT = "treeItemContent";
-
   /**
    * The base tree item element that will be cloned.
    */
@@ -82,9 +80,8 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * Creates an empty tree item.
    */
   public FastTreeItem() {
-    Element elem = DOMHelper.clone(TREE_LEAF, true);
-    setElement(elem);
-    contentElem = DOMHelper.rawFirstChild(elem);
+    Element elem = createLeafElement();
+    setElement(elem);    
   }
 
   /**
@@ -107,6 +104,14 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     addWidget(widget);
   }
 
+  /**
+   * This constructor is only for use by {@link DecoratedFastTreeItem}.
+   * @param element element
+   */
+  FastTreeItem(Element element) {
+    setElement(element);
+  }
+
   public void addItem(FastTreeItem item) {
     // Detach item from existing parent.
     if ((item.getParentItem() != null) || (item.getTree() != null)) {
@@ -117,7 +122,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     }
     if (children == null) {
       // Never had children.
-      children = new ArrayList();
+      children = new ArrayList<FastTreeItem>();
     }
     // Logical attach.
     item.setParentItem(this);
@@ -149,26 +154,14 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   /**
    * Become an interior node.
    */
-  public void becomeInteriorNode() {
-    if (!isInteriorNode()) {
+  public void becomeInteriorNode() {  
+    if (!isInteriorNode()) {      
       state = TREE_NODE_INTERIOR_NEVER_OPENED;
 
-      removeStyleDependentName(STYLENAME_LEAF);
       Element control = DOM.createDiv();
       setStyleName(control, STYLENAME_CLOSED);
       DOM.appendChild(control, contentElem);
-      DOM.appendChild(getElement(), control);
-    }
-  }
-
-  /**
-   * Become a leaf node.
-   */
-  public void becomeLeafNode() {
-    if (!isInteriorNode()) {
-      setStyleName(contentElem, getStylePrimaryName() + STYLENAME_LEAF);
-      setElement(contentElem);
-      childElems = null;
+      convertElementToInteriorNode(control);
     }
   }
 
@@ -176,8 +169,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     if ((index < 0) || (index >= getChildCount())) {
       throw new IndexOutOfBoundsException("No child at index " + index);
     }
-
-    return (FastTreeItem) children.get(index);
+    return children.get(index);
   }
 
   public int getChildCount() {
@@ -376,8 +368,9 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
       if (state == TREE_NODE_INTERIOR_NEVER_OPENED) {
         ensureChildren();
         childElems = DOM.createDiv();
-        DOM.appendChild(getElement(), childElems);
         UIObject.setStyleName(childElems, STYLENAME_CHILDREN);
+        convertElementToHaveChildren(childElems);
+
         if (children != null) {
           for (FastTreeItem item : children) {
             DOM.appendChild(childElems, item.getElement());
@@ -467,22 +460,37 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
       }
       tree = null;
       for (int i = 0, n = getChildCount(); i < n; ++i) {
-        ((FastTreeItem) children.get(i)).clearTree();
+        children.get(i).clearTree();
       }
     }
   }
 
-  void dumpTreeItems(List accum) {
+  void convertElementToHaveChildren(Element children) {
+    DOM.appendChild(getElement(), children);
+  }
+
+  void convertElementToInteriorNode(Element control) {
+    setStyleName(getElement(), "gwt-FastTreeItem-leaf", false);
+    DOM.appendChild(getElement(), control);
+  }
+
+  Element createLeafElement() {
+    Element elem = DOMHelper.clone(TREE_LEAF, true);
+    contentElem = DOMHelper.rawFirstChild(elem);
+    return elem;
+  }
+
+  void dumpTreeItems(List<FastTreeItem> accum) {
     if (isInteriorNode() && getChildCount() > 0) {
       for (int i = 0; i < children.size(); i++) {
-        FastTreeItem item = (FastTreeItem) children.get(i);
+        FastTreeItem item = children.get(i);
         accum.add(item);
         item.dumpTreeItems(accum);
       }
     }
   }
 
-  ArrayList getChildren() {
+  ArrayList<FastTreeItem> getChildren() {
     return children;
   }
 
@@ -533,7 +541,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     }
 
     for (int i = 0, n = getChildCount(); i < n; ++i) {
-      ((FastTreeItem) children.get(i)).setTree(newTree);
+      children.get(i).setTree(newTree);
     }
   }
 

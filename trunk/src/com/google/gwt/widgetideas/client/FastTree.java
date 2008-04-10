@@ -106,7 +106,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
 
   private static final String STYLENAME_SELECTION = "selection-bar";
 
-  private static FocusImpl impl = (FocusImpl) FocusImpl.getFocusImplForPanel();
+  private static FocusImpl impl = FocusImpl.getFocusImplForPanel();
 
   /**
    * Add the default style sheet and images.
@@ -124,7 +124,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   /**
    * Map of TreeItem.widget -> TreeItem.
    */
-  private final Map childWidgets = new HashMap();
+  private final Map<Widget,FastTreeItem> childWidgets = new HashMap<Widget, FastTreeItem>();
   private FastTreeItem curSelection;
   private final Element focusable;
   private FocusListenerCollection focusListeners;
@@ -315,12 +315,14 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     return impl.getTabIndex(focusable);
   }
 
-  public Iterator iterator() {
+  public Iterator<Widget> iterator() {
     final Widget[] widgets = new Widget[childWidgets.size()];
     childWidgets.keySet().toArray(widgets);
     return WidgetIterators.createWidgetIterator(this, widgets);
   }
 
+  @Override
+  @SuppressWarnings("fallthrough")
   public void onBrowserEvent(Event event) {
     int eventType = DOM.eventGetType(event);
 
@@ -400,7 +402,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
           // If we got here because of a key tab, then we need to make sure the
           // current tree item is selected.
           if (DOM.eventGetKeyCode(event) == KeyboardListener.KEY_TAB) {
-            ArrayList chain = new ArrayList();
+            ArrayList<Element> chain = new ArrayList<Element>();
             collectElementChain(chain, getElement(), DOM.eventGetTarget(event));
             FastTreeItem item = findItemByChain(chain, 0, root);
             if (item != getSelectedItem()) {
@@ -411,7 +413,6 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
 
         // Intentional fall through.
       case Event.ONKEYPRESS: {
-
         if (keyboardListeners != null) {
           keyboardListeners.fireKeyboardEvent(this, event);
         }
@@ -440,9 +441,10 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     super.onBrowserEvent(event);
   }
 
+  @Override
   public boolean remove(Widget w) {
     // Validate.
-    FastTreeItem item = (FastTreeItem) childWidgets.get(w);
+    FastTreeItem item = childWidgets.get(w);
     if (item == null) {
       return false;
     }
@@ -531,17 +533,19 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   /**
    * Iterator of tree items.
    */
-  public Iterator treeItemIterator() {
-    List accum = new ArrayList();
+  public Iterator<FastTreeItem> treeItemIterator() {
+    List<FastTreeItem> accum = new ArrayList<FastTreeItem>();
     root.dumpTreeItems(accum);
     return accum.iterator();
   }
 
+  @Override
   protected void doAttachChildren() {
     super.doAttachChildren();
     DOM.setEventListener(focusable, this);
   }
 
+  @Override
   protected void doDetachChildren() {
     super.doDetachChildren();
     DOM.setEventListener(focusable, null);
@@ -549,6 +553,48 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
 
   protected FastTreeItem getRoot() {
     return root;
+  }
+
+  protected void keyboardNavigation(Event event) {
+    // If nothing's selected, select the first item.
+    if (curSelection == null) {
+      if (root.getChildCount() > 0) {
+        onSelection(root.getChild(0), true, true);
+      }
+      super.onBrowserEvent(event);
+    } else {
+
+      // Handle keyboard events if keyboard navigation is enabled
+
+      switch (DOMHelper.standardizeKeycode(DOM.eventGetKeyCode(event))) {
+        case KeyboardListener.KEY_UP: {
+          moveSelectionUp(curSelection);
+          break;
+        }
+        case KeyboardListener.KEY_DOWN: {
+          moveSelectionDown(curSelection, true);
+          break;
+        }
+        case KeyboardListener.KEY_LEFT: {
+          if (curSelection.isOpen()) {
+            curSelection.setState(false);
+          } else {
+            FastTreeItem parent = curSelection.getParentItem();
+            if (parent != null) {
+              setSelectedItem(parent);
+            }
+          }
+          break;
+        }
+        case KeyboardListener.KEY_RIGHT: {
+          if (!curSelection.isOpen()) {
+            curSelection.setState(true);
+          }
+          // Do nothing if the element is already open.
+          break;
+        }
+      }
+    }
   }
 
   /**
@@ -569,6 +615,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     UIObject.setVisible(focusable, true);
   }
 
+  @Override
   protected void onLoad() {
     if (getSelectedItem() != null) {
       moveSelectionBar(getSelectedItem());
@@ -612,6 +659,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * This method is called immediately before a widget will be detached from the
    * browser's document.
    */
+  @Override
   protected void onUnload() {
   }
 
@@ -639,7 +687,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   /*
    * This method exists solely to support unit tests.
    */
-  Map getChildWidgets() {
+  Map<Widget, FastTreeItem> getChildWidgets() {
     return childWidgets;
   }
 
@@ -660,7 +708,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   /**
    * Collects parents going up the element tree, terminated at the tree root.
    */
-  private void collectElementChain(ArrayList chain, Element hRoot, Element hElem) {
+  private void collectElementChain(ArrayList<Element> chain, Element hRoot, Element hElem) {
     if ((hElem == null) || hElem.equals(hRoot)) {
       return;
     }
@@ -691,7 +739,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
 
   private boolean elementClicked(FastTreeItem root, Event event) {
     Element target = DOM.eventGetTarget(event);
-    ArrayList chain = new ArrayList();
+    ArrayList<Element> chain = new ArrayList<Element>();
     collectElementChain(chain, getElement(), target);
     FastTreeItem item = findItemByChain(chain, 0, root);
     if (item != null) {
@@ -716,13 +764,13 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     return findDeepestOpenChild(item.getChild(item.getChildCount() - 1));
   }
 
-  private FastTreeItem findItemByChain(ArrayList chain, int idx,
+  private FastTreeItem findItemByChain(ArrayList<Element> chain, int idx,
       FastTreeItem root) {
     if (idx == chain.size()) {
       return root;
     }
 
-    Element hCurElem = (Element) chain.get(idx);
+    Element hCurElem = chain.get(idx);
     for (int i = 0, n = root.getChildCount(); i < n; ++i) {
       FastTreeItem child = root.getChild(i);
       if (child.getElement().equals(hCurElem)) {
@@ -735,48 +783,6 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     }
 
     return findItemByChain(chain, idx + 1, root);
-  }
-
-  private void keyboardNavigation(Event event) {
-    // If nothing's selected, select the first item.
-    if (curSelection == null) {
-      if (root.getChildCount() > 0) {
-        onSelection(root.getChild(0), true, true);
-      }
-      super.onBrowserEvent(event);
-    } else {
-
-      // Handle keyboard events if keyboard navigation is enabled
-
-      switch (DOMHelper.standardizeKeycode(DOM.eventGetKeyCode(event))) {
-        case KeyboardListener.KEY_UP: {
-          moveSelectionUp(curSelection);
-          break;
-        }
-        case KeyboardListener.KEY_DOWN: {
-          moveSelectionDown(curSelection, true);
-          break;
-        }
-        case KeyboardListener.KEY_LEFT: {
-          if (curSelection.isOpen()) {
-            curSelection.setState(false);
-          } else {
-            FastTreeItem parent = curSelection.getParentItem();
-            if (parent != null) {
-              setSelectedItem(parent);
-            }
-          }
-          break;
-        }
-        case KeyboardListener.KEY_RIGHT: {
-          if (!curSelection.isOpen()) {
-            curSelection.setState(true);
-          }
-          // Do nothing if the element is already open.
-          break;
-        }
-      }
-    }
   }
 
   private void moveElementOverTarget(Element movable, Element target) {
@@ -806,6 +812,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     } else {
       // Ensure Focus is set, as focus may have been previously delegated by
       // tree.
+
       impl.focus(focusable);
     }
   }
@@ -881,9 +888,9 @@ class WidgetIterators {
    * @param contained the array of widgets
    * @return the iterator
    */
-  static final Iterator createWidgetIterator(final HasWidgets container,
+  static final Iterator<Widget> createWidgetIterator(final HasWidgets container,
       final Widget[] contained) {
-    return new Iterator() {
+    return new Iterator<Widget>() {
       int index = -1, last = -1;
       boolean widgetsWasCopied = false;
       Widget[] widgets = contained;
@@ -896,7 +903,7 @@ class WidgetIterators {
         return (index < contained.length);
       }
 
-      public Object next() {
+      public Widget next() {
         if (!hasNext()) {
           throw new NoSuchElementException();
         }
