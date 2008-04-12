@@ -1,0 +1,4713 @@
+<html>
+<head><script>
+var $gwt_version = "0.0.0";
+var $wnd = parent;
+var $doc = $wnd.document;
+var $moduleName, $moduleBase;
+var $stats = $wnd.__gwtstatsEvent ? function(a,b,c,d) {$wnd.__gwtstatsEvent(a,b,c,d)} : null;
+</script></head>
+<body>
+<script><!--
+$stats && $stats('com.google.gwt.demos.glasspanel.GlassPanelDemo', 'startup', 'moduleEvalStart', {millis:(new Date()).getTime()});
+var _;
+function equals_1(other){
+  return this === other;
+}
+
+function getClass_73(){
+  return Ljava_lang_Object_2_classlit;
+}
+
+function hashCode_2(){
+  return this.$H || (this.$H = ++sNextHashId);
+}
+
+function toString_4(){
+  return (this.typeMarker$ === nullMethod || this.typeId$ == 2?this.getClass$():Lcom_google_gwt_core_client_JavaScriptObject_2_classlit).typeName + '@' + toPowerOfTwoString(this.typeMarker$ === nullMethod || this.typeId$ == 2?this.hashCode$():this.$H || (this.$H = ++sNextHashId), 4);
+}
+
+function Object_0(){
+}
+
+_ = Object_0.prototype = {};
+_.equals$ = equals_1;
+_.getClass$ = getClass_73;
+_.hashCode$ = hashCode_2;
+_.toString$ = toString_4;
+_.toString = function(){
+  return this.toString$();
+}
+;
+_.typeMarker$ = nullMethod;
+_.typeId$ = 1;
+var sUncaughtExceptionHandler = null;
+function $Throwable(this$static, message, cause){
+  this$static.cause = cause;
+  this$static.detailMessage = message;
+  return this$static;
+}
+
+function $toString_2(this$static){
+  var className, msg;
+  className = this$static.getClass$().typeName;
+  msg = this$static.detailMessage;
+  if (msg !== null) {
+    return className + ': ' + msg;
+  }
+   else {
+    return className;
+  }
+}
+
+function getClass_78(){
+  return Ljava_lang_Throwable_2_classlit;
+}
+
+function toString_8(){
+  return $toString_2(this);
+}
+
+function Throwable(){
+}
+
+_ = Throwable.prototype = new Object_0();
+_.getClass$ = getClass_78;
+_.toString$ = toString_8;
+_.typeId$ = 3;
+_.cause = null;
+_.detailMessage = null;
+function $Exception(this$static, message){
+  this$static.detailMessage = message;
+  return this$static;
+}
+
+function getClass_68(){
+  return Ljava_lang_Exception_2_classlit;
+}
+
+function Exception(){
+}
+
+_ = Exception.prototype = new Throwable();
+_.getClass$ = getClass_68;
+_.typeId$ = 4;
+function $RuntimeException(this$static, message){
+  this$static.detailMessage = message;
+  return this$static;
+}
+
+function getClass_74(){
+  return Ljava_lang_RuntimeException_2_classlit;
+}
+
+function RuntimeException(){
+}
+
+_ = RuntimeException.prototype = new Exception();
+_.getClass$ = getClass_74;
+_.typeId$ = 5;
+function $JavaScriptException(this$static, e){
+  $Exception(this$static, '(' + getName(e) + '): ' + getDescription(e) + getProperties(e));
+  getName(e);
+  getDescription(e);
+  getException(e);
+  return this$static;
+}
+
+function getClass_0(){
+  return Lcom_google_gwt_core_client_JavaScriptException_2_classlit;
+}
+
+function getDescription(e){
+  if (e !== null && (e.typeMarker$ !== nullMethod && e.typeId$ != 2)) {
+    return getDescription0(dynamicCastJso(e));
+  }
+   else {
+    return e + '';
+  }
+}
+
+function getDescription0(e){
+  if (e == null) {
+    return null;
+  }
+  return e.message == null?null:e.message;
+}
+
+function getException(e){
+  if (e !== null && (e.typeMarker$ !== nullMethod && e.typeId$ != 2)) {
+    return dynamicCastJso(e);
+  }
+   else {
+    return null;
+  }
+}
+
+function getName(e){
+  if (e === null) {
+    return 'null';
+  }
+   else if (e !== null && (e.typeMarker$ !== nullMethod && e.typeId$ != 2)) {
+    return getName0(dynamicCastJso(e));
+  }
+   else if (e !== null && canCast(e.typeId$, 1)) {
+    return 'String';
+  }
+   else {
+    return (e.typeMarker$ === nullMethod || e.typeId$ == 2?e.getClass$():Lcom_google_gwt_core_client_JavaScriptObject_2_classlit).typeName;
+  }
+}
+
+function getName0(e){
+  if (e == null) {
+    return null;
+  }
+  return e.name == null?null:e.name;
+}
+
+function getProperties(e){
+  if (e !== null && (e.typeMarker$ !== nullMethod && e.typeId$ != 2)) {
+    return getProperties0(dynamicCastJso(e));
+  }
+   else {
+    return '';
+  }
+}
+
+function getProperties0(e){
+  var result = '';
+  for (prop in e) {
+    if (prop != 'name' && prop != 'description') {
+      result += '\n ' + prop + ': ' + e[prop];
+    }
+  }
+  return result;
+}
+
+function JavaScriptException(){
+}
+
+_ = JavaScriptException.prototype = new RuntimeException();
+_.getClass$ = getClass_0;
+_.typeId$ = 6;
+function hashCode__devirtual$(this$static){
+  return this$static.typeMarker$ === nullMethod || this$static.typeId$ == 2?this$static.hashCode$():this$static.$H || (this$static.$H = ++sNextHashId);
+}
+
+var sNextHashId = 0;
+function $onModuleLoad2(this$static){
+  var buttonBodyDefault, buttonBodyLarge, buttonHTMLDefault, buttonHTMLLarge, buttonScrollingDisable, buttonScrollingEnable, buttonTable;
+  $add(($clinit_90() , get_0(null)), $HTML_0(new HTML(), '<code>$doc.compatMode = <b>' + $doc.compatMode + '<\/b><\/code>'));
+  this$static.redAbsolutePanel = $AbsolutePanel(new AbsolutePanel());
+  $setPixelSize(this$static.redAbsolutePanel, 130, 130);
+  $add_0(get_0(null), this$static.redAbsolutePanel, 500, 150);
+  $add(this$static.redAbsolutePanel, $HTML_0(new HTML(), 'This red GlassPanel was created<br>with <code>autoHide<\/code> set to <code>false<\/code>.'));
+  this$static.greenAbsolutePanel = get_0('cell2');
+  $workaroundIssue1813($getElement(this$static.greenAbsolutePanel));
+  $add(this$static.greenAbsolutePanel, $HTML_0(new HTML(), 'Click or press <code>ESC<\/code> once<br>to remove the gray GlassPanel.<br><br>Click or press <code>ESC<\/code> a second<br>time to remove this green GlassPanel.'));
+  buttonBodyDefault = $Button_0(new Button(), 'BODY setSize("", "")');
+  $addClickListener(buttonBodyDefault, $GlassPanelDemo$3(new GlassPanelDemo$3(), this$static));
+  buttonBodyLarge = $Button_0(new Button(), 'BODY setSize("1000px", "1000px")');
+  $addClickListener(buttonBodyLarge, $GlassPanelDemo$4(new GlassPanelDemo$4(), this$static));
+  buttonHTMLDefault = $Button_0(new Button(), 'HTML setSize("", "")');
+  $addClickListener(buttonHTMLDefault, $GlassPanelDemo$5(new GlassPanelDemo$5(), this$static));
+  buttonHTMLLarge = $Button_0(new Button(), 'HTML setSize("2000px", "2000px")');
+  $addClickListener(buttonHTMLLarge, $GlassPanelDemo$6(new GlassPanelDemo$6(), this$static));
+  buttonScrollingEnable = $Button_0(new Button(), 'Window.enableScrolling(true)');
+  $addClickListener(buttonScrollingEnable, $GlassPanelDemo$7(new GlassPanelDemo$7(), this$static));
+  buttonScrollingDisable = $Button_0(new Button(), 'Window.enableScrolling(false)');
+  $addClickListener(buttonScrollingDisable, $GlassPanelDemo$8(new GlassPanelDemo$8(), this$static));
+  buttonTable = $FlexTable(new FlexTable());
+  setStyleName((buttonTable.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , buttonTable.element), 'buttons', true);
+  $add_0(get_0(null), buttonTable, 0, 0);
+  $setWidget(buttonTable, 0, 0, buttonBodyDefault);
+  $setWidget(buttonTable, 0, 1, buttonBodyLarge);
+  $setWidget(buttonTable, 1, 0, buttonHTMLDefault);
+  $setWidget(buttonTable, 1, 1, buttonHTMLLarge);
+  $setWidget(buttonTable, 2, 0, buttonScrollingEnable);
+  $setWidget(buttonTable, 2, 1, buttonScrollingDisable);
+  $removeGlassPanel(this$static);
+  this$static.redGlassPanel = $GlassPanel(new GlassPanel(), false);
+  $addStyleName(this$static.redGlassPanel, 'red');
+  $add_0(this$static.redAbsolutePanel, this$static.redGlassPanel, 0, 0);
+  this$static.greenGlassPanel = $GlassPanel(new GlassPanel(), true);
+  $addStyleName(this$static.greenGlassPanel, 'green');
+  $add_0(this$static.greenAbsolutePanel, this$static.greenGlassPanel, 0, 0);
+  this$static.glassPanel3 = $GlassPanel(new GlassPanel(), true);
+  $add_0(get_0(null), this$static.glassPanel3, 0, 0);
+}
+
+function $removeGlassPanel(this$static){
+  if (this$static.redGlassPanel !== null) {
+    $removeFromParent(this$static.redGlassPanel);
+  }
+  if (this$static.greenGlassPanel !== null) {
+    $removeFromParent(this$static.greenGlassPanel);
+  }
+  if (this$static.glassPanel3 !== null) {
+    $removeFromParent(this$static.glassPanel3);
+  }
+}
+
+function $resetGlassPanels(this$static){
+  $removeGlassPanel(this$static);
+  this$static.redGlassPanel = $GlassPanel(new GlassPanel(), false);
+  $addStyleName(this$static.redGlassPanel, 'red');
+  $add_0(this$static.redAbsolutePanel, this$static.redGlassPanel, 0, 0);
+  this$static.greenGlassPanel = $GlassPanel(new GlassPanel(), true);
+  $addStyleName(this$static.greenGlassPanel, 'green');
+  $add_0(this$static.greenAbsolutePanel, this$static.greenGlassPanel, 0, 0);
+  this$static.glassPanel3 = $GlassPanel(new GlassPanel(), true);
+  $add_0(($clinit_90() , get_0(null)), this$static.glassPanel3, 0, 0);
+}
+
+function $workaroundIssue1813(element){
+  element.style['position'] = 'relative';
+  element.style['overflow'] = 'hidden';
+  element.style['display'] = 'block';
+}
+
+function getClass_10(){
+  return Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo_2_classlit;
+}
+
+function GlassPanelDemo(){
+}
+
+_ = GlassPanelDemo.prototype = new Object_0();
+_.getClass$ = getClass_10;
+_.typeId$ = 0;
+_.glassPanel3 = null;
+_.greenAbsolutePanel = null;
+_.greenGlassPanel = null;
+_.redAbsolutePanel = null;
+_.redGlassPanel = null;
+function $onUncaughtException(throwable){
+  var dialogBox, i, stackTraceElements, text;
+  text = 'Uncaught exception: ';
+  while (throwable !== null) {
+    stackTraceElements = initDim(_3Ljava_lang_StackTraceElement_2_classlit, 0, 0, 0, 0);
+    text += $toString_2(throwable) + '\n';
+    for (i = 0; i < stackTraceElements.length; ++i) {
+      text += '    at ' + stackTraceElements[i] + '\n';
+    }
+    throwable = throwable.cause;
+    if (throwable !== null) {
+      text += 'Caused by: ';
+    }
+  }
+  dialogBox = $DialogBox(new DialogBox(), true);
+  (dialogBox.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , dialogBox.element).style['backgroundColor'] = '#ABCDEF';
+  text = $replaceAll(text, ' ', '&nbsp;');
+  $setHTML(dialogBox.caption, '<pre>' + text + '<\/pre>');
+  $center(dialogBox);
+}
+
+function getClass_2(){
+  return Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo$1_2_classlit;
+}
+
+function GlassPanelDemo$1(){
+}
+
+_ = GlassPanelDemo$1.prototype = new Object_0();
+_.getClass$ = getClass_2;
+_.typeId$ = 0;
+function $GlassPanelDemo$2(this$static, this$0){
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function execute(){
+  $onModuleLoad2(this.this$0);
+}
+
+function getClass_3(){
+  return Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo$2_2_classlit;
+}
+
+function GlassPanelDemo$2(){
+}
+
+_ = GlassPanelDemo$2.prototype = new Object_0();
+_.execute = execute;
+_.getClass$ = getClass_3;
+_.typeId$ = 7;
+_.this$0 = null;
+function $GlassPanelDemo$3(this$static, this$0){
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function getClass_4(){
+  return Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo$3_2_classlit;
+}
+
+function onClick(sender){
+  $removeGlassPanel(this.this$0);
+  $setSize(($clinit_90() , get_0(null)), '', '');
+  $resetGlassPanels(this.this$0);
+}
+
+function GlassPanelDemo$3(){
+}
+
+_ = GlassPanelDemo$3.prototype = new Object_0();
+_.getClass$ = getClass_4;
+_.onClick = onClick;
+_.typeId$ = 8;
+_.this$0 = null;
+function $GlassPanelDemo$4(this$static, this$0){
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function getClass_5(){
+  return Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo$4_2_classlit;
+}
+
+function onClick_0(sender){
+  $removeGlassPanel(this.this$0);
+  $setSize(($clinit_90() , get_0(null)), '1000px', '1000px');
+  $resetGlassPanels(this.this$0);
+}
+
+function GlassPanelDemo$4(){
+}
+
+_ = GlassPanelDemo$4.prototype = new Object_0();
+_.getClass$ = getClass_5;
+_.onClick = onClick_0;
+_.typeId$ = 9;
+_.this$0 = null;
+function $GlassPanelDemo$5(this$static, this$0){
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function getClass_6(){
+  return Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo$5_2_classlit;
+}
+
+function onClick_1(sender){
+  var htmlElement;
+  $removeGlassPanel(this.this$0);
+  htmlElement = $getParentElement(($clinit_90() , $doc.body));
+  htmlElement.style['width'] = '';
+  htmlElement.style['height'] = '';
+  $resetGlassPanels(this.this$0);
+}
+
+function GlassPanelDemo$5(){
+}
+
+_ = GlassPanelDemo$5.prototype = new Object_0();
+_.getClass$ = getClass_6;
+_.onClick = onClick_1;
+_.typeId$ = 10;
+_.this$0 = null;
+function $GlassPanelDemo$6(this$static, this$0){
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function getClass_7(){
+  return Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo$6_2_classlit;
+}
+
+function onClick_2(sender){
+  var htmlElement;
+  $removeGlassPanel(this.this$0);
+  htmlElement = $getParentElement(($clinit_90() , $doc.body));
+  htmlElement.style['width'] = '2000px';
+  htmlElement.style['height'] = '2000px';
+  $resetGlassPanels(this.this$0);
+}
+
+function GlassPanelDemo$6(){
+}
+
+_ = GlassPanelDemo$6.prototype = new Object_0();
+_.getClass$ = getClass_7;
+_.onClick = onClick_2;
+_.typeId$ = 11;
+_.this$0 = null;
+function $GlassPanelDemo$7(this$static, this$0){
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function getClass_8(){
+  return Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo$7_2_classlit;
+}
+
+function onClick_3(sender){
+  $removeGlassPanel(this.this$0);
+  ($clinit_52() , documentRoot).style.overflow = '';
+  $resetGlassPanels(this.this$0);
+}
+
+function GlassPanelDemo$7(){
+}
+
+_ = GlassPanelDemo$7.prototype = new Object_0();
+_.getClass$ = getClass_8;
+_.onClick = onClick_3;
+_.typeId$ = 12;
+_.this$0 = null;
+function $GlassPanelDemo$8(this$static, this$0){
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function getClass_9(){
+  return Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo$8_2_classlit;
+}
+
+function onClick_4(sender){
+  $removeGlassPanel(this.this$0);
+  ($clinit_52() , documentRoot).style.overflow = 'hidden';
+  $resetGlassPanels(this.this$0);
+}
+
+function GlassPanelDemo$8(){
+}
+
+_ = GlassPanelDemo$8.prototype = new Object_0();
+_.getClass$ = getClass_9;
+_.onClick = onClick_4;
+_.typeId$ = 13;
+_.this$0 = null;
+function $getFirstChildElement(elem){
+  var child = elem.firstChild;
+  while (child && child.nodeType != 1)
+    child = child.nextSibling;
+  return child || null;
+}
+
+function $getParentElement(elem){
+  var parent = elem.parentNode;
+  if (parent == null) {
+    return null;
+  }
+  if (parent.nodeType != 1)
+    parent = null;
+  return parent || null;
+}
+
+function $getAbsoluteLeft(elem){
+  if (elem.offsetLeft == null) {
+    return 0;
+  }
+  var left = 0;
+  var curr = elem.parentNode;
+  if (curr) {
+    while (curr.offsetParent) {
+      left -= curr.scrollLeft;
+      curr = curr.parentNode;
+    }
+  }
+  while (elem) {
+    left += elem.offsetLeft;
+    var parent = elem.offsetParent;
+    if (parent && (parent.tagName == 'BODY' && elem.style.position == 'absolute')) {
+      break;
+    }
+    elem = parent;
+  }
+  return left;
+}
+
+function $getAbsoluteTop(elem){
+  if (elem.offsetTop == null) {
+    return 0;
+  }
+  var top = 0;
+  var curr = elem.parentNode;
+  if (curr) {
+    while (curr.offsetParent) {
+      top -= curr.scrollTop;
+      curr = curr.parentNode;
+    }
+  }
+  while (elem) {
+    top += elem.offsetTop;
+    var parent = elem.offsetParent;
+    if (parent && (parent.tagName == 'BODY' && elem.style.position == 'absolute')) {
+      break;
+    }
+    elem = parent;
+  }
+  return top;
+}
+
+function $isOrHasChild(parent, child){
+  while (child) {
+    if (parent == child) {
+      return true;
+    }
+    child = child.parentNode;
+    if (child && child.nodeType != 1) {
+      child = null;
+    }
+  }
+  return false;
+}
+
+function $appendChild(this$static, newChild){
+  return this$static.appendChild(newChild);
+}
+
+function createFromSeed(seedType, length){
+  var seedArray = [null, 0, false, [0, 0]];
+  var value = seedArray[seedType];
+  var array = new Array(length);
+  for (var i = 0; i < length; ++i) {
+    array[i] = value;
+  }
+  return array;
+}
+
+function getClass_11(){
+  return this.arrayClass$;
+}
+
+function initDim(arrayClass, typeId, queryId, length, seedType){
+  var result;
+  result = createFromSeed(seedType, length);
+  initValues(arrayClass, typeId, queryId, result);
+  return result;
+}
+
+function initValues(arrayClass, typeId, queryId, array){
+  if (protoTypeArray_0 === null) {
+    protoTypeArray_0 = new Array_0();
+  }
+  wrapArray(array, protoTypeArray_0);
+  array.arrayClass$ = arrayClass;
+  array.typeId$ = typeId;
+  array.queryId$ = queryId;
+  return array;
+}
+
+function setCheck(array, index, value){
+  if (value !== null) {
+    if (array.queryId$ > 0 && !canCastUnsafe(value.typeId$, array.queryId$)) {
+      throw new ArrayStoreException();
+    }
+    if (array.queryId$ < 0 && (value.typeMarker$ === nullMethod || value.typeId$ == 2)) {
+      throw new ArrayStoreException();
+    }
+  }
+  return array[index] = value;
+}
+
+function wrapArray(array, protoTypeArray){
+  for (var i in protoTypeArray) {
+    var toCopy = protoTypeArray[i];
+    if (toCopy) {
+      array[i] = toCopy;
+    }
+  }
+  return array;
+}
+
+function Array_0(){
+}
+
+_ = Array_0.prototype = new Object_0();
+_.getClass$ = getClass_11;
+_.typeId$ = 0;
+_.arrayClass$ = null;
+_.length = 0;
+_.queryId$ = 0;
+var protoTypeArray_0 = null;
+function canCast(srcId, dstId){
+  return srcId && !!typeIdArray[srcId][dstId];
+}
+
+function canCastUnsafe(srcId, dstId){
+  return srcId && typeIdArray[srcId][dstId];
+}
+
+function dynamicCast(src, dstId){
+  if (src !== null && !canCastUnsafe(src.typeId$, dstId)) {
+    throw new ClassCastException();
+  }
+  return src;
+}
+
+function dynamicCastJso(src){
+  if (src !== null && (src.typeMarker$ === nullMethod || src.typeId$ == 2)) {
+    throw new ClassCastException();
+  }
+  return src;
+}
+
+function instanceOf(src, dstId){
+  return src !== null && canCast(src.typeId$, dstId);
+}
+
+var typeIdArray = [{}, {}, {1:1}, {2:1}, {2:1}, {2:1, 17:1}, {2:1, 17:1}, {3:1}, {9:1}, {9:1}, {9:1}, {9:1}, {9:1}, {9:1}, {2:1, 17:1}, {5:1}, {5:1}, {5:1}, {6:1}, {5:1}, {10:1, 13:1, 14:1}, {10:1, 13:1, 14:1}, {10:1, 13:1, 14:1}, {10:1, 13:1, 14:1, 16:1}, {10:1, 13:1, 14:1}, {10:1, 13:1, 14:1}, {10:1, 13:1, 14:1}, {19:1}, {19:1}, {19:1}, {10:1, 13:1, 14:1}, {10:1, 13:1, 14:1}, {4:1, 10:1, 13:1, 14:1}, {4:1, 10:1, 11:1, 13:1, 14:1}, {10:1, 13:1, 14:1}, {10:1, 13:1, 14:1}, {10:1, 13:1, 14:1}, {10:1, 13:1, 14:1}, {10:1, 13:1, 14:1}, {19:1}, {8:1}, {10:1, 12:1, 13:1, 14:1, 16:1}, {6:1}, {4:1, 10:1, 13:1, 14:1}, {7:1}, {3:1}, {2:1, 17:1}, {2:1, 17:1}, {2:1}, {2:1}, {2:1, 17:1}, {2:1, 17:1}, {2:1, 17:1}, {2:1, 17:1}, {2:1, 17:1}, {2:1, 17:1}, {21:1}, {20:1}, {18:1}, {2:1, 17:1}];
+function caught(e){
+  if (e !== null && canCast(e.typeId$, 2)) {
+    return e;
+  }
+  return $JavaScriptException(new JavaScriptException(), e);
+}
+
+function throwAssertionError(){
+  throw new AssertionError();
+}
+
+function throwAssertionError_Object(message){
+  throw $AssertionError(new AssertionError(), message);
+}
+
+function $CommandCanceledException(this$static){
+  return this$static;
+}
+
+function getClass_12(){
+  return Lcom_google_gwt_user_client_CommandCanceledException_2_classlit;
+}
+
+function CommandCanceledException(){
+}
+
+_ = CommandCanceledException.prototype = new RuntimeException();
+_.getClass$ = getClass_12;
+_.typeId$ = 14;
+function $CommandExecutor(this$static){
+  this$static.cancellationTimer = $CommandExecutor$1(new CommandExecutor$1(), this$static);
+  this$static.commands = $ArrayList(new ArrayList());
+  this$static.executionTimer = $CommandExecutor$2(new CommandExecutor$2(), this$static);
+  this$static.iterator = $CommandExecutor$CircularIterator(new CommandExecutor$CircularIterator(), this$static);
+  return this$static;
+}
+
+function $doCommandCanceled(this$static){
+  var cmd, ex, ueh;
+  cmd = $getLast(this$static.iterator);
+  $remove(this$static.iterator);
+  cmd !== null || throwAssertionError();
+  ex = null;
+  if (cmd !== null && canCast(cmd.typeId$, 3)) {
+    ex = $CommandCanceledException(new CommandCanceledException(), dynamicCast(cmd, 3));
+  }
+   else {
+  }
+  if (ex !== null) {
+    ueh = sUncaughtExceptionHandler;
+    if (ueh !== null) {
+      $onUncaughtException(ex);
+    }
+  }
+  this$static.executing = false;
+  $maybeStartExecutionTimer(this$static);
+}
+
+function $doExecuteCommands(this$static, startTimeMillis){
+  var command, element, wasCanceled;
+  !this$static.executionTimerPending || throwAssertionError();
+  wasCanceled = false;
+  try {
+    this$static.executing = true;
+    $setEnd(this$static.iterator, this$static.commands.size);
+    $schedule(this$static.cancellationTimer, 10000);
+    while ($hasNext(this$static.iterator)) {
+      element = $next(this$static.iterator);
+      try {
+        if (element === null) {
+          return;
+        }
+        if (element !== null && canCast(element.typeId$, 3)) {
+          command = dynamicCast(element, 3);
+          command.execute();
+        }
+         else {
+        }
+      }
+       finally {
+        wasCanceled = this$static.iterator.last == -1;
+        if (wasCanceled) {
+          return;
+        }
+        $remove(this$static.iterator);
+      }
+      if ((new Date()).getTime() - startTimeMillis >= 100) {
+        return;
+      }
+    }
+  }
+   finally {
+    if (!wasCanceled) {
+      $cancel(this$static.cancellationTimer);
+      this$static.executing = false;
+      $maybeStartExecutionTimer(this$static);
+    }
+  }
+}
+
+function $maybeStartExecutionTimer(this$static){
+  if (this$static.commands.size != 0 && !this$static.executionTimerPending && !this$static.executing) {
+    this$static.executionTimerPending = true;
+    $schedule(this$static.executionTimer, 1);
+  }
+}
+
+function $submit(this$static, command){
+  $add_3(this$static.commands, command);
+  $maybeStartExecutionTimer(this$static);
+}
+
+function getClass_16(){
+  return Lcom_google_gwt_user_client_CommandExecutor_2_classlit;
+}
+
+function CommandExecutor(){
+}
+
+_ = CommandExecutor.prototype = new Object_0();
+_.getClass$ = getClass_16;
+_.typeId$ = 0;
+_.executing = false;
+_.executionTimerPending = false;
+function $clinit_39(){
+  $clinit_39 = nullMethod;
+  timers = $ArrayList(new ArrayList());
+  addWindowCloseListener(new Timer$1());
+}
+
+function $cancel(this$static){
+  if (this$static.isRepeating) {
+    $wnd.clearInterval(this$static.timerId);
+  }
+   else {
+    $wnd.clearTimeout(this$static.timerId);
+  }
+  $remove_7(timers, this$static);
+}
+
+function $fireAndCatch(this$static){
+  var $e0, e;
+  try {
+    $fireImpl(this$static);
+  }
+   catch ($e0) {
+    $e0 = caught($e0);
+    if (instanceOf($e0, 2)) {
+      e = $e0;
+      $onUncaughtException(e);
+    }
+     else 
+      throw $e0;
+  }
+}
+
+function $fireImpl(this$static){
+  if (!this$static.isRepeating) {
+    $remove_7(timers, this$static);
+  }
+  this$static.run();
+}
+
+function $schedule(this$static, delayMillis){
+  if (delayMillis <= 0) {
+    throw $IllegalArgumentException(new IllegalArgumentException(), 'must be positive');
+  }
+  $cancel(this$static);
+  this$static.isRepeating = false;
+  this$static.timerId = createTimeout(this$static, delayMillis);
+  $add_3(timers, this$static);
+}
+
+function createTimeout(timer, delay){
+  return $wnd.setTimeout(function(){
+    timer.fire();
+  }
+  , delay);
+}
+
+function fire(){
+  var handler;
+  handler = sUncaughtExceptionHandler;
+  if (handler !== null) {
+    $fireAndCatch(this);
+  }
+   else {
+    $fireImpl(this);
+  }
+}
+
+function getClass_18(){
+  return Lcom_google_gwt_user_client_Timer_2_classlit;
+}
+
+function Timer(){
+}
+
+_ = Timer.prototype = new Object_0();
+_.fire = fire;
+_.getClass$ = getClass_18;
+_.typeId$ = 15;
+_.isRepeating = false;
+_.timerId = 0;
+var timers;
+function $clinit_29(){
+  $clinit_29 = nullMethod;
+  $clinit_39();
+}
+
+function $CommandExecutor$1(this$static, this$0){
+  $clinit_29();
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function getClass_13(){
+  return Lcom_google_gwt_user_client_CommandExecutor$1_2_classlit;
+}
+
+function run(){
+  if (!this.this$0.executing) {
+    return;
+  }
+  $doCommandCanceled(this.this$0);
+}
+
+function CommandExecutor$1(){
+}
+
+_ = CommandExecutor$1.prototype = new Timer();
+_.getClass$ = getClass_13;
+_.run = run;
+_.typeId$ = 16;
+_.this$0 = null;
+function $clinit_30(){
+  $clinit_30 = nullMethod;
+  $clinit_39();
+}
+
+function $CommandExecutor$2(this$static, this$0){
+  $clinit_30();
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function getClass_14(){
+  return Lcom_google_gwt_user_client_CommandExecutor$2_2_classlit;
+}
+
+function run_0(){
+  !this.this$0.executing || throwAssertionError();
+  this.this$0.executionTimerPending = false;
+  $doExecuteCommands(this.this$0, (new Date()).getTime());
+}
+
+function CommandExecutor$2(){
+}
+
+_ = CommandExecutor$2.prototype = new Timer();
+_.getClass$ = getClass_14;
+_.run = run_0;
+_.typeId$ = 17;
+_.this$0 = null;
+function $CommandExecutor$CircularIterator(this$static, this$0){
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function $getLast(this$static){
+  this$static.last >= 0 || throwAssertionError();
+  return $get_0(this$static.this$0.commands, this$static.last);
+}
+
+function $hasNext(this$static){
+  return this$static.next < this$static.end;
+}
+
+function $next(this$static){
+  var command;
+  this$static.last = this$static.next;
+  command = $get_0(this$static.this$0.commands, this$static.next++);
+  if (this$static.next >= this$static.end) {
+    this$static.next = 0;
+  }
+  return command;
+}
+
+function $remove(this$static){
+  this$static.last >= 0 || throwAssertionError();
+  $remove_6(this$static.this$0.commands, this$static.last);
+  --this$static.end;
+  if (this$static.last <= this$static.next) {
+    if (--this$static.next < 0) {
+      this$static.next = 0;
+    }
+  }
+  this$static.last = -1;
+}
+
+function $setEnd(this$static, end){
+  end >= this$static.next || throwAssertionError();
+  this$static.end = end;
+}
+
+function getClass_15(){
+  return Lcom_google_gwt_user_client_CommandExecutor$CircularIterator_2_classlit;
+}
+
+function hasNext(){
+  return this.next < this.end;
+}
+
+function next_0(){
+  return $next(this);
+}
+
+function CommandExecutor$CircularIterator(){
+}
+
+_ = CommandExecutor$CircularIterator.prototype = new Object_0();
+_.getClass$ = getClass_15;
+_.hasNext = hasNext;
+_.next_0 = next_0;
+_.typeId$ = 0;
+_.end = 0;
+_.last = -1;
+_.next = 0;
+_.this$0 = null;
+function addEventPreview(preview){
+  if (sEventPreviewStack === null) {
+    sEventPreviewStack = $ArrayList(new ArrayList());
+  }
+  $add_3(sEventPreviewStack, preview);
+}
+
+function dispatchEvent(evt, elem, listener){
+  var handler;
+  handler = sUncaughtExceptionHandler;
+  if (handler !== null) {
+    dispatchEventAndCatch(evt, elem, listener);
+  }
+   else {
+    dispatchEventImpl(evt, elem, listener);
+  }
+}
+
+function dispatchEventAndCatch(evt, elem, listener){
+  var $e0, e;
+  try {
+    dispatchEventImpl(evt, elem, listener);
+  }
+   catch ($e0) {
+    $e0 = caught($e0);
+    if (instanceOf($e0, 2)) {
+      e = $e0;
+      $onUncaughtException(e);
+    }
+     else 
+      throw $e0;
+  }
+}
+
+function dispatchEventImpl(evt, elem, listener){
+  var prevCurrentEvent;
+  if (elem === sCaptureElem) {
+    if ($eventGetTypeInt(evt) == 8192) {
+      sCaptureElem = null;
+    }
+  }
+  prevCurrentEvent = currentEvent;
+  currentEvent = evt;
+  try {
+    listener.onBrowserEvent(evt);
+  }
+   finally {
+    currentEvent = prevCurrentEvent;
+  }
+}
+
+function previewEvent(evt){
+  var preview, ret;
+  ret = true;
+  if (sEventPreviewStack !== null && sEventPreviewStack.size > 0) {
+    preview = dynamicCast($get_0(sEventPreviewStack, sEventPreviewStack.size - 1), 4);
+    if (!(ret = preview.onEventPreview(evt))) {
+      evt.cancelBubble = true;
+      evt.preventDefault();
+    }
+  }
+  return ret;
+}
+
+function releaseCapture(elem){
+  if (sCaptureElem !== null && elem === sCaptureElem) {
+    sCaptureElem = null;
+  }
+  $maybeInitializeEventSystem();
+  $releaseCaptureImpl(elem);
+}
+
+function removeEventPreview(preview){
+  if (sEventPreviewStack !== null) {
+    $remove_7(sEventPreviewStack, preview);
+  }
+}
+
+function setCapture(elem){
+  sCaptureElem = elem;
+  $maybeInitializeEventSystem();
+  $wnd.__captureElem = elem;
+}
+
+function sinkEvents(elem, eventBits){
+  $maybeInitializeEventSystem();
+  $sinkEventsImpl(elem, eventBits);
+}
+
+var currentEvent = null, sCaptureElem = null, sEventPreviewStack = null;
+function $clinit_35(){
+  $clinit_35 = nullMethod;
+  commandExecutor = $CommandExecutor(new CommandExecutor());
+}
+
+function addCommand(cmd){
+  $clinit_35();
+  if (cmd === null) {
+    throw $NullPointerException(new NullPointerException(), 'cmd cannot be null');
+  }
+  $submit(commandExecutor, cmd);
+}
+
+var commandExecutor;
+function getClass_17(){
+  return Lcom_google_gwt_user_client_Timer$1_2_classlit;
+}
+
+function onWindowClosed(){
+  while (($clinit_39() , timers).size > 0) {
+    $cancel(dynamicCast($get_0(timers, 0), 5));
+  }
+}
+
+function onWindowClosing(){
+  return null;
+}
+
+function Timer$1(){
+}
+
+_ = Timer$1.prototype = new Object_0();
+_.getClass$ = getClass_17;
+_.onWindowClosed = onWindowClosed;
+_.onWindowClosing = onWindowClosing;
+_.typeId$ = 18;
+function addWindowCloseListener(listener){
+  maybeInitializeHandlers();
+  if (closingListeners === null) {
+    closingListeners = $ArrayList(new ArrayList());
+  }
+  $add_3(closingListeners, listener);
+}
+
+function addWindowResizeListener(listener){
+  maybeInitializeHandlers();
+  if (resizeListeners === null) {
+    resizeListeners = $ArrayList(new ArrayList());
+  }
+  $add_3(resizeListeners, listener);
+}
+
+function fireClosedAndCatch(){
+  var $e0, e;
+  try {
+    fireClosedImpl();
+  }
+   catch ($e0) {
+    $e0 = caught($e0);
+    if (instanceOf($e0, 2)) {
+      e = $e0;
+      $onUncaughtException(e);
+    }
+     else 
+      throw $e0;
+  }
+}
+
+function fireClosedImpl(){
+  var listener, listener$iterator;
+  if (closingListeners !== null) {
+    for (listener$iterator = $AbstractList$IteratorImpl(new AbstractList$IteratorImpl(), closingListeners); listener$iterator.i < listener$iterator.this$0.size_0();) {
+      listener = dynamicCast($next_0(listener$iterator), 6);
+      listener.onWindowClosed();
+    }
+  }
+}
+
+function fireClosingAndCatch(){
+  var $e0, e;
+  try {
+    return fireClosingImpl();
+  }
+   catch ($e0) {
+    $e0 = caught($e0);
+    if (instanceOf($e0, 2)) {
+      e = $e0;
+      $onUncaughtException(e);
+      return null;
+    }
+     else 
+      throw $e0;
+  }
+}
+
+function fireClosingImpl(){
+  var listener, listener$iterator, msg, ret;
+  ret = null;
+  if (closingListeners !== null) {
+    for (listener$iterator = $AbstractList$IteratorImpl(new AbstractList$IteratorImpl(), closingListeners); listener$iterator.i < listener$iterator.this$0.size_0();) {
+      listener = dynamicCast($next_0(listener$iterator), 6);
+      msg = listener.onWindowClosing();
+      ret = msg;
+    }
+  }
+  return ret;
+}
+
+function fireResizedAndCatch(){
+  var $e0, e;
+  try {
+    fireResizedImpl();
+  }
+   catch ($e0) {
+    $e0 = caught($e0);
+    if (instanceOf($e0, 2)) {
+      e = $e0;
+      $onUncaughtException(e);
+    }
+     else 
+      throw $e0;
+  }
+}
+
+function fireResizedImpl(){
+  var listener, listener$iterator;
+  if (resizeListeners !== null) {
+    for (listener$iterator = $AbstractList$IteratorImpl(new AbstractList$IteratorImpl(), resizeListeners); listener$iterator.i < listener$iterator.this$0.size_0();) {
+      listener = dynamicCast($next_0(listener$iterator), 7);
+      $onWindowResized(listener, (($clinit_52() , documentRoot).clientWidth , $wnd.devicePixelRatio?documentRoot.clientHeight:$wnd.innerHeight));
+    }
+  }
+}
+
+function init(){
+  __gwt_initHandlers(function(){
+    onResize();
+  }
+  , function(){
+    return onClosing();
+  }
+  , function(){
+    onClosed();
+    $wnd.onresize = null;
+    $wnd.onbeforeclose = null;
+    $wnd.onclose = null;
+  }
+  );
+}
+
+function maybeInitializeHandlers(){
+  if (!handlersAreInitialized) {
+    init();
+    handlersAreInitialized = true;
+  }
+}
+
+function onClosed(){
+  var handler;
+  handler = sUncaughtExceptionHandler;
+  if (handler !== null) {
+    fireClosedAndCatch();
+  }
+   else {
+    fireClosedImpl();
+  }
+}
+
+function onClosing(){
+  var handler;
+  handler = sUncaughtExceptionHandler;
+  if (handler !== null) {
+    return fireClosingAndCatch();
+  }
+   else {
+    return fireClosingImpl();
+  }
+}
+
+function onResize(){
+  var handler;
+  handler = sUncaughtExceptionHandler;
+  if (handler !== null) {
+    fireResizedAndCatch();
+  }
+   else {
+    fireResizedImpl();
+  }
+}
+
+function removeWindowResizeListener(listener){
+  if (resizeListeners !== null) {
+    $remove_7(resizeListeners, listener);
+  }
+}
+
+var closingListeners = null, handlersAreInitialized = false, resizeListeners = null;
+function $update(this$static, curTime){
+  var progress;
+  if (!this$static.started && curTime >= this$static.startTime) {
+    this$static.started = true;
+    $onStart(this$static);
+  }
+  if (curTime >= this$static.startTime + this$static.duration) {
+    this$static.started = false;
+    $onComplete(this$static);
+    return true;
+  }
+   else if (curTime >= this$static.startTime) {
+    progress = (curTime - this$static.startTime) / this$static.duration;
+    $onUpdate(this$static, (1 + Math.cos(3.141592653589793 + progress * 3.141592653589793)) / 2);
+  }
+  return false;
+}
+
+function getClass_20(){
+  return Lcom_google_gwt_user_client_animation_Animation_2_classlit;
+}
+
+function Animation(){
+}
+
+_ = Animation.prototype = new Object_0();
+_.getClass$ = getClass_20;
+_.typeId$ = 0;
+_.duration = -1;
+_.startTime = -1;
+_.started = false;
+function $cancel_0(anim){
+  if (animations === null) {
+    return;
+  }
+  anim.started = false;
+  if ($remove_7(animations, anim)) {
+    $onComplete(anim);
+  }
+}
+
+function $run(anim, duration, startTime){
+  $cancel_0(anim);
+  anim.duration = duration;
+  anim.startTime = startTime;
+  if ($update(anim, (new Date()).getTime())) {
+    return;
+  }
+  if (animations === null) {
+    animations = $ArrayList(new ArrayList());
+    animationTimer = ($clinit_43() , $clinit_39() , new Animation$AnimationImplEnabled$1());
+  }
+  $add_3(animations, anim);
+  if (animations.size == 1) {
+    $schedule(animationTimer, 25);
+  }
+}
+
+function $updateAnimations(){
+  var animation, curTime, i;
+  curTime = (new Date()).getTime();
+  for (i = 0; i < animations.size; ++i) {
+    animation = dynamicCast($get_0(animations, i), 8);
+    if ($update(animation, curTime)) {
+      dynamicCast($remove_6(animations, i), 8);
+      --i;
+    }
+  }
+  if (animations.size > 0) {
+    $schedule(animationTimer, 25);
+  }
+}
+
+var animationTimer = null, animations = null;
+function $clinit_43(){
+  $clinit_43 = nullMethod;
+  $clinit_39();
+}
+
+function getClass_19(){
+  return Lcom_google_gwt_user_client_animation_Animation$AnimationImplEnabled$1_2_classlit;
+}
+
+function run_1(){
+  $updateAnimations();
+}
+
+function Animation$AnimationImplEnabled$1(){
+}
+
+_ = Animation$AnimationImplEnabled$1.prototype = new Timer();
+_.getClass$ = getClass_19;
+_.run = run_1;
+_.typeId$ = 19;
+function getClass_21(){
+  return Lcom_google_gwt_user_client_animation_WidgetAnimation_2_classlit;
+}
+
+function WidgetAnimation(){
+}
+
+_ = WidgetAnimation.prototype = new Animation();
+_.getClass$ = getClass_21;
+_.typeId$ = 0;
+function $eventGetTypeInt(evt){
+  switch (evt.type) {
+    case 'blur':
+      return 4096;
+    case 'change':
+      return 1024;
+    case 'click':
+      return 1;
+    case 'dblclick':
+      return 2;
+    case 'focus':
+      return 2048;
+    case 'keydown':
+      return 128;
+    case 'keypress':
+      return 256;
+    case 'keyup':
+      return 512;
+    case 'load':
+      return 32768;
+    case 'losecapture':
+      return 8192;
+    case 'mousedown':
+      return 4;
+    case 'mousemove':
+      return 64;
+    case 'mouseout':
+      return 32;
+    case 'mouseover':
+      return 16;
+    case 'mouseup':
+      return 8;
+    case 'scroll':
+      return 16384;
+    case 'error':
+      return 65536;
+    case 'mousewheel':
+      return 131072;
+    case 'DOMMouseScroll':
+      return 131072;
+  }
+}
+
+function $maybeInitializeEventSystem(){
+  if (!eventSystemIsInitialized) {
+    $initEventSystem();
+    eventSystemIsInitialized = true;
+  }
+}
+
+var eventSystemIsInitialized = false;
+function $eventGetFromElement(evt){
+  if (evt.type == 'mouseover')
+    return evt.relatedTarget || null;
+  if (evt.type == 'mouseout')
+    return evt.target || null;
+  return null;
+}
+
+function $eventGetToElement(evt){
+  if (evt.type == 'mouseover')
+    return evt.target || null;
+  if (evt.type == 'mouseout')
+    return evt.relatedTarget || null;
+  return null;
+}
+
+function $getChild(elem, index){
+  var count = 0, child = elem.firstChild;
+  while (child) {
+    var next = child.nextSibling;
+    if (child.nodeType == 1) {
+      if (index == count)
+        return child;
+      ++count;
+    }
+    child = next;
+  }
+  return null;
+}
+
+function $initEventSystem(){
+  $wnd.__dispatchCapturedMouseEvent = function(evt){
+    if ($wnd.__dispatchCapturedEvent(evt)) {
+      var cap = $wnd.__captureElem;
+      if (cap && cap.__listener) {
+        dispatchEvent(evt, cap, cap.__listener);
+        evt.stopPropagation();
+      }
+    }
+  }
+  ;
+  $wnd.__dispatchCapturedEvent = function(evt){
+    if (!previewEvent(evt)) {
+      evt.stopPropagation();
+      evt.preventDefault();
+      return false;
+    }
+    return true;
+  }
+  ;
+  $wnd.addEventListener('focus', $wnd.__dispatchCapturedEvent, true);
+  $wnd.addEventListener('blur', $wnd.__dispatchCapturedEvent, true);
+  $wnd.addEventListener('click', $wnd.__dispatchCapturedMouseEvent, true);
+  $wnd.addEventListener('dblclick', $wnd.__dispatchCapturedMouseEvent, true);
+  $wnd.addEventListener('mousedown', $wnd.__dispatchCapturedMouseEvent, true);
+  $wnd.addEventListener('mouseup', $wnd.__dispatchCapturedMouseEvent, true);
+  $wnd.addEventListener('mousemove', $wnd.__dispatchCapturedMouseEvent, true);
+  $wnd.addEventListener('mousewheel', $wnd.__dispatchCapturedMouseEvent, true);
+  $wnd.addEventListener('keydown', $wnd.__dispatchCapturedEvent, true);
+  $wnd.addEventListener('keyup', $wnd.__dispatchCapturedEvent, true);
+  $wnd.addEventListener('keypress', $wnd.__dispatchCapturedEvent, true);
+  $wnd.__dispatchEvent = function(evt){
+    var listener, curElem = this;
+    while (curElem && !(listener = curElem.__listener))
+      curElem = curElem.parentNode;
+    if (curElem && curElem.nodeType != 1)
+      curElem = null;
+    if (listener)
+      dispatchEvent(evt, curElem, listener);
+  }
+  ;
+  $wnd.__captureElem = null;
+}
+
+function $insertChild(parent, toAdd, index){
+  var count = 0, child = parent.firstChild, before = null;
+  while (child) {
+    if (child.nodeType == 1) {
+      if (count == index) {
+        before = child;
+        break;
+      }
+      ++count;
+    }
+    child = child.nextSibling;
+  }
+  parent.insertBefore(toAdd, before);
+}
+
+function $releaseCaptureImpl(elem){
+  if (elem === $wnd.__captureElem) {
+    $wnd.__captureElem = null;
+  }
+}
+
+function $sinkEventsImpl(elem, bits){
+  var chMask = (elem.__eventBits || 0) ^ bits;
+  elem.__eventBits = bits;
+  if (!chMask)
+    return;
+  if (chMask & 1)
+    elem.onclick = bits & 1?$wnd.__dispatchEvent:null;
+  if (chMask & 2)
+    elem.ondblclick = bits & 2?$wnd.__dispatchEvent:null;
+  if (chMask & 4)
+    elem.onmousedown = bits & 4?$wnd.__dispatchEvent:null;
+  if (chMask & 8)
+    elem.onmouseup = bits & 8?$wnd.__dispatchEvent:null;
+  if (chMask & 16)
+    elem.onmouseover = bits & 16?$wnd.__dispatchEvent:null;
+  if (chMask & 32)
+    elem.onmouseout = bits & 32?$wnd.__dispatchEvent:null;
+  if (chMask & 64)
+    elem.onmousemove = bits & 64?$wnd.__dispatchEvent:null;
+  if (chMask & 128)
+    elem.onkeydown = bits & 128?$wnd.__dispatchEvent:null;
+  if (chMask & 256)
+    elem.onkeypress = bits & 256?$wnd.__dispatchEvent:null;
+  if (chMask & 512)
+    elem.onkeyup = bits & 512?$wnd.__dispatchEvent:null;
+  if (chMask & 1024)
+    elem.onchange = bits & 1024?$wnd.__dispatchEvent:null;
+  if (chMask & 2048)
+    elem.onfocus = bits & 2048?$wnd.__dispatchEvent:null;
+  if (chMask & 4096)
+    elem.onblur = bits & 4096?$wnd.__dispatchEvent:null;
+  if (chMask & 8192)
+    elem.onlosecapture = bits & 8192?$wnd.__dispatchEvent:null;
+  if (chMask & 16384)
+    elem.onscroll = bits & 16384?$wnd.__dispatchEvent:null;
+  if (chMask & 32768)
+    elem.onload = bits & 32768?$wnd.__dispatchEvent:null;
+  if (chMask & 65536)
+    elem.onerror = bits & 65536?$wnd.__dispatchEvent:null;
+  if (chMask & 131072)
+    elem.onmousewheel = bits & 131072?$wnd.__dispatchEvent:null;
+}
+
+function $clinit_52(){
+  $clinit_52 = nullMethod;
+  documentRoot = $getDocumentRoot(($clinit_51() , $clinit_52() , new DocumentRootImplSafari()));
+}
+
+function getClass_23(){
+  return Lcom_google_gwt_user_client_impl_DocumentRootImpl_2_classlit;
+}
+
+function DocumentRootImpl(){
+}
+
+_ = DocumentRootImpl.prototype = new Object_0();
+_.getClass$ = getClass_23;
+_.typeId$ = 0;
+var documentRoot;
+function $clinit_51(){
+  $clinit_51 = nullMethod;
+  $clinit_52();
+}
+
+function $getDocumentRoot(){
+  var elem = $doc.createElement('div');
+  elem.style.cssText = 'width:0px;width:1';
+  return parseInt(elem.style.width) != 1?$doc.documentElement:$doc.body;
+}
+
+function getClass_22(){
+  return Lcom_google_gwt_user_client_impl_DocumentRootImplSafari_2_classlit;
+}
+
+function DocumentRootImplSafari(){
+}
+
+_ = DocumentRootImplSafari.prototype = new DocumentRootImpl();
+_.getClass$ = getClass_22;
+_.typeId$ = 0;
+function $addStyleName(this$static, style){
+  setStyleName((this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element), style, true);
+}
+
+function $extractLengthValue(s){
+  if (s == 'auto' || (s == 'inherit' || s == '')) {
+    return 0;
+  }
+   else {
+    return parseFloat(s);
+  }
+}
+
+function $getElement(this$static){
+  this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()");
+  return this$static.element;
+}
+
+function $setElement(this$static, elem){
+  this$static.element === null || throwAssertionError_Object('Element may only be set once');
+  this$static.element = elem;
+}
+
+function $setPixelSize(this$static, width, height){
+  if (width >= 0) {
+    $extractLengthValue($trim(width + 'px').toLowerCase()) >= 0 || throwAssertionError_Object('CSS widths should not be negative');
+    (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).style['width'] = width + 'px';
+  }
+  if (height >= 0) {
+    $extractLengthValue($trim(height + 'px').toLowerCase()) >= 0 || throwAssertionError_Object('CSS heights should not be negative');
+    (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).style['height'] = height + 'px';
+  }
+}
+
+function $setSize(this$static, width, height){
+  $extractLengthValue($trim(width).toLowerCase()) >= 0 || throwAssertionError_Object('CSS widths should not be negative');
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).style['width'] = width;
+  $extractLengthValue($trim(height).toLowerCase()) >= 0 || throwAssertionError_Object('CSS heights should not be negative');
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).style['height'] = height;
+}
+
+function $setStyleName(this$static, style){
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element)['className'] = style;
+}
+
+function getClass_52(){
+  return Lcom_google_gwt_user_client_ui_UIObject_2_classlit;
+}
+
+function setStyleName(elem, style, add){
+  var begin, end, idx, last, lastPos, newClassName, oldStyle, ret;
+  if (elem === null) {
+    throw $RuntimeException(new RuntimeException(), 'Null widget handle. If you are creating a composite, ensure that initWidget() has been called.');
+  }
+  style = $trim(style);
+  if (style.length == 0) {
+    throw $IllegalArgumentException(new IllegalArgumentException(), 'Style names cannot be empty');
+  }
+  oldStyle = (ret = elem['className'] , ret == null?null:String(ret));
+  idx = oldStyle.indexOf(style);
+  while (idx != -1) {
+    if (idx == 0 || oldStyle.charCodeAt(idx - 1) == 32) {
+      last = idx + style.length;
+      lastPos = oldStyle.length;
+      if (last == lastPos || last < lastPos && oldStyle.charCodeAt(last) == 32) {
+        break;
+      }
+    }
+    idx = oldStyle.indexOf(style, idx + 1);
+  }
+  if (add) {
+    if (idx == -1) {
+      if (oldStyle.length > 0) {
+        oldStyle += ' ';
+      }
+      elem['className'] = oldStyle + style;
+    }
+  }
+   else {
+    if (idx != -1) {
+      begin = $trim(oldStyle.substr(0, idx - 0));
+      end = $trim($substring(oldStyle, idx + style.length));
+      if (begin.length == 0) {
+        newClassName = end;
+      }
+       else if (end.length == 0) {
+        newClassName = begin;
+      }
+       else {
+        newClassName = begin + ' ' + end;
+      }
+      elem['className'] = newClassName;
+    }
+  }
+}
+
+function toString_1(){
+  if ((this.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this.element) === null) {
+    return '(null handle)';
+  }
+  return (this.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this.element).outerHTML;
+}
+
+function UIObject(){
+}
+
+_ = UIObject.prototype = new Object_0();
+_.getClass$ = getClass_52;
+_.toString$ = toString_1;
+_.typeId$ = 0;
+_.element = null;
+function $onAttach(this$static){
+  if (this$static.attached) {
+    throw $IllegalStateException(new IllegalStateException(), "Should only call onAttach when the widget is detached from the browser's document");
+  }
+  this$static.attached = true;
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).__listener = this$static;
+  this$static.doAttachChildren();
+  this$static.onLoad();
+}
+
+function $onDetach(this$static){
+  if (!this$static.attached) {
+    throw $IllegalStateException(new IllegalStateException(), "Should only call onDetach when the widget is attached to the browser's document");
+  }
+  try {
+    this$static.onUnload();
+  }
+   finally {
+    this$static.doDetachChildren();
+    (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).__listener = null;
+    this$static.attached = false;
+  }
+}
+
+function $removeFromParent(this$static){
+  if (this$static.parent !== null) {
+    this$static.parent.remove(this$static);
+  }
+   else if (this$static.parent !== null) {
+    throw $IllegalStateException(new IllegalStateException(), "This widget's parent does not implement HasWidgets");
+  }
+}
+
+function $setParent(this$static, parent){
+  var oldParent;
+  oldParent = this$static.parent;
+  if (parent === null) {
+    if (oldParent !== null && oldParent.attached) {
+      this$static.onDetach();
+      !this$static.attached || throwAssertionError_Object('Failure of ' + this$static.getClass$().typeName + ' to call super.onDetach()');
+    }
+    this$static.parent = null;
+  }
+   else {
+    if (oldParent !== null) {
+      throw $IllegalStateException(new IllegalStateException(), 'Cannot set a new parent without first clearing the old parent');
+    }
+    this$static.parent = parent;
+    if (parent.attached) {
+      this$static.onAttach();
+      this$static.attached || throwAssertionError_Object('Failure of ' + this$static.getClass$().typeName + ' to call super.onAttach()');
+    }
+  }
+}
+
+function doAttachChildren_1(){
+}
+
+function doDetachChildren_1(){
+}
+
+function getClass_55(){
+  return Lcom_google_gwt_user_client_ui_Widget_2_classlit;
+}
+
+function onAttach(){
+  $onAttach(this);
+}
+
+function onBrowserEvent_3(event_0){
+}
+
+function onDetach_0(){
+  $onDetach(this);
+}
+
+function onLoad_0(){
+}
+
+function onUnload_0(){
+}
+
+function Widget(){
+}
+
+_ = Widget.prototype = new UIObject();
+_.doAttachChildren = doAttachChildren_1;
+_.doDetachChildren = doDetachChildren_1;
+_.getClass$ = getClass_55;
+_.onAttach = onAttach;
+_.onBrowserEvent = onBrowserEvent_3;
+_.onDetach = onDetach_0;
+_.onLoad = onLoad_0;
+_.onUnload = onUnload_0;
+_.typeId$ = 20;
+_.attached = false;
+_.parent = null;
+function $adopt(this$static, child){
+  child.parent === null || throwAssertionError();
+  $setParent(child, this$static);
+}
+
+function $doAttachChildren(this$static){
+  var child, it;
+  for (it = this$static.iterator_0(); it.hasNext();) {
+    child = dynamicCast(it.next_0(), 10);
+    child.onAttach();
+  }
+}
+
+function $doDetachChildren(this$static){
+  var child, it;
+  for (it = this$static.iterator_0(); it.hasNext();) {
+    child = dynamicCast(it.next_0(), 10);
+    child.onDetach();
+  }
+}
+
+function doAttachChildren_0(){
+  $doAttachChildren(this);
+}
+
+function doDetachChildren_0(){
+  $doDetachChildren(this);
+}
+
+function getClass_44(){
+  return Lcom_google_gwt_user_client_ui_Panel_2_classlit;
+}
+
+function onLoad(){
+}
+
+function onUnload(){
+}
+
+function Panel(){
+}
+
+_ = Panel.prototype = new Widget();
+_.doAttachChildren = doAttachChildren_0;
+_.doDetachChildren = doDetachChildren_0;
+_.getClass$ = getClass_44;
+_.onLoad = onLoad;
+_.onUnload = onUnload;
+_.typeId$ = 21;
+function $add_1(this$static, child, container){
+  $removeFromParent(child);
+  $add_2(this$static.children, child);
+  container.appendChild((child.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , child.element));
+  child.parent === null || throwAssertionError();
+  $setParent(child, this$static);
+}
+
+function $remove_1(this$static, w){
+  var elem;
+  if (w.parent !== this$static) {
+    return false;
+  }
+  w.parent === this$static || throwAssertionError();
+  $setParent(w, null);
+  elem = (w.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , w.element);
+  $getParentElement(elem).removeChild(elem);
+  $remove_5(this$static.children, w);
+  return true;
+}
+
+function getClass_28(){
+  return Lcom_google_gwt_user_client_ui_ComplexPanel_2_classlit;
+}
+
+function iterator(){
+  return $WidgetCollection$WidgetIterator(new WidgetCollection$WidgetIterator(), this.children);
+}
+
+function remove_0(w){
+  return $remove_1(this, w);
+}
+
+function ComplexPanel(){
+}
+
+_ = ComplexPanel.prototype = new Panel();
+_.getClass$ = getClass_28;
+_.iterator_0 = iterator;
+_.remove = remove_0;
+_.typeId$ = 22;
+function $AbsolutePanel(this$static){
+  $AbsolutePanel_0(this$static, $doc.createElement('div'));
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).style['position'] = 'relative';
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).style['overflow'] = 'hidden';
+  return this$static;
+}
+
+function $AbsolutePanel_0(this$static, elem){
+  this$static.children = $WidgetCollection(new WidgetCollection());
+  this$static.element === null || throwAssertionError_Object('Element may only be set once');
+  this$static.element = elem;
+  return this$static;
+}
+
+function $add(this$static, w){
+  $add_1(this$static, w, (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element));
+}
+
+function $add_0(this$static, w, left, top){
+  $removeFromParent(w);
+  $setWidgetPositionImpl(w, left, top);
+  $add_1(this$static, w, (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element));
+}
+
+function $remove_0(this$static, w){
+  var removed;
+  removed = $remove_1(this$static, w);
+  if (removed) {
+    changeToStaticPositioning((w.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , w.element));
+  }
+  return removed;
+}
+
+function $setWidgetPositionImpl(w, left, top){
+  var h;
+  h = (w.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , w.element);
+  if (left == -1 && top == -1) {
+    h.style['left'] = '';
+    h.style['top'] = '';
+    h.style['position'] = '';
+  }
+   else {
+    h.style['position'] = 'absolute';
+    h.style['left'] = left + 'px';
+    h.style['top'] = top + 'px';
+  }
+}
+
+function changeToStaticPositioning(elem){
+  elem.style['left'] = '';
+  elem.style['top'] = '';
+  elem.style['position'] = '';
+}
+
+function getClass_24(){
+  return Lcom_google_gwt_user_client_ui_AbsolutePanel_2_classlit;
+}
+
+function remove(w){
+  return $remove_0(this, w);
+}
+
+function AbsolutePanel(){
+}
+
+_ = AbsolutePanel.prototype = new ComplexPanel();
+_.getClass$ = getClass_24;
+_.remove = remove;
+_.typeId$ = 23;
+function $clinit_66(){
+  $clinit_66 = nullMethod;
+  impl_0 = ($clinit_106() , implWidget);
+}
+
+function $addClickListener(this$static, listener){
+  if (this$static.clickListeners === null) {
+    this$static.clickListeners = $ClickListenerCollection(new ClickListenerCollection());
+    sinkEvents((this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element), 1 | ((this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).__eventBits || 0));
+  }
+  $add_3(this$static.clickListeners, listener);
+}
+
+function getClass_34(){
+  return Lcom_google_gwt_user_client_ui_FocusWidget_2_classlit;
+}
+
+function onBrowserEvent_0(event_0){
+  if ($eventGetTypeInt(event_0) == 1) {
+    if (this.clickListeners !== null) {
+      $fireClick(this.clickListeners, this);
+    }
+  }
+}
+
+function FocusWidget(){
+}
+
+_ = FocusWidget.prototype = new Widget();
+_.getClass$ = getClass_34;
+_.onBrowserEvent = onBrowserEvent_0;
+_.typeId$ = 24;
+_.clickListeners = null;
+var impl_0;
+function $clinit_56(){
+  $clinit_56 = nullMethod;
+  $clinit_66();
+}
+
+function $ButtonBase(this$static, elem){
+  $clinit_56();
+  this$static.element === null || throwAssertionError_Object('Element may only be set once');
+  this$static.element = elem;
+  impl_0.setTabIndex((this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element), 0);
+  return this$static;
+}
+
+function getClass_25(){
+  return Lcom_google_gwt_user_client_ui_ButtonBase_2_classlit;
+}
+
+function ButtonBase(){
+}
+
+_ = ButtonBase.prototype = new FocusWidget();
+_.getClass$ = getClass_25;
+_.typeId$ = 25;
+function $clinit_57(){
+  $clinit_57 = nullMethod;
+  $clinit_56();
+}
+
+function $Button_0(this$static, html){
+  $clinit_57();
+  $ButtonBase(this$static, $doc.createElement('button'));
+  adjustType((this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element));
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element)['className'] = 'gwt-Button';
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).innerHTML = html || '';
+  return this$static;
+}
+
+function adjustType(button){
+  if (button.type == 'submit') {
+    try {
+      button.setAttribute('type', 'button');
+    }
+     catch (e) {
+    }
+  }
+}
+
+function getClass_26(){
+  return Lcom_google_gwt_user_client_ui_Button_2_classlit;
+}
+
+function Button(){
+}
+
+_ = Button.prototype = new ButtonBase();
+_.getClass$ = getClass_26;
+_.typeId$ = 26;
+function $advanceToFind(iter, o){
+  var t;
+  while (iter.hasNext()) {
+    t = iter.next_0();
+    if (o === null?t === null:o.typeMarker$ === nullMethod || o.typeId$ == 2?o.equals$(t):o === t) {
+      return iter;
+    }
+  }
+  return null;
+}
+
+function add_0(o){
+  throw $UnsupportedOperationException(new UnsupportedOperationException(), 'add');
+}
+
+function contains(o){
+  var iter;
+  iter = $advanceToFind(this.iterator_0(), o);
+  return iter !== null;
+}
+
+function getClass_80(){
+  return Ljava_util_AbstractCollection_2_classlit;
+}
+
+function toString_9(){
+  var comma, iter, sb;
+  sb = $StringBuffer(new StringBuffer());
+  comma = null;
+  $append_0(sb.builder, '[');
+  iter = this.iterator_0();
+  while (iter.hasNext()) {
+    if (comma !== null) {
+      $append_0(sb.builder, comma);
+    }
+     else {
+      comma = ', ';
+    }
+    $append(sb, '' + iter.next_0());
+  }
+  $append_0(sb.builder, ']');
+  return $toString_1(sb.builder);
+}
+
+function AbstractCollection(){
+}
+
+_ = AbstractCollection.prototype = new Object_0();
+_.add_0 = add_0;
+_.contains = contains;
+_.getClass$ = getClass_80;
+_.toString$ = toString_9;
+_.typeId$ = 0;
+function add_2(obj){
+  this.add(this.size_0(), obj);
+  return true;
+}
+
+function add_1(index, element){
+  throw $UnsupportedOperationException(new UnsupportedOperationException(), 'add');
+}
+
+function checkIndex(index, size){
+  if (index < 0 || index >= size) {
+    indexOutOfBounds(index, size);
+  }
+}
+
+function equals_3(o){
+  var elem, elemOther, iter, iterOther, other;
+  if (o === this) {
+    return true;
+  }
+  if (!(o !== null && canCast(o.typeId$, 19))) {
+    return false;
+  }
+  other = dynamicCast(o, 19);
+  if (this.size_0() != other.size_0()) {
+    return false;
+  }
+  iter = $AbstractList$IteratorImpl(new AbstractList$IteratorImpl(), this);
+  iterOther = other.iterator_0();
+  while (iter.i < iter.this$0.size_0()) {
+    elem = $next_0(iter);
+    elemOther = $next_0(iterOther);
+    if (!(elem === null?elemOther === null:elem.typeMarker$ === nullMethod || elem.typeId$ == 2?elem.equals$(elemOther):elem === elemOther)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function getClass_85(){
+  return Ljava_util_AbstractList_2_classlit;
+}
+
+function hashCode_4(){
+  var iter, k, obj;
+  k = 1;
+  iter = $AbstractList$IteratorImpl(new AbstractList$IteratorImpl(), this);
+  while (iter.i < iter.this$0.size_0()) {
+    obj = $next_0(iter);
+    k = 31 * k + (obj === null?0:obj.typeMarker$ === nullMethod || obj.typeId$ == 2?obj.hashCode$():obj.$H || (obj.$H = ++sNextHashId));
+  }
+  return k;
+}
+
+function indexOutOfBounds(index, size){
+  throw $IndexOutOfBoundsException(new IndexOutOfBoundsException(), 'Index: ' + index + ', Size: ' + size);
+}
+
+function iterator_3(){
+  return $AbstractList$IteratorImpl(new AbstractList$IteratorImpl(), this);
+}
+
+function AbstractList(){
+}
+
+_ = AbstractList.prototype = new AbstractCollection();
+_.add_0 = add_2;
+_.add = add_1;
+_.equals$ = equals_3;
+_.getClass$ = getClass_85;
+_.hashCode$ = hashCode_4;
+_.iterator_0 = iterator_3;
+_.typeId$ = 27;
+function $ArrayList(this$static){
+  this$static.array = [];
+  this$static.size = 0;
+  return this$static;
+}
+
+function $add_3(this$static, o){
+  this$static.array[this$static.size++] = o;
+  return true;
+}
+
+function $get_0(this$static, index){
+  checkIndex(index, this$static.size);
+  return this$static.array[index];
+}
+
+function $indexOf_2(this$static, o, index){
+  if (index < 0) {
+    indexOutOfBounds(index, this$static.size);
+  }
+  for (; index < this$static.size; ++index) {
+    if (equalsWithNullCheck(o, this$static.array[index])) {
+      return index;
+    }
+  }
+  return -1;
+}
+
+function $remove_6(this$static, index){
+  var previous;
+  previous = (checkIndex(index, this$static.size) , this$static.array[index]);
+  this$static.array.splice(index, 1);
+  --this$static.size;
+  return previous;
+}
+
+function $remove_7(this$static, o){
+  var i, previous;
+  i = $indexOf_2(this$static, o, 0);
+  if (i == -1) {
+    return false;
+  }
+  previous = (checkIndex(i, this$static.size) , this$static.array[i]);
+  this$static.array.splice(i, 1);
+  --this$static.size;
+  return true;
+}
+
+function $set(this$static, index, o){
+  var previous;
+  previous = (checkIndex(index, this$static.size) , this$static.array[index]);
+  this$static.array[index] = o;
+  return previous;
+}
+
+function add_4(o){
+  return this.array[this.size++] = o , undefined , true;
+}
+
+function add_3(index, o){
+  if (index < 0 || index > this.size) {
+    indexOutOfBounds(index, this.size);
+  }
+  this.array.splice(index, 0, o);
+  ++this.size;
+}
+
+function contains_2(o){
+  return $indexOf_2(this, o, 0) != -1;
+}
+
+function get_1(index){
+  return checkIndex(index, this.size) , this.array[index];
+}
+
+function getClass_90(){
+  return Ljava_util_ArrayList_2_classlit;
+}
+
+function size_2(){
+  return this.size;
+}
+
+function ArrayList(){
+}
+
+_ = ArrayList.prototype = new AbstractList();
+_.add_0 = add_4;
+_.add = add_3;
+_.contains = contains_2;
+_.get = get_1;
+_.getClass$ = getClass_90;
+_.size_0 = size_2;
+_.typeId$ = 28;
+_.array = null;
+_.size = 0;
+function $ClickListenerCollection(this$static){
+  this$static.array = [];
+  this$static.size = 0;
+  return this$static;
+}
+
+function $fireClick(this$static, sender){
+  var listener, listener$iterator;
+  for (listener$iterator = $AbstractList$IteratorImpl(new AbstractList$IteratorImpl(), this$static); listener$iterator.i < listener$iterator.this$0.size_0();) {
+    listener = dynamicCast($next_0(listener$iterator), 9);
+    listener.onClick(sender);
+  }
+}
+
+function getClass_27(){
+  return Lcom_google_gwt_user_client_ui_ClickListenerCollection_2_classlit;
+}
+
+function ClickListenerCollection(){
+}
+
+_ = ClickListenerCollection.prototype = new ArrayList();
+_.getClass$ = getClass_27;
+_.typeId$ = 29;
+function $SimplePanel(this$static, elem){
+  this$static.element === null || throwAssertionError_Object('Element may only be set once');
+  this$static.element = elem;
+  return this$static;
+}
+
+function $remove_3(this$static, w){
+  if (this$static.widget !== w) {
+    return false;
+  }
+  w.parent === this$static || throwAssertionError();
+  $setParent(w, null);
+  this$static.getContainerElement().removeChild((w.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , w.element));
+  this$static.widget = null;
+  return true;
+}
+
+function getClass_51(){
+  return Lcom_google_gwt_user_client_ui_SimplePanel_2_classlit;
+}
+
+function getContainerElement_1(){
+  return this.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this.element;
+}
+
+function iterator_1(){
+  return new SimplePanel$1();
+}
+
+function remove_2(w){
+  return $remove_3(this, w);
+}
+
+function SimplePanel(){
+}
+
+_ = SimplePanel.prototype = new Panel();
+_.getClass$ = getClass_51;
+_.getContainerElement = getContainerElement_1;
+_.iterator_0 = iterator_1;
+_.remove = remove_2;
+_.typeId$ = 30;
+_.widget = null;
+function $clinit_61(){
+  $clinit_61 = nullMethod;
+  DEFAULT_ROW_STYLENAMES = initValues(_3Ljava_lang_String_2_classlit, 0, 1, ['top', 'middle', 'bottom']);
+}
+
+function $DecoratorPanel(this$static, rowStyles, containerIndex){
+  var i, row, table, trElem, inner, tdElem, inner_0, tdElem_0, inner_1, tdElem_1;
+  $clinit_61();
+  $SimplePanel(this$static, $doc.createElement('table'));
+  table = (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element);
+  this$static.tbody = $doc.createElement('tbody');
+  table.appendChild(this$static.tbody);
+  table['cellSpacing'] = 0;
+  table['cellPadding'] = 0;
+  for (i = 0; i < rowStyles.length; ++i) {
+    row = (trElem = $doc.createElement('tr') , (trElem['className'] = rowStyles[i] , undefined) , $appendChild(trElem, (tdElem = $doc.createElement('td') , inner = $doc.createElement('div') , tdElem.appendChild(inner) , (tdElem['className'] = rowStyles[i] + 'Left' , undefined) , (inner['className'] = rowStyles[i] + 'Left' + 'Inner' , undefined) , tdElem)) , $appendChild(trElem, (tdElem_0 = $doc.createElement('td') , inner_0 = $doc.createElement('div') , tdElem_0.appendChild(inner_0) , (tdElem_0['className'] = rowStyles[i] + 'Center' , undefined) , (inner_0['className'] = rowStyles[i] + 'Center' + 'Inner' , undefined) , tdElem_0)) , $appendChild(trElem, (tdElem_1 = $doc.createElement('td') , inner_1 = $doc.createElement('div') , tdElem_1.appendChild(inner_1) , (tdElem_1['className'] = rowStyles[i] + 'Right' , undefined) , (inner_1['className'] = rowStyles[i] + 'Right' + 'Inner' , undefined) , tdElem_1)) , trElem);
+    this$static.tbody.appendChild(row);
+    if (i == containerIndex) {
+      this$static.containerElem = $getFirstChildElement($getChild(row, 1));
+    }
+  }
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element)['className'] = 'gwt-DecoratorPanel';
+  return this$static;
+}
+
+function getClass_29(){
+  return Lcom_google_gwt_user_client_ui_DecoratorPanel_2_classlit;
+}
+
+function getContainerElement(){
+  return this.containerElem;
+}
+
+function DecoratorPanel(){
+}
+
+_ = DecoratorPanel.prototype = new SimplePanel();
+_.getClass$ = getClass_29;
+_.getContainerElement = getContainerElement;
+_.typeId$ = 31;
+_.containerElem = null;
+_.tbody = null;
+var DEFAULT_ROW_STYLENAMES;
+function $clinit_88(){
+  $clinit_88 = nullMethod;
+  $clinit_61();
+}
+
+function $blur(elt){
+  if (elt.blur) {
+    elt.blur();
+  }
+}
+
+function $center(this$static){
+  var initiallyAnimated, initiallyShowing, left, top;
+  initiallyShowing = this$static.showing;
+  initiallyAnimated = this$static.isAnimationEnabled;
+  if (!initiallyShowing) {
+    (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).style['visibility'] = 'hidden';
+    this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()");
+    this$static.isAnimationEnabled = false;
+    $show(this$static);
+  }
+  left = ($clinit_52() , documentRoot).clientWidth - (parseInt((this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element)['offsetWidth']) || 0) >> 1;
+  top = ($wnd.devicePixelRatio?documentRoot.clientHeight:$wnd.innerHeight) - (parseInt((this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element)['offsetHeight']) || 0) >> 1;
+  $setPopupPosition(this$static, $doc.body.scrollLeft + left, $doc.body.scrollTop + top);
+  if (!initiallyShowing) {
+    $hide(this$static);
+    (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).style['visibility'] = 'visible';
+    this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()");
+    this$static.isAnimationEnabled = initiallyAnimated;
+    $show(this$static);
+  }
+}
+
+function $hide(this$static){
+  if (!this$static.showing) {
+    return;
+  }
+  this$static.showing = false;
+  if (resizeAnimation === null) {
+    resizeAnimation = new PopupPanel$ResizeAnimation();
+  }
+  $setOpen(resizeAnimation, this$static);
+}
+
+function $onEventPreview(this$static, event_0){
+  var allow, eventTargetsPopup, target, type;
+  target = event_0.target || null;
+  eventTargetsPopup = target !== null && $isOrHasChild((this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element), target);
+  type = $eventGetTypeInt(event_0);
+  switch (type) {
+    case 128:
+      {
+        allow = ((event_0.which || (event_0.keyCode || -1)) & 65535 , (!!event_0.shiftKey?1:0) | (!!event_0.metaKey?8:0) | (!!event_0.ctrlKey?2:0) | (!!event_0.altKey?4:0) , true);
+        return allow && (eventTargetsPopup || !this$static.modal);
+      }
+
+    case 512:
+      {
+        allow = ((event_0.which || (event_0.keyCode || -1)) & 65535 , (!!event_0.shiftKey?1:0) | (!!event_0.metaKey?8:0) | (!!event_0.ctrlKey?2:0) | (!!event_0.altKey?4:0) , true);
+        return allow && (eventTargetsPopup || !this$static.modal);
+      }
+
+    case 256:
+      {
+        allow = ((event_0.which || (event_0.keyCode || -1)) & 65535 , (!!event_0.shiftKey?1:0) | (!!event_0.metaKey?8:0) | (!!event_0.ctrlKey?2:0) | (!!event_0.altKey?4:0) , true);
+        return allow && (eventTargetsPopup || !this$static.modal);
+      }
+
+    case 4:
+    case 8:
+    case 64:
+    case 1:
+    case 2:
+      {
+        if (sCaptureElem !== null) {
+          return true;
+        }
+        if (!eventTargetsPopup && this$static.autoHide && type == 4) {
+          $hide(this$static);
+          return true;
+        }
+        break;
+      }
+
+    case 2048:
+      {
+        if (this$static.modal && !eventTargetsPopup && target !== null) {
+          $blur(target);
+          return false;
+        }
+      }
+
+  }
+  return !this$static.modal || eventTargetsPopup;
+}
+
+function $setPopupPosition(this$static, left, top){
+  var elem;
+  if (left < 0) {
+    left = 0;
+  }
+  if (top < 0) {
+    top = 0;
+  }
+  this$static.leftPosition = left;
+  this$static.topPosition = top;
+  elem = (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element);
+  elem.style['left'] = left + 'px';
+  elem.style['top'] = top + 'px';
+}
+
+function $show(this$static){
+  if (this$static.showing) {
+    return;
+  }
+  this$static.showing = true;
+  addEventPreview(this$static);
+  if (resizeAnimation === null) {
+    resizeAnimation = new PopupPanel$ResizeAnimation();
+  }
+  $setOpen(resizeAnimation, this$static);
+}
+
+function getClass_47(){
+  return Lcom_google_gwt_user_client_ui_PopupPanel_2_classlit;
+}
+
+function getContainerElement_0(){
+  return $getFirstChildElement(this.containerElem);
+}
+
+function onDetach(){
+  removeEventPreview(this);
+  $onDetach(this);
+}
+
+function onEventPreview_0(event_0){
+  return $onEventPreview(this, event_0);
+}
+
+function PopupPanel(){
+}
+
+_ = PopupPanel.prototype = new DecoratorPanel();
+_.getClass$ = getClass_47;
+_.getContainerElement = getContainerElement_0;
+_.onDetach = onDetach;
+_.onEventPreview = onEventPreview_0;
+_.typeId$ = 32;
+_.autoHide = false;
+_.isAnimationEnabled = true;
+_.leftPosition = -1;
+_.modal = false;
+_.showing = false;
+_.topPosition = -1;
+var resizeAnimation = null;
+function $clinit_62(){
+  $clinit_62 = nullMethod;
+  $clinit_88();
+}
+
+function $DialogBox(this$static, autoHide){
+  var td, tr;
+  $clinit_62();
+  $DecoratorPanel(this$static, DEFAULT_ROW_STYLENAMES, 1);
+  this$static.animType = ($clinit_86() , CENTER);
+  this$static.containerElem.appendChild($doc.createElement('div'));
+  $setPopupPosition(this$static, 0, 0);
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element)['className'] = 'gwt-PopupPanel';
+  $getFirstChildElement(this$static.containerElem)['className'] = 'content';
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).style['overflow'] = 'hidden';
+  this$static.autoHide = autoHide;
+  this$static.modal = true;
+  this$static.caption = $HTML(new HTML());
+  td = (tr = $getChild(this$static.tbody, 0) , $getChild(tr, 1));
+  td.appendChild($getElement(this$static.caption));
+  $adopt(this$static, this$static.caption);
+  $setStyleName(this$static.caption, 'Caption');
+  $addMouseListener(this$static.caption, this$static);
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element)['className'] = 'gwt-DialogBox';
+  return this$static;
+}
+
+function $onMouseMove(this$static, x, y){
+  var absX, absY;
+  if (this$static.dragging) {
+    absX = x + $getAbsoluteLeft((this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element));
+    absY = y + $getAbsoluteTop((this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element));
+    $setPopupPosition(this$static, absX - this$static.dragStartX, absY - this$static.dragStartY);
+  }
+}
+
+function doAttachChildren(){
+  $doAttachChildren(this);
+  $onAttach(this.caption);
+}
+
+function doDetachChildren(){
+  $doDetachChildren(this);
+  $onDetach(this.caption);
+}
+
+function getClass_30(){
+  return Lcom_google_gwt_user_client_ui_DialogBox_2_classlit;
+}
+
+function onEventPreview(event_0){
+  if ($eventGetTypeInt(event_0) == 4) {
+    if ($isOrHasChild($getElement(this.caption), event_0.target || null)) {
+      event_0.preventDefault();
+    }
+  }
+  return $onEventPreview(this, event_0);
+}
+
+function DialogBox(){
+}
+
+_ = DialogBox.prototype = new PopupPanel();
+_.doAttachChildren = doAttachChildren;
+_.doDetachChildren = doDetachChildren;
+_.getClass$ = getClass_30;
+_.onEventPreview = onEventPreview;
+_.typeId$ = 33;
+_.dragStartX = 0;
+_.dragStartY = 0;
+_.dragging = false;
+function $checkRowBounds(this$static, row){
+  var rowSize;
+  rowSize = this$static.bodyElem.rows.length;
+  if (row >= rowSize || row < 0) {
+    throw $IndexOutOfBoundsException(new IndexOutOfBoundsException(), 'Row index: ' + row + ', Row size: ' + rowSize);
+  }
+}
+
+function $insertRow(this$static, beforeRow){
+  var tr;
+  if (beforeRow != this$static.bodyElem.rows.length) {
+    $checkRowBounds(this$static, beforeRow);
+  }
+  tr = $doc.createElement('tr');
+  $insertChild(this$static.bodyElem, tr, beforeRow);
+  return beforeRow;
+}
+
+function $internalClearCell(this$static, td, clearInnerHTML){
+  var maybeChild, widget;
+  maybeChild = $getFirstChildElement(td);
+  widget = null;
+  if (maybeChild !== null) {
+    widget = $getWidget(this$static.widgetMap, maybeChild);
+  }
+  if (widget !== null) {
+    $remove_2(this$static, widget);
+    return true;
+  }
+   else {
+    if (clearInnerHTML) {
+      td.innerHTML = '';
+    }
+    return false;
+  }
+}
+
+function $remove_2(this$static, widget){
+  var elem;
+  if (widget.parent !== this$static) {
+    return false;
+  }
+  widget.parent === this$static || throwAssertionError();
+  $setParent(widget, null);
+  elem = (widget.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , widget.element);
+  $getParentElement(elem).removeChild(elem);
+  $removeWidgetByElement(this$static.widgetMap, elem);
+  return true;
+}
+
+function $setColumnFormatter(this$static, formatter){
+  this$static.columnFormatter = formatter;
+  $prepareColumnGroup(this$static.columnFormatter);
+}
+
+function $setWidget(this$static, row, column, widget){
+  var td_0, td, out;
+  $prepareCell(this$static, row, column);
+  if (widget !== null) {
+    $removeFromParent(widget);
+    td_0 = (td = (out = this$static.cellFormatter.this$0.bodyElem.rows[row].cells[column] , out == null?null:out) , $internalClearCell(this$static, td, true) , td);
+    $putWidget(this$static.widgetMap, widget);
+    td_0.appendChild((widget.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , widget.element));
+    widget.parent === null || throwAssertionError();
+    $setParent(widget, this$static);
+  }
+}
+
+function getClass_40(){
+  return Lcom_google_gwt_user_client_ui_HTMLTable_2_classlit;
+}
+
+function iterator_0(){
+  return $HTMLTable$WidgetMapper$1(new HTMLTable$WidgetMapper$1(), this.widgetMap);
+}
+
+function onBrowserEvent_1(event_0){
+  $eventGetTypeInt(event_0);
+}
+
+function remove_1(widget){
+  return $remove_2(this, widget);
+}
+
+function HTMLTable(){
+}
+
+_ = HTMLTable.prototype = new Panel();
+_.getClass$ = getClass_40;
+_.iterator_0 = iterator_0;
+_.onBrowserEvent = onBrowserEvent_1;
+_.remove = remove_1;
+_.typeId$ = 34;
+_.bodyElem = null;
+_.cellFormatter = null;
+_.columnFormatter = null;
+_.tableElem = null;
+function $FlexTable(this$static){
+  this$static.widgetMap = $HTMLTable$WidgetMapper(new HTMLTable$WidgetMapper());
+  this$static.tableElem = $doc.createElement('table');
+  this$static.bodyElem = $doc.createElement('tbody');
+  this$static.tableElem.appendChild(this$static.bodyElem);
+  $setElement(this$static, this$static.tableElem);
+  this$static.cellFormatter = $FlexTable$FlexCellFormatter(new FlexTable$FlexCellFormatter(), this$static);
+  $setColumnFormatter(this$static, $HTMLTable$ColumnFormatter(new HTMLTable$ColumnFormatter(), this$static));
+  return this$static;
+}
+
+function $prepareCell(this$static, row, column){
+  var cellCount, required;
+  $prepareRow(this$static, row);
+  if (column < 0) {
+    throw $IndexOutOfBoundsException(new IndexOutOfBoundsException(), 'Cannot create a column with a negative index: ' + column);
+  }
+  cellCount = ($checkRowBounds(this$static, row) , this$static.bodyElem.rows[row].cells.length);
+  required = column + 1 - cellCount;
+  if (required > 0) {
+    addCells(this$static.bodyElem, row, required);
+  }
+}
+
+function $prepareRow(this$static, row){
+  var i, rowCount;
+  if (row < 0) {
+    throw $IndexOutOfBoundsException(new IndexOutOfBoundsException(), 'Cannot create a row with a negative index: ' + row);
+  }
+  rowCount = this$static.bodyElem.rows.length;
+  for (i = rowCount; i <= row; ++i) {
+    $insertRow(this$static, i);
+  }
+}
+
+function addCells(table, row, num){
+  var rowElem = table.rows[row];
+  for (var i = 0; i < num; i++) {
+    var cell = $doc.createElement('td');
+    rowElem.appendChild(cell);
+  }
+}
+
+function getClass_32(){
+  return Lcom_google_gwt_user_client_ui_FlexTable_2_classlit;
+}
+
+function FlexTable(){
+}
+
+_ = FlexTable.prototype = new HTMLTable();
+_.getClass$ = getClass_32;
+_.typeId$ = 35;
+function getClass_35(){
+  return Lcom_google_gwt_user_client_ui_HTMLTable$CellFormatter_2_classlit;
+}
+
+function HTMLTable$CellFormatter(){
+}
+
+_ = HTMLTable$CellFormatter.prototype = new Object_0();
+_.getClass$ = getClass_35;
+_.typeId$ = 0;
+_.this$0 = null;
+function $FlexTable$FlexCellFormatter(this$static, this$0){
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function getClass_31(){
+  return Lcom_google_gwt_user_client_ui_FlexTable$FlexCellFormatter_2_classlit;
+}
+
+function FlexTable$FlexCellFormatter(){
+}
+
+_ = FlexTable$FlexCellFormatter.prototype = new HTMLTable$CellFormatter();
+_.getClass$ = getClass_31;
+_.typeId$ = 0;
+function $clinit_65(){
+  $clinit_65 = nullMethod;
+  impl = ($clinit_106() , implPanel);
+}
+
+function $setFocus(this$static, focused){
+  if (focused) {
+    $focus((this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element));
+  }
+   else {
+    $blur_0((this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element));
+  }
+}
+
+function getClass_33(){
+  return Lcom_google_gwt_user_client_ui_FocusPanel_2_classlit;
+}
+
+function onBrowserEvent(event_0){
+  $eventGetTypeInt(event_0);
+}
+
+function FocusPanel(){
+}
+
+_ = FocusPanel.prototype = new SimplePanel();
+_.getClass$ = getClass_33;
+_.onBrowserEvent = onBrowserEvent;
+_.typeId$ = 36;
+var impl;
+function $Label(this$static, element){
+  this$static.element === null || throwAssertionError_Object('Element may only be set once');
+  this$static.element = element;
+  return this$static;
+}
+
+function $addMouseListener(this$static, listener){
+  if (this$static.mouseListeners === null) {
+    this$static.mouseListeners = $MouseListenerCollection(new MouseListenerCollection());
+    sinkEvents((this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element), 124 | ((this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).__eventBits || 0));
+  }
+  $add_3(this$static.mouseListeners, listener);
+}
+
+function getClass_42(){
+  return Lcom_google_gwt_user_client_ui_Label_2_classlit;
+}
+
+function onBrowserEvent_2(event_0){
+  switch ($eventGetTypeInt(event_0)) {
+    case 4:
+    case 8:
+    case 64:
+    case 16:
+    case 32:
+      if (this.mouseListeners !== null) {
+        $fireMouseEvent(this.mouseListeners, this, event_0);
+      }
+
+  }
+}
+
+function Label(){
+}
+
+_ = Label.prototype = new Widget();
+_.getClass$ = getClass_42;
+_.onBrowserEvent = onBrowserEvent_2;
+_.typeId$ = 37;
+_.mouseListeners = null;
+function $HTML(this$static){
+  $Label(this$static, $doc.createElement('div'));
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element)['className'] = 'gwt-HTML';
+  return this$static;
+}
+
+function $HTML_0(this$static, html){
+  $Label(this$static, $doc.createElement('div'));
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element)['className'] = 'gwt-HTML';
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).innerHTML = html || '';
+  return this$static;
+}
+
+function $setHTML(this$static, html){
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).innerHTML = html || '';
+}
+
+function getClass_41(){
+  return Lcom_google_gwt_user_client_ui_HTML_2_classlit;
+}
+
+function HTML(){
+}
+
+_ = HTML.prototype = new Label();
+_.getClass$ = getClass_41;
+_.typeId$ = 38;
+function $HTMLTable$ColumnFormatter(this$static, this$0){
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function $prepareColumnGroup(this$static){
+  if (this$static.columnGroup === null) {
+    this$static.columnGroup = $doc.createElement('colgroup');
+    $insertChild(this$static.this$0.tableElem, this$static.columnGroup, 0);
+    this$static.columnGroup.appendChild($doc.createElement('col'));
+  }
+}
+
+function getClass_36(){
+  return Lcom_google_gwt_user_client_ui_HTMLTable$ColumnFormatter_2_classlit;
+}
+
+function HTMLTable$ColumnFormatter(){
+}
+
+_ = HTMLTable$ColumnFormatter.prototype = new Object_0();
+_.getClass$ = getClass_36;
+_.typeId$ = 0;
+_.columnGroup = null;
+_.this$0 = null;
+function $HTMLTable$WidgetMapper(this$static){
+  this$static.widgetList = $ArrayList(new ArrayList());
+  return this$static;
+}
+
+function $getWidget(this$static, elem){
+  var index_0, index;
+  index_0 = (index = elem['__widgetID'] , index == null?-1:index);
+  if (index_0 < 0) {
+    return null;
+  }
+  return dynamicCast($get_0(this$static.widgetList, index_0), 10);
+}
+
+function $putWidget(this$static, widget){
+  var index;
+  if (this$static.freeList === null) {
+    index = this$static.widgetList.size;
+    $add_3(this$static.widgetList, widget);
+  }
+   else {
+    index = this$static.freeList.index;
+    dynamicCast($set(this$static.widgetList, index, widget), 10);
+    this$static.freeList = this$static.freeList.next;
+  }
+  (widget.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , widget.element)['__widgetID'] = index;
+}
+
+function $removeWidgetByElement(this$static, elem){
+  var index_0, index;
+  index_0 = (index = elem['__widgetID'] , index == null?-1:index);
+  elem['__widgetID'] = null;
+  dynamicCast($set(this$static.widgetList, index_0, null), 10);
+  this$static.freeList = $HTMLTable$WidgetMapper$FreeNode(new HTMLTable$WidgetMapper$FreeNode(), index_0, this$static.freeList);
+}
+
+function getClass_39(){
+  return Lcom_google_gwt_user_client_ui_HTMLTable$WidgetMapper_2_classlit;
+}
+
+function HTMLTable$WidgetMapper(){
+}
+
+_ = HTMLTable$WidgetMapper.prototype = new Object_0();
+_.getClass$ = getClass_39;
+_.typeId$ = 0;
+_.freeList = null;
+function $HTMLTable$WidgetMapper$1(this$static, this$1){
+  this$static.this$1 = this$1;
+  $findNext(this$static);
+  return this$static;
+}
+
+function $findNext(this$static){
+  while (++this$static.nextIndex < this$static.this$1.widgetList.size) {
+    if (dynamicCast($get_0(this$static.this$1.widgetList, this$static.nextIndex), 10) !== null) {
+      return;
+    }
+  }
+}
+
+function getClass_37(){
+  return Lcom_google_gwt_user_client_ui_HTMLTable$WidgetMapper$1_2_classlit;
+}
+
+function hasNext_0(){
+  return this.nextIndex < this.this$1.widgetList.size;
+}
+
+function next_1(){
+  var result;
+  if (this.nextIndex >= this.this$1.widgetList.size) {
+    throw new NoSuchElementException();
+  }
+  result = dynamicCast($get_0(this.this$1.widgetList, this.nextIndex), 10);
+  $findNext(this);
+  return result;
+}
+
+function HTMLTable$WidgetMapper$1(){
+}
+
+_ = HTMLTable$WidgetMapper$1.prototype = new Object_0();
+_.getClass$ = getClass_37;
+_.hasNext = hasNext_0;
+_.next_0 = next_1;
+_.typeId$ = 0;
+_.nextIndex = -1;
+_.this$1 = null;
+function $HTMLTable$WidgetMapper$FreeNode(this$static, index, next){
+  this$static.index = index;
+  this$static.next = next;
+  return this$static;
+}
+
+function getClass_38(){
+  return Lcom_google_gwt_user_client_ui_HTMLTable$WidgetMapper$FreeNode_2_classlit;
+}
+
+function HTMLTable$WidgetMapper$FreeNode(){
+}
+
+_ = HTMLTable$WidgetMapper$FreeNode.prototype = new Object_0();
+_.getClass$ = getClass_38;
+_.typeId$ = 0;
+_.index = 0;
+_.next = null;
+function $MouseListenerCollection(this$static){
+  this$static.array = [];
+  this$static.size = 0;
+  return this$static;
+}
+
+function $fireMouseDown(this$static, x, y){
+  var listener, listener$iterator;
+  for (listener$iterator = $AbstractList$IteratorImpl(new AbstractList$IteratorImpl(), this$static); listener$iterator.i < listener$iterator.this$0.size_0();) {
+    listener = dynamicCast($next_0(listener$iterator), 11);
+    listener.dragging = true;
+    setCapture($getElement(listener.caption));
+    listener.dragStartX = x;
+    listener.dragStartY = y;
+  }
+}
+
+function $fireMouseEnter(this$static){
+  var listener$iterator;
+  for (listener$iterator = $AbstractList$IteratorImpl(new AbstractList$IteratorImpl(), this$static); listener$iterator.i < listener$iterator.this$0.size_0();) {
+    dynamicCast($next_0(listener$iterator), 11);
+  }
+}
+
+function $fireMouseEvent(this$static, sender, event_0){
+  var from, senderElem, to, x, y;
+  senderElem = (sender.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , sender.element);
+  x = (event_0.pageX - $doc.body.scrollLeft || -1) - $getAbsoluteLeft(senderElem) + (parseInt(senderElem['scrollLeft']) || 0) + $doc.body.scrollLeft;
+  y = (event_0.pageY - $doc.body.scrollTop || -1) - $getAbsoluteTop(senderElem) + (parseInt(senderElem['scrollTop']) || 0) + $doc.body.scrollTop;
+  switch ($eventGetTypeInt(event_0)) {
+    case 4:
+      $fireMouseDown(this$static, x, y);
+      break;
+    case 8:
+      $fireMouseUp(this$static);
+      break;
+    case 64:
+      $fireMouseMove(this$static, x, y);
+      break;
+    case 16:
+      from = $eventGetFromElement(event_0);
+      if (from === null || !$isOrHasChild(senderElem, from)) {
+        $fireMouseEnter(this$static);
+      }
+
+      break;
+    case 32:
+      to = $eventGetToElement(event_0);
+      if (to === null || !$isOrHasChild(senderElem, to)) {
+        $fireMouseLeave(this$static);
+      }
+
+  }
+}
+
+function $fireMouseLeave(this$static){
+  var listener$iterator;
+  for (listener$iterator = $AbstractList$IteratorImpl(new AbstractList$IteratorImpl(), this$static); listener$iterator.i < listener$iterator.this$0.size_0();) {
+    dynamicCast($next_0(listener$iterator), 11);
+  }
+}
+
+function $fireMouseMove(this$static, x, y){
+  var listener, listener$iterator;
+  for (listener$iterator = $AbstractList$IteratorImpl(new AbstractList$IteratorImpl(), this$static); listener$iterator.i < listener$iterator.this$0.size_0();) {
+    listener = dynamicCast($next_0(listener$iterator), 11);
+    $onMouseMove(listener, x, y);
+  }
+}
+
+function $fireMouseUp(this$static){
+  var listener, listener$iterator;
+  for (listener$iterator = $AbstractList$IteratorImpl(new AbstractList$IteratorImpl(), this$static); listener$iterator.i < listener$iterator.this$0.size_0();) {
+    listener = dynamicCast($next_0(listener$iterator), 11);
+    listener.dragging = false;
+    releaseCapture($getElement(listener.caption));
+  }
+}
+
+function getClass_43(){
+  return Lcom_google_gwt_user_client_ui_MouseListenerCollection_2_classlit;
+}
+
+function MouseListenerCollection(){
+}
+
+_ = MouseListenerCollection.prototype = new ArrayList();
+_.getClass$ = getClass_43;
+_.typeId$ = 39;
+function equals_0(other){
+  return this === other;
+}
+
+function getClass_66(){
+  return Ljava_lang_Enum_2_classlit;
+}
+
+function hashCode_1(){
+  return this.$H || (this.$H = ++sNextHashId);
+}
+
+function toString_3(){
+  return this.name_0;
+}
+
+function Enum(){
+}
+
+_ = Enum.prototype = new Object_0();
+_.equals$ = equals_0;
+_.getClass$ = getClass_66;
+_.hashCode$ = hashCode_1;
+_.toString$ = toString_3;
+_.typeId$ = 0;
+_.name_0 = null;
+function $clinit_86(){
+  $clinit_86 = nullMethod;
+  CENTER = $PopupPanel$AnimationType(new PopupPanel$AnimationType(), 'CENTER');
+  ONE_WAY_CORNER = $PopupPanel$AnimationType(new PopupPanel$AnimationType(), 'ONE_WAY_CORNER');
+}
+
+function $PopupPanel$AnimationType(this$static, enum$name){
+  $clinit_86();
+  this$static.name_0 = enum$name;
+  return this$static;
+}
+
+function getClass_45(){
+  return Lcom_google_gwt_user_client_ui_PopupPanel$AnimationType_2_classlit;
+}
+
+function PopupPanel$AnimationType(){
+}
+
+_ = PopupPanel$AnimationType.prototype = new Enum();
+_.getClass$ = getClass_45;
+_.typeId$ = 0;
+var CENTER, ONE_WAY_CORNER;
+function $onComplete(this$static){
+  if (!this$static.showing) {
+    $remove_0(($clinit_90() , get_0(null)), this$static.curPanel);
+    this$static.curPanel.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()");
+  }
+  ($clinit_88() , $getElement(this$static.curPanel)).style['clip'] = 'rect(auto, auto, auto, auto)';
+  this$static.curPanel = null;
+}
+
+function $onInstantaneousRun(this$static){
+  if (this$static.showing) {
+    $getElement(this$static.curPanel).style['position'] = 'absolute';
+    if (this$static.curPanel.topPosition != -1) {
+      $setPopupPosition(this$static.curPanel, this$static.curPanel.leftPosition, this$static.curPanel.topPosition);
+    }
+    $add(($clinit_90() , get_0(null)), this$static.curPanel);
+    this$static.curPanel.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()");
+  }
+   else {
+    $remove_0(($clinit_90() , get_0(null)), this$static.curPanel);
+    this$static.curPanel.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()");
+  }
+  this$static.curPanel = null;
+}
+
+function $onStart(this$static){
+  if (this$static.showing) {
+    $getElement(this$static.curPanel).style['position'] = 'absolute';
+    if (this$static.curPanel.topPosition != -1) {
+      $setPopupPosition(this$static.curPanel, this$static.curPanel.leftPosition, this$static.curPanel.topPosition);
+    }
+    ($clinit_88() , $getElement(this$static.curPanel)).style['clip'] = 'rect(0px, 0px, 0px, 0px)';
+    $add(($clinit_90() , get_0(null)), this$static.curPanel);
+    this$static.curPanel.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()");
+  }
+  this$static.offsetHeight = parseInt($getElement(this$static.curPanel)['offsetHeight']) || 0;
+  this$static.offsetWidth = parseInt($getElement(this$static.curPanel)['offsetWidth']) || 0;
+  $onUpdate(this$static, 0);
+}
+
+function $onUpdate(this$static, progress){
+  var bottom, height, left, right, top, width;
+  if (!this$static.showing) {
+    progress = 1 - progress;
+  }
+  top = 0;
+  left = 0;
+  right = 0;
+  bottom = 0;
+  height = ~~Math.max(Math.min(progress * this$static.offsetHeight, 2147483647), -2147483648);
+  width = ~~Math.max(Math.min(progress * this$static.offsetWidth, 2147483647), -2147483648);
+  if (this$static.curPanel.animType === ($clinit_86() , CENTER)) {
+    top = this$static.offsetHeight - height >> 1;
+    left = this$static.offsetWidth - width >> 1;
+  }
+   else 
+    this$static.curPanel.animType === ONE_WAY_CORNER;
+  right = left + width;
+  bottom = top + height;
+  ($clinit_88() , $getElement(this$static.curPanel)).style['clip'] = 'rect(' + top + 'px, ' + right + 'px, ' + bottom + 'px, ' + left + 'px)';
+}
+
+function $setOpen(this$static, panel){
+  var animate;
+  $cancel_0(this$static);
+  animate = panel.isAnimationEnabled;
+  if (panel.animType === ($clinit_86() , ONE_WAY_CORNER) && !panel.showing) {
+    animate = false;
+  }
+  this$static.showing = panel.showing;
+  this$static.curPanel = panel;
+  if (animate) {
+    $run(this$static, 200, (new Date()).getTime());
+  }
+   else {
+    $onInstantaneousRun(this$static);
+  }
+}
+
+function getClass_46(){
+  return Lcom_google_gwt_user_client_ui_PopupPanel$ResizeAnimation_2_classlit;
+}
+
+function PopupPanel$ResizeAnimation(){
+}
+
+_ = PopupPanel$ResizeAnimation.prototype = new WidgetAnimation();
+_.getClass$ = getClass_46;
+_.typeId$ = 40;
+_.curPanel = null;
+_.offsetHeight = 0;
+_.offsetWidth = -1;
+_.showing = false;
+function $clinit_90(){
+  $clinit_90 = nullMethod;
+  rootPanels = $HashMap(new HashMap());
+}
+
+function $RootPanel(this$static, elem){
+  $clinit_90();
+  this$static.children = $WidgetCollection(new WidgetCollection());
+  this$static.element === null || throwAssertionError_Object('Element may only be set once');
+  this$static.element = elem;
+  $onAttach(this$static);
+  return this$static;
+}
+
+function get_0(id){
+  $clinit_90();
+  var elem, rp;
+  rp = dynamicCast($get(rootPanels, id), 12);
+  if (rp !== null) {
+    return rp;
+  }
+  elem = null;
+  if (id !== null) {
+    if (null === (elem = $doc.getElementById(id))) {
+      return null;
+    }
+  }
+  if (rootPanels.size == 0) {
+    addWindowCloseListener(new RootPanel$1());
+  }
+  if (elem === null) {
+    elem = $doc.body;
+  }
+  dynamicCast($put(rootPanels, id, rp = $RootPanel(new RootPanel(), elem)), 12);
+  return rp;
+}
+
+function getClass_49(){
+  return Lcom_google_gwt_user_client_ui_RootPanel_2_classlit;
+}
+
+function RootPanel(){
+}
+
+_ = RootPanel.prototype = new AbsolutePanel();
+_.getClass$ = getClass_49;
+_.typeId$ = 41;
+var rootPanels;
+function getClass_48(){
+  return Lcom_google_gwt_user_client_ui_RootPanel$1_2_classlit;
+}
+
+function onWindowClosed_0(){
+  var gwt, gwt$iterator, outerIter, value;
+  for (gwt$iterator = (outerIter = $AbstractHashMap$EntrySetIterator(new AbstractHashMap$EntrySetIterator(), $values(($clinit_90() , rootPanels)).val$entrySet.this$0) , $AbstractMap$2$1(new AbstractMap$2$1(), outerIter)); $hasNext_0(gwt$iterator.val$outerIter.iter);) {
+    gwt = dynamicCast((value = dynamicCast($next_0(gwt$iterator.val$outerIter.iter), 18).value , value), 12);
+    if (gwt.attached) {
+      $onDetach(gwt);
+    }
+  }
+}
+
+function onWindowClosing_0(){
+  return null;
+}
+
+function RootPanel$1(){
+}
+
+_ = RootPanel$1.prototype = new Object_0();
+_.getClass$ = getClass_48;
+_.onWindowClosed = onWindowClosed_0;
+_.onWindowClosing = onWindowClosing_0;
+_.typeId$ = 42;
+function getClass_50(){
+  return Lcom_google_gwt_user_client_ui_SimplePanel$1_2_classlit;
+}
+
+function hasNext_1(){
+  return false;
+}
+
+function next_2(){
+  throw new NoSuchElementException();
+}
+
+function SimplePanel$1(){
+}
+
+_ = SimplePanel$1.prototype = new Object_0();
+_.getClass$ = getClass_50;
+_.hasNext = hasNext_1;
+_.next_0 = next_2;
+_.typeId$ = 0;
+function $WidgetCollection(this$static){
+  this$static.array = initDim(_3Lcom_google_gwt_user_client_ui_Widget_2_classlit, 0, 10, 4, 0);
+  return this$static;
+}
+
+function $add_2(this$static, w){
+  $insert(this$static, w, this$static.size);
+}
+
+function $indexOf(this$static, w){
+  var i;
+  for (i = 0; i < this$static.size; ++i) {
+    if (this$static.array[i] === w) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+function $insert(this$static, w, beforeIndex){
+  var i, newArray;
+  if (beforeIndex < 0 || beforeIndex > this$static.size) {
+    throw new IndexOutOfBoundsException();
+  }
+  if (this$static.size == this$static.array.length) {
+    newArray = initDim(_3Lcom_google_gwt_user_client_ui_Widget_2_classlit, 0, 10, this$static.array.length * 2, 0);
+    for (i = 0; i < this$static.array.length; ++i) {
+      setCheck(newArray, i, this$static.array[i]);
+    }
+    this$static.array = newArray;
+  }
+  ++this$static.size;
+  for (i = this$static.size - 1; i > beforeIndex; --i) {
+    setCheck(this$static.array, i, this$static.array[i - 1]);
+  }
+  setCheck(this$static.array, beforeIndex, w);
+}
+
+function $remove_4(this$static, index){
+  var i;
+  if (index < 0 || index >= this$static.size) {
+    throw new IndexOutOfBoundsException();
+  }
+  --this$static.size;
+  for (i = index; i < this$static.size; ++i) {
+    setCheck(this$static.array, i, this$static.array[i + 1]);
+  }
+  setCheck(this$static.array, this$static.size, null);
+}
+
+function $remove_5(this$static, w){
+  var index;
+  index = $indexOf(this$static, w);
+  if (index == -1) {
+    throw new NoSuchElementException();
+  }
+  $remove_4(this$static, index);
+}
+
+function getClass_54(){
+  return Lcom_google_gwt_user_client_ui_WidgetCollection_2_classlit;
+}
+
+function WidgetCollection(){
+}
+
+_ = WidgetCollection.prototype = new Object_0();
+_.getClass$ = getClass_54;
+_.typeId$ = 0;
+_.array = null;
+_.size = 0;
+function $WidgetCollection$WidgetIterator(this$static, this$0){
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function getClass_53(){
+  return Lcom_google_gwt_user_client_ui_WidgetCollection$WidgetIterator_2_classlit;
+}
+
+function hasNext_2(){
+  return this.index < this.this$0.size - 1;
+}
+
+function next_3(){
+  if (this.index >= this.this$0.size) {
+    throw new NoSuchElementException();
+  }
+  return this.this$0.array[++this.index];
+}
+
+function WidgetCollection$WidgetIterator(){
+}
+
+_ = WidgetCollection$WidgetIterator.prototype = new Object_0();
+_.getClass$ = getClass_53;
+_.hasNext = hasNext_2;
+_.next_0 = next_3;
+_.typeId$ = 0;
+_.index = -1;
+_.this$0 = null;
+function $clinit_106(){
+  $clinit_106 = nullMethod;
+  implPanel = $FocusImplSafari(new FocusImplSafari());
+  implWidget = implPanel !== null?($clinit_106() , new FocusImpl()):implPanel;
+}
+
+function getClass_58(){
+  return Lcom_google_gwt_user_client_ui_impl_FocusImpl_2_classlit;
+}
+
+function setTabIndex_0(elem, index){
+  elem.tabIndex = index;
+}
+
+function FocusImpl(){
+}
+
+_ = FocusImpl.prototype = new Object_0();
+_.getClass$ = getClass_58;
+_.setTabIndex = setTabIndex_0;
+_.typeId$ = 0;
+var implPanel, implWidget;
+function $clinit_104(){
+  $clinit_104 = nullMethod;
+  $clinit_106();
+}
+
+function $createBlurHandler(){
+  return function(evt){
+    if (this.parentNode.onblur) {
+      this.parentNode.onblur(evt);
+    }
+  }
+  ;
+}
+
+function $createFocusHandler(){
+  return function(evt){
+    if (this.parentNode.onfocus) {
+      this.parentNode.onfocus(evt);
+    }
+  }
+  ;
+}
+
+function $createFocusable(this$static){
+  var div = $doc.createElement('div');
+  var input = this$static.createHiddenInput();
+  input.addEventListener('blur', this$static.blurHandler, false);
+  input.addEventListener('focus', this$static.focusHandler, false);
+  div.addEventListener('mousedown', this$static.mouseHandler, false);
+  div.appendChild(input);
+  return div;
+}
+
+function createHiddenInput(){
+  var input = $doc.createElement('input');
+  input.type = 'text';
+  input.style.width = input.style.height = 0;
+  input.style.zIndex = -1;
+  input.style.position = 'absolute';
+  return input;
+}
+
+function getClass_56(){
+  return Lcom_google_gwt_user_client_ui_impl_FocusImplOld_2_classlit;
+}
+
+function setTabIndex(elem, index){
+  elem.firstChild.tabIndex = index;
+}
+
+function FocusImplOld(){
+}
+
+_ = FocusImplOld.prototype = new FocusImpl();
+_.createHiddenInput = createHiddenInput;
+_.getClass$ = getClass_56;
+_.setTabIndex = setTabIndex;
+_.typeId$ = 0;
+function $clinit_105(){
+  $clinit_105 = nullMethod;
+  $clinit_104();
+}
+
+function $FocusImplSafari(this$static){
+  $clinit_105();
+  this$static.blurHandler = $createBlurHandler();
+  this$static.focusHandler = $createFocusHandler();
+  this$static.mouseHandler = $createMouseHandler();
+  return this$static;
+}
+
+function $blur_0(elem){
+  $wnd.setTimeout(function(){
+    elem.firstChild.blur();
+  }
+  , 0);
+}
+
+function $createMouseHandler(){
+  return function(){
+    var firstChild = this.firstChild;
+    $wnd.setTimeout(function(){
+      firstChild.focus();
+    }
+    , 0);
+  }
+  ;
+}
+
+function $focus(elem){
+  $wnd.setTimeout(function(){
+    elem.firstChild.focus();
+  }
+  , 0);
+}
+
+function createHiddenInput_0(){
+  var input = $doc.createElement('input');
+  input.type = 'text';
+  input.style.opacity = 0;
+  input.style.zIndex = -1;
+  input.style.height = '1px';
+  input.style.width = '1px';
+  input.style.overflow = 'hidden';
+  input.style.position = 'absolute';
+  return input;
+}
+
+function getClass_57(){
+  return Lcom_google_gwt_user_client_ui_impl_FocusImplSafari_2_classlit;
+}
+
+function FocusImplSafari(){
+}
+
+_ = FocusImplSafari.prototype = new FocusImplOld();
+_.createHiddenInput = createHiddenInput_0;
+_.getClass$ = getClass_57;
+_.typeId$ = 0;
+function $clinit_110(){
+  $clinit_110 = nullMethod;
+  $clinit_65();
+}
+
+function $GlassPanel(this$static, autoHide){
+  var elem;
+  $clinit_110();
+  $SimplePanel(this$static, $createFocusable(impl));
+  sinkEvents((this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element), 138237 | ((this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element).__eventBits || 0));
+  this$static.autoHide = autoHide;
+  elem = (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element);
+  elem.style['backgroundColor'] = '#000';
+  elem.style['filter'] = 'alpha(opacity=50)';
+  elem.style['opacity'] = '0.5';
+  (this$static.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this$static.element)['className'] = 'gwt-GlassPanel';
+  return this$static;
+}
+
+function getClass_61(){
+  return Lcom_google_gwt_widgetideas_client_GlassPanel_2_classlit;
+}
+
+function onAttach_0(){
+  var $e0, parent;
+  $onAttach(this);
+  try {
+    parent = dynamicCast(this.parent, 16);
+  }
+   catch ($e0) {
+    $e0 = caught($e0);
+    if (instanceOf($e0, 17)) {
+      throw $IllegalStateException(new IllegalStateException(), 'Parent widget must be an instance of AbsolutePanel');
+    }
+     else 
+      throw $e0;
+  }
+  if (parent === ($clinit_90() , get_0(null))) {
+    implMatchDocumentSize((this.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this.element));
+    this.resizeListener = $GlassPanel$1(new GlassPanel$1(), this);
+    addWindowResizeListener(this.resizeListener);
+  }
+   else {
+    (this.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this.element).style['bottom'] = '0px';
+    (this.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this.element).style['right'] = '0px';
+  }
+  if (this.autoHide) {
+    addEventPreview(this);
+  }
+  addCommand($GlassPanel$2(new GlassPanel$2(), this));
+}
+
+function onDetach_1(){
+  $onDetach(this);
+  if (this.resizeListener !== null) {
+    removeWindowResizeListener(this.resizeListener);
+    this.resizeListener = null;
+  }
+  if (this.autoHide) {
+    removeEventPreview(this);
+  }
+}
+
+function onEventPreview_1(event_0){
+  var type;
+  type = $eventGetTypeInt(event_0);
+  switch (type) {
+    case 256:
+      {
+        if ((event_0.which || (event_0.keyCode || -1)) == 27) {
+          $removeFromParent(this);
+          return false;
+        }
+      }
+
+    case 1:
+      {
+        if ($isOrHasChild((this.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , this.element), event_0.target || null)) {
+          $removeFromParent(this);
+          return false;
+        }
+      }
+
+  }
+  return true;
+}
+
+function GlassPanel(){
+}
+
+_ = GlassPanel.prototype = new FocusPanel();
+_.getClass$ = getClass_61;
+_.onAttach = onAttach_0;
+_.onDetach = onDetach_1;
+_.onEventPreview = onEventPreview_1;
+_.typeId$ = 43;
+_.autoHide = false;
+_.resizeListener = null;
+function $GlassPanel$1(this$static, this$0){
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function $onWindowResized(this$static){
+  $matchDocumentSize(($clinit_110() , this$static.this$0));
+}
+
+function getClass_59(){
+  return Lcom_google_gwt_widgetideas_client_GlassPanel$1_2_classlit;
+}
+
+function GlassPanel$1(){
+}
+
+_ = GlassPanel$1.prototype = new Object_0();
+_.getClass$ = getClass_59;
+_.typeId$ = 44;
+_.this$0 = null;
+function $GlassPanel$2(this$static, this$0){
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function execute_0(){
+  $setFocus(this.this$0, true);
+}
+
+function getClass_60(){
+  return Lcom_google_gwt_widgetideas_client_GlassPanel$2_2_classlit;
+}
+
+function GlassPanel$2(){
+}
+
+_ = GlassPanel$2.prototype = new Object_0();
+_.execute = execute_0;
+_.getClass$ = getClass_60;
+_.typeId$ = 45;
+_.this$0 = null;
+function $matchDocumentSize(glassPanel){
+  implMatchDocumentSize((glassPanel.element !== null || throwAssertionError_Object("This UIObject's element is not set; you may be missing a call to either Composite.initWidget() or UIObject.setElement()") , glassPanel.element));
+}
+
+function implMatchDocumentSize(elem){
+  var scrollWidth = ($clinit_52() , documentRoot).scrollWidth;
+  var scrollHeight = documentRoot.scrollHeight;
+  var width = Math.max($wnd.innerWidth, scrollWidth);
+  var height = Math.max($wnd.innerHeight, scrollHeight);
+  var computedStyle = $doc.defaultView.getComputedStyle($doc.documentElement, null);
+  var marginLeft = parseInt(computedStyle.getPropertyValue('margin-left'));
+  var marginTop = parseInt(computedStyle.getPropertyValue('margin-top'));
+  elem.style.marginLeft = -marginLeft + 'px';
+  elem.style.marginTop = -marginTop + 'px';
+  elem.style.width = width + marginLeft + 'px';
+  elem.style.height = height + marginTop + 'px';
+}
+
+function getClass_62(){
+  return Ljava_lang_ArrayStoreException_2_classlit;
+}
+
+function ArrayStoreException(){
+}
+
+_ = ArrayStoreException.prototype = new RuntimeException();
+_.getClass$ = getClass_62;
+_.typeId$ = 47;
+function getClass_67(){
+  return Ljava_lang_Error_2_classlit;
+}
+
+function Error_0(){
+}
+
+_ = Error_0.prototype = new Throwable();
+_.getClass$ = getClass_67;
+_.typeId$ = 48;
+function $AssertionError(this$static, message){
+  $Throwable(this$static, '' + message, message !== null && canCast(message.typeId$, 2)?dynamicCast(message, 2):null);
+  return this$static;
+}
+
+function getClass_63(){
+  return Ljava_lang_AssertionError_2_classlit;
+}
+
+function AssertionError(){
+}
+
+_ = AssertionError.prototype = new Error_0();
+_.getClass$ = getClass_63;
+_.typeId$ = 49;
+function createForArray(packageName, className){
+  var clazz;
+  clazz = new Class();
+  clazz.typeName = packageName + className;
+  clazz.modifiers = 4;
+  return clazz;
+}
+
+function createForClass(packageName, className){
+  var clazz;
+  clazz = new Class();
+  clazz.typeName = packageName + className;
+  return clazz;
+}
+
+function createForEnum(packageName, className){
+  var clazz;
+  clazz = new Class();
+  clazz.typeName = packageName + className;
+  clazz.modifiers = 8;
+  return clazz;
+}
+
+function getClass_65(){
+  return Ljava_lang_Class_2_classlit;
+}
+
+function toString_2(){
+  return ((this.modifiers & 2) != 0?'interface ':(this.modifiers & 1) != 0?'':'class ') + this.typeName;
+}
+
+function Class(){
+}
+
+_ = Class.prototype = new Object_0();
+_.getClass$ = getClass_65;
+_.toString$ = toString_2;
+_.typeId$ = 0;
+_.modifiers = 0;
+_.typeName = null;
+function getClass_64(){
+  return Ljava_lang_ClassCastException_2_classlit;
+}
+
+function ClassCastException(){
+}
+
+_ = ClassCastException.prototype = new RuntimeException();
+_.getClass$ = getClass_64;
+_.typeId$ = 50;
+function $IllegalArgumentException(this$static, message){
+  this$static.detailMessage = message;
+  return this$static;
+}
+
+function getClass_69(){
+  return Ljava_lang_IllegalArgumentException_2_classlit;
+}
+
+function IllegalArgumentException(){
+}
+
+_ = IllegalArgumentException.prototype = new RuntimeException();
+_.getClass$ = getClass_69;
+_.typeId$ = 51;
+function $IllegalStateException(this$static, s){
+  this$static.detailMessage = s;
+  return this$static;
+}
+
+function getClass_70(){
+  return Ljava_lang_IllegalStateException_2_classlit;
+}
+
+function IllegalStateException(){
+}
+
+_ = IllegalStateException.prototype = new RuntimeException();
+_.getClass$ = getClass_70;
+_.typeId$ = 52;
+function $IndexOutOfBoundsException(this$static, message){
+  this$static.detailMessage = message;
+  return this$static;
+}
+
+function getClass_71(){
+  return Ljava_lang_IndexOutOfBoundsException_2_classlit;
+}
+
+function IndexOutOfBoundsException(){
+}
+
+_ = IndexOutOfBoundsException.prototype = new RuntimeException();
+_.getClass$ = getClass_71;
+_.typeId$ = 53;
+function toPowerOfTwoString(value, shift){
+  var bitMask, buf, bufSize, pos;
+  bufSize = ~~(32 / shift);
+  bitMask = (1 << shift) - 1;
+  buf = initDim(_3C_classlit, 0, -1, bufSize, 1);
+  pos = bufSize - 1;
+  if (value >= 0) {
+    while (value > bitMask) {
+      buf[pos--] = ($clinit_132() , digits)[value & bitMask];
+      value >>= shift;
+    }
+  }
+   else {
+    while (pos > 0) {
+      buf[pos--] = ($clinit_132() , digits)[value & bitMask];
+      value >>= shift;
+    }
+  }
+  buf[pos] = ($clinit_132() , digits)[value & bitMask];
+  return __valueOf(buf, pos, bufSize);
+}
+
+function $NullPointerException(this$static, message){
+  this$static.detailMessage = message;
+  return this$static;
+}
+
+function getClass_72(){
+  return Ljava_lang_NullPointerException_2_classlit;
+}
+
+function NullPointerException(){
+}
+
+_ = NullPointerException.prototype = new RuntimeException();
+_.getClass$ = getClass_72;
+_.typeId$ = 54;
+function $clinit_132(){
+  $clinit_132 = nullMethod;
+  digits = initValues(_3C_classlit, 0, -1, [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122]);
+}
+
+var digits;
+function $replaceAll(this$static, regex, replace){
+  replace = __translateReplaceString(replace);
+  return this$static.replace(RegExp(regex, 'g'), replace);
+}
+
+function $substring(this$static, beginIndex){
+  return this$static.substr(beginIndex, this$static.length - beginIndex);
+}
+
+function $trim(this$static){
+  if (this$static.length == 0 || this$static[0] > ' ' && this$static[this$static.length - 1] > ' ') {
+    return this$static;
+  }
+  var r1 = this$static.replace(/^(\s*)/, '');
+  var r2 = r1.replace(/\s*$/, '');
+  return r2;
+}
+
+function __translateReplaceString(replaceStr){
+  var pos;
+  pos = 0;
+  while (0 <= (pos = replaceStr.indexOf('\\', pos))) {
+    if (replaceStr.charCodeAt(pos + 1) == 36) {
+      replaceStr = replaceStr.substr(0, pos - 0) + '$' + $substring(replaceStr, ++pos);
+    }
+     else {
+      replaceStr = replaceStr.substr(0, pos - 0) + $substring(replaceStr, ++pos);
+    }
+  }
+  return replaceStr;
+}
+
+function __valueOf(x, start, end){
+  x = x.slice(start, end);
+  return String.fromCharCode.apply(null, x);
+}
+
+function equals_2(other){
+  if (!(other !== null && canCast(other.typeId$, 1))) {
+    return false;
+  }
+  return String(this) == other;
+}
+
+function getClass_77(){
+  return Ljava_lang_String_2_classlit;
+}
+
+function hashCode_3(){
+  return getHashCode_0(this);
+}
+
+function toString_7(){
+  return this;
+}
+
+_ = String.prototype;
+_.equals$ = equals_2;
+_.getClass$ = getClass_77;
+_.hashCode$ = hashCode_3;
+_.toString$ = toString_7;
+_.typeId$ = 2;
+function $clinit_136(){
+  $clinit_136 = nullMethod;
+  back = {};
+  front = {};
+}
+
+function compute(str){
+  var hashCode, i, inc, n;
+  n = str.length;
+  inc = n < 64?1:~~(n / 32);
+  hashCode = 0;
+  for (i = 0; i < n; i += inc) {
+    hashCode <<= 1;
+    hashCode += str.charCodeAt(i);
+  }
+  hashCode |= 0;
+  return hashCode;
+}
+
+function getHashCode_0(str){
+  $clinit_136();
+  var key = ':' + str;
+  var result = front[key];
+  if (result != null) {
+    return result;
+  }
+  result = back[key];
+  if (result == null) {
+    result = compute(str);
+  }
+  increment();
+  return front[key] = result;
+}
+
+function increment(){
+  if (count_0 == 256) {
+    back = front;
+    front = {};
+    count_0 = 0;
+  }
+  ++count_0;
+}
+
+var back, count_0 = 0, front;
+function $StringBuffer(this$static){
+  this$static.builder = $StringBuilder(new StringBuilder());
+  return this$static;
+}
+
+function $append(this$static, toAppend){
+  $append_0(this$static.builder, toAppend);
+  return this$static;
+}
+
+function getClass_75(){
+  return Ljava_lang_StringBuffer_2_classlit;
+}
+
+function toString_5(){
+  return $toString_1(this.builder);
+}
+
+function StringBuffer(){
+}
+
+_ = StringBuffer.prototype = new Object_0();
+_.getClass$ = getClass_75;
+_.toString$ = toString_5;
+_.typeId$ = 0;
+function $StringBuilder(this$static){
+  this$static.stringArray = initDim(_3Ljava_lang_String_2_classlit, 0, 1, 0, 0);
+  return this$static;
+}
+
+function $append_0(this$static, toAppend){
+  var appendLength;
+  if (toAppend === null) {
+    toAppend = 'null';
+  }
+  appendLength = toAppend.length;
+  if (appendLength > 0) {
+    this$static.stringArray[this$static.arrayLen++] = toAppend;
+    this$static.stringLength += appendLength;
+    if (this$static.arrayLen > 1024) {
+      $toString_1(this$static);
+      this$static.stringArray.length = 1024;
+    }
+  }
+  return this$static;
+}
+
+function $toString_1(this$static){
+  var s;
+  if (this$static.arrayLen != 1) {
+    this$static.stringArray.length = this$static.arrayLen;
+    s = this$static.stringArray.join('');
+    this$static.stringArray = initValues(_3Ljava_lang_String_2_classlit, 0, 1, [s]);
+    this$static.arrayLen = 1;
+  }
+  return this$static.stringArray[0];
+}
+
+function getClass_76(){
+  return Ljava_lang_StringBuilder_2_classlit;
+}
+
+function toString_6(){
+  return $toString_1(this);
+}
+
+function StringBuilder(){
+}
+
+_ = StringBuilder.prototype = new Object_0();
+_.getClass$ = getClass_76;
+_.toString$ = toString_6;
+_.typeId$ = 0;
+_.arrayLen = 0;
+_.stringLength = 0;
+function $UnsupportedOperationException(this$static, message){
+  this$static.detailMessage = message;
+  return this$static;
+}
+
+function getClass_79(){
+  return Ljava_lang_UnsupportedOperationException_2_classlit;
+}
+
+function UnsupportedOperationException(){
+}
+
+_ = UnsupportedOperationException.prototype = new RuntimeException();
+_.getClass$ = getClass_79;
+_.typeId$ = 55;
+function $values(this$static){
+  var entrySet;
+  entrySet = $AbstractHashMap$EntrySet(new AbstractHashMap$EntrySet(), this$static);
+  return $AbstractMap$2(new AbstractMap$2(), this$static, entrySet);
+}
+
+function equals_4(obj){
+  var entry, entry$iterator, otherKey, otherMap, otherValue;
+  if (obj === this) {
+    return true;
+  }
+  if (!(obj !== null && canCast(obj.typeId$, 20))) {
+    return false;
+  }
+  otherMap = dynamicCast(obj, 20);
+  if (dynamicCast(this, 20).size != otherMap.size) {
+    return false;
+  }
+  for (entry$iterator = $AbstractHashMap$EntrySetIterator(new AbstractHashMap$EntrySetIterator(), $AbstractHashMap$EntrySet(new AbstractHashMap$EntrySet(), otherMap).this$0); $hasNext_0(entry$iterator.iter);) {
+    entry = dynamicCast($next_0(entry$iterator.iter), 18);
+    otherKey = entry.key;
+    otherValue = entry.value;
+    if (!(otherKey === null?dynamicCast(this, 20).nullSlotLive:!(otherKey !== null && canCast(otherKey.typeId$, 1))?$hasHashValue(dynamicCast(this, 20), otherKey, otherKey.typeMarker$ === nullMethod || otherKey.typeId$ == 2?otherKey.hashCode$():otherKey.$H || (otherKey.$H = ++sNextHashId)):$hasStringValue(dynamicCast(this, 20), dynamicCast(otherKey, 1)))) {
+      return false;
+    }
+    if (!equalsWithNullCheck(otherValue, otherKey === null?dynamicCast(this, 20).nullSlot:!(otherKey !== null && canCast(otherKey.typeId$, 1))?$getHashValue(dynamicCast(this, 20), otherKey, otherKey.typeMarker$ === nullMethod || otherKey.typeId$ == 2?otherKey.hashCode$():otherKey.$H || (otherKey.$H = ++sNextHashId)):(_ = dynamicCast(this, 20).stringMap[':' + dynamicCast(otherKey, 1)]) == null?null:_)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function getClass_88(){
+  return Ljava_util_AbstractMap_2_classlit;
+}
+
+function hashCode_5(){
+  var entry, entry$iterator, hashCode;
+  hashCode = 0;
+  for (entry$iterator = $AbstractHashMap$EntrySetIterator(new AbstractHashMap$EntrySetIterator(), $AbstractHashMap$EntrySet(new AbstractHashMap$EntrySet(), dynamicCast(this, 20)).this$0); $hasNext_0(entry$iterator.iter);) {
+    entry = dynamicCast($next_0(entry$iterator.iter), 18);
+    hashCode += $hashCode_0(entry);
+    hashCode = ~~hashCode;
+  }
+  return hashCode;
+}
+
+function toString_10(){
+  var comma, entry, iter, s;
+  s = '{';
+  comma = false;
+  for (iter = $AbstractHashMap$EntrySetIterator(new AbstractHashMap$EntrySetIterator(), $AbstractHashMap$EntrySet(new AbstractHashMap$EntrySet(), dynamicCast(this, 20)).this$0); $hasNext_0(iter.iter);) {
+    entry = dynamicCast($next_0(iter.iter), 18);
+    if (comma) {
+      s += ', ';
+    }
+     else {
+      comma = true;
+    }
+    s += '' + entry.key;
+    s += '=';
+    s += '' + entry.value;
+  }
+  return s + '}';
+}
+
+function AbstractMap(){
+}
+
+_ = AbstractMap.prototype = new Object_0();
+_.equals$ = equals_4;
+_.getClass$ = getClass_88;
+_.hashCode$ = hashCode_5;
+_.toString$ = toString_10;
+_.typeId$ = 0;
+function $containsHashValue(this$static, value){
+  var hashCodeMap = this$static.hashCodeMap;
+  for (var hashCode in hashCodeMap) {
+    if (hashCode == parseInt(hashCode)) {
+      var array = hashCodeMap[hashCode];
+      for (var i = 0, c = array.length; i < c; ++i) {
+        var entry = array[i];
+        var entryValue = entry.getValue();
+        if (this$static.equalsBridge(value, entryValue)) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+function $containsKey(this$static, key){
+  return key === null?this$static.nullSlotLive:!(key !== null && canCast(key.typeId$, 1))?$hasHashValue(this$static, key, key.typeMarker$ === nullMethod || key.typeId$ == 2?key.hashCode$():key.$H || (key.$H = ++sNextHashId)):$hasStringValue(this$static, dynamicCast(key, 1));
+}
+
+function $containsStringValue(this$static, value){
+  var stringMap = this$static.stringMap;
+  for (var key in stringMap) {
+    if (key.charCodeAt(0) == 58) {
+      var entryValue = stringMap[key];
+      if (this$static.equalsBridge(value, entryValue)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function $containsValue(this$static, value){
+  if (this$static.nullSlotLive && $equals_0(this$static.nullSlot, value)) {
+    return true;
+  }
+   else if ($containsStringValue(this$static, value)) {
+    return true;
+  }
+   else if ($containsHashValue(this$static, value)) {
+    return true;
+  }
+  return false;
+}
+
+function $get(this$static, key){
+  return key === null?this$static.nullSlot:!(key !== null && canCast(key.typeId$, 1))?$getHashValue(this$static, key, key.typeMarker$ === nullMethod || key.typeId$ == 2?key.hashCode$():key.$H || (key.$H = ++sNextHashId)):(_ = this$static.stringMap[':' + dynamicCast(key, 1)]) == null?null:_;
+}
+
+function $getHashValue(this$static, key, hashCode){
+  var array = this$static.hashCodeMap[hashCode];
+  if (array) {
+    for (var i = 0, c = array.length; i < c; ++i) {
+      var entry = array[i];
+      var entryKey = entry.getKey();
+      if (this$static.equalsBridge(key, entryKey)) {
+        return entry.getValue();
+      }
+    }
+  }
+  return null;
+}
+
+function $hasHashValue(this$static, key, hashCode){
+  var array = this$static.hashCodeMap[hashCode];
+  if (array) {
+    for (var i = 0, c = array.length; i < c; ++i) {
+      var entry = array[i];
+      var entryKey = entry.getKey();
+      if (this$static.equalsBridge(key, entryKey)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function $hasStringValue(this$static, key){
+  return ':' + key in this$static.stringMap;
+}
+
+function $put(this$static, key, value){
+  return key === null?$putNullSlot(this$static, value):key === null?$putHashValue(this$static, key, value, getHashCode_0(key)):$putStringValue(this$static, key, value);
+}
+
+function $putHashValue(this$static, key, value, hashCode){
+  var array = this$static.hashCodeMap[hashCode];
+  if (array) {
+    for (var i = 0, c = array.length; i < c; ++i) {
+      var entry = array[i];
+      var entryKey = entry.getKey();
+      if (this$static.equalsBridge(key, entryKey)) {
+        var previous = entry.getValue();
+        entry.setValue(value);
+        return previous;
+      }
+    }
+  }
+   else {
+    array = this$static.hashCodeMap[hashCode] = [];
+  }
+  var entry = $MapEntryImpl(new MapEntryImpl(), key, value);
+  array.push(entry);
+  ++this$static.size;
+  return null;
+}
+
+function $putNullSlot(this$static, value){
+  var result;
+  result = this$static.nullSlot;
+  this$static.nullSlot = value;
+  if (!this$static.nullSlotLive) {
+    this$static.nullSlotLive = true;
+    ++this$static.size;
+  }
+  return result;
+}
+
+function $putStringValue(this$static, key, value){
+  key = ':' + key;
+  var result = this$static.stringMap[key];
+  this$static.stringMap[key] = value;
+  return result === undefined?(++this$static.size , null):result;
+}
+
+function addAllHashEntries(hashCodeMap, dest){
+  for (var hashCode in hashCodeMap) {
+    if (hashCode == parseInt(hashCode)) {
+      var array = hashCodeMap[hashCode];
+      for (var i = 0, c = array.length; i < c; ++i) {
+        dest.add_0(array[i]);
+      }
+    }
+  }
+}
+
+function addAllStringEntries(stringMap, dest){
+  for (var key in stringMap) {
+    if (key.charCodeAt(0) == 58) {
+      var value = stringMap[key];
+      var entry = $MapEntryImpl(new MapEntryImpl(), key.substring(1), value);
+      dest.add_0(entry);
+    }
+  }
+}
+
+function equalsBridge(value1, value2){
+  return value1 === value2 || value1 !== null && (value1.typeMarker$ === nullMethod || value1.typeId$ == 2?value1.equals$(value2):value1 === value2);
+}
+
+function getClass_83(){
+  return Ljava_util_AbstractHashMap_2_classlit;
+}
+
+function AbstractHashMap(){
+}
+
+_ = AbstractHashMap.prototype = new AbstractMap();
+_.equalsBridge = equalsBridge;
+_.getClass$ = getClass_83;
+_.typeId$ = 0;
+_.hashCodeMap = null;
+_.nullSlot = null;
+_.nullSlotLive = false;
+_.size = 0;
+_.stringMap = null;
+function equals_5(o){
+  var iter, other, otherItem;
+  if (o === this) {
+    return true;
+  }
+  if (!(o !== null && canCast(o.typeId$, 21))) {
+    return false;
+  }
+  other = dynamicCast(o, 21);
+  if (other.this$0.size != this.size_0()) {
+    return false;
+  }
+  for (iter = $AbstractHashMap$EntrySetIterator(new AbstractHashMap$EntrySetIterator(), other.this$0); $hasNext_0(iter.iter);) {
+    otherItem = dynamicCast($next_0(iter.iter), 18);
+    if (!this.contains(otherItem)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function getClass_89(){
+  return Ljava_util_AbstractSet_2_classlit;
+}
+
+function hashCode_6(){
+  var hashCode, iter, next;
+  hashCode = 0;
+  for (iter = this.iterator_0(); iter.hasNext();) {
+    next = iter.next_0();
+    if (next !== null) {
+      hashCode += next.typeMarker$ === nullMethod || next.typeId$ == 2?next.hashCode$():next.$H || (next.$H = ++sNextHashId);
+    }
+  }
+  return hashCode;
+}
+
+function AbstractSet(){
+}
+
+_ = AbstractSet.prototype = new AbstractCollection();
+_.equals$ = equals_5;
+_.getClass$ = getClass_89;
+_.hashCode$ = hashCode_6;
+_.typeId$ = 0;
+function $AbstractHashMap$EntrySet(this$static, this$0){
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function $contains(this$static, o){
+  var entry, key, value;
+  if (o !== null && canCast(o.typeId$, 18)) {
+    entry = dynamicCast(o, 18);
+    key = entry.key;
+    if ($containsKey(this$static.this$0, key)) {
+      value = $get(this$static.this$0, key);
+      return $equals_0(entry.value, value);
+    }
+  }
+  return false;
+}
+
+function contains_0(o){
+  return $contains(this, o);
+}
+
+function getClass_82(){
+  return Ljava_util_AbstractHashMap$EntrySet_2_classlit;
+}
+
+function iterator_2(){
+  return $AbstractHashMap$EntrySetIterator(new AbstractHashMap$EntrySetIterator(), this.this$0);
+}
+
+function size_0(){
+  return this.this$0.size;
+}
+
+function AbstractHashMap$EntrySet(){
+}
+
+_ = AbstractHashMap$EntrySet.prototype = new AbstractSet();
+_.contains = contains_0;
+_.getClass$ = getClass_82;
+_.iterator_0 = iterator_2;
+_.size_0 = size_0;
+_.typeId$ = 56;
+_.this$0 = null;
+function $AbstractHashMap$EntrySetIterator(this$static, this$0){
+  var entryImpl, list;
+  this$static.this$0 = this$0;
+  list = $ArrayList(new ArrayList());
+  if (this$static.this$0.nullSlotLive) {
+    entryImpl = $MapEntryImpl(new MapEntryImpl(), null, this$static.this$0.nullSlot);
+    list.array[list.size++] = entryImpl;
+  }
+  addAllStringEntries(this$static.this$0.stringMap, list);
+  addAllHashEntries(this$static.this$0.hashCodeMap, list);
+  this$static.iter = $AbstractList$IteratorImpl(new AbstractList$IteratorImpl(), list);
+  return this$static;
+}
+
+function getClass_81(){
+  return Ljava_util_AbstractHashMap$EntrySetIterator_2_classlit;
+}
+
+function hasNext_3(){
+  return $hasNext_0(this.iter);
+}
+
+function next_4(){
+  return dynamicCast($next_0(this.iter), 18);
+}
+
+function AbstractHashMap$EntrySetIterator(){
+}
+
+_ = AbstractHashMap$EntrySetIterator.prototype = new Object_0();
+_.getClass$ = getClass_81;
+_.hasNext = hasNext_3;
+_.next_0 = next_4;
+_.typeId$ = 0;
+_.iter = null;
+_.this$0 = null;
+function $AbstractList$IteratorImpl(this$static, this$0){
+  this$static.this$0 = this$0;
+  return this$static;
+}
+
+function $hasNext_0(this$static){
+  return this$static.i < this$static.this$0.size_0();
+}
+
+function $next_0(this$static){
+  if (this$static.i >= this$static.this$0.size_0()) {
+    throw new NoSuchElementException();
+  }
+  return this$static.this$0.get(this$static.i++);
+}
+
+function getClass_84(){
+  return Ljava_util_AbstractList$IteratorImpl_2_classlit;
+}
+
+function hasNext_4(){
+  return this.i < this.this$0.size_0();
+}
+
+function next_5(){
+  return $next_0(this);
+}
+
+function AbstractList$IteratorImpl(){
+}
+
+_ = AbstractList$IteratorImpl.prototype = new Object_0();
+_.getClass$ = getClass_84;
+_.hasNext = hasNext_4;
+_.next_0 = next_5;
+_.typeId$ = 0;
+_.i = 0;
+_.this$0 = null;
+function $AbstractMap$2(this$static, this$0, val$entrySet){
+  this$static.this$0 = this$0;
+  this$static.val$entrySet = val$entrySet;
+  return this$static;
+}
+
+function contains_1(value){
+  return $containsValue(this.this$0, value);
+}
+
+function getClass_87(){
+  return Ljava_util_AbstractMap$2_2_classlit;
+}
+
+function iterator_4(){
+  var outerIter;
+  return outerIter = $AbstractHashMap$EntrySetIterator(new AbstractHashMap$EntrySetIterator(), this.val$entrySet.this$0) , $AbstractMap$2$1(new AbstractMap$2$1(), outerIter);
+}
+
+function size_1(){
+  return this.val$entrySet.this$0.size;
+}
+
+function AbstractMap$2(){
+}
+
+_ = AbstractMap$2.prototype = new AbstractCollection();
+_.contains = contains_1;
+_.getClass$ = getClass_87;
+_.iterator_0 = iterator_4;
+_.size_0 = size_1;
+_.typeId$ = 0;
+_.this$0 = null;
+_.val$entrySet = null;
+function $AbstractMap$2$1(this$static, val$outerIter){
+  this$static.val$outerIter = val$outerIter;
+  return this$static;
+}
+
+function getClass_86(){
+  return Ljava_util_AbstractMap$2$1_2_classlit;
+}
+
+function hasNext_5(){
+  return $hasNext_0(this.val$outerIter.iter);
+}
+
+function next_6(){
+  var value;
+  return value = dynamicCast($next_0(this.val$outerIter.iter), 18).value , value;
+}
+
+function AbstractMap$2$1(){
+}
+
+_ = AbstractMap$2$1.prototype = new Object_0();
+_.getClass$ = getClass_86;
+_.hasNext = hasNext_5;
+_.next_0 = next_6;
+_.typeId$ = 0;
+_.val$outerIter = null;
+function $HashMap(this$static){
+  this$static.hashCodeMap = [];
+  this$static.stringMap = {};
+  this$static.nullSlotLive = false;
+  this$static.nullSlot = null;
+  this$static.size = 0;
+  return this$static;
+}
+
+function $equals_0(value1, value2){
+  return value1 === value2 || value1 !== null && (value1.typeMarker$ === nullMethod || value1.typeId$ == 2?value1.equals$(value2):value1 === value2);
+}
+
+function getClass_91(){
+  return Ljava_util_HashMap_2_classlit;
+}
+
+function HashMap(){
+}
+
+_ = HashMap.prototype = new AbstractHashMap();
+_.getClass$ = getClass_91;
+_.typeId$ = 57;
+function $MapEntryImpl(this$static, key, value){
+  this$static.key = key;
+  this$static.value = value;
+  return this$static;
+}
+
+function $hashCode_0(this$static){
+  var keyHash, valueHash;
+  keyHash = 0;
+  valueHash = 0;
+  if (this$static.key !== null) {
+    keyHash = hashCode__devirtual$(this$static.key);
+  }
+  if (this$static.value !== null) {
+    valueHash = hashCode__devirtual$(this$static.value);
+  }
+  return keyHash ^ valueHash;
+}
+
+function equals_6(other){
+  var entry;
+  if (other !== null && canCast(other.typeId$, 18)) {
+    entry = dynamicCast(other, 18);
+    if (equalsWithNullCheck(this.key, entry.key) && equalsWithNullCheck(this.value, entry.value)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function getClass_92(){
+  return Ljava_util_MapEntryImpl_2_classlit;
+}
+
+function getKey(){
+  return this.key;
+}
+
+function getValue(){
+  return this.value;
+}
+
+function hashCode_7(){
+  return $hashCode_0(this);
+}
+
+function setValue(object){
+  var old;
+  old = this.value;
+  this.value = object;
+  return old;
+}
+
+function toString_11(){
+  return this.key + '=' + this.value;
+}
+
+function MapEntryImpl(){
+}
+
+_ = MapEntryImpl.prototype = new Object_0();
+_.equals$ = equals_6;
+_.getClass$ = getClass_92;
+_.getKey = getKey;
+_.getValue = getValue;
+_.hashCode$ = hashCode_7;
+_.setValue = setValue;
+_.toString$ = toString_11;
+_.typeId$ = 58;
+_.key = null;
+_.value = null;
+function getClass_93(){
+  return Ljava_util_NoSuchElementException_2_classlit;
+}
+
+function NoSuchElementException(){
+}
+
+_ = NoSuchElementException.prototype = new RuntimeException();
+_.getClass$ = getClass_93;
+_.typeId$ = 59;
+function equalsWithNullCheck(a, b){
+  return a === b || a !== null && (a.typeMarker$ === nullMethod || a.typeId$ == 2?a.equals$(b):a === b);
+}
+
+function gwtOnLoad(errFn, modName, modBase){
+  $moduleName = modName;
+  $moduleBase = modBase;
+  if (errFn)
+    try {
+      !!$stats && $stats($moduleName, 'startup', 'onModuleLoadStart:GlassPanelDemo', {millis:(new Date()).getTime()});
+      sUncaughtExceptionHandler = new GlassPanelDemo$1();
+      addCommand($GlassPanelDemo$2(new GlassPanelDemo$2(), new GlassPanelDemo()));
+    }
+     catch (e) {
+      errFn(modName);
+    }
+   else {
+    !!$stats && $stats($moduleName, 'startup', 'onModuleLoadStart:GlassPanelDemo', {millis:(new Date()).getTime()});
+    sUncaughtExceptionHandler = new GlassPanelDemo$1();
+    addCommand($GlassPanelDemo$2(new GlassPanelDemo$2(), new GlassPanelDemo()));
+  }
+}
+
+function nullMethod(){
+}
+
+var Ljava_lang_Object_2_classlit = createForClass('java.lang.', 'Object'), Ljava_lang_Throwable_2_classlit = createForClass('java.lang.', 'Throwable'), Ljava_lang_Exception_2_classlit = createForClass('java.lang.', 'Exception'), Ljava_lang_RuntimeException_2_classlit = createForClass('java.lang.', 'RuntimeException'), Lcom_google_gwt_core_client_JavaScriptException_2_classlit = createForClass('com.google.gwt.core.client.', 'JavaScriptException'), Lcom_google_gwt_core_client_JavaScriptObject_2_classlit = createForClass('com.google.gwt.core.client.', 'JavaScriptObject$'), Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo_2_classlit = createForClass('com.google.gwt.demos.glasspanel.client.', 'GlassPanelDemo'), _3Ljava_lang_StackTraceElement_2_classlit = createForArray('[Ljava.lang.', 'StackTraceElement;'), Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo$1_2_classlit = createForClass('com.google.gwt.demos.glasspanel.client.', 'GlassPanelDemo$1'), Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo$2_2_classlit = createForClass('com.google.gwt.demos.glasspanel.client.', 'GlassPanelDemo$2'), Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo$3_2_classlit = createForClass('com.google.gwt.demos.glasspanel.client.', 'GlassPanelDemo$3'), Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo$4_2_classlit = createForClass('com.google.gwt.demos.glasspanel.client.', 'GlassPanelDemo$4'), Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo$5_2_classlit = createForClass('com.google.gwt.demos.glasspanel.client.', 'GlassPanelDemo$5'), Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo$6_2_classlit = createForClass('com.google.gwt.demos.glasspanel.client.', 'GlassPanelDemo$6'), Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo$7_2_classlit = createForClass('com.google.gwt.demos.glasspanel.client.', 'GlassPanelDemo$7'), Lcom_google_gwt_demos_glasspanel_client_GlassPanelDemo$8_2_classlit = createForClass('com.google.gwt.demos.glasspanel.client.', 'GlassPanelDemo$8'), Lcom_google_gwt_user_client_CommandCanceledException_2_classlit = createForClass('com.google.gwt.user.client.', 'CommandCanceledException'), Lcom_google_gwt_user_client_CommandExecutor_2_classlit = createForClass('com.google.gwt.user.client.', 'CommandExecutor'), Lcom_google_gwt_user_client_Timer_2_classlit = createForClass('com.google.gwt.user.client.', 'Timer'), Lcom_google_gwt_user_client_CommandExecutor$1_2_classlit = createForClass('com.google.gwt.user.client.', 'CommandExecutor$1'), Lcom_google_gwt_user_client_CommandExecutor$2_2_classlit = createForClass('com.google.gwt.user.client.', 'CommandExecutor$2'), Lcom_google_gwt_user_client_CommandExecutor$CircularIterator_2_classlit = createForClass('com.google.gwt.user.client.', 'CommandExecutor$CircularIterator'), Lcom_google_gwt_user_client_Timer$1_2_classlit = createForClass('com.google.gwt.user.client.', 'Timer$1'), Lcom_google_gwt_user_client_animation_Animation_2_classlit = createForClass('com.google.gwt.user.client.animation.', 'Animation'), Lcom_google_gwt_user_client_animation_Animation$AnimationImplEnabled$1_2_classlit = createForClass('com.google.gwt.user.client.animation.', 'Animation$AnimationImplEnabled$1'), Lcom_google_gwt_user_client_animation_WidgetAnimation_2_classlit = createForClass('com.google.gwt.user.client.animation.', 'WidgetAnimation'), Lcom_google_gwt_user_client_impl_DocumentRootImpl_2_classlit = createForClass('com.google.gwt.user.client.impl.', 'DocumentRootImpl'), Lcom_google_gwt_user_client_impl_DocumentRootImplSafari_2_classlit = createForClass('com.google.gwt.user.client.impl.', 'DocumentRootImplSafari'), Lcom_google_gwt_user_client_ui_UIObject_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'UIObject'), Lcom_google_gwt_user_client_ui_Widget_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'Widget'), Lcom_google_gwt_user_client_ui_Panel_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'Panel'), Lcom_google_gwt_user_client_ui_ComplexPanel_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'ComplexPanel'), Lcom_google_gwt_user_client_ui_AbsolutePanel_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'AbsolutePanel'), Lcom_google_gwt_user_client_ui_FocusWidget_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'FocusWidget'), Lcom_google_gwt_user_client_ui_ButtonBase_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'ButtonBase'), Lcom_google_gwt_user_client_ui_Button_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'Button'), Ljava_util_AbstractCollection_2_classlit = createForClass('java.util.', 'AbstractCollection'), Ljava_util_AbstractList_2_classlit = createForClass('java.util.', 'AbstractList'), Ljava_util_ArrayList_2_classlit = createForClass('java.util.', 'ArrayList'), Lcom_google_gwt_user_client_ui_ClickListenerCollection_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'ClickListenerCollection'), Lcom_google_gwt_user_client_ui_SimplePanel_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'SimplePanel'), _3Ljava_lang_String_2_classlit = createForArray('[Ljava.lang.', 'String;'), Lcom_google_gwt_user_client_ui_DecoratorPanel_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'DecoratorPanel'), Lcom_google_gwt_user_client_ui_PopupPanel_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'PopupPanel'), Lcom_google_gwt_user_client_ui_DialogBox_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'DialogBox'), Lcom_google_gwt_user_client_ui_HTMLTable_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'HTMLTable'), Lcom_google_gwt_user_client_ui_FlexTable_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'FlexTable'), Lcom_google_gwt_user_client_ui_HTMLTable$CellFormatter_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'HTMLTable$CellFormatter'), Lcom_google_gwt_user_client_ui_FlexTable$FlexCellFormatter_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'FlexTable$FlexCellFormatter'), Lcom_google_gwt_user_client_ui_FocusPanel_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'FocusPanel'), Lcom_google_gwt_user_client_ui_Label_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'Label'), Lcom_google_gwt_user_client_ui_HTML_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'HTML'), Lcom_google_gwt_user_client_ui_HTMLTable$ColumnFormatter_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'HTMLTable$ColumnFormatter'), Lcom_google_gwt_user_client_ui_HTMLTable$WidgetMapper_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'HTMLTable$WidgetMapper'), Lcom_google_gwt_user_client_ui_HTMLTable$WidgetMapper$1_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'HTMLTable$WidgetMapper$1'), Lcom_google_gwt_user_client_ui_HTMLTable$WidgetMapper$FreeNode_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'HTMLTable$WidgetMapper$FreeNode'), Lcom_google_gwt_user_client_ui_MouseListenerCollection_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'MouseListenerCollection'), Ljava_lang_Enum_2_classlit = createForClass('java.lang.', 'Enum'), Lcom_google_gwt_user_client_ui_PopupPanel$AnimationType_2_classlit = createForEnum('com.google.gwt.user.client.ui.', 'PopupPanel$AnimationType'), Lcom_google_gwt_user_client_ui_PopupPanel$ResizeAnimation_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'PopupPanel$ResizeAnimation'), Lcom_google_gwt_user_client_ui_RootPanel_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'RootPanel'), Lcom_google_gwt_user_client_ui_RootPanel$1_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'RootPanel$1'), Lcom_google_gwt_user_client_ui_SimplePanel$1_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'SimplePanel$1'), _3Lcom_google_gwt_user_client_ui_Widget_2_classlit = createForArray('[Lcom.google.gwt.user.client.ui.', 'Widget;'), Lcom_google_gwt_user_client_ui_WidgetCollection_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'WidgetCollection'), Lcom_google_gwt_user_client_ui_WidgetCollection$WidgetIterator_2_classlit = createForClass('com.google.gwt.user.client.ui.', 'WidgetCollection$WidgetIterator'), Lcom_google_gwt_user_client_ui_impl_FocusImpl_2_classlit = createForClass('com.google.gwt.user.client.ui.impl.', 'FocusImpl'), Lcom_google_gwt_user_client_ui_impl_FocusImplOld_2_classlit = createForClass('com.google.gwt.user.client.ui.impl.', 'FocusImplOld'), Lcom_google_gwt_user_client_ui_impl_FocusImplSafari_2_classlit = createForClass('com.google.gwt.user.client.ui.impl.', 'FocusImplSafari'), Lcom_google_gwt_widgetideas_client_GlassPanel_2_classlit = createForClass('com.google.gwt.widgetideas.client.', 'GlassPanel'), Lcom_google_gwt_widgetideas_client_GlassPanel$1_2_classlit = createForClass('com.google.gwt.widgetideas.client.', 'GlassPanel$1'), Lcom_google_gwt_widgetideas_client_GlassPanel$2_2_classlit = createForClass('com.google.gwt.widgetideas.client.', 'GlassPanel$2'), Ljava_lang_ArrayStoreException_2_classlit = createForClass('java.lang.', 'ArrayStoreException'), Ljava_lang_Error_2_classlit = createForClass('java.lang.', 'Error'), Ljava_lang_AssertionError_2_classlit = createForClass('java.lang.', 'AssertionError'), Ljava_lang_Class_2_classlit = createForClass('java.lang.', 'Class'), Ljava_lang_ClassCastException_2_classlit = createForClass('java.lang.', 'ClassCastException'), Ljava_lang_IllegalArgumentException_2_classlit = createForClass('java.lang.', 'IllegalArgumentException'), Ljava_lang_IllegalStateException_2_classlit = createForClass('java.lang.', 'IllegalStateException'), Ljava_lang_IndexOutOfBoundsException_2_classlit = createForClass('java.lang.', 'IndexOutOfBoundsException'), _3C_classlit = createForArray('', '[C'), Ljava_lang_NullPointerException_2_classlit = createForClass('java.lang.', 'NullPointerException'), Ljava_lang_String_2_classlit = createForClass('java.lang.', 'String'), Ljava_lang_StringBuffer_2_classlit = createForClass('java.lang.', 'StringBuffer'), Ljava_lang_StringBuilder_2_classlit = createForClass('java.lang.', 'StringBuilder'), Ljava_lang_UnsupportedOperationException_2_classlit = createForClass('java.lang.', 'UnsupportedOperationException'), Ljava_util_AbstractMap_2_classlit = createForClass('java.util.', 'AbstractMap'), Ljava_util_AbstractHashMap_2_classlit = createForClass('java.util.', 'AbstractHashMap'), Ljava_util_AbstractSet_2_classlit = createForClass('java.util.', 'AbstractSet'), Ljava_util_AbstractHashMap$EntrySet_2_classlit = createForClass('java.util.', 'AbstractHashMap$EntrySet'), Ljava_util_AbstractHashMap$EntrySetIterator_2_classlit = createForClass('java.util.', 'AbstractHashMap$EntrySetIterator'), Ljava_util_AbstractList$IteratorImpl_2_classlit = createForClass('java.util.', 'AbstractList$IteratorImpl'), Ljava_util_AbstractMap$2_2_classlit = createForClass('java.util.', 'AbstractMap$2'), Ljava_util_AbstractMap$2$1_2_classlit = createForClass('java.util.', 'AbstractMap$2$1'), Ljava_util_HashMap_2_classlit = createForClass('java.util.', 'HashMap'), Ljava_util_MapEntryImpl_2_classlit = createForClass('java.util.', 'MapEntryImpl'), Ljava_util_NoSuchElementException_2_classlit = createForClass('java.util.', 'NoSuchElementException');
+$stats && $stats('com.google.gwt.demos.glasspanel.GlassPanelDemo', 'startup', 'moduleEvalEnd', {millis:(new Date()).getTime()});
+if ($wnd.com_google_gwt_demos_glasspanel_GlassPanelDemo) $wnd.com_google_gwt_demos_glasspanel_GlassPanelDemo.onScriptLoad();
+--></script></body></html>
