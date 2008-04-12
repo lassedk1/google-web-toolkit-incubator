@@ -43,7 +43,7 @@ public class TextResourceTest extends LibTestBase {
   public void testExternal() throws ResourceException {
     final Resources r = GWT.create(Resources.class);
 
-    TextResourceCallback c = new TextResourceCallback() {
+    ResourceCallback<TextResource> c = new ResourceCallback<TextResource>() {
 
       public void onError(ResourceException e) {
         e.printStackTrace();

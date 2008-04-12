@@ -16,9 +16,9 @@
 package com.google.gwt.libideas.resources.client.impl;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.libideas.resources.client.ResourceCallback;
 import com.google.gwt.libideas.resources.client.ResourceException;
 import com.google.gwt.libideas.resources.client.SoundResource;
-import com.google.gwt.libideas.resources.client.SoundResourceCallback;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 
@@ -34,7 +34,7 @@ public class SoundResourcePrototype implements SoundResource {
       if (isReady()) {
         handle = plugin.play(flashElement, name, volume, pan);
       } else {
-        prepare(new SoundResourceCallback() {
+        prepare(new ResourceCallback<SoundResource>() {
 
           public void onError(ResourceException e) {
             if (GWT.getUncaughtExceptionHandler() != null) {
@@ -138,11 +138,12 @@ public class SoundResourcePrototype implements SoundResource {
         pan, PAN_LEFT, PAN_RIGHT));
   }
 
-  public Handle play(SoundResourceCallback callback) {
+  public Handle play(ResourceCallback<SoundResource> callback) {
     return play(callback, 100, 0);
   }
 
-  public Handle play(final SoundResourceCallback callback, int volume, int pan) {
+  public Handle play(final ResourceCallback<SoundResource> callback,
+      int volume, int pan) {
     final Handle toReturn = play(volume, pan);
     // XXX Can flash call JS functions?
     (new Timer() {
@@ -161,7 +162,7 @@ public class SoundResourcePrototype implements SoundResource {
    * wait for is for the particular frame to be rendered. More complicated
    * loading cases, such as sharded container files, would be triggered here.
    */
-  public void prepare(final SoundResourceCallback callback) {
+  public void prepare(final ResourceCallback<SoundResource> callback) {
     plugin.prepare(flashElement, this, callback);
   }
 
