@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -19,8 +19,8 @@ import com.google.gwt.user.client.ui.Image;
 
 /**
  * Test for ImageBundle optimizations.
- * @gwt.resourceGenerator com.google.gwt.libideas.resources.rg.ImageResourceGenerator
  */
+@ResourceGeneratorType("com.google.gwt.libideas.resources.rg.ImageResourceGenerator")
 public interface ImageResource extends ResourcePrototype {
 
   /**
@@ -29,7 +29,7 @@ public interface ImageResource extends ResourcePrototype {
    * 
    * @param image the instance to be transformed to match this prototype
    */
-  public abstract void applyTo(Image image);
+  void applyTo(Image image);
 
   /**
    * Creates a new {@link Image} instance based on the image represented by this
@@ -37,7 +37,7 @@ public interface ImageResource extends ResourcePrototype {
    * 
    * @return a new <code>Image</code> based on this prototype
    */
-  public abstract Image createImage();
+  Image createImage();
 
   /**
    * Gets an HTML fragment that displays the image represented by this
@@ -47,5 +47,5 @@ public interface ImageResource extends ResourcePrototype {
    * 
    * @return the HTML representation of this prototype
    */
-  public abstract String getHTML();
+  String getHTML();
 }

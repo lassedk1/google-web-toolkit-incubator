@@ -16,11 +16,9 @@
 package com.google.gwt.libideas.resources.client;
 
 /**
- * A callback used when loading external text resources.
+ * Specifies the implementation of ResourceGenerator to use for a type of
+ * {@link ResourcePrototype}.
  */
-public interface SoundResourceCallback {
-  // TODO Replace this with a generic ResourceCallback interface
-  void onError(ResourceException e);
-
-  void onSuccess(SoundResource resource);
+public @interface ResourceGeneratorType {
+  String value();
 }

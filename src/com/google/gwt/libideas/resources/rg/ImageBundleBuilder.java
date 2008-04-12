@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -125,7 +125,7 @@ class ImageBundleBuilder {
   }
 
   public ImageRect getMapping(String imageName) {
-    return (ImageRect) nameToRectMap.get(imageName);
+    return nameToRectMap.get(imageName);
   }
 
   public String writeBundledImage(TreeLogger logger, ResourceContext context)

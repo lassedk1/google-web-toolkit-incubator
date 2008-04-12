@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -19,9 +19,8 @@ package com.google.gwt.libideas.resources.client;
  * Identical to {@link TextResource}, except the contents of the resource are
  * not inlined into the compiled output. This is suitable for resources that are
  * not required as part of program initialization.
- * 
- * @gwt.resourceGenerator com.google.gwt.libideas.resources.rg.ExternalTextResourceGenerator
  */
+@ResourceGeneratorType("com.google.gwt.libideas.resources.rg.ExternalTextResourceGenerator")
 public interface ExternalTextResource extends ResourcePrototype {
-  public void getText(TextResourceCallback callback) throws ResourceException;
+  void getText(TextResourceCallback callback) throws ResourceException;
 }

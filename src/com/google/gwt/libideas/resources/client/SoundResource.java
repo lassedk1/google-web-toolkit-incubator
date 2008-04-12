@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -24,9 +24,8 @@ package com.google.gwt.libideas.resources.client;
  * <li>ADPCM/WAV files</li>
  * </ul>
  * The browser must support playing SWF files of version 8 or better.
- * 
- * @gwt.resourceGenerator com.google.gwt.libideas.resources.rg.SoundResourceGenerator
  */
+@ResourceGeneratorType("com.google.gwt.libideas.resources.rg.SoundResourceGenerator")
 public interface SoundResource extends ResourcePrototype {
   /**
    * Represents a sound that is currently playing.
@@ -36,12 +35,12 @@ public interface SoundResource extends ResourcePrototype {
     /**
      * Return the number of milliseconds for which the sound has been playing.
      */
-    public long getPosition();
+    long getPosition();
 
     /**
      * Indicates if the sound has finished playing.
      */
-    public boolean isComplete();
+    boolean isComplete();
 
     /**
      * Change the panning of the sound after it has been started.
@@ -49,7 +48,7 @@ public interface SoundResource extends ResourcePrototype {
      * @param pan A number from -100 (far left) to 100 (far right). Out-of-range
      *          values will be coerced into the acceptable range.
      */
-    public void setPan(int pan);
+    void setPan(int pan);
 
     /**
      * Change the volume of the sound after it has been started.
@@ -57,31 +56,31 @@ public interface SoundResource extends ResourcePrototype {
      * @param volume A number from 0 to 100. Out-of-range values will be coerced
      *          into the acceptable range.
      */
-    public void setVolume(int volume);
+    void setVolume(int volume);
 
     /**
      * Stop playing the resource. Calling this method on a Handle that is not
      * currently playing will have no effect.
      */
-    public void stop();
+    void stop();
   }
 
   /**
    * The duration in milliseconds of the SoundResource.
    */
-  public long getDuration();
+  long getDuration();
 
   /**
    * Indicates that a particular SoundResource is ready for immediate playback.
    */
-  public boolean isReady();
+  boolean isReady();
 
   /**
    * Play the sound. If the SoundResource is not ready, this will implicitly
    * invoke {@link #prepare(ResourceCallback)} and play the sound when the
    * resource is ready.
    */
-  public Handle play();
+  Handle play();
 
   /**
    * Play the sound. If the SoundResource is not ready, this will implicitly
@@ -93,7 +92,7 @@ public interface SoundResource extends ResourcePrototype {
    * @param pan A number from -100 (far left) to 100 (far right). Out-of-range
    *          values will be coerced into the acceptable range.
    */
-  public Handle play(int volume, int pan);
+  Handle play(int volume, int pan);
 
   /**
    * Play the sound. If the SoundResource is not ready, this will implicitly
@@ -103,7 +102,7 @@ public interface SoundResource extends ResourcePrototype {
    * @param callback A callback to be notified when the sound has finished
    *          playing.
    */
-  public Handle play(SoundResourceCallback callback);
+  Handle play(SoundResourceCallback callback);
 
   /**
    * Play the sound. If the SoundResource is not ready, this will implicitly
@@ -117,12 +116,12 @@ public interface SoundResource extends ResourcePrototype {
    * @param pan A number from -100 (far left) to 100 (far right). Out-of-range
    *          values will be coerced into the acceptable range.
    */
-  public Handle play(SoundResourceCallback callback, int volume, int pan);
+  Handle play(SoundResourceCallback callback, int volume, int pan);
 
   /**
    * Request that a demand-loaded sound resource is loaded and receive a
    * callback when the SoundResource can be played. This method allows
    * latency-sensitive sounds to be preloaded without having to play the sound.
    */
-  public void prepare(SoundResourceCallback callback);
+  void prepare(SoundResourceCallback callback);
 }
