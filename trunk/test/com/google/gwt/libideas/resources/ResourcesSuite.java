@@ -13,14 +13,24 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.resources.client;
+package com.google.gwt.libideas.resources;
+
+import com.google.gwt.junit.tools.GWTTestSuite;
+import com.google.gwt.libideas.resources.client.ImageResourceTest;
+import com.google.gwt.libideas.resources.client.TextResourceTest;
+
+import junit.framework.Test;
 
 /**
- * A callback used when loading external text resources.
+ * Tests the ImmutableResourceBundle framework.
  */
-public interface SoundResourceCallback {
-  // TODO Replace this with a generic ResourceCallback interface
-  void onError(ResourceException e);
+public class ResourcesSuite {
+  public static Test suite() {
+    GWTTestSuite suite = new GWTTestSuite(
+        "Test for com.google.gwt.libideas.resources.client");
+    suite.addTestSuite(ImageResourceTest.class);
+    suite.addTestSuite(TextResourceTest.class);
 
-  void onSuccess(SoundResource resource);
+    return suite;
+  }
 }

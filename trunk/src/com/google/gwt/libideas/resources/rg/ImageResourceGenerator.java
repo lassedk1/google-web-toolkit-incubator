@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -52,8 +52,8 @@ public final class ImageResourceGenerator extends ResourceGenerator {
   @Override
   public void prepare(TreeLogger logger, JMethod method)
       throws UnableToCompleteException {
-    URL[] resources =
-        ResourceGeneratorUtil.findResources(logger, context, method);
+    URL[] resources = ResourceGeneratorUtil.findResources(logger, context,
+        method);
 
     if (resources.length != 1) {
       logger.log(TreeLogger.ERROR, "Exactly one image may be specified", null);
@@ -91,7 +91,7 @@ public final class ImageResourceGenerator extends ResourceGenerator {
       rect = builder.getMapping(method.getName());
     } else {
       sw.println(externalLocationExpressions.get(name).toString() + ", ");
-      rect = (ImageBundleBuilder.ImageRect) externalImageRects.get(name);
+      rect = externalImageRects.get(name);
     }
 
     if (rect == null) {
@@ -109,9 +109,8 @@ public final class ImageResourceGenerator extends ResourceGenerator {
   @Override
   public void writeFields(TreeLogger logger) throws UnableToCompleteException {
     if (imageStripCount > 0) {
-      String bundleUrlExpression =
-          builder.writeBundledImage(logger.branch(TreeLogger.DEBUG,
-              "Writing image strip", null), context);
+      String bundleUrlExpression = builder.writeBundledImage(logger.branch(
+          TreeLogger.DEBUG, "Writing image strip", null), context);
 
       SourceWriter sw = context.getSourceWriter();
       sw.println("private String imageResourceBundleUrl = "

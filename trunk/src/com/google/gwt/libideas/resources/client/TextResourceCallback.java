@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,6 +20,7 @@ package com.google.gwt.libideas.resources.client;
  */
 public interface TextResourceCallback {
   // TODO Replace this with a generic ResourceCallback interface
-  public void onError(ResourceException e);
-  public void onSuccess(TextResource resource);
+   void onError(ResourceException e);
+
+  void onSuccess(TextResource resource);
 }

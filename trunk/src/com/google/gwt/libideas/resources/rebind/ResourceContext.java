@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -44,7 +44,7 @@ public interface ResourceContext {
    * @return a Java expression which will evaluate to the location of the
    *         provided resource at runtime.
    */
-  public String addToOutput(URL resource, boolean xhrCompatible)
+  String addToOutput(URL resource, boolean xhrCompatible)
       throws UnableToCompleteException;
 
   /**
@@ -60,19 +60,19 @@ public interface ResourceContext {
    * @return a Java expression which will evaluate to the location of the
    *         provided resource at runtime.
    */
-  public String addToOutput(String suggestedFileName, String mimeType,
-      byte[] data, boolean xhrCompatible) throws UnableToCompleteException;
+  String addToOutput(String suggestedFileName, String mimeType, byte[] data,
+      boolean xhrCompatible) throws UnableToCompleteException;
 
   /**
    * Return the GeneratorContext in which the overall resource generation
    * framework is being run.
    */
-  public GeneratorContext getGeneratorContext();
+  GeneratorContext getGeneratorContext();
 
   /**
    * Return the type of the resource bundle being generated.
    */
-  public JClassType getResourceBundleType();
+  JClassType getResourceBundleType();
 
   /**
    * Return a SourceWriter which can be used to add to the concrete
@@ -80,5 +80,5 @@ public interface ResourceContext {
    * 
    * @return
    */
-  public SourceWriter getSourceWriter();
+  SourceWriter getSourceWriter();
 }

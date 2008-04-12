@@ -54,11 +54,11 @@ public interface ImmutableResourceBundle {
    * @return the resource, or <code>null</code> if no such resource is
    *         defined.
    */
-  public ResourcePrototype getResource(String name);
+  ResourcePrototype getResource(String name);
 
   /**
    * A convenience method to iterate over all ResourcePrototypes contained in
    * the ResourceBundle.
    */
-  public ResourcePrototype[] getResources();
+  ResourcePrototype[] getResources();
 }

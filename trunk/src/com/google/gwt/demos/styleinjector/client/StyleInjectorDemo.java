@@ -33,17 +33,13 @@ public class StyleInjectorDemo implements EntryPoint {
    * Resources used.
    */
   public interface Resources extends ImmutableResourceBundle {
-    public static final Resources INSTANCE = GWT.create(Resources.class);
+    Resources INSTANCE = GWT.create(Resources.class);
 
-    /**
-     * @gwt.resource StyleInjectorDemo.jpg
-     */
-    public DataResource background();
+    @Resource("StyleInjectorDemo.jpg")
+    DataResource background();
 
-    /**
-     * @gwt.resource StyleInjectorDemo.css
-     */
-    public TextResource css();
+    @Resource("StyleInjectorDemo.css")
+    TextResource css();
   }
 
   /**

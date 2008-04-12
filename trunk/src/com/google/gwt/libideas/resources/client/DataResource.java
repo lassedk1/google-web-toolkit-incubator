@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -17,12 +17,12 @@ package com.google.gwt.libideas.resources.client;
 
 /**
  * A non-text resource.
- * @gwt.resourceGenerator com.google.gwt.libideas.resources.rg.DataResourceGenerator
  */
+@ResourceGeneratorType("com.google.gwt.libideas.resources.rg.DataResourceGenerator")
 public interface DataResource extends ResourcePrototype {
   /**
    * Retrieves a URL by which the contents of the resource can be obtained. This
    * will be an absolute URL.
    */
-  public String getUrl();
+  String getUrl();
 }

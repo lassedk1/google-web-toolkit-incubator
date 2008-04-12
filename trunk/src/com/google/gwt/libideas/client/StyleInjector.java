@@ -16,11 +16,11 @@
 package com.google.gwt.libideas.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.StyleElement;
 import com.google.gwt.libideas.resources.client.DataResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.libideas.resources.client.ResourcePrototype;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 
 /**
  * Used to add stylesheets to the document.
@@ -31,10 +31,10 @@ public class StyleInjector {
    */
   static class StyleInjectorImpl {
     void injectStyleSheet(String contents) {
-      Element style = DOM.createElement("style");
-      DOM.setElementProperty(style, "language", "text/css");
-      DOM.setInnerText(style, contents);
-      DOM.appendChild(getDocumentHead(), style);
+      StyleElement style = Document.get().createStyleElement();
+      style.setPropertyString("language", "text/css");
+      style.setInnerText(contents);
+      Document.get().getElementsByTagName("head").getItem(0).appendChild(style);
     }
   }
 
@@ -43,11 +43,9 @@ public class StyleInjector {
    */
   static class StyleInjectorImplIE extends StyleInjectorImpl {
     native void injectStyleSheet(String contents) /*-{
-     $doc.createStyleSheet().cssText = contents;
-     }-*/;
+      $doc.createStyleSheet().cssText = contents;
+    }-*/;
   }
-
-  private static final StyleInjectorImpl IMPL = GWT.create(StyleInjectorImpl.class);
 
   /**
    * Add a stylesheet to the document.
@@ -70,9 +68,7 @@ public class StyleInjector {
   public static void injectStylesheet(String contents,
       ImmutableResourceBundle references) {
     if (references != null) {
-      ResourcePrototype[] prototypes = references.getResources();
-      for (int i = 0; i < prototypes.length; i++) {
-        ResourcePrototype p = prototypes[i];
+      for (ResourcePrototype p : references.getResources()) {
         if (p instanceof DataResource) {
           contents = contents.replaceAll("%" + p.getName() + "%",
               ((DataResource) p).getUrl());
@@ -80,17 +76,8 @@ public class StyleInjector {
       }
     }
 
-    IMPL.injectStyleSheet(contents);
+    ((StyleInjectorImpl) GWT.create(StyleInjectorImpl.class)).injectStyleSheet(contents);
   }
-
-  /**
-   * Append an element to the documents HEAD element. This should be in DOM.
-   * 
-   * @param elt the Element representing the document's head
-   */
-  private static native Element getDocumentHead() /*-{
-   return $doc.getElementsByTagName("head")[0];
-   }-*/;
 
   /**
    * Utility class.

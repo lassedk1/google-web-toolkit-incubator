@@ -24,6 +24,7 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
+import com.google.gwt.libideas.resources.client.ResourceGeneratorType;
 import com.google.gwt.libideas.resources.client.ResourcePrototype;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
@@ -38,8 +39,6 @@ import java.util.Map;
  * The base class for creating new ResourceBundle implementations.
  */
 public abstract class AbstractResourceBundleGenerator extends Generator {
-
-  private static final String RESOURCE_GENERATOR_TAG = "gwt.resourceGenerator";
 
   public AbstractResourceBundleGenerator() {
     super();
@@ -265,46 +264,25 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
       TreeLogger logger, TypeOracle typeOracle, JMethod method)
       throws UnableToCompleteException {
 
-    String className;
-    String[][] md;
     JClassType resourceType = method.getReturnType().isClassOrInterface();
+    ResourceGeneratorType generatorType = resourceType.getAnnotation(ResourceGeneratorType.class);
 
-    // Look for an override on the method itself
-    md = method.getMetaData(RESOURCE_GENERATOR_TAG);
-    if (md.length == 0) {
-      // Otherwise, look at the return type
-      while (resourceType != null) {
-        md = resourceType.getMetaData(RESOURCE_GENERATOR_TAG);
-
-        // Found some metadata
-        if (md.length > 0) {
-          break;
-        } else {
-          // Try supertype if no annotation found
-          resourceType = resourceType.getSuperclass();
-        }
-      }
-
-      // No generator tag defined on the return type or any of its supertypes
-      if (resourceType == null) {
-        logger.log(TreeLogger.ERROR, "No " + RESOURCE_GENERATOR_TAG
-            + " annotation for method " + method.getName()
-            + " or its return type hierarchy", null);
-        throw new UnableToCompleteException();
-      }
+    if (generatorType == null) {
+      logger.log(TreeLogger.ERROR, "No @"
+          + ResourceGeneratorType.class.getName()
+          + " was specifed for resource type "
+          + resourceType.getQualifiedSourceName());
+      throw new UnableToCompleteException();
     }
-
-    int lastInstanceIndex = md.length - 1;
-    int lastEntryIndex = md[lastInstanceIndex].length - 1;
-    className = md[lastInstanceIndex][lastEntryIndex];
+    String className = generatorType.value();
 
     try {
       return Class.forName(className).asSubclass(ResourceGenerator.class);
+    } catch (ClassCastException e) {
+      logger.log(TreeLogger.ERROR, className + " is not a "
+          + ResourceGenerator.class.getName());
     } catch (ClassNotFoundException e) {
       logger.log(TreeLogger.ERROR, "Could not load " + className, e);
-    } catch (ClassCastException e) {
-      logger.log(TreeLogger.ERROR, className + " is not a ResourceGenerator",
-          null);
     }
 
     throw new UnableToCompleteException();
