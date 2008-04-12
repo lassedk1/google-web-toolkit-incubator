@@ -17,10 +17,9 @@ package com.google.gwt.libideas.resources.client;
 
 /**
  * A callback used when loading external text resources.
+ * 
+ * @deprecated use {@link ResourceCallback} directly
  */
-public interface SoundResourceCallback {
-  // TODO Replace this with a generic ResourceCallback interface
-  void onError(ResourceException e);
-
-  void onSuccess(SoundResource resource);
+@Deprecated
+public interface SoundResourceCallback extends ResourceCallback<SoundResource> {
 }

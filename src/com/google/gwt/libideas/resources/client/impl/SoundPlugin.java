@@ -15,9 +15,9 @@
  */
 package com.google.gwt.libideas.resources.client.impl;
 
+import com.google.gwt.libideas.resources.client.ResourceCallback;
 import com.google.gwt.libideas.resources.client.ResourceException;
 import com.google.gwt.libideas.resources.client.SoundResource;
-import com.google.gwt.libideas.resources.client.SoundResourceCallback;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
@@ -73,7 +73,7 @@ abstract class SoundPlugin {
     }
 
     public void prepare(Element elt, SoundResource resource,
-        SoundResourceCallback callback) {
+        ResourceCallback<SoundResource> callback) {
       callback.onSuccess(resource);
     }
 
@@ -195,7 +195,7 @@ abstract class SoundPlugin {
    * loading cases, such as sharded container files, would be triggered here.
    */
   public void prepare(final Element elt, final SoundResource resource,
-      final SoundResourceCallback callback) {
+      final ResourceCallback<SoundResource> callback) {
     if (callback == null) {
       return;
     }

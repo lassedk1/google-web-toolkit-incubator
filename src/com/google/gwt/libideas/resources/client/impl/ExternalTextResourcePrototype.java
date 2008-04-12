@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -22,9 +22,9 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.libideas.resources.client.ExternalTextResource;
+import com.google.gwt.libideas.resources.client.ResourceCallback;
 import com.google.gwt.libideas.resources.client.ResourceException;
 import com.google.gwt.libideas.resources.client.TextResource;
-import com.google.gwt.libideas.resources.client.TextResourceCallback;
 
 /**
  * Implements external resource fetching of TextResources.
@@ -35,9 +35,9 @@ public class ExternalTextResourcePrototype implements ExternalTextResource {
    * Maps the HTTP callback onto the ResourceCallback.
    */
   private class ETRCallback implements RequestCallback {
-    final TextResourceCallback callback;
+    final ResourceCallback<TextResource> callback;
 
-    public ETRCallback(TextResourceCallback callback) {
+    public ETRCallback(ResourceCallback<TextResource> callback) {
       this.callback = callback;
     }
 
@@ -89,15 +89,15 @@ public class ExternalTextResourcePrototype implements ExternalTextResource {
    *         error.
    */
   private static native JavaScriptObject evalObject(String data) /*-{
-   var safe = !(/[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/.test(
-   data.replace(/"(\\.|[^"\\])*"/g, '')));
-   
-   if (!safe) {
-   return null;
-   }
-   
-   return eval('(' + data + ')') || null;
-   }-*/;
+    var safe = !(/[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/.test(
+      data.replace(/"(\\.|[^"\\])*"/g, '')));
+
+    if (!safe) {
+      return null;
+    }
+
+    return eval('(' + data + ')') || null;
+  }-*/;
 
   /**
    * Extract the specified String from a JavaScriptObject that is array-like.
@@ -107,17 +107,8 @@ public class ExternalTextResourcePrototype implements ExternalTextResource {
    * @return the requested string, or <code>null</code> if it does not exist.
    */
   private static native String extractString(JavaScriptObject jso, int index) /*-{
-   if (!jso) {
-   return null;
-   }
-   
-   return (jso.length > index) && jso[index] || null;
-   }-*/;
-
-  private final String name;
-  private final String url;
-
-  private final int index;
+    return (jso.length > index) && jso[index] || null;
+  }-*/;
 
   /**
    * This is a reference to an array nominally created in the IRB that contains
@@ -125,6 +116,9 @@ public class ExternalTextResourcePrototype implements ExternalTextResource {
    * of the ETR that have a common parent IRB.
    */
   private final TextResource[] cache;
+  private final int index;
+  private final String name;
+  private final String url;
 
   public ExternalTextResourcePrototype(String name, String url,
       TextResource[] cache, int index) {
@@ -141,7 +135,8 @@ public class ExternalTextResourcePrototype implements ExternalTextResource {
   /**
    * Possibly fire off an HTTPRequest for the text resource.
    */
-  public void getText(TextResourceCallback callback) throws ResourceException {
+  public void getText(ResourceCallback<TextResource> callback)
+      throws ResourceException {
 
     // If we've already parsed the JSON bundle, short-circuit.
     if (cache[index] != null) {

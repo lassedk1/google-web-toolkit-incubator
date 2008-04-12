@@ -16,12 +16,20 @@
 package com.google.gwt.libideas.resources.client;
 
 /**
- * Identical to {@link TextResource}, except the contents of the resource are
- * not inlined into the compiled output. This is suitable for resources that are
- * not required as part of program initialization.
+ * A callback interface for asynchronous operations on resources.
+ * 
+ * @param <R> the type of resource
  */
-@ResourceGeneratorType("com.google.gwt.libideas.resources.rg.ExternalTextResourceGenerator")
-public interface ExternalTextResource extends ResourcePrototype {
-  void getText(ResourceCallback<TextResource> callback)
-      throws ResourceException;
+public interface ResourceCallback<R extends ResourcePrototype> {
+  /**
+   * Invoked if the asynchronous operation failed.
+   * @param e an exception describing the failure
+   */
+  void onError(ResourceException e);
+
+  /**
+   * Invoked if the asynchronous operation was successfully completed.
+   * @param resource the resource on which the operation was performed
+   */
+  void onSuccess(R resource);
 }

@@ -102,7 +102,7 @@ public interface SoundResource extends ResourcePrototype {
    * @param callback A callback to be notified when the sound has finished
    *          playing.
    */
-  Handle play(SoundResourceCallback callback);
+  Handle play(ResourceCallback<SoundResource> callback);
 
   /**
    * Play the sound. If the SoundResource is not ready, this will implicitly
@@ -116,12 +116,12 @@ public interface SoundResource extends ResourcePrototype {
    * @param pan A number from -100 (far left) to 100 (far right). Out-of-range
    *          values will be coerced into the acceptable range.
    */
-  Handle play(SoundResourceCallback callback, int volume, int pan);
+  Handle play(ResourceCallback<SoundResource> callback, int volume, int pan);
 
   /**
    * Request that a demand-loaded sound resource is loaded and receive a
    * callback when the SoundResource can be played. This method allows
    * latency-sensitive sounds to be preloaded without having to play the sound.
    */
-  void prepare(SoundResourceCallback callback);
+  void prepare(ResourceCallback<SoundResource> callback);
 }
