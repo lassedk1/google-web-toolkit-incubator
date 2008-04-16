@@ -14,19 +14,17 @@
  * the License.
  */
 
-package com.google.gwt.widgetideas.client.events;
+package com.google.gwt.widgetideas.client.event;
 
 /**
- * Fires {@link HighlightEvent}s.
- * 
- * @param <HighlightType> type which will be highlighted
+ * Handles {@link KeyPressEvent}s.
  */
-public interface HighlightHandler<HighlightType> extends EventHandler {
+public interface KeyPressHandler extends EventHandler {
 
   /**
-   * handles highlight events.
+   * handles  key press events.
    * 
    * @param event the event
    */
-  void onHighlight(HighlightEvent<HighlightType> event);
+  void onKeyPress(KeyPressEvent event);
 }

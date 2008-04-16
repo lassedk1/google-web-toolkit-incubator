@@ -19,16 +19,16 @@ package com.google.gwt.widgetideas.datepicker.client;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.client.events.ChangeEvent;
-import com.google.gwt.widgetideas.client.events.ChangeHandler;
-import com.google.gwt.widgetideas.client.events.FiresChangeEvents;
-import com.google.gwt.widgetideas.client.events.FiresHighlightEvents;
-import com.google.gwt.widgetideas.client.events.FiresRenderingEvents;
-import com.google.gwt.widgetideas.client.events.Handlers;
-import com.google.gwt.widgetideas.client.events.HighlightEvent;
-import com.google.gwt.widgetideas.client.events.HighlightHandler;
-import com.google.gwt.widgetideas.client.events.RenderingEvent;
-import com.google.gwt.widgetideas.client.events.RenderingHandler;
+import com.google.gwt.widgetideas.client.event.ChangeEvent;
+import com.google.gwt.widgetideas.client.event.ChangeHandler;
+import com.google.gwt.widgetideas.client.event.EventHandlers;
+import com.google.gwt.widgetideas.client.event.FiresChangeEvents;
+import com.google.gwt.widgetideas.client.event.FiresHighlightEvents;
+import com.google.gwt.widgetideas.client.event.FiresRenderingEvents;
+import com.google.gwt.widgetideas.client.event.HighlightEvent;
+import com.google.gwt.widgetideas.client.event.HighlightHandler;
+import com.google.gwt.widgetideas.client.event.RenderingEvent;
+import com.google.gwt.widgetideas.client.event.RenderingHandler;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -147,9 +147,7 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
     }
   }
 
-  private Handlers<ChangeHandler<Date>> changeHandlers = null;
-  private Handlers<HighlightHandler<Date>> highlightChangeHandlers = null;
-  private Handlers<RenderingHandler> renderingHandlers = null;
+  private EventHandlers handlers = new EventHandlers();
 
   private DateStyler styler = new DateStyler();
 
@@ -189,7 +187,7 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
   }
 
   public final void addChangeHandler(ChangeHandler<Date> handler) {
-    changeHandlers = Handlers.add(changeHandlers, handler);
+    handlers.add(ChangeEvent.class, handler);
   }
 
   /**
@@ -201,15 +199,17 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
    */
   public void addGlobalDateStyle(Date date, String styleName) {
     styler.setStyleName(date, styleName, true);
-    calendar.addDateStyle(date, styleName);
+    if (isDateVisible(date)) {
+      calendar.addDateStyle(date, styleName);
+    }
   }
 
   public final void addHighlightHandler(HighlightHandler<Date> handler) {
-    highlightChangeHandlers = Handlers.add(highlightChangeHandlers, handler);
+    handlers.add(HighlightEvent.class, handler);
   }
 
   public final void addRenderingHandler(RenderingHandler handler) {
-    renderingHandlers = Handlers.add(renderingHandlers, handler);
+    handlers.add(RenderingEvent.class, handler);
 
     // Render onto the current display.
     handler.onRendered(new RenderingEvent(this));
@@ -285,7 +285,7 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
   }
 
   public final void removeChangeHandler(ChangeHandler<Date> handler) {
-    Handlers.remove(changeHandlers, handler);
+    handlers.remove(ChangeEvent.class, handler);
   }
 
   /**
@@ -302,11 +302,11 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
   }
 
   public final void removeHighlightHandler(HighlightHandler<Date> handler) {
-    Handlers.remove(highlightChangeHandlers, handler);
+    handlers.remove(HighlightEvent.class, handler);
   }
 
   public final void removeRenderingHandler(RenderingHandler handler) {
-    Handlers.remove(renderingHandlers, handler);
+    handlers.remove(RenderingEvent.class, handler);
   }
 
   /**
@@ -352,12 +352,9 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
    */
   public final void setSelectedDate(Date date, boolean fireEvents) {
     Date old = selectedDate;
-    if (fireEvents && changeHandlers != null) {
+    if (fireEvents && handlers.has(ChangeEvent.class)) {
       ChangeEvent event = new ChangeEvent(this, old, date);
-      changeHandlers.fire(event);
-      if (event.isCanceled()) {
-        return;
-      }
+      handlers.fire(event);
     }
     if (old != null) {
       removeGlobalDateStyle(old, Styles.SELECTED_CELL);
@@ -441,9 +438,9 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
     calendar.refresh();
     monthSelector.refresh();
 
-    if (renderingHandlers != null) {
+    if (handlers.has(RenderingEvent.class)) {
       RenderingEvent event = new RenderingEvent((FiresRenderingEvents) this);
-      renderingHandlers.fire(event);
+      handlers.fire(event);
     }
   }
 
@@ -454,13 +451,10 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
    * @param highlightedDate selected date
    */
   void setHighlightedDate(Date highlightedDate) {
-
-    if (highlightChangeHandlers != null) {
+    if (handlers.has(HighlightEvent.class)) {
       HighlightEvent<Date> event = new HighlightEvent<Date>(this,
           highlightedDate);
-      if (!highlightChangeHandlers.fire(event)) {
-        return;
-      }
+      handlers.fire(event);
     }
     this.highlightedDate = highlightedDate;
   }

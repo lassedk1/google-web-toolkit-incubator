@@ -14,25 +14,29 @@
  * the License.
  */
 
-package com.google.gwt.widgetideas.client.events;
+package com.google.gwt.widgetideas.client.event;
+
+import com.google.gwt.user.client.Event;
 
 /**
- * Rendering event.
+ * These events are triggered by underlying DOM events.
+ * 
+ * @param <FiresEvent> the ui object which fires the event
+ * @param <HandlerType> the type of handler which handles the event
  */
-public class RenderingEvent extends
-    AbstractEvent<FiresRenderingEvents, RenderingHandler> {
+public abstract class BrowserEvent<FiresEvent, HandlerType extends EventHandler>
+    extends AbstractEvent<FiresEvent, HandlerType> {
+  private Event browserEvent;
 
-  /**
-   * Constructor.
-   * 
-   * @param source the source
-   */
-  public RenderingEvent(FiresRenderingEvents source) {
+  protected BrowserEvent(Event event, FiresEvent source) {
     super(source);
+    this.browserEvent = event;
   }
 
-  @Override
-  public void fire(RenderingHandler e) {
-    e.onRendered(this);
+  /**
+   * Gets the underlying native event.
+   */
+  public Event getBrowserEvent() {
+    return browserEvent;
   }
 }

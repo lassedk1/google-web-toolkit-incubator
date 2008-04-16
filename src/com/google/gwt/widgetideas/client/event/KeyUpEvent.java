@@ -14,16 +14,28 @@
  * the License.
  */
 
-package com.google.gwt.widgetideas.client.events;
+package com.google.gwt.widgetideas.client.event;
+
+import com.google.gwt.user.client.Event;
 
 /**
- * Rendering handler.
+ * Fires {@link KeyUpEvent}.
+ * 
  */
-public interface RenderingHandler extends EventHandler {
+public class KeyUpEvent extends KeyboardEvent<FiresKeyUpEvents, KeyUpHandler> {
+
   /**
-   * handles rendering events.
+   * Constructor.
    * 
-   * @param event the event
+   * @param source source
    */
-  void onRendered(RenderingEvent event);
+  public KeyUpEvent(Event event, FiresKeyUpEvents source) {
+    super(event, source);
+  }
+
+  @Override
+  public void fire(KeyUpHandler e) {
+    e.onKeyUp(this);
+  }
+
 }

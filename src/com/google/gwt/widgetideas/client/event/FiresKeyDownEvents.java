@@ -14,10 +14,23 @@
  * the License.
  */
 
-package com.google.gwt.widgetideas.client.events;
+package com.google.gwt.widgetideas.client.event;
 
 /**
- * Marker interface.
+ * Fires {@link KeyDownEvents}.
  */
-public interface EventHandler {
+public interface FiresKeyDownEvents {
+  /**
+   * Adds a key down handler.
+   * 
+   * @param handler the handler
+   */
+  void addKeyDownHandler(KeyDownHandler handler);
+
+  /**
+   * Removes a key down handler.
+   * 
+   * @param handler the handler
+   */
+  void removeKeyDownHandler(KeyDownHandler handler);
 }

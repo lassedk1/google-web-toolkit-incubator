@@ -14,17 +14,17 @@
  * the License.
  */
 
-package com.google.gwt.widgetideas.client.events;
+package com.google.gwt.widgetideas.client.event;
 
 /**
- * Change handler.
- * 
- * @param <ChangeType> type which changed.
+ * Handles {@link KeyDownEvent}s.
  */
-public interface ChangeHandler<ChangeType> extends EventHandler {
+public interface KeyDownHandler extends KeyboardHandler {
 
   /**
-   * On change.
+   * handles key down events.
+   * 
+   * @param event the event
    */
-  void onChange(ChangeEvent<ChangeType> event);
+  void onKeyDown(KeyDownEvent event);
 }

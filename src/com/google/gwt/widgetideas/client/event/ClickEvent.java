@@ -14,23 +14,19 @@
  * the License.
  */
 
-package com.google.gwt.widgetideas.client.events;
+package com.google.gwt.widgetideas.client.event;
 
 /**
- * Fires rendering events.
+ * A click event.
  */
-public interface FiresRenderingEvents {
-  /**
-   * Adds a rendering handler.
-   * 
-   * @param handler the handler
-   */
-  void addRenderingHandler(RenderingHandler handler);
+public class ClickEvent extends AbstractEvent<FiresClickEvents, ClickHandler> {
 
-  /**
-   * Removes a rendering handler.
-   * 
-   * @param handler the handler
-   */
-  void removeRenderingHandler(RenderingHandler handler);
+  public ClickEvent(FiresClickEvents source) {
+    super(source);
+  }
+
+  @Override
+  protected void fire(ClickHandler e) {
+    e.onClick(this);
+  }
 }
