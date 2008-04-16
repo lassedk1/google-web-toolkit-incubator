@@ -27,7 +27,7 @@ public class ChangeEvent<Value> extends
   private Value newValue;
 
   /**
-   * Contructor.
+   * Constructor.
    * 
    * @param source source
    * @param oldValue old value

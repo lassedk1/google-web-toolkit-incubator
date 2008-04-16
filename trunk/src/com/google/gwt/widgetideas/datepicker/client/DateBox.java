@@ -18,6 +18,7 @@ package com.google.gwt.widgetideas.datepicker.client;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.libideas.logging.shared.Log;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -26,19 +27,24 @@ import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.DropDownPanel;
-import com.google.gwt.widgetideas.client.events.ChangeEvent;
-import com.google.gwt.widgetideas.client.events.ChangeHandler;
+import com.google.gwt.widgetideas.client.event.ChangeEvent;
+import com.google.gwt.widgetideas.client.event.ChangeHandler;
+import com.google.gwt.widgetideas.client.event.EventHandlers;
+import com.google.gwt.widgetideas.client.event.FiresKeyDownEvents;
+import com.google.gwt.widgetideas.client.event.KeyDownEvent;
+import com.google.gwt.widgetideas.client.event.KeyDownHandler;
 
 import java.util.Date;
 
 /**
- * Most of the functionality needed to create a simple date box.
+ * A simple date box.
  */
-public class DateBox extends Composite {
+public class DateBox extends Composite implements FiresKeyDownEvents {
   private static class Styles {
     public static String DEFAULT = "gwt-DateBox";
   }
 
+  private EventHandlers handlers = new EventHandlers();
   private boolean dirtyText = false;
   private DropDownPanel popup = new DropDownPanel();
   private TextBox box = new TextBox();
@@ -71,6 +77,7 @@ public class DateBox extends Composite {
       }
 
     });
+
     box.addFocusListener(new FocusListener() {
       public void onFocus(Widget sender) {
         showDatePicker();
@@ -93,14 +100,18 @@ public class DateBox extends Composite {
     box.addKeyboardListener(new KeyboardListener() {
 
       public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-        dirtyText = true;
+        handlers.fire(new KeyDownEvent(DOM.eventGetCurrentEvent(), DateBox.this));
+
         switch (keyCode) {
           case KEY_ENTER:
           case KEY_TAB:
           case KEY_ESCAPE:
           case KEY_DOWN: {
             updateDateFromTextBox();
+            break;
           }
+          default:
+            dirtyText = true;
         }
       }
 
@@ -113,6 +124,24 @@ public class DateBox extends Composite {
     });
   }
 
+  public void addKeyDownHandler(KeyDownHandler handler) {
+    handlers.add(KeyDownEvent.class, handler);
+  }
+
+  /**
+   * Gets the current cursor position in the date box.
+   */
+  public int getCursorPos() {
+    return box.getCursorPos();
+  }
+
+  /**
+   * Gets the current date formatter.
+   */
+  public DateTimeFormat getDateFormatter() {
+    return formatter;
+  }
+
   /**
    * Gets the date picker.
    * 
@@ -122,8 +151,31 @@ public class DateBox extends Composite {
     return picker;
   }
 
+  /**
+   * Gets the date box's position in the tab index.
+   * 
+   * @return the date box's tab index
+   */
+  public int getTabIndex() {
+    return box.getTabIndex();
+  }
+
+  /**
+   * Get current text in text box.
+   */
+  public String getText() {
+    return box.getText();
+  }
+
+  /**
+   * Hide the date picker.
+   */
   public void hideDatePicker() {
     popup.hide();
+  }
+
+  public void removeKeyDownHandler(KeyDownHandler handler) {
+    handlers.remove(KeyDownEvent.class, handler);
   }
 
   /**
@@ -134,6 +186,26 @@ public class DateBox extends Composite {
    */
   public void setAccessKey(char key) {
     box.setAccessKey(key);
+  }
+
+  /**
+   * Sets the date format to the given format. If date box is not empty,
+   * contents of date box will be replaced with current date in new format.
+   * 
+   * @param format format.
+   */
+  public void setDateFormat(DateTimeFormat format) {
+    if (format != formatter) {
+      formatter = format;
+      String cur = box.getText();
+      if (cur != null && cur.length() != 0) {
+        try {
+          box.setText(formatter.format(picker.getSelectedDate()));
+        } catch (IllegalArgumentException e) {
+          box.setText("");
+        }
+      }
+    }
   }
 
   /**
@@ -190,12 +262,12 @@ public class DateBox extends Composite {
   }
 
   /**
-   * Gets the date box's position in the tab index.
+   * Default way to handle format errors.
    * 
-   * @return the date box's tab index
+   * @param text text
    */
-  int getTabIndex() {
-    return box.getTabIndex();
+  protected void handleIllegalInput(String text) {
+    Log.info("Format error:" + text);
   }
 
   private void setText(Date value) {
@@ -204,15 +276,16 @@ public class DateBox extends Composite {
   }
 
   private void updateDateFromTextBox() {
+
+    String text = box.getText().trim();
+    if (text.equals("")) {
+      return;
+    }
     try {
-      String text = box.getText().trim();
-      if (text.equals("")) {
-        return;
-      }
       Date d = formatter.parse(text);
       showDate(d);
     } catch (IllegalArgumentException exception) {
-      Log.info("Could not parse " + box.getText());
+      handleIllegalInput(text);
     }
     dirtyText = false;
   }
