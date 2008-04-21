@@ -25,6 +25,7 @@ import java.util.Date;
 /**
  * Model used to get calendar information.
  */
+@SuppressWarnings ( {"deprecation"} )
 public class CalendarModel {
 
   public static final int WEEKS_IN_MONTH = 6;
@@ -42,7 +43,6 @@ public class CalendarModel {
   private static final DateTimeFormat dayOfWeekFormatter = DateTimeFormat.getFormat("ccccc");
   private static final DateTimeFormat monthAndYearFormatter = DateTimeFormat.getFormat("MMM yyyy");
   private static final DateTimeFormat dateFormatter = DateTimeFormat.getShortDateFormat();
-  private static final long MILLISECONDS_IN_DAY = 1000 * 60 * 60 * 24;
 
   /**
    * Is the year before the month?
@@ -75,8 +75,8 @@ public class CalendarModel {
   /**
    * Returns the number of days between the two dates.
    * 
-   * @param start
-   * @param finish
+   * @param start starting date
+   * @param finish ending date
    * @return the different
    */
   public static int diffDays(Date start, Date finish) {
@@ -86,9 +86,7 @@ public class CalendarModel {
     long adjust = 60 * 60 * 1000;
     adjust = (bTime > aTime) ? adjust : -adjust;
 
-    int diff = (int) ((bTime - aTime + adjust) / (24 * 60 * 60 * 1000));
-
-    return diff;
+      return (int) ((bTime - aTime + adjust) / (24 * 60 * 60 * 1000));
   }
 
   /**
@@ -108,8 +106,7 @@ public class CalendarModel {
    * @param days number of days
    */
   public static void shiftDays(Date date, int days) {
-    long offset = MILLISECONDS_IN_DAY * days;
-    date.setTime(date.getTime() + offset);
+      date.setDate ( date.getDate () + days );
   }
 
   /**
@@ -172,8 +169,6 @@ public class CalendarModel {
 
   private int lastDayOfWeekend;
 
-  private int dayOfWeekStart;
-
   private String[] dayOfMonthNames = new String[32];
 
   private int numDaysInMonth;
@@ -228,8 +223,8 @@ public class CalendarModel {
   /**
    * Format the date using this model's formatter.
    * 
-   * @param selectedDate
-   * @return
+   * @param date date
+   * @return string
    */
   public String format(Date date) {
     if (date == null) {
@@ -269,7 +264,7 @@ public class CalendarModel {
 
   /**
    * Formats the date's day of month.
-   * 
+   * @param dayOfMonth day of month
    * @return the formatted day of month
    */
   public String formatDayOfMonth(int dayOfMonth) {
@@ -313,16 +308,7 @@ public class CalendarModel {
     return numDaysInMonth;
   }
 
-  /**
-   * Gets the current starting day of week.
-   * 
-   * @return starting date of week
-   */
-  public int getCurrentStartingDayOfWeek() {
-    return dayOfWeekStart;
-  }
-
-  /**
+    /**
    * Gets the current year.
    * 
    * @return the current year
@@ -337,15 +323,17 @@ public class CalendarModel {
    * @return the first day
    */
   public Date getFirstDayOfCurrentFirstWeek() {
-    if (getCurrentStartingDayOfWeek() == getLocaleStartingDayOfWeek()) {
-      return curMonthAndYear;
-    } else {
-      int dayInMonth = computeDaysInMonth(-1)
-          - (getCurrentStartingDayOfWeek() - 1);
-      Date d = createDate(dayInMonth);
-      shiftMonths(d, -1);
-      return d;
-    }
+      int wkDayOfMonth1st = curMonthAndYear.getDay ();
+      if ( wkDayOfMonth1st == getLocaleStartingDayOfWeek () ) {
+          return curMonthAndYear;
+      } else {
+          Date d = new Date ( curMonthAndYear.getTime () );
+          int offset = wkDayOfMonth1st - getLocaleStartingDayOfWeek () > 0 ?
+                  wkDayOfMonth1st - getLocaleStartingDayOfWeek () :
+                  DAYS_IN_WEEK - ( getLocaleStartingDayOfWeek () - wkDayOfMonth1st );
+          shiftDays ( d, -offset );
+          return d;
+      }
   }
 
   /**
@@ -370,6 +358,8 @@ public class CalendarModel {
 
   /**
    * Default formatter for date parsing.
+   * @param text date to parse
+   * @return resulting Date object
    */
   public Date parseDate(String text) {
     return dateFormatter.parse(text);
@@ -441,7 +431,6 @@ public class CalendarModel {
     // offset from Sunday == 0; +70 to make number +ve
     int offset = (dayOfWeek - date + 1 - weekStart + 70) % 7;
     numDaysInMonth = computeDaysInMonth(0);
-    dayOfWeekStart = offset;
   }
 
 }
