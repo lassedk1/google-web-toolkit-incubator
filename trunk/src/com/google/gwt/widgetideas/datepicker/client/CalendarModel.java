@@ -25,7 +25,7 @@ import java.util.Date;
 /**
  * Model used to get calendar information.
  */
-@SuppressWarnings ( {"deprecation"} )
+@SuppressWarnings( {"deprecation"})
 public class CalendarModel {
 
   public static final int WEEKS_IN_MONTH = 6;
@@ -73,20 +73,30 @@ public class CalendarModel {
   }
 
   /**
-   * Returns the number of days between the two dates.
+   * Returns the number of days between the two dates. Time is ignored.
    * 
    * @param start starting date
    * @param finish ending date
    * @return the different
    */
   public static int diffDays(Date start, Date finish) {
+    if (hasTime(start)) {
+      start = copy(start);
+      resetTime(start);
+    }
+
+    if (hasTime(finish)) {
+      finish = copy(finish);
+      resetTime(finish);
+    }
+
     long aTime = start.getTime();
     long bTime = finish.getTime();
 
     long adjust = 60 * 60 * 1000;
     adjust = (bTime > aTime) ? adjust : -adjust;
 
-      return (int) ((bTime - aTime + adjust) / (24 * 60 * 60 * 1000));
+    return (int) ((bTime - aTime + adjust) / (24 * 60 * 60 * 1000));
   }
 
   /**
@@ -106,7 +116,7 @@ public class CalendarModel {
    * @param days number of days
    */
   public static void shiftDays(Date date, int days) {
-      date.setDate ( date.getDate () + days );
+    date.setDate(date.getDate() + days);
   }
 
   /**
@@ -153,6 +163,16 @@ public class CalendarModel {
     return date;
   }
 
+  private static boolean hasTime(Date start) {
+    return start.getHours() != 0 || start.getMinutes() != 0
+        || start.getSeconds() != 0;
+  }
+
+  /**
+   * Resets the date to have no time modifiers.
+   * 
+   * @param date the date
+   */
   private static void resetTime(Date date) {
     long msec = date.getTime();
     msec = (msec / 1000) * 1000;
@@ -264,6 +284,7 @@ public class CalendarModel {
 
   /**
    * Formats the date's day of month.
+   * 
    * @param dayOfMonth day of month
    * @return the formatted day of month
    */
@@ -308,7 +329,7 @@ public class CalendarModel {
     return numDaysInMonth;
   }
 
-    /**
+  /**
    * Gets the current year.
    * 
    * @return the current year
@@ -323,17 +344,17 @@ public class CalendarModel {
    * @return the first day
    */
   public Date getFirstDayOfCurrentFirstWeek() {
-      int wkDayOfMonth1st = curMonthAndYear.getDay ();
-      if ( wkDayOfMonth1st == getLocaleStartingDayOfWeek () ) {
-          return curMonthAndYear;
-      } else {
-          Date d = new Date ( curMonthAndYear.getTime () );
-          int offset = wkDayOfMonth1st - getLocaleStartingDayOfWeek () > 0 ?
-                  wkDayOfMonth1st - getLocaleStartingDayOfWeek () :
-                  DAYS_IN_WEEK - ( getLocaleStartingDayOfWeek () - wkDayOfMonth1st );
-          shiftDays ( d, -offset );
-          return d;
-      }
+    int wkDayOfMonth1st = curMonthAndYear.getDay();
+    if (wkDayOfMonth1st == getLocaleStartingDayOfWeek()) {
+      return curMonthAndYear;
+    } else {
+      Date d = new Date(curMonthAndYear.getTime());
+      int offset = wkDayOfMonth1st - getLocaleStartingDayOfWeek() > 0
+          ? wkDayOfMonth1st - getLocaleStartingDayOfWeek() : DAYS_IN_WEEK
+              - (getLocaleStartingDayOfWeek() - wkDayOfMonth1st);
+      shiftDays(d, -offset);
+      return d;
+    }
   }
 
   /**
@@ -358,6 +379,7 @@ public class CalendarModel {
 
   /**
    * Default formatter for date parsing.
+   * 
    * @param text date to parse
    * @return resulting Date object
    */
