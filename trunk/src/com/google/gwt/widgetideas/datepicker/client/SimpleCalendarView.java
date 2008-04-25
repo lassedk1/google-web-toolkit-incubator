@@ -181,7 +181,7 @@ public class SimpleCalendarView extends CalendarView<DatePicker> {
 
   private Date lastDisplayed = new Date();
 
-  SimpleCalendarView() {
+  public SimpleCalendarView() {
   }
 
   @Override
@@ -231,7 +231,9 @@ public class SimpleCalendarView extends CalendarView<DatePicker> {
     CellFormatter formatter = grid.getCellFormatter();
     // Set up title.
     for (int i = 0; i < CalendarModel.DAYS_IN_WEEK; i++) {
-      grid.setText(0, i, getModel().formatDayOfWeek(i));
+      int shift = CalendarModel.getLocaleStartingDayOfWeek ();
+      int dayIdx = i + shift < CalendarModel.DAYS_IN_WEEK ? i + shift : i + shift - CalendarModel.DAYS_IN_WEEK;
+      grid.setText(0, i, getModel().formatDayOfWeek(dayIdx));
       formatter.setStyleName(0, i, Styles.DAY_TITLE);
     }
 
@@ -244,7 +246,9 @@ public class SimpleCalendarView extends CalendarView<DatePicker> {
     setStyleName(Styles.CALENDAR_VIEW);
     ColumnFormatter columnFormatter = grid.getColumnFormatter();
     for (int i = 0; i < 7; i++) {
-      if (getModel().isWeekend(i)) {
+      int shift = CalendarModel.getLocaleStartingDayOfWeek ();
+      int dayIdx = i + shift < CalendarModel.DAYS_IN_WEEK ? i + shift : i + shift - CalendarModel.DAYS_IN_WEEK;
+      if (getModel().isWeekend(dayIdx)) {
         columnFormatter.addStyleName(i, Styles.WEEKEND);
       }
     }
