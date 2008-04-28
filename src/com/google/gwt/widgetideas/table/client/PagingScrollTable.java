@@ -116,6 +116,11 @@ public class PagingScrollTable<R> extends ScrollTable implements
   }
 
   /**
+   * The bulk render used to render the contents of this table.
+   */
+  private FixedWidthGridBulkRenderer bulkRenderer = null;
+
+  /**
    * The callback used with cell editors.
    */
   private AbstractCellEditor.Callback<R> cellEditorCallback = null;
@@ -159,9 +164,6 @@ public class PagingScrollTable<R> extends ScrollTable implements
     public void onRowsReady(Request request, Response<R> response) {
       setData(request.getStartRow(), response.getIterator(),
           response.getRowValues());
-      if (rowPagingListeners != null) {
-        rowPagingListeners.firePageLoaded(currentPage);
-      }
     }
   };
 
@@ -182,13 +184,15 @@ public class PagingScrollTable<R> extends ScrollTable implements
   private TableModel<R> tableModel;
 
   /**
-   * The bulk render used to render the contents of this table.
-   */
-  private FixedWidthGridBulkRenderer bulkRenderer = null;
-  /**
    * The {@link RendererCallback} used when table rendering completes.
    */
-  private RendererCallback tableRendererCallback = null;
+  private RendererCallback tableRendererCallback = new RendererCallback() {
+    public void onRendered() {
+      if (rowPagingListeners != null) {
+        rowPagingListeners.firePageLoaded(currentPage);
+      }
+    }
+  };
 
   /**
    * Constructor.
@@ -451,6 +455,15 @@ public class PagingScrollTable<R> extends ScrollTable implements
   }
 
   /**
+   * Set the bulk table renderer.
+   * 
+   * @param bulkRenderer the table renderer
+   */
+  public void setBulkRenderer(FixedWidthGridBulkRenderer bulkRenderer) {
+    this.bulkRenderer = bulkRenderer;
+  }
+
+  /**
    * Set the cell editor for a column.
    * 
    * @param column the column index
@@ -517,24 +530,6 @@ public class PagingScrollTable<R> extends ScrollTable implements
 
     // Set the row value
     rowValues.set(row, value);
-  }
-
-  /**
-   * Set the bulk table renderer.
-   * 
-   * @param bulkRenderer the table renderer
-   */
-  public void setBulkRenderer(FixedWidthGridBulkRenderer bulkRenderer) {
-    this.bulkRenderer = bulkRenderer;
-    if (bulkRenderer != null && tableRendererCallback == null) {
-      tableRendererCallback = new RendererCallback() {
-        public void onRendered() {
-          if (rowPagingListeners != null) {
-            rowPagingListeners.firePageLoaded(currentPage);
-          }
-        }
-      };
-    }
   }
 
   /**
@@ -727,8 +722,11 @@ public class PagingScrollTable<R> extends ScrollTable implements
         colCount = Math.max(colCount, curColumn);
       }
 
-      // Get rid of uneeded rows
+      // Get rid of unneeded rows
       getDataTable().resize(rowCount, colCount);
+
+      // Fire page loaded event
+      tableRendererCallback.onRendered();
     }
   }
 }
