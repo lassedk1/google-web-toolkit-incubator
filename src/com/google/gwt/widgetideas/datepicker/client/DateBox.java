@@ -46,7 +46,7 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
 
   private EventHandlers handlers = new EventHandlers();
   private boolean dirtyText = false;
-  private DropDownPanel popup = new DropDownPanel();
+  private DropDownPanel<DateBox> popup = new DropDownPanel<DateBox>();
   private TextBox box = new TextBox();
   private DatePicker picker;
   private DateTimeFormat formatter = DateTimeFormat.getMediumDateFormat();
@@ -267,7 +267,7 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
    * @param text text
    */
   protected void handleIllegalInput(String text) {
-    Log.info("Format error:" + text);
+    Log.info("Format error: " + text);
   }
 
   private void setText(Date value) {
