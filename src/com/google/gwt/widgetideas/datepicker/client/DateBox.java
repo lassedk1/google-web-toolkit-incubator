@@ -258,7 +258,7 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
       current = new Date();
     }
     picker.showDate(current);
-    popup.showBelow(this);
+    popup.showRelativeTo(this);
   }
 
   /**
