@@ -53,6 +53,9 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
     }
   }
 
+  private int numColumns;
+  private String[] colStarts;
+
   /**
    * Constructor. Takes in the number of columns in the table to allow efficient
    * creation of the header row.
@@ -62,7 +65,53 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
    */
   public FixedWidthGridBulkRenderer(FixedWidthGrid table, int numColumns) {
     super(table);
+    this.numColumns = numColumns;
     table.resizeColumns(numColumns);
+  }
+
+  @Override
+  public RenderingOptions createRenderingOptions() {
+    if (colStarts != null) {
+      return new RenderingOptions() {
+        @Override
+        public String getEndCell(int column) {
+          return "</span></td>";
+        }
+
+        @Override
+        public String getStartCell(int column) {
+          return colStarts[column];
+        }
+      };
+    } else {
+      return new RenderingOptions() {
+        @Override
+        public String getEndCell(int column) {
+          return "</span></td>";
+        }
+
+        @Override
+        public String getStartCell(int column) {
+          return "<td><span>";
+        }
+      };
+    }
+  }
+
+  /**
+   * Sets all the style names for cells in a given column.
+   * 
+   * @param column the column
+   * @param styleName the style name
+   */
+  public void setStyleNameByColumn(int column, String styleName) {
+    if (colStarts == null) {
+      colStarts = new String[numColumns];
+      for (int i = 0; i < numColumns; i++) {
+        colStarts[i] = "<td><span>";
+      }
+    }
+    colStarts[column] = "<td class='" + styleName + "'><span>";
   }
 
   @Override
@@ -77,15 +126,15 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
    * @param table the table
    * @return the new ghost row
    */
-  protected native Element getBulkLoadedGhostRow(HTMLTable table) /*-{
+  protected native Element getBulkLoadedGhostRow(HTMLTable table)
+  /*-{
     return table.@com.google.gwt.widgetideas.table.client.overrides.HTMLTable::getBodyElement()(table).rows[0];
   }-*/;
-
+  
   @Override
   protected void renderRows(Iterator<Iterator<Object>> iterator,
       final RenderingOptions options) {
-    options.startCell = "<td><span>";
-    options.endCell = "</span></td>";
+
     FixedWidthGrid table = (FixedWidthGrid) super.getTable();
     if (table.getColumnCount() == 0) {
       throw new IllegalStateException(
