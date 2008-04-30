@@ -23,16 +23,17 @@ import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Enables bulk rendering of tables. Each subclass that needs special handling
  * for bulk rendering should have its own bulk renderer.
  */
 public abstract class TableBulkRenderer {
+
   /**
    * Controls how each cell is rendered. The default implementation calls
    * toString on the cell data.
+   * 
    */
   public abstract static class CellRenderer {
 
@@ -76,10 +77,16 @@ public abstract class TableBulkRenderer {
     public int startRow = 0;
     public int numRows = TableModel.ALL_ROWS;
     public boolean syncCall = false;
-    public String startCell = "<td>";
-    public String endCell = "</td>";
     public String headerRow = null;
     public RendererCallback callback = null;
+
+    public String getEndCell(int column) {
+      return "</td>";
+    }
+
+    public String getStartCell(int column) {
+      return "<td>";
+    }
   }
 
   /**
@@ -155,6 +162,39 @@ public abstract class TableBulkRenderer {
   }
 
   /**
+   * Removes all rows in the current table replaces them with the rows provided.
+   * <p>
+   * This method should only be used when the number of rows is known and of
+   * reasonable size, therefore this call is synchronous by default.
+   * </p>
+   * 
+   * @param rows {@link Iterable} of rows. Each row itself must be another
+   *          {@link Iterable}.
+   */
+  public final void renderRows(Iterable<? extends Iterable> rows) {
+    renderRows(rows, null);
+  }
+
+  /**
+   * Removes all rows in the current table replaces them with the rows provided.
+   * <p>
+   * This method should only be used when the number of rows is known and of
+   * reasonable size, therefore this call is synchronous by default.
+   * </p>
+   * 
+   * @param rows list of rows. Each row itself must be another list
+   * @param callback callback to be called after the rows are rendered
+   */
+  public final void renderRows(Iterable<? extends Iterable> rows,
+      RendererCallback callback) {
+    IterableTableModel tableModel = new IterableTableModel(rows);
+    RenderingOptions options = createRenderingOptions();
+    options.syncCall = true;
+    options.callback = callback;
+    renderRows(tableModel, options);
+  }
+
+  /**
    * Removes all rows in the current table replaces them with the roews supplied
    * by the iterator. Each element of the rows iterator is an {@link Iterator}
    * which represents a single row.
@@ -164,34 +204,14 @@ public abstract class TableBulkRenderer {
    */
   public final void renderRows(Iterator<Iterator<Object>> rows,
       RendererCallback callback) {
-    RenderingOptions options = new RenderingOptions();
+    RenderingOptions options = createRenderingOptions();
     options.callback = callback;
     renderRows(rows, options);
   }
 
   /**
-   * Removes all rows in the current table replaces them with the list of rows
-   * provided.
-   * <p>
-   * This method should only be used when the number of rows is known and of
-   * reasonable size, therefore this call is synchronous by default.
-   * </p>
-   * 
-   * @param rows list of rows. Each row itself must be another list
-   * @param callback callback to be called after the rows are rendered
-   */
-  public final void renderRows(List<List<Object>> rows,
-      RendererCallback callback) {
-    ListTableModel<Object> tableModel = new ListTableModel<Object>(rows);
-    RenderingOptions options = new RenderingOptions();
-    options.syncCall = true;
-    options.callback = callback;
-    renderRows(tableModel, options);
-  }
-
-  /**
-   * Removes all rows in the current table replaces them with the rows supplied
-   * by the provided {@link TableModel}.
+   * Removes all rows in the current table and replaces them with the rows
+   * supplied by the provided {@link TableModel}.
    * 
    * @param tableModel the table data
    * @param startRow the tableModel's start row index
@@ -201,7 +221,7 @@ public abstract class TableBulkRenderer {
    */
   public final void renderRows(TableModel<?> tableModel, int startRow,
       int numRows, RendererCallback callback) {
-    RenderingOptions options = new RenderingOptions();
+    RenderingOptions options = createRenderingOptions();
     options.startRow = startRow;
     options.numRows = numRows;
     options.callback = callback;
@@ -209,8 +229,8 @@ public abstract class TableBulkRenderer {
   }
 
   /**
-   * Removes all rows in the current table replaces them with the rows supplied
-   * by the provided {@link TableModel}.
+   * Removes all rows in the current table and replaces them with the rows
+   * supplied by the provided {@link TableModel}.
    * 
    * @param tableModel the table model
    * @param callback callback to call after the table is finished being rendered
@@ -230,6 +250,17 @@ public abstract class TableBulkRenderer {
   }
 
   /**
+   * Creates the rendering options associated with this renderer.
+   * 
+   * @return the rendering options
+   */
+  protected RenderingOptions createRenderingOptions() {
+    return new RenderingOptions();
+  }
+
+  /**
+   * Gets the table.
+   * 
    * @returns the current html table.
    */
   protected HTMLTable getTable() {
@@ -279,10 +310,10 @@ public abstract class TableBulkRenderer {
           temp.append("<tr>");
           Iterator<Object> row = rows.next();
           for (int cellIndex = 0; row.hasNext(); ++cellIndex) {
-            temp.append(options.startCell);
+            temp.append(options.getStartCell(cellIndex));
             Object next = row.next();
             getCellRenderer().renderCell(rowIndex, cellIndex, next, temp);
-            temp.append(options.endCell);
+            temp.append(options.getEndCell(cellIndex));
           }
           temp.append("</tr>");
         }
