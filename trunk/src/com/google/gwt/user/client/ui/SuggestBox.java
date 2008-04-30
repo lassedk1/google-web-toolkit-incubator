@@ -204,7 +204,8 @@ public final class SuggestBox extends Composite implements HasText, HasFocus,
    * list.
    */
   private static DropDownPanel<SuggestBox> createSuggestionPopup() {
-    DropDownPanel dropDown = new DropDownPanel<SuggestBox>() {
+    DropDownPanel<SuggestBox> dropDown = new DropDownPanel<SuggestBox>() {
+      @Override
       public void position(SuggestBox widget, int offsetWidth, int offsetHeight) {
         super.position(widget, offsetWidth, offsetHeight);
 

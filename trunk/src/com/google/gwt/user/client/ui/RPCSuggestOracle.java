@@ -55,7 +55,7 @@ public abstract class RPCSuggestOracle extends SuggestOracle {
 
   @Override
   public final void requestSuggestions(Request request, Callback callback) {
-    assert (checkForSuggestor());
+    assert suggester != null : "Must call setSuggestWidget before requesting suggestions";
     if (currentCallback == null) {
       currentCallback = callback;
       sendRequest(request, wrappedCallback);
@@ -76,20 +76,11 @@ public abstract class RPCSuggestOracle extends SuggestOracle {
   /**
    * Sets the widget who is using the {@link SuggestOracle}. Usually it is a
    * {@link SuggestBox}, however to support the use of custom suggest widgets,
-   * any widget implements HasText can be passed in here.
+   * any widget that implements HasText can be passed in here.
    * 
    * @param suggestBox the widget calling to this oracle.
    */
   public void setSuggestWidget(HasText suggestBox) {
     suggester = suggestBox;
   }
-
-  private boolean checkForSuggestor() {
-    if (suggester == null) {
-      throw new IllegalStateException(
-          "Must call setSuggestWidget before requesting suggestions");
-    }
-    return true;
-  }
-
 }
