@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,11 +16,11 @@
 
 package com.google.gwt.widgetideas.client;
 
+import com.google.gwt.animation.client.Animation;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.animation.WidgetAnimation;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ChangeListenerCollection;
@@ -142,7 +142,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     }
   }
 
-  private class HidingAnimation extends WidgetAnimation {
+  private class HidingAnimation extends Animation {
     @Override
     public void onCancel() {
     }
@@ -151,11 +151,6 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     public void onComplete() {
       setPanelPos(0);
       setState(State.IS_HIDDEN);
-    }
-
-    @Override
-    public void onInstantaneousRun() {
-      onComplete();
     }
 
     @Override
@@ -169,7 +164,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     }
   }
 
-  private class ShowingAnimation extends WidgetAnimation {
+  private class ShowingAnimation extends Animation {
 
     @Override
     public void onCancel() {
@@ -180,11 +175,6 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     public void onComplete() {
       setPanelPos(maxOffshift);
       setState(State.IS_SHOWN);
-    }
-
-    @Override
-    public void onInstantaneousRun() {
-      onComplete();
     }
 
     @Override

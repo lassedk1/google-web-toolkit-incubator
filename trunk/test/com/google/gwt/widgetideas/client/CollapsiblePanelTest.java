@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -28,6 +28,8 @@ public class CollapsiblePanelTest extends WidgetTestBase {
     SimplePanel simple = new SimplePanel();
     simple.setSize("30px", "30px");
     CollapsiblePanel p = new CollapsiblePanel(simple);
+    // Need to set the height to 1px, or the width will be 0px
+    p.setHeight("1px");
     RootPanel.get().add(p);
     assertEquals(width, p.getOffsetWidth());
   }
