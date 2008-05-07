@@ -32,7 +32,7 @@ The current listener widget event system is very easy to use and understand, whi
 
 = Proposed Handler System =
 == Overview ==
-  * Each handler has a single method, such as onClick, onMouseDown, etc.
+  * Each handler has a single method, such as `onClick`, `onMouseDown`, etc.
   * Each handler has a single argument, which is exactly the handler’s corresponding event.  
   * Widget has the following methods
     * `protected addHandler(Class eventType, EventHandler handler)` 
@@ -49,5 +49,5 @@ http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/im
 ||(3) Excess unused listener fields || A single handlers field is used ||
 ||(4) Excess events are sunk || Only the events that are needed are sunk ||
 ||(5) Extra blank methods || No extra methods needed ||
-||(6) Boiler plate code || Between Widget and EventHandlers classes, most boiler plate code removed ||
-|| (7) All event senders must be widgets || Senders must implement the Fires* interface ||
+||(6) Boiler plate code || Between `Widget` enhancements and `EventHandlers` classes, most boiler plate code removed ||
+|| (7) All event senders must be widgets || Senders must implement the `Fires*` interface ||
