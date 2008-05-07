@@ -11,15 +11,15 @@ The current listener widget event system is very easy to use and understand, whi
 
 = Disadvantages of current listener system =
   # We cannot add extra information about an event. 
-    * For example, we could not add native events to the current Click or Change listeners.
+    * For example, we could not add native events to the current `Click` or `Change` listeners.
   # We cannot add a new feature to a current listener. 
-    * For example, TreeListener cannot be expanded to allow more tree events.
+    * For example, `TreeListener` cannot be expanded to allow more tree events.
   # Many widgets do not have any listeners, and yet have three or four listeners fields that need to be null initialized. 
-    * For example, most `Label` have no events, yet have three fields that need to be null.
+    * For example, most `Label` widgets have no events, yet have three fields that need to be null initialized.
   # We have to sink unnecessary events on widgets. 
-    * For example to get a mouse down event, mouse move events are also sunk. 
+    * For example to listen to a mouse down event, mouse move events are also sunk. 
   # Our users end up with many blank empty event methods or need to extend from Adapter classes. 
-    * For example, to add a mouse up listener, you end up with  empty mouse down and mouse move events as well.
+    * For example, to add a mouse up listener, you end up with empty mouse down and mouse move events as well.
   # We repeat the same lines of boiler plate code in many different widgets to check if the listeners are instantiated and instantiate them. 
    * For example:
 {{{
@@ -35,8 +35,8 @@ The current listener widget event system is very easy to use and understand, whi
   * Each handler has a single method, such as onClick, onMouseDown, etc.
   * Each handler has a single argument, which is exactly the handler’s corresponding event.  
   * Widget has the following methods
-    * protected addHandler(Class eventType, EventHandler handler) 
-    * protected removeHandler(Class eventType, EventHandler handler)
+    * `protected addHandler(Class eventType, EventHandler handler)` 
+    * `protected removeHandler(Class eventType, EventHandler handler)`
   * Widget delegates all event handling to a new lazily initialized EventHandlers instance.
 
 == Class Diagram ==
