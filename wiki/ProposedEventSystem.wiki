@@ -51,11 +51,14 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
 
  public void addKeyDownHandler(KeyDownHandler handler) {
     addEventHandler(KeyDownEvent.class, handler);
-  }
+ }
 
+ public void removeKeyDownHandler(KeyDownHandler handler) {
+    removeEventHandler(KeyDownEvent.class, handler);
+ }
 }}}
 
-=== Sample use of a a handler ==
+=== Sample use of a handler ==
 {{{
 
  start.addKeyDownHandler(new KeyDownHandler() {
@@ -65,7 +68,6 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
         }
       }
     });
-
 }}}
 
 
