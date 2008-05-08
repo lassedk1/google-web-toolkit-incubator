@@ -65,7 +65,7 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
  start.addKeyDownHandler(new KeyDownHandler() {
       public void onKeyDown(KeyDownEvent e) {
         if (e.getKeyCode() == KEY_RIGHT){
-        ... 
+           ... 
         }
       }
     });
