@@ -2,9 +2,9 @@
 
 = Introduction =
 
-The current listener widget event system is very easy to use and understand, which are significant advantages. However, it has a reasonable number of disadvantages as well, therefore in this document we
+The current listener widget event system is very easy to use and understand, which are significant advantages. However, it has a reasonable number of disadvantages as well, therefore in this document we:
   * Detail the disadvantages of the current listeners system.
-  * Explain our proposed new handlers system
+  * Explain the proposed handlers event system.
   * Revisit the disadvantages of the current listener system and show how the handler system addresses each one. 
 
 
@@ -19,7 +19,7 @@ The current listener widget event system is very easy to use and understand, whi
   # We have to sink unnecessary events on widgets. 
     * For example to listen to a mouse down event, mouse move events are also sunk. 
   # Our users end up with many blank empty event methods or need to extend from Adapter classes. 
-    * For example, to add a mouse up listener, you end up with empty mouse down and mouse move events as well.
+    * For example, to add a mouse up listener, you end up with empty mouse down and mouse move methods as well.
   # We repeat the same lines of boiler plate code in many different widgets to check if the listeners are instantiated and instantiate them. 
    * For example:
 {{{
@@ -35,13 +35,41 @@ The current listener widget event system is very easy to use and understand, whi
   * Each handler has a single method, such as `onClick`, `onMouseDown`, etc.
   * Each handler has a single argument, which is exactly the handler’s corresponding event.  
   * Widget has the following methods
-    * `protected addHandler(Class eventType, EventHandler handler)` 
-    * `protected removeHandler(Class eventType, EventHandler handler)`
+    * `protected addEventHandler(Class eventType, EventHandler handler)` 
+    * `protected removeEventHandler(Class eventType, EventHandler handler)`
   * Widget delegates all event handling to a new lazily initialized EventHandlers instance.
 
 == Class Diagram ==
 http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/HandlerDesign.jpg
-== How does it address each issue ==
+
+== Sample code ==
+=== Sample Key Down handler==
+
+{{{
+public class DateBox extends Composite implements FiresKeyDownEvents {
+...
+
+ public void addKeyDownHandler(KeyDownHandler handler) {
+    addEventHandler(KeyDownEvent.class, handler);
+  }
+
+}}}
+
+=== Sample use of key down handler ==
+{{{
+
+ start.addKeyDownHandler(new KeyDownHandler() {
+      public void onKeyDown(KeyDownEvent e) {
+        if (e.getKeyCode() == KEY_RIGHT){
+        ... 
+        }
+      }
+    });
+
+}}}
+
+
+== How the handler system solves problems ==
 
 ||Listener Problem || Handler solution ||
 ||(1) Cannot add extra information about an event. || Can add metadata to event ||
