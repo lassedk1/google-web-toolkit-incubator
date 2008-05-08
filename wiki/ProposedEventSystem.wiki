@@ -50,6 +50,7 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
 ...
 
  public void addKeyDownHandler(KeyDownHandler handler) {
+    // Sink event here if necessary.
     addEventHandler(KeyDownEvent.class, handler);
  }
 
