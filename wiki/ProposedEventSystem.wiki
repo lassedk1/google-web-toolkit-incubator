@@ -43,7 +43,7 @@ The current listener widget event system is very easy to use and understand, whi
 http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/HandlerDesign.jpg
 
 == Sample code ==
-=== Sample Key Down handler==
+=== Sample widget implementation of a handler==
 
 {{{
 public class DateBox extends Composite implements FiresKeyDownEvents {
@@ -55,7 +55,7 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
 
 }}}
 
-=== Sample use of key down handler ==
+=== Sample use of a a handler ==
 {{{
 
  start.addKeyDownHandler(new KeyDownHandler() {
