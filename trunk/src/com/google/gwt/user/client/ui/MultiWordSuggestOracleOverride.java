@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * The default {@link com.google.gwt.user.client.ui.SuggestOracle}. The default
+ * The default {@link com.google.gwt.user.client.ui.SuggestOracleOverride}. The default
  * oracle returns potential suggestions based on breaking the query into
  * separate words and looking for matches. It also modifies the returned text to
  * show which prefix matched the query term. The matching is case insensitive.
@@ -59,10 +59,10 @@ import java.util.Set;
  * </table>
  * </p>
  */
-public final class MultiWordSuggestOracle extends SuggestOracle {
+public final class MultiWordSuggestOracleOverride extends SuggestOracleOverride {
 
   /**
-   * Suggestion class for {@link MultiWordSuggestOracle}.
+   * Suggestion class for {@link MultiWordSuggestOracleOverride}.
    */
   public static class MultiWordSuggestion implements Suggestion, IsSerializable {
     private String displayString;
@@ -134,7 +134,7 @@ public final class MultiWordSuggestOracle extends SuggestOracle {
    * 
    * @see #MultiWordSuggestOracle(String)
    */
-  public MultiWordSuggestOracle() {
+  public MultiWordSuggestOracleOverride() {
     this(" ");
   }
 
@@ -151,7 +151,7 @@ public final class MultiWordSuggestOracle extends SuggestOracle {
    * 
    * @param whitespaceChars the characters to treat as word separators
    */
-  public MultiWordSuggestOracle(String whitespaceChars) {
+  public MultiWordSuggestOracleOverride(String whitespaceChars) {
     this.whitespaceChars = new char[whitespaceChars.length()];
     for (int i = 0; i < whitespaceChars.length(); i++) {
       this.whitespaceChars[i] = whitespaceChars.charAt(i);

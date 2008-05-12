@@ -33,17 +33,17 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * A {@link SuggestBox} is a text box or text area which displays a
+ * A {@link SuggestBoxOverride} is a text box or text area which displays a
  * pre-configured set of selections that match the user's input.
  * 
- * Each {@link SuggestBox} is associated with a single {@link SuggestOracle}.
- * The {@link SuggestOracle} is used to provide a set of selections given a
- * specific query string.
+ * Each {@link SuggestBoxOverride} is associated with a single
+ * {@link SuggestOracleOverride}. The {@link SuggestOracleOverride} is used to
+ * provide a set of selections given a specific query string.
  * 
  * <p>
- * By default, the {@link SuggestBox} uses a {@link MultiWordSuggestOracle} as
- * its oracle. Below we show how a {@link MultiWordSuggestOracle} can be
- * configured:
+ * By default, the {@link SuggestBoxOverride} uses a
+ * {@link MultiWordSuggestOracleOverride} as its oracle. Below we show how a
+ * {@link MultiWordSuggestOracleOverride} can be configured:
  * </p>
  * 
  * <pre> 
@@ -68,9 +68,10 @@ import java.util.List;
  * text that does not match any of the SuggestBox's suggestions, then the
  * SuggestBox will not have a currently selected suggestion. It is more useful
  * to know when a suggestion has been chosen from the SuggestBox's list of
- * suggestions. A SuggestBox fires {@link SuggestionEvent SuggestionEvents}
- * whenever a suggestion is chosen, and handlers for these events can be added
- * using the {@link #addEventHandler(SuggestionHandler)} method.
+ * suggestions. A SuggestBox fires
+ * {@link SuggestionEventReadOnlyOverride SuggestionEvents} whenever a
+ * suggestion is chosen, and handlers for these events can be added using the
+ * {@link #addEventHandler(SuggestionHandlerReadOnlyOverride)} method.
  * </p>
  * 
  * <p>
@@ -85,13 +86,13 @@ import java.util.List;
  * <li>.gwt-SuggestBoxPopup .item-selected { a selected suggestion }</li>
  * </ul>
  * 
- * @see SuggestOracle
- * @see MultiWordSuggestOracle
+ * @see SuggestOracleOverride
+ * @see MultiWordSuggestOracleOverride
  * @see TextBoxBase
  */
-public final class SuggestBox extends Composite implements HasText, HasFocus,
-    HasAnimation, SourcesClickEvents, SourcesFocusEvents, SourcesChangeEvents,
-    SourcesKeyboardEvents, FiresSuggestionEvents,
+public final class SuggestBoxOverride extends Composite implements HasText,
+    HasFocus, HasAnimation, SourcesClickEvents, SourcesFocusEvents,
+    SourcesChangeEvents, SourcesKeyboardEvents, FiresSuggestionEvents,
     FiresHighlightEvents<Suggestion> {
   /**
    * The SuggestionMenu class is used for the display and selection of
@@ -156,7 +157,7 @@ public final class SuggestBox extends Composite implements HasText, HasFocus,
       super.itemOver(item);
       if (item != null) {
         Suggestion s = ((SuggestionMenuItem) item).getSuggestion();
-        handlers.fire(new HighlightEvent<Suggestion>(SuggestBox.this, s));
+        handlers.fire(new HighlightEvent<Suggestion>(SuggestBoxOverride.this, s));
       }
     }
   }
@@ -203,10 +204,11 @@ public final class SuggestBox extends Composite implements HasText, HasFocus,
    * "GWT-SuggestBoxPopup and selects the first suggestion in the suggestion
    * list.
    */
-  private static DropDownPanel<SuggestBox> createSuggestionPopup() {
-    DropDownPanel<SuggestBox> dropDown = new DropDownPanel<SuggestBox>() {
+  private static DropDownPanel<SuggestBoxOverride> createSuggestionPopup() {
+    DropDownPanel<SuggestBoxOverride> dropDown = new DropDownPanel<SuggestBoxOverride>() {
       @Override
-      public void position(SuggestBox widget, int offsetWidth, int offsetHeight) {
+      public void position(SuggestBoxOverride widget, int offsetWidth,
+          int offsetHeight) {
         super.position(widget, offsetWidth, offsetHeight);
 
         // Select the first item in the suggestion menu.
@@ -221,10 +223,10 @@ public final class SuggestBox extends Composite implements HasText, HasFocus,
   private EventHandlers handlers = new EventHandlers();
 
   private int limit = 20;
-  private SuggestOracle oracle;
+  private SuggestOracleOverride oracle;
   private String currentText;
   private final SuggestionMenu suggestionMenu;
-  private final DropDownPanel<SuggestBox> suggestionPopup;
+  private final DropDownPanel<SuggestBoxOverride> suggestionPopup;
   private final TextBoxBase box;
   private ArrayList<SuggestionHandler> suggestionHandlers = null;
   private DelegatingClickListenerCollection clickListeners;
@@ -239,39 +241,39 @@ public final class SuggestBox extends Composite implements HasText, HasFocus,
   };
 
   /**
-   * Constructor for {@link SuggestBox}. Creates a
-   * {@link MultiWordSuggestOracle} and {@link TextBox} to use with this
-   * {@link SuggestBox}.
+   * Constructor for {@link SuggestBoxOverride}. Creates a
+   * {@link MultiWordSuggestOracleOverride} and {@link TextBox} to use with this
+   * {@link SuggestBoxOverride}.
    */
-  public SuggestBox() {
-    this(new MultiWordSuggestOracle());
+  public SuggestBoxOverride() {
+    this(new MultiWordSuggestOracleOverride());
   }
 
   /**
-   * Constructor for {@link SuggestBox}. Creates a {@link TextBox} to use with
-   * this {@link SuggestBox}.
+   * Constructor for {@link SuggestBoxOverride}. Creates a {@link TextBox} to
+   * use with this {@link SuggestBoxOverride}.
    * 
    * @param oracle the oracle for this <code>SuggestBox</code>
    */
-  public SuggestBox(SuggestOracle oracle) {
+  public SuggestBoxOverride(SuggestOracleOverride oracle) {
     this(oracle, new TextBox());
   }
 
   /**
-   * Constructor for {@link SuggestBox}. The text box will be removed from it's
-   * current location and wrapped by the {@link SuggestBox}.
+   * Constructor for {@link SuggestBoxOverride}. The text box will be removed
+   * from it's current location and wrapped by the {@link SuggestBoxOverride}.
    * 
    * @param oracle supplies suggestions based upon the current contents of the
    *          text widget
    * @param box the text widget
    */
-  public SuggestBox(SuggestOracle oracle, TextBoxBase box) {
+  public SuggestBoxOverride(SuggestOracleOverride oracle, TextBoxBase box) {
     this(oracle, box, createSuggestionPopup());
   }
 
   /**
-   * Constructor for {@link SuggestBox}. The text box will be removed from it's
-   * current location and wrapped by the {@link SuggestBox}.
+   * Constructor for {@link SuggestBoxOverride}. The text box will be removed
+   * from it's current location and wrapped by the {@link SuggestBoxOverride}.
    * <p>
    * The default dropDownPanel selects the first suggestion to display and has
    * the style name of "GWT-SuggestBoxPopup" and has animations set to
@@ -284,8 +286,8 @@ public final class SuggestBox extends Composite implements HasText, HasFocus,
    * @param box the text widget
    * @param suggestionPopup the drop down panel used to display the suggestions
    */
-  public SuggestBox(SuggestOracle oracle, TextBoxBase box,
-      DropDownPanel<SuggestBox> suggestionPopup) {
+  public SuggestBoxOverride(SuggestOracleOverride oracle, TextBoxBase box,
+      DropDownPanel<SuggestBoxOverride> suggestionPopup) {
     this.box = box;
     initWidget(box);
     suggestionMenu = new SuggestionMenu(true);
@@ -361,8 +363,8 @@ public final class SuggestBox extends Composite implements HasText, HasFocus,
 
   /**
    * Gets the limit for the number of suggestions that should be displayed for
-   * this box. It is up to the current {@link SuggestOracle} to enforce this
-   * limit.
+   * this box. It is up to the current {@link SuggestOracleOverride} to enforce
+   * this limit.
    * 
    * @return the limit for the number of suggestions
    */
@@ -371,11 +373,12 @@ public final class SuggestBox extends Composite implements HasText, HasFocus,
   }
 
   /**
-   * Gets the suggest box's {@link com.google.gwt.user.client.ui.SuggestOracle}.
+   * Gets the suggest box's
+   * {@link com.google.gwt.user.client.ui.SuggestOracleOverride}.
    * 
-   * @return the {@link SuggestOracle}
+   * @return the {@link SuggestOracleOverride}
    */
-  public SuggestOracle getSuggestOracle() {
+  public SuggestOracleOverride getSuggestOracle() {
     return oracle;
   }
 
@@ -545,7 +548,7 @@ public final class SuggestBox extends Composite implements HasText, HasFocus,
 
   private void fireSuggestionEvent(Suggestion selectedSuggestion) {
     if (suggestionHandlers != null) {
-      SuggestionEvent event = new SuggestionEvent(this, selectedSuggestion);
+      SuggestionEvent event = new SuggestionEvent(null, selectedSuggestion);
       for (SuggestionHandler handler : suggestionHandlers) {
         handler.onSuggestionSelected(event);
       }
@@ -576,7 +579,7 @@ public final class SuggestBox extends Composite implements HasText, HasFocus,
    * 
    * @param oracle the oracle
    */
-  private void setOracle(SuggestOracle oracle) {
+  private void setOracle(SuggestOracleOverride oracle) {
     this.oracle = oracle;
   }
 
@@ -612,7 +615,7 @@ public final class SuggestBox extends Composite implements HasText, HasFocus,
             curSuggestion, oracle.isDisplayStringHTML());
         menuItem.setCommand(new Command() {
           public void execute() {
-            SuggestBox.this.setNewSelection(menuItem);
+            SuggestBoxOverride.this.setNewSelection(menuItem);
           }
         });
 
