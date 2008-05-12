@@ -17,7 +17,7 @@
 package com.google.gwt.user.client.ui;
 
 /**
- * This is a stubbed out RPC {@link SuggestOracle} for use by {@link SuggestBox}
+ * This is a stubbed out RPC {@link SuggestOracleOverride} for use by {@link SuggestBoxOverride}
  * instances backed by server side data.
  * 
  * This oracle allows only one request to be sent out at a time. The reason is
@@ -26,7 +26,7 @@ package com.google.gwt.user.client.ui;
  * someone rapidly typing in a suggest box.
  */
 
-public abstract class RPCSuggestOracle extends SuggestOracle {
+public abstract class RPCSuggestOracleOverride extends SuggestOracleOverride {
   private HasText suggester;
   private Callback currentCallback;
   private Request pendingRequest;
@@ -50,7 +50,7 @@ public abstract class RPCSuggestOracle extends SuggestOracle {
 
   };
 
-  public RPCSuggestOracle() {
+  public RPCSuggestOracleOverride() {
   }
 
   @Override
@@ -74,8 +74,8 @@ public abstract class RPCSuggestOracle extends SuggestOracle {
   public abstract void sendRequest(Request request, Callback callback);
 
   /**
-   * Sets the widget who is using the {@link SuggestOracle}. Usually it is a
-   * {@link SuggestBox}, however to support the use of custom suggest widgets,
+   * Sets the widget who is using the {@link SuggestOracleOverride}. Usually it is a
+   * {@link SuggestBoxOverride}, however to support the use of custom suggest widgets,
    * any widget that implements HasText can be passed in here.
    * 
    * @param suggestBox the widget calling to this oracle.
