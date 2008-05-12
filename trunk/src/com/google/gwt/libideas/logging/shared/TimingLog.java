@@ -20,6 +20,9 @@ package com.google.gwt.libideas.logging.shared;
  * {@link TimingLog} allows users to quickly annotate their code with timing
  * information.
  * 
+ * As an aside, the best first step of profiling most web applications is to run
+ * your app using FireFox's firebug profiler. Only when that fails would you
+ * need the {@link TimingLog}.
  */
 
 public class TimingLog {
