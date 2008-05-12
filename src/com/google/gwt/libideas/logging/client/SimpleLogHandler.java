@@ -25,32 +25,29 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * A very simple log handler meant to display simple messages.
+ * A very simple log handler meant to display simple text messages.
  */
-public class SimpleLogHandler extends PopupWidgetLogHandler {
-  Widget widget;
-  VerticalPanel contents;
+public class SimpleLogHandler extends PopupWidgetLogHandler<VerticalPanel> {
+  private VerticalPanel contents;
 
-  public SimpleLogHandler(boolean popup) {
-    super(popup);
-    VerticalPanel p = new VerticalPanel();
+  /**
+   * Constructor.
+   * 
+   * @param autoHide automatically close the popup
+   */
+  public SimpleLogHandler(boolean autoHide) {
+    super(autoHide, new VerticalPanel());
     ScrollPanel scroller = new ScrollPanel();
     contents = new VerticalPanel();
     scroller.add(contents);
-
+    VerticalPanel p = this.getWidget();
     p.add(new Button("clear log", new ClickListener() {
       public void onClick(Widget sender) {
         contents.clear();
       }
     }));
     p.add(scroller);
-    widget = p;
-    widget.setStyleName("gwt-SimpleLogHandler");
-  }
-
-  @Override
-  public Widget getWidget() {
-    return widget;
+    getWidget().setStyleName("gwt-SimpleLogHandler");
   }
 
   @Override
@@ -64,5 +61,6 @@ public class SimpleLogHandler extends PopupWidgetLogHandler {
       Label eLabel = new Label("&nbsp;&nbsp;&nbsp;&nbsp;" + e.getMessage());
       contents.add(eLabel);
     }
+    showLog();
   }
 }

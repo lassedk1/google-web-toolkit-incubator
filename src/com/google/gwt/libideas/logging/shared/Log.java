@@ -35,7 +35,7 @@ import java.util.Iterator;
 public class Log {
   public static final String CATEGORY = "gwt.logging";
   private static LogImpl impl;
-
+  
   static {
     try {
       impl = GWT.create(LogImpl.class);
@@ -310,6 +310,18 @@ public class Log {
 
   static void registerLevel(Level level) {
     impl.registerLevel(level);
+  }
+
+  /**
+   * Installs an uncaught exception handler that logs messages under the
+   * "uncaught" category.
+   */
+  public final void installUncaughtExceptionHandler() {
+    GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
+      public void onUncaughtException(Throwable e) {
+        Log.severe(e.getMessage(), "uncaught", e);
+      }
+    });
   }
 
 }

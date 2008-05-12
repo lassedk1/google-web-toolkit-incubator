@@ -128,6 +128,9 @@ public abstract class AbstractRealLogging {
   }
 
   public void setDefaultLevel(Level level) {
+    if (level == null) {
+      throw new IllegalArgumentException("Cannot set global level to null");
+    }
     globalLevel = level;
   }
 
