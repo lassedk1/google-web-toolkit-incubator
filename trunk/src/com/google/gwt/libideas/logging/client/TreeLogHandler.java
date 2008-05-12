@@ -18,7 +18,6 @@ package com.google.gwt.libideas.logging.client;
 
 import com.google.gwt.libideas.logging.shared.Level;
 import com.google.gwt.libideas.logging.shared.Log;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.FastTree;
 import com.google.gwt.widgetideas.client.FastTreeItem;
 import com.google.gwt.widgetideas.client.HasFastTreeItems;
@@ -26,18 +25,18 @@ import com.google.gwt.widgetideas.client.HasFastTreeItems;
 /**
  * Publishes log messages into a popup tree sorted by category.
  */
-public class TreeLogHandler extends PopupWidgetLogHandler {
+public class TreeLogHandler extends PopupWidgetLogHandler<FastTree> {
   private FastTree tree = new FastTree();
 
   /**
    * TreeHandler, used only in development.
    * 
-   * @param autoShow is the tree handler shown when new logging messages are
-   *        added.
+   * @param autoHide is the tree handler shown when new logging messages are
+   *          added.
    */
-  public TreeLogHandler(boolean autoShow) {
-    super(autoShow);
-    popup.setWidget(tree);
+  public TreeLogHandler(boolean autoHide) {
+    super(autoHide, new FastTree());
+    this.tree = getWidget();
   }
 
   /**
@@ -45,7 +44,7 @@ public class TreeLogHandler extends PopupWidgetLogHandler {
    */
   public void clear() {
     tree = new FastTree();
-    popup.setWidget(tree);
+    getPopup().setWidget(tree);
   }
 
   public FastTreeItem getChild(HasFastTreeItems parent, String childName) {
@@ -63,7 +62,7 @@ public class TreeLogHandler extends PopupWidgetLogHandler {
     return key;
   }
 
-  public Widget getWidget() {
+  public FastTree getWidget() {
     return tree;
   }
 
@@ -87,8 +86,8 @@ public class TreeLogHandler extends PopupWidgetLogHandler {
 
     tree.setSelectedItem(target);
     tree.ensureSelectedItemVisible();
-    if (autoShow) {
-      popup.show();
+    if (isAutoShow()) {
+      getPopup().show();
     }
   }
 }

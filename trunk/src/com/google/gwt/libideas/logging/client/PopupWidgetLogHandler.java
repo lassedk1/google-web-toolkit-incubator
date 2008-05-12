@@ -22,30 +22,49 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Shows a widget handler in a popup.
+ * 
+ * @param <T> type of popup contents
  */
-public abstract class PopupWidgetLogHandler extends LogHandler {
+public abstract class PopupWidgetLogHandler<T extends Widget> extends
+    LogHandler {
 
-  protected PopupPanel popup;
-  protected boolean autoShow;
+  private final PopupPanel popup;
+  private final boolean autoShow;
+  private final T widget;
 
-  PopupWidgetLogHandler(boolean autoShow) {
-    this.popup = new PopupPanel(true);
-    popup.setStyleName("gwt-PopupWidgetHandler");
+  PopupWidgetLogHandler(boolean autoShow, T widget) {
+    this.popup = new PopupPanel(autoShow);
+    getPopup().setStyleName("gwt-PopupWidgetHandler");
     this.autoShow = autoShow;
+    setPopupPosition(0, 0);
+    this.widget = widget;
+    getPopup().setWidget(widget);
   }
 
-  public abstract Widget getWidget();
+  public T getWidget() {
+    return widget;
+  }
 
   public void hideHandler() {
-    popup.hide();
+    getPopup().hide();
   }
 
   public void setPopupPosition(int left, int top) {
-    popup.setPopupPosition(left, top);
+    getPopup().setPopupPosition(left, top);
   }
 
   public void showLog() {
-    popup.show();
+    if (getPopup().equals(getWidget().getParent())) {
+      getPopup().show();
+    }
+  }
+
+  protected PopupPanel getPopup() {
+    return popup;
+  }
+
+  protected boolean isAutoShow() {
+    return autoShow;
   }
 
 }
