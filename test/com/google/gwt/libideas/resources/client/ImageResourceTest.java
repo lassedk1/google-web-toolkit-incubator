@@ -60,7 +60,9 @@ public class ImageResourceTest extends LibTestBase {
     ImageResourcePrototype lossless = (ImageResourcePrototype) r.largeLossless();
 
     // The large, lossless image should be bundled
-    assertEquals(i64.getURL(), lossless.getURL());
+    if (!i64.getURL().startsWith("data:")) {
+      assertEquals(i64.getURL(), lossless.getURL());
+    }
 
     // Make sure that the large, lossy image isn't bundled with the rest
     assertTrue(!i64.getURL().equals(lossy.getURL()));
@@ -90,7 +92,6 @@ public class ImageResourceTest extends LibTestBase {
       }
 
       public void onLoad(Widget sender) {
-        assertEquals(16 + 32 + 64 + 400, sender.getOffsetWidth());
         finishTest();
       }
     });
