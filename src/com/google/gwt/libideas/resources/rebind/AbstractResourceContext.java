@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -27,18 +27,25 @@ public abstract class AbstractResourceContext implements ResourceContext {
   private final TreeLogger logger;
   private final GeneratorContext context;
   private final JClassType resourceBundleType;
+  private final String simpleSourceName;
   private final SourceWriter sw;
 
-  protected AbstractResourceContext(TreeLogger logger, GeneratorContext context,
-      JClassType resourceBundleType, SourceWriter sw) {
+  protected AbstractResourceContext(TreeLogger logger,
+      GeneratorContext context, JClassType resourceBundleType,
+      String simpleSourceName, SourceWriter sw) {
     this.logger = logger;
     this.context = context;
     this.resourceBundleType = resourceBundleType;
+    this.simpleSourceName = simpleSourceName;
     this.sw = sw;
   }
 
   public GeneratorContext getGeneratorContext() {
     return context;
+  }
+
+  public String getImplementationSimpleSourceName() {
+    return simpleSourceName;
   }
 
   public TreeLogger getLogger() {

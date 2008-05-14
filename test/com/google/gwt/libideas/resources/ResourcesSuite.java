@@ -16,6 +16,7 @@
 package com.google.gwt.libideas.resources;
 
 import com.google.gwt.junit.tools.GWTTestSuite;
+import com.google.gwt.libideas.resources.client.CSSResourceTest;
 import com.google.gwt.libideas.resources.client.ImageResourceTest;
 import com.google.gwt.libideas.resources.client.TextResourceTest;
 
@@ -28,6 +29,7 @@ public class ResourcesSuite {
   public static Test suite() {
     GWTTestSuite suite = new GWTTestSuite(
         "Test for com.google.gwt.libideas.resources.client");
+    suite.addTestSuite(CSSResourceTest.class);
     suite.addTestSuite(ImageResourceTest.class);
     suite.addTestSuite(TextResourceTest.class);
 

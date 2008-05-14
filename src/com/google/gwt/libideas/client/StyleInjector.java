@@ -18,6 +18,7 @@ package com.google.gwt.libideas.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.StyleElement;
+import com.google.gwt.libideas.resources.client.CssResource;
 import com.google.gwt.libideas.resources.client.DataResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.libideas.resources.client.ResourcePrototype;
@@ -29,8 +30,8 @@ public class StyleInjector {
   /**
    * The DOM-compatible way of adding stylesheets.
    */
-  static class StyleInjectorImpl {
-    void injectStyleSheet(String contents) {
+  public static class StyleInjectorImpl {
+    public void injectStyleSheet(String contents) {
       StyleElement style = Document.get().createStyleElement();
       style.setPropertyString("language", "text/css");
       style.setInnerText(contents);
@@ -41,10 +42,25 @@ public class StyleInjector {
   /**
    * IE doesn't allow manipulation of a style element through DOM methods.
    */
-  static class StyleInjectorImplIE extends StyleInjectorImpl {
-    native void injectStyleSheet(String contents) /*-{
+  public static class StyleInjectorImplIE extends StyleInjectorImpl {
+    public native void injectStyleSheet(String contents) /*-{
       $doc.createStyleSheet().cssText = contents;
     }-*/;
+  }
+
+  /**
+   * Inject all CSSResources in an ImmutableResourceBundle.
+   * 
+   * @param resources the ImmutableResourceBundle to inject
+   */
+  public static void injectStylesheet(ImmutableResourceBundle resources) {
+    StringBuilder sb = new StringBuilder();
+    for (ResourcePrototype p : resources.getResources()) {
+      if (p instanceof CssResource) {
+        sb.append(((CssResource) p).getText()).append("\n");
+      }
+    }
+    injectStylesheet(sb.toString(), resources);
   }
 
   /**
