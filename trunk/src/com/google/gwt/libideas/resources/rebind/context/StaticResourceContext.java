@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -38,8 +38,8 @@ class StaticResourceContext extends AbstractResourceContext {
   static final String ENABLE_RENAMING = "ResourceBundle.enableRenaming";
 
   StaticResourceContext(TreeLogger logger, GeneratorContext context,
-      JClassType resourceBundleType, SourceWriter sw) {
-    super(logger, context, resourceBundleType, sw);
+      JClassType resourceBundleType, String simpleSourceName, SourceWriter sw) {
+    super(logger, context, resourceBundleType, simpleSourceName, sw);
   }
 
   public String addToOutput(String suggestedFileName, String mimeType,
@@ -75,8 +75,7 @@ class StaticResourceContext extends AbstractResourceContext {
       outputName = strongName + ".cache." + extension;
 
     } else {
-      outputName =
-          suggestedFileName.substring(suggestedFileName.lastIndexOf('/') + 1);
+      outputName = suggestedFileName.substring(suggestedFileName.lastIndexOf('/') + 1);
     }
 
     // Ask the context for an OutputStream into the named resource
@@ -118,5 +117,9 @@ class StaticResourceContext extends AbstractResourceContext {
           "Unable to determine mime type of resource", e);
       throw new UnableToCompleteException();
     }
+  }
+
+  public boolean supportsDataUrls() {
+    return false;
   }
 }

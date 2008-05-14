@@ -19,6 +19,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.ext.BadPropertyValueException;
 import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;
+import com.google.gwt.core.ext.PropertyOracle;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
@@ -69,7 +70,8 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
 
     // Pick a name for the generated class to not conflict. Enclosing class
     // names must be preserved.
-    final String generatedSimpleSourceName = generateSimpleSourceName(sourceType.getName())
+    final String generatedSimpleSourceName = generateSimpleSourceName(logger,
+        context.getPropertyOracle(), sourceType.getName())
         + locale;
 
     // Begin writing the generated source.
@@ -111,7 +113,7 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
       Map<Class<? extends ResourceGenerator>, List<JMethod>> resourceGenerators = new HashMap<Class<? extends ResourceGenerator>, List<JMethod>>();
 
       ResourceContext resourceContext = createResourceContext(logger, context,
-          sourceType, sw);
+          sourceType, generatedSimpleSourceName, sw);
 
       // First assemble all of the ResourceGenerators that we may need for the
       // type
@@ -240,21 +242,18 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
    * Create the ResourceContext object that will be used by
    * {@link ResourceGenerator} subclasses. This is the primary way to implement
    * custom logic in the resource generation pass.
-   * 
-   * @param logger
-   * @param context
-   * @param resourceBundleType
-   * @param sw
-   * @return the ResourceContext to be used
    */
   protected abstract ResourceContext createResourceContext(TreeLogger logger,
-      GeneratorContext context, JClassType resourceBundleType, SourceWriter sw);
+      GeneratorContext context, JClassType resourceBundleType,
+      String simpleSourceName, SourceWriter sw);
 
   /**
    * Given a user-defined type name, determine the type name for the generated
    * class.
    */
-  protected abstract String generateSimpleSourceName(String sourceType);
+  protected abstract String generateSimpleSourceName(TreeLogger logger,
+      PropertyOracle oracle, String sourceType)
+      throws UnableToCompleteException;
 
   /**
    * Given a JMethod, find the a ResourceGenerator class that will be able to
@@ -267,15 +266,26 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
     JClassType resourceType = method.getReturnType().isClassOrInterface();
     ResourceGeneratorType generatorType = resourceType.getAnnotation(ResourceGeneratorType.class);
 
+    // Look at the implemented interfaces for a ResourceGenerator annotation
+    if (generatorType == null) {
+      for (JClassType t : resourceType.getImplementedInterfaces()) {
+        generatorType = t.getAnnotation(ResourceGeneratorType.class);
+
+        if (generatorType != null) {
+          break;
+        }
+      }
+    }
+
     if (generatorType == null) {
       logger.log(TreeLogger.ERROR, "No @"
           + ResourceGeneratorType.class.getName()
           + " was specifed for resource type "
-          + resourceType.getQualifiedSourceName());
+          + resourceType.getQualifiedSourceName() + " or its supertypes");
       throw new UnableToCompleteException();
     }
-    String className = generatorType.value();
 
+    String className = generatorType.value();
     try {
       return Class.forName(className).asSubclass(ResourceGenerator.class);
     } catch (ClassCastException e) {

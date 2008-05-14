@@ -38,19 +38,6 @@ public interface ResourceContext {
    * Cause a specific collection of bytes to be available in the program's
    * compiled output.
    * 
-   * @param resource the resource to add to the compiled output
-   * @param xhrCompatible enforces compatibility with security restrictions if
-   *          the resource is intended to be accessed via an XMLHttpRequest.
-   * @return a Java expression which will evaluate to the location of the
-   *         provided resource at runtime.
-   */
-  String addToOutput(URL resource, boolean xhrCompatible)
-      throws UnableToCompleteException;
-
-  /**
-   * Cause a specific collection of bytes to be available in the program's
-   * compiled output.
-   * 
    * @param suggestedFileName an unobfuscated filename to possibly use for the
    *          resource
    * @param mimeType the MIME type of the data being provided
@@ -64,10 +51,29 @@ public interface ResourceContext {
       boolean xhrCompatible) throws UnableToCompleteException;
 
   /**
+   * Cause a specific collection of bytes to be available in the program's
+   * compiled output.
+   * 
+   * @param resource the resource to add to the compiled output
+   * @param xhrCompatible enforces compatibility with security restrictions if
+   *          the resource is intended to be accessed via an XMLHttpRequest.
+   * @return a Java expression which will evaluate to the location of the
+   *         provided resource at runtime.
+   */
+  String addToOutput(URL resource, boolean xhrCompatible)
+      throws UnableToCompleteException;
+
+  /**
    * Return the GeneratorContext in which the overall resource generation
    * framework is being run.
    */
   GeneratorContext getGeneratorContext();
+
+  /**
+   * Returns the simple source name of the implementation of the bundle being
+   * generated.
+   */
+  String getImplementationSimpleSourceName();
 
   /**
    * Return the type of the resource bundle being generated.
@@ -81,4 +87,9 @@ public interface ResourceContext {
    * @return
    */
   SourceWriter getSourceWriter();
+
+  /**
+   * Indicates if the runtime context supports data: urls.
+   */
+  boolean supportsDataUrls();
 }

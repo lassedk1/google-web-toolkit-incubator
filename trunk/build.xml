@@ -55,6 +55,8 @@
        <classpath location="${gwt.user.jar}"/>
        <classpath location="${gwt.dev.jar}"/>
        <classpath location="${gwt.tools}/lib/javaswf/javaswf-20050404.jar"/>
+       <classpath location="${gwt.tools}/lib/sac/sac-1.3.jar"/>
+       <classpath location="${gwt.tools}/lib/flute/flute-1.3.jar"/>
     </javac>
     <copy todir="${javac.out}">
        <fileset dir="src">
@@ -83,6 +85,8 @@
        <zipfileset dir="${project.build}/demo" prefix="demo/" />
        <zipfileset dir="${project.build}/doc" prefix="doc/" />
        <zipfileset src="${gwt.tools}/lib/javaswf/javaswf-20050404.jar" />
+       <zipfileset src="${gwt.tools}/lib/sac/sac-1.3.jar"/>
+       <zipfileset src="${gwt.tools}/lib/flute/flute-1.3.jar"/>
        <zipfileset dir="src" prefix="" defaultexcludes="yes" />
     </jar>
   </target>
@@ -101,6 +105,8 @@
            <pathelement location="${gwt.user.jar}"/>
            <pathelement location="${gwt.dev.jar}"/>
            <pathelement location="${gwt.tools}/lib/javaswf/javaswf-20050404.jar"/>
+           <pathelement location="${gwt.tools}/lib/sac/sac-1.3.jar"/>
+           <pathelement location="${gwt.tools}/lib/flute/flute-1.3.jar"/>
         </classpath>
         <src>
 	   <pathelement location="./test" />

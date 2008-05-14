@@ -65,6 +65,12 @@ public final class ImageResourceGenerator extends ResourceGenerator {
 
     try {
       builder.assimilate(logger, name, resource);
+      if (context.supportsDataUrls()) {
+        // Just use the calculated meta-data
+        ImageRect r = builder.getMapping(name);
+        r.left = 0;
+        throw new UnsuitableForStripException(r);
+      }
       imageStripCount++;
     } catch (UnsuitableForStripException e) {
       // Add the image to the output as a separate resource

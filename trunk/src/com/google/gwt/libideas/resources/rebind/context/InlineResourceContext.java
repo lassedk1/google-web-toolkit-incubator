@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,8 +21,7 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.user.rebind.SourceWriter;
 
-
-class InlineResourceContext  extends StaticResourceContext {
+class InlineResourceContext extends StaticResourceContext {
   /**
    * The largest file size that will be inlined. Note that this value is taken
    * before any encodings are applied.
@@ -33,8 +32,8 @@ class InlineResourceContext  extends StaticResourceContext {
   private static final int MAX_INLINE_SIZE = 2 << 15;
 
   InlineResourceContext(TreeLogger logger, GeneratorContext context,
-      JClassType resourceBundleType, SourceWriter sw) {
-    super(logger, context, resourceBundleType, sw);
+      JClassType resourceBundleType, String simpleSourceName, SourceWriter sw) {
+    super(logger, context, resourceBundleType, simpleSourceName, sw);
   }
 
   @Override
@@ -51,9 +50,13 @@ class InlineResourceContext  extends StaticResourceContext {
       String base64Contents = enc.encode(data).replaceAll("\\s+", "");
 
       return "\"data:" + mimeType + ";base64," + base64Contents + "\"";
-
     } else {
       return super.addToOutput(suggestedFileName, mimeType, data, true);
     }
+  }
+
+  @Override
+  public boolean supportsDataUrls() {
+    return true;
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,8 +15,11 @@
  */
 package com.google.gwt.libideas.resources.rebind.context;
 
+import com.google.gwt.core.ext.BadPropertyValueException;
 import com.google.gwt.core.ext.GeneratorContext;
+import com.google.gwt.core.ext.PropertyOracle;
 import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.libideas.resources.rebind.AbstractResourceBundleGenerator;
 import com.google.gwt.libideas.resources.rebind.ResourceContext;
@@ -30,16 +33,26 @@ public final class StaticResourceBundleGenerator extends
     AbstractResourceBundleGenerator {
 
   protected ResourceContext createResourceContext(TreeLogger logger,
-      GeneratorContext context, JClassType resourceBundleType, SourceWriter sw) {
+      GeneratorContext context, JClassType resourceBundleType,
+      String simpleSourceName, SourceWriter sw) {
     return new StaticResourceContext(logger.branch(TreeLogger.DEBUG,
-        "Using static resources", null), context, resourceBundleType, sw);
+        "Using static resources", null), context, resourceBundleType,
+        simpleSourceName, sw);
   }
 
   /**
    * Given a user-defined type name, determine the type name for the generated
    * class.
    */
-  protected String generateSimpleSourceName(String sourceType) {
-    return sourceType.replaceAll("\\.", "_") + "_externalBundle";
+  protected String generateSimpleSourceName(TreeLogger logger,
+      PropertyOracle oracle, String sourceType)
+      throws UnableToCompleteException {
+    try {
+      return sourceType.replaceAll("\\.", "_") + "_"
+          + oracle.getPropertyValue(logger, "user.agent") + "_externalBundle";
+    } catch (BadPropertyValueException e) {
+      logger.log(TreeLogger.ERROR, "No user.agent property defined", e);
+      throw new UnableToCompleteException();
+    }
   }
 }

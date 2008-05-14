@@ -1,0 +1,62 @@
+/**
+ * Applied to the entire page.
+ */
+@def BIG 50px;
+@def DIRECTION ltr;
+@eval RED com.google.gwt.libideas.resources.client.CSSResourceTest.red();
+
+
+body {
+  color: black;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: small;
+  margin: 0px;
+  border: 0px;
+  padding: 0px;
+  direction: ltr;
+}
+
+@MEDIA print {
+  body {
+    color: gray;
+  }
+}
+
+div {
+	border: BIG solid RED;
+	direction: DIRECTION;
+}
+
+@sprite spriteClass spriteMethod;
+
+@page {
+  margin: 3cm;
+}
+
+@page :left {
+  margin: 4cm;
+}
+
+@if user.agent safari {
+	div.safari {
+		color: blue;
+	}
+	
+	@if com.google.gwt.core.client.GWT.isScript() {
+	  .safariIsScript { color : red; }
+	}
+}
+
+@if user.agent gecko1_8 {
+	div.gecko18 {
+		color: blue;
+	}
+}
+
+@if com.google.gwt.core.client.GWT.isScript() {
+  .otherIsScript { color : red; }
+}
+
+.replacement {
+	color: red;
+}
