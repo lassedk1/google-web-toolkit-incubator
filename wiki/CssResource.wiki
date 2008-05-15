@@ -8,9 +8,12 @@
       * This does not imply that the stylesheet would necessarily make sense if you just displayed it in a browser
     * Syntax validation
     * Minification
+    * Leverage GWT compiler
+      * Different CSS for different browsers, automatically
+      * Static evaluation of content
+  * Secondary
     * Basic CSS Modularization (Via dependency-injection API style)
     * BiDi (Janus-style?)
-  * Secondary
     * CSS image strips
     * Constants
   * Tertiary
