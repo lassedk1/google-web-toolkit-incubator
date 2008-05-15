@@ -1,0 +1,157 @@
+#summary Compile-time CSS processing
+
+
+=Goals=
+
+  * Primary
+    * Compatibility with non-GWT-aware CSS parsers (i.e. any extensions should be valid CSS syntax)
+      * This does not imply that the stylesheet would necessarily make sense if you just displayed it in a browser
+    * Syntax validation
+    * Minification
+    * Basic CSS Modularization (Via dependency-injection API style)
+    * BiDi (Janus-style?)
+  * Secondary
+    * CSS image strips
+    * Constants
+  * Tertiary
+    * Runtime manipulation (StyleElement.setEnabled() handles many cases)
+    * Compile-time class-name checking (Java/CSS)
+    * Obfuscation
+
+
+=Non-Goals=
+  * Server-side manipulation
+
+
+=Use Cases=
+
+  * Constants (Working):
+{{{
+@def small 1px;
+@def black #000;
+border: small solid black;
+}}}
+    * The parse rules make it difficult to use delimiting tokens for substitutions
+    * Redefining built-in sizes allows users to write plain CSS to draft a style and then tweak it.
+    * Suggest that users use upper-case names, similar to static final members.
+  * Runtime substitution (Working)
+{{{
+@eval userBackground com.module.UserPreferences.getUserBackground();
+background: userBackground;
+}}}
+    * Provides runtime support for evaluating static methods when the stylesheet is injected.  Triggered / dynamic updates could be added in the future if we allow programmatic manipulation of the style elements.
+      * If the user-defined function can be statically evaluated by the compiler, then the implementation of the specific CssResource should collapse to just a string literal.
+    * This allows easy support for non-structural skinning changes.
+    * Generated implementations of CSSResources can do fast string slicing since offsets of substitutions are known at compile time.
+    * Allow an @import statement for unqualified names?
+    * CSSResource.getText() or CSSResource.inject() necessary
+  * Runtime structural changes (Working)
+{{{
+/* Runtime evaluation in a static context */
+@if com.module.Foo.staticBooleanFunction() {
+  ... css rules ...
+}
+
+/* Compile-time evaluation */
+@if <deferred-binding-property> <space-separated list of values> {
+  ... css rules ...
+}
+@if user.agent safari gecko1_8 { ... }
+@if locale en { ... }
+
+/* Negation is supported */
+@if !user.agent ie6 opera {
+  ...
+}
+}}}
+    * This allows for more advanced skinning / theming / browser quirk handling by allowing for structural changes in the CSS.
+    * The contents of an @if block can be anything that would be a top-level rule in a CSS stylesheet.
+    * @if blocks can be nested.  No support for @else or @elif since conditional CSS is usually used to "fix up" browser quirks.
+    * What does it mean to have an @def or @eval in an @if block?  Easy to make this work for property-based @if statements; would have to generate pretty gnarly runtime code to handle the expression-based @if statement.  Could have block-level scoping; but this seems like a dubious use-case.
+    * If the function in the first form can be statically evaluated in a permutation, there is no runtime cost.  The second form will never have a runtime cost because it is evaluated during compilation.
+  * CSS Image Sprites (WORKING):
+{{{
+@sprite mySpriteClass imageResourceFuncName; => generates =>
+  .mySpriteClass {
+    background-image: url(gen.png);
+    clip: ...;
+    width: 27px;
+    height: 42px;
+  }
+}}}
+    * @sprite is sensitive to the FooBundle in which the CSSResource is declared; a sibling ImageResource method named in the @sprite declaration will be used to compose the background sprite.
+    * @sprite entries will be expanded to static CSS rules, possibly with data: urls
+    * The only way to make this work on ie6 is to modify the struture of the element.  For @style (and maybe a general class of meta-styles), the CssResource member function returns a MetaStyle instance with an apply(Element e) method.  The contract is that the Element passed in will be modified to have the meta-style applied.  The effects of the application depend on the specifics of the meta-style.
+  * References to DataResources (TODO)
+{{{
+@url myBackgroundUrl siblingDataResource;
+
+.myClass {
+  background: myBackgroundUrl repeat-x;
+}
+}}}
+  * BiDi (Open RFC):
+    * Can this be accomplished using just the skinning support and some pre-cooked recipes?
+    * Perhaps a magic @if predicate
+{{{
+@if :rtl {
+  ... ...
+}
+
+@if !:rtl {
+  ... ...
+}
+}}}
+    * Perhaps a magic substitution property value
+{{{
+direction: auto;
+}}}
+    * Perhaps use 'special pseudo-classes'
+{{{
+.myClass:rtl{}
+div:rtl{} => generates =>
+  .myClass {
+    direction: <correct value>
+    text-align: <correct value>
+  }
+}}}
+  * Compile-time name checking (Working):
+{{{
+java:
+    class Resources {
+      MyCSSResource myCSSResource();
+    }
+    class MyCSSResource extends CSSResource {
+      String mySpriteClass();
+      String someOtherClass();
+      String hookClass();
+    }
+    myWidget.addStyleName(resource.mySpriteClass());
+
+css:
+    @sprite mySpriteClass mySpriteImage;
+    .someOtherClass {
+      /* ... */
+    }
+    .hookClass{} /* Empty and stripped, but left for future expansion */
+}}}
+    * The function just returns the CSS class name, but verifies that the CSS class exists in the stylesheet.
+    * No typos.
+    * Possibility of using obfuscated names for programmatically-accessible class names. For obfuscation, we'll use a Adler32 checksum of the source css file expressed in base36 as a prefix (7 chars). The developer can override this with an annotation.
+  * Implementation fix-ups (Maybe):
+{{{
+    div:hover { }
+       Could use top-level event handler to fake on IE
+    div:focus { }
+       Problematic -- focus/blur don't bubble
+}}}
+
+=Important open questions=
+  * Can we manipulate style rules across browsers?
+    * Maybe make MyCSSResource.mySpriteClass() return Rule object
+    * The @eval rule implies that stylesheets must be removable or can be updated in-place.
+    * Does doing so update actual rendering on all browsers?
+  * Other meta-classes
+    * @Opacity
+    * @RoundedCorners
+      * Can we generalize the meta-classes into an extensible Java provider API?
