@@ -1,5 +1,5 @@
 #summary Compile-time CSS processing
-
+#labels Phase-Implementation,Type-Library
 
 =Goals=
 
@@ -12,10 +12,14 @@
       * Different CSS for different browsers, automatically
       * Static evaluation of content
   * Secondary
-    * Basic CSS Modularization (Via dependency-injection API style)
+    * Basic CSS Modularization
+      * Via dependency-injection API style
+      * Widgets can inject their own CSS only when it's needed
     * BiDi (Janus-style?)
     * CSS image strips
-    * Constants
+    * "Improve CSS"
+      * Constants
+      * Simple expressions
   * Tertiary
     * Runtime manipulation (StyleElement.setEnabled() handles many cases)
     * Compile-time class-name checking (Java/CSS)
@@ -96,7 +100,7 @@ myResources.css().mySpriteClass().apply(someElement)
 }}}
     * @sprite is sensitive to the FooBundle in which the CSSResource is declared; a sibling ImageResource method named in the @sprite declaration will be used to compose the background sprite.
     * @sprite entries will be expanded to static CSS rules, possibly with data: urls
-    * The only way to make this work on ie6 is to modify the struture of the element.  For @style (and maybe a general class of meta-styles), the CssResource member function returns a MetaStyle instance with an apply(Element e) method.  The contract is that the Element passed in will be modified to have the meta-style applied.  The effects of the application depend on the specifics of the meta-style.
+    * The only way to make this work on ie6 is to modify the structure of the element.  For @style (and maybe a general class of meta-styles), the CssResource member function returns a MetaStyle instance with an apply(Element e) method.  The contract is that the Element passed in will be modified to have the meta-style applied.  The effects of the application depend on the specifics of the meta-style.
   * References to DataResources (TODO)
 {{{
 @url myBackgroundUrl siblingDataResource;
@@ -137,7 +141,7 @@ java:
       MyCSSResource myCSSResource();
     }
     class MyCSSResource extends CSSResource {
-      String mySpriteClass();
+      Sprite mySpriteClass();
       String someOtherClass();
       String hookClass();
     }
