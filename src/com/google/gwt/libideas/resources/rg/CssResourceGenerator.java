@@ -28,6 +28,7 @@ import com.google.gwt.dev.util.DefaultTextOutput;
 import com.google.gwt.dev.util.Util;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.libideas.resources.client.CssResource;
+import com.google.gwt.libideas.resources.client.DataResource;
 import com.google.gwt.libideas.resources.client.impl.ImageResourcePrototype;
 import com.google.gwt.libideas.resources.client.impl.SpriteImpl;
 import com.google.gwt.libideas.resources.css.CssGenerationVisitor;
@@ -37,6 +38,7 @@ import com.google.gwt.libideas.resources.css.ast.CssCompilerException;
 import com.google.gwt.libideas.resources.css.ast.CssDef;
 import com.google.gwt.libideas.resources.css.ast.CssEval;
 import com.google.gwt.libideas.resources.css.ast.CssIf;
+import com.google.gwt.libideas.resources.css.ast.CssMediaRule;
 import com.google.gwt.libideas.resources.css.ast.CssModVisitor;
 import com.google.gwt.libideas.resources.css.ast.CssNode;
 import com.google.gwt.libideas.resources.css.ast.CssProperty;
@@ -44,6 +46,7 @@ import com.google.gwt.libideas.resources.css.ast.CssRule;
 import com.google.gwt.libideas.resources.css.ast.CssSelector;
 import com.google.gwt.libideas.resources.css.ast.CssSprite;
 import com.google.gwt.libideas.resources.css.ast.CssStylesheet;
+import com.google.gwt.libideas.resources.css.ast.CssUrl;
 import com.google.gwt.libideas.resources.css.ast.CssVisitor;
 import com.google.gwt.libideas.resources.css.ast.HasNodes;
 import com.google.gwt.libideas.resources.rebind.ResourceContext;
@@ -190,6 +193,13 @@ public class CssResourceGenerator extends ResourceGenerator {
     private final Map<String, CssRule> canonicalRules = new HashMap<String, CssRule>();
 
     @Override
+    public boolean visit(CssMediaRule x, Context ctx) {
+      // Can't merge rules across media rules
+      (new MergeRulesVisitor()).accept(x.getNodes());
+      return false;
+    }
+
+    @Override
     public boolean visit(CssRule x, Context ctx) {
       for (CssSelector sel : x.getSelectors()) {
         if (canonicalRules.containsKey(sel.getSelector())) {
@@ -320,12 +330,22 @@ public class CssResourceGenerator extends ResourceGenerator {
     public void endVisit(CssEval x, Context ctx) {
       substitutions.put(x.getKey(), x);
     }
+
+    @Override
+    public void endVisit(CssUrl x, Context ctx) {
+      substitutions.put(x.getKey(), x);
+    }
   }
 
   private static class SubstitutionReplacer extends CssVisitor {
+    private final ResourceContext context;
+    private final TreeLogger logger;
     private final Map<String, CssDef> substitutions;
 
-    public SubstitutionReplacer(Map<String, CssDef> substitutions) {
+    public SubstitutionReplacer(TreeLogger logger, ResourceContext context,
+        Map<String, CssDef> substitutions) {
+      this.context = context;
+      this.logger = logger;
       this.substitutions = substitutions;
     }
 
@@ -351,6 +371,29 @@ public class CssResourceGenerator extends ResourceGenerator {
         } else if (def instanceof CssEval) {
           expression.append(def.getValue());
           useExpression = true;
+        } else if (def instanceof CssUrl) {
+          String functionName = def.getValue();
+
+          // Find the method
+          JMethod method = context.getResourceBundleType().findMethod(
+              functionName, new JType[0]);
+
+          if (method == null) {
+            logger.log(TreeLogger.ERROR, "Unable to find DataResource method "
+                + functionName + " in "
+                + context.getResourceBundleType().getQualifiedSourceName());
+            throw new RuntimeException("Cannot find data function");
+          }
+
+          String instance = "((" + DataResource.class.getName() + ")("
+              + context.getImplementationSimpleSourceName() + ".this."
+              + functionName + "()))";
+
+          expression.append("\"url('\" + ");
+          expression.append(instance).append(".getUrl()");
+          expression.append(" + \"')\"");
+          useExpression = true;
+
         } else {
           expression.append('"');
           expression.append(Generator.escape(def.getValue()));
@@ -362,7 +405,7 @@ public class CssResourceGenerator extends ResourceGenerator {
         }
 
         if (i.hasNext()) {
-          expression.append(" + ");
+          expression.append(" + \" \" + ");
         }
       }
 
@@ -394,7 +437,8 @@ public class CssResourceGenerator extends ResourceGenerator {
     stringType = typeOracle.findType(String.class.getName());
     assert stringType != null;
 
-    spriteType = typeOracle.findType(CssResource.Sprite.class.getName().replace('$', '.'));
+    spriteType = typeOracle.findType(CssResource.Sprite.class.getName().replace(
+        '$', '.'));
     assert spriteType != null;
 
     spriteImplType = typeOracle.findType(SpriteImpl.class.getName());
@@ -517,7 +561,6 @@ public class CssResourceGenerator extends ResourceGenerator {
     sw.indent();
 
     String cssExpression = makeExpression(logger, resource, replacements);
-    System.out.println(cssExpression);
     sw.println("return " + cssExpression + ";");
     sw.outdent();
     sw.println("}");
@@ -607,7 +650,7 @@ public class CssResourceGenerator extends ResourceGenerator {
       SubstitutionCollector collector = new SubstitutionCollector();
       collector.accept(sheet);
 
-      (new SubstitutionReplacer(collector.substitutions)).accept(sheet);
+      (new SubstitutionReplacer(logger, context, collector.substitutions)).accept(sheet);
 
       // Evaluate @if statements based on deferred binding properties
       (new IfEvaluator(logger,
@@ -626,6 +669,7 @@ public class CssResourceGenerator extends ResourceGenerator {
 
     } catch (CssCompilerException e) {
       // Take this as a sign that one of the visitors was unhappy
+      logger.log(TreeLogger.ERROR, "Unable to process CSS", e);
       throw new UnableToCompleteException();
     }
   }

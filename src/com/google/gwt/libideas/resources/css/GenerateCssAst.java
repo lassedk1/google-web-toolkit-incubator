@@ -28,6 +28,7 @@ import com.google.gwt.libideas.resources.css.ast.CssRule;
 import com.google.gwt.libideas.resources.css.ast.CssSelector;
 import com.google.gwt.libideas.resources.css.ast.CssSprite;
 import com.google.gwt.libideas.resources.css.ast.CssStylesheet;
+import com.google.gwt.libideas.resources.css.ast.CssUrl;
 import com.google.gwt.libideas.resources.css.ast.HasNodes;
 import com.google.gwt.libideas.resources.css.ast.HasProperties;
 
@@ -359,6 +360,19 @@ public class GenerateCssAst {
 
       CssSprite sprite = new CssSprite(parts[1], parts[2]);
       addNode(sprite);
+    }
+
+    void parseUrl(String atRule) throws CSSException {
+      // @url key dataResourceFunction
+      String[] parts = atRule.substring(0, atRule.length() - 1).split("\\s");
+
+      if (parts.length != 3) {
+        throw new CSSException(CSSException.SAC_SYNTAX_ERR,
+            "Incorrect number of parts for @url", null);
+      }
+
+      CssUrl url = new CssUrl(parts[1], parts[2]);
+      addNode(url);
     }
 
     /**

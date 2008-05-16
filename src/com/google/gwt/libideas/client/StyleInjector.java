@@ -60,7 +60,7 @@ public class StyleInjector {
         sb.append(((CssResource) p).getText()).append("\n");
       }
     }
-    injectStylesheet(sb.toString(), resources);
+    injectStylesheet(sb.toString());
   }
 
   /**
@@ -69,7 +69,7 @@ public class StyleInjector {
    * @param contents the CSS contents of the stylesheet
    */
   public static void injectStylesheet(String contents) {
-    injectStylesheet(contents, null);
+    ((StyleInjectorImpl) GWT.create(StyleInjectorImpl.class)).injectStyleSheet(contents);
   }
 
   /**
@@ -80,7 +80,9 @@ public class StyleInjector {
    * 
    * @param contents the CSS contents of the stylesheet
    * @param references the resources to substitute into the stylesheet.
+   * @deprecated Use {@link CssResource} with {@code @url} rules instead.
    */
+  @Deprecated
   public static void injectStylesheet(String contents,
       ImmutableResourceBundle references) {
     if (references != null) {
@@ -92,7 +94,7 @@ public class StyleInjector {
       }
     }
 
-    ((StyleInjectorImpl) GWT.create(StyleInjectorImpl.class)).injectStyleSheet(contents);
+    injectStylesheet(contents);
   }
 
   /**

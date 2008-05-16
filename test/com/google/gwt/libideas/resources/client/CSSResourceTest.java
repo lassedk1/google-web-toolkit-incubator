@@ -40,10 +40,19 @@ public class CSSResourceTest extends LibTestBase {
 
     @Resource("16x16.png")
     ImageResource spriteMethod();
+    
+    @Resource("32x32.png")
+    DataResource dataMethod();
   }
 
   public void testCSS() {
     MyCssResource css = Resources.INSTANCE.css();
     assertFalse("replacement".equals(css.replacement()));
+    
+    String text = css.getText();
+    assertTrue(text.contains(Resources.INSTANCE.dataMethod().getUrl()));
+    assertTrue(text.contains(red() + ";"));
+    assertTrue(text.contains(":50px"));
+    System.out.println(text);
   }
 }

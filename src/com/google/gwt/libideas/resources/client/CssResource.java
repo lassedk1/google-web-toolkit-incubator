@@ -22,7 +22,26 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 /**
- * Aggregates and minifies CSS stylesheets.
+ * Aggregates and minifies CSS stylesheets. A CssResource represents a regular
+ * CSS file with GWT-specific at-rules.
+ * 
+ * Currently-supported rules:
+ * 
+ * <ul>
+ * <li>{@code @def NAME literal-value; .myClass {background: NAME;}} Define a
+ * static constant.
+ * <li>{@code @eval NAME Java-expression; .myClass {background: NAME;}} Define
+ * a constant based on a Java expression.
+ * <li>{@code @if [!]property (list of values) {ruleBlock}} Include or exclude
+ * CSS rules based on the value of a deferred-binding property.
+ * <li>{@code @if Java-expression {ruleBlock}} Include or exclude CSS rules
+ * based on a boolean Java expression.
+ * <li>{@code @sprite className siblingImageResource;} Return a {@link Sprite}
+ * to access the style.
+ * <li>{@code @url NAME siblingDataResource; .myClass {background: NAME repeat-x;}}
+ * Use a DataResource to generate a <code>url('...'}</code> value.
+ * </ul>
+ * Any named value will be replaced
  */
 @ResourceGeneratorType("com.google.gwt.libideas.resources.rg.CssResourceGenerator")
 public interface CssResource extends ResourcePrototype {

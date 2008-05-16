@@ -27,6 +27,7 @@ import com.google.gwt.libideas.resources.css.ast.CssProperty;
 import com.google.gwt.libideas.resources.css.ast.CssRule;
 import com.google.gwt.libideas.resources.css.ast.CssSelector;
 import com.google.gwt.libideas.resources.css.ast.CssSprite;
+import com.google.gwt.libideas.resources.css.ast.CssUrl;
 import com.google.gwt.libideas.resources.css.ast.CssVisitor;
 
 import java.util.ArrayList;
@@ -193,6 +194,14 @@ public class CssGenerationVisitor extends CssVisitor {
     out.printOpt("/* CssSprite */");
     out.newlineOpt();
     addSubstitition(x);
+    return false;
+  }
+
+  @Override
+  public boolean visit(CssUrl x, Context ctx) {
+    // These are not valid CSS
+    out.printOpt("/* CssUrl */");
+    out.newlineOpt();
     return false;
   }
 
