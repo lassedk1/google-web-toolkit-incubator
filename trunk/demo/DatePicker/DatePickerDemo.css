@@ -6,6 +6,8 @@ Date picker styles, most of these will eventually move into a default resource b
   border: 1px solid #f1f1f1;
   border-bottom: 2px solid #f1f1f1;
   color: 6b6b6b;
+  cursor: default;
+ 
 }
 
 .gwt-DatePicker td {
@@ -14,9 +16,9 @@ Date picker styles, most of these will eventually move into a default resource b
   padding: 2px;
   text-align: center;
   padding: 2px;
-  cursor: pointer;
   outline: none;
   -moz-outline: none;
+  cursor: default;
 }
 
 .gwt-DatePicker td,.month-selector td :focus {
@@ -38,10 +40,12 @@ Calendar styles
 .calendar-view .filler-cell {
   color: #bfbfbf;
   padding: 1px;
+  cursor: hand;
 }
 
 .calendar-view .date-cell {
   padding: 1px;
+  cursor:hand;
 }
 
 .calendar-view .selected-cell {
@@ -54,12 +58,12 @@ Calendar styles
 
 .gwt-DatePicker .calendar-view .highlighted-cell {
   border: 1px solid #eeeeee;
-  padding:0px;
+  padding: 0px;
 }
 
 .calendar-view .today-cell {
   border: 1px solid black;
-  padding:0px;
+  padding: 0px;
 }
 
 .gwt-DatePicker .calendar-view .weekend {
@@ -87,6 +91,14 @@ Month selector styles
 .month-selector .month-label {
   text-align: center;
   background: #dbe6de;
+}
+
+.month-selector .month-backward {
+  padding-right: 2em;
+}
+
+.month-selector .month-forward {
+  padding-left: 2em;
 }
 
 /****************************
