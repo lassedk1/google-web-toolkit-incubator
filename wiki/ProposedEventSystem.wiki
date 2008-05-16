@@ -36,7 +36,9 @@ The current listener widget event system is very easy to use and understand, whi
   * Each handler has a single argument, which is exactly the handler’s corresponding event.  
   * Widget has the following methods
     * `protected HandlerRegistration addEventHandler(Class eventType, EventHandler handler)` 
-  * Widget delegates all event handling to a new lazily initialized HandlerManager instance.
+    * `protected void fireEvent(AbstractEvent event)`
+  * `Widget` delegates all event handling to a new lazily initialized `HandlerManager` instance.
+  * `EventHandler` is removed by calling `remove()` on the returned `HandlerRegistration`
 
 == Class Diagram ==
 http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/HandlerDesign.jpg
