@@ -35,8 +35,7 @@ The current listener widget event system is very easy to use and understand, whi
   * Each handler has a single method, such as `onClick`, `onMouseDown`, etc.
   * Each handler has a single argument, which is exactly the handler’s corresponding event.  
   * Widget has the following methods
-    * `protected addEventHandler(Class eventType, EventHandler handler)` 
-    * `protected removeEventHandler(Class eventType, EventHandler handler)`
+    * `protected HandlerRegistration addEventHandler(Class eventType, EventHandler handler)` 
   * Widget delegates all event handling to a new lazily initialized EventHandlers instance.
 
 == Class Diagram ==
