@@ -24,11 +24,13 @@ The current listener widget event system is very easy to use and understand, whi
    * For example:
 {{{
     if(clickListeners == null) {
+      sinkEvents(Event.ON_CLICK);
       clickListeners = new ClickListenerCollection(); 
     }
     clickListeners.add(handler);
 }}} 
   # All event senders must be widgets.
+  
 
 = Proposed Handler System =
 == Overview ==
@@ -80,12 +82,14 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
 {{{
 interface KeyDownHandler extends EventHandler {
   public static Hook HOOK = new Hook(){
-    public void hookEvent(FiresKeyDownEvents source, EventHandler firstHandler) {
+
+    public void hookEvent(Object source, EventHandler firstHandler) {
+      // Sanity checks
+      assert(firstHandler instanceof KeyDownHandler);
+      assert(source instanceof FiresKeyDownEvents);
+
       // If source implements sink events, sink ON_KEYDOWN
-      ...
-      // Check to see if first handler is of correct type to 
-      // ensure widget is setting up its handlers correctly.
-      ...
+      BrowserEvent.trySinkEvents(source, Event.ON_KEYDOWN);
     }
   }
   public void onKeyDown(KeyDownEvent event);
