@@ -79,7 +79,7 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
 ===  Sample declaration of a handler ===
 {{{
 interface KeyDownHandler extends EventHandler {
-  public static HandlerHook HOOK = new HandlerHook(){
+  public static Hook HOOK = new Hook(){
     public void hookEvent(FiresKeyDownEvents source, EventHandler firstHandler) {
       // If source implements sink events, sink ON_KEYDOWN
       ...
@@ -93,7 +93,17 @@ interface KeyDownHandler extends EventHandler {
 }}}
 
 === Sample declaration of an event ===
-
+{{{
+class KeyDownEvent extends KeyEvent {
+  public HandlerHook getHandlerHook() {
+    return KeyDownHandler.HOOK;
+  }
+  
+  public void fire(EventHandler handler) {
+    ((KeyDownHandler).onKeyDown(this));
+  }
+}
+}}}
 
 == How the handler system solves problems ==
 
@@ -104,4 +114,4 @@ interface KeyDownHandler extends EventHandler {
 ||(4) Excess events are sunk || Only the events that are needed are sunk ||
 ||(5) Extra blank methods || No extra methods needed ||
 ||(6) Boiler plate code || Between `Widget` enhancements and `EventHandlers` classes, most boiler plate code removed ||
-|| (7) All event senders must be widgets || Senders must implement the `Fires*` interface ||
+|| (7) All event senders must be widgets || Senders must implement the `Fires*` interface
