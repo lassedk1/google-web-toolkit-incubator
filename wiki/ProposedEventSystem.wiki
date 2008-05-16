@@ -36,12 +36,26 @@ The current listener widget event system is very easy to use and understand, whi
   * Each handler has a single argument, which is exactly the handler’s corresponding event.  
   * Widget has the following methods
     * `protected HandlerRegistration addEventHandler(Class eventType, EventHandler handler)` 
-  * Widget delegates all event handling to a new lazily initialized EventHandlers instance.
+  * Widget delegates all event handling to a new lazily initialized HandlerManager instance.
 
 == Class Diagram ==
 http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/HandlerDesign.jpg
 
 == Sample code ==
+
+=== Sample use of a handler ==
+{{{
+ DateBox start = new DateBox();
+ start.addKeyDownHandler(new KeyDownHandler() {
+      public void onKeyDown(KeyDownEvent e) {
+        if (e.getKeyCode() == KEY_RIGHT){
+           ... 
+        }
+      }
+    });
+}}}
+
+
 === Sample widget implementation of a handler==
 
 {{{
