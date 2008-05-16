@@ -68,23 +68,31 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
     // Sink event here if necessary.
     addEventHandler(KeyDownEvent.class, handler);
  }
+  @Override
+  public void onBrowserEvent(Event e){
+    ...
+    case On_KEYDOWN:
+      fireEvent(new KeyDownEvent(e)); 
+  }
+  }}}
 
- public void removeKeyDownHandler(KeyDownHandler handler) {
-    removeEventHandler(KeyDownEvent.class, handler);
- }
-}}}
-
-=== Sample use of a handler ==
+===  Sample declaration of a handler ===
 {{{
-
- start.addKeyDownHandler(new KeyDownHandler() {
-      public void onKeyDown(KeyDownEvent e) {
-        if (e.getKeyCode() == KEY_RIGHT){
-           ... 
-        }
-      }
-    });
+interface KeyDownHandler extends EventHandler {
+  public static HandlerHook HOOK = new HandlerHook(){
+    public void hookEvent(FiresKeyDownEvents source, EventHandler firstHandler) {
+      // If source implements sink events, sink ON_KEYDOWN
+      ...
+      // Check to see if first handler is of correct type to 
+      // ensure widget is setting up its handlers correctly.
+      ...
+    }
+  }
+  public void onKeyDown(KeyDownEvent event);
+} 
 }}}
+
+=== Sample declaration of an event ===
 
 
 == How the handler system solves problems ==
