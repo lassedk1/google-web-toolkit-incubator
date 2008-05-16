@@ -90,6 +90,9 @@ public class CssVisitor {
   public void endVisit(CssStylesheet x, Context ctx) {
   }
 
+  public void endVisit(CssUrl x, Context ctx) {
+  }
+
   public boolean visit(CssDef x, Context ctx) {
     return true;
   }
@@ -127,6 +130,10 @@ public class CssVisitor {
   }
 
   public boolean visit(CssStylesheet x, Context ctx) {
+    return true;
+  }
+
+  public boolean visit(CssUrl x, Context ctx) {
     return true;
   }
 

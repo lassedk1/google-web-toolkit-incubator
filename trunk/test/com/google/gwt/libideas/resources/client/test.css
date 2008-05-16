@@ -4,10 +4,11 @@
 @def BIG 50px;
 @def DIRECTION ltr;
 @eval RED com.google.gwt.libideas.resources.client.CSSResourceTest.red();
-
+@url BACKGROUND dataMethod;
 
 body {
   color: black;
+  background: BACKGROUND repeat-x;
   font-family: Helvetica, Arial, sans-serif;
   font-size: small;
   margin: 0px;
@@ -48,9 +49,9 @@ div {
 }
 
 @if user.agent gecko1_8 {
-	div.gecko18 {
-		color: blue;
-	}
+  div.gecko18 {
+    color: blue;
+  }
 }
 
 @if com.google.gwt.core.client.GWT.isScript() {

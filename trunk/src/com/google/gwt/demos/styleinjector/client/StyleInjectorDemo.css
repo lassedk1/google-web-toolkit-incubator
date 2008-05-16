@@ -1,6 +1,75 @@
+/*
+ * Copyright 2008 Google Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+ 
+/*
+ * Using CssResource, we can be as liberal with comments and whitespace as
+ * we want to, because the CSS will be minified.
+ */
+ 
+/*
+ * This is a static definition.
+ */
+@def H1COLOR white;
+
+/*
+ * This rule will define a macro that evaluates to a URL by which the named
+ * DataResource can be accessed.
+ */
+@url BACKGROUND background;
+
 body {
-  background: url('%background%') repeat-x;
+  /* This will expand to url('http://...'), or perhaps a data: url. */
+  background: BACKGROUND repeat-x;
 }
-h1{
- color:white;
+
+h1 {
+ color: H1COLOR;
+}
+
+p {
+  color: white;
+}
+
+/*
+ * Many stylesheets include somewhat baroque selector lists in order to
+ * prevent rules from being applied on some subset of browsers.  The @if
+ * rule allows for intent to be specified, while also allowing the overall
+ * amount of code delivered to the client to be minimized.
+ */
+@if !user.agent ie6 {
+  h1:after {
+    content: "Now with CssResource!";
+    font-size: small;
+    vertical-align: super;
+    text-shadow: 2px 2px 3px gold;
+  }
+}
+
+/*
+ * We'll have fun with advanced WebKit-based transforms, but other browsers
+ * won't pay the price for CSS they don't interpret.
+ */
+@if user.agent safari {
+  h1 {
+     /* The leading slash is needed to make this a valid css2 ident. */
+     \-webkit-transform: rotate(-10deg);
+  }
+
+  p {
+    position: relative;
+    top: 60px;
+  }
 }

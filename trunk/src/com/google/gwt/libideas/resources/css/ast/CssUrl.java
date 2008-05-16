@@ -13,9 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+package com.google.gwt.libideas.resources.css.ast;
 
 /**
- * Support package for manipulating CSS resources.
+ * A reference to a DataResource that results in a url expression being inserted
+ * into the generated CSS.
  */
-@com.google.gwt.util.PreventSpuriousRebuilds
-package com.google.gwt.libideas.resources.css;
+public class CssUrl extends CssDef {
+  public CssUrl(String key, String value) {
+    super(key, value);
+  }
+
+  @Override
+  public void traverse(CssVisitor visitor, Context context) {
+    visitor.visit(this, context);
+    visitor.endVisit(this, context);
+  }
+}
