@@ -34,10 +34,11 @@ import java.util.Date;
  */
 public class SimpleCalendarView extends CalendarView<DatePicker> {
 
-  /* note the fully-qualified extends classname above: a bug in JDK1.5 (at 
-   * least 1.5.0_10 & 12) can't find the symbol "Grid" if unqualified, despite
-   * the identical import (on line 25 as a write this, but subject to change).
-   *     --fabbott, 20mar08
+  /*
+   * note the fully-qualified extends classname above: a bug in JDK1.5 (at least
+   * 1.5.0_10 & 12) can't find the symbol "Grid" if unqualified, despite the
+   * identical import (on line 25 as a write this, but subject to change).
+   * --fabbott, 20mar08
    */
   class CellGrid extends com.google.gwt.widgetideas.table.client.overrides.Grid {
 
@@ -210,9 +211,11 @@ public class SimpleCalendarView extends CalendarView<DatePicker> {
     lastDisplayed.setTime(firstDisplayed.getTime());
 
     for (int i = 0; i < grid.cellList.size(); i++) {
+      if (i != 0) {
+        CalendarModel.shiftDays(lastDisplayed, 1);
+      }
       Cell cell = grid.cellList.get(i);
       cell.update(lastDisplayed);
-      CalendarModel.shiftDays(lastDisplayed, 1);
     }
   }
 
@@ -231,8 +234,9 @@ public class SimpleCalendarView extends CalendarView<DatePicker> {
     CellFormatter formatter = grid.getCellFormatter();
     // Set up title.
     for (int i = 0; i < CalendarModel.DAYS_IN_WEEK; i++) {
-      int shift = CalendarModel.getLocaleStartingDayOfWeek ();
-      int dayIdx = i + shift < CalendarModel.DAYS_IN_WEEK ? i + shift : i + shift - CalendarModel.DAYS_IN_WEEK;
+      int shift = CalendarModel.getLocaleStartingDayOfWeek();
+      int dayIdx = i + shift < CalendarModel.DAYS_IN_WEEK ? i + shift : i
+          + shift - CalendarModel.DAYS_IN_WEEK;
       grid.setText(0, i, getModel().formatDayOfWeek(dayIdx));
       formatter.setStyleName(0, i, Styles.DAY_TITLE);
     }
@@ -246,8 +250,9 @@ public class SimpleCalendarView extends CalendarView<DatePicker> {
     setStyleName(Styles.CALENDAR_VIEW);
     ColumnFormatter columnFormatter = grid.getColumnFormatter();
     for (int i = 0; i < 7; i++) {
-      int shift = CalendarModel.getLocaleStartingDayOfWeek ();
-      int dayIdx = i + shift < CalendarModel.DAYS_IN_WEEK ? i + shift : i + shift - CalendarModel.DAYS_IN_WEEK;
+      int shift = CalendarModel.getLocaleStartingDayOfWeek();
+      int dayIdx = i + shift < CalendarModel.DAYS_IN_WEEK ? i + shift : i
+          + shift - CalendarModel.DAYS_IN_WEEK;
       if (getModel().isWeekend(dayIdx)) {
         columnFormatter.addStyleName(i, Styles.WEEKEND);
       }
