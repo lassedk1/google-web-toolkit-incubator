@@ -18,11 +18,14 @@ package com.google.gwt.widgetideas.datepicker.client;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.libideas.logging.shared.Log;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusListener;
+import com.google.gwt.user.client.ui.HasAnimation;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -33,13 +36,16 @@ import com.google.gwt.widgetideas.client.event.EventHandlers;
 import com.google.gwt.widgetideas.client.event.FiresKeyDownEvents;
 import com.google.gwt.widgetideas.client.event.KeyDownEvent;
 import com.google.gwt.widgetideas.client.event.KeyDownHandler;
+import com.google.gwt.widgetideas.client.event.RenderingEvent;
+import com.google.gwt.widgetideas.client.event.RenderingHandler;
 
 import java.util.Date;
 
 /**
  * A simple date box.
  */
-public class DateBox extends Composite implements FiresKeyDownEvents {
+public class DateBox extends Composite implements FiresKeyDownEvents,
+    HasAnimation {
   private static class Styles {
     public static String DEFAULT = "gwt-DateBox";
   }
@@ -50,6 +56,7 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
   private TextBox box = new TextBox();
   private DatePicker picker;
   private DateTimeFormat formatter = DateTimeFormat.getMediumDateFormat();
+  private boolean allowDPShow = true;
 
   /**
    * Constructor.
@@ -74,13 +81,34 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
       public void onChange(ChangeEvent<Date> event) {
         setText(event.getNewValue());
         hideDatePicker();
+        allowDPShow = false;
+        DeferredCommand.addCommand(new Command() {
+          public void execute() {
+            allowDPShow = true;
+          }
+        });
+        box.setFocus(true);
       }
 
     });
+    
+    picker.addRenderingHandler(new RenderingHandler() {
+
+      public void onRendered(RenderingEvent event) {
+        allowDPShow = false;
+        DeferredCommand.addCommand(new Command() {
+          public void execute() {
+            allowDPShow = true;
+          }
+        });
+        box.setFocus(true);
+      }});
 
     box.addFocusListener(new FocusListener() {
       public void onFocus(Widget sender) {
-        showDatePicker();
+        if (allowDPShow) {
+          showDatePicker();
+        }
       }
 
       public void onLostFocus(Widget sender) {
@@ -108,6 +136,7 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
           case KEY_ESCAPE:
           case KEY_DOWN: {
             updateDateFromTextBox();
+            popup.hide();
             break;
           }
           default:
@@ -174,6 +203,10 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
     popup.hide();
   }
 
+  public boolean isAnimationEnabled() {
+    return popup.isAnimationEnabled();
+  }
+
   public void removeKeyDownHandler(KeyDownHandler handler) {
     handlers.remove(KeyDownEvent.class, handler);
   }
@@ -186,6 +219,10 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
    */
   public void setAccessKey(char key) {
     box.setAccessKey(key);
+  }
+
+  public void setAnimationEnabled(boolean enable) {
+    popup.setAnimationEnabled(enable);
   }
 
   /**

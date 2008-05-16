@@ -20,6 +20,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.libideas.logging.client.SimpleLogHandler;
 import com.google.gwt.libideas.logging.shared.Log;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -62,6 +63,7 @@ public class DatePickerDemo implements EntryPoint {
     Log.addLogHandler(handler);
 
     TabPanel panel = new TabPanel();
+    panel.getDeckPanel().setAnimationEnabled(true);
     LazyPanel.addTabListener(panel);
     master.add(panel);
     master.add(handler.getWidget());
@@ -111,7 +113,13 @@ public class DatePickerDemo implements EntryPoint {
 
       public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
         if (tabIndex == 3) {
-          start.setFocus(true);
+          Timer t = new Timer() {
+
+            @Override
+            public void run() {
+              start.setFocus(true);
+            }};
+            t.schedule(350);
         }
       }
 
@@ -124,7 +132,9 @@ public class DatePickerDemo implements EntryPoint {
     HorizontalPanel p = new HorizontalPanel();
     v.add(p);
     start = new DateBox();
+    start.setAnimationEnabled(true);
     final DateBox end = new DateBox();
+    end.setAnimationEnabled(true);
 
     start.addKeyDownHandler(new KeyDownHandler() {
       public void onKeyDown(KeyDownEvent e) {
