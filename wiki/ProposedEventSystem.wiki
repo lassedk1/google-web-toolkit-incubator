@@ -73,7 +73,7 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
   @Override
   public void onBrowserEvent(Event e){
     ...
-    case On_KEYDOWN:
+    case ON_KEYDOWN:
       fireEvent(new KeyDownEvent(e)); 
   }
   }}}
