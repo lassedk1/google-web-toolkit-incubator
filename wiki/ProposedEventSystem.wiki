@@ -2,7 +2,7 @@
 
 = Introduction =
 
-The current listener widget event system is very easy to use and understand, which are significant advantages. However, it has a reasonable number of disadvantages as well, therefore in this document we:
+The current listener widget event system is very easy to use and understand, which are significant advantages. However, it has certain disadvantages as well, therefore in this document we:
   * Detail the disadvantages of the current listeners system.
   * Explain the proposed handlers event system.
   * Revisit the disadvantages of the current listener system and show how the handler system addresses each one. 
@@ -35,9 +35,9 @@ The current listener widget event system is very easy to use and understand, whi
 = Proposed Handler System =
 == Overview ==
   * Each handler has a single method, such as `onClick`, `onMouseDown`, etc.
-  * Each handler has a single argument, which is exactly the handler’s corresponding event.  
-  * Widget has the following methods
-    * `protected HandlerRegistration addEventHandler(Class eventType, EventHandler handler)` 
+  * Each handler method has a single argument, which is exactly the handler’s corresponding event.  
+  * Widget has the following new methods
+    * `protected HandlerRegistration addEventHandler(EventHandler.Hook hook, EventHandler handler)` 
     * `protected void fireEvent(AbstractEvent event)`
   * `Widget` delegates all event handling to a new lazily initialized `HandlerManager` instance.
   * `EventHandler` is removed by calling `remove()` on the returned `HandlerRegistration`
