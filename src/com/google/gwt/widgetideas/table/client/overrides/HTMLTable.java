@@ -954,7 +954,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
    * @throws IndexOutOfBoundsException
    */
   public String getHTML(int row, int column) {
-    return DOM.getInnerHTML(getCellContainer(row, column, false));
+    return DOM.getInnerHTML(cellFormatter.getElement(row, column));
   }
 
   /**
@@ -982,7 +982,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
    * @throws IndexOutOfBoundsException
    */
   public String getText(int row, int column) {
-    return DOM.getInnerText(getCellContainer(row, column, false));
+    return DOM.getInnerText(cellFormatter.getElement(row, column));
   }
 
   /**
@@ -1157,7 +1157,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
     prepareCell(row, column);
     Element td = cleanCell(row, column, html == null);
     if (html != null) {
-      DOM.setInnerHTML(getCellContainer(td), html);
+      DOM.setInnerHTML(td, html);
     }
   }
 
@@ -1173,7 +1173,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
     prepareCell(row, column);
     Element td = cleanCell(row, column, text == null);
     if (text != null) {
-      DOM.setInnerText(getCellContainer(td), text);
+      DOM.setInnerText(td, text);
     }
   }
 
@@ -1201,13 +1201,13 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
 
       // Removes any existing widget.
       Element td = cleanCell(row, column, true);
-      DOM.setInnerHTML(getCellContainer(td), "");
+      DOM.setInnerHTML(td, "");
 
       // Logical attach.
       widgetMap.putWidget(widget);
 
       // Physical attach.
-      DOM.appendChild(getCellContainer(td), widget.getElement());
+      DOM.appendChild(td, widget.getElement());
 
       adopt(widget);
     }
@@ -1280,34 +1280,6 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
    */
   protected Element getBodyElement() {
     return bodyElem;
-  }
-
-  /**
-   * Get the container element from a cell. Subclasses can force all table cells
-   * to contain a container element. Widgets and text will be added to the
-   * container instead of the cell itself.
-   * 
-   * @param td the cell element
-   * @return the container element
-   */
-  protected Element getCellContainer(Element td) {
-    return td;
-  }
-
-  /**
-   * Get the container element from a cell.
-   * 
-   * @param row the cell row
-   * @param column the cell column
-   * @param raw do not check cell bounds
-   * @return the container element
-   */
-  protected Element getCellContainer(int row, int column, boolean raw) {
-    if (raw) {
-      return getCellContainer(cellFormatter.getRawElement(row, column));
-    } else {
-      return getCellContainer(cellFormatter.getElement(row, column));
-    }
   }
 
   /**
@@ -1419,8 +1391,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
    * @return returns whether a widget was cleared
    */
   protected boolean internalClearCell(Element td, boolean clearInnerHTML) {
-    Element container = getCellContainer(td);
-    Element maybeChild = DOM.getFirstChild(container);
+    Element maybeChild = DOM.getFirstChild(td);
     Widget widget = null;
     if (maybeChild != null) {
       widget = widgetMap.getWidget(maybeChild);
@@ -1432,7 +1403,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
     } else {
       // Otherwise, simply clear whatever text and/or HTML may be there.
       if (clearInnerHTML) {
-        DOM.setInnerHTML(container, clearText);
+        DOM.setInnerHTML(td, clearText);
       }
       return false;
     }
@@ -1561,7 +1532,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
    * @return the widget
    */
   private Widget getWidgetImpl(int row, int column) {
-    Element e = getCellContainer(row, column, true);
+    Element e = cellFormatter.getRawElement(row, column);
     Element child = DOM.getFirstChild(e);
     if (child == null) {
       return null;

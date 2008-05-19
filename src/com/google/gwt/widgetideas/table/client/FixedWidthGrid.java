@@ -26,8 +26,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A variation of the {@link com.google.gwt.widgetideas.table.client.overrides.Grid} that
- * resizes columns using a fixed table width.
+ * A variation of the
+ * {@link com.google.gwt.widgetideas.table.client.overrides.Grid} that resizes
+ * columns using a fixed table width.
  */
 public class FixedWidthGrid extends SortableGrid {
   /**
@@ -246,60 +247,6 @@ public class FixedWidthGrid extends SortableGrid {
   }
 
   /**
-   * Stretches or shrinks the column to automatically fit its data content.
-   * 
-   * @param column the column to fit
-   * @return the new column width
-   * @throws IndexOutOfBoundsException
-   */
-  public int autoFitColumnWidth(int column) {
-    int newWidth = getAutoFitColumnWidth(column);
-    setColumnWidth(column, newWidth);
-    return newWidth;
-  }
-
-  /**
-   * Calculate the minimum required width to fit the contents of the column, but
-   * do not actually change the column size.
-   * 
-   * @param column the column to fit
-   * @return the minimum column width
-   * @throws IndexOutOfBoundsException
-   */
-  public int getAutoFitColumnWidth(int column) {
-    // Ensure that the indices are not negative.
-    super.prepareColumn(column);
-
-    // Calculate difference between current width and desired width
-    int columnWidth = getColumnWidth(column);
-    int widthOffset = -1 * columnWidth;
-    int contentVisibleWidth = 0;
-    FixedWidthGridCellFormatter formatter = getFixedWidthGridCellFormatter();
-    for (int row = 0; row < numRows; row++) {
-      Element td = formatter.getRawElement(row, column);
-
-      // Get the visible width for all cells in the column
-      if (row == 0) {
-        int clientWidth = DOM.getElementPropertyInt(td, "clientWidth");
-        contentVisibleWidth = clientWidth - 2 * getCellPadding();
-      }
-
-      // Calculate hidden area for this cell
-      widthOffset = Math.max(widthOffset, DOM.getElementPropertyInt(
-          getCellContainer(td), "offsetWidth")
-          - contentVisibleWidth);
-
-      // Scroll back if needed
-      DOM.setElementPropertyInt(DOM.getFirstChild(td), "scrollLeft", 0);
-    }
-
-    // Set the new width
-    int newWidth = columnWidth + widthOffset;
-    newWidth = Math.max(newWidth, MIN_COLUMN_WIDTH);
-    return newWidth;
-  }
-
-  /**
    * Return the column width for a given column index. If a width has not been
    * assigned, the default width is returned.
    * 
@@ -406,18 +353,6 @@ public class FixedWidthGrid extends SortableGrid {
   }
 
   /**
-   * Get the container element from a cell. The container element is a span
-   * inside of the cell that actually holds the content.
-   * 
-   * @param td the cell element
-   * @return the container element
-   */
-  @Override
-  protected Element getCellContainer(Element td) {
-    return DOM.getFirstChild(td);
-  }
-
-  /**
    * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
    */
   @Override
@@ -494,7 +429,6 @@ public class FixedWidthGrid extends SortableGrid {
   protected Element insertCell(int row, int column) {
     Element tr = getRowFormatter().getElement(row);
     Element td = createCell();
-    appendCellContainer(td);
     DOM.insertChild(tr, td, column);
     return td;
   }
@@ -594,25 +528,6 @@ public class FixedWidthGrid extends SortableGrid {
         DOM.insertChild(bodyElem, trElems[i], 1);
       }
     }
-  }
-
-  /**
-   * Appends a div and span container to a cell. All cell content is actually
-   * added to the container, which allows for forceful control of the width of a
-   * column.
-   * 
-   * @param td the td element
-   */
-  private void appendCellContainer(Element td) {
-    // Set the enforced cell style
-    DOM.setInnerHTML(td, "");
-    DOM.setStyleAttribute(td, "overflow", "hidden");
-
-    // Add a tight span to hold the contents
-    Element span = DOM.createSpan();
-    DOM.setStyleAttribute(span, "padding", "0px");
-    DOM.setInnerHTML(span, "&nbsp;");
-    DOM.appendChild(td, span);
   }
 
   /**

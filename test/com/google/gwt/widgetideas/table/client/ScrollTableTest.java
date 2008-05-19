@@ -15,7 +15,6 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.widgetideas.client.WidgetTestBase;
 import com.google.gwt.widgetideas.table.client.ScrollTable.ScrollPolicy;
 
@@ -60,12 +59,6 @@ public class ScrollTableTest extends WidgetTestBase {
     assertEquals(ScrollTable.ResizePolicy.FILL_WIDTH, table.getResizePolicy());
     table.setResizePolicy(ScrollTable.ResizePolicy.FIXED_WIDTH);
     assertEquals(ScrollTable.ResizePolicy.FIXED_WIDTH, table.getResizePolicy());
-
-    // Auto fit enabled
-    table.setAutoFitEnabled(true);
-    assertTrue(table.isAutoFitEnabled());
-    table.setAutoFitEnabled(false);
-    assertFalse(table.isAutoFitEnabled());
 
     // Min width
     assertEquals(-1, table.getMinWidth());
@@ -118,30 +111,6 @@ public class ScrollTableTest extends WidgetTestBase {
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
-  }
-
-  /**
-   * Test autoFit width.
-   */
-  public void testAutoFit() {
-    // Initialize the table
-    FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
-    FixedWidthGrid dataTable = new FixedWidthGrid();
-    FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
-    ScrollTable table = getScrollTable(headerTable, dataTable, footerTable);
-    RootPanel.get().add(table);
-    for (int row = 0; row < 5; row++) {
-      for (int cell = 0; cell < 5; cell++) {
-        dataTable.setHTML(row, cell, row + " - " + cell);
-      }
-    }
-
-    // Auto-fit width
-    int autoFitWidth = dataTable.getAutoFitColumnWidth(1);
-    table.autoFitColumnWidth(1);
-    assertEquals(autoFitWidth, headerTable.getColumnWidth(1));
-    assertEquals(autoFitWidth, dataTable.getColumnWidth(1));
-    assertEquals(autoFitWidth, footerTable.getColumnWidth(1));
   }
 
   /**
