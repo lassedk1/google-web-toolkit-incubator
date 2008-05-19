@@ -75,7 +75,7 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
       return new RenderingOptions() {
         @Override
         public String getEndCell(int column) {
-          return "</span></td>";
+          return "</td>";
         }
 
         @Override
@@ -87,12 +87,12 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
       return new RenderingOptions() {
         @Override
         public String getEndCell(int column) {
-          return "</span></td>";
+          return "</td>";
         }
 
         @Override
         public String getStartCell(int column) {
-          return "<td><span>";
+          return "<td>";
         }
       };
     }
@@ -108,10 +108,10 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
     if (colStarts == null) {
       colStarts = new String[numColumns];
       for (int i = 0; i < numColumns; i++) {
-        colStarts[i] = "<td><span>";
+        colStarts[i] = "<td>";
       }
     }
-    colStarts[column] = "<td class='" + styleName + "'><span>";
+    colStarts[column] = "<td class='" + styleName + "'>";
   }
 
   @Override

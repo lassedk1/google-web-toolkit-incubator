@@ -161,63 +161,6 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     private ScrollTable table = null;
 
     /**
-     * Autofit the current cell's column plus any columns it spans.
-     */
-    public void autoFitCell() {
-      if (curCell == null || !table.isAutoFitEnabled()) {
-        return;
-      }
-
-      // Make sure we have a sacrifice column if needed
-      FixedWidthFlexTable headerTable = table.getHeaderTable();
-      FixedWidthGrid dataTable = table.getDataTable();
-      FixedWidthFlexTable footerTable = table.getFooterTable();
-      int colspan = DOM.getElementPropertyInt(curCell, "colSpan");
-      sacrificeColumn = curCellIndex + colspan;
-      ResizePolicy resizePolicy = table.getResizePolicy();
-      if (resizePolicy == ResizePolicy.FIXED_WIDTH
-          || resizePolicy == ResizePolicy.FILL_WIDTH) {
-        if (sacrificeColumn >= dataTable.getColumnCount()) {
-          return;
-        }
-      }
-
-      // Calculate new sizes and total difference
-      int[] newWidths = new int[colspan];
-      int diff = 0;
-      for (int i = 0; i < colspan; i++) {
-        int actualColumn = curCellIndex + i;
-        if (table.isColumnWidthGuaranteed(actualColumn)) {
-          newWidths[i] = dataTable.getColumnWidth(actualColumn);
-        } else {
-          newWidths[i] = dataTable.getAutoFitColumnWidth(actualColumn);
-        }
-        diff += (newWidths[i] - table.getColumnWidth(actualColumn));
-      }
-
-      // Redistribute the width
-      if (resizePolicy == ResizePolicy.FLOW) {
-        table.redistributeWidth(-diff, sacrificeColumn);
-        diff = 0;
-      } else if (resizePolicy != ResizePolicy.UNCONSTRAINED) {
-        diff += table.redistributeWidth(-diff, sacrificeColumn);
-      }
-
-      // Resize the columns
-      for (int i = 0; i < colspan; i++) {
-        int actualColumn = curCellIndex + i;
-        int unclaimedDiff = diff / (colspan - i);
-        newWidths[i] -= unclaimedDiff;
-        dataTable.setColumnWidth(actualColumn, newWidths[i]);
-        headerTable.setColumnWidth(actualColumn, newWidths[i]);
-        if (footerTable != null) {
-          footerTable.setColumnWidth(actualColumn, newWidths[i]);
-        }
-        diff -= unclaimedDiff;
-      }
-    }
-
-    /**
      * Returns the current cell.
      * 
      * @return the current cell
@@ -540,11 +483,6 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   }
 
   /**
-   * A boolean indicating whether or not column auto resizing is enabled.
-   */
-  private boolean autoFitEnabled = true;
-
-  /**
    * Columns which have guaranteed sizes.
    */
   private Set<Integer> guaranteedColumns = new HashSet<Integer>();
@@ -739,7 +677,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     DOM.sinkEvents(dataWrapper, Event.ONSCROLL);
     DOM.setEventListener(headerWrapper, this);
     DOM.sinkEvents(headerWrapper, Event.ONMOUSEMOVE | Event.ONMOUSEDOWN
-        | Event.ONMOUSEUP | Event.ONCLICK | Event.ONDBLCLICK);
+        | Event.ONMOUSEUP | Event.ONCLICK);
 
     // Listen for sorting events in the data table
     dataTable.addSortableColumnsListener(new SortableColumnsListener() {
@@ -784,21 +722,6 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     } catch (UnsupportedOperationException e) {
       // Ignore, this may not be implemented
     }
-    try {
-      setAutoFitEnabled(autoFitEnabled);
-    } catch (UnsupportedOperationException e) {
-      // Ignore, this may not be implemented
-    }
-  }
-
-  /**
-   * Stretches or shrinks the column to automatically fit its data content.
-   * 
-   * @param column the column to fit
-   * @throws IndexOutOfBoundsException
-   */
-  public void autoFitColumnWidth(int column) {
-    setColumnWidth(column, dataTable.getAutoFitColumnWidth(column));
   }
 
   /**
@@ -934,13 +857,6 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   }
 
   /**
-   * @return true if auto fitting is enabled, false if disabled
-   */
-  public boolean isAutoFitEnabled() {
-    return autoFitEnabled;
-  }
-
-  /**
    * @param column the column index
    * @return true if the column is sortable, false if it is not sortable
    */
@@ -1053,15 +969,6 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
           dataTable.hoverCell(null);
         }
         break;
-
-      // Auto resize the column on double click
-      case Event.ONDBLCLICK:
-        if (resizeWorker.getCurrentCell() != null) {
-          DOM.eventPreventDefault(event);
-          DOM.eventCancelBubble(event, true);
-          resizeWorker.autoFitCell();
-        }
-        break;
     }
   }
 
@@ -1104,16 +1011,6 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   public boolean remove(Widget child) {
     throw new UnsupportedOperationException(
         "This panel does not support remove()");
-  }
-
-  /**
-   * Enable or disable automatic column fitting via mouse clicks to the header
-   * cells.
-   * 
-   * @param autoFitEnabled true to enable column sorting via mouse events
-   */
-  public void setAutoFitEnabled(boolean autoFitEnabled) {
-    this.autoFitEnabled = autoFitEnabled;
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -39,21 +39,9 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
       + "withing its visible area so you do not see a horizontal scrollbar.";
 
   /**
-   * The description of hide a column.
-   */
-  private static final String DESC_HIDE = "Completely hide a column from view";
-
-  /**
    * The description of resizing a column.
    */
   private static final String DESC_RESIZE = "Manually set the absolute size of a column.";
-
-  /**
-   * The description of stretching a column.
-   */
-  private static final String DESC_STRETCH = "Stretch a column to automatically calculate the minimum column width "
-      + "required to display the contents of every cell in the data portion of "
-      + "the column.  The header cells are ignored when stretching a column.";
 
   /**
    * The column index box.
@@ -76,16 +64,6 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
   private CheckBox guaranteedCheck = new CheckBox("Guaranteed");
 
   /**
-   * The button used to hide a column.
-   */
-  private Button hideButton = new Button("Hide Column", this);
-
-  /**
-   * The button used to show a column.
-   */
-  private Button showButton = new Button("Show Column", this);
-
-  /**
    * The button used to resize a column.
    */
   private Button resizeButton = new Button("Resize Column", this);
@@ -99,11 +77,6 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
    * The button used to stretch a column.
    */
   private Button resizePolicyButton = new Button("Set Resize Policy", this);
-
-  /**
-   * The button used to stretch a column.
-   */
-  private Button stretchButton = new Button("Stretch to Fit", this);
 
   /**
    * Handle click events from the buttons in this panel.
@@ -122,16 +95,6 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
         } else {
           scrollTable.setColumnWidth(column, width);
         }
-      } else if (sender == stretchButton) {
-        // Stretch to fit contents
-        int column = Integer.parseInt(columnIndexBox.getText());
-        scrollTable.autoFitColumnWidth(column);
-      } else if (sender == hideButton) {
-        // Hide a column
-        Window.alert("Feature not available");
-      } else if (sender == showButton) {
-        // Show a column
-        Window.alert("Feature not available");
       } else if (sender == resizePolicyButton) {
         // Set the resize policy
         String selection = resizePolicyBox.getValue(resizePolicyBox.getSelectedIndex());
@@ -158,7 +121,7 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
 
   @Override
   protected Widget onInitialize() {
-    grid = new Grid(4, 4);
+    grid = new Grid(3, 4);
     grid.setCellSpacing(0);
     grid.setBorderWidth(1);
 
@@ -167,8 +130,6 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
     columnIndexBox.setText("0");
     grid.setHTML(0, 0, "<B>Column:</B>");
     grid.setWidget(0, 1, columnIndexBox);
-    grid.setWidget(0, 2, stretchButton);
-    grid.setHTML(0, 3, DESC_STRETCH);
 
     // Width options
     VerticalPanel widthContainer = new VerticalPanel();
@@ -181,14 +142,6 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
     grid.setWidget(1, 2, resizeButton);
     grid.setHTML(1, 3, DESC_RESIZE);
 
-    // hide options
-    columnWidthBox.setWidth("70px");
-    columnWidthBox.setText("10");
-    grid.setHTML(2, 0, "<BR>");
-    grid.setWidget(2, 1, showButton);
-    grid.setWidget(2, 2, hideButton);
-    grid.setHTML(2, 3, DESC_HIDE);
-
     // Fixed width options
     resizePolicyBox.addItem("Disabled");
     resizePolicyBox.addItem("Unconstrained");
@@ -197,10 +150,10 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
     resizePolicyBox.addItem("Fill");
     resizePolicyBox.addItem("Fill Disabled");
     resizePolicyBox.setSelectedIndex(3);
-    grid.setHTML(3, 0, "<BR>");
-    grid.setWidget(3, 1, resizePolicyButton);
-    grid.setWidget(3, 2, resizePolicyBox);
-    grid.setHTML(3, 3, DESC_FIXED_WIDTH);
+    grid.setHTML(2, 0, "<BR>");
+    grid.setWidget(2, 1, resizePolicyButton);
+    grid.setWidget(2, 2, resizePolicyBox);
+    grid.setHTML(2, 3, DESC_FIXED_WIDTH);
 
     return grid;
   }
