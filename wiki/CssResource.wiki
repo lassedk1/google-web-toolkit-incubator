@@ -101,7 +101,7 @@ myResources.css().mySpriteClass().apply(someElement)
     * @sprite is sensitive to the FooBundle in which the CSSResource is declared; a sibling ImageResource method named in the @sprite declaration will be used to compose the background sprite.
     * @sprite entries will be expanded to static CSS rules, possibly with data: urls
     * The only way to make this work on ie6 is to modify the structure of the element.  For @style (and maybe a general class of meta-styles), the CssResource member function returns a MetaStyle instance with an apply(Element e) method.  The contract is that the Element passed in will be modified to have the meta-style applied.  The effects of the application depend on the specifics of the meta-style.
-  * References to DataResources (TODO)
+  * References to DataResources (Working)
 {{{
 @url myBackgroundUrl siblingDataResource;
 
@@ -109,6 +109,7 @@ myResources.css().mySpriteClass().apply(someElement)
   background: myBackgroundUrl repeat-x;
 }
 }}}
+    * The identifier will be expanded to `url('some_url')`
   * BiDi (Open RFC):
     * Can this be accomplished using just the skinning support and some pre-cooked recipes?
     * Perhaps a magic @if predicate
