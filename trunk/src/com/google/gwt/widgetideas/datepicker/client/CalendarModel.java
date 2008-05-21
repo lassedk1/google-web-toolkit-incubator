@@ -18,7 +18,7 @@ package com.google.gwt.widgetideas.datepicker.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.widgetideas.datepicker.client.overrides.DateTimeConstants;
+import com.google.gwt.i18n.client.constants.DateTimeConstants;
 
 import java.util.Date;
 
