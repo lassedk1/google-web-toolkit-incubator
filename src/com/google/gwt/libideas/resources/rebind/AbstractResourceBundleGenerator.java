@@ -25,6 +25,7 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
+import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.libideas.resources.client.ResourceGeneratorType;
 import com.google.gwt.libideas.resources.client.ResourcePrototype;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
@@ -49,14 +50,14 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
       String typeName) throws UnableToCompleteException {
 
     // The TypeOracle knows about all types in the type system
-    final TypeOracle typeOracle = context.getTypeOracle();
+    TypeOracle typeOracle = context.getTypeOracle();
 
     // Get a reference to the type that the generator should implement
-    final JClassType sourceType = typeOracle.findType(typeName);
+    JClassType sourceType = typeOracle.findType(typeName);
 
     // Ensure that the requested type exists
     if (sourceType == null) {
-      logger.log(TreeLogger.ERROR, "Could not find requested typeName", null);
+      logger.log(TreeLogger.ERROR, "Could not find requested typeName");
       throw new UnableToCompleteException();
     }
 
@@ -70,12 +71,12 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
 
     // Pick a name for the generated class to not conflict. Enclosing class
     // names must be preserved.
-    final String generatedSimpleSourceName = generateSimpleSourceName(logger,
+    String generatedSimpleSourceName = generateSimpleSourceName(logger,
         context.getPropertyOracle(), sourceType.getName())
         + locale;
 
     // Begin writing the generated source.
-    final ClassSourceFileComposerFactory f = new ClassSourceFileComposerFactory(
+    ClassSourceFileComposerFactory f = new ClassSourceFileComposerFactory(
         sourceType.getPackage().getName(), generatedSimpleSourceName);
 
     // The generated class needs to be able to determine the module base URL
@@ -105,99 +106,29 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
     // If an implementation already exists, we don't need to do any work
     if (out != null) {
 
+      /*
+       * This associates the methods to implement with the class that will
+       * generate the implementations of those methods.
+       */
+      Map<Class<? extends ResourceGenerator>, List<JMethod>> taskList = createTaskList(
+          logger, typeOracle, sourceType);
+
       // We really use a SourceWriter since it's convenient
       final SourceWriter sw = f.createSourceWriter(context, out);
-
-      JMethod[] methods = sourceType.getMethods();
-
-      Map<Class<? extends ResourceGenerator>, List<JMethod>> resourceGenerators = new HashMap<Class<? extends ResourceGenerator>, List<JMethod>>();
 
       ResourceContext resourceContext = createResourceContext(logger, context,
           sourceType, generatedSimpleSourceName, sw);
 
-      // First assemble all of the ResourceGenerators that we may need for the
-      // type
-      for (JMethod m : methods) {
-        JClassType returnType = m.getReturnType().isClassOrInterface();
-        if (returnType == null) {
-          logger.log(TreeLogger.ERROR, "Cannot implement " + m.getName()
-              + ": not a class or interface.", null);
-          throw new UnableToCompleteException();
-        }
+      // Run the ResourceGenerators to generate implementations of the methods
+      for (Map.Entry<Class<? extends ResourceGenerator>, List<JMethod>> entry : taskList.entrySet()) {
 
-        Class<? extends ResourceGenerator> clazz = findResourceGenerator(
-            logger, typeOracle, m);
-        List<JMethod> generatorMethods;
-        if (resourceGenerators.containsKey(clazz)) {
-          generatorMethods = resourceGenerators.get(clazz);
-        } else {
-          generatorMethods = new ArrayList<JMethod>();
-          resourceGenerators.put(clazz, generatorMethods);
-        }
+        ResourceGenerator rg = instantiateResourceGenerator(logger,
+            entry.getKey());
+        rg.init(logger.branch(TreeLogger.DEBUG,
+            "Initializing ResourceGenerator"), resourceContext);
 
-        generatorMethods.add(m);
-      }
-
-      // Run the ResourceGenerator code
-      for (Map.Entry<Class<? extends ResourceGenerator>, List<JMethod>> entry : resourceGenerators.entrySet()) {
-        Class<? extends ResourceGenerator> generatorClass = entry.getKey();
-        List<JMethod> generatorMethods = entry.getValue();
-
-        // Create the ResourceGenerator
-        ResourceGenerator rg;
-        try {
-          rg = generatorClass.newInstance();
-          rg.init(logger.branch(TreeLogger.DEBUG,
-              "Initializing ResourceGenerator", null), resourceContext);
-        } catch (InstantiationException e) {
-          logger.log(TreeLogger.ERROR,
-              "Unable to initialize ResourceGenerator", e);
-          throw new UnableToCompleteException();
-        } catch (IllegalAccessException e) {
-          logger.log(TreeLogger.ERROR,
-              "Unable to instantiate ResourceGenerator. "
-                  + "Does it have a public default constructor?", e);
-          throw new UnableToCompleteException();
-        }
-
-        // Prepare the ResourceGenerator by telling it all methods that it is
-        // expected to produce.
-        for (JMethod m : generatorMethods) {
-          rg.prepare(logger.branch(TreeLogger.DEBUG, "Preparing method "
-              + m.getName(), null), m);
-        }
-
-        // Write all field values
-        rg.writeFields(logger.branch(TreeLogger.DEBUG, "Writing fields", null));
-
-        // Create the instance variables in the IRB subclass by calling
-        // writeAssignment() on the ResourceGenerator
-        for (JMethod m : generatorMethods) {
-          // Strip off all but the access modifiers
-          sw.print(m.getReadableDeclaration(false, true, true, true, true));
-          sw.println(" {");
-          sw.indent();
-
-          String fieldName = (m.getName() + "_instance").toUpperCase();
-          fieldNames.add(fieldName);
-          sw.println("return " + fieldName + ";");
-
-          sw.outdent();
-          sw.println("}");
-
-          sw.print("private final "
-              + m.getReturnType().getQualifiedSourceName() + " " + fieldName
-              + " = ");
-
-          rg.writeAssignment(logger.branch(TreeLogger.DEBUG,
-              "Writing assignment for " + m.getName(), null), m);
-
-          sw.println(";");
-        }
-
-        // Finalize the ResourceGenerator
-        rg.finish(logger.branch(TreeLogger.DEBUG,
-            "Finishing ResourceGenerator", null));
+        invokeSingleGenerator(logger.branch(TreeLogger.DEBUG,
+            "Invoking ResourceGenerator"), rg, entry.getValue(), sw, fieldNames);
       }
 
       // Complete the IRB contract
@@ -213,16 +144,18 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
       sw.outdent();
       sw.println("}");
 
-      // Allow map-style lookup
+      // Use a switch statement as a fast map
       sw.println("public native ResourcePrototype "
           + "getResource(String name) /*-{");
       sw.indent();
       sw.println("switch (name) {");
       sw.indent();
-      for (JMethod m : methods) {
-        sw.println("case '" + m.getName() + "': return this.@"
-            + f.getCreatedClassName() + "::"
-            + (m.getName() + "_instance").toUpperCase() + ";");
+      for (List<JMethod> list : taskList.values()) {
+        for (JMethod m : list) {
+          sw.println("case '" + m.getName() + "': return this.@"
+              + f.getCreatedClassName() + "::"
+              + (m.getName() + "_instance").toUpperCase() + ";");
+        }
       }
       sw.outdent();
       sw.println("}");
@@ -254,6 +187,71 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
   protected abstract String generateSimpleSourceName(TreeLogger logger,
       PropertyOracle oracle, String sourceType)
       throws UnableToCompleteException;
+
+  /**
+   * Given an ImmutableResourceBundle subtype, compute which ResourceGenerators
+   * should implement which methods.
+   */
+  private Map<Class<? extends ResourceGenerator>, List<JMethod>> createTaskList(
+      TreeLogger logger, TypeOracle typeOracle, JClassType sourceType)
+      throws UnableToCompleteException {
+
+    Map<Class<? extends ResourceGenerator>, List<JMethod>> toReturn = new HashMap<Class<? extends ResourceGenerator>, List<JMethod>>();
+
+    JClassType bundleType = typeOracle.findType(ImmutableResourceBundle.class.getName());
+    assert bundleType != null;
+
+    JClassType resourcePrototypeType = typeOracle.findType(ResourcePrototype.class.getName());
+    assert resourcePrototypeType != null;
+
+    // Accumulate as many errors as possible before failing
+    boolean throwException = false;
+
+    // Using overridable methods allows composition of interface types
+    for (JMethod m : sourceType.getOverridableMethods()) {
+      JClassType returnType = m.getReturnType().isClassOrInterface();
+
+      if (m.getEnclosingType().equals(bundleType)) {
+        // Methods that we must generate, but that are not resources
+        continue;
+
+      } else if (!m.isAbstract()) {
+        // Covers the case of an abstract class base type
+        continue;
+
+      } else if (returnType == null
+          || !returnType.isAssignableTo(resourcePrototypeType)) {
+        // Primitives and random other abstract methods
+        logger.log(TreeLogger.ERROR, "Unable to implement " + m.getName()
+            + " because it does not derive from "
+            + resourcePrototypeType.getQualifiedSourceName());
+        throwException = true;
+        continue;
+      }
+
+      try {
+        Class<? extends ResourceGenerator> clazz = findResourceGenerator(
+            logger, typeOracle, m);
+        List<JMethod> generatorMethods;
+        if (toReturn.containsKey(clazz)) {
+          generatorMethods = toReturn.get(clazz);
+        } else {
+          generatorMethods = new ArrayList<JMethod>();
+          toReturn.put(clazz, generatorMethods);
+        }
+
+        generatorMethods.add(m);
+      } catch (UnableToCompleteException e) {
+        throwException = true;
+      }
+    }
+
+    if (throwException) {
+      throw new UnableToCompleteException();
+    }
+
+    return toReturn;
+  }
 
   /**
    * Given a JMethod, find the a ResourceGenerator class that will be able to
@@ -296,5 +294,66 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
     }
 
     throw new UnableToCompleteException();
+  }
+
+  /**
+   * Utility method to construct a ResourceGenerator that logs errors.
+   */
+  private <T extends ResourceGenerator> T instantiateResourceGenerator(
+      TreeLogger logger, Class<T> generatorClass)
+      throws UnableToCompleteException {
+    try {
+      return generatorClass.newInstance();
+    } catch (InstantiationException e) {
+      logger.log(TreeLogger.ERROR, "Unable to initialize ResourceGenerator", e);
+      throw new UnableToCompleteException();
+    } catch (IllegalAccessException e) {
+      logger.log(TreeLogger.ERROR, "Unable to instantiate ResourceGenerator. "
+          + "Does it have a public default constructor?", e);
+      throw new UnableToCompleteException();
+    }
+  }
+
+  private void invokeSingleGenerator(TreeLogger logger, ResourceGenerator rg,
+      List<JMethod> generatorMethods, SourceWriter sw, List<String> fieldNames)
+      throws UnableToCompleteException {
+
+    // Prepare the ResourceGenerator by telling it all methods that it is
+    // expected to produce.
+    for (JMethod m : generatorMethods) {
+      rg.prepare(logger.branch(TreeLogger.DEBUG, "Preparing method "
+          + m.getName(), null), m);
+    }
+
+    // Write all field values
+    rg.writeFields(logger.branch(TreeLogger.DEBUG, "Writing fields", null));
+
+    // Create the instance variables in the IRB subclass by calling
+    // writeAssignment() on the ResourceGenerator
+    for (JMethod m : generatorMethods) {
+      // Strip off all but the access modifiers
+      sw.print(m.getReadableDeclaration(false, true, true, true, true));
+      sw.println(" {");
+      sw.indent();
+
+      String fieldName = (m.getName() + "_instance").toUpperCase();
+      fieldNames.add(fieldName);
+      sw.println("return " + fieldName + ";");
+
+      sw.outdent();
+      sw.println("}");
+
+      sw.print("private final " + m.getReturnType().getQualifiedSourceName()
+          + " " + fieldName + " = ");
+
+      rg.writeAssignment(logger.branch(TreeLogger.DEBUG,
+          "Writing assignment for " + m.getName(), null), m);
+
+      sw.println(";");
+    }
+
+    // Finalize the ResourceGenerator
+    rg.finish(logger.branch(TreeLogger.DEBUG, "Finishing ResourceGenerator",
+        null));
   }
 }
