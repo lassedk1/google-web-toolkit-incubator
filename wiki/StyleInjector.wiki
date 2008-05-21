@@ -10,36 +10,35 @@
 In your gwt.xml file:
 {{{
 <inherits name="com.google.gwt.libideas.ImmutableResources" />
+<inherits name="com.google.gwt.libideas.StyleInjector" />
 }}}
 
 Define your ImmutableResourceBundle:
 {{{
 public interface Resources extends ImmutableResourceBundle {
   public static final Resources INSTANCE =
-      (Resources) GWT.create(Resources.class);
+      GWT.create(Resources.class);
 
-  /**
-   * @gwt.resource myBackground.png
-   */
-  public DataResource background();
+  @Resource("myBackground.png")
+  public DataResource backgroundFunction();
 
-  /**
-   * @gwt.resource myCSS.css
-   */
-  public TextResource css();
+  @Resource("myCss.css")
+  public CssResource css();
 }
 }}}
 
 The CSS contents:
 {{{
+/* The format is @url <id> <function name>; */
+@url backgroundUrl backgroundFunction;
 body {
-  background: url('%background%') repeat-x;
+  background: backgroundUrl repeat-x;
 }
 }}}
 
 In your `onModuleLoad`:
 {{{
-StyleInjector.injectStylesheet(Resources.INSTANCE.css().getText(), Resources.INSTANCE);
+StyleInjector.injectStylesheet(Resources.INSTANCE.css().getText());
 }}}
 
 
