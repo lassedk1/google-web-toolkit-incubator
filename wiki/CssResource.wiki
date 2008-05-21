@@ -52,6 +52,12 @@ background: userBackground;
     * Generated implementations of CSSResources can do fast string slicing since offsets of substitutions are known at compile time.
     * Allow an @import statement for unqualified names?
     * CSSResource.getText() or CSSResource.inject() necessary
+  * Compile-time import (TODO)
+{{{
+@import cssResourceFunctionName;
+}}}
+    * This will cause compile-time substitution (a-la gcc #import) of one CssResource into another.
+    * The @import statement will only work for other CssResources, not for URLs at runtime, since the `.gwt.xml` or StyleInjector can be used in those cases.
   * Runtime structural changes (Working)
 {{{
 /* Runtime evaluation in a static context */
