@@ -17,7 +17,6 @@ package com.google.gwt.user.client.ui;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.PopupPanel.AnimationType;
 import com.google.gwt.user.client.ui.SuggestOracle.Callback;
 import com.google.gwt.user.client.ui.SuggestOracle.Request;
 import com.google.gwt.user.client.ui.SuggestOracle.Response;
@@ -216,7 +215,6 @@ public final class SuggestBoxOverride extends Composite implements HasText,
       }
     };
     dropDown.setStyleName("gwt-SuggestBoxPopup");
-    dropDown.setAnimationType(AnimationType.ONE_WAY_CORNER);
     return dropDown;
   }
 
