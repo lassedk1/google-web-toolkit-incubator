@@ -128,6 +128,7 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
     case ON_KEYDOWN:
       fireEvent(new KeyDownEvent(e)); 
   }
+}
 }}}
 
 == Advanced widget creation ==
@@ -144,7 +145,7 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
   * `abstract void fire(EventHandler handler)`
    * allows events to specify correct handler method.
   * `abstract EventHook getEventHook()`
-   * allows event instances to specify the correct static event hook to use.
+   * allows event instances to specify the static event hook.
 
 === Steps to create a custom event ===
   # Define a new event class
