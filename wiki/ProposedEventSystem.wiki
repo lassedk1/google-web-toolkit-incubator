@@ -30,6 +30,7 @@ The current listener widget event system is very easy to use and understand, whi
     clickListeners.add(handler);
 }}} 
   # All event senders must be widgets.
+  # All widget creators must manage when to sink events, which is a very common source of bugs.
   
 
 = Proposed Handler System =
@@ -79,20 +80,9 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
   }
   }}}
 
-===  Sample declaration of a handler ===
+===  Sample declaration of a new handler interface ===
 {{{
 interface KeyDownHandler extends EventHandler {
-  public static Hook HOOK = new Hook(){
-
-    public void hookEvent(Object source, EventHandler firstHandler) {
-      // Sanity checks
-      assert(firstHandler instanceof KeyDownHandler);
-      assert(source instanceof FiresKeyDownEvents);
-
-      // If source implements sink events, sink ON_KEYDOWN
-      BrowserEvent.trySinkEvents(source, Event.ON_KEYDOWN);
-    }
-  }
   public void onKeyDown(KeyDownEvent event);
 } 
 }}}
@@ -100,12 +90,25 @@ interface KeyDownHandler extends EventHandler {
 === Sample declaration of an event ===
 {{{
 class KeyDownEvent extends KeyEvent {
-  public HandlerHook getHandlerHook() {
-    return KeyDownHandler.HOOK;
+ public static Hook HOOK = new Hook(){
+    public void hookEvent(HandlerRegistration registration) {
+      // Sanity checks
+      assert(registration.getHandler() instanceof KeyDownHandler);
+      assert(registration.getSource() instanceof FiresKeyDownEvents);
+
+      if(registration.isFirstHandlerForEvent()){
+        // If source implements sink events, sink ON_KEYDOWN
+        BrowserEvent.trySinkEvents(source, Event.ON_KEYDOWN);
+      }
+    }
+  }
+
+  public HandlerHook getEventHook() {
+    return HOOK;
   }
   
   public void fire(EventHandler handler) {
-    ((KeyDownHandler).onKeyDown(this));
+    ((KeyDownHandler)handler).onKeyDown(this));
   }
 }
 }}}
@@ -118,5 +121,6 @@ class KeyDownEvent extends KeyEvent {
 ||(3) Excess unused listener fields || A single handlers field is used ||
 ||(4) Excess events are sunk || Only the events that are needed are sunk ||
 ||(5) Extra blank methods || No extra methods needed ||
-||(6) Boiler plate code || Between `Widget` enhancements and `EventHandlers` classes, most boiler plate code removed ||
-|| (7) All event senders must be widgets || Senders must implement the `Fires*` interface
+||(6) Boiler plate code || Between `Widget` enhancements and `HandlerManager` classes, most boiler plate code removed ||
+|| (7) All event senders must be widgets || Senders simply must implement the `Fires*` interface ||
+|| (8) All widgets must manage sinking of events || All standard widgets have events sunk automatically ||
