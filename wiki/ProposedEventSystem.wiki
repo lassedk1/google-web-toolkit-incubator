@@ -2,24 +2,28 @@
 
 The current listener widget event system is very easy to use and understand, which are significant advantages. However, it has certain disadvantages as well, therefore in this document we:
   * Detail the disadvantages of the current listeners system.
-  * Explain the proposed handlers event system.
+  * Explain the proposed event handler system.
   * Revisit the disadvantages of the current listener system and show how the handler system addresses each one. 
 
 
 
 = Disadvantages of current listener system =
-  # We cannot add extra information about an event. 
-    * For example, we could not add native events to the current `Click` or `Change` listeners.
+  # We cannot add extra information about an event
+    * Why: Because modifying an interface is a breaking change.
+    * Example: We could not add native events to the current `Click` or `Change` listeners.
   # We cannot add a new feature to a current listener. 
-    * For example, `TreeListener` cannot be expanded to allow more tree events.
+    * Why: Because modifying an interface is still a breaking change.
+    * Example: `TreeListener` cannot be expanded to allow more tree events.
   # Many widgets do not have any listeners, and yet have three or four listeners fields that need to be null initialized. 
-    * For example, most `Label` widgets have no events, yet have three fields that need to be null initialized.
+    * Example: Most `Label` widgets have no events, yet have three fields that need to be null initialized.
   # We have to sink unnecessary events on widgets. 
-    * For example to listen to a mouse down event, mouse move events are also sunk. 
-  # Our users end up with many blank empty event methods or need to extend from Adapter classes. 
-    * For example, to add a mouse up listener, you end up with empty mouse down and mouse move methods as well.
+    * Why: Because a widget cannot know what handler methods the user requires
+    * Example: To listen to a mouse down event, mouse move events are also sunk. 
+  # Our users end up with many empty event methods or need to extend from Adapter classes. 
+    * Why: Users only usually care about a subset of  listener methods defined in the interface.
+    * Example: to add a mouse up listener, you end up with empty mouse down and mouse move methods as well.
   # We repeat the same lines of boiler plate code in many different widgets to check if the listeners are instantiated and instantiate them. 
-   * For example:
+   * Example:
 {{{
     if(clickListeners == null) {
       sinkEvents(Event.ON_CLICK);
@@ -28,18 +32,41 @@ The current listener widget event system is very easy to use and understand, whi
     clickListeners.add(handler);
 }}} 
   # All event senders must be widgets.
-  # All widget creators must manage when to sink events, which is a very common source of bugs.
+    * Why: because interface sender is defined as a `Widget`.
+  # All widget creators must sink their own events.
   
 
 = Proposed Handler System =
-== Overview ==
-  * Each handler has a single method, such as `onClick`, `onMouseDown`, etc.
-  * Each handler method has a single argument, which is exactly the handler’s corresponding event.  
-  * `Widget` has the following new methods
-    * `protected HandlerRegistration addEventHandler(EventHook hook, EventHandler handler)` 
-    * `protected void fireEvent(AbstractEvent event)`
-  * `Widget` delegates all event handling to a new lazily initialized `HandlerManager` instance.
-  * `EventHandler` is removed by calling `removeHandler()` on the returned `HandlerRegistration`
+== API exposed by `Widgets` == 
+  * New classes
+    * `AbstractEvent`
+      * Base class for all events
+      * New Event classes  
+        * `ClickEvent`
+        * `KeyDownEvent`
+        * ...
+      * 'HandlerRegistration`
+        *  Bookkeeping class to allow handlers to be removed from widgets.
+    * New Interfaces
+      * `EventHandler`
+        * Base interface for all handlers
+        * New handler interfaces
+          * 'ClickHandler'
+          * 'KeyDownHandler'
+          * ...
+      * For each handler, we also have a source
+        * `FiresClickEvents`
+        * `FiresKeyDownEvents`
+        * ...
+  * Functionality
+    * Each handler has a single method with a single argument, such as `onClick(ClickEvent event)` or `onKeyDown(KeyDownEvent event)
+    * Each widget supporting an event type has a method to add a handler of the form`HandlerRegistration addClickHandler(ClickHandler handler)
+ 
+
+
+
+  
+ 
 
 == Class Diagram ==
 http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/HandlerDesign.jpg
