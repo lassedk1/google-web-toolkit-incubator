@@ -242,25 +242,25 @@ public class KeyDownEvent extends KeyEvent {
 http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/HandlerDesign.jpg
  
 == How it actually works ==
- * Adding event handler *myHandler* as a handler for *MyEvent*
+ * Adding event handler *myHandler* as a handler for `MyEvent`
    # In `Widget`
-    # ensures `HandlerManager` handlerManager instance exists
-    # calls `handlerManager.addEventHandler(MyEvent.HOOK, myHandler)`
+    * ensure `HandlerManager` *handlerManager* instance exists
+    * call `handlerManager.addEventHandler(MyEvent.HOOK, myHandler)`
    # In `HandlerManager`  
-    # stores the handler in a hash map indexed by the given event hook
-    # calls `EventHook.hookEvent` for event specific setup
- * Firing a *MyEvent* event
+    * store *myHandler* in a map indexed by event hook
+    * call `EventHook.hookEvent` for event specific setup
+ * Firing a `MyEvent` event
    # In 'Widget'
-    # creates new `MyEvent` myEvent instance
-    # delegates firing myEvent to `handlerManager.fireEvent(MyEvent event)
+    * create new `MyEvent` *myEvent* instance
+    * call `handlerManager.fireEvent(myEvent)`
    # In `HandlerManager`
-    # sets the correct sender field in myEvent
-    # gets the correct event hook from myEvent
-    # retrieves the list of handlers associate with myEvent's event hook
-    # calls myEvent.fireEvent(handler) on each handler. 
+    * set the correct sender field in *myEvent*
+    * get the correct event hook from *myEvent*, in specific `MyEvent.HOOK`
+    * retrieve the list of handlers associated with `MyEvent.HOOK`
+    * call  `myEvent.fireEvent(handler)` on each handler in the list. 
    # In 'MyEvent'
-    # casts the handler to be`MyEventHandler`
-    # calls correct handler method on `MyEventHandler`, passing in the current event.
+    * cast the current handler as a`MyEventHandler`
+    * call correct handler method on the current handler, passing in the current event.
  
 
  
