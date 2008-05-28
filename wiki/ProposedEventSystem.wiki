@@ -37,44 +37,50 @@ The current listener widget event system is very easy to use and understand, whi
   
 
 = Proposed Handler System =
-== API exposed by `Widgets` == 
-  * New classes
+== API exposed by widgets == 
+This it the API that will be used by all GWT widget users. 
+
+=== Class overview ===
+  * Classes
     * `AbstractEvent`
       * Base class for all events
       * New Event classes  
         * `ClickEvent`
         * `KeyDownEvent`
         * ...
-      * 'HandlerRegistration`
-        *  Bookkeeping class to allow handlers to be removed from widgets.
-    * New Interfaces
-      * `EventHandler`
-        * Base interface for all handlers
-        * New handler interfaces
-          * 'ClickHandler'
-          * 'KeyDownHandler'
-          * ...
-      * For each handler, we also have a source
-        * `FiresClickEvents`
-        * `FiresKeyDownEvents`
+    * `HandlerRegistration`
+      *  Bookkeeping class to allow handlers to be removed from widgets.
+  * Interfaces
+    * `EventHandler`
+      * Base interface for all handlers
+      * New handler interfaces
+        * `ClickHandler`
+        * `KeyDownHandler`
         * ...
+    * For each handler, we also have a source
+      * `FiresClickEvents`
+      * `FiresKeyDownEvents`
+      * ...
   * Functionality
-    * Each handler has a single method with a single argument, such as `onClick(ClickEvent event)` or `onKeyDown(KeyDownEvent event)
-    * Each widget supporting an event type has a method to add a handler of the form`HandlerRegistration addClickHandler(ClickHandler handler)
- 
+    * Each handler has a single method with a single argument, such as `onClick(ClickEvent event)` or `onKeyDown(KeyDownEvent event)`
+    * Each widget supporting an event type has a method to add a handler of the form `HandlerRegistration addClickHandler(ClickHandler handler)
+    * To remove a handler, you must save the handler registration and call `registration.removeHandler()`
 
+== Widget Developer API ==
+This is the API that will be used by widget creators who are creating and packaging their own widgets.
 
+=== Class overview ===
+  * Classes
+    * `EventHook`
+      * Event hook is used to allow the widget to hook a handler to a specific event.
+      * For each event type, we have a specific hook, such as `ClickEvent.HOOK`, `KeyDownEvent.Hook`
 
-  
- 
+  * Widget enhancements
+    * `HandlerRegistration addEventHandler(EventHook hook, EventHandler handler)`
+    * `void fireEvent(AbstractEvent event)`
 
-== Class Diagram ==
-http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/HandlerDesign.jpg
-
-== Sample code ==
 
 === Sample use of a handler ==
-To use a handler, you must be able to use the classes in *blue* above.
 {{{
  DateBox start = new DateBox();
  start.addKeyDownHandler(new KeyDownHandler() {
@@ -85,6 +91,15 @@ To use a handler, you must be able to use the classes in *blue* above.
       }
     });
 }}}
+
+
+ 
+===
+
+== Class Diagram ==
+http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/HandlerDesign.jpg
+ 
+
 
 
 === Sample widget implementation of a handler==
