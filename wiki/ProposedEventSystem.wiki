@@ -55,9 +55,11 @@ This it the API that will be used by all GWT widget users.
     * `ClickHandler`
     * `KeyDownHandler`
     * ...
-  * For each handler, we also have a source
+  * For each handler, we also have a source with a single add method
    * `FiresClickEvents`
+    * `HandlerRegistation addClickHandler(ClickEvent event)`
    * `FiresKeyDownEvents`
+    * `HandlerRegistration addKeyDownHandler(KeyDownEvent event)`
    * ...
 === How it works ===
   # Each handler has a single method with a single argument, such as `onClick(ClickEvent event)` or `onKeyDown(KeyDownEvent event)`
