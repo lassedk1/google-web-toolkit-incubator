@@ -1,5 +1,3 @@
-#summary DRAFT Proposed event system for widgets
-
 = Introduction =
 
 The current listener widget event system is very easy to use and understand, which are significant advantages. However, it has certain disadvantages as well, therefore in this document we:
