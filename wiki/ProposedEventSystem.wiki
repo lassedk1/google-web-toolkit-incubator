@@ -121,14 +121,16 @@ This code shows how to wire a `DateBox` to be able to handler a `KeyDownHandler`
 public class DateBox extends Composite implements FiresKeyDownEvents {
 ...
 
- // Method from FiredKeyDownEvents
+ // implements FiresKeyDownEvents.addKeyDownHandler
  public void addKeyDownHandler(KeyDownHandler handler) {
+    // Widget's addEventHandler method. Registers the current handler as a KeyDownEvent handler.
     addEventHandler(KeyDownEvent.HOOK, handler);
  }
   @Override
   public void onBrowserEvent(Event e){
     ...
     case ON_KEYDOWN:
+      // Widget's fireEvent method. It will call each handler registered to KeyDownEvent.
       fireEvent(new KeyDownEvent(e)); 
   }
 }
@@ -142,43 +144,45 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
 
 === Protected methods ===
  * `EventHook`
-  *`void hookEvent(HandlerManager manager, EventHandler handler)`
+  * `void hookEvent(HandlerManager manager, EventHandler handler)`
    * setup method that is called when an event handler is added to a widget. Allows the handler system to take care of sinking events when appropriate.
  * `AbstractEvent`
-  * `abstract void fire(EventHandler handler)`
+  * `protected abstract void fire(EventHandler handler)`
    * allows events to specify correct handler method.
   * `abstract EventHook getEventHook()`
    * allows event instances to specify the static event hook.
 
 === Steps to create a custom event ===
+This is an event that is triggered when the user becomes happy. Will be implemented in webkit 10.
+
   # Define a new event class
 {{{
-public class KeyDownEvent extends KeyEvent{
+public class HappyEvent extends AbstractEvent{
   ...
 }
 }}}
   # Define a new handler and fires class for the event class.
 {{{
-interface KeyDownHandler extends EventHandler {
-  public void onKeyDown(KeyDownEvent event);
+interface HappyHandler extends EventHandler {
+  public void onHappiness(HappyEvent event);
 }
 
-interface FiresKeyDownEvents {
-  public void addKeyDownHandler(KeyDownHandler handler);
+interface FiresHappyEvents {
+  public void addHappyHandler(HappyHandler handler);
 }
 }}}
-  # Wire up the `KeyDownEvent.fire` method
+  # Wire up the `HappyEvent.fire` method
 {{{
-class KeyDownEvent extends KeyEvent {
-  public void fire(EventHandler handler) {
-    ((KeyDownHandler)handler).onKeyDown(this);
+class HappyEvent extends MoodEvent {
+  protected void fire(EventHandler handler) {
+    ((HappyHandler)handler).onHappiness(this);
   }
   ...
 }
 }}}
   # Add a unique event hook
 {{{
-class KeyDownEvent extends KeyEvent {
+class HappinessEvent extends MoodEvent {
   public static EventHook HOOK = new EventHook();
  
   public EventHook getEventHook(){
@@ -192,37 +196,38 @@ class KeyDownEvent extends KeyEvent {
 public void hookEvent(EventManager eventManager, EventHandler handler) {
   // Sanity checks
   Object sender = eventManager.getEventSource();
-  assert(handler instanceof KeyDownHandler);
-  assert(sender instanceof FiresKeyDownEvents);
+  assert(handler instanceof HappyHandler);
+  assert(sender instanceof FiresHappyEvents);
 
   if(eventManager.isFirstHandler(handler){
-    // If source implements sink events, sink ON_KEYDOWN
-    BrowserEvent.trySinkEvents(source, Event.ON_KEYDOWN);
+    // If source implements sink events, sink it. 
+    // No, ON_HAPPY doesn't exist, just run with it...
+    BrowserEvent.trySinkEvents(source, Event.ON_HAPPY);
   }
 }
 }}}
 
 === Sample event creation === 
+
 {{{
-public interface KeyDownHandler extends EventHandler {
-  public void onKeyDown(KeyDownEvent event);
+public interface HappyHandler extends EventHandler {
+  public void onHappy(HappyEvent event);
 }
 
-public interface FiresKeyDownEvents {
-  public void addKeyDownHandler(KeyDownHandler handler);
+public interface FiresHappyEvents {
+  public void addHappyHandler(HappyHandler handler);
 }
 
-public class KeyDownEvent extends KeyEvent {
+public class HappyEvent extends KeyEvent {
   public static EventHook HOOK = new EventHook(){
     public void hookEvent(EventManager eventManager, EventHandler handler) {
       // Sanity checks
       Object sender = eventManager.getEventSource();
-      assert(handler instanceof KeyDownHandler);
-      assert(sender instanceof FiresKeyDownEvents);
+      assert(handler instanceof HappyHandler);
+      assert(sender instanceof FiresHappyEvents);
 
       if(eventManager.isFirstHandler(handler){
-        // If source implements sink events, sink ON_KEYDOWN
-        BrowserEvent.trySinkEvents(source, Event.ON_KEYDOWN);
+        BrowserEvent.trySinkEvents(source, Event.ON_HAPPY);
       }
      }
   };
@@ -231,7 +236,7 @@ public class KeyDownEvent extends KeyEvent {
   }
 
   public void fire(EventHandler handler) {
-    ((KeyDownHandler)handler).onKeyDown(this);
+    ((HappyHandler)handler).onHappy(this);
   }
    
 }
