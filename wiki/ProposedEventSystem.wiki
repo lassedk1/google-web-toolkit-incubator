@@ -258,8 +258,8 @@ http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/im
     * get the correct event hook from *myEvent*, in specific `MyEvent.HOOK`
     * retrieve the list of handlers associated with `MyEvent.HOOK`
     * call  `myEvent.fireEvent(handler)` on each handler in the list. 
-   # In 'MyEvent'
-    * cast the current handler as a`MyEventHandler`
+   # In `MyEvent`
+    * cast the current handler as a `MyEventHandler`
     * call correct handler method on the current handler, passing in the current event.
  
 
