@@ -141,7 +141,7 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
   *`void hookEvent(HandlerManager manager, EventHandler handler)`
    * setup method that is called when an event handler is added to a widget. Allows the handler system to take care of sinking events when appropriate.
  * `AbstractEvent`
-  * `abstract void fireEvent(EventHandler handler)`
+  * `abstract void fire(EventHandler handler)`
    * allows events to specify correct handler method.
   * `abstract EventHook getEventHook()`
    * allows event instances to specify the correct static event hook to use.
@@ -163,10 +163,10 @@ interface FiresKeyDownEvents {
   public void addKeyDownHandler(KeyDownHandler handler);
 }
 }}}
-  # Wire up the `KeyDownEvent.fireEvent` method
+  # Wire up the `KeyDownEvent.fire` method
 {{{
 class KeyDownEvent extends KeyEvent {
-  public void firesEvent(EventHandler handler) {
+  public void fire(EventHandler handler) {
     ((KeyDownHandler)handler).onKeyDown(this);
   }
   ...
@@ -183,7 +183,7 @@ class KeyDownEvent extends KeyEvent {
   ...
 }
 }}}
-  # Wire up `EventHook.hookEvent` if necesary
+  # Wire up `EventHook.hookEvent` if necessary
 {{{
 public void hookEvent(EventManager eventManager, EventHandler handler) {
   // Sanity checks
@@ -226,7 +226,7 @@ public class KeyDownEvent extends KeyEvent {
     return HOOK; 
   }
 
-  public void firesEvent(EventHandler handler) {
+  public void fire(EventHandler handler) {
     ((KeyDownHandler)handler).onKeyDown(this);
   }
    
@@ -235,9 +235,9 @@ public class KeyDownEvent extends KeyEvent {
 
 }}}
 == Class Diagram ==
-Widget API classes are in blue
-Widget developer classes are in green
-Advanced widget developer classes are in black
+  * Widget API classes are in blue
+  * Widget developer classes are in green
+  * Advanced widget developer classes are in black
 
 http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/HandlerDesign.jpg
  
