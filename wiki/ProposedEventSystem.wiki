@@ -267,11 +267,11 @@ http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/im
 == How the handler system solves problems ==
 
 ||Listener Problem || Handler solution ||
-||(1) Cannot add extra information about an event. || Can add metadata to event ||
+||(1) Cannot add extra information about an event || Can add metadata to event ||
 ||(2) Cannot add extra features || Each handler represents a single method, so more can always be added || 
-||(3) Excess unused listener fields || A single handlers field is used ||
+||(3) Excess unused listener fields || A single manager field is used ||
 ||(4) Excess events are sunk || Only the events that are needed are sunk ||
 ||(5) Extra blank methods || No extra methods needed ||
-||(6) Boiler plate code || Between `Widget` enhancements and `HandlerManager` classes, most boiler plate code removed ||
+||(6) Boiler plate code || Between `Widget` enhancements and `HandlerManager` classes, most boiler plate code removed. Remaining boiler plate code will be inlined ||
 || (7) All event senders must be widgets || Senders simply must implement the `Fires*` interface ||
 || (8) All widgets must manage sinking of events || All standard widgets have events sunk automatically ||
