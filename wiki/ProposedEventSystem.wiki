@@ -151,7 +151,7 @@ interface FiresKeyDownEvents {
   public void addKeyDownHandler(KeyDownHandler handler);
 }
 }}}
-  # Wire up the KeyDownEvent.fireEvent method
+  # Wire up the `KeyDownEvent.fireEvent` method
 {{{
 class KeyDownEvent extends KeyEvent {
   public void firesEvent(EventHandler handler) {
@@ -159,6 +159,36 @@ class KeyDownEvent extends KeyEvent {
   }
   ...
 }
+}}}
+  # Add a unique event hook
+{{{
+class KeyDownEvent extends KeyEvent {
+  public static EventHook HOOK = new EventHook();
+ 
+  public EventHook getEventHook(){
+    return HOOK; 
+  }
+  ...
+}
+}}}
+  # Wire up `EventHook.hookEvent` if necesary
+{{{
+class KeyDownEvent extends KeyEvent {
+  public static EventHook HOOK = new EventHook(){
+    public void hookEvent(EventManager eventManager, EventHandler handler) {
+      // Sanity checks
+      Object sender = eventManager.getEventSource();
+      assert(handler instanceof KeyDownHandler);
+      assert(sender instanceof FiresKeyDownEvents);
+
+      if(eventManager.isFirstHandler(handler){
+        // If source implements sink events, sink ON_KEYDOWN
+        BrowserEvent.trySinkEvents(source, Event.ON_KEYDOWN);
+      }
+    }
+    ...
+  }
+ }
 }}}
 
 
