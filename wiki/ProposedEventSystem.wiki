@@ -17,12 +17,12 @@ The current listener widget event system is very easy to use and understand, whi
   # Many widgets do not have any listeners, and yet have three or four listeners fields that need to be null initialized. 
     * Example: Most `Label` widgets have no events, yet have three fields that need to be null initialized.
   # We have to sink unnecessary events on widgets. 
-    * Why: Because a widget cannot know what handler methods the user requires
+    * Why: Because many event listeners bundle several event methods in a single listener interface.
     * Example: To listen to a mouse down event, mouse move events are also sunk. 
   # Our users end up with many empty event methods or need to extend from Adapter classes. 
     * Why: Users only usually care about a subset of  listener methods defined in the interface.
     * Example: to add a mouse up listener, you end up with empty mouse down and mouse move methods as well.
-  # We repeat the same lines of boiler plate code in many different widgets to check if the listeners are instantiated and instantiate them. Therefore, no individual listener method can every be inlined away.
+  # We repeat the same lines of boiler plate code in many different widgets to check if the listeners are instantiated and instantiate them. Therefore, no individual listener method can ever be inlined away.
    * Example:
 {{{
   if(clickListeners == null) {
@@ -57,16 +57,16 @@ This it the API that will be used by all GWT users.
     * `KeyDownHandler`
      * `onKeyDown(KeyDownEvent event)`
     * ...
-  * For each handler, we also have a source with a single add method
+  * For each event we also need to know who fired it
    * `FiresClickEvents`
     * `HandlerRegistation addClickHandler(ClickEvent event)`
    * `FiresKeyDownEvents`
     * `HandlerRegistration addKeyDownHandler(KeyDownEvent event)`
    * ...
 === How it works ===
-  * Each handler has a single method with a single argument, such as `onClick(ClickEvent event)` or `onKeyDown(KeyDownEvent event)`
-  * Each widget supporting an event type has a method to add a handler of the form `HandlerRegistration addClickHandler(ClickHandler handler)`
-  * To remove a handler, you must save the handler registration and call `registration.removeHandler()`
+  * Each handler has a single method with a single argument, such as `onClick(ClickEvent event)` or `onKeyDown(KeyDownEvent event)`.
+  * Each widget supporting an event type has a method to add a handler of the form `HandlerRegistration addClickHandler(ClickHandler handler)`.
+  * To remove a handler, you must save the `HandlerRegistration` instance returned from the handler's add method and call `removeHandler()` on it.
 
 === Sample use of a handler ==
 {{{
@@ -74,7 +74,7 @@ This it the API that will be used by all GWT users.
  start.addKeyDownHandler(new KeyDownHandler() {
       public void onKeyDown(KeyDownEvent e) {
         if (e.getKeyCode() == KEY_RIGHT){
-           ... 
+           Window.alert("I have to be right");
         }
       }
     });
@@ -86,10 +86,10 @@ This is the API that will be used by most widget creators who are creating and p
 === Class overview ===
   
   * `EventHook`
-   * Event hook is used to allow the widget to hook a handler to a specific event.
+   * Event hook is used to allow the widget to hook a handler to a specific event type.
    * For each event type, we have a specific hook, such as 
      * `ClickEvent.HOOK`
-     * `KeyDownEvent.Hook`
+     * `KeyDownEvent.HOOK`
      * ...
   * Widget enhancements
     * `final HandlerRegistration addEventHandler(EventHook hook, EventHandler handler)`
@@ -114,11 +114,14 @@ This is the API that will be used by most widget creators who are creating and p
 }}}
 
 
-=== Sample widget event handling code ==
+=== Sample widget event handling code ===
+This code shows how to wire a `DateBox` to be able to handler a `KeyDownHandler`. In specific, implements the functionality described in the first example.
+
 {{{
 public class DateBox extends Composite implements FiresKeyDownEvents {
 ...
 
+ // Method from FiredKeyDownEvents
  public void addKeyDownHandler(KeyDownHandler handler) {
     addEventHandler(KeyDownEvent.HOOK, handler);
  }
