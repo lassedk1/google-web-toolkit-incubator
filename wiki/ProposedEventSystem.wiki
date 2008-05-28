@@ -37,8 +37,8 @@ The current listener widget event system is very easy to use and understand, whi
   
 
 = Proposed Handler System =
-== API exposed by widgets == 
-This it the API that will be used by all GWT widget users. 
+== Widget event API == 
+This it the API that will be used by all GWT users.
 
 === Class overview ===
   * `AbstractEvent`
@@ -53,7 +53,9 @@ This it the API that will be used by all GWT widget users.
    * Base interface for all handlers
    * New handler interfaces
     * `ClickHandler`
+     * `onClick(ClickEvent event)`
     * `KeyDownHandler`
+     * `onKeyDown(KeyDownEvent event)`
     * ...
   * For each handler, we also have a source with a single add method
    * `FiresClickEvents`
@@ -62,9 +64,9 @@ This it the API that will be used by all GWT widget users.
     * `HandlerRegistration addKeyDownHandler(KeyDownEvent event)`
    * ...
 === How it works ===
-  # Each handler has a single method with a single argument, such as `onClick(ClickEvent event)` or `onKeyDown(KeyDownEvent event)`
-  # Each widget supporting an event type has a method to add a handler of the form `HandlerRegistration addClickHandler(ClickHandler handler)
-  # To remove a handler, you must save the handler registration and call `registration.removeHandler()`
+  * Each handler has a single method with a single argument, such as `onClick(ClickEvent event)` or `onKeyDown(KeyDownEvent event)`
+  * Each widget supporting an event type has a method to add a handler of the form `HandlerRegistration addClickHandler(ClickHandler handler)`
+  * To remove a handler, you must save the handler registration and call `registration.removeHandler()`
 
 === Sample use of a handler ==
 {{{
@@ -78,34 +80,29 @@ This it the API that will be used by all GWT widget users.
     });
 }}}
 
-== Widget Developer API ==
-This is the API that will be used by widget creators who are creating and packaging their own widgets.
+== Widget Developer Event API ==
+This is the API that will be used by most widget creators who are creating and packaging their own widgets.
 
 === Class overview ===
-  * Classes
-    * `EventHook`
-      * Event hook is used to allow the widget to hook a handler to a specific event.
-      * For each event type, we have a specific hook, such as `ClickEvent.HOOK`, `KeyDownEvent.Hook`
-
+  
+  * `EventHook`
+   * Event hook is used to allow the widget to hook a handler to a specific event.
+   * For each event type, we have a specific hook, such as 
+     * `ClickEvent.HOOK`
+     * `KeyDownEvent.Hook`
+     * ...
   * Widget enhancements
-    * `HandlerRegistration addEventHandler(EventHook hook, EventHandler handler)`
-    * `void fireEvent(AbstractEvent event)`
+    * `final HandlerRegistration addEventHandler(EventHook hook, EventHandler handler)`
+    * `final void fireEvent(AbstractEvent event)`
 
 
+=== How it works ===
+  * When a handler is added to a widget, the widget calls `addEventHandler` with the event's hook and the supplied handler.
+
+  * To use the widget's handlers, the widget must create an event object, then call `fireEvent` on that event object.
 
 
- 
-===
-
-== Class Diagram ==
-http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/HandlerDesign.jpg
- 
-
-
-
-=== Sample widget implementation of a handler==
-To implement a handler, you must be able to use the classes in *green* above.
-
+=== Sample widget event handling code ==
 {{{
 public class DateBox extends Composite implements FiresKeyDownEvents {
 ...
@@ -119,41 +116,59 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
     case ON_KEYDOWN:
       fireEvent(new KeyDownEvent(e)); 
   }
-  }}}
+}}}
 
-===  Sample declaration of a new handler interface ===
+== Advanced widget creation ==
+=== Classes ===
+  * `HandlerManager`
+   * Manages all event handlers for widgets. `Widget` lazily creates a `HandlerManager` instance when `addEventHandler` is called.
+   * Each `HandlerManager` is associated with a single widget. That widget is set as the source for all events passed into the handler.
+
+=== Protected methods ===
+ * `EventHook`
+  *`void hookEvent(HandlerManager manager, EventHandler handler)`
+   * setup method that is called when an event handler is added to a widget. Allows the handler system to take care of sinking events when appropriate.
+ * `AbstractEvent`
+   `abstract void fireEvent(EventHandler handler)`
+    * allows events to specify correct handler method.
+   `abstract EventHook getEventHook()`
+    * allows event instances to specify the correct static event hook to use.
+
+=== Steps to create a custom event ===
+  # Define a new event class
+{{{
+public class KeyDownEvent extends KeyEvent{
+  ...
+}
+}}}
+  # Define a new handler and fires class for the event class.
 {{{
 interface KeyDownHandler extends EventHandler {
   public void onKeyDown(KeyDownEvent event);
-} 
-}}}
+}
 
-=== Sample declaration of an event ===
+interface FiresKeyDownEvents {
+  public void addKeyDownHandler(KeyDownHandler handler);
+}
+}}}
+  # Wire up the KeyDownEvent.fireEvent method
 {{{
 class KeyDownEvent extends KeyEvent {
- public static Hook HOOK = new Hook(){
-    public void hookEvent(HandlerRegistration registration) {
-      // Sanity checks
-      assert(registration.getHandler() instanceof KeyDownHandler);
-      assert(registration.getSource() instanceof FiresKeyDownEvents);
-
-      if(registration.isFirstHandlerForEvent()){
-        // If source implements sink events, sink ON_KEYDOWN
-        BrowserEvent.trySinkEvents(source, Event.ON_KEYDOWN);
-      }
-    }
+  public void firesEvent(EventHandler handler) {
+    ((KeyDownHandler)handler).onKeyDown(this);
   }
-
-  public HandlerHook getEventHook() {
-    return HOOK;
-  }
-  
-  public void fire(EventHandler handler) {
-    ((KeyDownHandler)handler).onKeyDown(this));
-  }
+  ...
 }
 }}}
 
+
+
+== Class Diagram ==
+Widget API classes are in blue
+
+http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/HandlerDesign.jpg
+ 
+ 
 == How the handler system solves problems ==
 
 ||Listener Problem || Handler solution ||
