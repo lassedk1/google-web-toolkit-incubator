@@ -193,18 +193,22 @@ class HappinessEvent extends MoodEvent {
 }}}
   # Wire up `EventHook.hookEvent` if necessary
 {{{
-public void hookEvent(EventManager eventManager, EventHandler handler) {
-  // Sanity checks
-  Object sender = eventManager.getEventSource();
-  assert(handler instanceof HappyHandler);
-  assert(sender instanceof FiresHappyEvents);
 
-  if(eventManager.isFirstHandler(handler){
-    // If source implements sink events, sink it. 
-    // No, ON_HAPPY doesn't exist, just run with it...
-    BrowserEvent.trySinkEvents(source, Event.ON_HAPPY);
+class HappyEvent extends MoodEvent {
+  public static final HookEvent HOOK = new HOOK(){
+  public void hookEvent(EventManager eventManager, EventHandler handler) {
+    // Sanity checks
+    Object sender = eventManager.getEventSource();
+    assert(handler instanceof HappyHandler);
+    assert(sender instanceof FiresHappyEvents);
+
+    if(eventManager.isFirstHandler(handler){
+      // If source implements sink events, sink it. 
+      // No, ON_HAPPY doesn't exist, just run with it...
+      BrowserEvent.trySinkEvents(source, Event.ON_HAPPY);
+    }
   }
-}
+  ...
 }}}
 
 === Sample event creation === 
