@@ -48,6 +48,7 @@ http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/im
 == Sample code ==
 
 === Sample use of a handler ==
+To use a handler, you must be able to use the classes in *blue* above.
 {{{
  DateBox start = new DateBox();
  start.addKeyDownHandler(new KeyDownHandler() {
@@ -61,14 +62,14 @@ http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/im
 
 
 === Sample widget implementation of a handler==
+To implement a handler, you must be able to use the classes in *green* above.
 
 {{{
 public class DateBox extends Composite implements FiresKeyDownEvents {
 ...
 
  public void addKeyDownHandler(KeyDownHandler handler) {
-    // Sink event here if necessary.
-    addEventHandler(KeyDownEvent.class, handler);
+    addEventHandler(KeyDownEvent.HOOK, handler);
  }
   @Override
   public void onBrowserEvent(Event e){
