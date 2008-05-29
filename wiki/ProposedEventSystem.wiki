@@ -151,7 +151,7 @@ This API is for those widget creators who need to create custom events and for t
    * Setup method that is called when an event handler is added to a widget. Allows the handler system to take care of sinking events when appropriate. For example, `KeyDownEvent`'s event hook checks to see if the sender implements `sinkEvents`, and if it does, sinks `Event.ON_KEY_DOWN`. 
  * `AbstractEvent`
   * `protected abstract void fire(EventHandler handler)`
-   * allows event instance to call correct handler method. For example 
+   * Allows event instance to call correct handler method. For example 
 {{{
 public class KeyDownEvent extends KeyEvent {
   public void fire(EventHandler handler) {
@@ -175,10 +175,10 @@ public class KeyDownEvent extends KeyEvent {
 === Steps to create a custom event ===
 This is an event that is triggered when the user becomes happy. Will be implemented in webkit 10.
 
-  # Define a new event class
+  # Define a new event class.  You can add arbitrary metadata in the event class. For simplicity, we will not include any here though.
 {{{
 public class HappyEvent extends AbstractEvent{
-  ...
+   ...
 }
 }}}
   # Define a new handler and fires class for the event class.
@@ -188,7 +188,7 @@ interface HappyHandler extends EventHandler {
 }
 
 interface FiresHappyEvents {
-  public void addHappyHandler(HappyHandler handler);
+  public HandlerRegistration addHappyHandler(HappyHandler handler);
 }
 }}}
   # Wire up the `HappyEvent.fire` method
@@ -231,7 +231,7 @@ class HappyEvent extends MoodEvent {
   ...
 }}}
 
-=== Sample event creation === 
+=== Full code needed to create a `Happy` handler === 
 
 {{{
 public interface HappyHandler extends EventHandler {
@@ -239,7 +239,7 @@ public interface HappyHandler extends EventHandler {
 }
 
 public interface FiresHappyEvents {
-  public void addHappyHandler(HappyHandler handler);
+  public HandlerRegistration addHappyHandler(HappyHandler handler);
 }
 
 public class HappyEvent extends KeyEvent {
