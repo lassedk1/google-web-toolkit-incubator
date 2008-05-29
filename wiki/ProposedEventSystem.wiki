@@ -8,7 +8,7 @@ The current listener widget event system is very easy to use and understand, whi
 
 
 = Disadvantages of current listener system =
-  # We cannot add extra information about an event
+  # We cannot add extra information about an event.
     * Why: Because modifying an interface is a breaking change.
     * Example: We could not add native events to the current `Click` or `Change` listeners.
   # We cannot add a new feature to a current listener. 
@@ -38,7 +38,7 @@ The current listener widget event system is very easy to use and understand, whi
 
 = Proposed Handler System =
 == Widget event API == 
-This it the API that will be used by all GWT users.
+This it the API that will be used by all GWT users. It allows users to add new handlers to widgets.
 
 === Class overview ===
   * `AbstractEvent`
@@ -48,7 +48,7 @@ This it the API that will be used by all GWT users.
     * `KeyDownEvent`
     * ...
   * `HandlerRegistration`
-   *  Bookkeeping class to allow handlers to be removed from widgets.
+   *  Bookkeeping class to allow handlers to be removed from widgets. Each time a handler is added to a widget, a `HandlerRegistration` instance is returned
   * `EventHandler`
    * Base interface for all handlers
    * New handler interfaces
@@ -81,7 +81,7 @@ This it the API that will be used by all GWT users.
 }}}
 
 == Widget Developer Event API ==
-This is the API that will be used by most widget creators who are creating and packaging their own widgets.
+This is the API that will be used by most widget creators who are creating and packaging their own widgets.  It allows widgets to hook up new handlers and send events to them.
 
 === Class overview ===
   
@@ -91,9 +91,10 @@ This is the API that will be used by most widget creators who are creating and p
      * `ClickEvent.HOOK`
      * `KeyDownEvent.HOOK`
      * ...
-  * Widget enhancements
-    * `final HandlerRegistration addEventHandler(EventHook hook, EventHandler handler)`
-    * `final void fireEvent(AbstractEvent event)`
+=== Protected methods ===
+  * In `Widget` 
+    * `protected finalHandlerRegistration addEventHandler(EventHook hook, EventHandler handler)`
+    * `protected final void fireEvent(AbstractEvent event)`
 
 
 === How it works ===
@@ -103,7 +104,7 @@ This is the API that will be used by most widget creators who are creating and p
     addEventHandler(KeyDownEvent.HOOK, handler);
  }
 }}}
-  * To use the widget's handlers, the widget must create an event object, then call `fireEvent` on that event object.
+  * To use the widget's handlers, the widget must create an event object, then call `Widget`'s `fireEvent` method on that event object.
 {{{
   @Override
   public void onBrowserEvent(Event e){
@@ -137,7 +138,9 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
 }}}
 
 == Advanced widget creation ==
-=== Classes ===
+This API is for those widget creators who need to create custom events and for those creating widgets that do not extend `Widget`
+
+=== Class Overview ===
   * `HandlerManager`
    * Manages all event handlers for widgets. `Widget` lazily creates a `HandlerManager` instance when `addEventHandler` is called.
    * Each `HandlerManager` is associated with a single widget. That widget is set as the source for all events passed into the handler.
@@ -145,10 +148,19 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
 === Protected methods ===
  * `EventHook`
   * `void hookEvent(HandlerManager manager, EventHandler handler)`
-   * setup method that is called when an event handler is added to a widget. Allows the handler system to take care of sinking events when appropriate.
+   * Setup method that is called when an event handler is added to a widget. Allows the handler system to take care of sinking events when appropriate. For example, `KeyDownEvent`'s event hook checks to see if the sender implements `sinkEvents`, and if it does, sinks `Event.ON_KEY_DOWN`. 
  * `AbstractEvent`
   * `protected abstract void fire(EventHandler handler)`
-   * allows events to specify correct handler method.
+   * allows event instance to call correct handler method. For example 
+{{{
+public class KeyDownEvent extends KeyEvent {
+  public void fire(EventHandler handler) {
+     ((KeyDownHandler)handler).onKeyDown(this);
+  }
+ ...
+}
+ 
+}}}`KeyDownEvent`'s fire method is `handler.onKeyDown(this)`.
   * `abstract EventHook getEventHook()`
    * allows event instances to specify the static event hook.
 
