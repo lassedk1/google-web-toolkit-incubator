@@ -235,7 +235,7 @@ class HappyEvent extends MoodEvent {
 
 {{{
 public interface HappyHandler extends EventHandler {
-  public void onHappy(HappyEvent event);
+  public void onHappiness(HappyEvent event);
 }
 
 public interface FiresHappyEvents {
@@ -260,7 +260,7 @@ public class HappyEvent extends KeyEvent {
   }
 
   public void fire(EventHandler handler) {
-    ((HappyHandler)handler).onHappy(this);
+    ((HappyHandler)handler).onHappiness(this);
   }
    
 }
