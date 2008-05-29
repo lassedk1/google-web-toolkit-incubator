@@ -154,7 +154,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
      * The column that will be sacrificed.
      */
     private int sacrificeColumn = -1;
-    
+
     /**
      * The table that this worker affects.
      */
@@ -326,6 +326,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       if (mouseXLast != mouseXCurrent) {
         mouseXLast = mouseXCurrent;
 
+        table.disableScrollTables = true;
         int columnsRemaining = curCellColumns.size();
         int totalDelta = mouseXCurrent - mouseXStart;
         for (ColumnNode curNode : curCellColumns) {
@@ -338,6 +339,9 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
           totalDelta -= (colWidth - originalWidth);
           columnsRemaining--;
         }
+
+        table.disableScrollTables = false;
+        table.scrollTables(false);
       }
     }
   }
@@ -476,10 +480,11 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    * <ul>
    * <li>HORIZONTAL - Only a horizontal scrollbar will be present.</li>
    * <li>BOTH - Both a vertical and horizontal scrollbar will be present.</li>
+   * <li>DISABLED - Scrollbars will not appear, even if content doesn't fit</li>
    * </ul>
    */
   public enum ScrollPolicy {
-    HORIZONTAL, BOTH
+    HORIZONTAL, BOTH, DISABLED
   }
 
   /**
@@ -496,6 +501,13 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    * The scrollable wrapper div around the data table.
    */
   private Element dataWrapper;
+
+  /**
+   * If true, ignore all requests to scroll the tables. This boolean is used to
+   * improve performance of certain operations that would otherwise force
+   * repeated calls to scrollTables.
+   */
+  private boolean disableScrollTables = false;
 
   /**
    * An image used to show a fill width button.
@@ -735,7 +747,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   public void fillWidth() {
     // Calculate how much room we have to work with
     int clientWidth = -1;
-    if (scrollPolicy != ScrollPolicy.HORIZONTAL) {
+    if (scrollPolicy == ScrollPolicy.BOTH) {
       DOM.setStyleAttribute(dataWrapper, "overflow", "scroll");
       clientWidth = DOM.getElementPropertyInt(dataWrapper, "clientWidth") - 1;
       DOM.setStyleAttribute(dataWrapper, "overflow", "auto");
@@ -765,6 +777,9 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       totalWidth += colWidths[i];
     }
 
+    // Prevent tables from aligning, we'll call this manually at the end
+    disableScrollTables = true;
+
     // Distribute the difference across all columns, weighted by current size
     int remainingDiff = diff;
     for (int i = 0; i < numColumns; i++) {
@@ -788,6 +803,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
 
     // Reset the resize policy
     resizePolicy = tempResizePolicy;
+    disableScrollTables = false;
+    scrollTables(false);
   }
 
   /**
@@ -1054,7 +1071,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   /**
    * Set the width of a column. If the column has already been set using the
    * {@link #setGuaranteedColumnWidth(int, int)} method, the column will no
-   * longer have a guarenteed column width.
+   * longer have a guaranteed column width.
    * 
    * @param column the index of the column
    * @param width the width in pixels
@@ -1091,6 +1108,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       if (footerWrapper == null) {
         footerWrapper = createWrapper("footerWrapper");
         footerSpacer = createSpacer(footerWrapper);
+        DOM.setEventListener(footerWrapper, this);
+        DOM.sinkEvents(footerWrapper, Event.ONMOUSEUP);
       }
 
       // Adopt the header table into the panel
@@ -1169,14 +1188,21 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   public void setScrollPolicy(ScrollPolicy scrollPolicy) {
     this.scrollPolicy = scrollPolicy;
 
-    if (scrollPolicy == ScrollPolicy.HORIZONTAL) {
+    if (scrollPolicy == ScrollPolicy.DISABLED) {
+      // Disabled scroll bars
       super.setHeight("auto");
-      DOM.setStyleAttribute(dataWrapper, "height", "auto");
-    } else {
-      // Reset the height
+      dataWrapper.getStyle().setProperty("height", "auto");
+      dataWrapper.getStyle().setProperty("overflow", "hidden");
+    } else if (scrollPolicy == ScrollPolicy.HORIZONTAL) {
+      // Only show horizontal scroll bar
+      super.setHeight("auto");
+      dataWrapper.getStyle().setProperty("overflow", "auto");
+    } else if (scrollPolicy == ScrollPolicy.BOTH) {
+      // Show both scroll bars
       if (lastHeight != null) {
         super.setHeight(lastHeight);
       }
+      dataWrapper.getStyle().setProperty("overflow", "auto");
     }
 
     // Resize the tables
@@ -1232,9 +1258,13 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    */
   protected void resizeTablesVerticallyNow() {
     // Force browser to redraw
-    if (scrollPolicy == ScrollPolicy.HORIZONTAL) {
-      DOM.setStyleAttribute(dataWrapper, "overflow", "hidden");
-      DOM.setStyleAttribute(dataWrapper, "overflow", "auto");
+    if (scrollPolicy == ScrollPolicy.DISABLED) {
+      dataWrapper.getStyle().setProperty("overflow", "auto");
+      dataWrapper.getStyle().setProperty("overflow", "hidden");
+      return;
+    } else if (scrollPolicy == ScrollPolicy.HORIZONTAL) {
+      dataWrapper.getStyle().setProperty("overflow", "hidden");
+      dataWrapper.getStyle().setProperty("overflow", "auto");
       scrollTables(true);
       return;
     }
@@ -1258,20 +1288,26 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   }
 
   /**
-   * Sets the scroll property of the header and data wrappers when scrolling.
+   * Sets the scroll property of the header and data wrappers when scrolling so
+   * that the header, footer, and data tables line up.
    * 
    * @param baseHeader If true, use the header as the alignment source
    */
   protected void scrollTables(boolean baseHeader) {
-    if (isAttached()) {
+    // Return if scrolling is disabled
+    if (scrollPolicy == ScrollPolicy.DISABLED) {
+      return;
+    }
+
+    if (isAttached() && !disableScrollTables) {
       if (baseHeader) {
-        DOM.setElementPropertyInt(dataWrapper, "scrollLeft",
-            DOM.getElementPropertyInt(headerWrapper, "scrollLeft"));
+        int headerScrollLeft = headerWrapper.getScrollLeft();
+        dataWrapper.setScrollLeft(headerScrollLeft);
       }
-      int scrollLeft = DOM.getElementPropertyInt(dataWrapper, "scrollLeft");
-      DOM.setElementPropertyInt(headerWrapper, "scrollLeft", scrollLeft);
+      int scrollLeft = dataWrapper.getScrollLeft();
+      headerWrapper.setScrollLeft(scrollLeft);
       if (footerWrapper != null) {
-        DOM.setElementPropertyInt(footerWrapper, "scrollLeft", scrollLeft);
+        footerWrapper.setScrollLeft(scrollLeft);
       }
     }
   }
@@ -1353,10 +1389,12 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    */
   private Element createWrapper(String cssName) {
     Element wrapper = DOM.createDiv();
-    DOM.setStyleAttribute(wrapper, "width", "100%");
-    DOM.setStyleAttribute(wrapper, "padding", "0px");
-    DOM.setStyleAttribute(wrapper, "overflow", "hidden");
-    DOM.setStyleAttribute(wrapper, "position", "relative");
+    wrapper.getStyle().setProperty("width", "100%");
+    wrapper.getStyle().setProperty("overflow", "hidden");
+    wrapper.getStyle().setProperty("position", "relative");
+    wrapper.getStyle().setPropertyPx("padding", 0);
+    wrapper.getStyle().setPropertyPx("margin", 0);
+    wrapper.getStyle().setPropertyPx("border", 0);
     setStyleName(wrapper, cssName);
     return wrapper;
   }
@@ -1441,11 +1479,11 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    * Reposition the header spacer next to the header table.
    */
   private void repositionHeaderSpacer() {
-    DOM.setStyleAttribute(headerSpacer, "left",
-        ((Widget) headerTable).getOffsetWidth() + "px");
+    int headerWidth = headerTable.getOffsetWidth();
+    headerSpacer.getStyle().setPropertyPx("left", headerWidth);
     if (footerTable != null) {
-      DOM.setStyleAttribute(footerSpacer, "left",
-          ((Widget) footerTable).getOffsetWidth() + "px");
+      int footerWidth = footerTable.getOffsetWidth();
+      footerSpacer.getStyle().setPropertyPx("left", footerWidth);
     }
   }
 }

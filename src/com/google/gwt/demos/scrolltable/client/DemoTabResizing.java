@@ -130,6 +130,8 @@ public class DemoTabResizing extends DemoTab implements ClickListener {
         scrollTable.setScrollPolicy(ScrollPolicy.HORIZONTAL);
       } else if (policy.equals("both")) {
         scrollTable.setScrollPolicy(ScrollPolicy.BOTH);
+      } else if (policy.equals("disabled")) {
+        scrollTable.setScrollPolicy(ScrollPolicy.DISABLED);
       }
     } else if (sender == redrawButton) {
       scrollTable.redraw();
@@ -158,6 +160,7 @@ public class DemoTabResizing extends DemoTab implements ClickListener {
     // Toggle scrolling button
     scrollingBox.addItem("horizontal");
     scrollingBox.addItem("both");
+    scrollingBox.addItem("disabled");
     scrollingBox.setSelectedIndex(1);
     toggleButtonGrid.setWidget(1, 0, scrollingButton);
     toggleButtonGrid.setWidget(1, 1, scrollingBox);
