@@ -159,10 +159,18 @@ public class KeyDownEvent extends KeyEvent {
   }
  ...
 }
- 
-}}}`KeyDownEvent`'s fire method is `handler.onKeyDown(this)`.
+}}}
   * `abstract EventHook getEventHook()`
-   * allows event instances to specify the static event hook.
+   * Allows event instances to specify the static event hook. For example
+{{{
+public class KeyDownEvent extends KeyEvent {
+  public static final EventHook HOOK = ...
+  public EventHook getEventHook(){
+    return HOOK;
+  }
+}
+}}}
+
 
 === Steps to create a custom event ===
 This is an event that is triggered when the user becomes happy. Will be implemented in webkit 10.
