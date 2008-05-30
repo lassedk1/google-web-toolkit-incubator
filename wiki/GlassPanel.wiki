@@ -8,7 +8,7 @@
 A number of use cases are supported by the glass panel widget:
   * Darken/colorize any `AbsolutePanel`. This includes any subclasses such as `RootPanel`, which leads to additional use cases:
   * Attach a glass panel to the document BODY (=`RootPanel.get()`), which effectively shades or darkens the entire web page. Useful when showing modal dialog boxes where interaction with the rest of the page is not desirable.
-  * Darken/colorize any `id` based `RootPanel` (i.e. those obtained via `RootPanel.get(id)`) with a semi-transparent layer.
+  * Darken/colorize any `id`-based `RootPanel` (i.e. those obtained via `RootPanel.get(id)`) with a semi-transparent layer.
 
 
 
@@ -76,12 +76,12 @@ The glass panel widget should work (display) correctly under all combinations of
 
 = The basics =
 
-== Adding !GlassPanel to Your Project ==
-  # Follow the  instructions in the [http://code.google.com/p/google-web-toolkit-incubator/wiki/HowToUseTheIncubator How To User the Incubator wiki]
+== Adding !GlassPanel to your project ==
+  # Follow the  instructions in the [http://code.google.com/p/google-web-toolkit-incubator/wiki/HowToUseTheIncubator How To Use the Incubator]
   # Make sure your IDE, Java Compiler and GWT compile all have access to the compiled classes and source code:
     * If you use Eclipse, modify your launch configuration(s) to include the new jar so that the GWT compiler will be able to locate the Java *source* files
-    * If you use the command line shell/compile scripts, then update `*shell*` and `*compile*` in your project directory to include the new jar file in the class path
-  # You may either inherit all the incubator widgets as documented in the above wiki, or you could inherit just the glass panel module:
+    * If you use the command line shell/compile scripts, then update the `*shell*` and `*compile*` scripts in your project directory to include the new jar file in the class path
+  # You may either inherit all the incubator widgets as documented in the above wiki, or you can inherit just the glass panel module:
 {{{
     <!-- Inherit GlassPanel module                       -->
     <inherits name="com.google.gwt.widgetideas.GlassPanel"/>
@@ -95,7 +95,7 @@ The glass panel widget should work (display) correctly under all combinations of
     /* Override glass panel color to be `green` */
     background-color: green !important;
 
-    /* Override glass panel to 10% opacity (i.e. 90% transparency) */
+    /* Override glass panel to 10% opacity (= 90% transparency) */
     filter: alpha(opacity = 10) !important; /* IE */
     opacity: 0.1 !important; /* non-IE */
 
@@ -135,7 +135,7 @@ The glass panel widget should work (display) correctly under all combinations of
 = A few examples =
 
 
-== Covering the entire window ==
+== Covering the entire window (lightbox effect) ==
 {{{
   // Create a glass panel with `autoHide = true`
   GlassPanel glassPanel = new GlassPanel(true);
@@ -168,7 +168,7 @@ The glass panel widget should work (display) correctly under all combinations of
 }}}
 
 
-== Covering an `id` based `RootPanel` ==
+== Covering an `id`-based `RootPanel` ==
 Start with this example snippet in your HTML page.
 {{{
   <table border="1">
