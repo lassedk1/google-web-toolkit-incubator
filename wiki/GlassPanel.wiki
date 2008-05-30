@@ -21,7 +21,7 @@ Here is a [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/Gla
 = Implementation goals =
 The glass panel widget should work (display) correctly under all combinations of the following conditions:
   * On every GWT supported browser/platform
-  * Work with GWT 1.4.61 and `trunk` (upcoming GWT 1.5)
+  * Work with GWT 1.4.62 and GWT 1.5.x
   * In both Quirks (`BackCompat`) and Strict (`CSS1Compat`) modes
   * With or without an explicitly sized document BODY
 {{{
