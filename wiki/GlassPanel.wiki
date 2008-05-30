@@ -54,8 +54,8 @@ The glass panel widget should work (display) correctly under all combinations of
   * With margins and/or borders on either the HTML and BODY elements (although negative margins are not properly supported at this time)
 {{{
   /* To fully test CSS math:
-   *  - Use a different value for each of the four edges
-   *  - Use different values for BODY and HTML elements
+   *  1. Use a different value for each of the four edges
+   *  2. Use different values for BODY and HTML elements
    */
 
   HTML {
