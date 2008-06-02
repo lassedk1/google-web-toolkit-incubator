@@ -24,7 +24,6 @@ import java.util.Iterator;
 
 /**
  * Helper class to bulk load {@link FixedWidthGrid} tables.
- * 
  */
 public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
 
@@ -55,6 +54,7 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
 
   private int numColumns;
   private String[] colStarts;
+  private String[] colEnds;
 
   /**
    * Constructor. Takes in the number of columns in the table to allow efficient
@@ -67,35 +67,30 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
     super(table);
     this.numColumns = numColumns;
     table.resizeColumns(numColumns);
+    initCustomRenderValues();
   }
 
-  @Override
-  public RenderingOptions createRenderingOptions() {
-    if (colStarts != null) {
-      return new RenderingOptions() {
-        @Override
-        public String getEndCell(int column) {
-          return "</td>";
-        }
-
-        @Override
-        public String getStartCell(int column) {
-          return colStarts[column];
-        }
-      };
-    } else {
-      return new RenderingOptions() {
-        @Override
-        public String getEndCell(int column) {
-          return "</td>";
-        }
-
-        @Override
-        public String getStartCell(int column) {
-          return "<td>";
-        }
-      };
+  private RenderingOptions options = new RenderingOptions() {
+    @Override
+    public String getEndCell(int column) {
+      return colEnds[column];
     }
+
+    @Override
+    public String getStartCell(int column) {
+      return colStarts[column];
+    }
+  };
+
+  @Override
+  protected RenderingOptions createRenderingOptions() {
+    initCustomRenderValues();
+    return options;
+  }
+
+  protected void setColumnBeginAndEnd(int column, String start, String end) {
+    colStarts[column] = start;
+    colEnds[column] = end;
   }
 
   /**
@@ -105,13 +100,22 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
    * @param styleName the style name
    */
   public void setStyleNameByColumn(int column, String styleName) {
+    initCustomRenderValues();
+    colStarts[column] = "<td class='" + styleName + "'><span>";
+  }
+
+  private void initCustomRenderValues() {
     if (colStarts == null) {
       colStarts = new String[numColumns];
       for (int i = 0; i < numColumns; i++) {
         colStarts[i] = "<td>";
       }
+
+      colEnds = new String[numColumns];
+      for (int i = 0; i < numColumns; i++) {
+        colEnds[i] = "</td>";
+      }
     }
-    colStarts[column] = "<td class='" + styleName + "'>";
   }
 
   @Override
@@ -130,7 +134,7 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
   /*-{
     return table.@com.google.gwt.widgetideas.table.client.overrides.HTMLTable::getBodyElement()(table).rows[0];
   }-*/;
-  
+
   @Override
   protected void renderRows(Iterator<Iterator<Object>> iterator,
       final RenderingOptions options) {
