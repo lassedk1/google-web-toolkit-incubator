@@ -100,7 +100,7 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
    * @param styleName the style name
    */
   public void setStyleNameByColumn(int column, String styleName) {
-    initCustomRenderValues();
+ 
     colStarts[column] = "<td class='" + styleName + "'><span>";
   }
 
