@@ -1,6 +1,8 @@
 #summary Spinner and widgets using it
 
-|| Live demo || XXX ||
+= *Work in progress...* =
+
+|| Live demo || [http://www.floreysoft.com/gwt-sandbox/ Demo] ||
 || Java docs || XXX ||
 || Sample code || XXX ||
 || Java source || XXX ||
@@ -19,3 +21,27 @@ The incubator provides some widgets using the Spinner:
 || *!VolumeSlider* ||Combination of a !ProgressBar and arrows to increase decrease the value ||
 
 = Examples =
+{{{
+// Create a value spinner with initial value=0 that allows values between -1000 and 1000
+ValueSpinner simpleSpinner = new ValueSpinner(0, -1000, 1000);
+		
+// Create a value spinner that displays the value as a formatted date
+ValueSpinner dateSpinner = new ValueSpinner(new Date().getTime()) {
+	protected String formatValue(long value) {
+		return DateTimeFormat.getLongDateFormat().format(new Date(value));
+	}
+		protected long parseValue(String value) {
+		return DateTimeFormat.getLongDateFormat().parse(value).getTime();
+	}
+};
+// Min step = milliseconds per day
+dateSpinner.getSpinner().setMinStep(86400000);
+
+// A TimePicker using AM/PM 12h format
+TimePicker timePicker = new TimePicker(false);
+
+// A TimePicker with no "AM/PM" and no "seconds" field and using 24H formatting for "hours" filed
+TimePicker customTimePicker = new TimePicker(new Date(), null, DateTimeFormat.getFormat("HH"), DateTimeFormat.getFormat("mm"), null);
+
+
+}}}
