@@ -1,11 +1,9 @@
 #summary Spinner and widgets using it
 
-= *Work in progress...* =
-
 || Live demo || [http://www.floreysoft.com/gwt-sandbox/ Demo] ||
-|| Java docs || XXX ||
-|| Sample code || XXX ||
-|| Java source || XXX ||
+|| Java docs || *_TODO_* ||
+|| Sample code || *_TODO_* ||
+|| Java source || *_TODO_* ||
 
 = Introduction =
 A Spinner provides to arrows to increase and decrease a value. In combination with an input field this becomes a well known widget used mainly for setting times.
