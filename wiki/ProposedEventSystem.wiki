@@ -193,7 +193,7 @@ interface FiresHappyEvents {
 }}}
   # Wire up the `HappyEvent.fire` method
 {{{
-class HappyEvent extends MoodEvent {
+class HappyEvent extends AbstractEvent {
   protected void fire(EventHandler handler) {
     ((HappyHandler)handler).onHappiness(this);
   }
@@ -215,7 +215,7 @@ class HappyEvent extends AbstractEvent {
 {{{
 
 class HappyEvent extends AbstractEvent {
-  public static final HookEvent HOOK = new HOOK(){
+  public static final HookEvent HOOK = new EventHook(){
   public void hookEvent(EventManager eventManager, EventHandler handler) {
     // Sanity checks
     Object sender = eventManager.getEventSource();
