@@ -151,6 +151,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     // The 'root' item is invisible and serves only as a container
     // for all top-level items.
     root = new FastTreeItem() {
+      @Override
       public void addItem(FastTreeItem item) {
         super.addItem(item);
 
@@ -163,6 +164,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         DOM.setIntStyleAttribute(item.getElement(), "margin", 0);
       }
 
+      @Override
       public void removeItem(FastTreeItem item) {
         if (!getChildren().contains(item)) {
           return;
@@ -188,6 +190,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    * @see com.google.gwt.user.client.ui.HasWidgets#add(com.google.gwt.user.client.ui.Widget)
    * @param widget widget to add.
    */
+  @Override
   public void add(Widget widget) {
     addItem(widget);
   }
@@ -247,6 +250,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   /**
    * Clears all tree items from the current tree.
    */
+  @Override
   public void clear() {
     int size = root.getChildCount();
     for (int i = size - 1; i >= 0; i--) {
@@ -325,6 +329,15 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   @SuppressWarnings("fallthrough")
   public void onBrowserEvent(Event event) {
     int eventType = DOM.eventGetType(event);
+    
+    int mouseButtons = event.getButton();
+    boolean alt = event.getAltKey();
+    boolean ctrl = event.getCtrlKey();
+    boolean meta = event.getMetaKey();
+    boolean shift = event.getShiftKey();
+
+    boolean left = mouseButtons == Event.BUTTON_LEFT;    
+    boolean modifiers = alt || ctrl || meta || shift;
 
     switch (eventType) {
       case Event.ONCLICK: {
@@ -334,7 +347,9 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
           // Avoid moving focus back up to the tree (so that focusable widgets
           // attached to TreeItems can receive keyboard events).
         } else {
-          clickedOnFocus(DOM.eventGetTarget(event));
+          if (left && !modifiers) {
+            clickedOnFocus(DOM.eventGetTarget(event));
+          }
         }
         break;
       }
@@ -349,7 +364,10 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       case Event.ONMOUSEUP: {
         if (lostMouseDown) {
           // artificial mouse down due to IE bug where mouse downs are lost.
-          elementClicked(root, event);
+          
+          if (left && !modifiers) {
+            elementClicked(root, event);
+          }
         }
         if (mouseListeners != null) {
           mouseListeners.fireMouseEvent(this, event);
@@ -362,7 +380,9 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         if (mouseListeners != null) {
           mouseListeners.fireMouseEvent(this, event);
         }
-        elementClicked(root, event);
+        if (left && !modifiers) {
+          elementClicked(root, event);
+        }
         break;
       }
       case Event.ONMOUSEOVER: {
@@ -417,6 +437,10 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
           keyboardListeners.fireKeyboardEvent(this, event);
         }
 
+        if (modifiers) {
+          break;
+        }
+        
         // Trying to avoid duplicate key downs and fire navigation despite
         // missing key downs.
         if (eventType != Event.ONKEYUP) {
