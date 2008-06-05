@@ -22,12 +22,13 @@ The incubator provides some widgets using the Spinner:
 
 = Examples =
 
-=== ValueSpinner ===
+=== !ValueSpinner ===
 {{{
 // Create a value spinner with initial value=0 that allows values between -1000 and 1000
-ValueSpinner simpleSpinner = new ValueSpinner(0, -1000, 1000);}}}
+ValueSpinner simpleSpinner = new ValueSpinner(0, -1000, 1000);
+}}}
 
-=== Customized ValueSpinner to display value as formatted date ===
+=== Customized !ValueSpinner to display value as formatted date ===
 {{{	
 // Create a value spinner that displays the value as a formatted date
 ValueSpinner dateSpinner = new ValueSpinner(new Date().getTime()) {
@@ -42,7 +43,7 @@ ValueSpinner dateSpinner = new ValueSpinner(new Date().getTime()) {
 dateSpinner.getSpinner().setMinStep(86400000);
 }}}
 
-=== TimePicker ===
+=== !TimePicker ===
 {{{
 // A TimePicker using AM/PM 12h format
 TimePicker timePicker = new TimePicker(false);
@@ -51,7 +52,7 @@ TimePicker timePicker = new TimePicker(false);
 TimePicker customTimePicker = new TimePicker(new Date(), null, DateTimeFormat.getFormat("HH"), DateTimeFormat.getFormat("mm"), null);
 }}}
 
-=== DateTimePicker ===
+=== !DateTimePicker ===
 {{{
 // Creating a date time picker with AM/PM 12h TimePicker
 final DateTimePicker dateTimePicker = new DateTimePicker(false);
@@ -67,4 +68,10 @@ getDate.addClickListener(new ClickListener() {
 		dateLabel.setText(DateTimeFormat.getMediumDateTimeFormat().format(dateTimePicker.getDate()));
 	}
 });
+}}}
+
+=== !VolumeSlider ===
+{{{
+// Initial value = 0, min-value=-100 max-value=100
+VolumeSlider volumeSlider = new VolumeSlider(0, -100, 100);
 }}}
