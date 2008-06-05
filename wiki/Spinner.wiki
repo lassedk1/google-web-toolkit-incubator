@@ -32,12 +32,12 @@ ValueSpinner simpleSpinner = new ValueSpinner(0, -1000, 1000);
 {{{	
 // Create a value spinner that displays the value as a formatted date
 ValueSpinner dateSpinner = new ValueSpinner(new Date().getTime()) {
-	protected String formatValue(long value) {
-		return DateTimeFormat.getLongDateFormat().format(new Date(value));
-	}
-		protected long parseValue(String value) {
-		return DateTimeFormat.getLongDateFormat().parse(value).getTime();
-	}
+  protected String formatValue(long value) {
+    return DateTimeFormat.getLongDateFormat().format(new Date(value));
+  }
+  protected long parseValue(String value) {
+    return DateTimeFormat.getLongDateFormat().parse(value).getTime();
+  }
 };
 // Min step = milliseconds per day
 dateSpinner.getSpinner().setMinStep(86400000);
@@ -63,10 +63,10 @@ DecoratorPanel decoratorPanel = new DecoratorPanel();
 decoratorPanel.setWidget(dateTimePicker);
 Button getDate = new Button("Show date");
 getDate.addClickListener(new ClickListener() {
-	public void onClick(Widget sender) {
-		// Display the selected date/time using DateTimeFormat
-		dateLabel.setText(DateTimeFormat.getMediumDateTimeFormat().format(dateTimePicker.getDate()));
-	}
+  public void onClick(Widget sender) {
+    // Display the selected date/time using DateTimeFormat
+    dateLabel.setText(DateTimeFormat.getMediumDateTimeFormat().format(dateTimePicker.getDate()));
+  }
 });
 }}}
 
