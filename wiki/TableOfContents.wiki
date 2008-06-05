@@ -21,6 +21,7 @@
     * [ProgressBar]
     * [DatePicker]
     * [GWTCanvas]
+    * [Spinner]
   * [FAQ]
     * [StubbingRPC]
     * [IntegratingWithSpring]
