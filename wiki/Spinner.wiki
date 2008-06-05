@@ -21,11 +21,14 @@ The incubator provides some widgets using the Spinner:
 || *!VolumeSlider* ||Combination of a !ProgressBar and arrows to increase decrease the value ||
 
 = Examples =
+
+=== ValueSpinner ===
 {{{
 // Create a value spinner with initial value=0 that allows values between -1000 and 1000
-ValueSpinner simpleSpinner = new ValueSpinner(0, -1000, 1000);
+ValueSpinner simpleSpinner = new ValueSpinner(0, -1000, 1000);}}}
 
-		
+=== Customized ValueSpinner to display value as formatted date ===
+{{{	
 // Create a value spinner that displays the value as a formatted date
 ValueSpinner dateSpinner = new ValueSpinner(new Date().getTime()) {
 	protected String formatValue(long value) {
@@ -37,16 +40,19 @@ ValueSpinner dateSpinner = new ValueSpinner(new Date().getTime()) {
 };
 // Min step = milliseconds per day
 dateSpinner.getSpinner().setMinStep(86400000);
+}}}
 
-
+=== TimePicker ===
+{{{
 // A TimePicker using AM/PM 12h format
 TimePicker timePicker = new TimePicker(false);
 
-
 // A TimePicker with no "AM/PM" and no "seconds" field and using 24H formatting for "hours" filed
 TimePicker customTimePicker = new TimePicker(new Date(), null, DateTimeFormat.getFormat("HH"), DateTimeFormat.getFormat("mm"), null);
+}}}
 
-
+=== DateTimePicker ===
+{{{
 // Creating a date time picker with AM/PM 12h TimePicker
 final DateTimePicker dateTimePicker = new DateTimePicker(false);
 // Create a label to display the selected date
