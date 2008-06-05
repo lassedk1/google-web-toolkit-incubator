@@ -24,6 +24,7 @@ The incubator provides some widgets using the Spinner:
 {{{
 // Create a value spinner with initial value=0 that allows values between -1000 and 1000
 ValueSpinner simpleSpinner = new ValueSpinner(0, -1000, 1000);
+
 		
 // Create a value spinner that displays the value as a formatted date
 ValueSpinner dateSpinner = new ValueSpinner(new Date().getTime()) {
@@ -37,11 +38,27 @@ ValueSpinner dateSpinner = new ValueSpinner(new Date().getTime()) {
 // Min step = milliseconds per day
 dateSpinner.getSpinner().setMinStep(86400000);
 
+
 // A TimePicker using AM/PM 12h format
 TimePicker timePicker = new TimePicker(false);
+
 
 // A TimePicker with no "AM/PM" and no "seconds" field and using 24H formatting for "hours" filed
 TimePicker customTimePicker = new TimePicker(new Date(), null, DateTimeFormat.getFormat("HH"), DateTimeFormat.getFormat("mm"), null);
 
 
+// Creating a date time picker with AM/PM 12h TimePicker
+final DateTimePicker dateTimePicker = new DateTimePicker(false);
+// Create a label to display the selected date
+final Label dateLabel = new Label();
+// Wrap the DateTimePicker into a DecoratorPanel
+DecoratorPanel decoratorPanel = new DecoratorPanel();
+decoratorPanel.setWidget(dateTimePicker);
+Button getDate = new Button("Show date");
+getDate.addClickListener(new ClickListener() {
+	public void onClick(Widget sender) {
+		// Display the selected date/time using DateTimeFormat
+		dateLabel.setText(DateTimeFormat.getMediumDateTimeFormat().format(dateTimePicker.getDate()));
+	}
+});
 }}}
