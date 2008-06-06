@@ -57,7 +57,7 @@ This it the API that will be used by all GWT users. It allows users to add new h
     * `KeyDownHandler`
      * `onKeyDown(KeyDownEvent event)`
     * ...
-  * For each event we also need to know who fired it
+  * For each event, we create an interface to allow widgets to add handler's for the event.  
    * `FiresClickEvents`
     * `HandlerRegistation addClickHandler(ClickEvent event)`
    * `FiresKeyDownEvents`
@@ -85,16 +85,17 @@ This is the API that will be used by most widget creators who are creating and p
 
 === Class overview ===
   
-  * `EventHook`
-   * Event hook is used to allow the widget to hook a handler to a specific event type.
-   * For each event type, we have a specific hook, such as 
-     * `ClickEvent.HOOK`
-     * `KeyDownEvent.HOOK`
+  * `Event.Key`
+   * Event Key is used to associate a specific event type, handler type, and sender.
+   * For each event type, we have a specific key
+     * `ClickEvent.KEY`
+     * `KeyDownEvent.KEY`
      * ...
 === Protected methods ===
   * In `Widget` 
     * `protected finalHandlerRegistration addEventHandler(EventHook hook, EventHandler handler)`
     * `protected final void fireEvent(AbstractEvent event)`
+    * `protected void attachEventType(Event.key eventType)`
 
 
 === How it works ===
