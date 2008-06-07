@@ -1,6 +1,6 @@
 #summary Spinner and widgets using it
 
-|| Live demo || [http://google-web-toolkit-incubator.googlecode.com Demo] ||
+|| Live demo || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/SpinnerDemo/SpinnerDemo.html Demo] ||
 || Java docs || *_TODO_* ||
 || Sample code || *_TODO_* ||
 || Java source || *_TODO_* ||
