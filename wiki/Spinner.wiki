@@ -2,8 +2,8 @@
 
 || Live demo || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/SpinnerDemo/SpinnerDemo.html Demo] ||
 || Java docs || *_TODO_* ||
-|| Sample code || *_TODO_* ||
-|| Java source || *_TODO_* ||
+|| Sample code || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/spinner/client/SpinnerDemoPanel.java Sample] ||
+|| Java source || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/widgetideas/client/Spinner.java Source] ||
 
 = Introduction =
 A Spinner provides to arrows to increase and decrease a value. In combination with an input field this becomes a well known widget used mainly for setting times.
