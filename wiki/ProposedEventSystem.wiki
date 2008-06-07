@@ -6,7 +6,6 @@ The current listener widget event system is very easy to use and understand, whi
   * Revisit the disadvantages of the current listener system and show how the handler system addresses each one. 
 
 
-
 = Disadvantages of current listener system =
   # We cannot add extra information about an event.
     * Why: Because modifying an interface is a breaking change.
@@ -32,7 +31,7 @@ The current listener widget event system is very easy to use and understand, whi
   clickListeners.add(handler);
 }}} 
   # All event sources must be widgets.
-    * Why: because interface source is defined as a `Widget`.
+    * Why: because interface handler methods define the source as `Widget`.
   # All widget creators must sink their own events.
   
 
@@ -45,7 +44,9 @@ This it the API that will be used by all GWT users. It allows users to add new h
    * Base class for all events
    * New Event classes  
     * `ClickEvent`
+      * Event which wraps a native click event.
     * `KeyDownEvent`
+      * Event which wraps a native key down event.
     * ...
   * `HandlerRegistration`
    *  Bookkeeping class to allow handlers to be removed from widgets. Each time a handler is added to a widget, a `HandlerRegistration` instance is returned
@@ -57,15 +58,17 @@ This it the API that will be used by all GWT users. It allows users to add new h
     * `KeyDownHandler`
      * `onKeyDown(KeyDownEvent event)`
     * ...
-  * For each event, we create an interface to allow widgets to easily add handlers for the event.
+  * For each event, we create an interface for adding event handlers..
    * `FiresClickEvents`
-    * `HandlerRegistation addClickHandler(ClickEvent event)`
+    * `HandlerRegistation addClickHandler(ClickHandler handler)`
+       * Adds a click handler to the given widget.
    * `FiresKeyDownEvents`
-    * `HandlerRegistration addKeyDownHandler(KeyDownEvent event)`
+    * `HandlerRegistration addKeyDownHandler(KeyDownHandler event)`
+      * Adds a key down handler to the given widget.
    * ...
 === How it works ===
-  * Each handler has a single method with a single argument, such as `onClick(ClickEvent event)` or `onKeyDown(KeyDownEvent event)`.
-  * Each widget supporting an event type has a method to add a handler of the form `HandlerRegistration addClickHandler(ClickHandler handler)`.
+  * Each handler has a single method with a single argument, such as `void onClick(ClickEvent event)` or `void onKeyDown(KeyDownEvent event)`.
+  * Each widget supporting an event type will impleent the appropriate `Fires` interface and therefore have a method of the form `HandlerRegistration addFooHandler(FooEvent . For example a widget supporting a click handler must implement `FiresClickEvents`. 
   * To remove a handler, you must save the `HandlerRegistration` instance returned from the handler's add method and call `removeHandler()` on it.
 
 === Sample use of a handler ==
@@ -81,23 +84,26 @@ This it the API that will be used by all GWT users. It allows users to add new h
 }}}
 
 == Widget Developer Event API ==
-This is the API that will be used by most widget creators who are creating and packaging their own widgets.  It allows widgets to key up new handlers and send events to them.
+This is the API that will be used by most widget creators who are creating and packaging their own widgets.  It allows widgets to hook up new handlers and send events to them.
 
 === Class overview ===
   
-  * `Event.Key`
-   * Event Key is used to associate a specific event type, handler type, and source.
+  * `AbstractEvent.Key`
+   * The unique key used to represent a event type. It is primarily used to associate handers and events. 
    * For each event type, we have a specific key
      * `ClickEvent.KEY`
+       * The key used to register handlers on a click event.
      * `KeyDownEvent.KEY`
+       * The key used to register  handlers on a key down event.
      * ...
 === Protected methods ===
   * In `Widget` 
-    * `protected finalHandlerRegistration addEventHandler(EventHook key, EventHandler handler)`
+    * `protected final HandlerRegistration addEventHandler(AbstractEvent.Key key, EventHandler handler)`
+      *  Registers the handler for the specific type represented by the event key.
     * `protected final void fireEvent(AbstractEvent event)`
-    * `protected void attachEventType(Event.Key eventType)`
-
-
+      *  Fires the event to all registered handlers. 
+    * `protected void  subscribeTo(AbstractEvent.Key eventKey)`
+      *  Prepares the widget to fire the given event type.   The default implementation sinks native events where appropriate.
 === How it works ===
   * When a handler is added to a widget, the widget calls `addEventHandler` with the event's key and the supplied handler.
 {{{
@@ -105,7 +111,17 @@ This is the API that will be used by most widget creators who are creating and p
     addEventHandler(KeyDownEvent.KEY, handler);
  }
 }}}
-  * To use the widget's handlers, the widget must create an event object, then call `Widget`'s `fireEvent` method on that event object.
+  *  If this is the first time a handler of a given type has been added a widget, the widget's `subscribeTo` method is called. 
+{{{
+  public void subscribeTo(AbstractEvent.Key key) {
+     if(key instanceof BrowserEvent.Key) {
+       int eventToSink = ((BrowserEvent.Key)key).getEventToSink();
+       sinkEvents(eventToSink);
+     }
+  } 
+
+}}} 
+  * To use the widget's handlers, the widget must create an event object, then call `Widget`'s `fireEvent`.  
 {{{
   @Override
   public void onBrowserEvent(Event e){
@@ -117,7 +133,7 @@ This is the API that will be used by most widget creators who are creating and p
 
 
 === Sample widget event handling code ===
-This code shows how to wire a `DateBox` to be able to handler a `KeyDownHandler`. In specific, implements the functionality described in the first example.
+This code shows how to wire a `DateBox` to handle a `KeyDownHandler`. In  other words, this sample implements the `DataBox.addKeyDownEvent`  functionality used above.
 
 {{{
 public class DateBox extends Composite implements FiresKeyDownEvents {
@@ -144,29 +160,30 @@ This API is for those widget creators who need to create custom events and for t
 === Class Overview ===
   * `HandlerManager`
    * Manages all event handlers for widgets. `Widget` lazily creates a `HandlerManager` instance when `addEventHandler` is called.
-   * Each `HandlerManager` is associated with a single widget. That widget is set as the source for all events passed into the handler.
+   * Each `HandlerManager` is associated with a single widget. That widget is set as the source for all events passed into the manager.
 
 === Protected methods ===
- * `Event.Key`
-  * `void keyEvent(HandlerManager manager, EventHandler handler)`
-   * Setup method that is called when an event handler is added to a widget. Allows the handler system to take care of sinking events when appropriate. For example, `KeyDownEvent`'s event key checks to see if the source implements `sinkEvents`, and if it does, sinks `Event.ON_KEY_DOWN`. 
  * `AbstractEvent`
   * `protected abstract void fire(EventHandler handler)`
    * Allows event instance to call correct handler method. For example 
 {{{
-public class KeyDownEvent extends KeyEvent {
-  public void fire(EventHandler handler) {
-     ((KeyDownHandler)handler).onKeyDown(this);
+public class KeyDownEvent extends KeyEvent<KeyDownHandler> {
+  public void fire(KeyDownHandler handler) {
+     handler.onKeyDown(this);
   }
  ...
 }
 }}}
-  * `abstract EventHook getEventHook()`
-   * Allows event instances to specify the static event key. For example
+  * `abstract Event.Key getKey()`
+   * Allows event instances to specify the static event key.  The event key can also contain additional useful information about the event type. For example
 {{{
-public class KeyDownEvent extends KeyEvent {
-  public static final EventHook KEY = ...
-  public EventHook getEventHook(){
+public class KeyDownEvent extends BrowserEvent {
+  
+  // BrowserEvent.Key overrides Key and adds a getEventToSink() attribute.  
+  public static final Key KEY = new BrowserEvent.Key(Event.ON_KEY_DOWN);
+ 
+   // This method allows the event, once created, to identify its key. The handler manager uses that information to dispatch the event to the correct handlers.
+   public Event.Key getKey(){
     return KEY;
   }
 }
@@ -174,7 +191,7 @@ public class KeyDownEvent extends KeyEvent {
 
 
 === Steps to create a custom event ===
-This is an event that is triggered when the user becomes happy. Will be implemented in webkit 10.
+This is an event that is triggered when the user becomes happy. 
 
   # Define a new event class.  You can add arbitrary metadata in the event class. For simplicity, we will not include any here though.
 {{{
@@ -194,44 +211,25 @@ interface FiresHappyEvents {
 }}}
   # Wire up the `HappyEvent.fire` method
 {{{
-class HappyEvent extends AbstractEvent {
-  protected void fire(EventHandler handler) {
-    ((HappyHandler)handler).onHappiness(this);
+class HappyEvent extends AbstractEvent <HappyHandler> {
+  protected void fire(HappyHandler handler) {
+     happyHandler.onHappiness(this);
   }
   ...
 }
 }}}
   # Add a unique event key
 {{{
-class HappyEvent extends AbstractEvent {
-  public static EventHook KEY = new EventHook();
+class HappyEvent extends AbstractEvent <HappyHandler>{
+  public static Event.Key KEY = new Event.Key();
  
-  public EventHook getEventHook(){
+  public Event.Key getKey(){
     return KEY; 
   }
   ...
 }
 }}}
-  # Wire up `EventHook.keyEvent` if necessary
-{{{
-
-class HappyEvent extends AbstractEvent {
-  public static final HookEvent KEY = new EventHook(){
-  public void keyEvent(EventManager eventManager, EventHandler handler) {
-    // Sanity checks
-    Object source = eventManager.getEventSource();
-    assert(handler instanceof HappyHandler);
-    assert(source instanceof FiresHappyEvents);
-
-    if(eventManager.isFirstHandler(handler){
-      // If source implements sink events, sink it. 
-      // No, ON_HAPPY doesn't exist, just run with it...
-      BrowserEvent.trySinkEvents(source, Event.ON_HAPPY);
-    }
-  }
-  ...
-}}}
-
+ 
 === Full code needed to create a `Happy` handler === 
 
 {{{
@@ -243,29 +241,18 @@ public interface FiresHappyEvents {
   public HandlerRegistration addHappyHandler(HappyHandler handler);
 }
 
-public class HappyEvent extends KeyEvent {
-  public static EventHook KEY = new EventHook(){
-    public void keyEvent(EventManager eventManager, EventHandler handler) {
-      // Sanity checks
-      Object source = eventManager.getEventSource();
-      assert(handler instanceof HappyHandler);
-      assert(source instanceof FiresHappyEvents);
+public class HappyEvent extends AbstractEvent <HappyHandler> {
+  public static Event KEY = new Event.Key( );
 
-      if(eventManager.isFirstHandler(handler){
-        BrowserEvent.trySinkEvents(source, Event.ON_HAPPY);
-      }
-     }
-  };
-  public EventHook getEventHook(){
+  public Event.Key getEvent.Key(){
     return KEY; 
   }
 
-  public void fire(EventHandler handler) {
-    ((HappyHandler)handler).onHappiness(this);
+  public void fire(HappyHandler handler) {
+    handler.onHappiness(this);
   }
    
 }
-
 
 }}}
 == Class Diagram ==
@@ -282,7 +269,7 @@ http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/im
     * call `handlerManager.addEventHandler(MyEvent.KEY, myHandler)`
    # In `HandlerManager`  
     * store *myHandler* in a map indexed by event key
-    * call `EventHook.keyEvent` for event specific setup
+    * call `Event.Key.keyEvent` for event specific setup
  * Firing a `MyEvent` event
    # In 'Widget'
     * create new `MyEvent` *myEvent* instance
