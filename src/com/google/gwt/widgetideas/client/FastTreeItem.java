@@ -384,6 +384,11 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
       state = TREE_NODE_INTERIOR_CLOSED;
     }
     updateState();
+    if (open) {
+      afterOpen();
+    } else {
+      afterClose();
+    }
   }
 
   public void setText(String text) {
@@ -410,6 +415,18 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * Called before the tree item is opened.
    */
   protected void beforeOpen() {
+  }
+
+  /**
+   * Called after the tree item is closed.
+   */
+  protected void afterClose() {
+  }
+
+  /**
+   * Called after the tree item is opened.
+   */
+  protected void afterOpen() {
   }
 
   /**
