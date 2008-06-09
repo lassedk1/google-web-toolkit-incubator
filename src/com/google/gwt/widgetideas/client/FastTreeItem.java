@@ -406,18 +406,6 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   }
 
   /**
-   * Called before the tree item is closed.
-   */
-  protected void beforeClose() {
-  }
-
-  /**
-   * Called before the tree item is opened.
-   */
-  protected void beforeOpen() {
-  }
-
-  /**
    * Called after the tree item is closed.
    */
   protected void afterClose() {
@@ -427,6 +415,18 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * Called after the tree item is opened.
    */
   protected void afterOpen() {
+  }
+
+  /**
+   * Called before the tree item is closed.
+   */
+  protected void beforeClose() {
+  }
+
+  /**
+   * Called before the tree item is opened.
+   */
+  protected void beforeOpen() {
   }
 
   /**
