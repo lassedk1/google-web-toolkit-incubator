@@ -189,7 +189,7 @@ public class TimePicker extends Composite implements FiresChangeEvents<Date> {
     dateInMillis = (long) ((Math.floor(date.getTime() / DAY_IN_MS) + 1) * DAY_IN_MS)
         + dateInMillis % DAY_IN_MS;
     for (TimeSpinner spinner : timeSpinners) {
-      spinner.getSpinner().setValue(dateInMillis, true);
+      spinner.getSpinner().setValue(dateInMillis, false);
     }
   }
 
