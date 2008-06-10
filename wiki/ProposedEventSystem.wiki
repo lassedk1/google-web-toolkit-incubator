@@ -37,7 +37,7 @@ The current listener widget event system is very easy to use and understand, whi
 
 = Proposed Handler System =
 == Widget event API == 
-This it the API that will be used by all GWT users. It allows users to add new handlers to widgets.
+This is the API that will be used by all GWT users. It allows users to add new handlers to widgets.
 
 === Class overview ===
   * `AbstractEvent`
