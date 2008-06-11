@@ -162,6 +162,7 @@ css:
     .hookClass{} /* Empty and stripped, but left for future expansion */
 }}}
     * The function just returns the CSS class name, but verifies that the CSS class exists in the stylesheet.
+      * TODO: Add an @external annotation to allow a "binding" to a site-wide css file
     * No typos.
     * Possibility of using obfuscated names for programmatically-accessible class names. For obfuscation, we'll use a Adler32 checksum of the source css file expressed in base36 as a prefix (7 chars). The developer can override this with an annotation.
   * Implementation fix-ups (Maybe):
