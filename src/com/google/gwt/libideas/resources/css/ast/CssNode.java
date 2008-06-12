@@ -15,8 +15,18 @@
  */
 package com.google.gwt.libideas.resources.css.ast;
 
+import com.google.gwt.dev.util.DefaultTextOutput;
+import com.google.gwt.libideas.resources.css.CssGenerationVisitor;
+
 /**
  * The basic type that composes a CSS tree.
  */
 public abstract class CssNode implements CssVisitable {
+  @Override
+  public String toString() {
+    DefaultTextOutput out = new DefaultTextOutput(false);
+    CssGenerationVisitor v = new CssGenerationVisitor(out, true);
+    v.accept(this);
+    return out.toString();
+  }
 }

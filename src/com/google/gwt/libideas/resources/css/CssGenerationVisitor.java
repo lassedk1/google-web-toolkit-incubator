@@ -37,22 +37,43 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
- * 
+ * Generates a static CSS template string and provides information on where to
+ * inject dynamic expressions.
  */
 public class CssGenerationVisitor extends CssVisitor {
-
   private final TextOutput out;
   private boolean needsOpenBrace;
   private boolean needsComma;
+  private final boolean substituteDots;
   private final SortedMap<Integer, List<CssNode>> substitutionPositions = new TreeMap<Integer, List<CssNode>>();
 
+  /**
+   * Constructor.
+   * 
+   * @param out the output hondler
+   */
   public CssGenerationVisitor(TextOutput out) {
+    this(out, false);
+  }
+
+  /**
+   * Constructor for producing an abbreviated form of the template for use with
+   * {@link CssNode#toString()}.
+   * 
+   * @param out the output handler
+   * @param substituteDots if <code>true</code> locations in the text output
+   *          where expression substitutions would normally occur are replaced
+   *          with a textual placeholder
+   */
+  public CssGenerationVisitor(TextOutput out, boolean substituteDots) {
     this.out = out;
+    this.substituteDots = substituteDots;
   }
 
   @Override
   public void endVisit(CssIf x, Context ctx) {
     // Match up an explanatory comment
+    out.indentOut();
     out.printOpt("/* } */");
     out.newlineOpt();
   }
@@ -102,7 +123,17 @@ public class CssGenerationVisitor extends CssVisitor {
   @Override
   public boolean visit(CssIf x, Context ctx) {
     // Record where the contents of the if block should be inserted
-    out.printOpt("/* @if " + x.getExpression() + " { */");
+    StringBuilder expr = new StringBuilder("/* @if ");
+    if (x.getExpression() != null) {
+      expr.append(x.getExpression()).append(" ");
+    } else {
+      expr.append(x.getPropertyName()).append(" ");
+      for (String v : x.getPropertyValues()) {
+        expr.append(v).append(" ");
+      }
+    }
+    expr.append("{ */");
+    out.printOpt(expr.toString());
     out.newlineOpt();
     out.indentIn();
     addSubstitition(x);
@@ -206,13 +237,18 @@ public class CssGenerationVisitor extends CssVisitor {
   }
 
   private void addSubstitition(CssNode node) {
-    int position = out.toString().length();
-    if (substitutionPositions.containsKey(position)) {
-      substitutionPositions.get(position).add(node);
+    if (substituteDots) {
+      out.printOpt(".....");
+      out.newlineOpt();
     } else {
-      List<CssNode> nodes = new ArrayList<CssNode>();
-      nodes.add(node);
-      substitutionPositions.put(position, nodes);
+      int position = out.toString().length();
+      if (substitutionPositions.containsKey(position)) {
+        substitutionPositions.get(position).add(node);
+      } else {
+        List<CssNode> nodes = new ArrayList<CssNode>();
+        nodes.add(node);
+        substitutionPositions.put(position, nodes);
+      }
     }
   }
 
