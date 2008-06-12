@@ -31,11 +31,12 @@ public class StyleInjector {
    * The DOM-compatible way of adding stylesheets.
    */
   public static class StyleInjectorImpl {
-    public void injectStyleSheet(String contents) {
+    public StyleElement injectStyleSheet(String contents) {
       StyleElement style = Document.get().createStyleElement();
       style.setPropertyString("language", "text/css");
       style.setInnerText(contents);
       Document.get().getElementsByTagName("head").getItem(0).appendChild(style);
+      return style;
     }
   }
 
@@ -43,8 +44,10 @@ public class StyleInjector {
    * IE doesn't allow manipulation of a style element through DOM methods.
    */
   public static class StyleInjectorImplIE extends StyleInjectorImpl {
-    public native void injectStyleSheet(String contents) /*-{
-      $doc.createStyleSheet().cssText = contents;
+    public native StyleElement injectStyleSheet(String contents) /*-{
+      var s = $doc.createStyleSheet();
+      s.cssText = contents;
+      return s;
     }-*/;
   }
 
@@ -53,14 +56,14 @@ public class StyleInjector {
    * 
    * @param resources the ImmutableResourceBundle to inject
    */
-  public static void injectStylesheet(ImmutableResourceBundle resources) {
+  public static StyleElement injectStylesheet(ImmutableResourceBundle resources) {
     StringBuilder sb = new StringBuilder();
     for (ResourcePrototype p : resources.getResources()) {
       if (p instanceof CssResource) {
         sb.append(((CssResource) p).getText()).append("\n");
       }
     }
-    injectStylesheet(sb.toString());
+    return injectStylesheet(sb.toString());
   }
 
   /**
@@ -68,8 +71,8 @@ public class StyleInjector {
    * 
    * @param contents the CSS contents of the stylesheet
    */
-  public static void injectStylesheet(String contents) {
-    ((StyleInjectorImpl) GWT.create(StyleInjectorImpl.class)).injectStyleSheet(contents);
+  public static StyleElement injectStylesheet(String contents) {
+    return ((StyleInjectorImpl) GWT.create(StyleInjectorImpl.class)).injectStyleSheet(contents);
   }
 
   /**
@@ -83,7 +86,7 @@ public class StyleInjector {
    * @deprecated Use {@link CssResource} with {@code @url} rules instead.
    */
   @Deprecated
-  public static void injectStylesheet(String contents,
+  public static StyleElement injectStylesheet(String contents,
       ImmutableResourceBundle references) {
     if (references != null) {
       for (ResourcePrototype p : references.getResources()) {
@@ -94,7 +97,7 @@ public class StyleInjector {
       }
     }
 
-    injectStylesheet(contents);
+    return injectStylesheet(contents);
   }
 
   /**
