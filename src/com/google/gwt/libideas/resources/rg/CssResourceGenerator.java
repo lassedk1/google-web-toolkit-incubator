@@ -50,7 +50,7 @@ import com.google.gwt.libideas.resources.css.ast.CssUrl;
 import com.google.gwt.libideas.resources.css.ast.CssVisitor;
 import com.google.gwt.libideas.resources.css.ast.HasNodes;
 import com.google.gwt.libideas.resources.rebind.ResourceContext;
-import com.google.gwt.libideas.resources.rebind.ResourceGenerator;
+import com.google.gwt.libideas.resources.rebind.AbstractResourceGenerator;
 import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
 import com.google.gwt.user.rebind.SourceWriter;
 
@@ -71,7 +71,7 @@ import java.util.zip.Adler32;
 /**
  * Provides implementations of CSSResources.
  */
-public class CssResourceGenerator extends ResourceGenerator {
+public class CssResourceGenerator extends AbstractResourceGenerator {
   private static class ClassRenamer extends CssVisitor {
     private final Map<String, String> classReplacements;
     private final TreeLogger logger;
@@ -189,32 +189,115 @@ public class CssResourceGenerator extends ResourceGenerator {
   /**
    * Merges rules that have matching selectors.
    */
-  private static class MergeRulesVisitor extends CssModVisitor {
+  private static class MergeIdenticalSelectorsVisitor extends CssModVisitor {
     private final Map<String, CssRule> canonicalRules = new HashMap<String, CssRule>();
+
+    @Override
+    public boolean visit(CssIf x, Context ctx) {
+      // Can't merge rules across if rules
+      (new MergeIdenticalSelectorsVisitor()).accept(x.getNodes());
+      return false;
+    }
 
     @Override
     public boolean visit(CssMediaRule x, Context ctx) {
       // Can't merge rules across media rules
-      (new MergeRulesVisitor()).accept(x.getNodes());
+      (new MergeIdenticalSelectorsVisitor()).accept(x.getNodes());
       return false;
     }
 
     @Override
     public boolean visit(CssRule x, Context ctx) {
-      for (CssSelector sel : x.getSelectors()) {
-        if (canonicalRules.containsKey(sel.getSelector())) {
-          CssRule canonical = canonicalRules.get(sel.getSelector());
-
-          // Don't duplicate properties if a rule had multiple selectors
-          x.getProperties().removeAll(canonical.getProperties());
-          canonical.getProperties().addAll(x.getProperties());
-
-          ctx.removeMe();
-        } else {
-          canonicalRules.put(sel.getSelector(), x);
-        }
+      // Assumed to run immediately after SplitRulesVisitor
+      assert x.getSelectors().size() == 1;
+      CssSelector sel = x.getSelectors().get(0);
+      if (canonicalRules.containsKey(sel.getSelector())) {
+        CssRule canonical = canonicalRules.get(sel.getSelector());
+        canonical.getProperties().addAll(x.getProperties());
+        ctx.removeMe();
+      } else {
+        canonicalRules.put(sel.getSelector(), x);
       }
       return false;
+    }
+  }
+
+  /**
+   * Merges rules that have identical content.
+   */
+  private static class MergeRulesByContentVisitor extends CssModVisitor {
+    private Map<String, CssRule> rulesByContents = new HashMap<String, CssRule>();
+
+    @Override
+    public boolean visit(CssIf x, Context ctx) {
+      // Can't merge rules across if rules
+      (new MergeIdenticalSelectorsVisitor()).accept(x.getNodes());
+      return false;
+    }
+
+    @Override
+    public boolean visit(CssMediaRule x, Context ctx) {
+      // Can't merge rules across media rules
+      (new MergeRulesByContentVisitor()).accept(x.getNodes());
+      return false;
+    }
+
+    @Override
+    public boolean visit(CssRule x, Context ctx) {
+      StringBuilder b = new StringBuilder();
+      for (CssProperty p : x.getProperties()) {
+        b.append(p.getName()).append(":");
+        if (p.getExpression() != null) {
+          b.append(p.getExpression());
+        } else {
+          for (String s : p.getValues()) {
+            b.append(s).append(" ");
+          }
+          b.append(";");
+        }
+      }
+
+      String content = b.toString();
+      if (rulesByContents.containsKey(content)) {
+        CssRule r = rulesByContents.get(content);
+        r.getSelectors().addAll(x.getSelectors());
+        ctx.removeMe();
+        return false;
+      }
+
+      // Look for prefixes
+      for (Map.Entry<String, CssRule> entry : rulesByContents.entrySet()) {
+        if (content.startsWith(entry.getKey())) {
+          CssRule r = entry.getValue();
+          r.getSelectors().addAll(x.getSelectors());
+          x.getProperties().subList(0, r.getProperties().size()).clear();
+          return false;
+        }
+      }
+
+      rulesByContents.put(content, x);
+      return false;
+    }
+  }
+
+  /**
+   * Splits rules with compound selectors into multiple rules.
+   */
+  private static class SplitRulesVisitor extends CssModVisitor {
+    @Override
+    public void endVisit(CssRule x, Context ctx) {
+      if (x.getSelectors().size() == 1) {
+        return;
+      }
+
+      for (CssSelector sel : x.getSelectors()) {
+        CssRule newRule = new CssRule();
+        newRule.getSelectors().add(sel);
+        newRule.getProperties().addAll(x.getProperties());
+        ctx.insertBefore(newRule);
+      }
+      ctx.removeMe();
+      return;
     }
   }
 
@@ -663,7 +746,9 @@ public class CssResourceGenerator extends ResourceGenerator {
       (new ClassRenamer(logger, classReplacements)).accept(sheet);
 
       // Combine rules with identical selectors
-      (new MergeRulesVisitor()).accept(sheet);
+      (new SplitRulesVisitor()).accept(sheet);
+      (new MergeIdenticalSelectorsVisitor()).accept(sheet);
+      (new MergeRulesByContentVisitor()).accept(sheet);
 
       return makeExpression(logger, sheet);
 

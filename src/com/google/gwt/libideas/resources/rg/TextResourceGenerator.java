@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -22,7 +22,7 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.dev.util.Util;
 import com.google.gwt.libideas.resources.client.TextResource;
 import com.google.gwt.libideas.resources.rebind.ResourceContext;
-import com.google.gwt.libideas.resources.rebind.ResourceGenerator;
+import com.google.gwt.libideas.resources.rebind.AbstractResourceGenerator;
 import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
 import com.google.gwt.user.rebind.SourceWriter;
 
@@ -30,11 +30,10 @@ import java.net.URL;
 
 /**
  * Provides implementations of TextResource.
- * 
  */
-public final class TextResourceGenerator extends ResourceGenerator {
+public final class TextResourceGenerator extends AbstractResourceGenerator {
 
-  ResourceContext context;
+  private ResourceContext context;
 
   @Override
   public void init(TreeLogger logger, ResourceContext context) {
@@ -44,8 +43,8 @@ public final class TextResourceGenerator extends ResourceGenerator {
   @Override
   public void writeAssignment(TreeLogger logger, JMethod method)
       throws UnableToCompleteException {
-    URL[] resources =
-        ResourceGeneratorUtil.findResources(logger, context, method);
+    URL[] resources = ResourceGeneratorUtil.findResources(logger, context,
+        method);
 
     if (resources.length != 1) {
       logger.log(TreeLogger.ERROR, "Exactly one "
@@ -66,11 +65,11 @@ public final class TextResourceGenerator extends ResourceGenerator {
     sw.println("public String getText() {");
     sw.indent();
 
-    TreeLogger transformLogger =
-        logger.branch(TreeLogger.DEBUG, "Applying Transformers", null);
-    String toWrite =
-        ResourceGeneratorUtil.applyTransformations(transformLogger, method,
-            String.class, new String(Util.readURLAsChars(resource)));
+    TreeLogger transformLogger = logger.branch(TreeLogger.DEBUG,
+        "Applying Transformers", null);
+    String toWrite = ResourceGeneratorUtil.applyTransformations(
+        transformLogger, method, String.class, new String(
+            Util.readURLAsChars(resource)));
 
     sw.println("return \"" + Generator.escape(toWrite).replaceAll("\0", "\\0")
         + "\";");

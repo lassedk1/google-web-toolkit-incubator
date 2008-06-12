@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,7 +20,7 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.libideas.resources.client.DataResource;
 import com.google.gwt.libideas.resources.rebind.ResourceContext;
-import com.google.gwt.libideas.resources.rebind.ResourceGenerator;
+import com.google.gwt.libideas.resources.rebind.AbstractResourceGenerator;
 import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
 import com.google.gwt.user.rebind.SourceWriter;
 
@@ -29,7 +29,7 @@ import java.net.URL;
 /**
  * Provides implementations of DataResource.
  */
-public final class DataResourceGenerator extends ResourceGenerator {
+public final class DataResourceGenerator extends AbstractResourceGenerator {
   private ResourceContext context;
 
   @Override
@@ -41,8 +41,8 @@ public final class DataResourceGenerator extends ResourceGenerator {
   public void writeAssignment(TreeLogger logger, JMethod method)
       throws UnableToCompleteException {
 
-    URL[] resources =
-        ResourceGeneratorUtil.findResources(logger, context, method);
+    URL[] resources = ResourceGeneratorUtil.findResources(logger, context,
+        method);
 
     if (resources.length != 1) {
       logger.log(TreeLogger.ERROR, "Exactly one "

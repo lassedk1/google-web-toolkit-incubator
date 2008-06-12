@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -23,7 +23,7 @@ import com.google.gwt.dev.util.Util;
 import com.google.gwt.libideas.resources.client.TextResource;
 import com.google.gwt.libideas.resources.client.impl.ExternalTextResourcePrototype;
 import com.google.gwt.libideas.resources.rebind.ResourceContext;
-import com.google.gwt.libideas.resources.rebind.ResourceGenerator;
+import com.google.gwt.libideas.resources.rebind.AbstractResourceGenerator;
 import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
 import com.google.gwt.user.rebind.SourceWriter;
 
@@ -34,7 +34,8 @@ import java.util.Map;
 /**
  * Adds {@link ExternalTextResourcePrototype} objects to the bundle.
  */
-public final class ExternalTextResourceGenerator extends ResourceGenerator {
+public final class ExternalTextResourceGenerator extends
+    AbstractResourceGenerator {
   private ResourceContext context;
   private StringBuffer data;
   private boolean first;

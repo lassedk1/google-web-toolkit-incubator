@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,41 +20,50 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 
 /**
- * Encapsulates per-type resource generation logic.
+ * Encapsulates per-type resource generation logic. The methods on
+ * ResourceGenerator will be called in the following order:
+ * <ol>
+ * <lIResourceGeneratoreeLogger, ResourceContext)}</li>
+ * <li>{@link #prepare(TreeLogger, JMethod)} once for each method</li>
+ * <li>{@link #writeFields(TreeLogger)}</li>
+ * <li>{@link #writeAssignment(TreeLogger, JMethod)} once for each method</li>
+ * <li>{@link #finish(TreeLogger)}</li>
+ * </ol>
  */
-public abstract class ResourceGenerator {
+public interface ResourceGenerator {
 
   /**
-   * Default no-op implementation.
-   * 
-   * @param logger the TreeLogger to use when recording events for the method
-   * @throws UnableToCompleteException
+   * Called at the end of the resource generation phase and can be used to
+   * perform cleanup. The default implementation is a no-op.
    */
-  public void finish(TreeLogger logger) throws UnableToCompleteException {
-  }
+  void finish(TreeLogger logger) throws UnableToCompleteException;
 
-  public abstract void init(TreeLogger logger, ResourceContext context)
+  /**
+   * Initialize the ResourceGenerator with the generation context. The logger
+   * instance should not be retained; use the per-method logger instead.
+   */
+  void init(TreeLogger logger, ResourceContext context)
       throws UnableToCompleteException;
 
   /**
-   * Default no-op implementation.
-   * 
-   * @param logger the TreeLogger to use when recording events for the method
-   * @throws UnableToCompleteException
+   * Called once for each method the ResourceGenerator is expected to handle.
+   * The default implementation is a no-op.
    */
-  public void prepare(TreeLogger logger, JMethod method)
-      throws UnableToCompleteException {
-  }
-
-  public abstract void writeAssignment(TreeLogger logger, JMethod method)
+  void prepare(TreeLogger logger, JMethod method)
       throws UnableToCompleteException;
 
   /**
-   * Default no-op implementation.
-   * 
-   * @param logger the TreeLogger to use when recording events for the method
-   * @throws UnableToCompleteException
+   * Write the right-hand-side of an assignment expression to provide the
+   * singleton instance object for a particular resource.
    */
-  public void writeFields(TreeLogger logger) throws UnableToCompleteException {
-  }
+  void writeAssignment(TreeLogger logger, JMethod method)
+      throws UnableToCompleteException;
+
+  /**
+   * The ResourceGenerator will write any bundle-level fields into the
+   * {@linkplain ResourceContext#getSourceWriter() context's SourceWriter} at
+   * this time. Default no-op implementation.
+   */
+  void writeFields(TreeLogger logger) throws UnableToCompleteException;
+
 }
