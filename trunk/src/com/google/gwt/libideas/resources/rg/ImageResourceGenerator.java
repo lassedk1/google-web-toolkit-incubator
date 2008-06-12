@@ -20,7 +20,7 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.libideas.resources.client.impl.ImageResourcePrototype;
 import com.google.gwt.libideas.resources.rebind.ResourceContext;
-import com.google.gwt.libideas.resources.rebind.ResourceGenerator;
+import com.google.gwt.libideas.resources.rebind.AbstractResourceGenerator;
 import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
 import com.google.gwt.libideas.resources.rg.ImageBundleBuilder.ImageRect;
 import com.google.gwt.user.rebind.SourceWriter;
@@ -33,7 +33,7 @@ import java.util.Map;
  * Builds an image strip for all ImageResources defined within an
  * ImmutableResourceBundle.
  */
-public final class ImageResourceGenerator extends ResourceGenerator {
+public final class ImageResourceGenerator extends AbstractResourceGenerator {
   private ResourceContext context;
   private ImageBundleBuilder builder;
   private Map<String, String> externalLocationExpressions;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -22,7 +22,7 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.libideas.resources.client.impl.SoundResourcePrototype;
 import com.google.gwt.libideas.resources.rebind.ResourceContext;
-import com.google.gwt.libideas.resources.rebind.ResourceGenerator;
+import com.google.gwt.libideas.resources.rebind.AbstractResourceGenerator;
 import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.rebind.SourceWriter;
@@ -32,7 +32,7 @@ import java.net.URL;
 /**
  * Creates implementations of SoundResources.
  */
-public class SoundResourceGenerator extends ResourceGenerator {
+public class SoundResourceGenerator extends AbstractResourceGenerator {
   private ResourceContext context;
   private SoundBundleBuilder builder;
   private boolean soundEnabled;
