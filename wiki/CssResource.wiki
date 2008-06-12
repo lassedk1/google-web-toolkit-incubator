@@ -32,7 +32,7 @@
 
 =Use Cases=
 
-  * Constants (Working):
+  * Constants (*Working*):
 {{{
 @def small 1px;
 @def black #000;
@@ -41,7 +41,7 @@ border: small solid black;
     * The parse rules make it difficult to use delimiting tokens for substitutions
     * Redefining built-in sizes allows users to write plain CSS to draft a style and then tweak it.
     * Suggest that users use upper-case names, similar to static final members.
-  * Runtime substitution (Working)
+  * Runtime substitution (*Working*)
 {{{
 @eval userBackground com.module.UserPreferences.getUserBackground();
 background: userBackground;
@@ -52,13 +52,16 @@ background: userBackground;
     * Generated implementations of CSSResources can do fast string slicing since offsets of substitutions are known at compile time.
     * Allow an @import statement for unqualified names?
     * CSSResource.getText() or CSSResource.inject() necessary
-  * Compile-time import (TODO)
+  * Compile-time import (_TODO_)
 {{{
 @import cssResourceFunctionName;
 }}}
-    * This will cause compile-time substitution (a-la gcc #import) of one CssResource into another.
+    * What does this mean?
+      * Is this a preprocessor-like #include?  If so, it is problematic to have an n:1 relationship?
+      * Is this like a Java static import where we just inherit metadata like @def or @url?
+    * To what extent is this actually necessary?  The point of the @import statement is to allow for source and deployment modularization.  Source modularization can be achieved by using multiple CssResource interfaces and we're only concerned with static resources in the Bundle.
     * The @import statement will only work for other CssResources, not for URLs at runtime, since the `.gwt.xml` or StyleInjector can be used in those cases.
-  * Runtime structural changes (Working)
+  * Runtime structural changes (*Working*)
 {{{
 /* Runtime evaluation in a static context */
 @if com.module.Foo.staticBooleanFunction() {
@@ -82,7 +85,7 @@ background: userBackground;
     * @if blocks can be nested.  No support for @else or @elif since conditional CSS is usually used to "fix up" browser quirks.
     * What does it mean to have an @def or @eval in an @if block?  Easy to make this work for property-based @if statements; would have to generate pretty gnarly runtime code to handle the expression-based @if statement.  Could have block-level scoping; but this seems like a dubious use-case.
     * If the function in the first form can be statically evaluated in a permutation, there is no runtime cost.  The second form will never have a runtime cost because it is evaluated during compilation.
-  * CSS Image Sprites (WORKING):
+  * CSS Image Sprites (*Working*):
 {{{
 @sprite mySpriteClass imageResourceFuncName; => generates =>
   .mySpriteClass {
@@ -107,7 +110,7 @@ myResources.css().mySpriteClass().apply(someElement)
     * @sprite is sensitive to the FooBundle in which the CSSResource is declared; a sibling ImageResource method named in the @sprite declaration will be used to compose the background sprite.
     * @sprite entries will be expanded to static CSS rules, possibly with data: urls
     * The only way to make this work on ie6 is to modify the structure of the element.  For @style (and maybe a general class of meta-styles), the CssResource member function returns a MetaStyle instance with an apply(Element e) method.  The contract is that the Element passed in will be modified to have the meta-style applied.  The effects of the application depend on the specifics of the meta-style.
-  * References to DataResources (Working)
+  * References to DataResources (*Working*)
 {{{
 @url myBackgroundUrl siblingDataResource;
 
@@ -116,7 +119,7 @@ myResources.css().mySpriteClass().apply(someElement)
 }
 }}}
     * The identifier will be expanded to `url('some_url')`
-  * BiDi (Open RFC):
+  * BiDi (_Open RFC_):
     * Can this be accomplished using just the skinning support and some pre-cooked recipes?
     * Perhaps a magic @if predicate
 {{{
@@ -141,7 +144,7 @@ div:rtl{} => generates =>
     text-align: <correct value>
   }
 }}}
-  * Compile-time name checking (Working):
+  * Compile-time name checking (*Working*):
 {{{
 java:
     class Resources {
@@ -162,10 +165,10 @@ css:
     .hookClass{} /* Empty and stripped, but left for future expansion */
 }}}
     * The function just returns the CSS class name, but verifies that the CSS class exists in the stylesheet.
-      * TODO: Add an @external annotation to allow a "binding" to a site-wide css file
+      * _TODO_: Add an @external annotation to allow a "binding" to a site-wide css file
     * No typos.
     * Possibility of using obfuscated names for programmatically-accessible class names. For obfuscation, we'll use a Adler32 checksum of the source css file expressed in base36 as a prefix (7 chars). The developer can override this with an annotation.
-  * Implementation fix-ups (Maybe):
+  * Implementation fix-ups (~~Not planned~~):
 {{{
     div:hover { }
        Could use top-level event handler to fake on IE
