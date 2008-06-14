@@ -98,7 +98,9 @@ java -cp src/:/path/to/gwt-dev-mac.jar:/path/to/gwt-incubator.jar \
   -package com.foo.client.resources
 }}}
 
-When running !MakeBundle, set the classpath up in the same way that you would configure the classpath when running !GWTCompiler. That is, ensure that the source of your application is on the classpath.
+  When running !MakeBundle, set the classpath up in the same way that you would configure the classpath when running GWTCompiler. That is, ensure that the source of your application is on the classpath.
+
+  The tool optionally takes a list of files to include in the bundle, e.g. `com/foo/client/resources/*.png`.
 
 It is recommended that you use interface composition to modify the generated interface in order to avoid the need to merge updates to the automatically-generated file:
 
