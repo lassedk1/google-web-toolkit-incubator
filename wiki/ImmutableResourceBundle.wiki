@@ -86,6 +86,31 @@ The methods on a `ResourceGenerator` are called in the following order
   * Inlining files into the compiled JS may not make sense if those files are not always accessed by the program, thus inlining should be configurable on a per-resource or per-ImmutableResourceBundle basis.
 
 
+= Automatically creating a bundle interface =
+
+The !MakeBundle tool will create a template ImmutableResourceBundle file.  Suppose you wanted to generate bundle for all of the resources in the `com.foo.client.resources` Java package named `FooBundle.java`:
+
+{{{
+#!/bin/sh
+java -cp src/:/path/to/gwt-dev-mac.jar:/path/to/gwt-incubator.jar \
+  com.google.gwt.libideas.resources.tools.MakeBundle \
+  -out /tmp/eclgen -showTypes -name FooBundle.java \
+  -package com.foo.client.resources
+}}}
+
+When running !MakeBundle, set the classpath up in the same way that you would configure the classpath when running !GWTCompiler. That is, ensure that the source of your application is on the classpath.
+
+It is recommended that you use interface composition to modify the generated interface in order to avoid the need to merge updates to the automatically-generated file:
+
+{{{
+public interface RealBundle extends GeneratedBundle {
+  RealBundle IMPL = GWT.create(RealBundle.class);
+
+  @Resource("something_else.txt")
+  DataResource anExtraMethod();
+}
+}}}
+
 = Future possibilities =
   * Automatic, distributed cache warming.  This could be especially useful for popular apps to pre-distribute resources into intermediate proxy servers.
   * Google Gears resource store integration.
