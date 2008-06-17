@@ -52,10 +52,14 @@ public class StyleInjector {
   }
 
   /**
-   * Inject all CSSResources in an ImmutableResourceBundle.
+   * Inject all CSSResources in an ImmutableResourceBundle. This method is
+   * deprecated to isolate StyleInjector from the bundle API.
    * 
    * @param resources the ImmutableResourceBundle to inject
+   * @deprecated Use {@link #injectStyleSheet(String)} and
+   *             {@link CssResource#getText()}.
    */
+  @Deprecated
   public static StyleElement injectStylesheet(ImmutableResourceBundle resources) {
     StringBuilder sb = new StringBuilder();
     for (ResourcePrototype p : resources.getResources()) {
