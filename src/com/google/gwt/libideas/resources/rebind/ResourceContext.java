@@ -18,7 +18,6 @@ package com.google.gwt.libideas.resources.rebind;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
-import com.google.gwt.user.rebind.SourceWriter;
 
 import java.net.URL;
 
@@ -79,14 +78,6 @@ public interface ResourceContext {
    * Return the type of the resource bundle being generated.
    */
   JClassType getResourceBundleType();
-
-  /**
-   * Return a SourceWriter which can be used to add to the concrete
-   * implementation of the type.
-   * 
-   * @return
-   */
-  SourceWriter getSourceWriter();
 
   /**
    * Indicates if the runtime context supports data: urls.

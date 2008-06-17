@@ -23,14 +23,31 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
  * Encapsulates per-type resource generation logic. The methods on
  * ResourceGenerator will be called in the following order:
  * <ol>
- * <lIResourceGeneratoreeLogger, ResourceContext)}</li>
+ * <li>{@link #init(TreeLogger, ResourceContext)}</li>
  * <li>{@link #prepare(TreeLogger, JMethod)} once for each method</li>
- * <li>{@link #writeFields(TreeLogger)}</li>
- * <li>{@link #writeAssignment(TreeLogger, JMethod)} once for each method</li>
+ * <li>{@link #createFields(TreeLogger, FieldAccumulator)}</li>
+ * <li>{@link #createAssignment(TreeLogger, JMethod)} once for each method</li>
  * <li>{@link #finish(TreeLogger)}</li>
  * </ol>
+ * 
+ * Direct access to the contents of the generated bundle implementation is
+ * intentionally limited to prevent unrelated ResourceGenerators from
+ * potentially creating namespace conflicts.
  */
 public interface ResourceGenerator {
+
+  /**
+   * Produce the right-hand-side of an assignment expression to provide the
+   * singleton instance object for a particular resource.
+   */
+  String createAssignment(TreeLogger logger, JMethod method)
+      throws UnableToCompleteException;
+
+  /**
+   * The ResourceGenerator can create bundle-level fields.
+   */
+  void createFields(TreeLogger logger, FieldAccumulator fields)
+      throws UnableToCompleteException;
 
   /**
    * Called at the end of the resource generation phase and can be used to
@@ -40,7 +57,7 @@ public interface ResourceGenerator {
 
   /**
    * Initialize the ResourceGenerator with the generation context. The logger
-   * instance should not be retained; use the per-method logger instead.
+   * instance should not be retained; use the per-method loggers instead.
    */
   void init(TreeLogger logger, ResourceContext context)
       throws UnableToCompleteException;
@@ -51,19 +68,4 @@ public interface ResourceGenerator {
    */
   void prepare(TreeLogger logger, JMethod method)
       throws UnableToCompleteException;
-
-  /**
-   * Write the right-hand-side of an assignment expression to provide the
-   * singleton instance object for a particular resource.
-   */
-  void writeAssignment(TreeLogger logger, JMethod method)
-      throws UnableToCompleteException;
-
-  /**
-   * The ResourceGenerator will write any bundle-level fields into the
-   * {@linkplain ResourceContext#getSourceWriter() context's SourceWriter} at
-   * this time. Default no-op implementation.
-   */
-  void writeFields(TreeLogger logger) throws UnableToCompleteException;
-
 }
