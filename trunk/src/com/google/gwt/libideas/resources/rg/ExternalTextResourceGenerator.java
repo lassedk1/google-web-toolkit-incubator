@@ -18,13 +18,18 @@ package com.google.gwt.libideas.resources.rg;
 import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
+import com.google.gwt.core.ext.typeinfo.JType;
+import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.dev.util.Util;
 import com.google.gwt.libideas.resources.client.TextResource;
 import com.google.gwt.libideas.resources.client.impl.ExternalTextResourcePrototype;
-import com.google.gwt.libideas.resources.rebind.ResourceContext;
 import com.google.gwt.libideas.resources.rebind.AbstractResourceGenerator;
+import com.google.gwt.libideas.resources.rebind.FieldAccumulator;
+import com.google.gwt.libideas.resources.rebind.ResourceContext;
 import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
+import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
 import com.google.gwt.user.rebind.SourceWriter;
 
 import java.net.URL;
@@ -43,6 +48,54 @@ public final class ExternalTextResourceGenerator extends
   private Map<String, Integer> hashes;
   private Map<String, Integer> offsets;
   private int currentIndex;
+
+  private String externalTextUrlIdent;
+
+  private String externalTextCacheIdent;
+
+  @Override
+  public String createAssignment(TreeLogger logger, JMethod method)
+      throws UnableToCompleteException {
+    String name = method.getName();
+
+    SourceWriter sw = new StringSourceWriter();
+    sw.println("new " + ExternalTextResourcePrototype.class.getName() + "(");
+    sw.indent();
+    sw.println('"' + name + "\",");
+    // These are field names
+    sw.println(externalTextUrlIdent + ", " + externalTextCacheIdent + ", ");
+    sw.println(offsets.get(method.getName()).toString());
+    sw.outdent();
+    sw.print(")");
+
+    return sw.toString();
+  }
+
+  @Override
+  public void createFields(TreeLogger logger, FieldAccumulator fields)
+      throws UnableToCompleteException {
+    data.append(']');
+
+    urlExpression = context.addToOutput(
+        context.getResourceBundleType().getQualifiedSourceName().replace('.',
+            '_')
+            + "_jsonbundle.txt", "text/plain", data.toString().getBytes(), true);
+
+    TypeOracle typeOracle = context.getGeneratorContext().getTypeOracle();
+    JClassType stringType = typeOracle.findType(String.class.getName());
+    assert stringType != null;
+
+    externalTextUrlIdent = fields.addField(stringType, "externalTextUrl",
+        urlExpression, true, true);
+
+    JClassType textResourceType = typeOracle.findType(TextResource.class.getName());
+    assert textResourceType != null;
+    JType textResourceArrayType = typeOracle.getArrayType(textResourceType);
+
+    externalTextCacheIdent = fields.addField(textResourceArrayType,
+        "externalTextCache", "new " + TextResource.class.getName() + "["
+            + currentIndex + "]", true, true);
+  }
 
   @Override
   public void init(TreeLogger logger, ResourceContext context)
@@ -93,37 +146,5 @@ public final class ExternalTextResourceGenerator extends
 
     // Store the (possibly n:1) mapping of resource function to bundle index.
     offsets.put(method.getName(), hashes.get(toWrite));
-  }
-
-  @Override
-  public void writeAssignment(TreeLogger logger, JMethod method)
-      throws UnableToCompleteException {
-    String name = method.getName();
-
-    SourceWriter sw = context.getSourceWriter();
-    sw.println("new " + ExternalTextResourcePrototype.class.getName() + "(");
-    sw.indent();
-    sw.println('"' + name + "\",");
-    // These are field names
-    sw.println("EXTERNAL_TEXT_URL, EXTERNAL_TEXT_CACHE,");
-    sw.println(offsets.get(method.getName()).toString());
-    sw.outdent();
-    sw.print(")");
-  }
-
-  @Override
-  public void writeFields(TreeLogger logger) throws UnableToCompleteException {
-    data.append(']');
-
-    urlExpression = context.addToOutput(
-        context.getResourceBundleType().getQualifiedSourceName().replace('.',
-            '_')
-            + "_jsonbundle.txt", "text/plain", data.toString().getBytes(), true);
-
-    SourceWriter sw = context.getSourceWriter();
-    sw.println("final String EXTERNAL_TEXT_URL = " + urlExpression + ";");
-    sw.println("final " + TextResource.class.getName()
-        + "[] EXTERNAL_TEXT_CACHE = new " + TextResource.class.getName() + "["
-        + currentIndex + "];");
   }
 }

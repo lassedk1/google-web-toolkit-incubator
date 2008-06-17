@@ -17,11 +17,15 @@ package com.google.gwt.libideas.resources.rg;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
+import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.libideas.resources.client.impl.ImageResourcePrototype;
-import com.google.gwt.libideas.resources.rebind.ResourceContext;
 import com.google.gwt.libideas.resources.rebind.AbstractResourceGenerator;
+import com.google.gwt.libideas.resources.rebind.FieldAccumulator;
+import com.google.gwt.libideas.resources.rebind.ResourceContext;
 import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
+import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
 import com.google.gwt.libideas.resources.rg.ImageBundleBuilder.ImageRect;
 import com.google.gwt.user.rebind.SourceWriter;
 
@@ -39,6 +43,58 @@ public final class ImageResourceGenerator extends AbstractResourceGenerator {
   private Map<String, String> externalLocationExpressions;
   private Map<String, ImageRect> externalImageRects;
   private int imageStripCount;
+
+  private String imageResourceBundleUrlIdent;
+
+  @Override
+  public String createAssignment(TreeLogger logger, JMethod method)
+      throws UnableToCompleteException {
+    String name = method.getName();
+
+    SourceWriter sw = new StringSourceWriter();
+    sw.println("new " + ImageResourcePrototype.class.getName() + "(");
+    sw.indent();
+    sw.println('"' + name + "\",");
+
+    ImageBundleBuilder.ImageRect rect;
+    if (!externalImageRects.containsKey(name)) {
+      // This is a reference to a field
+      sw.println(imageResourceBundleUrlIdent + ",");
+      rect = builder.getMapping(method.getName());
+    } else {
+      sw.println(externalLocationExpressions.get(name).toString() + ", ");
+      rect = externalImageRects.get(name);
+    }
+
+    if (rect == null) {
+      logger.log(TreeLogger.ERROR, "No ImageRect ever computed for " + name,
+          null);
+      throw new UnableToCompleteException();
+    }
+
+    sw.println(rect.left + ", 0, " + rect.width + ", " + rect.height);
+
+    sw.outdent();
+    sw.print(")");
+    
+    return sw.toString();
+  }
+
+  @Override
+  public void createFields(TreeLogger logger, FieldAccumulator fields)
+      throws UnableToCompleteException {
+    if (imageStripCount > 0) {
+      String bundleUrlExpression = builder.writeBundledImage(logger.branch(
+          TreeLogger.DEBUG, "Writing image strip", null), context);
+
+      TypeOracle typeOracle = context.getGeneratorContext().getTypeOracle();
+      JClassType stringType = typeOracle.findType(String.class.getName());
+      assert stringType != null;
+
+      imageResourceBundleUrlIdent = fields.addField(stringType,
+          "imageResourceBundleUrl", bundleUrlExpression, true, true);
+    }
+  }
 
   @Override
   public void init(TreeLogger logger, ResourceContext context) {
@@ -77,50 +133,6 @@ public final class ImageResourceGenerator extends AbstractResourceGenerator {
       String urlExpression = context.addToOutput(resource, false);
       externalLocationExpressions.put(name, urlExpression);
       externalImageRects.put(name, e.getImageRect());
-    }
-  }
-
-  @Override
-  public void writeAssignment(TreeLogger logger, JMethod method)
-      throws UnableToCompleteException {
-    String name = method.getName();
-
-    SourceWriter sw = context.getSourceWriter();
-    sw.println("new " + ImageResourcePrototype.class.getName() + "(");
-    sw.indent();
-    sw.println('"' + name + "\",");
-
-    ImageBundleBuilder.ImageRect rect;
-    if (!externalImageRects.containsKey(name)) {
-      // This is a reference to a field
-      sw.println("imageResourceBundleUrl,");
-      rect = builder.getMapping(method.getName());
-    } else {
-      sw.println(externalLocationExpressions.get(name).toString() + ", ");
-      rect = externalImageRects.get(name);
-    }
-
-    if (rect == null) {
-      logger.log(TreeLogger.ERROR, "No ImageRect ever computed for " + name,
-          null);
-      throw new UnableToCompleteException();
-    }
-
-    sw.println(rect.left + ", 0, " + rect.width + ", " + rect.height);
-
-    sw.outdent();
-    sw.print(")");
-  }
-
-  @Override
-  public void writeFields(TreeLogger logger) throws UnableToCompleteException {
-    if (imageStripCount > 0) {
-      String bundleUrlExpression = builder.writeBundledImage(logger.branch(
-          TreeLogger.DEBUG, "Writing image strip", null), context);
-
-      SourceWriter sw = context.getSourceWriter();
-      sw.println("private String imageResourceBundleUrl = "
-          + bundleUrlExpression + ";");
     }
   }
 }

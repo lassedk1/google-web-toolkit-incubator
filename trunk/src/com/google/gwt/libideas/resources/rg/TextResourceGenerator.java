@@ -24,6 +24,7 @@ import com.google.gwt.libideas.resources.client.TextResource;
 import com.google.gwt.libideas.resources.rebind.ResourceContext;
 import com.google.gwt.libideas.resources.rebind.AbstractResourceGenerator;
 import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
+import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
 import com.google.gwt.user.rebind.SourceWriter;
 
 import java.net.URL;
@@ -36,12 +37,7 @@ public final class TextResourceGenerator extends AbstractResourceGenerator {
   private ResourceContext context;
 
   @Override
-  public void init(TreeLogger logger, ResourceContext context) {
-    this.context = context;
-  }
-
-  @Override
-  public void writeAssignment(TreeLogger logger, JMethod method)
+  public String createAssignment(TreeLogger logger, JMethod method)
       throws UnableToCompleteException {
     URL[] resources = ResourceGeneratorUtil.findResources(logger, context,
         method);
@@ -54,7 +50,7 @@ public final class TextResourceGenerator extends AbstractResourceGenerator {
 
     URL resource = resources[0];
 
-    SourceWriter sw = context.getSourceWriter();
+    SourceWriter sw = new StringSourceWriter();
     // Write the expression to create the subtype.
     sw.println("new " + TextResource.class.getName() + "() {");
     sw.indent();
@@ -84,5 +80,12 @@ public final class TextResourceGenerator extends AbstractResourceGenerator {
 
     sw.outdent();
     sw.println("}");
+    
+    return sw.toString();
+  }
+
+  @Override
+  public void init(TreeLogger logger, ResourceContext context) {
+    this.context = context;
   }
 }

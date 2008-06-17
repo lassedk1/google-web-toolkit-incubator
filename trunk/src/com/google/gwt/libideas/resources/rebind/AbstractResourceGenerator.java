@@ -25,6 +25,15 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
  * @see ResourceGeneratorUtil
  */
 public abstract class AbstractResourceGenerator implements ResourceGenerator {
+  public abstract String createAssignment(TreeLogger logger, JMethod method)
+      throws UnableToCompleteException;
+
+  /**
+   * A no-op implementation.
+   */
+  public void createFields(TreeLogger logger, FieldAccumulator fields)
+      throws UnableToCompleteException {
+  }
 
   /**
    * A no-op implementation.
@@ -40,14 +49,5 @@ public abstract class AbstractResourceGenerator implements ResourceGenerator {
    */
   public void prepare(TreeLogger logger, JMethod method)
       throws UnableToCompleteException {
-  }
-
-  public abstract void writeAssignment(TreeLogger logger, JMethod method)
-      throws UnableToCompleteException;
-
-  /**
-   * A no-op implementation.
-   */
-  public void writeFields(TreeLogger logger) throws UnableToCompleteException {
   }
 }

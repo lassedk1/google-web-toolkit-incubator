@@ -49,9 +49,10 @@ import com.google.gwt.libideas.resources.css.ast.CssStylesheet;
 import com.google.gwt.libideas.resources.css.ast.CssUrl;
 import com.google.gwt.libideas.resources.css.ast.CssVisitor;
 import com.google.gwt.libideas.resources.css.ast.HasNodes;
-import com.google.gwt.libideas.resources.rebind.ResourceContext;
 import com.google.gwt.libideas.resources.rebind.AbstractResourceGenerator;
+import com.google.gwt.libideas.resources.rebind.ResourceContext;
 import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
+import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
 import com.google.gwt.user.rebind.SourceWriter;
 
 import java.io.IOException;
@@ -508,28 +509,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   private JClassType stringType;
 
   @Override
-  public void init(TreeLogger logger, ResourceContext context)
-      throws UnableToCompleteException {
-    this.context = context;
-
-    // Find all of the types that we care about in the type system
-    TypeOracle typeOracle = context.getGeneratorContext().getTypeOracle();
-    elementType = typeOracle.findType(Element.class.getName());
-    assert elementType != null;
-
-    stringType = typeOracle.findType(String.class.getName());
-    assert stringType != null;
-
-    spriteType = typeOracle.findType(CssResource.Sprite.class.getName().replace(
-        '$', '.'));
-    assert spriteType != null;
-
-    spriteImplType = typeOracle.findType(SpriteImpl.class.getName());
-    assert spriteImplType != null;
-  }
-
-  @Override
-  public void writeAssignment(TreeLogger logger, JMethod method)
+  public String createAssignment(TreeLogger logger, JMethod method)
       throws UnableToCompleteException {
     URL[] resources = ResourceGeneratorUtil.findResources(logger, context,
         method);
@@ -569,7 +549,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       }
     }
 
-    SourceWriter sw = context.getSourceWriter();
+    SourceWriter sw = new StringSourceWriter();
     // Write the expression to create the subtype.
     sw.println("new " + method.getReturnType().getQualifiedSourceName()
         + "() {");
@@ -656,6 +636,29 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
     sw.outdent();
     sw.println("}");
+
+    return sw.toString();
+  }
+
+  @Override
+  public void init(TreeLogger logger, ResourceContext context)
+      throws UnableToCompleteException {
+    this.context = context;
+
+    // Find all of the types that we care about in the type system
+    TypeOracle typeOracle = context.getGeneratorContext().getTypeOracle();
+    elementType = typeOracle.findType(Element.class.getName());
+    assert elementType != null;
+
+    stringType = typeOracle.findType(String.class.getName());
+    assert stringType != null;
+
+    spriteType = typeOracle.findType(CssResource.Sprite.class.getName().replace(
+        '$', '.'));
+    assert spriteType != null;
+
+    spriteImplType = typeOracle.findType(SpriteImpl.class.getName());
+    assert spriteImplType != null;
   }
 
   /**

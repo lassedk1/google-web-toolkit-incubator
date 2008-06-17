@@ -19,11 +19,15 @@ import com.google.gwt.core.ext.BadPropertyValueException;
 import com.google.gwt.core.ext.PropertyOracle;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
+import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.libideas.resources.client.impl.SoundResourcePrototype;
-import com.google.gwt.libideas.resources.rebind.ResourceContext;
 import com.google.gwt.libideas.resources.rebind.AbstractResourceGenerator;
+import com.google.gwt.libideas.resources.rebind.FieldAccumulator;
+import com.google.gwt.libideas.resources.rebind.ResourceContext;
 import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
+import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.rebind.SourceWriter;
 
@@ -36,6 +40,55 @@ public class SoundResourceGenerator extends AbstractResourceGenerator {
   private ResourceContext context;
   private SoundBundleBuilder builder;
   private boolean soundEnabled;
+
+  private String flashElementIdent;
+
+  /**
+   * Create instances of {@link SoundResourcePrototype}.
+   */
+  @Override
+  public String createAssignment(TreeLogger logger, JMethod method)
+      throws UnableToCompleteException {
+    SourceWriter sw = new StringSourceWriter();
+
+    sw.print("new ");
+    sw.print(SoundResourcePrototype.class.getName());
+    sw.println("(");
+    sw.indent();
+    sw.print(flashElementIdent + ", \"");
+    sw.print(method.getName());
+    sw.print("\", ");
+    sw.print(String.valueOf(builder.getIndex(method.getName())));
+    sw.print(", ");
+    sw.print(String.valueOf(builder.getDuration(method.getName())));
+    sw.outdent();
+    sw.println(")");
+
+    return sw.toString();
+  }
+
+  /**
+   * Save the plugins's Element in a class field.
+   */
+  @Override
+  public void createFields(TreeLogger logger, FieldAccumulator fields)
+      throws UnableToCompleteException {
+
+    String urlExpression;
+    if (soundEnabled) {
+      urlExpression = builder.writeBundle(logger, context);
+    } else {
+      urlExpression = "null";
+    }
+
+    TypeOracle typeOracle = context.getGeneratorContext().getTypeOracle();
+    JClassType elementType = typeOracle.findType(Element.class.getName());
+    assert elementType != null;
+
+    flashElementIdent = fields.addField(elementType, "flashElement",
+        SoundResourcePrototype.class.getName() + ".attach(" + urlExpression
+            + ")", true, true);
+  }
 
   @Override
   public void init(TreeLogger logger, ResourceContext context)
@@ -72,50 +125,5 @@ public class SoundResourceGenerator extends AbstractResourceGenerator {
     }
 
     builder.assimilate(logger, method.getName(), urls[0]);
-  }
-
-  /**
-   * Create instances of {@link SoundResourcePrototype}.
-   */
-  @Override
-  public void writeAssignment(TreeLogger logger, JMethod method)
-      throws UnableToCompleteException {
-    SourceWriter sw = context.getSourceWriter();
-
-    sw.print("new ");
-    sw.print(SoundResourcePrototype.class.getName());
-    sw.println("(");
-    sw.indent();
-    sw.print("FLASH_ELEMENT, \"");
-    sw.print(method.getName());
-    sw.print("\", ");
-    sw.print(String.valueOf(builder.getIndex(method.getName())));
-    sw.print(", ");
-    sw.print(String.valueOf(builder.getDuration(method.getName())));
-    sw.outdent();
-    sw.println(")");
-  }
-
-  /**
-   * Save the plugins's Element in a class field.
-   */
-  @Override
-  public void writeFields(TreeLogger logger) throws UnableToCompleteException {
-
-    String urlExpression;
-    if (soundEnabled) {
-      urlExpression = builder.writeBundle(logger, context);
-    } else {
-      urlExpression = "null";
-    }
-
-    SourceWriter sw = context.getSourceWriter();
-    sw.print("private final ");
-    sw.print(Element.class.getName());
-    sw.print(" FLASH_ELEMENT = ");
-    sw.print(SoundResourcePrototype.class.getName());
-    sw.print(".attach(");
-    sw.print(urlExpression);
-    sw.println(");");
   }
 }
