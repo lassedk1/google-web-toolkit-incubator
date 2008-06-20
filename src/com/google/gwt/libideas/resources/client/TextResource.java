@@ -15,11 +15,14 @@
  */
 package com.google.gwt.libideas.resources.client;
 
+import com.google.gwt.libideas.resources.rebind.ResourceGeneratorType;
+import com.google.gwt.libideas.resources.rg.TextResourceGenerator;
+
 /**
  * A resource that contains text that should be incorporated into the compiled
  * output.
  */
-@ResourceGeneratorType("com.google.gwt.libideas.resources.rg.TextResourceGenerator")
+@ResourceGeneratorType(TextResourceGenerator.class)
 public interface TextResource extends ResourcePrototype {
   String getText();
 }

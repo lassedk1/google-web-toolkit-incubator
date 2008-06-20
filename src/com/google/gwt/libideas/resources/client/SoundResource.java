@@ -15,6 +15,9 @@
  */
 package com.google.gwt.libideas.resources.client;
 
+import com.google.gwt.libideas.resources.rebind.ResourceGeneratorType;
+import com.google.gwt.libideas.resources.rg.SoundResourceGenerator;
+
 /**
  * A sound sample.
  * <p>
@@ -25,7 +28,7 @@ package com.google.gwt.libideas.resources.client;
  * </ul>
  * The browser must support playing SWF files of version 8 or better.
  */
-@ResourceGeneratorType("com.google.gwt.libideas.resources.rg.SoundResourceGenerator")
+@ResourceGeneratorType(SoundResourceGenerator.class)
 public interface SoundResource extends ResourcePrototype {
   /**
    * Represents a sound that is currently playing.

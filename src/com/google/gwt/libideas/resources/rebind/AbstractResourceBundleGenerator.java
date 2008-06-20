@@ -28,7 +28,6 @@ import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.dev.generator.NameFactory;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
-import com.google.gwt.libideas.resources.client.ResourceGeneratorType;
 import com.google.gwt.libideas.resources.client.ResourcePrototype;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
@@ -172,15 +171,22 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
       // ResourceBundle.getResources()
       Fields fields = new Fields();
 
+      // Try to provide as many errors as possible before failing.
+      boolean success = true;
+
       // Run the ResourceGenerators to generate implementations of the methods
       for (Map.Entry<Class<? extends ResourceGenerator>, List<JMethod>> entry : taskList.entrySet()) {
 
         ResourceGenerator rg = instantiateResourceGenerator(logger,
             entry.getKey());
 
-        invokeSingleGenerator(logger.branch(TreeLogger.DEBUG,
-            "Invoking ResourceGenerator"), resourceContext, rg,
-            entry.getValue(), sw, fields);
+        success &= invokeSingleGenerator(logger.branch(TreeLogger.DEBUG,
+            "Invoking ResourceGenerator " + rg.getClass().getName()),
+            resourceContext, rg, entry.getValue(), sw, fields);
+      }
+
+      if (!success) {
+        throw new UnableToCompleteException();
       }
 
       // Print the accumulated field definitions
@@ -339,17 +345,7 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
       throw new UnableToCompleteException();
     }
 
-    String className = generatorType.value();
-    try {
-      return Class.forName(className).asSubclass(ResourceGenerator.class);
-    } catch (ClassCastException e) {
-      logger.log(TreeLogger.ERROR, className + " is not a "
-          + ResourceGenerator.class.getName());
-    } catch (ClassNotFoundException e) {
-      logger.log(TreeLogger.ERROR, "Could not load " + className, e);
-    }
-
-    throw new UnableToCompleteException();
+    return generatorType.value();
   }
 
   /**
@@ -369,29 +365,59 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
     throw new UnableToCompleteException();
   }
 
-  private void invokeSingleGenerator(TreeLogger logger,
+  /**
+   * Returns true if the invocation was successful.
+   */
+  private boolean invokeSingleGenerator(TreeLogger logger,
       ResourceContext resourceContext, ResourceGenerator rg,
-      List<JMethod> generatorMethods, SourceWriter sw, Fields fields)
-      throws UnableToCompleteException {
+      List<JMethod> generatorMethods, SourceWriter sw, Fields fields) {
 
-    rg.init(logger.branch(TreeLogger.DEBUG, "Initializing ResourceGenerator"),
-        resourceContext);
+    try {
+      rg.init(
+          logger.branch(TreeLogger.DEBUG, "Initializing ResourceGenerator"),
+          resourceContext);
+    } catch (UnableToCompleteException e) {
+      return false;
+    }
+
+    // Defer failure until this phase has ended
+    boolean fail = false;
 
     // Prepare the ResourceGenerator by telling it all methods that it is
     // expected to produce.
     for (JMethod m : generatorMethods) {
-      rg.prepare(logger.branch(TreeLogger.DEBUG, "Preparing method "
-          + m.getName(), null), m);
+      try {
+        rg.prepare(logger.branch(TreeLogger.DEBUG, "Preparing method "
+            + m.getName()), m);
+      } catch (UnableToCompleteException e) {
+        fail = true;
+      }
+    }
+
+    if (fail) {
+      return false;
     }
 
     // Write all field values
-    rg.createFields(logger.branch(TreeLogger.DEBUG, "Creating fields"), fields);
+    try {
+      rg.createFields(logger.branch(TreeLogger.DEBUG, "Creating fields"),
+          fields);
+    } catch (UnableToCompleteException e) {
+      return false;
+    }
 
     // Create the instance variables in the IRB subclass by calling
     // writeAssignment() on the ResourceGenerator
     for (JMethod m : generatorMethods) {
-      String rhs = rg.createAssignment(logger.branch(TreeLogger.DEBUG,
-          "Writing assignment for " + m.getName()), m);
+      String rhs;
+
+      try {
+        rhs = rg.createAssignment(logger.branch(TreeLogger.DEBUG,
+            "Creating assignment for " + m.getName()), m);
+      } catch (UnableToCompleteException e) {
+        fail = true;
+        continue;
+      }
 
       String ident = fields.addField(m.getReturnType().isClassOrInterface(),
           m.getName(), null, true, false);
@@ -410,8 +436,17 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
       sw.println("}");
     }
 
+    if (fail) {
+      return false;
+    }
+
     // Finalize the ResourceGenerator
-    rg.finish(logger.branch(TreeLogger.DEBUG, "Finishing ResourceGenerator",
-        null));
+    try {
+      rg.finish(logger.branch(TreeLogger.DEBUG, "Finishing ResourceGenerator"));
+    } catch (UnableToCompleteException e) {
+      return false;
+    }
+
+    return true;
   }
 }
