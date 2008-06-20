@@ -15,12 +15,14 @@
  */
 package com.google.gwt.libideas.resources.client;
 
+import com.google.gwt.libideas.resources.rebind.ResourceGeneratorType;
+import com.google.gwt.libideas.resources.rg.ImageResourceGenerator;
 import com.google.gwt.user.client.ui.Image;
 
 /**
  * Test for ImageBundle optimizations.
  */
-@ResourceGeneratorType("com.google.gwt.libideas.resources.rg.ImageResourceGenerator")
+@ResourceGeneratorType(ImageResourceGenerator.class)
 public interface ImageResource extends ResourcePrototype {
 
   /**

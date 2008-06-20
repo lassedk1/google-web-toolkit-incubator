@@ -15,10 +15,13 @@
  */
 package com.google.gwt.libideas.resources.client;
 
+import com.google.gwt.libideas.resources.rebind.ResourceGeneratorType;
+import com.google.gwt.libideas.resources.rg.DataResourceGenerator;
+
 /**
  * A non-text resource.
  */
-@ResourceGeneratorType("com.google.gwt.libideas.resources.rg.DataResourceGenerator")
+@ResourceGeneratorType(DataResourceGenerator.class)
 public interface DataResource extends ResourcePrototype {
   /**
    * Retrieves a URL by which the contents of the resource can be obtained. This

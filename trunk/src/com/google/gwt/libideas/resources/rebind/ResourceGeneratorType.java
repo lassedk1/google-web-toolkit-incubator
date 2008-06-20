@@ -13,12 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.resources.client;
+package com.google.gwt.libideas.resources.rebind;
 
 /**
  * Specifies the implementation of ResourceGenerator to use for a type of
- * {@link ResourcePrototype}.
+ * {@link com.google.gwt.libideas.resources.client.ResourcePrototype}.
  */
 public @interface ResourceGeneratorType {
-  String value();
+  Class<? extends ResourceGenerator> value();
 }

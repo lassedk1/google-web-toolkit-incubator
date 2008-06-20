@@ -16,6 +16,8 @@
 package com.google.gwt.libideas.resources.client;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.libideas.resources.rebind.ResourceGeneratorType;
+import com.google.gwt.libideas.resources.rg.CssResourceGenerator;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -43,7 +45,7 @@ import java.lang.annotation.Target;
  * </ul>
  * Any named value will be replaced
  */
-@ResourceGeneratorType("com.google.gwt.libideas.resources.rg.CssResourceGenerator")
+@ResourceGeneratorType(CssResourceGenerator.class)
 public interface CssResource extends ResourcePrototype {
   /**
    * The original CSS class name specified in the resource.
