@@ -22,6 +22,7 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventPreview;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowResizeListener;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -52,8 +53,15 @@ import com.google.gwt.widgetideas.client.impl.GlassPanelImpl;
 public class GlassPanel extends FocusPanel implements EventPreview {
   private static final GlassPanelImpl impl = GWT.create(GlassPanelImpl.class);
 
-  private boolean autoHide;
+  private final boolean autoHide;
   private WindowResizeListener resizeListener;
+
+  private final Timer timer = new Timer() {
+    @Override
+    public void run() {
+      impl.matchDocumentSize(GlassPanel.this, false);
+    }
+  };
 
   /**
    * Create a glass panel widget that can be attached to an AbsolutePanel via
@@ -91,18 +99,19 @@ public class GlassPanel extends FocusPanel implements EventPreview {
     return true;
   }
 
+  @Override
   protected void onAttach() {
     super.onAttach();
     AbsolutePanel parent;
     try {
       parent = (AbsolutePanel) getParent();
     } catch (RuntimeException e) {
-      throw new IllegalStateException(
-          "Parent widget must be an instance of AbsolutePanel");
+      throw new IllegalStateException("Parent widget must be an instance of AbsolutePanel");
     }
 
     if (parent == RootPanel.get()) {
       impl.matchDocumentSize(this, false);
+      timer.scheduleRepeating(100);
       resizeListener = new WindowResizeListener() {
         public void onWindowResized(int width, int height) {
           impl.matchDocumentSize(GlassPanel.this, true);
@@ -126,8 +135,10 @@ public class GlassPanel extends FocusPanel implements EventPreview {
     });
   }
 
+  @Override
   protected void onDetach() {
     super.onDetach();
+    timer.cancel();
     if (resizeListener != null) {
       Window.removeWindowResizeListener(resizeListener);
       resizeListener = null;
