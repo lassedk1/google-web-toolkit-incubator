@@ -27,7 +27,7 @@ public interface Resources extends ImmutableResourceBundle {
 }
 }}}
 
-The CSS contents:
+The CSS contents (see CssResource for more information):
 {{{
 /* The format is @url <id> <function name>; */
 @url backgroundUrl backgroundFunction;
