@@ -13,11 +13,7 @@ One of the most important things to remember is that gwt-incubator should be com
      {{{~/gwt-incubator$ svn checkout http://google-web-toolkit.googlecode.com/svn/tools/ tools}}}
    # Check out the Incubator source:
      {{{~/gwt-incubator$ svn checkout http://google-web-toolkit-incubator.googlecode.com/svn/trunk/ trunk-read-only }}}
- # Create a new eclipse project from the existing source
- # In the properties tab go to Java Build Path --> Libraries. 
-   # Add the `gwt-user` and `gwt-dev` jars from the downloaded GWT distribution. You can find the download package [http://code.google.com/webtoolkit/download.html here].
-   # Add the `javaswf-20050404.jar` from the tools directory in the downloaded package. 
-   # Add the `junit jar` using the eclipse "Add Library option". Select junit3.
+ # Import the .project file you'll find in incubator/eclipse 
 You now should be completely set up. 
 
 === Setup for other IDEs ===
