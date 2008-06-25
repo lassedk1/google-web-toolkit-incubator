@@ -18,7 +18,7 @@ One of the most important things to remember is that gwt-incubator should be com
 
 From the incubator directory, type {{{ ant -Dgwt.home=<path to your gwt jar> test }}}
 
-If you are building gwt from source, the gwt.home path will be something like {{{ /home/you/src/gwt1.5/build/staging/gwt-mac-0.0.0 }}}
+If you are building gwt from source, the gwt.home argument will be something like {{{ -Dgwt.home=/home/you/src/gwt1.5/build/staging/gwt-mac-0.0.0 }}}
 
 === Setup for Eclipse ===
 
