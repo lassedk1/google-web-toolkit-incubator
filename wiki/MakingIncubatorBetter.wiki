@@ -6,15 +6,26 @@ This page explains how to develop with the gwt-incubator source.
 One of the most important things to remember is that gwt-incubator should be compiled against the most current *released* version of GWT. You can download the latest release of GWT for your platform [http://code.google.com/webtoolkit/download.html here].
  
 == Setting up the incubator project ==
-=== Setup for Eclipse ===
- # Follow the instructions [http://google-web-toolkit.googlecode.com/svn/trunk/eclipse/README.txt here] to set up your eclipse environment.
+
+=== Get the source ===
  # Check out the following code from the gwt-incubator Subversion repository:
    # The GWT prerequisite tools and third party library code. Use `gwt/tools` directly if you have them installed. Otherwise download them here:
      {{{~/gwt-incubator$ svn checkout http://google-web-toolkit.googlecode.com/svn/tools/ tools}}}
    # Check out the Incubator source:
      {{{~/gwt-incubator$ svn checkout http://google-web-toolkit-incubator.googlecode.com/svn/trunk/ trunk-read-only }}}
+
+=== Build and test with ant ===
+
+From the incubator directory, type {{{ ant -Dgwt.home=<path to your gwt jar> test }}}
+
+If you are building gwt from source, the gwt.home path will be something like {{{ /home/you/src/gwt1.5/build/staging/gwt-mac-0.0.0 }}}
+
+=== Setup for Eclipse ===
+
+ # Follow the instructions [http://google-web-toolkit.googlecode.com/svn/trunk/eclipse/README.txt here] to set up your eclipse environment.
  # Import the .project file you'll find in incubator/eclipse 
-You now should be completely set up. 
+
+You now should be ready to go. 
 
 === Setup for other IDEs ===
 We would much appreciate instructions here, if you are motivated to add them, add them as a comment below and I'll pull them up to this section.
