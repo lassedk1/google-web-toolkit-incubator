@@ -23,8 +23,10 @@ If you are building gwt from source, the gwt.home argument will be something lik
 === Setup for Eclipse ===
 
  # Follow the instructions [http://google-web-toolkit.googlecode.com/svn/trunk/eclipse/README.txt here] to set up your eclipse environment.
- # Create a variable named "GWT_INCUBATOR" pointing to your "gwt-incubator" folder, under
-Window->Preferences->Java->Build Path->Classpath Variables
+ # Create a variable named "GWT_INCUBATOR" pointing to your "gwt-incubator" folder
+    # Window->Preferences->Java->Build Path->Classpath Variables
+    # Click New...
+    # Type GWT_INCUBATOR in the name field, and click the Folder... button.
  # Import the eclipse project
     # File->Import->Existing Projects into Workspace
     # Select your gwt-incubator directory
