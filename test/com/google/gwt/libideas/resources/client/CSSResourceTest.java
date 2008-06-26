@@ -50,9 +50,15 @@ public class CSSResourceTest extends LibTestBase {
     assertFalse("replacement".equals(css.replacement()));
     
     String text = css.getText();
+    System.out.println(text);
     assertTrue(text.contains(Resources.INSTANCE.dataMethod().getUrl()));
     assertTrue(text.contains(red() + ";"));
-    assertTrue(text.contains(":50px"));
-    System.out.println(text);
-  }
+    assertTrue(text.contains("50px"));
+    assertFalse(text.contains("should-never-see-this"));
+    // Make sure that we can handle tags in a namespace
+    assertTrue(text.contains("ns\\:tag:pseudo"));
+    
+    // Make sure we escape property names that aren't idents
+    assertTrue(text.contains("\\-some-wacky-extension"));
+    }
 }
