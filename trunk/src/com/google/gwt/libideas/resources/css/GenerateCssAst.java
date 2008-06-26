@@ -237,7 +237,8 @@ public class GenerateCssAst {
       if (value != null) {
         extractValueOf(values, value);
       }
-      currentRule.getProperties().add(new CssProperty(name, values, important));
+      currentRule.getProperties().add(
+          new CssProperty(escapeIdent(name), values, important));
     }
 
     public void startDocument(InputSource source) throws CSSException {
@@ -427,11 +428,32 @@ public class GenerateCssAst {
       return "#" + sr + sg + sb;
     }
 
-    private String escape(String s, boolean inDoubleQuotes) {
+    private String escapeIdent(String selector) {
+      assert selector.length() > 0;
+
+      StringBuilder toReturn = new StringBuilder();
+      if (!isIdentStart(selector.charAt(0))) {
+        toReturn.append('\\');
+      }
+      toReturn.append(selector.charAt(0));
+
+      if (selector.length() > 1) {
+        for (char c : selector.substring(1).toCharArray()) {
+          if (!isIdentPart(c)) {
+            toReturn.append('\\');
+          }
+          toReturn.append(c);
+        }
+      }
+      return toReturn.toString();
+    }
+
+    private String escapeValue(String s, boolean inDoubleQuotes) {
       StringBuilder b = new StringBuilder();
       for (char c : s.toCharArray()) {
         if (Character.isISOControl(c)) {
-          b.append('\\').append(Integer.toHexString(c).toUpperCase()).append(" ");
+          b.append('\\').append(Integer.toHexString(c).toUpperCase()).append(
+              " ");
         } else {
           switch (c) {
             case '\'':
@@ -468,6 +490,14 @@ public class GenerateCssAst {
         accumulator.add(valueOf(value));
         value = value.getNextLexicalUnit();
       } while (value != null);
+    }
+
+    private boolean isIdentPart(char c) {
+      return Character.isLetterOrDigit(c) || (c == '\\') || (c == '-');
+    }
+
+    private boolean isIdentStart(char c) {
+      return Character.isLetter(c) || (c == '\\');
     }
 
     /**
@@ -542,7 +572,7 @@ public class GenerateCssAst {
         case LexicalUnit.SAC_IDENT:
           return value.getStringValue();
         case LexicalUnit.SAC_STRING_VALUE:
-          return '"' + escape(value.getStringValue(), true) + '"';
+          return '"' + escapeValue(value.getStringValue(), true) + '"';
         case LexicalUnit.SAC_RGBCOLOR:
           // flute models the commas as operators so no separator needed
           return colorValue(value.getParameters());
@@ -648,7 +678,7 @@ public class GenerateCssAst {
         if (s.getLocalName() == null) {
           return "*";
         } else {
-          return s.getLocalName();
+          return escapeIdent(s.getLocalName());
         }
 
       } else if (selector instanceof NegativeSelector) {

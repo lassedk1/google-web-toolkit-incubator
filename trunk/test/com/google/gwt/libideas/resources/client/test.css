@@ -11,6 +11,9 @@ body {
   background: BACKGROUND repeat-x;
   font-family: Helvetica, Arial, sans-serif;
   font-size: small;
+}
+
+body {
   margin: 0px;
   border: 0px;
   padding: 0px;
@@ -60,4 +63,44 @@ div {
 
 .replacement {
 	color: red;
+}
+
+.replacement:after {
+  content: "Hello world";
+}
+
+.blah {
+  \-some-wacky-extension : boo;
+}
+
+.foo {
+  border: red;
+  filter: "alpha(opacity = 30)";
+}
+
+.ns\:tag {
+  border: red;
+}
+
+.ns\:tag:pseudo {
+  content : "blah";
+}
+
+@if false {
+  .foo {
+    should-never-see-this: true;
+  }
+}
+
+.foo {
+  width: 50px;
+}
+
+.bar, .baz {
+  border: red;
+  width: 50px;
+}
+
+.baz {
+  border-left: blue;
 }
