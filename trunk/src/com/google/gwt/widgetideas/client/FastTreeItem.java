@@ -15,6 +15,7 @@
  */
 package com.google.gwt.widgetideas.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.HasFocus;
@@ -48,7 +49,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   private static final String STYLENAME_OPEN = "open";
   private static final String STYLENAME_CLOSED = "closed";
   private static final String STYLENAME_LEAF = "leaf";
-  
+
   private static final String STYLENAME_CONTENT = "treeItemContent";
   /**
    * The base tree item element that will be cloned.
@@ -59,14 +60,15 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * Static constructor to set up clonable elements.
    */
   static {
-
-    // Create the base element that will be cloned
-    TREE_LEAF = DOM.createDiv();
-    // leaf contents.
-    setStyleName(TREE_LEAF, STYLENAME_LEAF_DEFAULT);
-    Element content = DOM.createDiv();
-    setStyleName(content, STYLENAME_CONTENT);
-    DOM.appendChild(TREE_LEAF, content);
+    if (GWT.isClient()) {
+      // Create the base element that will be cloned
+      TREE_LEAF = DOM.createDiv();
+      // leaf contents.
+      setStyleName(TREE_LEAF, STYLENAME_LEAF_DEFAULT);
+      Element content = DOM.createDiv();
+      setStyleName(content, STYLENAME_CONTENT);
+      DOM.appendChild(TREE_LEAF, content);
+    }
   }
 
   private int state = TREE_NODE_LEAF;
@@ -81,7 +83,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    */
   public FastTreeItem() {
     Element elem = createLeafElement();
-    setElement(elem);    
+    setElement(elem);
   }
 
   /**
@@ -106,6 +108,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
 
   /**
    * This constructor is only for use by {@link DecoratedFastTreeItem}.
+   * 
    * @param element element
    */
   FastTreeItem(Element element) {
@@ -154,8 +157,8 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   /**
    * Become an interior node.
    */
-  public void becomeInteriorNode() {  
-    if (!isInteriorNode()) {      
+  public void becomeInteriorNode() {
+    if (!isInteriorNode()) {
       state = TREE_NODE_INTERIOR_NEVER_OPENED;
 
       Element control = DOM.createDiv();

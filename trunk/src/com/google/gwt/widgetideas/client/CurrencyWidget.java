@@ -67,6 +67,9 @@ public class CurrencyWidget extends Composite {
   protected static String acceptableCharset = getAcceptedCharset();
 
   private static String getAcceptedCharset() {
+    if (!GWT.isClient()) {
+      return null;
+    }
     StringBuffer strbuf = new StringBuffer();
     strbuf.append("0123456789");
     if (numberConstants.zeroDigit().charAt(0) != '0') {

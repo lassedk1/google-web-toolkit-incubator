@@ -62,7 +62,8 @@ public class CurrencyWidgetWithPreview extends CurrencyWidget {
   }
 
   // private static final String STYLENAME_DEFAULT = "gwt-FastTree";
-  private static final String decimalSeparator = CurrencyWidget.numberConstants.decimalSeparator();
+  private static final String decimalSeparator = !GWT.isClient() ? null
+      : CurrencyWidget.numberConstants.decimalSeparator();
   CurrencyWidgetWithPreview widget = this;
   private final PopupPanel previewPanel = new PopupPanel();
   private final HTML previewField = new HTML();
