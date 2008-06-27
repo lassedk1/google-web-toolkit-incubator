@@ -27,16 +27,23 @@ import com.google.gwt.libideas.resources.client.ResourcePrototype;
  * Used to add stylesheets to the document.
  */
 public class StyleInjector {
+
   /**
    * The DOM-compatible way of adding stylesheets.
    */
   public static class StyleInjectorImpl {
+    private static final StyleInjectorImpl IMPL = GWT.create(StyleInjectorImpl.class);
+
     public StyleElement injectStyleSheet(String contents) {
       StyleElement style = Document.get().createStyleElement();
       style.setPropertyString("language", "text/css");
-      style.setInnerText(contents);
+      setContents(style, contents);
       Document.get().getElementsByTagName("head").getItem(0).appendChild(style);
       return style;
+    }
+
+    public void setContents(StyleElement style, String contents) {
+      style.setInnerText(contents);
     }
   }
 
@@ -44,10 +51,20 @@ public class StyleInjector {
    * IE doesn't allow manipulation of a style element through DOM methods.
    */
   public static class StyleInjectorImplIE extends StyleInjectorImpl {
-    public native StyleElement injectStyleSheet(String contents) /*-{
-      var s = $doc.createStyleSheet();
-      s.cssText = contents;
-      return s;
+    @Override
+    public StyleElement injectStyleSheet(String contents) {
+      StyleElement style = createElement();
+      setContents(style, contents);
+      return style;
+    }
+
+    @Override
+    public native void setContents(StyleElement style, String contents) /*-{
+      style.cssText = contents;
+    }-*/;
+
+    private native StyleElement createElement() /*-{
+      return $doc.createStyleSheet();
     }-*/;
   }
 
@@ -76,7 +93,7 @@ public class StyleInjector {
    * @param contents the CSS contents of the stylesheet
    */
   public static StyleElement injectStylesheet(String contents) {
-    return ((StyleInjectorImpl) GWT.create(StyleInjectorImpl.class)).injectStyleSheet(contents);
+    return StyleInjectorImpl.IMPL.injectStyleSheet(contents);
   }
 
   /**
@@ -102,6 +119,19 @@ public class StyleInjector {
     }
 
     return injectStylesheet(contents);
+  }
+
+  /**
+   * Replace the contents of a previously-injected stylesheet. Updating the
+   * stylesheet in-place is typically more efficient than removing a
+   * previously-created element and adding a new one.
+   * 
+   * @param style a StyleElement previously-returned from
+   *          {@link #injectStylesheet(String)}.
+   * @param contents the new contents of the stylesheet.
+   */
+  public static void setContents(StyleElement style, String contents) {
+    StyleInjectorImpl.IMPL.setContents(style, contents);
   }
 
   /**
