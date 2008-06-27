@@ -277,7 +277,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
         }
 
         // Start the timer and listen for changes
-        DOM.setCapture(table.getElement());
+        DOM.setCapture(table.headerWrapper);
         resizeTimer.schedule(20);
       }
     }
@@ -291,7 +291,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       if (curCell != null && resizing) {
         curCellColumns.clear();
         resizing = false;
-        DOM.releaseCapture(table.getElement());
+        DOM.releaseCapture(table.headerWrapper);
         resizeTimer.cancel();
         resizeColumn();
       }
@@ -385,7 +385,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
 
       // Position a div that forces a cursor redraw in Opera
       if (cellChanged) {
-        DOM.setCapture(getScrollTable().getElement());
+        DOM.setCapture(getScrollTable().headerWrapper);
         DOM.setStyleAttribute(cursorUpdateDiv, "height",
             (Window.getClientHeight() - 1) + "px");
         DOM.setStyleAttribute(cursorUpdateDiv, "width",
@@ -414,7 +414,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     private void removeCursorUpdateDiv() {
       if (DOM.getCaptureElement() != null) {
         DOM.removeChild(RootPanel.getBodyElement(), cursorUpdateDiv);
-        DOM.releaseCapture(getScrollTable().getElement());
+        DOM.releaseCapture(getScrollTable().headerWrapper);
       }
     }
   }
