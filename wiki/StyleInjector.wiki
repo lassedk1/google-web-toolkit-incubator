@@ -43,3 +43,9 @@ StyleInjector.injectStylesheet(Resources.INSTANCE.css().getText());
 
 
 You now have your stylesheet applied to the document while taking advantage of strongly-named or inlined resource URLs.  Because the standard I18N-style of resource naming is applied to the `DataResource` instance, it is possible to provide localized CSS background images without the need for multiple, per-locale stylesheets.  It is now possible to have `myBackground_fr.png` and `myBackground_en.png` substituted based on the `locale` deferred binding property.
+
+It is possible to update the contents of a previously-injected stylesheet using the `setContents()` method:
+{{{
+StyleElement elt = StyleInjector.injectStylesheet("CSS contents");
+StyleInjector.setContents(elt, "New CSS contents");
+}}}
