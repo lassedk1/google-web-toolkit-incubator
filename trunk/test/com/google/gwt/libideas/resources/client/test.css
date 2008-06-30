@@ -93,12 +93,12 @@ div {
 }
 
 .foo {
-  width: 50px;
+  width: BIG;
 }
 
 .bar, .baz {
   border: red;
-  width: 50px;
+  width: BIG;
 }
 
 .baz {

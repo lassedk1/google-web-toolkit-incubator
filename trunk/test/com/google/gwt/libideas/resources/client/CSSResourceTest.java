@@ -29,7 +29,6 @@ public class CSSResourceTest extends LibTestBase {
 
   interface MyCssResource extends CssResource {
     String replacement();
-    String spriteClass();
   }
 
   interface Resources extends ImmutableResourceBundle {
@@ -40,15 +39,24 @@ public class CSSResourceTest extends LibTestBase {
 
     @Resource("16x16.png")
     ImageResource spriteMethod();
-    
+
     @Resource("32x32.png")
     DataResource dataMethod();
+  }
+
+  @CssResource.ClassPrefix("T")
+  interface SiblingResources extends ImmutableResourceBundle {
+    @Resource("siblingTestA.css")
+    MyCssResource a();
+
+    @Resource("siblingTestB.css")
+    MyCssResource b();
   }
 
   public void testCSS() {
     MyCssResource css = Resources.INSTANCE.css();
     assertFalse("replacement".equals(css.replacement()));
-    
+
     String text = css.getText();
     System.out.println(text);
     assertTrue(text.contains(Resources.INSTANCE.dataMethod().getUrl()));
@@ -57,8 +65,23 @@ public class CSSResourceTest extends LibTestBase {
     assertFalse(text.contains("should-never-see-this"));
     // Make sure that we can handle tags in a namespace
     assertTrue(text.contains("ns\\:tag:pseudo"));
-    
+
     // Make sure we escape property names that aren't idents
     assertTrue(text.contains("\\-some-wacky-extension"));
-    }
+  }
+
+  public void testSiblingCSS() {
+    SiblingResources r = GWT.create(SiblingResources.class);
+    
+    assertEquals(r.a().replacement(), r.b().replacement());
+    
+    String a = r.a().getText();
+    String b = r.b().getText();
+    
+    System.out.println(a);
+    System.out.println(b);
+    
+    assertTrue(a.contains(".other"));
+    assertTrue(b.contains(".other"));
+  }
 }
