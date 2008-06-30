@@ -28,7 +28,17 @@
 
 =Non-Goals=
   * Server-side manipulation
+    * All features in CssResource must be implemented with compile-time and runtime code only.  No features may depend on runtime support from server-side code.
 
+=Overview=
+
+  1 Write a CSS file, with or without GWT-specific extensions
+  1 If GWT-specific extensions are used, define a custom subtype of CssResource
+  1 Declare a method that returns CssResource or a subtype in an ImmutableResourceBundle
+  1 When the bundle type is generated with `GWT.create()` a Java expression that evaluates to the contents of the stylesheets will be created
+    * Except in the simplest case where the Java expression is a string literal, it is generally not the case that a CSS file could be generated into the module output
+  1 At runtime, call `CssResource.getText()` to retrieve the contents of the stylesheet 
+    * This will typically be combined with StyleInjector
 
 =Use Cases=
 
@@ -175,6 +185,11 @@ css:
     div:focus { }
        Problematic -- focus/blur don't bubble
 }}}
+
+=Levers and Knobs=
+
+  * The deferred-binding property `CssResource.style` may be set to `pretty` which will disable class-name obfuscation as well as pretty-print the CSS content.  Combine this with a `ResourceBundle.enableInlining` value of `false` to produce a CSS expression which is amenable to client-side editing.
+  * To allow for client-side tweaking of the effective (i.e. permutation-specific) style rules, you can store the value of CssResource.getText() into a TextArea.  Wire some UI action to pass the contents of the TextArea into `StyleInjector.setContents()` to overwrite the original, injected stylesheet.
 
 =Important open questions=
   * Can we manipulate style rules across browsers?
