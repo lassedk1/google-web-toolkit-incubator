@@ -72,6 +72,9 @@
     </all>
   </replace-with>
 
+  <!-- This can be used to make CssResource produce human-readable CSS -->
+  <define-property name="CssResource.style" values="obf,OBF,pretty,PRETTY" />
+  <set-property name="CssResource.style" value="obf" />
 
   <!-- This can be used to disable sound resources -->
   <define-property name="ResourceBundle.enableSound" values="true,false" />

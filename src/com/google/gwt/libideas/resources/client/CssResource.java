@@ -43,7 +43,6 @@ import java.lang.annotation.Target;
  * <li>{@code @url NAME siblingDataResource; .myClass {background: NAME repeat-x;}}
  * Use a DataResource to generate a <code>url('...'}</code> value.
  * </ul>
- * Any named value will be replaced
  */
 @ResourceGeneratorType(CssResourceGenerator.class)
 public interface CssResource extends ResourcePrototype {
@@ -57,13 +56,18 @@ public interface CssResource extends ResourcePrototype {
   }
 
   /**
-   * Override the prefix used for obfuscated CSS class names. The default
-   * algorithm is designed to be safe, but will not produce the shortest
-   * possible CSS class identifiers. The developer should choose a prefix that
-   * is known to not conflict with external CSS class names. An application
-   * written by FooBar Inc. might choose to use a prefix <code>FB</code>.
+   * Override the prefix used for obfuscated CSS class names within a bundle
+   * type. This annotation must be applied to the enclosing
+   * ImmutableResourceBundle because the bundle itself defines the scope in
+   * which the obfuscation of CSS class identifiers is applied.
+   * <p>
+   * The default algorithm is designed to be safe, but will not produce the
+   * shortest possible CSS class identifiers. The developer should choose a
+   * prefix that is known to not conflict with external CSS class names. An
+   * application written by FooBar Inc. might choose to use a prefix
+   * <code>FB</code>.
    */
-  @Target(ElementType.METHOD)
+  @Target(ElementType.TYPE)
   @interface ClassPrefix {
     String value();
   }
