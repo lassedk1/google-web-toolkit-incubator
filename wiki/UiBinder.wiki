@@ -201,3 +201,61 @@ There are type matching issues here. The g:field of a DOM element is a string id
 {{{
 <some:WidgetOfSomeKind g:field="theWidget"> <label gwt:for="theWidget" />
 }}}
+
+=Using ClientBundles with a UiBinder=
+
+{{{
+<!-- Resourceful.ui.xml -->
+<gwt:HTMLPanel
+  xmlns:g="package://com.google.gwt.user.client.ui"
+  xmlns:res="with://com.my.app.widgets.Resources">
+
+  <img res:-invoke="widgetyImage.apply">
+
+  <div res:class="widgetyStyle.widgetyBlock">
+    <div res:-invoke="style.widgetyLogoSprite.apply"/>
+    Level of widgetiness:
+    <span res:class="widgetyStyle.widgetyRun" g:field="widgetyText"/>
+  </div>
+</gwt:HTMLPanel>
+
+public class Resourceful extends Composite {
+  @Template("Resourceful.ui.xml")
+  interface MyUiBinder implements UiBinder<Resourceful> {}
+  private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
+
+  protected SpanElement widgetyText;
+
+  public Resourceful() {
+    uiBinder.bind(this);
+  }
+}
+
+public interface Resources extends ClientBundle {
+  @Resource("com.my.app.resources.WidgetyStyle.css")
+  WidgetyStyle widgetyStyle();
+
+  @Resource("com.my.app.resources.Widgety.jpg")
+  ImageResource widgetyImage();
+
+  public interface WidgetyStyle extends CssResource {
+    String widgetyBlock();
+    String widgetyRun();
+    Sprite widgetyLogoSprite();
+  }
+}
+}}}
+
+The with: uri type marks an object whose methods can be called to fill in attribute values. If no public api is provided to set the "with" argument (as in this example), it must be instantiable by GWT.create().
+
+Note that the apply(Element) methods of Sprite and ImageResource are set via the "-invoke" attribute. That dash is to avoid colliding with an invoke method on Resources itself (perhaps that's not worth worryin about?). There is strong debate over whether this mechanism is too loose. We are tempted to restrict it to work only with objects that implement an Applicator interface, like Sprite and ImageResource do (or will?). 
+
+{{{
+public interface Applicator<T> {
+  void apply(T t);
+}
+
+<div res:-apply="style.widgetyLogoSprite"/>
+}}}
+
+Note also that there is no requirement that a with: class implement the ClientBundle interface.
