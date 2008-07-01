@@ -259,3 +259,132 @@ public interface Applicator<T> {
 }}}
 
 Note also that there is no requirement that a with: class implement the ClientBundle interface.
+
+=Share ClientBundle instances=
+
+Extends Resourceful (from the example above) to allow its bundle to be passed in.
+
+{{{
+public class Resourceful extends Composite {
+ 
+  @Template("Resourceful.ui.xml")
+  interface MyUiBinder implements UiBinder<Resourceful> {
+    MyUiBinder with(Resources resources);
+  }
+  private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
+
+  protected SpanElement widgetyText;
+
+  public Resourceful(Resources resources) {
+    uiBinder.with(resources).bind(this);
+  }
+}
+}}}
+
+If this were using a ForkedUiBinder, it would look like this:
+
+{{{
+public class Resourceful extends Composite {
+
+  @Template("Resourceful.ui.xml")
+  interface MyUiBinder implements ForkedUiBinder<HTMLPanel, Resourceful> {
+    MyUiBinder with(Resources resources);
+  }
+  private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
+
+  protected SpanElement widgetyText;
+
+  public Resourceful(Resources resources) {
+    initWidget(uiBinder.createRoot());
+    uiBinder.with(resources).bindRest(getWidget(), this);
+  }
+}
+}}}
+
+The trick here is to define a with() method on MyUiBinder, corresponding to any with:// url defined in your template that you wish to make public.
+
+But wait, I hear you say. We have a single static instance of MyUiBinder, shared by every call to the Resourceful() constructor. Is it really safe to give it an instance method like with(), and load it up with state that may linger if bindRest() is never called?
+
+Not to worry--the binder instance returned by with() does not need to be the same instance that received the with() call. When made necessary like this, we can return a disposable UiBinder instance to accumulate whatever per-instance state is needed. Slick, eh?
+
+And you've probably noticed that you can use this technique to make any constructor argument available to the template...
+
+=Using a widget that requires constructor args=
+
+You have an existing widget that needs constructor arguments.
+
+{{{
+public CricketScores(String... teamNames) {...} 
+}}}
+
+You use it in a template.
+
+{{{
+<!-- UserDashboard.ui.xml -->
+<gwt:HTMLPanel
+  xmlns:gwt='package://com.google.gwt.user.client.ui'
+  xmlns:my='package://com.my.app.widgets' >
+
+  <my:WeatherReport g:field="weather"/>
+  <my:Stocks g:field="stocks"/>
+  <my:CricketScores g:field="scores" />
+</gwt:HTMLPanel>
+
+public class UserDashboard extends Composite {
+  @Template("UserDashboard.ui.xml")
+  interface MyUiBinder implements UiBinder<UserDashboard> {}
+  private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
+
+  public UserDashboard() {
+    uiBinder.bind(this);
+  }
+}
+}}}
+
+An error results:
+
+{{{
+UserDashboard.ui.xml:7:2 [ERROR] Cannot instantiate CricketScores
+without a zero args constructor. You must define a non-private
+CricketScores createCricketScores() method on UserDashboard.
+}}}
+
+So you define one:
+
+{{{
+public class UserDashboard extends Composite {
+  @Template("UserDashboard.ui.xml")
+  interface MyUiBinder implements UiBinder<UserDashboard> {}
+
+  String[] teamNames;
+ 
+  public UserDashboard(String... teamNames) {
+    this.teamNames = teamNames;
+    uiBinder.bind(this);
+  }
+
+  protected CricketScores createCricketScores() {
+    return new CricketSores(teamNames);
+  }
+}
+}}}
+
+or perhaps
+
+{{{
+public class UserDashboard extends Composite {
+  @Template("UserDashboard.ui.xml")
+  interface MyUiBinder implements UiBinder<UserDashboard> {}
+
+  CricketScores scores;
+ 
+  public UserDashboard(CricketScores scores) {
+    this.scores = scores;
+    uiBinder.bind(this);
+  }
+
+  protected CricketScores createCricketScores() {
+    return scores;
+  }
+}
+}}}
