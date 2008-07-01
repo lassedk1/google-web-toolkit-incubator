@@ -1,6 +1,8 @@
 #summary Declarative XML structure for defining GWT widgets
 #labels Type-Library
 
+_There is a more up to date set of use cases at UiBinder_
+
 = Declarative UI Construction in GWT =
 
 Joel Webber
