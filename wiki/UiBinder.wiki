@@ -1,7 +1,9 @@
-#summary GWT UI Binder Use Cases
+#summary UI Binder Use Cases
 #labels Type-Library
 
-= Introduction =
+= GWT UI Binder Use Cases =
+
+Ray Ryan
 
 This document provides various use cases for the use of the UiBinder, a proposed service to generate Widget and DOM structures from XML markup.
 
