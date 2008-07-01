@@ -1,5 +1,9 @@
 #summary GWT UI Binder Use Cases
 
+= Introduction =
+
+This document provides various use cases for the use of the UiBinder, a proposed service to generate Widget and DOM structures from XML markup.
+
 = Background =
 
 There are problems with the declarative ui template binder as it was [DeclarativeUi originally proposed]
@@ -58,9 +62,65 @@ interface ForkedUiBinder<R, O> extends UiBinder<O> {
 }
 }}}
 
-= Details =
+= Hello World =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+Make a simple generated UI, with a named element, and without widgets.
+
+{{{
+<!-- HelloWorld.ui.xml -->
+
+<span xmlns:g='package://com.google.gwt.user.client.ui'>
+  Hello, <span g:field="nameSpan"/>.
+</span>
+
+public class HelloWorld extends UIObject { // Could extend Widget instead
+
+  @Template("HelloWorld.ui.xml")
+  interface MyUiBinder implements UiBinder<HelloWorld> {}
+  private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
+
+  protected SpanElement nameSpan;
+
+  public HelloWorld(String name) {
+    // call setElement(), set nameSpan
+    uiBinder.installUi(this);
+    nameSpan.setInnerText(name);
+  }
+}
+
+// Use:
+
+SpanElement helloWorld = new HelloWorld("World").getElement();
+}}}
+
+= Hello Composite World =
+
+Make a simple widget-based UI
+
+{{{
+<!-- HelloWidgetWorld.ui.xml -->
+
+<g:HTMLPanel xmlns:g='package://com.google.gwt.user.client.ui'>
+  Hello, <g:ListBox g:field="listBox"/>.
+</g:HTMLPanel>
+
+public class HelloWidgetWorld extends Composite {
+
+  @Template("HelloWidgetWorld.ui.xml")
+  interface MyUiBinder implements UiBinder<HelloWidgetWorld> {}
+  private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
+
+  protected ListBox listBox;
+
+  public HelloWidgetWorld(String... names) {
+    // call initWidget(), set listBox
+    uiBinder.bind(this);
+    for (String name : names) { listBox.addItem(name); }
+  }
+}
+
+// Use:
+
+HelloWidgetWorld helloWorld =
+  new HelloWidgetWorld("able", "baker", "charlie");
+}}}
