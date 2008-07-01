@@ -320,7 +320,7 @@ The trick here is to define a with() method on MyUiBinder, corresponding to any 
 
 But wait, I hear you say. We have a single static instance of MyUiBinder, shared by every call to the Resourceful() constructor. Is it really safe to give it an instance method like with(), and load it up with state that may linger if bindRest() is never called?
 
-Not to worry&mdash;the binder instance returned by with() does not need to be the same instance that received the with() call. When made necessary like this, we can return a disposable UiBinder instance to accumulate whatever per-instance state is needed. Slick, eh?
+Not to worry--the binder instance returned by with() does not need to be the same instance that received the with() call. When made necessary like this, we can return a disposable UiBinder instance to accumulate whatever per-instance state is needed. Slick, eh?
 
 And you've probably noticed that you can use this technique to make any constructor argument available to the template...
 
