@@ -1,0 +1,13 @@
+#summary GWT UI Binder Use Cases
+
+= Background =
+
+There are problems with the declarative ui template binder as it was [DeclarativeUi originally proposed]
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
