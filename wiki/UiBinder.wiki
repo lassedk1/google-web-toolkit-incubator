@@ -388,3 +388,45 @@ public class UserDashboard extends Composite {
   }
 }
 }}}
+
+=Apply different xml templates to the same widget=
+
+You're an MVC developer. You have a nice view interface, and a templated Widget that implements it. How might you use several different xml templates for the same view?
+
+{{{
+public class FooPickerController {
+  public interface Display {
+    HasText titleField();
+    SourcesChangeEvents pickerSelect();
+  }
+
+  public void setDisplay(FooPickerDisplay display) { ... }
+}
+
+public class FooPickerDisplay extends Composite
+    implements FooPickerController.Display {
+ 
+  @Template("RedFooPicker.ui.xml")
+  interface RedBinder implements UiBinder<FooPickerDisplay> {}
+  private static RedBinder redBinder = GWT.create(MyUiBinder.class);
+
+  @Template("BlueFooPicker.ui.xml")
+  interface BlueBinder implements UiBinder<FooPickerDisplay> {}
+  private static BlueBinder blueBinder = GWT.create(MyUiBinder.class);
+
+  HasText titleField();
+  SourcesChangeEvents pickerSelect();
+
+  protected FooPickerDisplay(UiBinder<FooPickerDisplay> binder) {
+    uiBinder.bind(this);
+  }
+
+  public static FooPickerDisplay createRedPicker() {
+    return new FooPickerDisplay(redBinder);
+  }
+
+  public static FooPickerDisplay createBluePicker() {
+    return new FooPickerDisplay(blueBinder);
+  }
+}
+}}}
