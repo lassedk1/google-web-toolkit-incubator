@@ -4,6 +4,59 @@
 
 There are problems with the declarative ui template binder as it was [DeclarativeUi originally proposed]
 
+  * A template-based UI must be istantiated via GWT.create(), causing an implementation detail to be visible as public api
+  * within a template, only widgets with a zero arg constructor can be used
+  * ClientBundles cannot be used
+
+In addressing these issues, we have talked about encouraging a proxy style of use (basically, use Composite to wrap whatever widget gets GWT.create()'d), but dislike the extra object creation implied. We also hope for a system that can choose to use innerHTML, cloning, or DOM assembly as makes sense per browser type. These shortcomings could be addressed by a combination of developer discipline (yuck) and perhaps the builder pattern, but we still found ourselves faced with the likelihood of wrapping a generated object.
+
+Emily hit upon the idea of the Configurator (here rechristened UiBinder). It’s like a factory, but responsible for filling in the fields of a Widget (or other object) that someone else instantiates, rather than instantiating one itself. This seems to offer all the benefits of a builder, with no concerns of extra object creation, and as a nice side effect avoids a lot of boilerplate. This document illustrates its application in various use cases.
+
+{{{
+/**
+ * Interface implemented by classes that generate DOM and widget
+ * structures from ui.xml template files. Put the {@link Template}
+ * annotation  on a UiBinder class declaration to point the code
+ * generator at the right ui.xml file.
+ */
+interface UiBinder<T> {
+
+  /**
+   * Create a new UI and inject it into the given owner.
+   * Elements marked in the template by g:field will be
+   * assigned to like named fields or setter methods
+   * in owner.
+   */
+  bindUi(T owner);
+}
+
+/**
+ * Extends UiBinder to provide separate calls to create the root
+ * of the UI, and to bind the UI. This allows fancy implementations
+ * to support deferred instantiation.
+ *
+ * <p>Calling the inherited bindUi(owner) method is the same
+ * as calling bindRest(createRoot(), owner);
+ */
+interface ForkedUiBinder<R, O> extends UiBinder<O> {
+  /**
+   * Return the root element defined in the template,
+   * possibly empty. The type R must match the root
+   * element in the ui.xml template file.
+   */
+  R createRoot();
+
+  /**
+   * Given a ui root from a previous call to createRoot(),
+   * install it into owner. Elements marked in the
+   * template by g:field will be assigned to like named
+   * fields or setter methods in owner.(If creation of
+   * root's contents were deferred, they will be
+   * instantiated now.)
+   */
+  bindRest(R root, O owner);
+}
+}}}
 
 = Details =
 
