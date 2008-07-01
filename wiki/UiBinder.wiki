@@ -9,13 +9,13 @@ This document provides various use cases for the use of the UiBinder, a proposed
 
 = Background =
 
-There are problems with the declarative ui template binder as it was [DeclarativeUi originally proposed]
+There are problems with the declarative ui template service as it was [DeclarativeUi originally proposed]
 
   * A template-based UI must be istantiated via GWT.create(), causing an implementation detail to be visible as public api
   * within a template, only widgets with a zero arg constructor can be used
   * ClientBundles cannot be used
 
-In addressing these issues, we have talked about encouraging a proxy style of use (basically, use Composite to wrap whatever widget gets GWT.create()'d), but dislike the extra object creation implied. We also hope for a system that can choose to use innerHTML, cloning, or DOM assembly as makes sense per browser type. These shortcomings could be addressed by a combination of developer discipline (yuck) and perhaps the builder pattern, but we still found ourselves faced with the likelihood of wrapping a generated object.
+In addressing these issues, we have talked about encouraging a proxy style of use (basically, use Composite to wrap whatever widget gets GWT.create()'d), but dislike the extra object creation implied. We also hope for a system that can choose to use innerHTML, cloning, or DOM assembly as makes sense per browser type. These shortcomings could be addressed by a combination of developer discipline (yuck) and perhaps the builder pattern, but we still found ourselves faced with the likelihood of hurried developers wrapping an unneeded, generated object.
 
 Emily hit upon the idea of the Configurator (here rechristened UiBinder). It’s like a factory, but responsible for filling in the fields of a Widget (or other object) that someone else instantiates, rather than instantiating one itself. This seems to offer all the benefits of a builder, with no concerns of extra object creation, and as a nice side effect avoids a lot of boilerplate. This document illustrates its application in various use cases.
 
@@ -75,7 +75,9 @@ Make a simple generated UI, with a named element, and without widgets.
 <span xmlns:g='package://com.google.gwt.user.client.ui'>
   Hello, <span g:field="nameSpan"/>.
 </span>
+}}}
 
+{{{
 public class HelloWorld extends UIObject { // Could extend Widget instead
 
   @Template("HelloWorld.ui.xml")
@@ -106,7 +108,9 @@ Make a simple widget-based UI
 <g:HTMLPanel xmlns:g='package://com.google.gwt.user.client.ui'>
   Hello, <g:ListBox g:field="listBox"/>.
 </g:HTMLPanel>
+}}}
 
+{{{
 public class HelloWidgetWorld extends Composite {
 
   @Template("HelloWidgetWorld.ui.xml")
@@ -139,7 +143,9 @@ Note that this example uses the same ui.xml file as the first. Templates need ha
 <span xmlns:g='package://com.google.gwt.user.client.ui'>
   Hello, <span g:field='nameSpan'/>.
 </span>
+}}}
 
+{{{
 public class Deferral extends Widget {
 
   @Template("HelloWorld.ui.xml")
@@ -176,7 +182,9 @@ You want to make your personal variant on the single most common widget, a check
   <input type="checkbox" g:field="myCheckBox">
   <label g:for="myCheckBox" g:field="myLabel"/>
 </span>
+}}}
 
+{{{
 public class LabeledCheckBox extends Widget {
   @Template("LabeledCheckBox.ui.xml")
   interface MyUiBinder implements UiBinder<LabeledCheckbox> {}
@@ -221,7 +229,9 @@ There are type matching issues here. The g:field of a DOM element is a string id
     <span res:class="widgetyStyle.widgetyRun" g:field="widgetyText"/>
   </div>
 </gwt:HTMLPanel>
+}}}
 
+{{{
 public class Resourceful extends Composite {
   @Template("Resourceful.ui.xml")
   interface MyUiBinder implements UiBinder<Resourceful> {}
@@ -308,7 +318,7 @@ The trick here is to define a with() method on MyUiBinder, corresponding to any 
 
 But wait, I hear you say. We have a single static instance of MyUiBinder, shared by every call to the Resourceful() constructor. Is it really safe to give it an instance method like with(), and load it up with state that may linger if bindRest() is never called?
 
-Not to worry--the binder instance returned by with() does not need to be the same instance that received the with() call. When made necessary like this, we can return a disposable UiBinder instance to accumulate whatever per-instance state is needed. Slick, eh?
+Not to worry&mdash;the binder instance returned by with() does not need to be the same instance that received the with() call. When made necessary like this, we can return a disposable UiBinder instance to accumulate whatever per-instance state is needed. Slick, eh?
 
 And you've probably noticed that you can use this technique to make any constructor argument available to the template...
 
@@ -332,7 +342,9 @@ You use it in a template.
   <my:Stocks g:field="stocks"/>
   <my:CricketScores g:field="scores" />
 </gwt:HTMLPanel>
+}}}
 
+{{{
 public class UserDashboard extends Composite {
   @Template("UserDashboard.ui.xml")
   interface MyUiBinder implements UiBinder<UserDashboard> {}
