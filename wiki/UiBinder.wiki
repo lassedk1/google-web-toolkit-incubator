@@ -1,4 +1,5 @@
 #summary GWT UI Binder Use Cases
+#labels Type-Library
 
 = Introduction =
 
