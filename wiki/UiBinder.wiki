@@ -12,7 +12,7 @@ This document provides various use cases for the use of the UiBinder, a proposed
 There are problems with the declarative ui template service as it was [DeclarativeUi originally proposed]
 
   * A template-based UI must be istantiated via GWT.create(), causing an implementation detail to be visible as public api
-  * within a template, only widgets with a zero arg constructor can be used
+  * Within a template, only widgets with a zero arg constructor can be used
   * ClientBundles cannot be used
 
 In addressing these issues, we have talked about encouraging a proxy style of use (basically, use Composite to wrap whatever widget gets GWT.create()'d), but dislike the extra object creation implied. We also hope for a system that can choose to use innerHTML, cloning, or DOM assembly as makes sense per browser type. These shortcomings could be addressed by a combination of developer discipline (yuck) and perhaps the builder pattern, but we still found ourselves faced with the likelihood of hurried developers wrapping an unneeded, generated object.
@@ -36,7 +36,9 @@ interface UiBinder<T> {
    */
   bindUi(T owner);
 }
+}}}
 
+{{{
 /**
  * Extends UiBinder to provide separate calls to create the root
  * of the UI, and to bind the UI. This allows fancy implementations
