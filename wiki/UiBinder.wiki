@@ -124,3 +124,80 @@ public class HelloWidgetWorld extends Composite {
 HelloWidgetWorld helloWorld =
   new HelloWidgetWorld("able", "baker", "charlie");
 }}}
+
+
+=Hello Deferred World=
+
+Note that this example uses the same ui.xml file as the first. Templates need have no knowledge of what kind of binder will use them.
+
+{{{
+<!-- HelloWorld.ui.xml -->
+
+<span xmlns:g='package://com.google.gwt.user.client.ui'>
+  Hello, <span g:field='nameSpan'/>.
+</span>
+
+public class Deferral extends Widget {
+
+  @Template("HelloWorld.ui.xml")
+  interface MyUiBinder implements ForkedUiBinder<SpanElement, Topical> {}
+  private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
+
+  protected SpanElement nameSpan;
+
+  public Deferral(String name) {
+    setElement(uiBinder.createRoot());
+  }
+
+  @Override protected onAttach() {
+    // set nameSpan
+    uiBinder.assembleRest((SpanElement)getElement(), this);
+    nameSpan.setInnerText(name);
+    super.onAttach();
+  }
+}
+
+// Use:
+
+Deferral helloDeferral = new Deferral("World");
+}}}
+
+=Putting a label on a checkbox (referring to generated ids within a template)=
+
+You want to make your personal variant on the single most common widget, a checkbox with a nice, accessible HTML label element tied to it:
+
+{{{
+<!-- LabeledCheckBox.ui.xml -->
+
+<span xmlns:g='package://com.google.gwt.user.client.ui'>
+  <input type="checkbox" g:field="myCheckBox">
+  <label g:for="myCheckBox" g:field="myLabel"/>
+</span>
+
+public class LabeledCheckBox extends Widget {
+  @Template("LabeledCheckBox.ui.xml")
+  interface MyUiBinder implements UiBinder<LabeledCheckbox> {}
+  private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
+
+  protected InputElement myCheckBox;
+  protected LabelElement myLabel;
+
+  public LabeledCheckBox() { uiBinder.bind(this); }
+ 
+  public void setValue(boolean b) { myCheckBox.setChecked(b); }
+
+  public boolean getValue() { return myCheckBox.isChecked(); }
+
+  public void setName(String name) { myLabel.setInnerText(name); }
+
+  public String getName() { return myLabel.getInnerText(); }
+}
+}}}
+
+The proposal here is that a g: prefix on any attribute other than id fills it with the id generated for a corresponding g:field.
+
+There are type matching issues here. The g:field of a DOM element is a string id, while that for a UIObject is typed. So, this should fail with a type mismatch:
+
+{{{
+<some:WidgetOfSomeKind g:field="theWidget"> <label gwt:for="theWidget" />
+}}}
