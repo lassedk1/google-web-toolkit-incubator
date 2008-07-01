@@ -90,7 +90,7 @@ public class HelloWorld extends UIObject { // Could extend Widget instead
 
   public HelloWorld(String name) {
     // call setElement(), set nameSpan
-    uiBinder.installUi(this);
+    uiBinder.bindUi(this);
     nameSpan.setInnerText(name);
   }
 }
@@ -162,7 +162,7 @@ public class Deferral extends Widget {
 
   @Override protected onAttach() {
     // set nameSpan
-    uiBinder.assembleRest((SpanElement)getElement(), this);
+    uiBinder.bindRest((SpanElement)getElement(), this);
     nameSpan.setInnerText(name);
     super.onAttach();
   }
