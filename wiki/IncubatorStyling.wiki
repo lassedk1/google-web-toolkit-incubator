@@ -3,39 +3,55 @@
 This is a draft for styling conventions that should be used in GWT incubator.
  
 == Use Cases ==
-=== Style Incubator widgets ===
+=== General Styling use cases===
+==== Style Incubator widgets ====
 Allow Incubator widgets to be styled as if they were normal GWT widgets. 
 
 For example, you should be able to grab the widget, grab some sample css from a demo and start using the widget without any further steps.
 
 
-=== Avoid ugly child names ===
-Right now, for efficiency reasons, we end up with style names such as gwt-TabBarItem-wrapper.  What we really want is <baseStyleName>-item-wrapper.
+==== Avoid ugly child names ====
+Right now, for efficiency reasons, we end up with style names such as `gwt-TabBarItem-wrapper`.  What we really want is `<baseStyleName>-item-wrapper`.
 
- For example, if your tab bar style name was schoolTabs, then you would ideally want the child style to be schoolTabs-item-wrapper.
+For example, if your tab bar style name was `schoolTabs`, then you would ideally want the child style to be `schoolTabs-item-wrapper`.
  
 
+=== Styling via CSS Resources use cases ===
+The next generation of gwt css styling will be done with css resources, which is part of the ImmutableResourceBundle initiative.  
 
-=== Style Incubator widgets using CSSResource ===
-The next generation of gwt css styling will be done with CSSResource.  This is a hugely powerful, yet disruptive tool currently scheduled for GWT 2.0.
+This is a hugely powerful, yet disruptive tool currently scheduled for GWT 2.0.
  
 
-=== Style Incubator graduates using CSSResource === 
-After a widget moves from Incubator to gwt in 1.6, we should be able to continue using CSSResource to style that widget.
+==== Style Incubator widgets using css resources ====
+Allow each gwt-incubator widget to be styled using css resources.
 
-=== Allow subclasses to decorate parent widgets ===
-For certain sorts of widgets, such as menus and buttons, it is important that subclasses can add extra DOM structures for stylistic reasons.
+==== Style Incubator graduates using css resources ====
+After a widget moves from Incubator to gwt in 1.6, we should be able to continue using css resources to style that widget.
+
+ 
+==== Customizable css resources ====
+Each individual widget should be able to have its css resources overridden.
+
+Additionally, the default css  used to style widgets should be overridable in order to allow projects to create custom looks and feels.
+
+=== Adding DOM structure for advanced styling ===
+
+For certain sorts of widgets, such as menus and buttons, it is important that subclasses can add extra DOM structures for stylistic reasons. 
 
 == Proposed solution ==
 
 === Overview ===
+We provide several new class types, described below, in order to create solutions for the use cases above.
+
 == Introduce `IncubatorWidget`/`Composite` ==
 As Incubator widgets start getting common machinery for styling and, later, event handling, it is important that they have a common parent to inherit at least some of that functionality from, so unless there is a very good reason not to, all Incubator Widgets should extend either `IncubatorWidget` or `IncubatorComposite`.
 
-== Introduce `Styler` interface ==
-Every Incubator widget will have a `Styler` interface. All style names used by the widget should be defined within that interface.
+== Introduce `CssInfo` interface ==
 
-Each `Styler` interface must extend `IncubatorWidget.Styler`, it also must define constant values that correspond to the default “normal” gwt names. So, for example, here is a potential `Styler` infaerface for a `CustomListBox` widget.
+
+Every Incubator widget will have a `CssInfo` interface. All style names used by the widget should be defined within that interface.
+
+Each `CssInfo` interface must extend `IncubatorWidget.CssInfo`, it also must define constant values that correspond to the default “normal” gwt names. So, for example, here is a potential `CssInfo` interface for a `CustomListBox` widget.
 {{{
  **
  * A custom list box.
@@ -47,7 +63,7 @@ public class CustomListBox<Value> extends IncubatorComposite<ToggleButton> {
   /**
    * Styles for {@link CustomListBox}
    */
-  public interface Styler extends IncubatorWidget.Styler {
+  public interface CssInfo extends IncubatorWidget.CssInfo {
     @DefaultStringValue("gwt-CustomListBox")
     String customListBox();
 
@@ -71,11 +87,128 @@ public class CustomListBox<Value> extends IncubatorComposite<ToggleButton> {
 }}}
 
 
+Each Incubator widget would define a `protected initCss(CssInfo css)` method which would set a final css field and provide a default if css was null.
+
+So, the first few lines of the constructor might look something like this:
+{{{
+/**
+   * Creates a custom list box with the given html as its face.
+   */
+  public CustomListBox(String html, CssInfo css) {
+    initWidget(new Button());
+    initCss(css);
+}
+
+}}}
+ 
+
+== Introduce ‘WidgetStyler` class ==
+Each widget will have its own styler class. So for example `CustomListBox` would have a `CustomListBoxStyler` class.
+
+This class is used to provide the default `CSSInfo` for each widget type.
+
+== Introduce `Decorator` class ==
+
+The Decorator class represents a controlled way to add html wrappers to widgets which support this class type.
+
+Decorator has four final methods:
+{{{
+  String wrapHTML(String html);
+  String wrapText(String text);
+  Element wrapElement(Element target);
+  Node wrapNode(Node note);
+}}}
+
+Each Decorator is initialized with a root element and an “attach to” element. 
+There is also a special DEFAULT decorator that does not modify its contents.  
+ 
+Each wrap method wraps the given target in a copy of the root element it was initialized with. So
+{{{
+  Element root = createElement(“<div id=’dummy’/>”)
+  Element child = createElement(“<div id=’child’/>”);
+  root.append(child);
+  Decorator dec= new Decorator(root,child);
+  Window.alert(dec.wrapElement(createElement(“<div id = ‘wrapped’/>”);
+}}}
+Should produce:
+{{{
+ <div id=’dummy’>
+   <div id=’child’>
+     <div id=’wrapped’/>
+   </div>
+ </div>
+}}}
+
+== CssResource enhancement ==
+I would like to make css resources to recognize the `@DefaultStringValue` annotation, so that if a default string value is supplied, it will look for the corresponding class name in its base css file.
+
+
+== Reviewing the use cases ==
+
+
+=== General Styling use cases===
+==== Style Incubator widgets ====
+Each widget must support a global flag which indicates whether to use css resources or not. If the flag is set, then the default should use css resources, if not, the default should just provide the standard css names.
  
 
 
 
+==== Avoid ugly child names ====
+`setStyleName` and `setPrimaryStyleName` would be unsupported within these widgets.  
+
+Instead, users should pass in their own version of `CssInfo`, that has all child names specified correctly.  
+
+=== Styling via CSS Resources use cases ===
+==== Style Incubator widgets using css resources ====
+This ones easy, done by default.
+
+
+==== Style Incubator graduates using css resources ==== 
+
+When the widget definition moves, a stub should remain in gwt-incubator. 
+
+The stub will contain the Resources declaration. The `CssInfo` class is now in GWT proper, however it still carries its constant default string tags, so the resource bundle should still be able to create it correctly.
+
+The stub class will create the `CssInfo` defaults gwt-incubator expects, and call the superclass constructor with the correct `CssInf` instance.
+
+ 
+==== Customizable css resources ====
+Each individual widget should be able to have its css resources overridden.
+
+Additionally, the default css used to style widgets should be overridable in order to allow projects to create custom looks and feels.
+
+Each individual widget should be able to accept a custom `CssInfo` instance for styling.  
+
+Additionally, the css resources system will support themes in order to customize the overall style structures.  
 
 
 
+=== Adding DOM structure for advanced styling ===
 
+For certain sorts of widgets, such as menus and buttons, it is important that subclasses can add extra DOM structures for stylistic reasons. 
+
+It is important that each widget modification is QA’d separately, as modifying the DOM structure of a widget can have far reaching complications. Therefore, each widget with extra DOM structures should be a separate subclass.
+
+We will use Decorator’s then to allow subclasses to override the DOM structure of a super class. For example back to `CustomListBox`, we have the following overidable methods.
+{{{
+  protected Decorator getButtonDecorator() {
+    return Decorator.DEFAULT;
+  }
+
+  protected Decorator getItemDecorator() {
+    return Decorator.DEFAULT;
+  }
+
+}}}
+
+So a subclass which wished to wrap each item, might have the following code
+
+{{{
+
+  protected Decorator getItemDecorator() {
+    return MyDecorator.MY_ITEM_DECORATOR;
+  }
+}}}
+
+
+ 
