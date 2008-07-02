@@ -83,7 +83,7 @@ Make a simple generated UI, with a named element, and without widgets.
 public class HelloWorld extends UIObject { // Could extend Widget instead
 
   @Template("HelloWorld.ui.xml")
-  interface MyUiBinder implements UiBinder<HelloWorld> {}
+  interface MyUiBinder extends UiBinder<HelloWorld> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
   protected SpanElement nameSpan;
@@ -116,7 +116,7 @@ Make a simple widget-based UI
 public class HelloWidgetWorld extends Composite {
 
   @Template("HelloWidgetWorld.ui.xml")
-  interface MyUiBinder implements UiBinder<HelloWidgetWorld> {}
+  interface MyUiBinder extends UiBinder<HelloWidgetWorld> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
   protected ListBox listBox;
@@ -151,7 +151,7 @@ Note that this example uses the same ui.xml file as the first. Templates need ha
 public class Deferral extends Widget {
 
   @Template("HelloWorld.ui.xml")
-  interface MyUiBinder implements ForkedUiBinder<SpanElement, Topical> {}
+  interface MyUiBinder extends ForkedUiBinder<SpanElement, Topical> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
   protected SpanElement nameSpan;
@@ -189,7 +189,7 @@ You want to make your personal variant on the single most common widget, a check
 {{{
 public class LabeledCheckBox extends Widget {
   @Template("LabeledCheckBox.ui.xml")
-  interface MyUiBinder implements UiBinder<LabeledCheckbox> {}
+  interface MyUiBinder extends UiBinder<LabeledCheckbox> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
   protected InputElement myCheckBox;
@@ -236,7 +236,7 @@ There are type matching issues here. The g:field of a DOM element is a string id
 {{{
 public class Resourceful extends Composite {
   @Template("Resourceful.ui.xml")
-  interface MyUiBinder implements UiBinder<Resourceful> {}
+  interface MyUiBinder extend UiBinder<Resourceful> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
   protected SpanElement widgetyText;
@@ -283,7 +283,7 @@ Extends Resourceful (from the example above) to allow its bundle to be passed in
 public class Resourceful extends Composite {
  
   @Template("Resourceful.ui.xml")
-  interface MyUiBinder implements UiBinder<Resourceful> {
+  interface MyUiBinder extends UiBinder<Resourceful> {
     MyUiBinder with(Resources resources);
   }
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
@@ -302,7 +302,7 @@ If this were using a ForkedUiBinder, it would look like this:
 public class Resourceful extends Composite {
 
   @Template("Resourceful.ui.xml")
-  interface MyUiBinder implements ForkedUiBinder<HTMLPanel, Resourceful> {
+  interface MyUiBinder extends ForkedUiBinder<HTMLPanel, Resourceful> {
     MyUiBinder with(Resources resources);
   }
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
@@ -349,7 +349,7 @@ You use it in a template.
 {{{
 public class UserDashboard extends Composite {
   @Template("UserDashboard.ui.xml")
-  interface MyUiBinder implements UiBinder<UserDashboard> {}
+  interface MyUiBinder extends UiBinder<UserDashboard> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
   public UserDashboard() {
@@ -371,7 +371,7 @@ So you define one:
 {{{
 public class UserDashboard extends Composite {
   @Template("UserDashboard.ui.xml")
-  interface MyUiBinder implements UiBinder<UserDashboard> {}
+  interface MyUiBinder extends UiBinder<UserDashboard> {}
 
   String[] teamNames;
  
@@ -391,7 +391,7 @@ or perhaps
 {{{
 public class UserDashboard extends Composite {
   @Template("UserDashboard.ui.xml")
-  interface MyUiBinder implements UiBinder<UserDashboard> {}
+  interface MyUiBinder extends UiBinder<UserDashboard> {}
 
   CricketScores scores;
  
@@ -424,11 +424,11 @@ public class FooPickerDisplay extends Composite
     implements FooPickerController.Display {
  
   @Template("RedFooPicker.ui.xml")
-  interface RedBinder implements UiBinder<FooPickerDisplay> {}
+  interface RedBinder extends UiBinder<FooPickerDisplay> {}
   private static RedBinder redBinder = GWT.create(MyUiBinder.class);
 
   @Template("BlueFooPicker.ui.xml")
-  interface BlueBinder implements UiBinder<FooPickerDisplay> {}
+  interface BlueBinder extends UiBinder<FooPickerDisplay> {}
   private static BlueBinder blueBinder = GWT.create(MyUiBinder.class);
 
   HasText titleField();
