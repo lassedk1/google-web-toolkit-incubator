@@ -133,9 +133,9 @@ There is also a special DEFAULT decorator that does not modify its contents.
  
 Each wrap method wraps the given target in a copy of the root element it was initialized with. So
 {{{
-  // root is <div id=”dummy”/>
-  // child is <div id=”child”/>)
-  // wrapped is <div id=”wrapped”/>
+  // root is <div id=dummy/>
+  // child is <div id=child/>)
+  // wrapped is <div id=wrapped/>
   root.append(child);
   Decorator dec= new Decorator(root,child);
   Window.alert(dec.wrapElement(wrapped);
