@@ -89,7 +89,6 @@ The glass panel widget should work (display) correctly under all combinations of
 
 
 == How to override the default CSS ==
-NOTE: Please do NOT use either CSS 'width' or 'height' here, as this would defeat much of the effort that went into GlassPanel in order to get it to work consistently in a variety of circumstances. Specifically, please resist the urge to use 'width/height: 100%'.
 {{{
   .gwt-GlassPanel {
 
@@ -100,6 +99,9 @@ NOTE: Please do NOT use either CSS 'width' or 'height' here, as this would defea
     filter: alpha(opacity = 10) !important; /* IE */
     opacity: 0.1 !important; /* non-IE */
 
+/*
+NOTE: Please do NOT use either CSS 'width' or 'height' here, as this would defeat much of the effort that went into GlassPanel in order to get it to work consistently in a variety of circumstances. Specifically, please resist the urge to use 'width/height: 100%'.
+*/
   }
 }}}
 
