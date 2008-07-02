@@ -2,10 +2,80 @@
 = Introduction =
 This is a draft for styling conventions that should be used in GWT incubator.
  
+== Use Cases ==
+=== Style Incubator widgets ===
+Allow Incubator widgets to be styled as if they were normal GWT widgets. 
 
-= Details =
+For example, you should be able to grab the widget, grab some sample css from a demo and start using the widget without any further steps.
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+
+=== Avoid ugly child names ===
+Right now, for efficiency reasons, we end up with style names such as gwt-TabBarItem-wrapper.  What we really want is <baseStyleName>-item-wrapper.
+
+ For example, if your tab bar style name was schoolTabs, then you would ideally want the child style to be schoolTabs-item-wrapper.
+ 
+
+
+=== Style Incubator widgets using CSSResource ===
+The next generation of gwt css styling will be done with CSSResource.  This is a hugely powerful, yet disruptive tool currently scheduled for GWT 2.0.
+ 
+
+=== Style Incubator graduates using CSSResource === 
+After a widget moves from Incubator to gwt in 1.6, we should be able to continue using CSSResource to style that widget.
+
+=== Allow subclasses to decorate parent widgets ===
+For certain sorts of widgets, such as menus and buttons, it is important that subclasses can add extra DOM structures for stylistic reasons.
+
+== Proposed solution ==
+
+=== Overview ===
+== Introduce `IncubatorWidget`/`Composite` ==
+As Incubator widgets start getting common machinery for styling and, later, event handling, it is important that they have a common parent to inherit at least some of that functionality from, so unless there is a very good reason not to, all Incubator Widgets should extend either `IncubatorWidget` or `IncubatorComposite`.
+
+== Introduce `Styler` interface ==
+Every Incubator widget will have a `Styler` interface. All style names used by the widget should be defined within that interface.
+
+Each `Styler` interface must extend `IncubatorWidget.Styler`, it also must define constant values that correspond to the default “normal” gwt names. So, for example, here is a potential `Styler` infaerface for a `CustomListBox` widget.
+{{{
+ **
+ * A custom list box.
+ * 
+ * @param <Value> the type of the values backing this list box
+ */
+public class CustomListBox<Value> extends IncubatorComposite<ToggleButton> {
+
+  /**
+   * Styles for {@link CustomListBox}
+   */
+  public interface Styler extends IncubatorWidget.Styler {
+    @DefaultStringValue("gwt-CustomListBox")
+    String customListBox();
+
+    @DefaultStringValue("gwt-CustomListBox-dropdown")
+    String customListBoxDropDown();
+
+    @DefaultStringValue("gwt-CustomListBox-item")
+    String customListBoxItem();
+
+    @DefaultStringValue("gwt-CustomListBox-item-highlighted")
+    String customListBoxItemHighlighted();
+
+    @DefaultStringValue("gwt-CustomListBox-item-selected")
+    String customListBoxItemSelected();
+
+    @DefaultStringValue("gwt-CustomListBox-item-selectedAndHighlighted")
+    String customListBoxItemSelectedAndHighlighted();
+  }
+
+  …
+}}}
+
+
+ 
+
+
+
+
+
+
+
