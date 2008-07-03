@@ -359,7 +359,7 @@ public class TableModelTest extends TableModelTestBase {
     assertEquals(0, sortList.size());
 
     // Add one item
-    sortList.add(4, false);
+    sortList.add(new ColumnSortInfo(4, false));
     assertEquals(1, sortList.size());
     assertEquals(4, sortList.getPrimaryColumn());
     assertFalse(sortList.isPrimaryAscending());
@@ -367,9 +367,9 @@ public class TableModelTest extends TableModelTestBase {
         new ColumnSortInfo(4, false)));
 
     // Add more items
-    sortList.add(6, false);
-    sortList.add(8, true);
-    sortList.add(10, true);
+    sortList.add(new ColumnSortInfo(6, false));
+    sortList.add(new ColumnSortInfo(8, true));
+    sortList.add(new ColumnSortInfo(10, true));
     assertEquals(4, sortList.size());
     assertEquals(10, sortList.getPrimaryColumn());
     assertTrue(sortList.isPrimaryAscending());
@@ -395,34 +395,34 @@ public class TableModelTest extends TableModelTestBase {
     }
 
     // Add an existing item
-    sortList.add(6, false);
+    sortList.add(new ColumnSortInfo(6, false));
     assertEquals(4, sortList.size());
     assertEquals(6, sortList.getPrimaryColumn());
     assertFalse(sortList.isPrimaryAscending());
 
     // Add an existing column, different order
-    sortList.add(8, false);
+    sortList.add(new ColumnSortInfo(8, false));
     assertEquals(4, sortList.size());
     assertEquals(8, sortList.getPrimaryColumn());
     assertFalse(sortList.isPrimaryAscending());
 
     // Compare two lists
     ColumnSortList sortList1 = new ColumnSortList();
-    sortList1.add(1, true);
-    sortList1.add(2, false);
-    sortList1.add(3, true);
+    sortList1.add(new ColumnSortInfo(1, true));
+    sortList1.add(new ColumnSortInfo(2, false));
+    sortList1.add(new ColumnSortInfo(3, true));
     ColumnSortList sortList2 = new ColumnSortList();
-    sortList2.add(1, true);
-    sortList2.add(2, false);
-    sortList2.add(3, true);
+    sortList2.add(new ColumnSortInfo(1, true));
+    sortList2.add(new ColumnSortInfo(2, false));
+    sortList2.add(new ColumnSortInfo(3, true));
     ColumnSortList sortList3 = new ColumnSortList();
-    sortList3.add(1, true);
-    sortList3.add(4, false);
-    sortList3.add(3, true);
+    sortList3.add(new ColumnSortInfo(1, true));
+    sortList3.add(new ColumnSortInfo(4, false));
+    sortList3.add(new ColumnSortInfo(3, true));
     ColumnSortList sortList4 = new ColumnSortList();
-    sortList4.add(1, true);
-    sortList4.add(2, true);
-    sortList4.add(3, true);
+    sortList4.add(new ColumnSortInfo(1, true));
+    sortList4.add(new ColumnSortInfo(2, true));
+    sortList4.add(new ColumnSortInfo(3, true));
     assertTrue(sortList1.equals(sortList2));
     assertFalse(sortList1.equals(sortList3));
     assertFalse(sortList1.equals(sortList4));

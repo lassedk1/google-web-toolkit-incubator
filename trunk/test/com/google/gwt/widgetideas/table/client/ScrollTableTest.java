@@ -60,6 +60,14 @@ public class ScrollTableTest extends WidgetTestBase {
     table.setResizePolicy(ScrollTable.ResizePolicy.FIXED_WIDTH);
     assertEquals(ScrollTable.ResizePolicy.FIXED_WIDTH, table.getResizePolicy());
 
+    // Column resize policy
+    table.setColumnResizePolicy(ScrollTable.ColumnResizePolicy.SINGLE_CELL);
+    assertEquals(ScrollTable.ColumnResizePolicy.SINGLE_CELL,
+        table.getColumnResizePolicy());
+    table.setColumnResizePolicy(ScrollTable.ColumnResizePolicy.MULTI_CELL);
+    assertEquals(ScrollTable.ColumnResizePolicy.MULTI_CELL,
+        table.getColumnResizePolicy());
+
     // Min width
     assertEquals(-1, table.getMinWidth());
     table.setMinWidth(100);

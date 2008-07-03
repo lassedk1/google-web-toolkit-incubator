@@ -25,12 +25,19 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.table.client.ScrollTable;
+import com.google.gwt.widgetideas.table.client.ScrollTable.ColumnResizePolicy;
+import com.google.gwt.widgetideas.table.client.ScrollTable.ResizePolicy;
 
 /**
  * A tab panel of various options used to change the width of columns in the
  * table.
  */
 public class DemoTabColumnWidth extends DemoTab implements ClickListener {
+  /**
+   * The description of column resixing.
+   */
+  private static final String DESC_COL_RESIZE = "Specify how users can resize columns.";
+
   /**
    * The description of fixed width resizing.
    */
@@ -39,7 +46,7 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
       + "withing its visible area so you do not see a horizontal scrollbar.";
 
   /**
-   * The description of resizing a column.
+   * The description of table resizing.
    */
   private static final String DESC_RESIZE = "Manually set the absolute size of a column.";
 
@@ -47,6 +54,17 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
    * The column index box.
    */
   private TextBox columnIndexBox = new TextBox();
+
+  /**
+   * The drop box of column resize policy options.
+   */
+  private ListBox columnResizePolicyBox = new ListBox();
+
+  /**
+   * The button used to select the {@link ColumnResizePolicy}.
+   */
+  private Button columnResizePolicyButton = new Button(
+      "Set Column Resize Policy", this);
 
   /**
    * The width box.
@@ -98,18 +116,24 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
       } else if (sender == resizePolicyButton) {
         // Set the resize policy
         String selection = resizePolicyBox.getValue(resizePolicyBox.getSelectedIndex());
-        if (selection.equals("Disabled")) {
-          scrollTable.setResizePolicy(ScrollTable.ResizePolicy.DISABLED);
-        } else if (selection.equals("Unconstrained")) {
-          scrollTable.setResizePolicy(ScrollTable.ResizePolicy.UNCONSTRAINED);
+        if (selection.equals("Unconstrained")) {
+          scrollTable.setResizePolicy(ResizePolicy.UNCONSTRAINED);
         } else if (selection.equals("Flow")) {
-          scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FLOW);
+          scrollTable.setResizePolicy(ResizePolicy.FLOW);
         } else if (selection.equals("Fixed")) {
-          scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FIXED_WIDTH);
+          scrollTable.setResizePolicy(ResizePolicy.FIXED_WIDTH);
         } else if (selection.equals("Fill")) {
-          scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
-        } else if (selection.equals("Fill Disabled")) {
-          scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH_DISABLED);
+          scrollTable.setResizePolicy(ResizePolicy.FILL_WIDTH);
+        }
+      } else if (sender == columnResizePolicyButton) {
+        // Set the resize policy
+        String selection = columnResizePolicyBox.getValue(columnResizePolicyBox.getSelectedIndex());
+        if (selection.equals("Disabled")) {
+          scrollTable.setColumnResizePolicy(ColumnResizePolicy.DISABLED);
+        } else if (selection.equals("Single Cell")) {
+          scrollTable.setColumnResizePolicy(ColumnResizePolicy.SINGLE_CELL);
+        } else if (selection.equals("Multi Cell")) {
+          scrollTable.setColumnResizePolicy(ColumnResizePolicy.MULTI_CELL);
         }
       }
     } catch (IndexOutOfBoundsException e) {
@@ -121,7 +145,7 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
 
   @Override
   protected Widget onInitialize() {
-    grid = new Grid(3, 4);
+    grid = new Grid(4, 4);
     grid.setCellSpacing(0);
     grid.setBorderWidth(1);
 
@@ -143,17 +167,25 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
     grid.setHTML(1, 3, DESC_RESIZE);
 
     // Fixed width options
-    resizePolicyBox.addItem("Disabled");
     resizePolicyBox.addItem("Unconstrained");
     resizePolicyBox.addItem("Flow");
     resizePolicyBox.addItem("Fixed");
     resizePolicyBox.addItem("Fill");
-    resizePolicyBox.addItem("Fill Disabled");
     resizePolicyBox.setSelectedIndex(3);
     grid.setHTML(2, 0, "<BR>");
     grid.setWidget(2, 1, resizePolicyButton);
     grid.setWidget(2, 2, resizePolicyBox);
     grid.setHTML(2, 3, DESC_FIXED_WIDTH);
+
+    // Column Resize options
+    columnResizePolicyBox.addItem("Disabled");
+    columnResizePolicyBox.addItem("Single Cell");
+    columnResizePolicyBox.addItem("Multi Cell");
+    columnResizePolicyBox.setSelectedIndex(2);
+    grid.setHTML(3, 0, "<BR>");
+    grid.setWidget(3, 1, columnResizePolicyButton);
+    grid.setWidget(3, 2, columnResizePolicyBox);
+    grid.setHTML(3, 3, DESC_COL_RESIZE);
 
     return grid;
   }

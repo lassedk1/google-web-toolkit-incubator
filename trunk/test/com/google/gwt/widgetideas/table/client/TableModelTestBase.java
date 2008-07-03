@@ -17,6 +17,7 @@ package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.widgetideas.client.WidgetTestBase;
 import com.google.gwt.widgetideas.table.client.TableModel.Callback;
+import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortInfo;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 import com.google.gwt.widgetideas.table.client.TableModel.Request;
 import com.google.gwt.widgetideas.table.client.TableModel.Response;
@@ -143,7 +144,7 @@ public abstract class TableModelTestBase extends WidgetTestBase {
 
     // Request some rows with sorting
     ColumnSortList sortList = new ColumnSortList();
-    sortList.add(5, true);
+    sortList.add(new ColumnSortInfo(5, true));
     TestCallback<String> callback2 = new TestCallback<String>(5, 6, sortList);
     Request request2 = new Request(5, 6, sortList);
     tableModel.requestRows(request2, callback2);
@@ -151,7 +152,7 @@ public abstract class TableModelTestBase extends WidgetTestBase {
     assertFalse(callback2.isFailed());
 
     // Request some rows with sorting descending
-    sortList.add(5, false);
+    sortList.add(new ColumnSortInfo(5, false));
     TestCallback<String> callback3 = new TestCallback<String>(5, 6, sortList);
     Request request3 = new Request(5, 6, sortList);
     tableModel.requestRows(request3, callback3);

@@ -267,5 +267,11 @@ public class SortableGridTest extends SelectionGridTest {
     for (int row = 0; row < 10; row++) {
       assertEquals(row + "", testGrid.getHTML(row, 1));
     }
+
+    // Set the column sort list
+    assertEquals(sortList, testGrid.getColumnSortList());
+    ColumnSortList newList = new ColumnSortList();
+    testGrid.setColumnSortList(newList);
+    assertEquals(newList, testGrid.getColumnSortList());
   }
 }
