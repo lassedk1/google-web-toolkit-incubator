@@ -16,12 +16,14 @@
 
 package com.google.gwt.widgetideas.table;
 
+import com.google.gwt.widgetideas.table.client.CachedTableModelTest;
 import com.google.gwt.widgetideas.table.client.ClientTableModelTest;
 import com.google.gwt.widgetideas.table.client.FixedWidthFlexTableTest;
 import com.google.gwt.widgetideas.table.client.FixedWidthGridTest;
 import com.google.gwt.widgetideas.table.client.FlexTableBulkRendererTest;
 import com.google.gwt.widgetideas.table.client.GridBulkRendererTest;
 import com.google.gwt.widgetideas.table.client.GridTest;
+import com.google.gwt.widgetideas.table.client.InlineCellEditorTest;
 import com.google.gwt.widgetideas.table.client.ListCellEditorTest;
 import com.google.gwt.widgetideas.table.client.ListTableModelTest;
 import com.google.gwt.widgetideas.table.client.PagingScrollTableTest;
@@ -29,6 +31,7 @@ import com.google.gwt.widgetideas.table.client.RadioCellEditorTest;
 import com.google.gwt.widgetideas.table.client.ReadOnlyTableModelTest;
 import com.google.gwt.widgetideas.table.client.ScrollTableTest;
 import com.google.gwt.widgetideas.table.client.SelectionGridTest;
+import com.google.gwt.widgetideas.table.client.SortableGridTest;
 import com.google.gwt.widgetideas.table.client.TableModelTest;
 import com.google.gwt.widgetideas.table.client.TextCellEditorTest;
 
@@ -44,28 +47,25 @@ public class TableSuite {
     TestSuite suite = new TestSuite(
         "Test for com.google.gwt.widgetideas.table.client");
     // $JUnit-BEGIN$
-    
-    suite.addTestSuite(TextCellEditorTest.class);
     suite.addTestSuite(FlexTableBulkRendererTest.class);
-    
-    suite.addTestSuite(ListTableModelTest.class);
- 
-    suite.addTestSuite(ClientTableModelTest.class);
-    suite.addTestSuite(GridTest.class);
-    suite.addTestSuite(SelectionGridTest.class);
-    suite.addTestSuite(PagingScrollTableTest.class);
-    suite.addTestSuite(ReadOnlyTableModelTest.class);
-   
-    suite.addTestSuite(TableModelTest.class);
-    suite.addTestSuite(ListCellEditorTest.class);
- 
-    suite.addTestSuite(FixedWidthFlexTableTest.class);
-    suite.addTestSuite(ScrollTableTest.class);
-    suite.addTestSuite(RadioCellEditorTest.class);
-    suite.addTestSuite(GridBulkRendererTest.class);
-    
     suite.addTestSuite(FixedWidthGridTest.class);
- 
+    suite.addTestSuite(PagingScrollTableTest.class);
+    suite.addTestSuite(ListTableModelTest.class);
+    suite.addTestSuite(GridBulkRendererTest.class);
+    suite.addTestSuite(ListCellEditorTest.class);
+    suite.addTestSuite(FixedWidthFlexTableTest.class);
+    suite.addTestSuite(TextCellEditorTest.class);
+    suite.addTestSuite(SelectionGridTest.class);
+    suite.addTestSuite(ClientTableModelTest.class);
+    suite.addTestSuite(TableModelTest.class);
+    suite.addTestSuite(GridTest.class);
+    suite.addTestSuite(SortableGridTest.class);
+    suite.addTestSuite(ScrollTableTest.class);
+    suite.addTestSuite(ReadOnlyTableModelTest.class);
+    suite.addTestSuite(RadioCellEditorTest.class);
+    suite.addTestSuite(InlineCellEditorTest.class);
+    suite.addTestSuite(CachedTableModelTest.class);
+    //$JUnit-END$
     // $JUnit-END$
     return suite;
   }
