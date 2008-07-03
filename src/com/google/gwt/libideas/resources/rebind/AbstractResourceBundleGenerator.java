@@ -27,8 +27,10 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.dev.generator.NameFactory;
+import com.google.gwt.dev.util.Util;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.libideas.resources.client.ResourcePrototype;
+import com.google.gwt.libideas.resources.rg.BundleResourceGenerator;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 
@@ -45,7 +47,8 @@ import java.util.Map;
 public abstract class AbstractResourceBundleGenerator extends Generator {
 
   /**
-   * An implementation of FieldAccumulator.
+   * An implementation of FieldAccumulator that immediately composes its output
+   * into a StringWriter.
    */
   private static class Fields implements FieldAccumulator {
     private final NameFactory factory = new NameFactory();
@@ -53,11 +56,15 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
     private final PrintWriter pw = new PrintWriter(buffer);
 
     public String addField(JType type, String name) {
-      return addField(type, name, null, false, false);
+      return addField(type, name, null, true, false);
     }
 
     public String addField(JType type, String name, String initializer,
         boolean isStatic, boolean isFinal) {
+
+      assert Util.isValidJavaIdent(name) : name
+          + " is not a valid Java identifier";
+
       String ident = factory.createName(name);
 
       pw.print("private ");
@@ -189,6 +196,10 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
         throw new UnableToCompleteException();
       }
 
+      // Bundles aren't ResourcePrototypes and don't need to be operated on
+      // by the following code.
+      taskList.remove(BundleResourceGenerator.class);
+
       // Print the accumulated field definitions
       sw.println(fields.toString());
 
@@ -282,11 +293,12 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
         continue;
 
       } else if (returnType == null
-          || !returnType.isAssignableTo(resourcePrototypeType)) {
+          || !(returnType.isAssignableTo(resourcePrototypeType) || returnType.isAssignableTo(bundleType))) {
         // Primitives and random other abstract methods
         logger.log(TreeLogger.ERROR, "Unable to implement " + m.getName()
             + " because it does not derive from "
-            + resourcePrototypeType.getQualifiedSourceName());
+            + resourcePrototypeType.getQualifiedSourceName() + " or "
+            + bundleType.getQualifiedSourceName());
         throwException = true;
         continue;
       }
@@ -324,16 +336,26 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
       throws UnableToCompleteException {
 
     JClassType resourceType = method.getReturnType().isClassOrInterface();
-    ResourceGeneratorType generatorType = resourceType.getAnnotation(ResourceGeneratorType.class);
+    assert resourceType != null;
 
-    // Look at the implemented interfaces for a ResourceGenerator annotation
-    if (generatorType == null) {
-      for (JClassType t : resourceType.getImplementedInterfaces()) {
-        generatorType = t.getAnnotation(ResourceGeneratorType.class);
+    List<JClassType> searchTypes = new ArrayList<JClassType>();
+    searchTypes.add(resourceType);
 
-        if (generatorType != null) {
-          break;
-        }
+    ResourceGeneratorType generatorType = null;
+
+    while (!searchTypes.isEmpty()) {
+      JClassType current = searchTypes.remove(0);
+      generatorType = current.getAnnotation(ResourceGeneratorType.class);
+      if (generatorType != null) {
+        break;
+      }
+
+      if (current.getSuperclass() != null) {
+        searchTypes.add(current.getSuperclass());
+      }
+
+      for (JClassType t : current.getImplementedInterfaces()) {
+        searchTypes.add(t);
       }
     }
 

@@ -24,7 +24,7 @@ import com.google.gwt.core.ext.typeinfo.JType;
 public interface FieldAccumulator {
   /**
    * Adds a field to the bundle. Equivalent to
-   * <code>addField(type, name, null, false, false)</code>.
+   * <code>addField(type, name, null, true, false)</code>.
    * 
    * @param type the declared type of the field
    * @param name a Java identifier to be used as the name of the field
