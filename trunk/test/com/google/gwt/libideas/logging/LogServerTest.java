@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.gwt.libideas.logging.client;
+package com.google.gwt.libideas.logging;
 
 import com.google.gwt.libideas.logging.server.ServerLogManager;
 import com.google.gwt.libideas.logging.shared.ArrayListLogHandler;
