@@ -16,9 +16,6 @@ Just add the following line to your module.gwt.xml file:
 
 You can specify your own stylesheet to further customize the look and feel of GWTCanvas.
 
-= Caveats! =
-We currently have supports for gradients in the API checked into the incubator trunk. However, IE support for gradients currently is incomplete and non-functional. The framework is there to go the last mile, so in the spirit of open source projects, contributor assistance is welcome :).
-
 = Using Images =
 
 In order for GWTCanvas to draw images, they must first be loaded by the browser. We provide an ImageLoader class in the same package as GWTCanvas to take care of this for you. Please refer to the Sample Code below for examples on how to use ImageLoader.
@@ -142,3 +139,7 @@ public class MyEntryPoint implements EntryPoint {
 }
 
 }}}
+
+
+= Caveats! =
+We currently have supports for gradients in the API checked into the incubator trunk. However, IE support for gradients currently is incomplete and non-functional. The framework is there to go the last mile, so in the spirit of open source projects, contributor assistance is welcome :).
