@@ -589,6 +589,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   private Adler32 classPrefixHash;
   private ResourceContext context;
   private JClassType elementType;
+  private boolean enableMerge;
   private boolean prettyOutput;
   private Map<String, String> replacements;
   private JClassType spriteImplType;
@@ -673,6 +674,10 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       String style = propertyOracle.getPropertyValue(logger,
           "CssResource.style").toLowerCase();
       prettyOutput = style.equals("pretty");
+
+      String merge = propertyOracle.getPropertyValue(logger,
+          "CssResource.enableMerge").toLowerCase();
+      enableMerge = merge.equals("true");
     } catch (BadPropertyValueException e) {
       logger.log(
           TreeLogger.WARN,
@@ -838,7 +843,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       (new ClassRenamer(logger, classReplacements)).accept(sheet);
 
       // Combine rules with identical selectors
-      if (!Boolean.getBoolean("CssResource.disableMerge")) {
+      if (enableMerge) {
         // TODO This is an off-switch while this is being developed; remove
         (new SplitRulesVisitor()).accept(sheet);
         (new MergeIdenticalSelectorsVisitor()).accept(sheet);
