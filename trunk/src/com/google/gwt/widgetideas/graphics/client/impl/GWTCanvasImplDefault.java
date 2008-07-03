@@ -16,18 +16,18 @@
 package com.google.gwt.widgetideas.graphics.client.impl;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-// import com.google.gwt.widgetideas.graphics.client.CanvasGradient;
-import com.google.gwt.widgetideas.graphics.client.ImageHandle;
+import com.google.gwt.widgetideas.graphics.client.CanvasGradient;
 
 /**
  * Deferred binding implementation of GWTCanvas.
  */
 public class GWTCanvasImplDefault implements GWTCanvasImpl {
 
-  // package protected to suppress warning when declared private
-  JavaScriptObject canvasContext = null;
+  @SuppressWarnings("unused")
+  private JavaScriptObject canvasContext = null;
   
   public native void arc(float x, float y, float radius, float startAngle,
       float endAngle, boolean antiClockwise) /*-{
@@ -57,8 +57,8 @@ public class GWTCanvasImplDefault implements GWTCanvasImpl {
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).bezierCurveTo(cp1x,cp1y,cp2x,cp2y,x,y);
   }-*/;
   
-  public native void drawImage(ImageHandle img, int sourceX, int sourceY, int sourceWidth,
-      int sourceHeight, int destX, int destY, int destWidth, int destHeight) /*-{
+  public native void drawImage(ImageElement img, float sourceX, float sourceY, float sourceWidth,
+      float sourceHeight, float destX, float destY, float destWidth, float destHeight) /*-{
      
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).drawImage(img,sourceX,sourceY,sourceWidth,sourceHeight,destX,destY,destWidth,destHeight);
     
@@ -72,9 +72,33 @@ public class GWTCanvasImplDefault implements GWTCanvasImpl {
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).fillRect(startX,startY,width,height);
   }-*/;
 
+  public native float getGlobalAlpha() /*-{
+    return (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).globalAlpha;
+  }-*/;
+
+  public native String getGlobalCompositeOperation() /*-{
+    return (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).globalCompositeOperation;
+  }-*/;
+
   public int getHeight(Element elem) {
     return DOM.getElementPropertyInt(elem, "height");
   }
+
+  public native String getLineCap() /*-{
+    return (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).lineCap;
+  }-*/;
+
+  public native String getLineJoin() /*-{
+    return (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).lineJoin;
+  }-*/;
+
+  public native float getLineWidth() /*-{
+    return (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).lineWidth;
+  }-*/;
+
+  public native float getMiterLimit() /*-{
+    return (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).miterLimit;
+  }-*/;
 
   public int getWidth(Element elem) {
     return DOM.getElementPropertyInt(elem, "width");
@@ -99,18 +123,22 @@ public class GWTCanvasImplDefault implements GWTCanvasImpl {
   public native void restoreContext() /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).restore();
   }-*/;
-
+   
   public native void rotate(float angle) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).rotate(angle);
   }-*/;
-
+  
   public native void saveContext() /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).save();
   }-*/;
-
+  
   public native void scale(float x, float y) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).scale(x,y);
   }-*/;
+
+  public void setBackgroundColor(Element element, String color) {
+    DOM.setStyleAttribute(element, "backgroundColor", color);
+  }
 
   public void setCoordHeight(Element elem, int height) {
     DOM.setElementProperty(elem, "height", String.valueOf(height));
@@ -119,24 +147,37 @@ public class GWTCanvasImplDefault implements GWTCanvasImpl {
   public void setCoordWidth(Element elem, int width) {
     DOM.setElementProperty(elem,"width", String.valueOf(width));
   }
+  
+  public void setFillStyle(CanvasGradient gradient) {
+    setFillStyle((CanvasGradientImplDefault) gradient);
+  }
 
-  /* TODO: Awaiting me fixing IE6 gradients...
-  public native void setFillStyle(CanvasGradient gradient) /-{ 
-    var gradObj = gradient.@com.google.gwt.widgetideas.graphics.client.CanvasGradient::getObject()();
-    (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).fillStyle = gradObj; 
-  }-/;
-   */
-   
   public native void setFillStyle(String colorStr) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).fillStyle = colorStr;
   }-*/;
-  
+
   public native void setGlobalAlpha(float alpha) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).globalAlpha = alpha;
   }-*/;
-  
+
+  public native void setGlobalCompositeOperation(String globalCompositeOperation) /*-{
+    (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).globalCompositeOperation = globalCompositeOperation;    
+  }-*/;
+
+  public native void setLineCap(String lineCap) /*-{
+    (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).lineCap = lineCap;
+  }-*/;
+
+  public native void setLineJoin(String lineJoin) /*-{
+    (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).lineJoin = lineJoin;
+  }-*/;
+
   public native void setLineWidth(float width) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).lineWidth = width;
+  }-*/;
+  
+  public native void setMiterLimit(float miterLimit) /*-{
+    (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).miterLimit = miterLimit;
   }-*/;
 
   public void setPixelHeight(Element elem, int height) {
@@ -147,22 +188,14 @@ public class GWTCanvasImplDefault implements GWTCanvasImpl {
     DOM.setStyleAttribute(elem, "width", width + "px");
   }
 
-  /* TODO: Awaiting me fixing IE6 gradients...
-  public native void setStrokeStyle(CanvasGradient gradient) /-{
-    var gradObj = gradient.@com.google.gwt.widgetideas.graphics.client.CanvasGradient::getObject()();
-    (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).strokeStyle = gradObj; 
-  }-/;
-  */
-  
+  public void setStrokeStyle(CanvasGradient gradient) {
+    setStrokeStyle((CanvasGradientImplDefault) gradient);
+  }
+
   public native void setStrokeStyle(String colorStr) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).strokeStyle = colorStr;
   }-*/;
-  
-  public native void setTransform(float m11, float m12, float m21, float m22,
-      float dx, float dy) /*-{
-      (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).setTransform(m11,m12,m21,m22,dx,dy);
-  }-*/;
-  
+
   public native void stroke() /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).stroke();
   }-*/;
@@ -184,9 +217,18 @@ public class GWTCanvasImplDefault implements GWTCanvasImpl {
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).clearRect(startX,startY,width,height);
   }-*/;
 
-  // This is called from JSNI function. Ignore warning.
+  @SuppressWarnings("unused")
   private void setCanvasContext(JavaScriptObject ctx) {
     this.canvasContext = ctx;
   }
 
+  private native void setFillStyle(CanvasGradientImplDefault gradient) /*-{ 
+    var gradObj = gradient.@com.google.gwt.widgetideas.graphics.client.impl.CanvasGradientImplDefault::getObject()();
+    (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).fillStyle = gradObj; 
+  }-*/;
+
+  private native void setStrokeStyle(CanvasGradientImplDefault gradient) /*-{
+    var gradObj = gradient.@com.google.gwt.widgetideas.graphics.client.impl.CanvasGradientImplDefault::getObject()();
+    (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).strokeStyle = gradObj; 
+  }-*/;;
 }

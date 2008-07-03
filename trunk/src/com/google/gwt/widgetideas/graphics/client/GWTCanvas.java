@@ -17,6 +17,7 @@
 package com.google.gwt.widgetideas.graphics.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImpl;
 
@@ -30,10 +31,65 @@ import com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImpl;
  */
 public class GWTCanvas extends Widget {
   
-  private final GWTCanvasImpl impl = GWT.create(GWTCanvasImpl.class);
+  /**
+   * Use this constant as a parameter for the
+   * {@link #setLineJoin(String)} method.
+   */
+  public static final String BEVEL = "bevel";
+
+  /**
+   * Use this constant as a parameter for the
+   * {@link #setLineCap(String)} method.
+   */
+  public static final String BUTT = "butt";
+
+  /**
+   * Use this constant as a parameter for the
+   * {@link #setGlobalCompositeOperation(String)} method.
+   */
+  public static final String DESTINATION_OVER = "destination-over";
+
+  /**
+   * Use this constant as a parameter for the
+   * {@link #setLineJoin(String)} method.
+   */
+  public static final String MITER = "miter";
+
+  /**
+   * Use this constant either as a parameter for the
+   * {@link #setLineCap(String)} or the {@link #setLineJoin(String)} method.
+   */
+  public static final String ROUND = "round";
+
+  /**
+   * Use this constant as a parameter for the
+   * {@link #setGlobalCompositeOperation(String)} method.
+   */
+  public static final String SOURCE_OVER = "source-over";
+
+  /**
+   * Use this constant as a parameter for the
+   * {@link #setLineCap(String)} method.
+   */
+  public static final String SQUARE = "square";
+
+  /**
+   * Use this constant as a parameter for the
+   * {@link #setBackgroundColor(Color)} method.
+   */
+  public static final Color TRANSPARENT = new Color("");
   
   private int coordHeight = 0;
+  
   private int coordWidth = 0;
+  
+  private final GradientFactory gradientFactoryImpl = (GradientFactory) GWT.create(GradientFactory.class);
+  
+  /*
+   * Impl Instance. Compiler should statify all the methods, so we do not
+   * end up with duplicate code for each canvas instance.
+   */
+  private final GWTCanvasImpl impl = GWT.create(GWTCanvasImpl.class);
   
   /**
    * Creates a GWTCanvas element.
@@ -46,8 +102,7 @@ public class GWTCanvas extends Widget {
   public GWTCanvas() {
     setElement(impl.createElement());
     setPixelWidth(300);
-    setPixelHeight(150);
-    
+    setPixelHeight(150);  
     setCoordSize(300,150);
   }
   
@@ -66,7 +121,6 @@ public class GWTCanvas extends Widget {
     setElement(impl.createElement());
     setPixelWidth(coordX);
     setPixelHeight(coordY);
-    
     setCoordSize(coordX,coordY);
   }
 
@@ -87,8 +141,7 @@ public class GWTCanvas extends Widget {
   public GWTCanvas(int coordX, int coordY, int pixelX, int pixelY) {
     setElement(impl.createElement());
     setPixelWidth(pixelX);
-    setPixelHeight(pixelY);
-    
+    setPixelHeight(pixelY);    
     setCoordSize(coordX, coordY);
   }
   
@@ -132,9 +185,39 @@ public class GWTCanvas extends Widget {
   }
   
   /**
+   * 
+   * Creates a LinearGradient Object for use as a fill or stroke style.
+   * 
+   * @param x0 x coord of start point of gradient
+   * @param y0 y coord of start point of gradient
+   * @param x1 x coord of end point of gradient
+   * @param y1 y coord of end point of gradient
+   * @return returns the CanvasGradient
+   */
+  public CanvasGradient createLinearGradient(float x0, float y0, float x1, float y1) {
+     return gradientFactoryImpl.createLinearGradient(x0, y0, x1, y1, getElement());
+  } 
+   
+  /**
+   * 
+   * Creates a RadialGradient Object for use as a fill or stroke style.
+   * 
+   * @param x0 x coord of origin of start circle
+   * @param y0 y coord of origin of start circle
+   * @param r0 radius of start circle
+   * @param x1 x coord of origin of end circle
+   * @param y1 y coord of origin of end circle
+   * @param r1 radius of the end circle
+   * @return returns the CanvasGradient
+   */
+  public CanvasGradient createRadialGradient(float x0, float y0, float r0, float x1, float y1, float r1) {
+     return gradientFactoryImpl.createRadialGradient(x0, y0, r0, x1, y1, r1, getElement());
+  } 
+  
+  /**
    *
    * Does nothing if the context's path is empty. Otherwise, it connects 
-   * the last point in the path to the given point <b>(x, y)</b> using a cubic BÃ©zier 
+   * the last point in the path to the given point <b>(x, y)</b> using a cubic BŽzier 
    * curve with control points <b>(cp1x, cp1y)</b> and <b>(cp2x, cp2y)</b>. Then, it must add the 
    * point <b>(x, y)</b> to the path.
    * 
@@ -160,7 +243,7 @@ public class GWTCanvas extends Widget {
    * @param offsetX x coord of the top left corner in the destination space 
    * @param offsetY y coord of the top left corner in the destination space
    */
-  public void drawImage(ImageHandle img, int offsetX, int offsetY) {
+  public void drawImage(ImageElement img, float offsetX, float offsetY) {
     drawImage(img,offsetX,offsetY,img.getWidth(),img.getHeight());
   }
 
@@ -177,7 +260,7 @@ public class GWTCanvas extends Widget {
    * @param width the size of the image in the destination space
    * @param height the size of the image in the destination space
    */
-  public void drawImage(ImageHandle img, int offsetX, int offsetY, int width, int height) {
+  public void drawImage(ImageElement img, float offsetX, float offsetY, float width, float height) {
     
     impl.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), 
             offsetX, offsetY, width, height);
@@ -208,8 +291,8 @@ public class GWTCanvas extends Widget {
    * Returns the height in pixels of the canvas.
    * @return returns the height in pixels of the canvas
    */
-  public int getHeight() {
-    return impl.getHeight(getElement());
+  public int getCoordHeight() {
+    return coordHeight;
   }
   
   /**
@@ -217,8 +300,68 @@ public class GWTCanvas extends Widget {
    * Returns the width in pixels of the canvas.
    * @return returns the width in pixels of the canvas
    */
-  public int getWidth() {
-    return impl.getWidth(getElement());
+  public int getCoordWidth() {
+    return coordWidth;
+  }
+  
+  /**
+   * See setter method for a fully detailed description.
+   * 
+   * @return
+   * @see GWTCanvas#setGlobalAlpha(float)
+   */
+  public float getGlobalAlpha() {
+    return impl.getGlobalAlpha();
+  }
+  
+  /**
+   * See setter method for a fully detailed description.
+   * 
+   * @return
+   * @see GWTCanvas#setGlobalCompositeOperation(String)
+   */
+  public String getGlobalCompositeOperation() {
+    return impl.getGlobalCompositeOperation();
+  }
+  
+  /**
+   * See setter method for a fully detailed description.
+   * 
+   * @return
+   * @see GWTCanvas#setLineCap(String)
+   */
+  public String getLineCap() {
+    return impl.getLineCap();
+  }
+  
+  /**
+   * See setter method for a fully detailed description.
+   * 
+   * @return
+   * @see GWTCanvas#setLineJoin(String)
+   */
+  public String getLineJoin() {
+    return impl.getLineJoin();
+  }
+  
+  /**
+   * See setter method for a fully detailed description.
+   * 
+   * @return
+   * @see GWTCanvas#setLineWidth(float)
+   */
+  public float getLineWidth() {
+    return impl.getLineWidth();
+  }
+  
+  /**
+   * See setter method for a fully detailed description.
+   * 
+   * @return
+   * @see GWTCanvas#setMiterLimit(float)
+   */
+  public double getMiterLimit() {
+    return impl.getMiterLimit();
   }
   
   /**
@@ -245,7 +388,7 @@ public class GWTCanvas extends Widget {
   /**
    * Does nothing if the context has an empty path. Otherwise it connects 
    * the last point in the path to the given point <b>(x, y)</b> using a quadratic 
-   * BÃ©zier curve with control point <b>(cpx, cpy)</b>, and then adds the given 
+   * BŽzier curve with control point <b>(cpx, cpy)</b>, and then adds the given 
    * point <b>(x, y)</b> to the path.
    * 
    * @param cpx x coord of the control point
@@ -307,7 +450,7 @@ public class GWTCanvas extends Widget {
    */
   public void saveContext() {
     impl.saveContext();
-  }
+  } 
   
   /**
    * Adds a scale transformation to the current transformation matrix.
@@ -319,6 +462,26 @@ public class GWTCanvas extends Widget {
   }
   
   /**
+   * Sets the background color of the canvas element.
+   * 
+   * @param color the background color.
+   */
+  public void setBackgroundColor(Color color) {
+    impl.setBackgroundColor(getElement(), color.toString());
+  }
+  
+  /**
+   * Sets the coordinate height of the Canvas. 
+   * <p>This will erase the canvas contents!</p>
+   * 
+   * @param height the size of the y component of the coordinate space
+   */
+  public void setCoordHeight(int height) {
+    impl.setCoordHeight(getElement(), height);
+    coordHeight = height;
+  }  
+
+  /**
    * Sets the coordinate space of the Canvas. 
    * <p>This will erase the canvas contents!</p>
    * 
@@ -326,14 +489,29 @@ public class GWTCanvas extends Widget {
    * @param height the size of the y component of the coordinate space
    */
   public void setCoordSize(int width, int height) {
+    setCoordWidth(width);
+    setCoordHeight(height);    
+  }  
+  
+  /**
+   * Sets the coordinate width of the Canvas. 
+   * <p>This will erase the canvas contents!</p>
+   * 
+   * @param width the size of the x component of the coordinate space
+   */
+  public void setCoordWidth(int width) {
     impl.setCoordWidth(getElement(), width);
-    impl.setCoordHeight(getElement(), height);
-    
-    // maintain local references to them
     coordWidth = width;
-    coordHeight = height;
   }
   
+  /**
+   * Set the current Fill Style to the specified color gradient. 
+   * @param grad {@link CanvasGradient} 
+   */
+  public void setFillStyle(CanvasGradient grad) {
+    impl.setFillStyle(grad);
+  }   
+ 
   /**
    * Set the current Fill Style to the specified color. 
    * @param color {@link Color} 
@@ -349,7 +527,54 @@ public class GWTCanvas extends Widget {
   public void setGlobalAlpha(float alpha) {
     impl.setGlobalAlpha(alpha);
   }
+
+  /**
+   * Determines how the canvas is displayed relative to any background
+   * content. The string identifies the desired compositing mode. If you do
+   * not set this value explicitly, the canvas uses the
+   * <code>GWTCanvas.SOURCE_OVER</code> compositing mode.
+   * <p>
+   * The valid compositing operators are:
+   * <ul>
+   * <li><code>GWTCanvas.SOURCE_OVER</code>
+   * <li><code>GWTCanvas.DESTINATION_OVER</code>
+   * </ul>
+   * <p>
+   *
+   * @param globalCompositeOperation
+   */
+  public void setGlobalCompositeOperation(String globalCompositeOperation) {
+    impl.setGlobalCompositeOperation(globalCompositeOperation);
+  }  
+
+  /**
+   * A string value that determines the end style used when drawing a line.
+   * Specify the string <code>GWTCanvas.BUTT</code> for a flat edge that is
+   * perpendicular to the line itself, <code>GWTCanvas.ROUND</code> for round
+   * endpoints, or <code>GWTCanvas.SQUARE</code> for square endpoints. If you
+   * do not set this value explicitly, the canvas uses the
+   * <code>GWTCanvas.BUTT</code> line cap style.
+   * 
+   * @param lineCap
+   */
+  public void setLineCap(String lineCap) {
+    impl.setLineCap(lineCap);
+  }
   
+  /**
+   * A string value that determines the join style between lines. Specify
+   * the string <code>GWTCanvas.ROUND</code> for round joins,
+   * <code>GWTCanvas.BEVEL</code> for beveled joins, or
+   * <code>GWTCanvas.MITER</code> for miter joins. If you do not set this
+   * value explicitly, the canvas uses the <code>GWTCanvas.MITER</code>
+   * line join style.
+   * 
+   * @param lineJoin
+   */
+  public void setLineJoin(String lineJoin) {
+    impl.setLineJoin(lineJoin);
+  }
+
   /**
    * Sets the current context's linewidth. Line width is the thickness
    * of a stroked line.
@@ -360,21 +585,45 @@ public class GWTCanvas extends Widget {
   }
   
   /**
-   * Sets the height of the canvas in pixels. Also defines the height of the coordinate
-   * space as an integer value.
-   * @param height the height of the canvas
+   * A double value with the new miter limit. You use this property to specify
+   * how the canvas draws the juncture between connected line segments. If
+   * the line join is set to <code>GWTCanvas.MITER</code>, the canvas uses the
+   * miter limit to determine whether the lines should be joined with a bevel
+   * instead of a miter. The canvas divides the length of the miter by the
+   * line width. If the result is greater than the miter limit, the style is
+   * converted to a bevel.
+   * 
+   * @param miterLimit
+   */
+  public void setMiterLimit(float miterLimit) {
+    impl.setMiterLimit(miterLimit);
+  }
+  
+  /**
+   * Sets the CSS height of the canvas in pixels. 
+   * 
+   * @param height the height of the canvas in pixels
    */
   public void setPixelHeight(int height) {
     impl.setPixelHeight(getElement(), height);
-  }  
-
+  }
+  
   /**
-   * Sets the CSS property in pixels for the canvas. 
-   * @param width width of the canvas
+   * Sets the CSS width in pixels for the canvas.
+   *  
+   * @param width width of the canvas in pixels
    */
   public void setPixelWidth(int width) {
     impl.setPixelWidth(getElement(), width);
-  }  
+  }
+  
+  /**
+   * Set the current Stroke Style to the specified color gradient. 
+   * @param grad {@link CanvasGradient} 
+   */
+  public void setStrokeStyle(CanvasGradient grad) {
+    impl.setStrokeStyle(grad);
+  }
   
   /**
    * Set the current Stroke Style to the specified color. 
@@ -383,13 +632,14 @@ public class GWTCanvas extends Widget {
   public void setStrokeStyle(Color color) {
     impl.setStrokeStyle(color.toString());
   }
- 
+  
   /**
    * Strokes the current path according to the current stroke style.
    */
   public void stroke() {
     impl.stroke();
   }
+  
   /**
    * Strokes a rectangle defined by the supplied arguments.
    * 
@@ -401,7 +651,7 @@ public class GWTCanvas extends Widget {
   public void strokeRect(float startX, float startY, float width, float height) {
     impl.strokeRect(startX, startY, width, height);
   }
-
+  
   /**
    * <code>The transform(m11, m12, m21, m22, dx, dy)</code> method must multiply the 
    * current transformation matrix with the input matrix. Input described by:
@@ -419,8 +669,8 @@ public class GWTCanvas extends Widget {
   public void transform(float m11, float m12, float m21,
       float m22, float dx, float dy) {
     impl.transform(m11, m12, m21, m22, dx, dy);
-  }  
-
+  }
+  
   /**
    * Applies a translation (linear shift) by x in the horizontal
    * and by y in the vertical.
@@ -431,5 +681,4 @@ public class GWTCanvas extends Widget {
   public void translate(float x, float y) {
     impl.translate(x, y);
   }
-  
 }

@@ -17,7 +17,7 @@ package com.google.gwt.demos.gwtcanvas.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -51,12 +51,11 @@ public class GWTCanvasDemo implements EntryPoint {
    */
   private ArrayList<SimpleCanvasDemo> demos = new ArrayList<SimpleCanvasDemo>();
 
-  private VerticalPanel layout;  
+  private HorizontalPanel layout;  
 
   public void onModuleLoad() {
     
-    layout = new VerticalPanel();
-    layout.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+    layout = new HorizontalPanel();    
     
     // Each demo will set their own dimensions, so it doesn't matter
     // what we initialize the canvas to.
@@ -68,7 +67,8 @@ public class GWTCanvasDemo implements EntryPoint {
     demos.add(new StaticDemo(canvas));
     demos.add(new LogoDemo(canvas));
     demos.add(new ParticleDemo(canvas));
-    // demos.add(new GradientDemo(canvas));
+    demos.add(new GradientDemo(canvas));
+    demos.add(new SuiteDemo(canvas));
     
     // Add them to the selection list box
     ListBox lb = new ListBox();
@@ -89,8 +89,10 @@ public class GWTCanvasDemo implements EntryPoint {
     currentDemo = demos.get(0);   
     
     // Add widgets to layout and RootPanel
-    layout.add(lb);
-    layout.add(canvas);
+    VerticalPanel vp = new VerticalPanel();
+    vp.add(lb);
+    vp.add(canvas);
+    layout.add(vp);
     if (currentDemo.getControls() != null) {
       layout.add(currentDemo.getControls());
     }
@@ -102,8 +104,8 @@ public class GWTCanvasDemo implements EntryPoint {
   * Changes the current demo for the input demo
   */
   private void swapDemo(SimpleCanvasDemo newDemo) {
-    layout.remove(currentDemo.getControls());
     currentDemo.stopDemo();
+    layout.remove(currentDemo.getControls());
     currentDemo = newDemo;
     layout.add(currentDemo.getControls());
     currentDemo.drawDemo();
