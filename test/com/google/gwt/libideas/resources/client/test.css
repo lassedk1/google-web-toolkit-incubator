@@ -1,66 +1,67 @@
-/**
- * Applied to the entire page.
+/*
+ * Copyright 2008 Google Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 @def BIG 50px;
 @def DIRECTION ltr;
 @eval RED com.google.gwt.libideas.resources.client.CSSResourceTest.red();
 @url BACKGROUND dataMethod;
 
-body {
-  color: black;
-  background: BACKGROUND repeat-x;
-  font-family: Helvetica, Arial, sans-serif;
-  font-size: small;
-}
+/*
+ * We'll use the token FAIL to indicate text that should never be seen in the output.
+ */
 
-body {
-  margin: 0px;
-  border: 0px;
-  padding: 0px;
-  direction: ltr;
-}
-
-@MEDIA print {
-  body {
-    color: gray;
-  }
-}
-
-div {
-	border: BIG solid RED;
-	direction: DIRECTION;
-}
-
+/* Test @sprite expansion */
 @sprite spriteClass spriteMethod;
-
-@page {
-  margin: 3cm;
+.spriteClass {
+  more: properties;
 }
 
-@page :left {
-  margin: 4cm;
+
+/* Test value substitution */
+div {
+    border: BIG solid RED;
+    direction: DIRECTION;
+    background: BACKGROUND;
 }
 
-@if user.agent safari {
-	div.safari {
-		color: blue;
-	}
-	
-	@if com.google.gwt.core.client.GWT.isScript() {
-	  .safariIsScript { color : red; }
-	}
-}
-
-@if user.agent gecko1_8 {
-  div.gecko18 {
-    color: blue;
+/* Test structural modifications */
+@if false {
+  div {
+    runtime: FAIL;
   }
 }
 
-@if com.google.gwt.core.client.GWT.isScript() {
-  .otherIsScript { color : red; }
+@if true {
+  div {
+    runtime: PASSED;
+ }
 }
 
+@if CssResource.style obf OBF pretty PRETTY {
+  div {
+    static: PASSED;
+  }
+}
+
+@if !CssResource.style obf OBF pretty PRETTY {
+  div {
+    static: FAILED;
+  }
+}
+
+/* Test named classes */
 .replacement {
 	color: red;
 }
@@ -69,12 +70,12 @@ div {
   content: "Hello world";
 }
 
-.blah {
+/* Test unusual tag, class, and property names and values */
+div {
   \-some-wacky-extension : boo;
 }
 
-.foo {
-  border: red;
+div {
   filter: "alpha(opacity = 30)";
 }
 
@@ -86,21 +87,71 @@ div {
   content : "blah";
 }
 
-@if false {
-  .foo {
-    should-never-see-this: true;
+/* Test merging / promotion functions*/
+
+.may-merge {
+  border: 0;
+}
+
+.may-combine {
+  border: 0;
+}
+
+/* Make sure rules in @if and @media are respected */
+@media blah {
+  @if true {
+    .this-does-not-matter {
+      after: merge;
+    }
   }
 }
 
-.foo {
-  width: BIG;
+.may-merge {
+  before: merge;
 }
 
-.bar, .baz {
-  border: red;
-  width: BIG;
+.may-combine2 {
+  border: 0;
 }
 
-.baz {
-  border-left: blue;
+.may-not-merge {
+  merge: merge;
+}
+
+.may-not-combine {
+  combine: combine;
+  prevent-combine: true;
+}
+
+/* Make sure rules in @if and @media are respected */
+@media blah {
+  @if true {
+    .may-not-merge-or-combine-because-of-this {
+      prevent: true;
+    }
+  }
+}
+.may-not-merge {
+  prevent-merge: true;
+}
+
+.may-not-combine2 {
+  combine: combine;
+  prevent-combine: true;
+}
+
+/* Ensure preservation of standard @rules */
+
+@MEDIA print {
+  div {
+    media: no-merge;
+  }
+}
+
+@page {
+  margin: 3cm;
+}
+
+@page :left {
+  margin: 4cm;
 }

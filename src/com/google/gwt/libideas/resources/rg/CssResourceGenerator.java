@@ -58,14 +58,18 @@ import com.google.gwt.user.rebind.SourceWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.Adler32;
@@ -193,18 +197,23 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
    */
   private static class MergeIdenticalSelectorsVisitor extends CssModVisitor {
     private final Map<String, CssRule> canonicalRules = new HashMap<String, CssRule>();
+    private final List<CssRule> rulesInOrder = new ArrayList<CssRule>();
 
     @Override
     public boolean visit(CssIf x, Context ctx) {
       // Can't merge rules across if rules
-      (new MergeIdenticalSelectorsVisitor()).accept(x.getNodes());
+      MergeIdenticalSelectorsVisitor v = new MergeIdenticalSelectorsVisitor();
+      v.accept(x.getNodes());
+      rulesInOrder.addAll(v.rulesInOrder);
       return false;
     }
 
     @Override
     public boolean visit(CssMediaRule x, Context ctx) {
       // Can't merge rules across media rules
-      (new MergeIdenticalSelectorsVisitor()).accept(x.getNodes());
+      MergeIdenticalSelectorsVisitor v = new MergeIdenticalSelectorsVisitor();
+      v.accept(x.getNodes());
+      rulesInOrder.addAll(v.rulesInOrder);
       return false;
     }
 
@@ -213,13 +222,32 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       // Assumed to run immediately after SplitRulesVisitor
       assert x.getSelectors().size() == 1;
       CssSelector sel = x.getSelectors().get(0);
+
       if (canonicalRules.containsKey(sel.getSelector())) {
         CssRule canonical = canonicalRules.get(sel.getSelector());
-        canonical.getProperties().addAll(x.getProperties());
-        ctx.removeMe();
-      } else {
-        canonicalRules.put(sel.getSelector(), x);
+
+        // Check everything between the canonical rule and this rule for common
+        // properties. If there are common properties, it would be unsafe to
+        // promote the rule.
+        boolean hasCommon = false;
+        int index = rulesInOrder.indexOf(canonical) + 1;
+        assert index != 0;
+
+        for (Iterator<CssRule> i = rulesInOrder.listIterator(index); i.hasNext()
+            && !hasCommon;) {
+          hasCommon = haveCommonProperties(i.next(), x);
+        }
+
+        if (!hasCommon) {
+          // It's safe to promote the rule
+          canonical.getProperties().addAll(x.getProperties());
+          ctx.removeMe();
+          return false;
+        }
       }
+
+      canonicalRules.put(sel.getSelector(), x);
+      rulesInOrder.add(x);
       return false;
     }
   }
@@ -229,18 +257,23 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
    */
   private static class MergeRulesByContentVisitor extends CssModVisitor {
     private Map<String, CssRule> rulesByContents = new HashMap<String, CssRule>();
+    private final List<CssRule> rulesInOrder = new ArrayList<CssRule>();
 
     @Override
     public boolean visit(CssIf x, Context ctx) {
       // Can't merge rules across if rules
-      (new MergeIdenticalSelectorsVisitor()).accept(x.getNodes());
+      MergeRulesByContentVisitor v = new MergeRulesByContentVisitor();
+      v.accept(x.getNodes());
+      rulesInOrder.addAll(v.rulesInOrder);
       return false;
     }
 
     @Override
     public boolean visit(CssMediaRule x, Context ctx) {
       // Can't merge rules across media rules
-      (new MergeRulesByContentVisitor()).accept(x.getNodes());
+      MergeRulesByContentVisitor v = new MergeRulesByContentVisitor();
+      v.accept(x.getNodes());
+      rulesInOrder.addAll(v.rulesInOrder);
       return false;
     }
 
@@ -260,24 +293,30 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       }
 
       String content = b.toString();
-      if (rulesByContents.containsKey(content)) {
-        CssRule r = rulesByContents.get(content);
-        r.getSelectors().addAll(x.getSelectors());
-        ctx.removeMe();
-        return false;
-      }
+      CssRule canonical = rulesByContents.get(content);
 
-      // Look for prefixes
-      for (Map.Entry<String, CssRule> entry : rulesByContents.entrySet()) {
-        if (content.startsWith(entry.getKey())) {
-          CssRule r = entry.getValue();
-          r.getSelectors().addAll(x.getSelectors());
-          x.getProperties().subList(0, r.getProperties().size()).clear();
+      // Check everything between the canonical rule and this rule for common
+      // properties. If there are common properties, it would be unsafe to
+      // promote the rule.
+      if (canonical != null) {
+        boolean hasCommon = false;
+        int index = rulesInOrder.indexOf(canonical) + 1;
+        assert index != 0;
+
+        for (Iterator<CssRule> i = rulesInOrder.listIterator(index); i.hasNext()
+            && !hasCommon;) {
+          hasCommon = haveCommonProperties(i.next(), x);
+        }
+
+        if (!hasCommon) {
+          canonical.getSelectors().addAll(x.getSelectors());
+          ctx.removeMe();
           return false;
         }
       }
 
       rulesByContents.put(content, x);
+      rulesInOrder.add(x);
       return false;
     }
   }
@@ -498,6 +537,52 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         x.setExpression(expression.toString());
       }
     }
+  }
+
+  static boolean haveCommonProperties(CssRule a, CssRule b) {
+    assert a.getProperties().size() > 0;
+    assert b.getProperties().size() > 0;
+
+    SortedSet<String> aProperties = new TreeSet<String>();
+    SortedSet<String> bProperties = new TreeSet<String>();
+
+    for (CssProperty p : a.getProperties()) {
+      aProperties.add(p.getName());
+    }
+    for (CssProperty p : b.getProperties()) {
+      bProperties.add(p.getName());
+    }
+
+    Iterator<String> ai = aProperties.iterator();
+    Iterator<String> bi = bProperties.iterator();
+
+    String aName = ai.next();
+    String bName = bi.next();
+    for (;;) {
+      int comp = aName.compareToIgnoreCase(bName);
+      if (comp == 0) {
+        return true;
+      } else if (comp > 0) {
+        if (aName.startsWith(bName + "-")) {
+          return true;
+        }
+
+        if (!bi.hasNext()) {
+          break;
+        }
+        bName = bi.next();
+      } else {
+        if (bName.startsWith(aName + "-")) {
+          return true;
+        }
+        if (!ai.hasNext()) {
+          break;
+        }
+        aName = ai.next();
+      }
+    }
+
+    return false;
   }
 
   private String classPrefix;
@@ -753,9 +838,12 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       (new ClassRenamer(logger, classReplacements)).accept(sheet);
 
       // Combine rules with identical selectors
-      (new SplitRulesVisitor()).accept(sheet);
-      (new MergeIdenticalSelectorsVisitor()).accept(sheet);
-      (new MergeRulesByContentVisitor()).accept(sheet);
+      if (!Boolean.getBoolean("CssResource.disableMerge")) {
+        // TODO This is an off-switch while this is being developed; remove
+        (new SplitRulesVisitor()).accept(sheet);
+        (new MergeIdenticalSelectorsVisitor()).accept(sheet);
+        (new MergeRulesByContentVisitor()).accept(sheet);
+      }
 
       return makeExpression(logger, sheet);
 

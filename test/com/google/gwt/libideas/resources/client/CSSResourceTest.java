@@ -31,11 +31,18 @@ public class CSSResourceTest extends LibTestBase {
     String replacement();
   }
 
+  /*
+   * Check type inheritance.
+   */
+  interface MyCssResourceWithSprite extends MyCssResource {
+    Sprite spriteClass();
+  }
+
   interface Resources extends ImmutableResourceBundle {
     Resources INSTANCE = GWT.create(Resources.class);
 
     @Resource("test.css")
-    MyCssResource css();
+    MyCssResourceWithSprite css();
 
     @Resource("16x16.png")
     ImageResource spriteMethod();
@@ -54,33 +61,64 @@ public class CSSResourceTest extends LibTestBase {
   }
 
   public void testCSS() {
-    MyCssResource css = Resources.INSTANCE.css();
-    assertFalse("replacement".equals(css.replacement()));
-
+    MyCssResourceWithSprite css = Resources.INSTANCE.css();
     String text = css.getText();
     System.out.println(text);
-    assertTrue(text.contains(Resources.INSTANCE.dataMethod().getUrl()));
-    assertTrue(text.contains(red() + ";"));
-    assertTrue(text.contains("50px"));
-    assertFalse(text.contains("should-never-see-this"));
-    // Make sure that we can handle tags in a namespace
-    assertTrue(text.contains("ns\\:tag:pseudo"));
 
-    // Make sure we escape property names that aren't idents
+    // Check the sprite
+    assertTrue(text.contains("height:16px"));
+    assertTrue(text.contains("width:16px"));
+
+    // Make sure renaming works
+    assertFalse("replacement".equals(css.replacement()));
+    assertTrue(text.contains("." + css.replacement()));
+    assertTrue(text.contains("." + css.replacement() + ":after"));
+
+    // Check static if evaluation
+    assertTrue(text.contains("static:PASSED;"));
+    assertFalse(text.contains("FAIL"));
+
+    // Check runtime if evaluation
+    assertTrue(text.contains("runtime:PASSED;"));
+
+    // Check interestingly-named idents
     assertTrue(text.contains("\\-some-wacky-extension"));
+    assertTrue(text.contains(".ns\\:tag"));
+    assertTrue(text.contains(".ns\\:tag:pseudo"));
+    assertTrue(text.contains("\"Hello world\""));
+
+    // Check data URL expansion
+    assertTrue(text.contains(Resources.INSTANCE.dataMethod().getUrl()));
+
+    // Check @eval expansion
+    assertTrue(text.contains(red() + ";"));
+
+    // Check @def substitution
+    assertTrue(text.contains("50px"));
+
+    // Check merging semantics
+    assertTrue(text.indexOf("static:PASSED") < text.indexOf("runtime:PASSED"));
+    assertTrue(text.indexOf("before:merge") != -1);
+    assertTrue(text.indexOf("before:merge") < text.indexOf("after:merge"));
+    assertTrue(text.indexOf(".may-combine,.may-combine2") != -1);
+    assertTrue(text.indexOf("merge:merge") != -1);
+    assertTrue(text.indexOf("merge:merge") < text.indexOf("may-not-combine"));
+    assertTrue(text.indexOf("may-not-combine") < text.indexOf("prevent:true"));
+    assertTrue(text.indexOf("prevent:true") < text.indexOf("prevent-merge:true"));
+    assertTrue(text.indexOf("prevent:true") < text.indexOf("may-not-combine2"));
   }
 
   public void testSiblingCSS() {
     SiblingResources r = GWT.create(SiblingResources.class);
-    
+
     assertEquals(r.a().replacement(), r.b().replacement());
-    
+
     String a = r.a().getText();
     String b = r.b().getText();
-    
+
     System.out.println(a);
     System.out.println(b);
-    
+
     assertTrue(a.contains(".other"));
     assertTrue(b.contains(".other"));
   }
