@@ -71,6 +71,11 @@
       <when-property-is name="user.agent" value="ie6" />
     </all>
   </replace-with>
+  
+  <!-- This allows merging of CSS rules to be disabled. -->
+  <!-- TODO : Consider whether or not to keep this in the final version -->
+  <define-property name="CssResource.enableMerge" values="true,false" />
+  <set-property name="CssResource.enableMerge" value="true" />
 
   <!-- This can be used to make CssResource produce human-readable CSS -->
   <define-property name="CssResource.style" values="obf,OBF,pretty,PRETTY" />
