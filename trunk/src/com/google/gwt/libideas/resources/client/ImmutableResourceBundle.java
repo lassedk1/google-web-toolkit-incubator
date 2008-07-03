@@ -15,6 +15,9 @@
  */
 package com.google.gwt.libideas.resources.client;
 
+import com.google.gwt.libideas.resources.rebind.ResourceGeneratorType;
+import com.google.gwt.libideas.resources.rg.BundleResourceGenerator;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
@@ -26,6 +29,7 @@ import java.lang.annotation.Target;
  * At runtime, the functions will return an object that can be used to access
  * the data in the original resource.
  */
+@ResourceGeneratorType(BundleResourceGenerator.class)
 public interface ImmutableResourceBundle {
 
   /**
