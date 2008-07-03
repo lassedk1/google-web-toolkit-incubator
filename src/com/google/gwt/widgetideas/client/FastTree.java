@@ -119,6 +119,15 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       StyleInjector.injectStylesheet(instance.css().getText(), instance);
     }
   }
+  
+  private static boolean hasModifiers(Event event) {
+    boolean alt = event.getAltKey();
+    boolean ctrl = event.getCtrlKey();
+    boolean meta = event.getMetaKey();
+    boolean shift = event.getShiftKey(); 
+    
+    return alt || ctrl || meta || shift;
+  }
 
   private boolean lostMouseDown = true;
   /**
@@ -329,15 +338,6 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   @SuppressWarnings("fallthrough")
   public void onBrowserEvent(Event event) {
     int eventType = DOM.eventGetType(event);
-    
-    int mouseButtons = event.getButton();
-    boolean alt = event.getAltKey();
-    boolean ctrl = event.getCtrlKey();
-    boolean meta = event.getMetaKey();
-    boolean shift = event.getShiftKey();
-
-    boolean left = mouseButtons == Event.BUTTON_LEFT;    
-    boolean modifiers = alt || ctrl || meta || shift;
 
     switch (eventType) {
       case Event.ONCLICK: {
@@ -347,7 +347,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
           // Avoid moving focus back up to the tree (so that focusable widgets
           // attached to TreeItems can receive keyboard events).
         } else {
-          if (left && !modifiers) {
+          if (!hasModifiers(event)) {
             clickedOnFocus(DOM.eventGetTarget(event));
           }
         }
@@ -361,11 +361,13 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         break;
       }
 
-      case Event.ONMOUSEUP: {
+      case Event.ONMOUSEUP: { 
+        boolean left = event.getButton() == Event.BUTTON_LEFT;
+
         if (lostMouseDown) {
           // artificial mouse down due to IE bug where mouse downs are lost.
           
-          if (left && !modifiers) {
+          if (left && !hasModifiers(event)) {
             elementClicked(root, event);
           }
         }
@@ -376,11 +378,13 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         break;
       }
       case Event.ONMOUSEDOWN: {
+        boolean left = event.getButton() == Event.BUTTON_LEFT;
+
         lostMouseDown = false;
         if (mouseListeners != null) {
           mouseListeners.fireMouseEvent(this, event);
         }
-        if (left && !modifiers) {
+        if (left && !hasModifiers(event)) {
           elementClicked(root, event);
         }
         break;
@@ -437,7 +441,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
           keyboardListeners.fireKeyboardEvent(this, event);
         }
 
-        if (modifiers) {
+        if (hasModifiers(event)) {
           break;
         }
         
@@ -970,7 +974,7 @@ class WidgetIterators {
     }
     return clone;
   }
-
+  
   private WidgetIterators() {
     // Not instantiable.
   }
