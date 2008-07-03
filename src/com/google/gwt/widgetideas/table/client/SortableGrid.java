@@ -301,6 +301,32 @@ public class SortableGrid extends SelectionGrid {
   }
 
   /**
+   * Set the current {@link ColumnSortList} and trigger the
+   * {@link SortableColumnsListener#onColumnSorted(ColumnSortList)} event.
+   * 
+   * @param columnSortList the new {@link ColumnSortList}
+   */
+  public void setColumnSortList(ColumnSortList columnSortList) {
+    setColumnSortList(columnSortList, true);
+  }
+
+  /**
+   * Set the current {@link ColumnSortList} and optionally trigger the
+   * {@link SortableColumnsListener#onColumnSorted(ColumnSortList)} event.
+   * 
+   * @param columnSortList the new {@link ColumnSortList}
+   * @param fireEvents true to trigger the onSort event
+   */
+  public void setColumnSortList(ColumnSortList columnSortList,
+      boolean fireEvents) {
+    assert columnSortList != null : "columnSortList cannot be null";
+    this.columnSortList = columnSortList;
+    if (fireEvents) {
+      fireColumnSorted();
+    }
+  }
+
+  /**
    * Sort the grid according to the specified column. If the column is already
    * sorted, reverse sort it.
    * 
@@ -333,7 +359,7 @@ public class SortableGrid extends SelectionGrid {
     }
 
     // Add the sorting to the list of sorted columns
-    columnSortList.add(column, ascending);
+    columnSortList.add(new ColumnSortInfo(column, ascending));
 
     // Use the onSort method to actually sort the column
     getColumnSorter(true).onSortColumn(this, columnSortList,

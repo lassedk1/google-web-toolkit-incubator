@@ -195,8 +195,18 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
      * @return true if the cell was actually changed
      */
     public boolean setCurrentCell(Event event) {
+      // Check the resize policy of the table
+      Element cell = null;
+      if (table.columnResizePolicy == ColumnResizePolicy.MULTI_CELL) {
+        cell = table.headerTable.getEventTargetCell(event);
+      } else if (table.columnResizePolicy == ColumnResizePolicy.SINGLE_CELL) {
+        cell = table.headerTable.getEventTargetCell(event);
+        if (cell != null && DOM.getElementPropertyInt(cell, "colSpan") > 1) {
+          cell = null;
+        }
+      }
+
       // See if we are near the edge of the cell
-      Element cell = table.headerTable.getEventTargetCell(event);
       int clientX = DOM.eventGetClientX(event);
       if (cell != null) {
         int absRight = DOM.getAbsoluteLeft(cell)
@@ -207,7 +217,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       }
 
       // Change out the current cell
-      if (!DOM.compare(cell, curCell)) {
+      if (cell != curCell) {
         // Clear the old cell
         if (curCell != null) {
           DOM.setStyleAttribute(curCell, "cursor", "default");
@@ -375,7 +385,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     @Override
     public boolean setCurrentCell(Event event) {
       // Check if cursor update div is active
-      if (DOM.compare(DOM.eventGetTarget(event), cursorUpdateDiv)) {
+      if (DOM.eventGetTarget(event) == cursorUpdateDiv) {
         removeCursorUpdateDiv();
         return false;
       }
@@ -451,10 +461,22 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   public static final String DEFAULT_STYLE_NAME = "gwt-ScrollTable";
 
   /**
-   * The resize policies of table cells.
+   * The resize policies related to user resizing.
    * 
    * <ul>
    * <li>DISABLED - Columns cannot be resized by the user</li>
+   * <li>SINGLE_CELL - Only cells with a colspan of 1 can be resized</li>
+   * <li>MULTI_CELL - All cells can be resized by the user</li>
+   * </ul>
+   */
+  public enum ColumnResizePolicy {
+    DISABLED, SINGLE_CELL, MULTI_CELL
+  }
+
+  /**
+   * The resize policies of table cells.
+   * 
+   * <ul>
    * <li>UNCONSTRAINED - Columns shrink and expand independently of each other</li>
    * <li>FLOW - As one column expands or shrinks, the columns to the right will
    * do the opposite, trying to maintain the same size. The user can still
@@ -466,12 +488,10 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    * in the grid growing in size.</li>
    * <li>FILL_WIDTH - Same as FIXED_WIDTH, but the grid will always fill the
    * available width, even if the widget is resized.</li>
-   * <li>FILL_WIDTH_DISABLED - The grid will always fill the available width,
-   * but the user cannot manually change column widths.</li>
    * </ul>
    */
   public enum ResizePolicy {
-    DISABLED, UNCONSTRAINED, FLOW, FIXED_WIDTH, FILL_WIDTH, FILL_WIDTH_DISABLED
+    UNCONSTRAINED, FLOW, FIXED_WIDTH, FILL_WIDTH
   }
 
   /**
@@ -486,6 +506,11 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   public enum ScrollPolicy {
     HORIZONTAL, BOTH, DISABLED
   }
+
+  /**
+   * The policy applied to user actions that resize columns.
+   */
+  private ColumnResizePolicy columnResizePolicy = ColumnResizePolicy.MULTI_CELL;
 
   /**
    * Columns which have guaranteed sizes.
@@ -822,6 +847,13 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   }
 
   /**
+   * @return the column resize policy
+   */
+  public ColumnResizePolicy getColumnResizePolicy() {
+    return columnResizePolicy;
+  }
+
+  /**
    * Return the column width for a given column index.
    * 
    * @param column the column index
@@ -926,10 +958,10 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
         }
         break;
       case Event.ONMOUSEUP:
-        // Stop resizing the header column
         if (DOM.eventGetButton(event) != Event.BUTTON_LEFT) {
           return;
         }
+        // Stop resizing the header column
         if (resizeWorker.isResizing()) {
           resizeWorker.stopResizing(event);
         } else {
@@ -959,8 +991,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
         // Resize the header column
         if (resizeWorker.isResizing()) {
           resizeWorker.resizeColumn(event);
-        } else if (resizePolicy != ResizePolicy.DISABLED
-            && resizePolicy != ResizePolicy.FILL_WIDTH_DISABLED) {
+        } else {
           resizeWorker.setCurrentCell(event);
         }
         break;
@@ -1007,8 +1038,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   public void redraw() {
     resizeTablesVertically();
 
-    if (resizePolicy == ResizePolicy.FILL_WIDTH
-        || resizePolicy == ResizePolicy.FILL_WIDTH_DISABLED) {
+    if (resizePolicy == ResizePolicy.FILL_WIDTH) {
       DeferredCommand.addCommand(new Command() {
         public void execute() {
           fillWidth();
@@ -1054,6 +1084,16 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     if (footerTable != null) {
       footerTable.setCellSpacing(spacing);
     }
+  }
+
+  /**
+   * Set the resize policy applied to user actions that resize columns.
+   * 
+   * @param columnResizePolicy the resize policy
+   */
+  public void setColumnResizePolicy(ColumnResizePolicy columnResizePolicy) {
+    this.columnResizePolicy = columnResizePolicy;
+    updateFillWidthImage();
   }
 
   /**
@@ -1147,18 +1187,14 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    * Widget is smaller than the width of the data table, a horizontal scroll bar
    * will appear.
    * 
-   * The minWidth property only applies to the policies
-   * {@link ResizePolicy#FILL_WIDTH} and
-   * {@link ResizePolicy#FILL_WIDTH_DISABLED}.
+   * The minWidth property only applies to the policy
+   * {@link ResizePolicy#FILL_WIDTH}.
    * 
    * @param minWidth the minimum width, or -1 to disable
    */
   public void setMinWidth(int minWidth) {
     this.minWidth = minWidth;
-    if (resizePolicy == ResizePolicy.FILL_WIDTH
-        || resizePolicy == ResizePolicy.FILL_WIDTH_DISABLED) {
-      fillWidth();
-    }
+    maybeFillWidth();
   }
 
   /**
@@ -1168,16 +1204,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    */
   public void setResizePolicy(ResizePolicy resizePolicy) {
     this.resizePolicy = resizePolicy;
-    if (resizePolicy == ResizePolicy.FIXED_WIDTH
-        || resizePolicy == ResizePolicy.DISABLED) {
-      fillWidthImage.setVisible(false);
-    } else if (resizePolicy == ResizePolicy.FILL_WIDTH
-        || resizePolicy == ResizePolicy.FILL_WIDTH_DISABLED) {
-      fillWidthImage.setVisible(false);
-      fillWidth();
-    } else {
-      fillWidthImage.setVisible(true);
-    }
+    updateFillWidthImage();
+    maybeFillWidth();
   }
 
   /**
@@ -1192,7 +1220,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       // Disabled scroll bars
       super.setHeight("auto");
       dataWrapper.getStyle().setProperty("height", "auto");
-      dataWrapper.getStyle().setProperty("overflow", "hidden");
+      dataWrapper.getStyle().setProperty("overflow", "");
     } else if (scrollPolicy == ScrollPolicy.HORIZONTAL) {
       // Only show horizontal scroll bar
       super.setHeight("auto");
@@ -1239,10 +1267,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     super.onAttach();
     resizeTablesVertically();
     repositionHeaderSpacer();
-    if (resizePolicy == ResizePolicy.FILL_WIDTH
-        || resizePolicy == ResizePolicy.FILL_WIDTH_DISABLED) {
-      fillWidth();
-    }
+    maybeFillWidth();
   }
 
   /**
@@ -1260,7 +1285,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     // Force browser to redraw
     if (scrollPolicy == ScrollPolicy.DISABLED) {
       dataWrapper.getStyle().setProperty("overflow", "auto");
-      dataWrapper.getStyle().setProperty("overflow", "hidden");
+      dataWrapper.getStyle().setProperty("overflow", "");
       return;
     } else if (scrollPolicy == ScrollPolicy.HORIZONTAL) {
       dataWrapper.getStyle().setProperty("overflow", "hidden");
@@ -1331,8 +1356,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
 
       // Prevent over resizing
       if (resizePolicy == ResizePolicy.FIXED_WIDTH
-          || resizePolicy == ResizePolicy.FILL_WIDTH
-          || resizePolicy == ResizePolicy.FILL_WIDTH_DISABLED) {
+          || resizePolicy == ResizePolicy.FILL_WIDTH) {
         width -= diff;
       }
     }
@@ -1397,6 +1421,16 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     wrapper.getStyle().setPropertyPx("border", 0);
     setStyleName(wrapper, cssName);
     return wrapper;
+  }
+
+  /**
+   * Extend the columns to exactly fill the available space, if the current
+   * {@link ResizePolicy} requires it.
+   */
+  private void maybeFillWidth() {
+    if (resizePolicy == ResizePolicy.FILL_WIDTH) {
+      fillWidth();
+    }
   }
 
   /**
@@ -1484,6 +1518,19 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     if (footerTable != null) {
       int footerWidth = footerTable.getOffsetWidth();
       footerSpacer.getStyle().setPropertyPx("left", footerWidth);
+    }
+  }
+
+  /**
+   * Show or hide to fillWidthImage depending on current policies.
+   */
+  private void updateFillWidthImage() {
+    if (columnResizePolicy == ColumnResizePolicy.DISABLED
+        || resizePolicy == ResizePolicy.FILL_WIDTH
+        || resizePolicy == ResizePolicy.FIXED_WIDTH) {
+      fillWidthImage.setVisible(false);
+    } else {
+      fillWidthImage.setVisible(true);
     }
   }
 }

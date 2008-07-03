@@ -158,6 +158,52 @@ public abstract class TableModel<R> implements SourceTableModelEvents {
      */
     private List<ColumnSortInfo> infos = new ArrayList<ColumnSortInfo>();
 
+    /**
+     * Add a {@link ColumnSortInfo} to this list. If the column already exists,
+     * it will be removed from its current position and placed at the start of
+     * the list, becoming the primary sort info.
+     * 
+     * This add method inserts an entry at the beginning of the list. It does
+     * not append the entry to the end of the list.
+     * 
+     * @param sortInfo the {@link ColumnSortInfo} to add
+     */
+    public void add(ColumnSortInfo sortInfo) {
+      add(0, sortInfo);
+    }
+
+    /**
+     * Inserts the specified {@link ColumnSortInfo} at the specified position in
+     * this list. If the column already exists in the sort info, the index will
+     * be adjusted to account for any removed entries.
+     * 
+     * @param sortInfo the {@link ColumnSortInfo} to add
+     */
+    public void add(int index, ColumnSortInfo sortInfo) {
+      // Remove sort info for duplicate columns
+      int column = sortInfo.getColumn();
+      for (int i = 0; i < infos.size(); i++) {
+        ColumnSortInfo curInfo = infos.get(i);
+        if (curInfo.getColumn() == column) {
+          infos.remove(i);
+          i--;
+          if (column < index) {
+            index--;
+          }
+        }
+      }
+
+      // Insert the new sort info
+      infos.add(index, sortInfo);
+    }
+
+    /**
+     * Removes all of the elements from this list.
+     */
+    public void clear() {
+      infos.clear();
+    }
+
     @Override
     public boolean equals(Object obj) {
       if (obj instanceof ColumnSortList) {
@@ -243,37 +289,21 @@ public abstract class TableModel<R> implements SourceTableModelEvents {
     }
 
     /**
+     * Remove a {@link ColumnSortInfo} from the list.
+     * 
+     * @param sortInfo the {@link ColumnSortInfo} to remove
+     */
+    public boolean remove(Object sortInfo) {
+      return infos.remove(sortInfo);
+    }
+
+    /**
      * Returns the number of {@link ColumnSortInfo} in the list.
      * 
      * @return the size of the list
      */
     public int size() {
       return infos.size();
-    }
-
-    /**
-     * Add a {@link ColumnSortInfo} to this list. If the column already exists,
-     * it will be removed from its current position and placed at the start of
-     * the list, becoming the primary sort info.
-     * 
-     * This add method inserts an entry at the beginning of the list. It does
-     * not append the entry to the end of the list.
-     * 
-     * @param column the column index
-     * @param ascending is the sort ascending
-     */
-    void add(int column, boolean ascending) {
-      // Remove sort info for duplicate columns
-      for (int i = 0; i < infos.size(); i++) {
-        ColumnSortInfo curInfo = infos.get(i);
-        if (curInfo.getColumn() == column) {
-          infos.remove(i);
-          i--;
-        }
-      }
-
-      // Insert the new sort info
-      infos.add(0, new ColumnSortInfo(column, ascending));
     }
 
     /**
