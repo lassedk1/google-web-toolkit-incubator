@@ -53,6 +53,7 @@ public class StaticDemo extends SimpleCanvasDemo {
    * originally derived from mozilla foundation test cases
    */
   public void drawDemo() {
+    
     canvas.resize(width, height);
     
     // Changing the coordinate size will implicitly clear the canvas
@@ -171,6 +172,7 @@ public class StaticDemo extends SimpleCanvasDemo {
     canvas.restoreContext();
     
     canvas.restoreContext();
+    // canvas.clear();
   }
 
   public void stopDemo() {

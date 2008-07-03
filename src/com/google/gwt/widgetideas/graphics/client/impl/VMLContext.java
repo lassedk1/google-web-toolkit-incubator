@@ -15,135 +15,86 @@
  */
 package com.google.gwt.widgetideas.graphics.client.impl;
 
+import com.google.gwt.widgetideas.graphics.client.GWTCanvas;
+
 /**
- * Wrapper for the Style and Transformation state of the VMLElement Context.
+ * The VML context abstraction for the Internet Explorer implementation.
  */
 public class VMLContext {
-  
-  /**
-   * Creates a copy of a 3x3 Matrix.
-   * 
-   * @param from
-   * @return A new float[3][3] with the same contents as the input matrix 
-   */
-  public static float[][] clone3x3Matrix(float[][] from) {
-    float[][] to = new float[3][3];
-    
-    to[0][0] = from[0][0];
-    to[0][1] = from[0][1];
-    to[0][2] = from[0][2];
-    
-    to[1][0] = from[1][0];
-    to[1][1] = from[1][1];
-    to[1][2] = from[1][2];
-    
-    to[2][0] = from[2][0];
-    to[2][1] = from[2][1];
-    to[2][2] = from[2][2];
-    
-    return to;
-  } 
-   
-  /**
-   * Creates a copy of a VMLContext.
-   *  
-   * @param from
-   * @return A new VMLContext object that has the same values as
-   * the input VMLContext
-   */
-  public static VMLContext cloneContext(VMLContext from) {
-    VMLContext to =  new VMLContext();
-    
-    to.fillStyle = from.fillStyle;
-    to.globalAlpha = from.globalAlpha;
-    to.lineWidth = from.lineWidth;
-    to.offsetX = from.offsetX;
-    to.offsetY = from.offsetY;
-    to.strokeStyle = from.strokeStyle;
-    to.scaleX = from.scaleX;
-    to.scaleY = from.scaleY;
-    // to.gradFillStyle = from.gradFillStyle.cloneGradient();
-    // to.gradStrokeStyle = from.gradStrokeStyle.cloneGradient(); 
-    
-    // We can't do simple assignment for objects
-    to.transform = VMLContext.clone3x3Matrix(from.transform);
-     
-    // clone the path too
-    to.path = new StringBuffer();
-    to.path.append(from.path.toString());
-    
-    return to;
-  }
-  
+
+  public float arcScaleX;
+
+  public float arcScaleY;
+
+  public float fillAlpha;
+
   public String fillStyle;
+  
+  public CanvasGradientImplIE6 fillGradient;
+  
+  public CanvasGradientImplIE6 strokeGradient;
+
   public float globalAlpha;
-  public int lineWidth;
-  public int offsetX;
-  public int offsetY;
-  
-  // Concatenation of currently opened Path Elements which have not yet been applied
-  // via an ending call (eg. closePath, stroke, fill, etc...)
-  public StringBuffer path;
-  
-  // We need to know the x,y components of scale operations
-  // as a convenience operation for knowing how much to
-  public float scaleX,scaleY;
-  
+
+  public String globalCompositeOperation;
+
+  public String lineCap;
+
+  public String lineJoin;
+
+  public float lineWidth;
+
+  public float[] matrix = new float[9];
+
+  public float miterLimit;
+
+  public float strokeAlpha;
+
   public String strokeStyle;
-  
-  public float[][] transform;
-  
-  // TODO: Awaiting me fixing IE6 gradients...
-  // If we have a gradient stroke or fill style specified, we
-  // should use those instead of the string stroke/fill style
-  // public CanvasGradientIE6 gradFillStyle;
-  // public CanvasGradientIE6 gradStrokeStyle;
-  
-  /*
-   * TODO: Explore adding rest of canvas state info
-   *    
-   * this.globalCompositeOperation = '';
-   *
-   * this.lineCap = '';
-   *
-   * this.lineJoin = '';
-   *
-   * this.miterLimit = '';
-   *
-   * this.shadowBlur = '';
-   *
-   * this.shadowColor = '';
-   *
-   * this.shadowOffsetX = '';
-   *
-   * this.shadowOffsetY = '';
-   */
-  
+
   public VMLContext() {
+
+    // load identity matrix
+    matrix[0] = 1.0f; matrix[1] = 0.0f; matrix[2] = 0.0f;
+    matrix[3] = 0.0f; matrix[4] = 1.0f; matrix[5] = 0.0f;
+    matrix[6] = 0.0f; matrix[7] = 0.0f; matrix[8] = 1.0f;
+
+    // init other stuff
+    arcScaleX         =  1.0f;
+    arcScaleY         =  1.0f;
+    globalAlpha         =  1.0f;
+    strokeAlpha         =  1.0f;
+    fillAlpha         =  1.0f;
+    miterLimit          = 10.0f;
+    lineWidth         =  1.0f;
+    lineCap           =  GWTCanvasImplIE6.BUTT;
+    lineJoin          =  GWTCanvas.MITER;
+    strokeStyle         =  "#000";
+    fillStyle         =  "#000";
+    globalCompositeOperation  =  GWTCanvasImplIE6.SOURCE_OVER;
   }
-  
-  public VMLContext(boolean initTransform) {
-    if (initTransform) {
-      init();
-    }
+
+  public VMLContext(VMLContext ctx) {
+
+    // copy the matrix
+    matrix[0] = ctx.matrix[0]; matrix[1] = ctx.matrix[1]; matrix[2] = ctx.matrix[2];
+    matrix[3] = ctx.matrix[3]; matrix[4] = ctx.matrix[4]; matrix[5] = ctx.matrix[5];
+    matrix[6] = ctx.matrix[6]; matrix[7] = ctx.matrix[7]; matrix[8] = ctx.matrix[8];
+
+    // copy other stuff
+    arcScaleX         = ctx.arcScaleX;
+    arcScaleY         = ctx.arcScaleY;
+    globalAlpha         = ctx.globalAlpha;
+    strokeAlpha         = ctx.strokeAlpha;
+    fillAlpha         = ctx.fillAlpha;
+    miterLimit          = ctx.miterLimit;
+    lineWidth         = ctx.lineWidth;
+    lineCap           = ctx.lineCap;
+    lineJoin          = ctx.lineJoin;
+    strokeStyle         = ctx.strokeStyle;
+    fillStyle         = ctx.fillStyle;
+    fillGradient = ctx.fillGradient;
+    strokeGradient = ctx.strokeGradient;
+    globalCompositeOperation  = ctx.globalCompositeOperation;
   }
-  
-  /**
-   * Default Values.
-   */
-  public void init() {
-    this.fillStyle = "black";
-    this.globalAlpha = 1.0f;
-    this.lineWidth = 1;
-    this.offsetX = 0;
-    this.offsetY = 0;
-    this.strokeStyle = "black";
-    this.scaleX = 1;
-    this.scaleY = 1;
-    // this.gradFillStyle = null;
-    // this.gradStrokeStyle = null;
-    this.transform = new float[][] { {1,0,0}, {0,1,0}, {0,0,1} };
-    this.path = new StringBuffer();
-  }
-  
 }

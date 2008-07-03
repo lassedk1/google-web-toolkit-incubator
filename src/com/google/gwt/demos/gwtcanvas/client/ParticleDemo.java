@@ -90,14 +90,14 @@ public class ParticleDemo extends SimpleCanvasDemo {
    * Not so much controls as feedback for benchmarking.
    */
   class ParticleDemoControls extends Composite {
-    private long average = 1;
+    private double average = 1;
     private Label averageLabel;
     
-    private long iterations = 1;
-    private long refreshRate;
+    private double iterations = 1;
+    private double refreshRate;
     private Label refreshRateLabel;
     
-    private long startTime = -1;
+    private double startTime = -1;
     
     public ParticleDemoControls() {
       refreshRateLabel = new Label("");
@@ -110,7 +110,7 @@ public class ParticleDemo extends SimpleCanvasDemo {
       initWidget(layout);
     }
     
-    public void doBenchmark(long now) {
+    public void doBenchmark(double now) {
       if (startTime < 0) {
         startTime = now;
       } else {
@@ -130,7 +130,9 @@ public class ParticleDemo extends SimpleCanvasDemo {
       this.startTime = -1;
     } 
   }
+  
   private int numParticles = 20;
+  
   private Particle[] particles;
   
   private Timer t;

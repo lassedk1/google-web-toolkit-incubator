@@ -15,6 +15,8 @@
  */
 package com.google.gwt.widgetideas.graphics.client;
 
+import com.google.gwt.dom.client.ImageElement;
+
 import java.util.ArrayList;
 
 /**
@@ -29,7 +31,7 @@ public class ImageLoader {
    * are loaded.
    */
   public interface CallBack {
-    void onImagesLoaded(ImageHandle[] imageHandles);
+    void onImagesLoaded(ImageElement[] imageElements);
   }
   
   /**
@@ -41,7 +43,7 @@ public class ImageLoader {
   /**
    * Takes in an array of url Strings corresponding to the images needed to
    * be loaded. The onImagesLoaded() method in the specified CallBack
-   * object is invoked with an array of ImageHandles corresponding to
+   * object is invoked with an array of ImageElements corresponding to
    * the original input array of url Strings once all the images report
    * an onload event.
    * 
@@ -51,14 +53,14 @@ public class ImageLoader {
   public static void loadImages(String[] urls, CallBack cb) {
     ImageLoader il = new ImageLoader();
     for (int i = 0;i < urls.length;i++) {
-      il.addHandle(il.loadImage(urls[0]));
+      il.addHandle(il.loadImage(urls[i]));
     }
     il.finalize(cb);
     ImageLoader.imageLoaders.add(il);
   }
   
   private CallBack callBack = null;
-  private ArrayList<ImageHandle> images = new ArrayList<ImageHandle>();
+  private ArrayList<ImageElement> images = new ArrayList<ImageElement>();
   private int loadedImages = 0;
   private int totalImages = 0;
   
@@ -66,11 +68,11 @@ public class ImageLoader {
   }
   
   /**
-   * Stores the ImageHandle reference so that when all the images report
-   * an onload, we can return the array of all the ImageHandles.
+   * Stores the ImageElement reference so that when all the images report
+   * an onload, we can return the array of all the ImageElements.
    * @param img
    */
-  private void addHandle(ImageHandle img) {
+  private void addHandle(ImageElement img) {
     this.totalImages++;
     this.images.add(img);
   }
@@ -81,9 +83,10 @@ public class ImageLoader {
    * 
    * Called from the JSNI onload event handler.
    */
+  @SuppressWarnings("unused")
   private void dispatchIfComplete() {
     if (callBack != null && isAllLoaded()) {
-      callBack.onImagesLoaded((ImageHandle[]) images.toArray(new ImageHandle[0]));
+      callBack.onImagesLoaded((ImageElement[]) images.toArray(new ImageElement[0]));
       // remove the image loader
       ImageLoader.imageLoaders.remove(this);
     }
@@ -100,6 +103,7 @@ public class ImageLoader {
     this.callBack = cb;
   }
   
+  @SuppressWarnings("unused")
   private void incrementLoadedImages() {
     this.loadedImages++;
   }
@@ -111,7 +115,7 @@ public class ImageLoader {
   /**
    * Returns a handle to an img object. Ties back to the ImageLoader instance
    */
-  private native ImageHandle loadImage(String url)/*-{
+  private native ImageElement loadImage(String url)/*-{
     // if( callback specified )
     // do nothing
      
@@ -131,7 +135,10 @@ public class ImageLoader {
         // we call this function each time onload fires
         // It will see if we are ready to invoke the callback
         __this.@com.google.gwt.widgetideas.graphics.client.ImageLoader::dispatchIfComplete()();   
-      } 
+      } else {
+        // we invoke the callback since we are already loaded
+        __this.@com.google.gwt.widgetideas.graphics.client.ImageLoader::dispatchIfComplete()();   
+      }
     }
     
     img.src = url;

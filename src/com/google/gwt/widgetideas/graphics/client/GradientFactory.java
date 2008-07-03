@@ -15,30 +15,15 @@
  */
 package com.google.gwt.widgetideas.graphics.client;
 
-import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.user.client.Element;
 
 /**
- * If I say an image element is a JavascriptObject... then it is!
+ * Radial Gradient for use as a stroke or fill style.
+ * Depends on deferred binding implementations.
  */
-public class ImageHandle extends JavaScriptObject {
+public interface GradientFactory {
 
-  protected ImageHandle() {
-    super();
-  }
+  CanvasGradient createLinearGradient(float x0, float y0, float x1, float y1, Element c);
   
-  public final native int getHeight()/*-{
-    return this.height;
-  }-*/;
-  
-  public final native String getUrl()/*-{
-    return this.src;
-  }-*/;
-  
-  public final native int getWidth()/*-{
-    return this.width;
-  }-*/;
-  
-  public final native boolean isLoaded()/*-{
-    return this.__isLoaded;
-  }-*/;
+  CanvasGradient createRadialGradient(float x0, float y0, float r0, float x1, float y1, float r1, Element c);
 }

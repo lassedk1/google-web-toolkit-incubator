@@ -84,6 +84,5 @@ public abstract class SimpleCanvasDemo {
    * Performs any teardowns/object destruction that should
    * happen when a demo stops.
    */
-  public abstract void stopDemo();
-  
+  public abstract void stopDemo(); 
 }

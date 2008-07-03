@@ -15,9 +15,9 @@
  */
 package com.google.gwt.widgetideas.graphics.client.impl;
 
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.user.client.Element;
-// import com.google.gwt.widgetideas.graphics.client.CanvasGradient;
-import com.google.gwt.widgetideas.graphics.client.ImageHandle;
+import com.google.gwt.widgetideas.graphics.client.CanvasGradient;
 
 /**
  * Common interface for all Deferred binding implementations of 
@@ -39,16 +39,24 @@ public interface GWTCanvasImpl {
   void cubicCurveTo(float cp1x, float cp1y, float cp2x, float cp2y, 
       float x, float y);
   
-  void drawImage(ImageHandle img, int sourceX, int sourceY, int sourceWidth,
-      int sourceHeight, int destX, int destY, int destWidth, int destHeight);
+  void drawImage(ImageElement img, float sourceX, float sourceY, float sourceWidth,
+      float sourceHeight, float destX, float destY, float destWidth, float destHeight);
   
   void fill();
   
   void fillRect(float startX, float startY, float width, float height);
  
-  int getHeight(Element elem);
+  float getGlobalAlpha();
   
-  int getWidth(Element elem);
+  String getGlobalCompositeOperation();
+  
+  String getLineCap();
+  
+  String getLineJoin();
+  
+  float getLineWidth();
+  
+  float getMiterLimit();
   
   void lineTo(float x, float y);
   
@@ -66,36 +74,42 @@ public interface GWTCanvasImpl {
   
   void scale(float x, float y);
   
+  void setBackgroundColor(Element element, String color);
+  
   void setCoordHeight(Element elem, int height);
   
   void setCoordWidth(Element elem, int width);
+ 
+  void setFillStyle(CanvasGradient gradient);
   
   void setFillStyle(String colorStr);
   
-  // void setFillStyle(CanvasGradient gradient);
-  
   void setGlobalAlpha(float alpha);
   
+  void setGlobalCompositeOperation(String globalCompositeOperation);
+
+  void setLineCap(String lineCap);
+
+  void setLineJoin(String lineJoin);
+
   void setLineWidth(float width);
-  
+
+  void setMiterLimit(float miterLimit);
+
   void setPixelHeight(Element elem, int height);
-  
+
   void setPixelWidth(Element elem, int width);
-  
+
+  void setStrokeStyle(CanvasGradient gradient);
+
   void setStrokeStyle(String colorStr);
-  
-  // void setStrokeStyle(CanvasGradient gradient);
-  
-  void setTransform(float m11, float m12, float m21, float m22, 
-      float dx, float dy);
-  
+
   void stroke();
-  
+
   void strokeRect(float startX, float startY, float width, float height);
-  
+
   void transform(float m11, float m12, float m21,float m22, 
       float dx, float dy);
-  
-  void translate(float x, float y);
 
+  void translate(float x, float y);
 }

@@ -24,4 +24,5 @@
 	<inherits name='com.google.gwt.widgetideas.HyperlinkOverride' />
 	<inherits name='com.google.gwt.widgetideas.CurrencyWidget' />
 	<inherits name='com.google.gwt.widgetideas.DatePicker' />
+	<inherits name='com.google.gwt.widgetideas.GWTCanvas'/>
 </module>

@@ -15,12 +15,13 @@
  */
 package com.google.gwt.demos.gwtcanvas.client;
 
+import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.widgetideas.graphics.client.GWTCanvas;
-import com.google.gwt.widgetideas.graphics.client.ImageHandle;
 import com.google.gwt.widgetideas.graphics.client.ImageLoader;
-import com.google.gwt.user.client.Timer;
 
 /**
  * Demo Showcasing simple image rendering, transformations 
@@ -41,17 +42,17 @@ public class LogoDemo extends SimpleCanvasDemo {
   } 
   
   /*
-   * Animation timer.
-   */
-  private Timer timer;
-
-  /*
    * Reference to our ImageHandle that gets initialized
    * on the callback from ImageLoader.
    */
-  private ImageHandle img = null;
+  private ImageElement img = null;
 
   private float rotation = 0.1f;
+
+  /*
+   * Animation timer.
+   */
+  private Timer timer;
 
   public LogoDemo(GWTCanvas theCanvas) {
     super(theCanvas);
@@ -72,33 +73,9 @@ public class LogoDemo extends SimpleCanvasDemo {
     canvas.setPixelWidth(width);
     
     String[] imageUrls = new String[] {
-        "gwt_logo.jpg"
+        "logo-185x175.png"
     };   
 
-    if (img == null) {
-    // The first time this demo gets run we need to load our images.
-    // Maintain a reference to the image we load so we can use it
-    // the next time the demo is selected
-    ImageLoader.loadImages(imageUrls, new ImageLoader.CallBack() {
-      public void onImagesLoaded(ImageHandle[] imageHandles) {
-        // Drawing code involving images goes here
-        img = imageHandles[0];
-        animateLogo();
-      }
-    });
-    
-    } else {
-      // Go ahead and animate
-      animateLogo();
-    }
-  }
-  
-  public void stopDemo() {
-    timer.cancel();
-  }
-  
-  private void animateLogo() {
-    
     timer = new Timer() {
 
       @Override
@@ -107,8 +84,36 @@ public class LogoDemo extends SimpleCanvasDemo {
       }
       
     };
-    timer.schedule(10);
+
+    if (img == null) {
+    // The first time this demo gets run we need to load our images.
+    // Maintain a reference to the image we load so we can use it
+    // the next time the demo is selected
+    ImageLoader.loadImages(imageUrls, new ImageLoader.CallBack() {
+      public void onImagesLoaded(ImageElement[] imageHandles) {
+        // Drawing code involving images goes here
+        img = imageHandles[0];
+        timer.schedule(10);        
+      }
+    });
+    
+    } else {
+      // Go ahead and animate
+      if (isImageLoaded(img)) {
+        timer.schedule(10);
+      } else {
+        Window.alert("Refresh the page to reload the image.");
+      }
+    }
   }
+  
+  public void stopDemo() {
+    timer.cancel();
+  }
+  
+  private native boolean isImageLoaded(ImageElement imgElem) /*-{
+    return !!imgElem.__isLoaded;
+  }-*/;
   
   private void renderingLoop() {
     canvas.saveContext();
@@ -116,7 +121,7 @@ public class LogoDemo extends SimpleCanvasDemo {
     canvas.clear();
     canvas.translate(300, 200);
     canvas.rotate(rotation);
-    canvas.scale(.5f, .5f);
+    canvas.scale(.9f, .9f);
     
     canvas.drawImage(img, 0, 0); 
     rotation += 0.1;
