@@ -41,21 +41,25 @@ div {
   div {
     runtime: FAIL;
   }
-}
-
-@if true {
+} @elif true {
   div {
     runtime: PASSED;
- }
-}
-
-@if CssResource.style obf OBF pretty PRETTY {
+  }
+} @else {
   div {
-    static: PASSED;
+    runtime: FAIL;
   }
 }
 
-@if !CssResource.style obf OBF pretty PRETTY {
+@if CssResource.style obf OBF {
+  div {
+    static: PASSED;
+  }
+} @elif CssResource.style pretty PRETTY {
+  div {
+    static: PASSED;
+  }
+} @else {
   div {
     static: FAIL;
   }

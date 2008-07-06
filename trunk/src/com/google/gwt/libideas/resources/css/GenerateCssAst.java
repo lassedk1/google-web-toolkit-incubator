@@ -284,6 +284,58 @@ public class GenerateCssAst {
       addNode(def);
     }
 
+    /**
+     * The elif nodes are processed as though they were {@code @if} nodes. The
+     * newly-generated CssIf node will be attached to the last CssIf in the
+     * if/else chain.
+     */
+    void parseElif(String atRule) throws CSSException {
+      List<CssNode> nodes = currentParent.peek().getNodes();
+      CssIf lastIf = findLastIfInChain(nodes);
+
+      if (lastIf == null) {
+        throw new CSSException(CSSException.SAC_SYNTAX_ERR,
+            "@elif must immediately follow an @if or @elif", null);
+      }
+
+      assert lastIf.getElseNodes().isEmpty();
+
+      // @elif -> lif (because parseIf strips the first three chars)
+      parseIf(atRule.substring(2));
+
+      // Fix up the structure by remove the newly-created node from the parent
+      // context and moving it to the end of the @if chain
+      lastIf.getElseNodes().add(nodes.remove(nodes.size() - 1));
+    }
+
+    /**
+     * The else nodes are processed as though they were written as
+     * {@code @elif true} rules.
+     */
+    void parseElse(String atRule) throws CSSException {
+      // The last CssIf in the if/else chain
+      CssIf lastIf = findLastIfInChain(currentParent.peek().getNodes());
+
+      if (lastIf == null) {
+        throw new CSSException(CSSException.SAC_SYNTAX_ERR,
+            "@else must immediately follow an @if or @elif", null);
+      }
+
+      // Create the CssIf to hold the @else rules
+      String fakeElif = "@elif true " + atRule.substring(atRule.indexOf("{"));
+      parseElif(fakeElif);
+      CssIf elseIf = findLastIfInChain(currentParent.peek().getNodes());
+
+      assert lastIf.getElseNodes().size() == 1
+          && lastIf.getElseNodes().get(0) == elseIf;
+      assert elseIf.getElseNodes().isEmpty();
+
+      // Merge the rules into the last CssIf to break the chain and prevent
+      // @else followed by @else
+      lastIf.getElseNodes().clear();
+      lastIf.getElseNodes().addAll(elseIf.getNodes());
+    }
+
     void parseEval(String atRule) throws CSSException {
       // @eval key com.google.Type.staticFunction
       String[] parts = atRule.substring(0, atRule.length() - 1).split("\\s");
@@ -490,6 +542,28 @@ public class GenerateCssAst {
         accumulator.add(valueOf(value));
         value = value.getNextLexicalUnit();
       } while (value != null);
+    }
+
+    /**
+     * The elif and else constructs are modeled as nested if statements in the
+     * CssIf's elseNodes field. This method will search a list of CssNodes and
+     * remove the last chained CssIf from the last element in the list of nodes.
+     */
+    private CssIf findLastIfInChain(List<CssNode> nodes) {
+      if (nodes.isEmpty()) {
+        return null;
+      }
+
+      CssNode lastNode = nodes.get(nodes.size() - 1);
+      if (lastNode instanceof CssIf) {
+        CssIf asIf = (CssIf) lastNode;
+        if (asIf.getElseNodes().isEmpty()) {
+          return asIf;
+        } else {
+          return findLastIfInChain(asIf.getElseNodes());
+        }
+      }
+      return null;
     }
 
     private boolean isIdentPart(char c) {
