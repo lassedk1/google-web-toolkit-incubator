@@ -126,21 +126,23 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
   /**
    * This delegate class bypasses traversal of a node, instead traversing the
-   * node's children.
-   * 
-   * @param <T> the original type of node
+   * node's children. Any modifications made to the node list of the
+   * CollapsedNode will be reflected in the original node.
    */
-  private static class CollapsedNode<T extends HasNodes> extends CssNode
-      implements HasNodes {
+  private static class CollapsedNode extends CssNode implements HasNodes {
 
-    private final T delegate;
+    private final List<CssNode> nodes;
 
-    public CollapsedNode(T delegate) {
-      this.delegate = delegate;
+    public CollapsedNode(HasNodes parent) {
+      this(parent.getNodes());
+    }
+
+    public CollapsedNode(List<CssNode> nodes) {
+      this.nodes = nodes;
     }
 
     public List<CssNode> getNodes() {
-      return delegate.getNodes();
+      return nodes;
     }
 
     public void traverse(CssVisitor visitor, Context context) {
@@ -179,6 +181,11 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
             for (CssNode n : x.getNodes()) {
               ctx.insertBefore(n);
             }
+          } else {
+            // Otherwise, move the else block into the if statement's position
+            for (CssNode n : x.getElseNodes()) {
+              ctx.insertBefore(n);
+            }
           }
 
           // Always delete @if rules that we can statically evaluate
@@ -188,7 +195,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
           throw new RuntimeException("Unable to parse CSS", e);
         }
       }
-      super.endVisit(x, ctx);
     }
   }
 
@@ -201,19 +207,14 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
     @Override
     public boolean visit(CssIf x, Context ctx) {
-      // Can't merge rules across if rules
-      MergeIdenticalSelectorsVisitor v = new MergeIdenticalSelectorsVisitor();
-      v.accept(x.getNodes());
-      rulesInOrder.addAll(v.rulesInOrder);
+      visitInNewContext(x.getNodes());
+      visitInNewContext(x.getElseNodes());
       return false;
     }
 
     @Override
     public boolean visit(CssMediaRule x, Context ctx) {
-      // Can't merge rules across media rules
-      MergeIdenticalSelectorsVisitor v = new MergeIdenticalSelectorsVisitor();
-      v.accept(x.getNodes());
-      rulesInOrder.addAll(v.rulesInOrder);
+      visitInNewContext(x.getNodes());
       return false;
     }
 
@@ -250,6 +251,12 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       rulesInOrder.add(x);
       return false;
     }
+
+    private void visitInNewContext(List<CssNode> nodes) {
+      MergeIdenticalSelectorsVisitor v = new MergeIdenticalSelectorsVisitor();
+      v.accept(nodes);
+      rulesInOrder.addAll(v.rulesInOrder);
+    }
   }
 
   /**
@@ -261,19 +268,14 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
     @Override
     public boolean visit(CssIf x, Context ctx) {
-      // Can't merge rules across if rules
-      MergeRulesByContentVisitor v = new MergeRulesByContentVisitor();
-      v.accept(x.getNodes());
-      rulesInOrder.addAll(v.rulesInOrder);
+      visitInNewContext(x.getNodes());
+      visitInNewContext(x.getElseNodes());
       return false;
     }
 
     @Override
     public boolean visit(CssMediaRule x, Context ctx) {
-      // Can't merge rules across media rules
-      MergeRulesByContentVisitor v = new MergeRulesByContentVisitor();
-      v.accept(x.getNodes());
-      rulesInOrder.addAll(v.rulesInOrder);
+      visitInNewContext(x.getNodes());
       return false;
     }
 
@@ -318,6 +320,12 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       rulesByContents.put(content, x);
       rulesInOrder.add(x);
       return false;
+    }
+
+    private void visitInNewContext(List<CssNode> nodes) {
+      MergeRulesByContentVisitor v = new MergeRulesByContentVisitor();
+      v.accept(nodes);
+      rulesInOrder.addAll(v.rulesInOrder);
     }
   }
 
@@ -782,13 +790,21 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         if (x instanceof CssIf) {
           CssIf asIf = (CssIf) x;
 
-          // Generate the sub-expression
-          String expression = makeExpression(logger, new CollapsedNode<CssIf>(
-              asIf));
+          // Generate the sub-expressions
+          String expression = makeExpression(logger, new CollapsedNode(asIf));
 
-          // ((expr) ? "CSS" : "") +
-          b.append("((" + asIf.getExpression() + ") ? " + expression
-              + " : \"\") + ");
+          String elseExpression;
+          if (asIf.getElseNodes().isEmpty()) {
+            // We'll treat an empty else block as an empty string
+            elseExpression = "\"\"";
+          } else {
+            elseExpression = makeExpression(logger, new CollapsedNode(
+                asIf.getElseNodes()));
+          }
+
+          // ((expr) ? "CSS" : "elseCSS") +
+          b.append("((" + asIf.getExpression() + ") ? " + expression + " : "
+              + elseExpression + ") + ");
 
         } else if (x instanceof CssProperty) {
           CssProperty property = (CssProperty) x;

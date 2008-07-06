@@ -19,14 +19,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A GWTCSS if statement.
+ * A GWTCSS if statement. The elif and else constructs are modeled as nested if
+ * statement is the elseNodes.
  */
 public class CssIf extends CssNode implements HasNodes {
+  private final List<CssNode> elseNodes = new ArrayList<CssNode>();
   private final List<CssNode> nodes = new ArrayList<CssNode>();
   private String expression;
   private boolean isNegated;
   private String property;
   private String[] propertyValues;
+
+  public List<CssNode> getElseNodes() {
+    return elseNodes;
+  }
 
   public String getExpression() {
     return expression;
@@ -67,6 +73,7 @@ public class CssIf extends CssNode implements HasNodes {
   public void traverse(CssVisitor visitor, Context context) {
     if (visitor.visit(this, context)) {
       visitor.acceptWithInsertRemove(nodes);
+      visitor.acceptWithInsertRemove(elseNodes);
     }
     visitor.endVisit(this, context);
   }
