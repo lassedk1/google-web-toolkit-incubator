@@ -57,7 +57,7 @@ div {
 
 @if !CssResource.style obf OBF pretty PRETTY {
   div {
-    static: FAILED;
+    static: FAIL;
   }
 }
 
@@ -96,6 +96,9 @@ div {
 .may-combine {
   border: 0;
 }
+
+/* Test merging around empty rules */
+.FAIL {}
 
 /* Make sure rules in @if and @media are respected */
 @media blah {
