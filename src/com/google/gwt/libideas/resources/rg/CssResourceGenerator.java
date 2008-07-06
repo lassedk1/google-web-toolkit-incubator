@@ -540,8 +540,9 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   }
 
   static boolean haveCommonProperties(CssRule a, CssRule b) {
-    assert a.getProperties().size() > 0;
-    assert b.getProperties().size() > 0;
+    if (a.getProperties().size() == 0 || b.getProperties().size() == 0) {
+      return false;
+    }
 
     SortedSet<String> aProperties = new TreeSet<String>();
     SortedSet<String> bProperties = new TreeSet<String>();
