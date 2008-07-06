@@ -89,12 +89,18 @@ background: userBackground;
 @if !user.agent ie6 opera {
   ...
 }
+
+/* Chaining is also supported */
+@if true {
+} @elif false {
+} @else {
+}
 }}}
     * This allows for more advanced skinning / theming / browser quirk handling by allowing for structural changes in the CSS.
     * The contents of an @if block can be anything that would be a top-level rule in a CSS stylesheet.
-    * @if blocks can be nested.  No support for @else or @elif since conditional CSS is usually used to "fix up" browser quirks.
+    * @if blocks can be arbitrarily nested.
     * What does it mean to have an @def or @eval in an @if block?  Easy to make this work for property-based @if statements; would have to generate pretty gnarly runtime code to handle the expression-based @if statement.  Could have block-level scoping; but this seems like a dubious use-case.
-    * If the function in the first form can be statically evaluated in a permutation, there is no runtime cost.  The second form will never have a runtime cost because it is evaluated during compilation.
+    * If the function in the first form can be statically evaluated by the compiler in a permutation, there is no runtime cost.  The second form will never have a runtime cost because it is evaluated during compilation.
   * CSS Image Sprites (*Working*):
 {{{
 @sprite mySpriteClass imageResourceFuncName; => generates =>
@@ -186,9 +192,94 @@ css:
        Problematic -- focus/blur don't bubble
 }}}
 
+=Optimizations=
+
+==Basic minification==
+
+Basic minification of the CSS input results in the minimum number of bytes required to retain the original structure of the input.  In general, this means that comments, unnecessary whitespace, and empty rules are removed.
+
+{{{
+.div {
+  /* This is the default background color */
+  background: blue;
+}
+.empty {}
+}}}
+
+would be transformed into
+
+{{{
+.div{background:blue;}
+}}}
+
+==Selector merging==
+
+Rules with identical selectors can be merged together.
+
+{{{
+.div {prop: value;}
+.div {foo: bar;}
+}}}
+
+becomes
+
+{{{
+.div {prop:value;foo:bar;} 
+}}}
+
+However, it is necessary that the original semantic ordering of the properties within the CSS is preserved.  To ensure that all selector merges are correct, we impose the restriction that *no rule can be promoted over another if the two rules define a common property*.  We consider `border` and `border-top` to be equivalent properties, however `padding-left` and `padding-right` are not equivalent.
+
+Thus
+
+{{{
+.a {background: green;}
+.b {border: thin solid blue;}
+.a {border-top: thin solid red;}
+}}}
+
+cannot be merged because an element whose CSS class matches both `.a` and `.b` would be rendered differently based on the exactly order of the CSS rules.
+
+When working with `@if` statements, it is preferable to work with the form that operates on deferred-binding properties because the CSS compiler can evaluate these rules statically, before the merge optimizations.  Consider the following:
+
+{{{
+.a {
+  background: red;
+}
+
+@if user.agent safari {
+  .a {
+    \-webkit-border-radius: 5px;
+  }
+} @else {
+  .a {
+    background: url('picture_of_border.png');
+  }
+}
+}}}
+
+In the safari permutation, the rule becomes `.a{background:red;\-webkit-border-radius:5px;}` while in other permutations, the `background` property is merged.
+
+==Property merging==
+
+Rules with identical properties can be merged together.
+
+{{{
+.a {background: blue;}
+.b {background: blue;}
+}}}
+
+can be transformed into
+
+{{{
+.a,.b{background:blue;}
+}}}
+
+Promotion of rules follows the previously-established rule of not promoting a rule over other rules with common properties.
+
 =Levers and Knobs=
 
   * The deferred-binding property `CssResource.style` may be set to `pretty` which will disable class-name obfuscation as well as pretty-print the CSS content.  Combine this with a `ResourceBundle.enableInlining` value of `false` to produce a CSS expression which is amenable to client-side editing.
+  * The deferred-binding property `CssResoure.enableMerge` can be set to `false` to disable modifications that re-order rules.  This should be considered a temporary measure until the merge logic has been fully vetted.
   * To allow for client-side tweaking of the effective (i.e. permutation-specific) style rules, you can store the value of CssResource.getText() into a TextArea.  Wire some UI action to pass the contents of the TextArea into `StyleInjector.setContents()` to overwrite the original, injected stylesheet.
 
 =Important open questions=
