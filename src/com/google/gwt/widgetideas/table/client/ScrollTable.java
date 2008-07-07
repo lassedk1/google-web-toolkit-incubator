@@ -1221,16 +1221,19 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       super.setHeight("auto");
       dataWrapper.getStyle().setProperty("height", "auto");
       dataWrapper.getStyle().setProperty("overflow", "");
+      getElement().getStyle().setProperty("overflow", "");
     } else if (scrollPolicy == ScrollPolicy.HORIZONTAL) {
       // Only show horizontal scroll bar
       super.setHeight("auto");
       dataWrapper.getStyle().setProperty("overflow", "auto");
+      getElement().getStyle().setProperty("overflow", "hidden");
     } else if (scrollPolicy == ScrollPolicy.BOTH) {
       // Show both scroll bars
       if (lastHeight != null) {
         super.setHeight(lastHeight);
       }
       dataWrapper.getStyle().setProperty("overflow", "auto");
+      getElement().getStyle().setProperty("overflow", "hidden");
     }
 
     // Resize the tables
