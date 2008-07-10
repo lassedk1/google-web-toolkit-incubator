@@ -15,16 +15,16 @@
  */
 package com.google.gwt.libideas.events.client.mouse;
 
-import com.google.gwt.libideas.events.client.BrowserEvent;
-import com.google.gwt.libideas.events.client.BrowserEvents;
 import com.google.gwt.libideas.events.client.AbstractEvent;
+import com.google.gwt.libideas.events.client.BrowserEvents;
 import com.google.gwt.user.client.Event;
 
-public class ClickEvent extends BrowserEvent<ClickHandler> {
+public class ClickEvent extends MouseEvent<ClickHandler> {
 
-  public static Key KEY = new Key(BrowserEvents.ONCLICK);
+  public static Key<ClickHandler> KEY = new Key<ClickHandler>(
+      BrowserEvents.ONCLICK);
 
-  protected ClickEvent(Event e) {
+  public ClickEvent(Event e) {
     super(e);
   }
 

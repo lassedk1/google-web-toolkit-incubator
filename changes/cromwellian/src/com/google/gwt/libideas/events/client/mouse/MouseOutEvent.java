@@ -15,17 +15,16 @@
  */
 package com.google.gwt.libideas.events.client.mouse;
 
-import com.google.gwt.libideas.events.client.BrowserEvent;
-import com.google.gwt.libideas.events.client.BrowserEvents;
 import com.google.gwt.libideas.events.client.AbstractEvent;
-import com.google.gwt.libideas.events.client.keyboard.KeyDownHandler;
+import com.google.gwt.libideas.events.client.BrowserEvents;
 import com.google.gwt.user.client.Event;
 
-public class MouseOutEvent extends BrowserEvent<MouseOutHandler> {
+public class MouseOutEvent extends MouseEvent<MouseOutHandler> {
 
-  public static Key KEY = new Key(BrowserEvents.ONMOUSEOUT);
+  public static Key<MouseOutHandler> KEY = new Key<MouseOutHandler>(
+      BrowserEvents.ONMOUSEOUT);
 
-  protected MouseOutEvent(Event e) {
+  public MouseOutEvent(Event e) {
     super(e);
   }
 

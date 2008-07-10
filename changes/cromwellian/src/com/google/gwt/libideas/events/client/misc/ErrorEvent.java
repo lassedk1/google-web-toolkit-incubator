@@ -13,23 +13,24 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.events.client.mouse;
+package com.google.gwt.libideas.events.client.misc;
 
 import com.google.gwt.libideas.events.client.AbstractEvent;
+import com.google.gwt.libideas.events.client.BrowserEvent;
 import com.google.gwt.libideas.events.client.BrowserEvents;
 import com.google.gwt.user.client.Event;
 
-public class MouseDownEvent extends MouseEvent<MouseDownHandler> {
+public class ErrorEvent extends BrowserEvent<ErrorHandler> {
 
-  public static Key<MouseDownHandler> KEY = new Key<MouseDownHandler>(
-      BrowserEvents.ONMOUSEDOWN);
+  public static Key<ErrorHandler> KEY = new Key<ErrorHandler>(
+      BrowserEvents.ONERROR);
 
-  public MouseDownEvent(Event e) {
+  protected ErrorEvent(Event e) {
     super(e);
   }
 
-  protected void fireEvent(MouseDownHandler handler) {
-    handler.onMouseDown(this);
+  protected void fireEvent(ErrorHandler handler) {
+    handler.onError(this);
   }
 
   protected AbstractEvent.Key getKey() {

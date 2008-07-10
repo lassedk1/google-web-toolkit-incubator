@@ -15,22 +15,60 @@
  */
 package com.google.gwt.libideas.events.client;
 
+/**
+ * AbstractEvent is the root of all events.
+ *
+ * @param <T> the type of handler used for this event
+ */
 public abstract class AbstractEvent<T extends EventHandler> {
+
+  /**
+   * Key class used to register events with HandlerManager.
+   */
+  public static class Key<T> {
+  }
 
   private Object source;
 
+  /**
+   * Constructs a new event with the given event source.
+   */
+  protected AbstractEvent(Object source) {
+    setSource(source);
+  }
+
+  /**
+   * Constructs a new event with no event source. The event source may be
+   * specified by a followup call to setSource()
+   */
+  protected AbstractEvent() {
+  }
+
+  /**
+   * Returns the source that generated the event.
+   */
   public Object getSource() {
     return source;
   }
 
-  void setSource(Object source) {
-    this.source=source;
-  }
-
-  public static class Key {
-  }
-
-  protected abstract EventData getEventData();
+  /**
+   * Fires event for given handler type.
+   *
+   * @param handler of type T
+   */
   protected abstract void fireEvent(T handler);
+
+  /**
+   * Returns the Key used to register this event.
+   */
   protected abstract Key getKey();
+
+  /**
+   * Set the source that triggered this event.
+   *
+   * @param source An object of type F
+   */
+  void setSource(Object source) {
+    this.source = source;
+  }
 }

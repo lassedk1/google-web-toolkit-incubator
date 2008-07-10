@@ -13,19 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.events.client.mouse;
+package com.google.gwt.libideas.events.client.misc;
 
+import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.BrowserEvent;
 import com.google.gwt.libideas.events.client.BrowserEvents;
-import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.user.client.Event;
 
 public class ChangeEvent extends BrowserEvent<ChangeHandler> {
 
-  public static Key KEY = new Key(BrowserEvents.ONCHANGE);
+  public static Key<ChangeHandler> KEY = new Key<ChangeHandler>(
+      BrowserEvents.ONCHANGE);
 
   protected ChangeEvent(Event e) {
-    super(e);   
+    super(e);
   }
 
   protected void fireEvent(ChangeHandler handler) {

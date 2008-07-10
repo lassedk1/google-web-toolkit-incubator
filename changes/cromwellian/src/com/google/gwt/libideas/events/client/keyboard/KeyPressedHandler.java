@@ -18,5 +18,6 @@ package com.google.gwt.libideas.events.client.keyboard;
 import com.google.gwt.libideas.events.client.EventHandler;
 
 public interface KeyPressedHandler extends EventHandler {
+
   void onKeyPressed(KeyPressedEvent event);
 }

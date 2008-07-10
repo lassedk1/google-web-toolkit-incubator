@@ -15,17 +15,17 @@
  */
 package com.google.gwt.libideas.events.client.mouse;
 
-import com.google.gwt.libideas.events.client.BrowserEvent;
-import com.google.gwt.libideas.events.client.BrowserEvents;
 import com.google.gwt.libideas.events.client.AbstractEvent;
+import com.google.gwt.libideas.events.client.BrowserEvents;
 import com.google.gwt.user.client.Event;
 
-public class ScrollEvent extends BrowserEvent<ScrollHandler> {
+public class ScrollEvent extends MouseEvent<ScrollHandler> {
 
-  public static Key KEY = new Key(BrowserEvents.ONSCROLL);
+  public static Key<ScrollHandler> KEY = new Key<ScrollHandler>(
+      BrowserEvents.ONSCROLL);
 
   protected ScrollEvent(Event e) {
-    super(e);  
+    super(e);
   }
 
   protected void fireEvent(ScrollHandler handler) {

@@ -16,105 +16,29 @@
 package com.google.gwt.libideas.events.client;
 
 import com.google.gwt.user.client.Event;
-import com.google.gwt.dom.client.Element;
 
+/**
+ * BrowserEvent is a subclass of AbstractEvent that provides events that map to
+ * DOM Level 2 Events. It provides an additional method to access the underlying
+ * native browser event object as well as a subclass of AbstractEvent.Key that
+ * understands GWT event bits used by sinkEvents().
+ *
+ * @param <T> the type of handler used by the event
+ */
 public abstract class BrowserEvent<T extends EventHandler>
-    extends AbstractEvent<T> implements EventData {
+    extends AbstractEvent<T> {
 
-  private Event eventData;
-
-  public void cancelBubble(boolean cancel) {
-    eventData.cancelBubble(cancel);
-  }
-
-  public boolean getAltKey() {
-    return eventData.getAltKey();
-  }
-
-  public int getButton() {
-    return eventData.getButton();
-  }
-
-  public int getClientX() {
-    return eventData.getClientX();
-  }
-
-  public int getClientY() {
-    return eventData.getClientY();
-  }
-
-  public boolean getCtrlKey() {
-    return eventData.getCtrlKey();
-  }
-
-  public Element getCurrentTarget() {
-    return eventData.getCurrentTarget();
-  }
-
-  public Element getFromElement() {
-    return eventData.getFromElement();
-  }
-
-  public int getKeyCode() {
-    return eventData.getKeyCode();
-  }
-
-  public boolean getMetaKey() {
-    return eventData.getMetaKey();
-  }
-
-  public int getMouseWheelVelocityY() {
-    return eventData.getMouseWheelVelocityY();
-  }
-
-  public boolean getRepeat() {
-    return eventData.getRepeat();
-  }
-
-  public int getScreenX() {
-    return eventData.getScreenX();
-  }
-
-  public int getScreenY() {
-    return eventData.getScreenY();
-  }
-
-  public boolean getShiftKey() {
-    return eventData.getShiftKey();
-  }
-
-  public String getString() {
-    return eventData.getString();
-  }
-
-  public Element getTarget() {
-    return eventData.getTarget();
-  }
-
-  public Element getToElement() {
-    return eventData.getToElement();
-  }
-
-  public String getType() {
-    return eventData.getType();
-  }
-
-  public int getTypeInt() {
-    return eventData.getTypeInt();
-  }
-
-  public void preventDefault() {
-    eventData.preventDefault();
-  }
-
-  public static class Key extends AbstractEvent.Key {
+  /**
+   * Key class used by BrowserEvent subclasses. Includes extra method to return
+   * event bits for sinkEvents().
+   */
+  public static class Key<T extends EventHandler> extends AbstractEvent.Key<T> {
 
     private int eventBits;
 
     // type safe constructor, unfortunately only a single event supported
     // as EnumSet is not efficient on GWT
     public Key(BrowserEvents event) {
-
       this.eventBits = event.getEventBits();
     }
 
@@ -128,11 +52,21 @@ public abstract class BrowserEvent<T extends EventHandler>
     }
   }
 
-  protected BrowserEvent(Event data) {
-    this.eventData = data;
+  private Event browserEvent;
+
+  protected BrowserEvent(Event browserEvent) {
+    this.browserEvent = browserEvent;
   }
 
-  public EventData getEventData() {
-    return this;
+  public Event getBrowserEvent() {
+    return browserEvent;
+  }
+
+  public void preventDefault() {
+    browserEvent.preventDefault();
+  }
+
+  public void stopPropagation() {
+    browserEvent.cancelBubble(true);
   }
 }

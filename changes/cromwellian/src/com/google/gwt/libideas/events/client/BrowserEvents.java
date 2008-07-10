@@ -17,6 +17,10 @@ package com.google.gwt.libideas.events.client;
 
 import com.google.gwt.user.client.Event;
 
+/**
+ * Enum used to model GWT eventBits and add slightly more type-safety to some
+ * constructors.
+ */
 public enum BrowserEvents {
 
   ONKEYDOWN(Event.ONKEYDOWN),

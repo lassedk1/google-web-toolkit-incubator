@@ -18,12 +18,10 @@ package com.google.gwt.libideas.events.client;
 import com.google.gwt.dom.client.Element;
 
 public interface EventData {
-
-  
   /**
    * Cancels bubbling for the given event. This will stop the event from being
    * propagated to parent elements.
-   * 
+   *
    * @param cancel <code>true</code> to cancel bubbling
    */
   void cancelBubble(boolean cancel);
@@ -33,7 +31,7 @@ public interface EventData {
    *
    * @return <code>true</code> if ALT was depressed when the event occurred
    */
-  public boolean getAltKey();
+  boolean getAltKey();
 
   /**
    * Gets the mouse buttons that were depressed when the given event occurred.
@@ -85,8 +83,7 @@ public interface EventData {
    *
    * <p> For {@link Event#ONKEYPRESS}, this method returns the Unicode value of
    * the character generated. For {@link Event#ONKEYDOWN} and {@link
-   * Event#ONKEYUP}, it returns the code associated with the physical key.
-   * </p>
+   * Event#ONKEYUP}, it returns the code associated with the physical key. </p>
    *
    * @return the Unicode character or key code.
    * @see com.google.gwt.user.client.ui.KeyboardListener
@@ -186,4 +183,6 @@ public interface EventData {
    * Prevents the browser from taking its default action for the given event.
    */
   void preventDefault();
+
+  void stopPropagation();
 }

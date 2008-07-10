@@ -17,25 +17,24 @@ package com.google.gwt.libideas.events.client.synthetic;
 
 import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.EventData;
-import com.google.gwt.libideas.events.client.keyboard.KeyDownEvent;
 import com.google.gwt.libideas.events.client.keyboard.KeyPressedEvent;
 
 public class SyntheticKeyPressedEvent extends KeyPressedEvent {
 
-  private EventData data;
-
   public static AbstractEvent.Key KEY = new AbstractEvent.Key();
+
+  private EventData data;
 
   public SyntheticKeyPressedEvent(EventData data) {
     super(null);
     this.data = data;
   }
 
-  protected AbstractEvent.Key getKey() {
-    return KEY;
-  }
-
   public EventData getData() {
     return data;
+  }
+
+  protected AbstractEvent.Key getKey() {
+    return KEY;
   }
 }

@@ -15,19 +15,11 @@
  */
 package com.google.gwt.libideas.events.client;
 
-import java.util.Collection;
+/**
+ * HandlerRegistration instances are returned by HandlerManager.addEventHandler()
+ * and used to remove event handler registrations.
+ */
+public interface HandlerRegistration {
 
-public class HandlerRegistration {
-
-  private EventHandler handler;
-  private Collection<EventHandler> handlers;
-
-  HandlerRegistration(EventHandler handler, Collection<EventHandler> handlers) {
-    this.handler = handler;
-    this.handlers = handlers;
-  }
-  
-  public void removeHandler() {
-    handlers.remove(handler);
-  }
+  void removeHandler();
 }

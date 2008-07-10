@@ -18,5 +18,6 @@ package com.google.gwt.libideas.events.client.mouse;
 import com.google.gwt.libideas.events.client.EventHandler;
 
 public interface MouseUpHandler extends EventHandler {
+
   void onMouseUp(MouseUpEvent event);
 }

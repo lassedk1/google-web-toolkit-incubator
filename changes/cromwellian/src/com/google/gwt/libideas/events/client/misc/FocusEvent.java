@@ -13,23 +13,24 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.events.client.mouse;
+package com.google.gwt.libideas.events.client.misc;
 
+import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.BrowserEvent;
 import com.google.gwt.libideas.events.client.BrowserEvents;
-import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.user.client.Event;
 
-public class LoseCaptureEvent extends BrowserEvent<LoseCaptureHandler> {
+public class FocusEvent extends BrowserEvent<FocusHandler> {
 
-  public static Key KEY = new Key(BrowserEvents.ONLOSECAPTURE);
+  public static Key<FocusHandler> KEY = new Key<FocusHandler>(
+      BrowserEvents.ONFOCUS);
 
-  protected LoseCaptureEvent(Event e) {
-    super(e);  
+  protected FocusEvent(Event e) {
+    super(e);
   }
 
-  protected void fireEvent(LoseCaptureHandler handler) {
-    handler.onLoseCapture(this);
+  protected void fireEvent(FocusHandler handler) {
+    handler.onFocus(this);
   }
 
   protected AbstractEvent.Key getKey() {

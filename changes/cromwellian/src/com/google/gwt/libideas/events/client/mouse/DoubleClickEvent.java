@@ -15,16 +15,16 @@
  */
 package com.google.gwt.libideas.events.client.mouse;
 
-import com.google.gwt.libideas.events.client.BrowserEvent;
-import com.google.gwt.libideas.events.client.BrowserEvents;
 import com.google.gwt.libideas.events.client.AbstractEvent;
+import com.google.gwt.libideas.events.client.BrowserEvents;
 import com.google.gwt.user.client.Event;
 
-public class DoubleClickEvent extends BrowserEvent<DoubleClickHandler> {
+public class DoubleClickEvent extends MouseEvent<DoubleClickHandler> {
 
-  public static Key KEY = new Key(BrowserEvents.ONDBLCLICK);
+  public static Key<DoubleClickHandler> KEY = new Key<DoubleClickHandler>(
+      BrowserEvents.ONDBLCLICK);
 
-  protected DoubleClickEvent(Event e) {
+  public DoubleClickEvent(Event e) {
     super(e);
   }
 

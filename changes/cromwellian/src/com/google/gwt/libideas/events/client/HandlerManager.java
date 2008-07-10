@@ -15,43 +15,49 @@
  */
 package com.google.gwt.libideas.events.client;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ArrayList;
 
+/**
+ * Manages a type-safe map of event Keys to EventHandlers.
+ */
 public class HandlerManager {
 
-  // TODO(cromwellian) use delegation to impl class that uses different
-  // collection depending on isScript() to use a JSMap/JSArray in web mode?
-  private Map<AbstractEvent.Key, Collection<EventHandler>> handlerRegistry;
+  // TODO(cromwellian) add implementation that uses native JS hash/arrays
+  private Map<AbstractEvent.Key, ArrayList<EventHandler>> handlerRegistry;
 
   private Object source;
 
   public HandlerManager(Object source) {
     this.handlerRegistry
-        = new HashMap<AbstractEvent.Key, Collection<EventHandler>>();
+        = new HashMap<AbstractEvent.Key, ArrayList<EventHandler>>();
     this.source = source;
   }
 
   public void fireEvent(AbstractEvent event) {
-    Collection<EventHandler> handlers = handlerRegistry.get(event.getKey());
+    ArrayList<EventHandler> handlers = handlerRegistry.get(event.getKey());
     event.setSource(source);
-    if(handlers != null) {
-      for(EventHandler handler : handlers) {
+    if (handlers != null) {
+      for (EventHandler handler : handlers) {
         event.fireEvent(handler);
       }
     }
   }
-  
-  public HandlerRegistration addEventHandler(AbstractEvent.Key key,
-      EventHandler handler) {
-    Collection<EventHandler> handlers = handlerRegistry.get(key);
-    if(handlers == null) {
+
+  public <T extends EventHandler> HandlerRegistration addEventHandler(
+      AbstractEvent.Key<T> key, final T handler) {
+    ArrayList<EventHandler> handlers = handlerRegistry.get(key);
+    if (handlers == null) {
       handlers = new ArrayList<EventHandler>();
       handlerRegistry.put(key, handlers);
     }
     handlers.add(handler);
-    return new HandlerRegistration(handler, handlers);
+    final ArrayList<EventHandler> finalHandlers = handlers;
+    return new HandlerRegistration() {
+      public void removeHandler() {
+        finalHandlers.remove(handler);
+      }
+    };
   }
 }

@@ -13,26 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.events.client.mouse;
+package com.google.gwt.libideas.events.client.misc;
 
-import com.google.gwt.libideas.events.client.BrowserEvent;
-import com.google.gwt.libideas.events.client.BrowserEvents;
-import com.google.gwt.libideas.events.client.AbstractEvent;
-import com.google.gwt.user.client.Event;
+import com.google.gwt.libideas.events.client.EventHandler;
 
-public class LoadEvent extends BrowserEvent<LoadHandler> {
+public interface BlurHandler extends EventHandler {
 
-  public static Key KEY = new Key(BrowserEvents.ONLOAD);
-
-  protected LoadEvent(Event e) {
-    super(e); 
-  }
-
-  protected void fireEvent(LoadHandler handler) {
-    handler.onLoad(this);
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
-  }
+  void onBlur(BlurEvent event);
 }

@@ -18,5 +18,6 @@ package com.google.gwt.libideas.events.client.mouse;
 import com.google.gwt.libideas.events.client.EventHandler;
 
 public interface MouseMoveHandler extends EventHandler {
+
   void onMouseMove(MouseMoveEvent event);
 }

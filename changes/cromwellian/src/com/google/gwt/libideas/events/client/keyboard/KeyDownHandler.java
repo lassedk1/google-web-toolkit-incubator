@@ -18,5 +18,6 @@ package com.google.gwt.libideas.events.client.keyboard;
 import com.google.gwt.libideas.events.client.EventHandler;
 
 public interface KeyDownHandler extends EventHandler {
+
   void onKeyDown(KeyDownEvent event);
 }

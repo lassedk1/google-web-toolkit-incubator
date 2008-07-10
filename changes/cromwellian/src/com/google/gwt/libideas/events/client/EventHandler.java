@@ -16,7 +16,8 @@
 package com.google.gwt.libideas.events.client;
 
 /**
- * Marker interface for EventHandlers. 
+ * Marker interface for EventHandlers.
  */
 public interface EventHandler {
+
 }

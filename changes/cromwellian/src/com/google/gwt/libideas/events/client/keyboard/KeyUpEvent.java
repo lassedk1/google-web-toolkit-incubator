@@ -15,16 +15,16 @@
  */
 package com.google.gwt.libideas.events.client.keyboard;
 
-import com.google.gwt.libideas.events.client.BrowserEvent;
 import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.BrowserEvents;
 import com.google.gwt.user.client.Event;
 
-public class KeyUpEvent extends BrowserEvent<KeyUpHandler> {
+public class KeyUpEvent extends KeyboardEvent<KeyUpHandler> {
 
-  public static Key KEY = new Key(BrowserEvents.ONKEYUP);
+  public static Key<KeyUpHandler> KEY = new Key<KeyUpHandler>(
+      BrowserEvents.ONKEYUP);
 
-  protected KeyUpEvent(Event e) {
+  public KeyUpEvent(Event e) {
     super(e);
   }
 

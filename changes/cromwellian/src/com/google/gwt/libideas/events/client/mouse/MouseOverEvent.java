@@ -15,18 +15,17 @@
  */
 package com.google.gwt.libideas.events.client.mouse;
 
-import com.google.gwt.libideas.events.client.BrowserEvent;
-import com.google.gwt.libideas.events.client.BrowserEvents;
 import com.google.gwt.libideas.events.client.AbstractEvent;
-import com.google.gwt.libideas.events.client.keyboard.KeyDownHandler;
+import com.google.gwt.libideas.events.client.BrowserEvents;
 import com.google.gwt.user.client.Event;
 
-public class MouseOverEvent extends BrowserEvent<MouseOverHandler> {
+public class MouseOverEvent extends MouseEvent<MouseOverHandler> {
 
-  public static Key KEY = new Key(BrowserEvents.ONMOUSEOVER);
+  public static Key<MouseOverHandler> KEY = new Key<MouseOverHandler>(
+      BrowserEvents.ONMOUSEOVER);
 
-  protected MouseOverEvent(Event e) {
-    super(e); 
+  public MouseOverEvent(Event e) {
+    super(e);
   }
 
   protected void fireEvent(MouseOverHandler handler) {

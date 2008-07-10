@@ -15,17 +15,16 @@
  */
 package com.google.gwt.libideas.events.client.mouse;
 
-import com.google.gwt.libideas.events.client.BrowserEvent;
-import com.google.gwt.libideas.events.client.BrowserEvents;
 import com.google.gwt.libideas.events.client.AbstractEvent;
-import com.google.gwt.libideas.events.client.keyboard.KeyDownHandler;
+import com.google.gwt.libideas.events.client.BrowserEvents;
 import com.google.gwt.user.client.Event;
 
-public class MouseUpEvent extends BrowserEvent<MouseUpHandler> {
+public class MouseUpEvent extends MouseEvent<MouseUpHandler> {
 
-  public static Key KEY = new Key(BrowserEvents.ONMOUSEUP);
+  public static Key<MouseUpHandler> KEY = new Key<MouseUpHandler>(
+      BrowserEvents.ONMOUSEUP);
 
-  protected MouseUpEvent(Event e) {
+  public MouseUpEvent(Event e) {
     super(e);
   }
 

@@ -15,18 +15,33 @@
  */
 package com.google.gwt.libideas.events.client.mouse;
 
-import com.google.gwt.libideas.events.client.BrowserEvent;
-import com.google.gwt.libideas.events.client.BrowserEvents;
 import com.google.gwt.libideas.events.client.AbstractEvent;
-import com.google.gwt.libideas.events.client.keyboard.KeyDownHandler;
+import com.google.gwt.libideas.events.client.BrowserEvents;
 import com.google.gwt.user.client.Event;
 
-public class MouseWheelEvent extends BrowserEvent<MouseWheelHandler> {
+public class MouseWheelEvent extends MouseEvent<MouseWheelHandler> {
 
-  public static Key KEY = new Key(BrowserEvents.ONMOUSEWHEEL);
+  public static Key<MouseWheelHandler> KEY = new Key<MouseWheelHandler>(
+      BrowserEvents.ONMOUSEWHEEL);
 
-  protected MouseWheelEvent(Event e) {
-    super(e); 
+  public MouseWheelEvent(Event e) {
+    super(e);
+  }
+
+  /**
+   * Gets the velocity of the mouse wheel associated with the event along the Y
+   * axis. <p> The velocity of the event is an artifical measurement for
+   * relative comparisons of wheel activity. It is affected by some non-browser
+   * factors, including choice of input hardware and mouse acceleration
+   * settings. The sign of the velocity measurement agrees with the screen
+   * coordinate system; negative values are towards the origin and positive
+   * values are away from the origin. Standard scrolling speed is approximately
+   * ten units per event. </p>
+   *
+   * @return The velocity of the mouse wheel.
+   */
+  public int getMouseWheelVelocityY() {
+    return getBrowserEvent().getMouseWheelVelocityY();
   }
 
   protected void fireEvent(MouseWheelHandler handler) {

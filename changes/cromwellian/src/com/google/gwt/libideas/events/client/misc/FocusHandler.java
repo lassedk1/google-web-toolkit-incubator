@@ -13,10 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.events.client.mouse;
+package com.google.gwt.libideas.events.client.misc;
 
 import com.google.gwt.libideas.events.client.EventHandler;
 
 public interface FocusHandler extends EventHandler {
+
   void onFocus(FocusEvent event);
 }

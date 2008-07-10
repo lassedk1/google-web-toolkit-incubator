@@ -13,25 +13,39 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.events.client.synthetic;
+package com.google.gwt.libideas.events.client.mouse;
 
-import com.google.gwt.libideas.events.client.AbstractEvent;
-import com.google.gwt.libideas.events.client.EventData;
-import com.google.gwt.libideas.events.client.mouse.MouseUpEvent;
+import com.google.gwt.libideas.events.client.BrowserEvent;
+import com.google.gwt.libideas.events.client.EventHandler;
+import com.google.gwt.user.client.Event;
 
-public class SyntheticMouseUpEvent extends MouseUpEvent {
+public abstract class MouseEvent<T extends EventHandler>
+    extends BrowserEvent<T> {
 
-  public static AbstractEvent.Key KEY = new AbstractEvent.Key();
+  public enum Button {
 
-  private EventData data;
+    LEFT, MIDDLE, RIGHT;
 
-  public SyntheticMouseUpEvent(EventData data) {
-    super(null);
-    this.data = data;
+    public static Button valueOf(int buttonCode) {
+      switch (buttonCode) {
+        case Event.BUTTON_LEFT:
+          return LEFT;
+        case Event.BUTTON_RIGHT:
+          return RIGHT;
+        case Event.BUTTON_MIDDLE:
+          return MIDDLE;
+        default:
+          throw new IllegalStateException("Unknown button code " + buttonCode);
+      }
+    }
+  }
+
+  protected MouseEvent(Event e) {
+    super(e);
   }
 
   public Button getButton() {
-    return Button.valueOf(getEventData().getButton());
+    return Button.valueOf(getBrowserEvent().getButton());
   }
 
   /**
@@ -40,7 +54,7 @@ public class SyntheticMouseUpEvent extends MouseUpEvent {
    * @return the mouse x-position
    */
   public int getClientX() {
-    return getEventData().getClientX();
+    return getBrowserEvent().getClientX();
   }
 
   /**
@@ -49,11 +63,7 @@ public class SyntheticMouseUpEvent extends MouseUpEvent {
    * @return the mouse y-position
    */
   public int getClientY() {
-    return getEventData().getClientY();
-  }
-
-  public EventData getEventData() {
-    return data;
+    return getBrowserEvent().getClientY();
   }
 
   /**
@@ -62,7 +72,7 @@ public class SyntheticMouseUpEvent extends MouseUpEvent {
    * @return the mouse x-position
    */
   public int getScreenX() {
-    return getEventData().getScreenX();
+    return getBrowserEvent().getScreenX();
   }
 
   /**
@@ -71,7 +81,7 @@ public class SyntheticMouseUpEvent extends MouseUpEvent {
    * @return the mouse y-position
    */
   public int getScreenY() {
-    return getEventData().getScreenY();
+    return getBrowserEvent().getScreenY();
   }
 
   /**
@@ -80,7 +90,7 @@ public class SyntheticMouseUpEvent extends MouseUpEvent {
    * @return whether the alt key is down
    */
   public boolean isAltKeyDown() {
-    return getEventData().getAltKey();
+    return getBrowserEvent().getAltKey();
   }
 
   /**
@@ -89,7 +99,7 @@ public class SyntheticMouseUpEvent extends MouseUpEvent {
    * @return whether the control key is down
    */
   public boolean isControlKeyDown() {
-    return getEventData().getCtrlKey();
+    return getBrowserEvent().getCtrlKey();
   }
 
   /**
@@ -98,7 +108,7 @@ public class SyntheticMouseUpEvent extends MouseUpEvent {
    * @return whether the meta key is down
    */
   public boolean isMetaKeyDown() {
-    return getEventData().getMetaKey();
+    return getBrowserEvent().getMetaKey();
   }
 
   /**
@@ -107,18 +117,6 @@ public class SyntheticMouseUpEvent extends MouseUpEvent {
    * @return whether the shift key is down
    */
   public boolean isShiftKeyDown() {
-    return getEventData().getShiftKey();
-  }
-
-  public void preventDefault() {
-    getEventData().preventDefault();
-  }
-
-  public void stopPropagation() {
-    getEventData().stopPropagation();
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
+    return getBrowserEvent().getShiftKey();
   }
 }
