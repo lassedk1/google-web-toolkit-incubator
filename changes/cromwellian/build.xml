@@ -1,0 +1,151 @@
+<project name="gwt-incubator" default="dist">
+  <property name="gwt.root" location="." />  
+  <property name="project.tail" value="" />  
+
+  <!-- if gwt.home isn't set, check if env $GWT_HOME is, or gwt.location,
+       or it's on the classpath anyway -->
+  <property environment="env" />
+  <condition property="gwt.home" value="${env.GWT_HOME}" >
+     <isset property="env.GWT_HOME" />
+  </condition>
+  <condition property="gwt.home" value="${gwt.location}" >
+     <and>
+        <not> <isset property="gwt.home" /> </not>
+        <isset property="gwt.location" />
+     </and>
+  </condition>
+  <condition property="gwt.home" value="" >
+     <and>
+       <not> <isset property="gwt.home" /> </not>
+         <available classname="com.google.gwt.core.client.EntryPoint" />
+     </and>
+  </condition>
+
+  <import file="${gwt.root}/common.ant.xml" />
+
+  <!-- "build" is the default when subprojects are directly targetted -->
+   <property name="target" value="build" />
+
+  <target name="inithome" unless="gwt.home">
+    <fail message="can't find gwt, please set gwt.home property (ant -Dgwt.home=...)"
+          unless="gwt.home" />
+
+  </target>
+
+  <target name="inittools" unless="gwt.tools">
+    <!-- if gwt.tools isn't set, check if env $GWT_TOOLS is -->
+    <condition property="gwt.tools" value="${env.GWT_TOOLS}" >
+       <isset property="env.GWT_TOOLS" />
+    </condition>
+    <fail message="can't find gwt tools, please set gwt.tools property (ant -Dgwt.tools=...)"
+          unless="gwt.tools" />
+  </target>
+
+  <target name="checksetup" depends="inithome,inittools">
+    <fail message="unknown platform" unless="gwt.platform" />
+    <echo message="gwt.home = ${gwt.home}" />
+    <echo message="gwt.tools = ${gwt.tools}" />
+    <echo message="gwt.platform = ${gwt.platform}" />
+  </target>
+
+  <target name="build" depends="checksetup">
+    <mkdir dir="${javac.out}"/>
+    <javac compiler="javac1.4" listfiles="true" destdir="${javac.out}">
+       <src path="src"/>
+       <classpath location="${gwt.user.jar}"/>
+       <classpath location="${gwt.dev.jar}"/>
+       <classpath location="${gwt.tools}/lib/javaswf/javaswf-20050404.jar"/>
+       <classpath location="${gwt.tools}/lib/w3c/sac/sac-1.3.jar"/>
+       <classpath location="${gwt.tools}/lib/w3c/flute/flute-1.3.jar"/>
+    </javac>
+    <copy todir="${javac.out}">
+       <fileset dir="src">
+          <include name="**/public/**"/>
+          <exclude name="**/.svn/**"/>
+       </fileset>
+    </copy>
+  </target>
+
+  <target name="dist" depends="build">
+    <mkdir dir="${project.build}/doc"/>
+    <copy todir="${project.build}/doc">
+       <fileset dir="doc">
+          <exclude name="**/.svn/**"/>
+       </fileset>
+    </copy>
+    <mkdir dir="${project.build}/demo"/>
+    <copy todir="${project.build}/demo">
+       <fileset dir="demo">
+          <exclude name="**/.svn/**"/>
+       </fileset>
+    </copy>
+    <mkdir dir="build/dist"/>
+    <jar destfile="build/dist/gwt-incubator.jar" >
+       <zipfileset dir="${javac.out}" />
+       <zipfileset dir="${project.build}/demo" prefix="demo/" />
+       <zipfileset dir="${project.build}/doc" prefix="doc/" />
+       <zipfileset src="${gwt.tools}/lib/javaswf/javaswf-20050404.jar" />
+       <zipfileset src="${gwt.tools}/lib/w3c/sac/sac-1.3.jar"/>
+       <zipfileset src="${gwt.tools}/lib/w3c/flute/flute-1.3.jar"/>
+       <zipfileset dir="src" prefix="" defaultexcludes="yes" />
+    </jar>
+  </target>
+
+  <import file="testsets.ant.xml" />
+
+  <target name="build.tests" depends="build"
+          description="Compiles the test code for this project">
+     <mkdir dir="${javac.junit.out}" />
+     <echo message="dev is ${gwt.dev.jar}"/>
+
+     <gwt.javac destdir="${javac.junit.out}">
+        <classpath>
+	   <pathelement location="${javac.out}" />
+           <pathelement location="${gwt.tools.lib}/junit/junit-3.8.1.jar" />
+           <pathelement location="${gwt.user.jar}"/>
+           <pathelement location="${gwt.dev.jar}"/>
+           <pathelement location="${gwt.tools}/lib/javaswf/javaswf-20050404.jar"/>
+           <pathelement location="${gwt.tools}/lib/w3c/sac/sac-1.3.jar"/>
+           <pathelement location="${gwt.tools}/lib/w3c/flute/flute-1.3.jar"/>
+        </classpath>
+        <src>
+	   <pathelement location="./test" />
+        </src>
+     </gwt.javac>
+   </target>
+
+  <target name="remoteweb-test" 
+          description="Run a remoteweb test at the given host and path">
+     <echo message="Performing remote browser testing at rmi://${gwt.remote.browser}" />
+     <gwt.junit 
+         test.args="-out www -web -remoteweb rmi://${gwt.remote.browser}" 
+         test.out="${junit.out}/${gwt.remote.browser}" 
+         test.cases="default.web.tests" />
+  </target>
+
+  <target name="test" depends="build, test.hosted, test.web, test.remoteweb">
+  </target>
+
+  <target name="test.hosted" depends="build, build.tests">
+     <gwt.junit test.out="${junit.out}/${gwt.platform}-hosted-mode" test.cases="default.hosted.tests" />
+  </target>
+
+  <target name="test.web" depends="build, build.tests" 
+          description="Run only web-mode tests, locally, for this project.">
+     <gwt.junit test.args="-out www -web" 
+                test.out="${junit.out}/${gwt.platform}-web-mode" 
+                test.cases="default.web.tests" />
+  </target>
+
+  <target name="test.remoteweb" depends="build, build.tests" 
+          description="Run remote web-mode tests, using gwt.remote.browsers (e.g. -Dgwt.remote.browsers=gwt-tester-02/ie6,gwt-tester-03/ie7)">
+     <foreach list="${gwt.remote.browsers}" delimiter="," parallel="true" 
+              maxThreads="5" target="remoteweb-test" 
+              param="gwt.remote.browser" />
+  </target>
+
+  <target name="clean">
+     <delete dir="build"/>
+  </target>
+
+</project>

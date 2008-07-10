@@ -1,0 +1,6 @@
+<module>
+	<!--  As new widgets are created, they should be able to use all of our incubator libraries -->
+	<inherits name='com.google.gwt.libideas.LibIdeas' />
+    <!--  hack until i18n is added back into users -->
+    <inherits name='com.google.gwt.i18n.I18N'/>
+</module>

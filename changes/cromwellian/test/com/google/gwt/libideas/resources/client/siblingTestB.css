@@ -1,0 +1,4 @@
+@CHARSET "UTF-8";
+/* This is the other half of the sibling test. */
+.other {background: blue; }
+.replacement { background:red; }

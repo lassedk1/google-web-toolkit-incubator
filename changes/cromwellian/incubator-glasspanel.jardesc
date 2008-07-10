@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jardesc>
+    <jar path="incubator-glasspanel.jar"/>
+    <options buildIfNeeded="true" compress="false" descriptionLocation="/google-web-toolkit-incubator/incubator-glasspanel.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
+        <javaElement handleIdentifier="=google-web-toolkit-incubator/src&lt;com.google.gwt.widgetideas.client{GlassPanel.java"/>
+        <javaElement handleIdentifier="=google-web-toolkit-incubator/src&lt;com.google.gwt.widgetideas.client.impl{GlassPanelImpl.java"/>
+        <javaElement handleIdentifier="=google-web-toolkit-incubator/src&lt;com.google.gwt.widgetideas.client.impl{GlassPanelImplStandard.java"/>
+        <javaElement handleIdentifier="=google-web-toolkit-incubator/src&lt;com.google.gwt.widgetideas.client.impl{GlassPanelImplIE6.java"/>
+        <file path="/google-web-toolkit-incubator/src/com/google/gwt/widgetideas/GlassPanel.gwt.xml"/>
+        <javaElement handleIdentifier="=google-web-toolkit-incubator/src&lt;com.google.gwt.widgetideas.client.impl{GlassPanelImplOpera.java"/>
+        <javaElement handleIdentifier="=google-web-toolkit-incubator/src&lt;com.google.gwt.widgetideas.client.impl{GlassPanelImplSafari.java"/>
+        <javaElement handleIdentifier="=google-web-toolkit-incubator/src&lt;com.google.gwt.widgetideas.client.impl{GlassPanelImplMozilla.java"/>
+    </selectedElements>
+</jardesc>
