@@ -41,8 +41,9 @@ package com.google.gwt.widgetideas.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.i18n.client.constants.CurrencyCodeMapConstants;
 import com.google.gwt.i18n.client.constants.NumberConstants;
+import com.google.gwt.i18n.client.impl.CurrencyData;
+import com.google.gwt.i18n.client.impl.CurrencyList;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -54,16 +55,12 @@ import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.overrides.DOMHelper;
 
-import java.util.Map;
-
 /**
  * TODO:Add javadoc
  */
 public class CurrencyWidget extends Composite {
   protected static final NumberConstants numberConstants = (NumberConstants)
       GWT.create(NumberConstants.class);
-  protected static final CurrencyCodeMapConstants currencyCodeMapConstants =
-      (CurrencyCodeMapConstants)GWT.create(CurrencyCodeMapConstants.class);
   protected static String acceptableCharset = getAcceptedCharset();
 
   private static String getAcceptedCharset() {
@@ -104,10 +101,11 @@ public class CurrencyWidget extends Composite {
   protected final Label currencySymbol;
 
   protected final TextBox amountBox = new TextBox();
-  protected final NumberFormat formatter = NumberFormat.getFormat(getCurrencyAmountPattern());
+  protected final NumberFormat formatter;
 
   protected boolean valueInitiated = false;
-
+  protected CurrencyData currencyData;
+  
   /**
    * Constructs a CurrencyWidget object.
    */
@@ -121,7 +119,11 @@ public class CurrencyWidget extends Composite {
    * @param currencyCode International currency code (ISO 4217).
    */
   public CurrencyWidget(String currencyCode) {
-    currencySymbol = new Label(getCurrencySymbol(currencyCode));
+    currencyData = CurrencyList.get().lookup(currencyCode);
+    assert(currencyData != null);
+    currencySymbol = new Label(currencyData.getPortableCurrencySymbol());
+    formatter = NumberFormat.getFormat(getCurrencyAmountPattern());
+    
     initWidget(horizontalPanel);
     horizontalPanel.setSpacing(2);
     if (isLeadingSymbol()) {
@@ -175,16 +177,15 @@ public class CurrencyWidget extends Composite {
   }
 
   protected String getCurrencyAmountPattern() {
-    return numberConstants.currencyPattern().replace('\u00a4', ' ').trim();
-  }
-
-  protected String getCurrencySymbol(String currencyCode) {
-    Map currencyMap = currencyCodeMapConstants.currencyMap();
-    String symbol = (String)currencyMap.get(currencyCode);
-    if (symbol == null) {
-      symbol = numberConstants.defCurrencyCode();
+    StringBuffer strBuf = new StringBuffer("#,##0");
+    int precision = currencyData.getDefaultFractionDigits();
+    if (precision > 0) {
+      strBuf.append('.');
+      for (int i = 0; i < precision; i++) {
+        strBuf.append('0');
+      }
     }
-    return symbol;
+    return strBuf.toString();
   }
 
   protected boolean isLeadingSymbol() {

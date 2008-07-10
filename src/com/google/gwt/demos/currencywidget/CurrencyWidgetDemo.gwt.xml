@@ -3,8 +3,7 @@
 	<!-- Inherit the core Web Toolkit stuff.                  -->
 	<inherits name='com.google.gwt.user.User'/>
 	<inherits name='com.google.gwt.widgetideas.CurrencyWidget'/>
-	
-
+  
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='com.google.gwt.demos.currencywidget.client.CurrencyWidgetDemo'/>
 

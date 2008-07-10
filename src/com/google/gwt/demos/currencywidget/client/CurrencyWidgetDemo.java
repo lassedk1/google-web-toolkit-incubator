@@ -67,11 +67,18 @@ public class CurrencyWidgetDemo implements EntryPoint {
       }
     });
 
+    final Label jpCurrencyWidgetLabel = new Label("Japanese Currency");
+    rootPanel.add(jpCurrencyWidgetLabel, 50, 184);
+
+    final CurrencyWidgetWithPreview jpCurrencyWidgetWithPreview = new CurrencyWidgetWithPreview("JPY");
+    rootPanel.add(jpCurrencyWidgetWithPreview, 50, 208);
+    jpCurrencyWidgetWithPreview.setSize("156px", "18px");
+
     
     final Label aNaiveTextLabel = new Label("A Naive Text Widget:");
-    rootPanel.add(aNaiveTextLabel, 50, 180);
+    rootPanel.add(aNaiveTextLabel, 50, 250);
     final TextBox textBox = new TextBox();
-    rootPanel.add(textBox, 50, 204);
+    rootPanel.add(textBox, 50, 280);
   }
 
 }
