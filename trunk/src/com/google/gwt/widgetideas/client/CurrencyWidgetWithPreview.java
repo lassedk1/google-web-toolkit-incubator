@@ -55,9 +55,7 @@ public class CurrencyWidgetWithPreview extends CurrencyWidget {
   interface Resources extends ImmutableResourceBundle {
     public static final Resources INSTANCE = GWT.create(Resources.class);
 
-    /**
-     * @gwt.resource CurrencyWidgetPreview.css
-     */
+    @Resource("CurrencyWidgetPreview.css")
     public TextResource css();
   }
 
@@ -92,8 +90,8 @@ public class CurrencyWidgetWithPreview extends CurrencyWidget {
    */
   public CurrencyWidgetWithPreview(String currencyCode) {
     super(currencyCode);
-    StyleInjector.injectStylesheet(Resources.INSTANCE.css().getText(),
-        Resources.INSTANCE);
+    StyleInjector.injectStylesheet(Resources.INSTANCE.css().getText());
+    
     previewPanel.setWidget(previewField);
     amountBox.addFocusListener(new FocusListener() {
       public void onFocus(Widget sender) {
