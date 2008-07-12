@@ -31,7 +31,7 @@ http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/im
   to.addChangeHandler(new ChangeHandler<Date>()){
     public void onChange(ChangeEvent<Date> change) {
       // All dates before and after this date range will not be selectable.
-      from.setDateRange(to.getSelectedDate(), null);
+      from.setAllowableDates(to.getSelectedDate(), null); 
       from.setSelectedDate(to.getSelectedDate());
     }
   }
