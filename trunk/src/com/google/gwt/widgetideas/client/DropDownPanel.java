@@ -175,6 +175,18 @@ public class DropDownPanel<R extends Widget> extends PopupPanel {
   }
 
   @Override
+  public void hide(boolean autohide) {
+    if (!showing) {
+      return;
+    }
+    showing = false;
+    autoHiding = autohide;
+    anchor = null;
+    // Hide the popup
+    animate();
+  }
+
+  @Override
   public boolean isAnimationEnabled() {
     return isAnimationEnabled;
   }
@@ -379,16 +391,4 @@ public class DropDownPanel<R extends Widget> extends PopupPanel {
   private native PopupListenerCollection getPopupListeners()/*-{
                   this.@com.google.gwt.user.client.ui.PopupPanel::popupListeners;
                 }-*/;
-
-  private void hide(boolean autohide) {
-    if (!showing) {
-      return;
-    }
-    showing = false;
-    autoHiding = autohide;
-    anchor = null;
-    // Hide the popup
-    animate();
-  }
-
 }

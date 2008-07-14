@@ -120,7 +120,7 @@ public class CurrencyWidget extends Composite {
    */
   public CurrencyWidget(String currencyCode) {
     currencyData = CurrencyList.get().lookup(currencyCode);
-    assert(currencyData != null);
+    assert (currencyData != null);
     currencySymbol = new Label(currencyData.getPortableCurrencySymbol());
     formatter = NumberFormat.getFormat(getCurrencyAmountPattern());
     
