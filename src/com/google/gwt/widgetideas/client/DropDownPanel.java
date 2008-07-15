@@ -174,7 +174,7 @@ public class DropDownPanel<R extends Widget> extends PopupPanel {
     hide(false);
   }
 
-  @Override
+
   public void hide(boolean autohide) {
     if (!showing) {
       return;
