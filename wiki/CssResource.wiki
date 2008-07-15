@@ -281,7 +281,14 @@ Promotion of rules follows the previously-established rule of not promoting a ru
   * The deferred-binding property `CssResource.style` may be set to `pretty` which will disable class-name obfuscation as well as pretty-print the CSS content.  Combine this with a `ResourceBundle.enableInlining` value of `false` to produce a CSS expression which is amenable to client-side editing.
   * The deferred-binding property `CssResoure.enableMerge` can be set to `false` to disable modifications that re-order rules.  This should be considered a temporary measure until the merge logic has been fully vetted.
   * To allow for client-side tweaking of the effective (i.e. permutation-specific) style rules, you can store the value of CssResource.getText() into a TextArea.  Wire some UI action to pass the contents of the TextArea into `StyleInjector.setContents()` to overwrite the original, injected stylesheet.
+= Implementation Details =
+== Scope ==
+In order to allow obfuscation to avoid duplicating shared css structure, a user must be able to define a scope across separate css resources. The scope will both define the unique prefix prepended to class names and the obfuscation context.  Two class names within a single scope will always be obfuscated the same way.
 
+Scope may be applied to either a bundle as a whole or on each individual CSSResource within a bundle.  
+
+ 
+ 
 =Important open questions=
   * Can we manipulate style rules across browsers?
     * Maybe make MyCSSResource.mySpriteClass() return Rule object
