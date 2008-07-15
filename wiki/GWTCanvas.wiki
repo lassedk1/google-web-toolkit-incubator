@@ -142,4 +142,6 @@ public class MyEntryPoint implements EntryPoint {
 
 
 = Important Caveats =
-We currently have supports for gradients in the API checked into the incubator trunk. However, IE support for gradients currently is incomplete and non-functional. The framework is there to go the last mile, so in the spirit of open source projects, contributor assistance is welcome :).
+- We currently have supports for gradients in the API checked into the incubator trunk. However, IE support for gradients currently is incomplete and non-functional. The framework is there to go the last mile, so in the spirit of open source projects, contributor assistance is welcome :).
+
+- GWTCanvas works fine in Web mode across the major browser. However, we currently only support Hosted mode on the Mac platform. This should all be remedied however with the release of [http://code.google.com/p/google-web-toolkit/wiki/DesignOOPHM OOPHM]. 
