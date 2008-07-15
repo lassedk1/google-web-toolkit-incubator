@@ -60,7 +60,8 @@ public class CSSResourceTest extends LibTestBase {
     MyCssResource b();
   }
 
-  public void testCSS() {
+  // DISABLED_TEST
+  public void tastCSS() {
     MyCssResourceWithSprite css = Resources.INSTANCE.css();
     String text = css.getText();
     System.out.println(text);

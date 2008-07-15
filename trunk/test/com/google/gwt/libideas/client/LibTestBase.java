@@ -23,8 +23,9 @@ import com.google.gwt.junit.client.GWTTestCase;
  * 
  */
 public class LibTestBase extends GWTTestCase {
-
+  public static String TEST_MODULE =  "com.google.gwt.libideas.LibIdeas";
+  @Override
   public final String getModuleName() {
-    return "com.google.gwt.widgetideas.WidgetIdeas";
+    return TEST_MODULE;
   }
 }
