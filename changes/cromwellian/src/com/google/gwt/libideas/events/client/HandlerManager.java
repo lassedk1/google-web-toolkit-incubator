@@ -15,49 +15,56 @@
  */
 package com.google.gwt.libideas.events.client;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.libideas.events.client.AbstractEvent.Key;
 
 /**
- * Manages a type-safe map of event Keys to EventHandlers.
+ * Manages a type-safe map of event keys to event handlers.
  */
 public class HandlerManager {
 
-  // TODO(cromwellian) add implementation that uses native JS hash/arrays
-  private Map<AbstractEvent.Key, ArrayList<EventHandler>> handlerRegistry;
-
+  private HandlerRegistry registry;
   private Object source;
 
-  public HandlerManager(Object source) {
-    this.handlerRegistry
-        = new HashMap<AbstractEvent.Key, ArrayList<EventHandler>>();
+  public HandlerManager(Object source, HandlerRegistry registry) {
+    this.registry = registry;
     this.source = source;
   }
 
+  public HandlerManager(Object source) {
+    this(source, pickRegistry());
+
+  }
+
+  private static HandlerRegistry pickRegistry() {
+    // TODO(ECC) once fully debugged, should also you java version in hosted
+    // mode.
+    if (GWT.isClient()) {
+      return new JSHandlerRegistry();
+    } else {
+      return new JavaHandlerRegistry();
+    }
+  }
+
   public void fireEvent(AbstractEvent event) {
-    ArrayList<EventHandler> handlers = handlerRegistry.get(event.getKey());
+    Key key = event.getKey();
+    int count = registry.getHandlerCount(key);
     event.setSource(source);
-    if (handlers != null) {
-      for (EventHandler handler : handlers) {
-        event.fireEvent(handler);
-      }
+    for (int i = 0; i < count; i++) {
+      EventHandler handler = registry.getHandler(key, i);
+      event.fireEvent(handler);
     }
   }
 
   public <T extends EventHandler> HandlerRegistration addEventHandler(
       AbstractEvent.Key<T> key, final T handler) {
-    ArrayList<EventHandler> handlers = handlerRegistry.get(key);
-    if (handlers == null) {
-      handlers = new ArrayList<EventHandler>();
-      handlerRegistry.put(key, handlers);
-    }
-    handlers.add(handler);
-    final ArrayList<EventHandler> finalHandlers = handlers;
-    return new HandlerRegistration() {
-      public void removeHandler() {
-        finalHandlers.remove(handler);
-      }
-    };
+    registry.addHandler(key, handler);
+    return new HandlerRegistration(this, key, handler);
   }
+
+  // Overridable by subclasses.
+  protected void removeHandler(Key key, EventHandler handler) {
+    registry.removeHandler(key, handler);
+  }
+
 }
