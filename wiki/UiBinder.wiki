@@ -14,6 +14,7 @@ There are problems with the declarative ui template service as it was [Declarati
   * A template-based UI must be istantiated via GWT.create(), causing an implementation detail to be visible as public api
   * Within a template, only widgets with a zero arg constructor can be used
   * ClientBundles cannot be used
+  * Templates are found by magical name matching conventions, and applying more than one template to a class is impossible
 
 In addressing these issues, we have talked about encouraging a proxy style of use (basically, use Composite to wrap whatever widget gets GWT.create()'d), but dislike the extra object creation implied. We also hope for a system that can choose to use innerHTML, cloning, or DOM assembly as makes sense per browser type. These shortcomings could be addressed by a combination of developer discipline (yuck) and perhaps the builder pattern, but we still found ourselves faced with the likelihood of hurried developers wrapping an unneeded, generated object.
 
@@ -218,45 +219,45 @@ There are type matching issues here. The g:field of a DOM element is a string id
 =Using ClientBundles with a UiBinder=
 
 {{{
-<!-- Resourceful.ui.xml -->
+<!-- LogoNamePanel.ui.xml -->
 <gwt:HTMLPanel
   xmlns:g="package://com.google.gwt.user.client.ui"
-  xmlns:res="with://com.my.app.widgets.Resources">
+  xmlns:res="with://com.my.app.widgets.logoname.Resources">
 
-  <img res:-invoke="widgetyImage.apply">
+  <img res:apply="logoImage">
 
-  <div res:class="widgetyStyle.widgetyBlock">
-    <div res:-invoke="style.widgetyLogoSprite.apply"/>
-    Level of widgetiness:
-    <span res:class="widgetyStyle.widgetyRun" g:field="widgetyText"/>
+  <div res:class="style.mainBlock">
+    <div res:apply="style.userPictureSprite">
+      Well hello there
+      <span res:class="style.nameSpan" g:field="userNameField"/>
+    </div>
   </div>
-</gwt:HTMLPanel>
-}}}
+</gwt:HTMLPanel>}}}
 
 {{{
-public class Resourceful extends Composite {
-  @Template("Resourceful.ui.xml")
-  interface MyUiBinder extend UiBinder<Resourceful> {}
+public class LogoNamePanel extends Composite {
+  @Template("LogoNamePanel.ui.xml")
+  interface MyUiBinder extend UiBinder<LogoNamePanel> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
-  protected SpanElement widgetyText;
+  protected SpanElement nameSpan;
 
-  public Resourceful() {
+  public LogoNamePanel() {
     uiBinder.bind(this);
   }
 }
 
 public interface Resources extends ClientBundle {
-  @Resource("com.my.app.resources.WidgetyStyle.css")
-  WidgetyStyle widgetyStyle();
+  @Resource("Style.css")
+  Style style();
 
-  @Resource("com.my.app.resources.Widgety.jpg")
+  @Resource("Logo.jpg")
   ImageResource widgetyImage();
 
-  public interface WidgetyStyle extends CssResource {
-    String widgetyBlock();
-    String widgetyRun();
-    Sprite widgetyLogoSprite();
+  public interface Style extends CssResource {
+    String mainBlock();
+    String nameSpan();
+    Sprite userPictureSprite();
   }
 }
 }}}
