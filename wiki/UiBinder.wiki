@@ -241,10 +241,14 @@ public class LogoNamePanel extends Composite {
   interface MyUiBinder extend UiBinder<LogoNamePanel> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
-  protected SpanElement nameSpan;
+  SpanElement nameSpan;
 
   public LogoNamePanel() {
     uiBinder.bind(this);
+  }
+
+  public void setUserName(String userName) {
+    nameSpan.setInnerText(userName);
   }
 }
 
