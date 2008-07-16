@@ -18,12 +18,14 @@ package com.google.gwt.widgetideas.graphics.client;
 import com.google.gwt.user.client.Element;
 
 /**
- * Radial Gradient for use as a stroke or fill style.
- * Depends on deferred binding implementations.
+ * Radial Gradient for use as a stroke or fill style. Depends on deferred
+ * binding implementations.
  */
 public interface GradientFactory {
 
-  CanvasGradient createLinearGradient(float x0, float y0, float x1, float y1, Element c);
-  
-  CanvasGradient createRadialGradient(float x0, float y0, float r0, float x1, float y1, float r1, Element c);
+  CanvasGradient createLinearGradient(double x0, double y0, double x1,
+      double y1, Element c);
+
+  CanvasGradient createRadialGradient(double x0, double y0, double r0,
+      double x1, double y1, double r1, Element c);
 }

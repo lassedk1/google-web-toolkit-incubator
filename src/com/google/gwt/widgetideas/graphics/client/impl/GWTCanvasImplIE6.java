@@ -41,17 +41,21 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     init();
   }
 
+  public static native int doubleToFlooredInt(double val) /*-{
+   return (val | 0);
+  }-*/;
+
   private static native void init() /*-{
-      if (!$doc.namespaces["v"]) {
-        $doc.namespaces.add("v", "urn:schemas-microsoft-com:vml");
-        $doc.createStyleSheet().cssText = "v\\:*{behavior:url(#default#VML);}";
-      }
-   }-*/;
+    if (!$doc.namespaces["v"]) {
+      $doc.namespaces.add("v", "urn:schemas-microsoft-com:vml");
+      $doc.createStyleSheet().cssText = "v\\:*{behavior:url(#default#VML);}";
+    }
+  }-*/;
 
   protected VMLContext context;
 
-  protected float[] matrix;
-  
+  protected double[] matrix;
+
   /**
    * This will be used for an array join. Currently a bit faster than
    * StringBuilder.append() & toString() because of the extra collections
@@ -65,9 +69,9 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
    */
   private Stack<VMLContext> contextStack = new Stack<VMLContext>();
 
-  private float currentX = 0.0f;
+  private double currentX = 0;
 
-  private float currentY = 0.0f;
+  private double currentY = 0;
 
   private Element parentElement = null;
 
@@ -75,8 +79,8 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
 
   private int parentWidth = 0;
 
-  public void arc(float x, float y, float radius, float startAngle,
-      float endAngle, boolean anticlockwise) {
+  public void arc(double x, double y, double radius, double startAngle,
+      double endAngle, boolean anticlockwise) {
     pathStr.push(PathElement.arc(x, y, radius, startAngle, endAngle,
         anticlockwise, this));
   }
@@ -110,25 +114,25 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     return parentElement;
   }
 
-  public void cubicCurveTo(float cp1x, float cp1y, float cp2x, float cp2y,
-      float x, float y) {
+  public void cubicCurveTo(double cp1x, double cp1y, double cp2x, double cp2y,
+      double x, double y) {
     pathStr.push(PathElement.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y, this));
     currentX = x;
     currentY = y;
   }
 
-  public void drawImage(ImageElement img, float sourceX, float sourceY,
-      float sourceWidth, float sourceHeight, float destX, float destY,
-      float destWidth, float destHeight) {
+  public void drawImage(ImageElement img, double sourceX, double sourceY,
+      double sourceWidth, double sourceHeight, double destX, double destY,
+      double destWidth, double destHeight) {
 
-    float fullWidth = img.getWidth();
-    float fullHeight = img.getHeight();
+    double fullWidth = img.getWidth();
+    double fullHeight = img.getHeight();
 
     JSOStack<String> vmlStr = JSOStack.getScratchArray();
 
     vmlStr.push("<v:group style=\"position:absolute;width:10;height:10;");
-    float dX = getCoordX(matrix, destX, destY);
-    float dY = getCoordY(matrix, destX, destY);
+    double dX = getCoordX(matrix, destX, destY);
+    double dY = getCoordY(matrix, destX, destY);
 
     // If we have a transformation matrix with rotation/scale, we
     // apply a filter
@@ -183,7 +187,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     vmlStr.push(String.valueOf((fullHeight - sourceY - sourceHeight)
         / fullHeight));
     vmlStr.push("\"/></v:group>");
-    
+
     insert("BeforeEnd", vmlStr.join());
   }
 
@@ -200,61 +204,63 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
 
     shapeStr.push(" e\"><v:fill opacity=\"");
     shapeStr.push("" + context.globalAlpha * context.fillAlpha);
-    
-    if (context.fillGradient != null && context.fillGradient.colorStops.size() > 0) {
+
+    if (context.fillGradient != null
+        && context.fillGradient.colorStops.size() > 0) {
       ArrayList<ColorStop> colorStops = context.fillGradient.colorStops;
-      
+
       shapeStr.push("\" color=\"");
-      shapeStr.push(colorStops.get(0).color.toString());      
+      shapeStr.push(colorStops.get(0).color.toString());
       shapeStr.push("\" color2=\"");
       shapeStr.push(colorStops.get(colorStops.size() - 1).color.toString());
       shapeStr.push("\" type=\"");
       shapeStr.push(context.fillGradient.type);
-      
-      float minX = pathStr.getMinCoordX();
-      float maxX = pathStr.getMaxCoordX();
-      float minY = pathStr.getMinCoordY();
-      float maxY = pathStr.getMaxCoordY();
-      
-      float dx = maxX - minX;
-      float dy = maxY - minY;
-      
-      float fillLength = (float) Math.sqrt((dx * dx) + (dy * dy));
-      float gradLength = context.fillGradient.length;
-      
+
+      double minX = pathStr.getMinCoordX();
+      double maxX = pathStr.getMaxCoordX();
+      double minY = pathStr.getMinCoordY();
+      double maxY = pathStr.getMaxCoordY();
+
+      double dx = maxX - minX;
+      double dy = maxY - minY;
+
+      double fillLength = Math.sqrt((dx * dx) + (dy * dy));
+      double gradLength = context.fillGradient.length;
+
       // Now add all the color stops
       String colors = "";
       for (int i = 1; i < colorStops.size() - 1; i++) {
         ColorStop cs = colorStops.get(i);
         double stopPosn = cs.offset * gradLength;
-        ///(Math.min(((stopPosn / fillLength) * 100), 100))
-        colors += 100 - (int) (((stopPosn / fillLength) * 100)) + "% " + cs.color.toString() + ",";
+        // /(Math.min(((stopPosn / fillLength) * 100), 100))
+        colors += 100 - (int) (((stopPosn / fillLength) * 100)) + "% "
+            + cs.color.toString() + ",";
         if (stopPosn > fillLength) {
           break;
         }
-      }      
+      }
       shapeStr.push("\" colors=\"");
       // shapeStr.push(colors);
       shapeStr.push("50% white,51% #0f0,100% #fff,");
       shapeStr.push("\" angle=\"");
-      shapeStr.push(/*context.fillGradient.angle*/ "180" + "");  
+      shapeStr.push(/* context.fillGradient.angle */"180" + "");
     }
-    
+
     shapeStr.push("\"></v:fill></v:shape>");
     String daStr = shapeStr.join();
     // Window.alert(daStr);
     insert(context.globalCompositeOperation, daStr);
   }
 
-  public void fillRect(float x, float y, float w, float h) {
+  public void fillRect(double x, double y, double w, double h) {
     w += x;
     h += y;
     beginPath();
-      moveTo(x, y);
-      lineTo(x, h);
-      lineTo(w, h);
-      lineTo(w, y);
-      closePath();
+    moveTo(x, y);
+    lineTo(x, h);
+    lineTo(w, h);
+    lineTo(w, y);
+    closePath();
     fill();
     pathStr.clear();
   }
@@ -263,15 +269,17 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     return context;
   }
 
-  public float getCoordX(float[] matrix, float x, float y) {
-    float coordX = (float) Math.floor(10 * (matrix[0] * x + matrix[1] * y + matrix[2]) - 4.5);
+  public int getCoordX(double[] matrix, double x, double y) {
+    int coordX = doubleToFlooredInt(Math.floor(10 * (matrix[0] * x + matrix[1]
+        * y + matrix[2]) - 4.5f));
     // record current point to derive bounding box of current open path.
     pathStr.logCoordX(coordX / 10);
     return coordX;
   }
 
-  public float getCoordY(float[] matrix, float x, float y) {
-    float coordY = (float) Math.floor(10 * (matrix[3] * x + matrix[4] * y + matrix[5]) - 4.5);
+  public int getCoordY(double[] matrix, double x, double y) {
+    int coordY = doubleToFlooredInt(Math.floor(10 * (matrix[3] * x + matrix[4]
+        * y + matrix[5]) - 4.5f));
     // record current point to derive bounding box of current open path.
     pathStr.logCoordY(coordY / 10);
     return coordY;
@@ -281,7 +289,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     return context.fillStyle;
   }
 
-  public float getGlobalAlpha() {
+  public double getGlobalAlpha() {
     return context.globalAlpha;
   }
 
@@ -304,11 +312,11 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     return context.lineJoin;
   }
 
-  public float getLineWidth() {
+  public double getLineWidth() {
     return context.lineWidth;
   }
 
-  public float getMiterLimit() {
+  public double getMiterLimit() {
     return context.miterLimit;
   }
 
@@ -316,29 +324,29 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     return context.strokeStyle;
   }
 
-  public void lineTo(float x, float y) {
+  public void lineTo(double x, double y) {
     pathStr.push(PathElement.lineTo(x, y, this));
     currentX = x;
     currentY = y;
   }
 
-  public void moveTo(float x, float y) {
+  public void moveTo(double x, double y) {
     pathStr.push(PathElement.moveTo(x, y, this));
     currentX = x;
     currentY = y;
   }
 
-  public void quadraticCurveTo(float cpx, float cpy, float x, float y) {
-    float cp1x = (float) (currentX + 2.0 / 3.0 * (cpx - currentX));
-    float cp1y = (float) (currentY + 2.0 / 3.0 * (cpy - currentY));
-    float cp2x = (float) (cp1x + (x - currentX) / 3.0);
-    float cp2y = (float) (cp1y + (y - currentY) / 3.0);
+  public void quadraticCurveTo(double cpx, double cpy, double x, double y) {
+    double cp1x = (currentX + 2.0 / 3.0 * (cpx - currentX));
+    double cp1y = (currentY + 2.0 / 3.0 * (cpy - currentY));
+    double cp2x = (cp1x + (x - currentX) / 3.0);
+    double cp2y = (cp1y + (y - currentY) / 3.0);
     pathStr.push(PathElement.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y, this));
     currentX = x;
     currentY = y;
   }
 
-  public void rect(float x, float y, float w, float h) {
+  public void rect(double x, double y, double w, double h) {
     pathStr.push(PathElement.moveTo(x, y, this));
     pathStr.push(PathElement.lineTo(x + w, y, this));
     pathStr.push(PathElement.lineTo(x + w, y + h, this));
@@ -355,11 +363,11 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     }
   }
 
-  public void rotate(float angle) {
-    float s = (float) Math.sin(-angle);
-    float c = (float) Math.cos(-angle);
-    float a = matrix[0];
-    float b = matrix[1];
+  public void rotate(double angle) {
+    double s = Math.sin(-angle);
+    double c = Math.cos(-angle);
+    double a = matrix[0];
+    double b = matrix[1];
     matrix[0] = a * c - (b * s);
     matrix[1] = a * s + b * c;
     a = matrix[3];
@@ -374,7 +382,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     matrix = context.matrix;
   }
 
-  public void scale(float x, float y) {
+  public void scale(double x, double y) {
     context.arcScaleX *= x;
     context.arcScaleY *= y;
     matrix[0] *= x;
@@ -397,11 +405,11 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     clear(0, 0);
   }
 
-  public void setCurrentX(float currentX) {
+  public void setCurrentX(double currentX) {
     this.currentX = currentX;
   }
 
-  public void setCurrentY(float currentY) {
+  public void setCurrentY(double currentY) {
     this.currentY = currentY;
   }
 
@@ -416,18 +424,18 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
       if (end > -1) {
         String[] guts = fillStyle.substring(5, end).split(",");
         if (guts.length == 4) {
-          context.fillAlpha = Float.parseFloat(guts[3]);
+          context.fillAlpha = Double.parseDouble(guts[3]);
           context.fillStyle = "rgb(" + guts[0] + "," + guts[1] + "," + guts[2]
               + ")";
         }
       }
     } else {
-      context.fillAlpha = 1.0f;
+      context.fillAlpha = 1;
       context.fillStyle = fillStyle;
     }
   }
 
-  public void setGlobalAlpha(float globalAlpha) {
+  public void setGlobalAlpha(double globalAlpha) {
     context.globalAlpha = globalAlpha;
   }
 
@@ -452,11 +460,11 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     context.lineJoin = lineJoin;
   }
 
-  public void setLineWidth(float lineWidth) {
+  public void setLineWidth(double lineWidth) {
     context.lineWidth = lineWidth;
   }
 
-  public void setMiterLimit(float miterLimit) {
+  public void setMiterLimit(double miterLimit) {
     context.miterLimit = miterLimit;
   }
 
@@ -485,13 +493,13 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
       if (end > -1) {
         String[] guts = strokeStyle.substring(5, end).split(",");
         if (guts.length == 4) {
-          context.strokeAlpha = Float.parseFloat(guts[3]);
+          context.strokeAlpha = Double.parseDouble(guts[3]);
           context.strokeStyle = "rgb(" + guts[0] + "," + guts[1] + ","
               + guts[2] + ")";
         }
       }
     } else {
-      context.strokeAlpha = 1.0f;
+      context.strokeAlpha = 1;
       context.strokeStyle = strokeStyle;
     }
   }
@@ -517,28 +525,28 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     shapeStr.push(context.lineJoin);
     shapeStr.push("\" endcap=\"");
     shapeStr.push(context.lineCap);
-    
+
     shapeStr.push("\"></v:stroke></v:shape>");
     insert(context.globalCompositeOperation, shapeStr.join());
   }
 
-  public void strokeRect(float x, float y, float w, float h) {
+  public void strokeRect(double x, double y, double w, double h) {
     w += x;
     h += y;
     beginPath();
-      moveTo(x, y);
-      lineTo(x, h);
-      lineTo(w, h);
-      lineTo(w, y);
-      closePath();
+    moveTo(x, y);
+    lineTo(x, h);
+    lineTo(w, h);
+    lineTo(w, y);
+    closePath();
     stroke();
     pathStr.clear();
   }
 
-  public void transform(float m11, float m12, float m21, float m22, float dx,
-      float dy) {
-    float a = matrix[0];
-    float b = matrix[1];
+  public void transform(double m11, double m12, double m21, double m22,
+      double dx, double dy) {
+    double a = matrix[0];
+    double b = matrix[1];
     matrix[0] = a * m11 + b * m21;
     matrix[1] = a * m12 + b * m22;
     matrix[2] += a * dx + b * dy;
@@ -549,12 +557,12 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     matrix[5] += a * dx + b * dy;
   }
 
-  public void translate(float x, float y) {
+  public void translate(double x, double y) {
     matrix[2] += matrix[0] * x + matrix[1] * y;
     matrix[5] += matrix[3] * x + matrix[4] * y;
   }
 
   private native void insert(String gco, String html) /*-{
-     this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplIE6::parentElement.insertAdjacentHTML(gco, html);
-   }-*/;
+    this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplIE6::parentElement.insertAdjacentHTML(gco, html);
+  }-*/;
 }

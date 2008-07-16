@@ -22,12 +22,12 @@ import com.google.gwt.user.client.Element;
  */
 public class RadialGradientImplDefault extends CanvasGradientImplDefault {
 
-  public RadialGradientImplDefault(float x0, float y0, float r0,
-      float x1, float y1, float r1, Element c) {
+  public RadialGradientImplDefault(double x0, double y0, double r0,
+      double x1, double y1, double r1, Element c) {
     createNativeGradientObject(x0,y0,r0,x1,y1,r1, c);
   }
 
-  private native void createNativeGradientObject(float x0, float y0, float r0, float x1, float y1, float r1, Element c) /*-{
+  private native void createNativeGradientObject(double x0, double y0, double r0, double x1, double y1, double r1, Element c) /*-{
     var ctx = c.getContext('2d');
     var gradient = ctx.createRadialGradient(x0,y0,r0,x1,y1,r1);
     this.@com.google.gwt.widgetideas.graphics.client.impl.CanvasGradientImplDefault::setNativeGradient(Lcom/google/gwt/core/client/JavaScriptObject;)(gradient);

@@ -22,10 +22,10 @@ import com.google.gwt.widgetideas.graphics.client.Color;
  * to a color stop for color gradients. Only needed for IE impl.
  */
 public class ColorStop {
-  public float offset;
+  public double offset;
   public Color color;
   
-  protected ColorStop(float myOffset, Color myColor) {
+  protected ColorStop(double myOffset, Color myColor) {
     offset = myOffset;
     color = myColor;
   }

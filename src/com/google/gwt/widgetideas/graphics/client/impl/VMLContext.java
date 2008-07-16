@@ -22,11 +22,11 @@ import com.google.gwt.widgetideas.graphics.client.GWTCanvas;
  */
 public class VMLContext {
 
-  public float arcScaleX;
+  public double arcScaleX;
 
-  public float arcScaleY;
+  public double arcScaleY;
 
-  public float fillAlpha;
+  public double fillAlpha;
 
   public String fillStyle;
   
@@ -34,7 +34,7 @@ public class VMLContext {
   
   public CanvasGradientImplIE6 strokeGradient;
 
-  public float globalAlpha;
+  public double globalAlpha;
 
   public String globalCompositeOperation;
 
@@ -42,31 +42,31 @@ public class VMLContext {
 
   public String lineJoin;
 
-  public float lineWidth;
+  public double lineWidth;
 
-  public float[] matrix = new float[9];
+  public double[] matrix = new double[9];
 
-  public float miterLimit;
+  public double miterLimit;
 
-  public float strokeAlpha;
+  public double strokeAlpha;
 
   public String strokeStyle;
 
   public VMLContext() {
 
     // load identity matrix
-    matrix[0] = 1.0f; matrix[1] = 0.0f; matrix[2] = 0.0f;
-    matrix[3] = 0.0f; matrix[4] = 1.0f; matrix[5] = 0.0f;
-    matrix[6] = 0.0f; matrix[7] = 0.0f; matrix[8] = 1.0f;
+    matrix[0] = 1; matrix[1] = 0; matrix[2] = 0;
+    matrix[3] = 0; matrix[4] = 1; matrix[5] = 0;
+    matrix[6] = 0; matrix[7] = 0; matrix[8] = 1;
 
     // init other stuff
-    arcScaleX         =  1.0f;
-    arcScaleY         =  1.0f;
-    globalAlpha         =  1.0f;
-    strokeAlpha         =  1.0f;
-    fillAlpha         =  1.0f;
-    miterLimit          = 10.0f;
-    lineWidth         =  1.0f;
+    arcScaleX         =  1;
+    arcScaleY         =  1;
+    globalAlpha         =  1;
+    strokeAlpha         =  1;
+    fillAlpha         =  1;
+    miterLimit          = 10;
+    lineWidth         =  1;
     lineCap           =  GWTCanvasImplIE6.BUTT;
     lineJoin          =  GWTCanvas.MITER;
     strokeStyle         =  "#000";

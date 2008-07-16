@@ -130,7 +130,7 @@ public class GWTCanvas extends Widget {
    * In the case of IE it should be VML.
    * 
    * <p>Different coordinate spaces and pixel spaces will cause aliased scaling.
-   * Use <code>scale(float,float)</code> and consistent coordinate and pixel
+   * Use <code>scale(double,double)</code> and consistent coordinate and pixel
    * spaces for better results.</p>
    * 
    * @param coordX the size of the coordinate space in the x direction
@@ -156,7 +156,7 @@ public class GWTCanvas extends Widget {
    * @param endAngle angle measured from positive X axis to end of arc CW
    * @param antiClockwise direction that the arc line is drawn
    */
-  public void arc(float x, float y, float radius, float startAngle, float endAngle, boolean antiClockwise) {
+  public void arc(double x, double y, double radius, double startAngle, double endAngle, boolean antiClockwise) {
     impl.arc(x, y, radius, startAngle, endAngle, antiClockwise);
   }
 
@@ -194,7 +194,7 @@ public class GWTCanvas extends Widget {
    * @param y1 y coord of end point of gradient
    * @return returns the CanvasGradient
    */
-  public CanvasGradient createLinearGradient(float x0, float y0, float x1, float y1) {
+  public CanvasGradient createLinearGradient(double x0, double y0, double x1, double y1) {
      return gradientFactoryImpl.createLinearGradient(x0, y0, x1, y1, getElement());
   } 
    
@@ -210,7 +210,7 @@ public class GWTCanvas extends Widget {
    * @param r1 radius of the end circle
    * @return returns the CanvasGradient
    */
-  public CanvasGradient createRadialGradient(float x0, float y0, float r0, float x1, float y1, float r1) {
+  public CanvasGradient createRadialGradient(double x0, double y0, double r0, double x1, double y1, double r1) {
      return gradientFactoryImpl.createRadialGradient(x0, y0, r0, x1, y1, r1, getElement());
   } 
   
@@ -231,7 +231,7 @@ public class GWTCanvas extends Widget {
    * @param x x coord of point
    * @param y x coord of point
    */
-  public void cubicCurveTo(float cp1x, float cp1y, float cp2x, float cp2y, float x, float y) {
+  public void cubicCurveTo(double cp1x, double cp1y, double cp2x, double cp2y, double x, double y) {
     impl.cubicCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
   }
 
@@ -243,7 +243,7 @@ public class GWTCanvas extends Widget {
    * @param offsetX x coord of the top left corner in the destination space 
    * @param offsetY y coord of the top left corner in the destination space
    */
-  public void drawImage(ImageElement img, float offsetX, float offsetY) {
+  public void drawImage(ImageElement img, double offsetX, double offsetY) {
     drawImage(img,offsetX,offsetY,img.getWidth(),img.getHeight());
   }
 
@@ -260,7 +260,7 @@ public class GWTCanvas extends Widget {
    * @param width the size of the image in the destination space
    * @param height the size of the image in the destination space
    */
-  public void drawImage(ImageElement img, float offsetX, float offsetY, float width, float height) {
+  public void drawImage(ImageElement img, double offsetX, double offsetY, double width, double height) {
     
     impl.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), 
             offsetX, offsetY, width, height);
@@ -283,7 +283,7 @@ public class GWTCanvas extends Widget {
    * @param width destination width of image
    * @param height destination height of image
    */
-  public void fillRect(float startX, float startY, float width, float height) {
+  public void fillRect(double startX, double startY, double width, double height) {
     impl.fillRect(startX, startY, width, height);
   }
 
@@ -308,9 +308,9 @@ public class GWTCanvas extends Widget {
    * See setter method for a fully detailed description.
    * 
    * @return
-   * @see GWTCanvas#setGlobalAlpha(float)
+   * @see GWTCanvas#setGlobalAlpha(double)
    */
-  public float getGlobalAlpha() {
+  public double getGlobalAlpha() {
     return impl.getGlobalAlpha();
   }
   
@@ -348,9 +348,9 @@ public class GWTCanvas extends Widget {
    * See setter method for a fully detailed description.
    * 
    * @return
-   * @see GWTCanvas#setLineWidth(float)
+   * @see GWTCanvas#setLineWidth(double)
    */
-  public float getLineWidth() {
+  public double getLineWidth() {
     return impl.getLineWidth();
   }
   
@@ -358,7 +358,7 @@ public class GWTCanvas extends Widget {
    * See setter method for a fully detailed description.
    * 
    * @return
-   * @see GWTCanvas#setMiterLimit(float)
+   * @see GWTCanvas#setMiterLimit(double)
    */
   public double getMiterLimit() {
     return impl.getMiterLimit();
@@ -371,7 +371,7 @@ public class GWTCanvas extends Widget {
    * @param x x coord of point
    * @param y y coord of point
    */
-  public void lineTo(float x, float y) {
+  public void lineTo(double x, double y) {
     impl.lineTo(x, y);
   }
   
@@ -381,7 +381,7 @@ public class GWTCanvas extends Widget {
    * @param x x coord of point
    * @param y y coord of point
    */
-  public void moveTo(float x, float y) {
+  public void moveTo(double x, double y) {
     impl.moveTo(x, y);
   }
   
@@ -396,7 +396,7 @@ public class GWTCanvas extends Widget {
    * @param x x coord of the point
    * @param y y coord of the point
    */
-  public void quadraticCurveTo(float cpx, float cpy, float x, float y) {
+  public void quadraticCurveTo(double cpx, double cpy, double x, double y) {
     impl.quadraticCurveTo(cpx, cpy, x, y);
   }
   
@@ -408,7 +408,7 @@ public class GWTCanvas extends Widget {
    * @param width the width of the rectangle
    * @param height the height of the rectangle
    */
-  public void rect(float startX, float startY, float width, float height) {
+  public void rect(double startX, double startY, double width, double height) {
     impl.rect(startX, startY, width, height);
   }
   
@@ -441,7 +441,7 @@ public class GWTCanvas extends Widget {
    * Adds a rotation of the specified angle to the current transform.
    * @param angle the angle to rotate by, <b>in radians</b>
    */
-  public void rotate(float angle) {
+  public void rotate(double angle) {
     impl.rotate(angle);
   }
   
@@ -457,7 +457,7 @@ public class GWTCanvas extends Widget {
    * @param x ratio that we must scale in the X direction
    * @param y ratio that we must scale in the Y direction
    */
-  public void scale(float x, float y) {
+  public void scale(double x, double y) {
     impl.scale(x, y);
   }
   
@@ -524,7 +524,7 @@ public class GWTCanvas extends Widget {
    * Set the global transparency to the specified alpha.
    * @param alpha alpha value
    */
-  public void setGlobalAlpha(float alpha) {
+  public void setGlobalAlpha(double alpha) {
     impl.setGlobalAlpha(alpha);
   }
 
@@ -580,7 +580,7 @@ public class GWTCanvas extends Widget {
    * of a stroked line.
    * @param width the width of the canvas
    */
-  public void setLineWidth(float width) {
+  public void setLineWidth(double width) {
     impl.setLineWidth(width);
   }
   
@@ -595,7 +595,7 @@ public class GWTCanvas extends Widget {
    * 
    * @param miterLimit
    */
-  public void setMiterLimit(float miterLimit) {
+  public void setMiterLimit(double miterLimit) {
     impl.setMiterLimit(miterLimit);
   }
   
@@ -648,7 +648,7 @@ public class GWTCanvas extends Widget {
    * @param width width of the rectangle
    * @param height height of the rectangle
    */
-  public void strokeRect(float startX, float startY, float width, float height) {
+  public void strokeRect(double startX, double startY, double width, double height) {
     impl.strokeRect(startX, startY, width, height);
   }
   
@@ -666,8 +666,8 @@ public class GWTCanvas extends Widget {
    * @param dx Translation in X direction
    * @param dy Translation in Y direction
    */
-  public void transform(float m11, float m12, float m21,
-      float m22, float dx, float dy) {
+  public void transform(double m11, double m12, double m21,
+      double m22, double dx, double dy) {
     impl.transform(m11, m12, m21, m22, dx, dy);
   }
   
@@ -678,7 +678,7 @@ public class GWTCanvas extends Widget {
    * @param x amount to shift in the x direction
    * @param y amount to shift in the y direction
    */
-  public void translate(float x, float y) {
+  public void translate(double x, double y) {
     impl.translate(x, y);
   }
 }

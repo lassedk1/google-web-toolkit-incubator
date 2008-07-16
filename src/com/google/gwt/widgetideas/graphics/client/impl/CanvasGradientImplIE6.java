@@ -26,33 +26,33 @@ import java.util.ArrayList;
 public abstract class CanvasGradientImplIE6 extends CanvasGradient {
   public String type;
   
-  public float startX;
-  public float startY;
-  public float endX;
-  public float endY;
-  public float startRad;
-  public float endRad;
+  public double startX;
+  public double startY;
+  public double endX;
+  public double endY;
+  public double startRad;
+  public double endRad;
   public int angle;
-  public float length;
+  public double length;
   
   public ArrayList<ColorStop> colorStops;
 
-  public CanvasGradientImplIE6(float x0, float y0, float x1, float y1) {
+  public CanvasGradientImplIE6(double x0, double y0, double x1, double y1) {
     startX = x0;
     startY = y0;
     endX = x1;
     endY = y1;
     startRad = 0;
     endRad = 0;
-    float dx = x1 - x0;
-    float dy = y1 - y0;
-    length = (float) Math.sqrt((dx * dx) + (dy * dy));
+    double dx = x1 - x0;
+    double dy = y1 - y0;
+    length = (double) Math.sqrt((dx * dx) + (dy * dy));
     angle = (int) (Math.atan(dx / dy) * 180 / Math.PI) + 180;
    
     colorStops = new ArrayList<ColorStop>();
   }
   
-  public void addColorStop(float offset, Color color) { 
+  public void addColorStop(double offset, Color color) { 
     ColorStop newColorStop = new ColorStop(offset, color);
     for (int i = 0; i < colorStops.size(); i++) {
       ColorStop cs = colorStops.get(i);
