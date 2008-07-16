@@ -75,7 +75,7 @@ Make a simple generated UI, with a named element, and without widgets.
 {{{
 <!-- HelloWorld.ui.xml -->
 
-<span xmlns:g='package://com.google.gwt.user.client.ui'>
+<span xmlns:g='import:com.google.gwt.user.client.ui'>
   Hello, <span g:field="nameSpan"/>.
 </span>
 }}}
@@ -108,7 +108,7 @@ Make a simple widget-based UI
 {{{
 <!-- HelloWidgetWorld.ui.xml -->
 
-<g:HTMLPanel xmlns:g='package://com.google.gwt.user.client.ui'>
+<g:HTMLPanel xmlns:g='import:com.google.gwt.user.client.ui'>
   Hello, <g:ListBox g:field="listBox"/>.
 </g:HTMLPanel>
 }}}
@@ -143,7 +143,7 @@ Note that this example uses the same ui.xml file as the first. Templates need ha
 {{{
 <!-- HelloWorld.ui.xml -->
 
-<span xmlns:g='package://com.google.gwt.user.client.ui'>
+<span xmlns:g='import:com.google.gwt.user.client.ui'>
   Hello, <span g:field='nameSpan'/>.
 </span>
 }}}
@@ -181,7 +181,7 @@ You want to make your personal variant on the single most common widget, a check
 {{{
 <!-- LabeledCheckBox.ui.xml -->
 
-<span xmlns:g='package://com.google.gwt.user.client.ui'>
+<span xmlns:g='import:com.google.gwt.user.client.ui'>
   <input type="checkbox" g:field="myCheckBox">
   <label g:for="myCheckBox" g:field="myLabel"/>
 </span>
@@ -221,8 +221,8 @@ There are type matching issues here. The g:field of a DOM element is a string id
 {{{
 <!-- LogoNamePanel.ui.xml -->
 <gwt:HTMLPanel
-  xmlns:g="package://com.google.gwt.user.client.ui"
-  xmlns:res="with://com.my.app.widgets.logoname.Resources">
+  xmlns:g="import:com.google.gwt.user.client.ui"
+  xmlns:res="with:com.my.app.widgets.logoname.Resources">
 
   <img res:apply="logoImage">
 
@@ -317,7 +317,7 @@ public class Resourceful extends Composite {
 }
 }}}
 
-The trick here is to define a with() method on MyUiBinder, corresponding to any with:// url defined in your template that you wish to make public.
+The trick here is to define a with() method on MyUiBinder, corresponding to any with: url defined in your template that you wish to make public.
 
 But wait, I hear you say. We have a single static instance of MyUiBinder, shared by every call to the Resourceful() constructor. Is it really safe to give it an instance method like with(), and load it up with state that may linger if bindRest() is never called?
 
@@ -338,8 +338,8 @@ You use it in a template.
 {{{
 <!-- UserDashboard.ui.xml -->
 <gwt:HTMLPanel
-  xmlns:gwt='package://com.google.gwt.user.client.ui'
-  xmlns:my='package://com.my.app.widgets' >
+  xmlns:gwt='import:com.google.gwt.user.client.ui'
+  xmlns:my='import:com.my.app.widgets' >
 
   <my:WeatherReport g:field="weather"/>
   <my:Stocks g:field="stocks"/>
