@@ -29,8 +29,8 @@ public class GWTCanvasImplDefault implements GWTCanvasImpl {
   @SuppressWarnings("unused")
   private JavaScriptObject canvasContext = null;
   
-  public native void arc(float x, float y, float radius, float startAngle,
-      float endAngle, boolean antiClockwise) /*-{
+  public native void arc(double x, double y, double radius, double startAngle,
+      double endAngle, boolean antiClockwise) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).arc(x,y,radius,startAngle,endAngle,antiClockwise);
   }-*/;
   
@@ -52,13 +52,13 @@ public class GWTCanvasImplDefault implements GWTCanvasImpl {
     return e;
   }-*/;
   
-  public native void cubicCurveTo(float cp1x, float cp1y, float cp2x, float cp2y,
-      float x, float y) /*-{
+  public native void cubicCurveTo(double cp1x, double cp1y, double cp2x, double cp2y,
+      double x, double y) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).bezierCurveTo(cp1x,cp1y,cp2x,cp2y,x,y);
   }-*/;
   
-  public native void drawImage(ImageElement img, float sourceX, float sourceY, float sourceWidth,
-      float sourceHeight, float destX, float destY, float destWidth, float destHeight) /*-{
+  public native void drawImage(ImageElement img, double sourceX, double sourceY, double sourceWidth,
+      double sourceHeight, double destX, double destY, double destWidth, double destHeight) /*-{
      
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).drawImage(img,sourceX,sourceY,sourceWidth,sourceHeight,destX,destY,destWidth,destHeight);
     
@@ -68,11 +68,11 @@ public class GWTCanvasImplDefault implements GWTCanvasImpl {
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).fill();
   }-*/;
 
-  public native void fillRect(float startX, float startY, float width, float height) /*-{
+  public native void fillRect(double startX, double startY, double width, double height) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).fillRect(startX,startY,width,height);
   }-*/;
 
-  public native float getGlobalAlpha() /*-{
+  public native double getGlobalAlpha() /*-{
     return (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).globalAlpha;
   }-*/;
 
@@ -92,11 +92,11 @@ public class GWTCanvasImplDefault implements GWTCanvasImpl {
     return (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).lineJoin;
   }-*/;
 
-  public native float getLineWidth() /*-{
+  public native double getLineWidth() /*-{
     return (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).lineWidth;
   }-*/;
 
-  public native float getMiterLimit() /*-{
+  public native double getMiterLimit() /*-{
     return (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).miterLimit;
   }-*/;
 
@@ -104,19 +104,19 @@ public class GWTCanvasImplDefault implements GWTCanvasImpl {
     return DOM.getElementPropertyInt(elem, "width");
   }
 
-  public native void lineTo(float x, float y) /*-{
+  public native void lineTo(double x, double y) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).lineTo(x,y);
   }-*/;
 
-  public native void moveTo(float x, float y) /*-{
+  public native void moveTo(double x, double y) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).moveTo(x,y);
   }-*/;
 
-  public native void quadraticCurveTo(float cpx, float cpy, float x, float y) /*-{
+  public native void quadraticCurveTo(double cpx, double cpy, double x, double y) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).quadraticCurveTo(cpx,cpy,x,y);
   }-*/;
 
-  public native void rect(float x, float y, float width, float height) /*-{
+  public native void rect(double x, double y, double width, double height) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).rect(x,y,width,height);
   }-*/;
 
@@ -124,7 +124,7 @@ public class GWTCanvasImplDefault implements GWTCanvasImpl {
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).restore();
   }-*/;
    
-  public native void rotate(float angle) /*-{
+  public native void rotate(double angle) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).rotate(angle);
   }-*/;
   
@@ -132,7 +132,7 @@ public class GWTCanvasImplDefault implements GWTCanvasImpl {
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).save();
   }-*/;
   
-  public native void scale(float x, float y) /*-{
+  public native void scale(double x, double y) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).scale(x,y);
   }-*/;
 
@@ -156,7 +156,7 @@ public class GWTCanvasImplDefault implements GWTCanvasImpl {
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).fillStyle = colorStr;
   }-*/;
 
-  public native void setGlobalAlpha(float alpha) /*-{
+  public native void setGlobalAlpha(double alpha) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).globalAlpha = alpha;
   }-*/;
 
@@ -172,11 +172,11 @@ public class GWTCanvasImplDefault implements GWTCanvasImpl {
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).lineJoin = lineJoin;
   }-*/;
 
-  public native void setLineWidth(float width) /*-{
+  public native void setLineWidth(double width) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).lineWidth = width;
   }-*/;
   
-  public native void setMiterLimit(float miterLimit) /*-{
+  public native void setMiterLimit(double miterLimit) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).miterLimit = miterLimit;
   }-*/;
 
@@ -200,20 +200,20 @@ public class GWTCanvasImplDefault implements GWTCanvasImpl {
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).stroke();
   }-*/;
 
-  public native void strokeRect(float startX, float startY, float width, float height) /*-{
+  public native void strokeRect(double startX, double startY, double width, double height) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).strokeRect(startX,startY,width,height);
   }-*/;
 
-  public native void transform(float m11, float m12, float m21, float m22, float dx,
-      float dy) /*-{
+  public native void transform(double m11, double m12, double m21, double m22, double dx,
+      double dy) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).transform(m11,m12,m21,m22,dx,dy);
   }-*/;
 
-  public native void translate(float x, float y) /*-{
+  public native void translate(double x, double y) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).translate(x,y);
   }-*/;
 
-  private native void clearRect(float startX, float startY, float width, float height) /*-{   
+  private native void clearRect(double startX, double startY, double width, double height) /*-{   
     (this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplDefault::canvasContext).clearRect(startX,startY,width,height);
   }-*/;
 

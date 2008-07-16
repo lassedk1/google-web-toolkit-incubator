@@ -21,7 +21,7 @@ package com.google.gwt.widgetideas.graphics.client.impl;
  */
 public class LinearGradientImplIE6 extends CanvasGradientImplIE6 {
   
-  public LinearGradientImplIE6(float x0, float y0, float x1, float y1) {
+  public LinearGradientImplIE6(double x0, double y0, double x1, double y1) {
     super(x0,y0,x1,y1);
     type = "gradient";
   }

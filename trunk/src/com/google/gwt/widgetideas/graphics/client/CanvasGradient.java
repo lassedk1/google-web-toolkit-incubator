@@ -27,5 +27,5 @@ public abstract class CanvasGradient {
    * @param offset the offset at which to apply the colorstop
    * @param color the color of the color stop
    */
-  public abstract void addColorStop(float offset, Color color);
+  public abstract void addColorStop(double offset, Color color);
 }

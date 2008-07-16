@@ -23,11 +23,11 @@ import com.google.gwt.user.client.Element;
  */
 public class LinearGradientImplDefault extends CanvasGradientImplDefault {
   
-  public LinearGradientImplDefault(float x0, float y0, float x1, float y1, Element c) {
+  public LinearGradientImplDefault(double x0, double y0, double x1, double y1, Element c) {
     createNativeGradientObject(x0,y0,x1,y1,c);
   }
 
-  private native void createNativeGradientObject(float x0, float y0, float x1, float y1, Element c) /*-{
+  private native void createNativeGradientObject(double x0, double y0, double x1, double y1, Element c) /*-{
     var ctx = c.getContext('2d');
     var gradient = ctx.createLinearGradient(x0,y0,x1,y1);
     this.@com.google.gwt.widgetideas.graphics.client.impl.CanvasGradientImplDefault::setNativeGradient(Lcom/google/gwt/core/client/JavaScriptObject;)(gradient);

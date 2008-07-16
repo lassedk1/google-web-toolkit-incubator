@@ -25,8 +25,8 @@ import com.google.gwt.widgetideas.graphics.client.CanvasGradient;
  */
 public interface GWTCanvasImpl {
   
-  void arc(float x, float y, float radius, float startAngle, 
-      float endAngle, boolean antiClockwise);
+  void arc(double x, double y, double radius, double startAngle, 
+      double endAngle, boolean antiClockwise);
 
   void beginPath();
   
@@ -36,17 +36,17 @@ public interface GWTCanvasImpl {
   
   Element createElement();
   
-  void cubicCurveTo(float cp1x, float cp1y, float cp2x, float cp2y, 
-      float x, float y);
+  void cubicCurveTo(double cp1x, double cp1y, double cp2x, double cp2y, 
+      double x, double y);
   
-  void drawImage(ImageElement img, float sourceX, float sourceY, float sourceWidth,
-      float sourceHeight, float destX, float destY, float destWidth, float destHeight);
+  void drawImage(ImageElement img, double sourceX, double sourceY, double sourceWidth,
+      double sourceHeight, double destX, double destY, double destWidth, double destHeight);
   
   void fill();
   
-  void fillRect(float startX, float startY, float width, float height);
+  void fillRect(double startX, double startY, double width, double height);
  
-  float getGlobalAlpha();
+  double getGlobalAlpha();
   
   String getGlobalCompositeOperation();
   
@@ -54,25 +54,25 @@ public interface GWTCanvasImpl {
   
   String getLineJoin();
   
-  float getLineWidth();
+  double getLineWidth();
   
-  float getMiterLimit();
+  double getMiterLimit();
   
-  void lineTo(float x, float y);
+  void lineTo(double x, double y);
   
-  void moveTo(float x, float y);
+  void moveTo(double x, double y);
   
-  void quadraticCurveTo(float cpx, float cpy, float x, float y);
+  void quadraticCurveTo(double cpx, double cpy, double x, double y);
   
-  void rect(float x, float y, float width, float height);
+  void rect(double x, double y, double width, double height);
   
   void restoreContext();
   
-  void rotate(float angle);
+  void rotate(double angle);
   
   void saveContext();
   
-  void scale(float x, float y);
+  void scale(double x, double y);
   
   void setBackgroundColor(Element element, String color);
   
@@ -84,7 +84,7 @@ public interface GWTCanvasImpl {
   
   void setFillStyle(String colorStr);
   
-  void setGlobalAlpha(float alpha);
+  void setGlobalAlpha(double alpha);
   
   void setGlobalCompositeOperation(String globalCompositeOperation);
 
@@ -92,9 +92,9 @@ public interface GWTCanvasImpl {
 
   void setLineJoin(String lineJoin);
 
-  void setLineWidth(float width);
+  void setLineWidth(double width);
 
-  void setMiterLimit(float miterLimit);
+  void setMiterLimit(double miterLimit);
 
   void setPixelHeight(Element elem, int height);
 
@@ -106,10 +106,10 @@ public interface GWTCanvasImpl {
 
   void stroke();
 
-  void strokeRect(float startX, float startY, float width, float height);
+  void strokeRect(double startX, double startY, double width, double height);
 
-  void transform(float m11, float m12, float m21,float m22, 
-      float dx, float dy);
+  void transform(double m11, double m12, double m21,double m22, 
+      double dx, double dy);
 
-  void translate(float x, float y);
+  void translate(double x, double y);
 }

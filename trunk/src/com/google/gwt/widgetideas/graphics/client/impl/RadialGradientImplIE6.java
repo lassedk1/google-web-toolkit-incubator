@@ -21,8 +21,8 @@ package com.google.gwt.widgetideas.graphics.client.impl;
  */
 public class RadialGradientImplIE6 extends CanvasGradientImplIE6 {
     
-  public RadialGradientImplIE6(float x0, float y0, float r0, float x1,
-      float y1, float r1) {
+  public RadialGradientImplIE6(double x0, double y0, double r0, double x1,
+      double y1, double r1) {
     super(x0,y0,x1,y1);
     startRad = r0;
     endRad = r1;

@@ -26,14 +26,14 @@ public class CanvasGradientImplDefault extends CanvasGradient {
   
   private JavaScriptObject nativeGradient;
   
-  public void addColorStop(float offset, Color color) {
+  public void addColorStop(double offset, Color color) {
     addNativeColorStop(offset,color.toString());
   }
   
   protected JavaScriptObject getObject() {
     return nativeGradient;
   }
-  private native void addNativeColorStop(float offset, String color) /*-{
+  private native void addNativeColorStop(double offset, String color) /*-{
     (this.@com.google.gwt.widgetideas.graphics.client.impl.CanvasGradientImplDefault::nativeGradient).addColorStop(offset,color);
   }-*/;
 

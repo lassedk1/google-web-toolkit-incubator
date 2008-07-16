@@ -48,19 +48,19 @@ public class JSOStack<T> extends JavaScriptObject {
      this._minX = this._minY = this._maxX = this._maxY = null;
    }-*/;
 
-  public final native float getMaxCoordX() /*-{
+  public final native double getMaxCoordX() /*-{
      return this._maxX;
    }-*/;
 
-  public final native float getMaxCoordY() /*-{
+  public final native double getMaxCoordY() /*-{
      return this._maxY;
    }-*/;
 
-  public final native float getMinCoordX() /*-{
+  public final native double getMinCoordX() /*-{
    return this._minX;
   }-*/;
 
-  public final native float getMinCoordY() /*-{
+  public final native double getMinCoordY() /*-{
    return this._minY;
   }-*/;
 
@@ -72,7 +72,7 @@ public class JSOStack<T> extends JavaScriptObject {
      return this.join("");
    }-*/;
 
-  public final native void logCoordX(float coordX) /*-{
+  public final native void logCoordX(double coordX) /*-{
      if (!this._minX) {
        this._minX = coordX;
        this._maxX = coordX;
@@ -87,7 +87,7 @@ public class JSOStack<T> extends JavaScriptObject {
      }
    }-*/;
 
-  public final native void logCoordY(float coordY) /*-{
+  public final native void logCoordY(double coordY) /*-{
      if (!this._minY) {
        this._minY = coordY;
        this._maxY = coordY;

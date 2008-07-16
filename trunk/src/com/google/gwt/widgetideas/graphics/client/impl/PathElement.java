@@ -30,18 +30,18 @@ public class PathElement {
   public static final String MOVETO = " m";
   public static final String CUBIC = " c";
 
-  public static String arc(float x, float y, float radius, float startAngle,
-      float endAngle, boolean antiClockwise, GWTCanvasImplIE6 canvas) {
+  public static String arc(double x, double y, double radius, double startAngle,
+      double endAngle, boolean antiClockwise, GWTCanvasImplIE6 canvas) {
 
-    float ar;
-    float endX;
-    float endY;
-    float startX;
-    float startY;
+    double ar;
+    double endX;
+    double endY;
+    double startX;
+    double startY;
 
-    float realStartAngle, realEndAngle;
+    double realStartAngle, realEndAngle;
     
-    float[] matrix = canvas.matrix;
+    double[] matrix = canvas.matrix;
     VMLContext context = canvas.context;
     
     if (!antiClockwise) {
@@ -53,31 +53,31 @@ public class PathElement {
     }
 
     ar = radius * 10;
-    startX = (float) (x + Math.cos(realStartAngle) * ar - 5);
-    startY = (float) (y + Math.sin(realStartAngle) * ar - 5);
-    endX = (float) (x + Math.cos(realEndAngle) * ar - 5);
-    endY = (float) (y + Math.sin(realEndAngle) * ar - 5);
+    startX = (x + Math.cos(realStartAngle) * ar - 5);
+    startY = (y + Math.sin(realStartAngle) * ar - 5);
+    endX = (x + Math.cos(realEndAngle) * ar - 5);
+    endY = (y + Math.sin(realEndAngle) * ar - 5);
     if (startX == endX && !antiClockwise) {
       startX += 0.125;
     }
 
-    float cx = canvas.getCoordX(matrix, x, y);
-    float cy = canvas.getCoordY(matrix, x, y);
-    float arcX = (float) (context.arcScaleX * ar);
-    float arcY = (float) (context.arcScaleY * ar);
-    return ARC + (Math.floor(cx - arcX + 0.5)) + ","
-        + (Math.floor(cy + arcY + 0.5)) + " "
-        + (Math.floor(cx + arcX + 0.5)) + ","
-        + (Math.floor(cy - arcY + 0.5)) + " "
+    double cx = canvas.getCoordX(matrix, x, y);
+    double cy = canvas.getCoordY(matrix, x, y);
+    double arcX = (context.arcScaleX * ar);
+    double arcY = (context.arcScaleY * ar);
+    return ARC + GWTCanvasImplIE6.doubleToFlooredInt(cx - arcX + 0.5f) + ","
+        + GWTCanvasImplIE6.doubleToFlooredInt(cy + arcY + 0.5f) + " "
+        + GWTCanvasImplIE6.doubleToFlooredInt(cx + arcX + 0.5f) + ","
+        + GWTCanvasImplIE6.doubleToFlooredInt(cy - arcY + 0.5f) + " "
         + canvas.getCoordX(matrix, startX, startY) + ","
         + canvas.getCoordY(matrix, startX, startY) + " "
         + canvas.getCoordX(matrix, endX, endY) + ","
         + canvas.getCoordY(matrix, endX, endY);
   }
 
-  public static String bezierCurveTo(float c1x, float c1y, float c2x,
-      float c2y, float x, float y, GWTCanvasImplIE6 canvas) {
-    float[] matrix = canvas.matrix;
+  public static String bezierCurveTo(double c1x, double c1y, double c2x,
+      double c2y, double x, double y, GWTCanvasImplIE6 canvas) {
+    double[] matrix = canvas.matrix;
     return CUBIC + canvas.getCoordX(matrix, c1x, c1y) + ","
         + canvas.getCoordY(matrix, c1x, c1y) + ","
         + canvas.getCoordX(matrix, c2x, c2y) + ","
@@ -90,14 +90,14 @@ public class PathElement {
     return CLOSE;
   }
 
-  public static String lineTo(float x, float y, GWTCanvasImplIE6 canvas) {
-    float[] matrix = canvas.matrix;
+  public static String lineTo(double x, double y, GWTCanvasImplIE6 canvas) {
+    double[] matrix = canvas.matrix;
     return LINETO + canvas.getCoordX(matrix, x, y) + ","
         + canvas.getCoordY(matrix, x, y);
   }
 
-  public static String moveTo(float x, float y, GWTCanvasImplIE6 canvas) {
-    float[] matrix = canvas.matrix;
+  public static String moveTo(double x, double y, GWTCanvasImplIE6 canvas) {
+    double[] matrix = canvas.matrix;
     return MOVETO + canvas.getCoordX(matrix, x, y) + ","
         + canvas.getCoordY(matrix, x, y);
   }
