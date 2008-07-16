@@ -232,7 +232,8 @@ There are type matching issues here. The g:field of a DOM element is a string id
       <span res:class="style.nameSpan" g:field="userNameField"/>
     </div>
   </div>
-</gwt:HTMLPanel>}}}
+</gwt:HTMLPanel>
+}}}
 
 {{{
 public class LogoNamePanel extends Composite {
@@ -263,8 +264,6 @@ public interface Resources extends ClientBundle {
 }}}
 
 The with: uri type marks an object whose methods can be called to fill in attribute values. If no public api is provided to set the "with" argument (as in this example), it must be instantiable by GWT.create().
-
-Note that the apply(Element) methods of Sprite and ImageResource are set via the "-invoke" attribute. That dash is to avoid colliding with an invoke method on Resources itself (perhaps that's not worth worryin about?). There is strong debate over whether this mechanism is too loose. We are tempted to restrict it to work only with objects that implement an Applicator interface, like Sprite and ImageResource do (or will?). 
 
 {{{
 public interface Applicator<T> {
