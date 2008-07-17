@@ -67,11 +67,15 @@ div {
 
 /* Test named classes */
 .replacement {
-	color: red;
+  color: red;
 }
 
 .replacement:after {
   content: "Hello world";
+}
+
+.replacement-not-java-ident {
+  color: blue;
 }
 
 /* Test unusual tag, class, and property names and values */

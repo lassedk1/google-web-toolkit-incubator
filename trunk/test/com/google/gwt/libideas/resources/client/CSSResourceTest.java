@@ -29,6 +29,9 @@ public class CSSResourceTest extends LibTestBase {
 
   interface MyCssResource extends CssResource {
     String replacement();
+
+    @ClassName("replacement-not-java-ident")
+    String nameOverride();
   }
 
   /*
@@ -60,8 +63,7 @@ public class CSSResourceTest extends LibTestBase {
     MyCssResource b();
   }
 
-  // DISABLED_TEST
-  public void tastCSS() {
+  public void testCSS() {
     MyCssResourceWithSprite css = Resources.INSTANCE.css();
     String text = css.getText();
     System.out.println(text);
@@ -74,6 +76,7 @@ public class CSSResourceTest extends LibTestBase {
     assertFalse("replacement".equals(css.replacement()));
     assertTrue(text.contains("." + css.replacement()));
     assertTrue(text.contains("." + css.replacement() + ":after"));
+    assertTrue(text.contains("." + css.nameOverride()));
 
     // Check static if evaluation
     assertTrue(text.contains("static:PASSED;"));

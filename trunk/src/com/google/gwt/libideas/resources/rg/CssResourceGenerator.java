@@ -29,6 +29,7 @@ import com.google.gwt.dev.util.Util;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.libideas.resources.client.CssResource;
 import com.google.gwt.libideas.resources.client.DataResource;
+import com.google.gwt.libideas.resources.client.CssResource.ClassName;
 import com.google.gwt.libideas.resources.client.impl.ImageResourcePrototype;
 import com.google.gwt.libideas.resources.client.impl.SpriteImpl;
 import com.google.gwt.libideas.resources.css.CssGenerationVisitor;
@@ -624,6 +625,12 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       String name = toImplement.getName();
       if ("getName".equals(name) || "getText".equals(name)) {
         continue;
+      }
+
+      // The user provided the class name to use
+      ClassName classNameOverride = toImplement.getAnnotation(ClassName.class);
+      if (classNameOverride != null) {
+        name = classNameOverride.value();
       }
 
       String obfuscatedClassName;
