@@ -17,10 +17,10 @@
 package com.google.gwt.libideas.event.shared;
 
 import com.google.gwt.libideas.client.LibTestBase;
-import com.google.gwt.libideas.event.client.mouse.ClickEvent;
-import com.google.gwt.libideas.event.client.mouse.ClickHandler;
-import com.google.gwt.libideas.event.client.mouse.MouseDownEvent;
-import com.google.gwt.libideas.event.client.mouse.MouseDownHandler;
+import com.google.gwt.libideas.event.client.ClickEvent;
+import com.google.gwt.libideas.event.client.ClickHandler;
+import com.google.gwt.libideas.event.client.MouseDownEvent;
+import com.google.gwt.libideas.event.client.MouseDownHandler;
 import com.google.gwt.libideas.event.shared.HandlerRegistry;
 
 /**
