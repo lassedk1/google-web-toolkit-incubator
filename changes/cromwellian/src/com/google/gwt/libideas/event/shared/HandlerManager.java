@@ -17,12 +17,8 @@ package com.google.gwt.libideas.event.shared;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.libideas.event.shared.AbstractEvent.Key;
-import com.google.gwt.libideas.event.shared.AbstractEvent;
-import com.google.gwt.libideas.event.shared.EventHandler;
-import com.google.gwt.libideas.event.shared.HandlerRegistration;
-import com.google.gwt.libideas.event.shared.HandlerRegistry;
-import com.google.gwt.libideas.event.client.JSHandlerRegistry;
-import com.google.gwt.libideas.event.client.JavaHandlerRegistry;
+import com.google.gwt.libideas.event.shared.HandlerRegistry.JSHandlerRegistry;
+import com.google.gwt.libideas.event.shared.HandlerRegistry.JavaHandlerRegistry;
 
 /**
  * Manages a type-safe map of event keys to event handlers.
