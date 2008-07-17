@@ -1,4 +1,5 @@
 @CHARSET "UTF-8";
 /* This is the first half of the sibling test. */
 .replacement { background:red; }
+.replacement-not-java-ident {color: blue;}
 .other {background: blue; }
