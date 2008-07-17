@@ -17,9 +17,22 @@ package com.google.gwt.libideas.events.client.mouse;
 
 import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.BrowserEvents;
+import com.google.gwt.libideas.events.client.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 public class MouseMoveEvent extends MouseEvent<MouseMoveHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of
+   * MouseMove events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a MouseMoveEvent handler.
+     */
+    HandlerRegistration addMouseMoveHandler(MouseMoveHandler handler);
+  }
 
   public static Key<MouseMoveHandler> KEY = new Key<MouseMoveHandler>(
       BrowserEvents.ONMOUSEMOVE);

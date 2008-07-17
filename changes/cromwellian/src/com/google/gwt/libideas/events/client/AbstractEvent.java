@@ -25,7 +25,7 @@ public abstract class AbstractEvent<T extends EventHandler> {
   /**
    * Key class used to register events with HandlerManager.
    */
-  public static class Key<T> {
+  public static class Key<T extends EventHandler> {
     private static int INDEX_SOURCE;
     static int EXPECTED_MAX_HANDLERS_PER_WIDGET = 5;
     private int index;

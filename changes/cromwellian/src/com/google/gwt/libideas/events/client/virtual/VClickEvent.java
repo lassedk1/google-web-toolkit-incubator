@@ -13,28 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.events.client.synthetic;
+package com.google.gwt.libideas.events.client.virtual;
 
-import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.EventData;
-import com.google.gwt.libideas.events.client.mouse.MouseMoveEvent;
 
-public class SyntheticMouseMoveEvent extends MouseMoveEvent {
+public class VClickEvent extends VMouseEvent<VClickHandler> {
 
-  public static AbstractEvent.Key KEY = new AbstractEvent.Key();
+  public static Key<VClickHandler> KEY = new Key<VClickHandler>();
 
-  private EventData data;
-
-  public SyntheticMouseMoveEvent(EventData data) {
-    super(null);
-    this.data = data;
+  public VClickEvent(EventData data) {
+    super(KEY, data);
   }
 
-  public EventData getData() {
-    return data;
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
+  protected void fireEvent(VClickHandler handler) {
+    handler.onClick(this);
   }
 }

@@ -17,9 +17,22 @@ package com.google.gwt.libideas.events.client.mouse;
 
 import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.BrowserEvents;
+import com.google.gwt.libideas.events.client.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 public class ScrollEvent extends MouseEvent<ScrollHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of Scroll
+   * events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a Scroll handler.
+     */
+    HandlerRegistration addScrollHandler(ScrollHandler handler);
+  }
 
   public static Key<ScrollHandler> KEY = new Key<ScrollHandler>(
       BrowserEvents.ONSCROLL);

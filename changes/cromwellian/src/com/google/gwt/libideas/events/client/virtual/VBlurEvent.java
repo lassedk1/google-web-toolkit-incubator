@@ -13,28 +13,17 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.events.client.synthetic;
+package com.google.gwt.libideas.events.client.virtual;
 
-import com.google.gwt.libideas.events.client.AbstractEvent;
-import com.google.gwt.libideas.events.client.EventData;
-import com.google.gwt.libideas.events.client.mouse.MouseOutEvent;
+public class VBlurEvent extends VirtualEvent<VBlurHandler> {
 
-public class SyntheticMouseOutEvent extends MouseOutEvent {
+  public static Key<VBlurHandler> KEY = new Key<VBlurHandler>();
 
-  public static AbstractEvent.Key KEY = new AbstractEvent.Key();
-
-  private EventData data;
-
-  public SyntheticMouseOutEvent(EventData data) {
-    super(null);
-    this.data = data;
+  public VBlurEvent(EventData data) {
+    super(KEY, data);
   }
 
-  public EventData getData() {
-    return data;
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
+  protected void fireEvent(VBlurHandler handler) {
+    handler.onBlurEvent(this);
   }
 }

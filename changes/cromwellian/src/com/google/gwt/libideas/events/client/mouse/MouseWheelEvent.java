@@ -17,9 +17,22 @@ package com.google.gwt.libideas.events.client.mouse;
 
 import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.BrowserEvents;
+import com.google.gwt.libideas.events.client.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 public class MouseWheelEvent extends MouseEvent<MouseWheelHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of MouseWheel
+   * events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a MouseWheel handler.
+     */
+    HandlerRegistration addMouseWheelHandler(MouseWheelHandler handler);
+  }
 
   public static Key<MouseWheelHandler> KEY = new Key<MouseWheelHandler>(
       BrowserEvents.ONMOUSEWHEEL);

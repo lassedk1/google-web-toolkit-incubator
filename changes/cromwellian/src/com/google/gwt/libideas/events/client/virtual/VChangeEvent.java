@@ -13,28 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.events.client.synthetic;
+package com.google.gwt.libideas.events.client.virtual;
 
-import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.EventData;
-import com.google.gwt.libideas.events.client.misc.BlurEvent;
 
-public class SyntheticBlurEvent extends BlurEvent {
+public class VChangeEvent extends VirtualEvent<VChangeHandler> {
 
-  public static AbstractEvent.Key KEY = new AbstractEvent.Key();
+  public static Key<VChangeHandler> KEY = new Key<VChangeHandler>();
 
-  private EventData data;
-
-  public SyntheticBlurEvent(SyntheticEventData data) {
-    super(null);
-    this.data = data;
+  public VChangeEvent(EventData data) {
+    super(KEY, data);
   }
 
-  public EventData getData() {
-    return data;
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
+  protected void fireEvent(VChangeHandler handler) {
+    handler.onChange(this);
   }
 }

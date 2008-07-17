@@ -13,28 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.events.client.synthetic;
+package com.google.gwt.libideas.events.client.virtual;
 
-import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.EventData;
-import com.google.gwt.libideas.events.client.mouse.ScrollEvent;
 
-public class SyntheticScrollEvent extends ScrollEvent {
+public class VLoseCaptureEvent extends VirtualEvent<VLoseCaptureHandler> {
 
-  public static AbstractEvent.Key KEY = new AbstractEvent.Key();
+  public static Key<VLoseCaptureHandler> KEY = new Key<VLoseCaptureHandler>();
 
-  private EventData data;
-
-  public SyntheticScrollEvent(EventData data) {
-    super(null);
-    this.data = data;
+  public VLoseCaptureEvent(EventData data) {
+    super(KEY, data);
   }
 
-  public EventData getData() {
-    return data;
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
+  protected void fireEvent(VLoseCaptureHandler handler) {
+    handler.onLoseCapture(this);
   }
 }

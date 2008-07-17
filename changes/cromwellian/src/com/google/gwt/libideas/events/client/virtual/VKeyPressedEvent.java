@@ -13,28 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.events.client.synthetic;
+package com.google.gwt.libideas.events.client.virtual;
 
-import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.EventData;
-import com.google.gwt.widgetideas.client.event.ClickEvent;
 
-public class SyntheticClickEvent extends ClickEvent {
+public class VKeyPressedEvent extends VKeyboardEvent<VKeyPressedHandler> {
 
-  public static AbstractEvent.Key KEY = new AbstractEvent.Key();
+  public static Key<VKeyPressedHandler> KEY = new Key<VKeyPressedHandler>();
 
   private EventData data;
 
-  public SyntheticClickEvent(EventData data) {
-    super(null);
-    this.data = data;
+  public VKeyPressedEvent(EventData data) {
+    super(KEY, data);
   }
 
-  public EventData getData() {
-    return data;
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
+  protected void fireEvent(VKeyPressedHandler handler) {
+    handler.onKeyPressed(this);
   }
 }

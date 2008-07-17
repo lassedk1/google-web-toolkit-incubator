@@ -13,28 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.events.client.synthetic;
+package com.google.gwt.libideas.events.client.virtual;
 
-import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.EventData;
-import com.google.gwt.libideas.events.client.misc.FocusEvent;
 
-public class SyntheticFocusEvent extends FocusEvent {
+public class VMouseDownEvent extends VMouseEvent<VMouseDownHandler> {
 
-  public static AbstractEvent.Key KEY = new AbstractEvent.Key();
+  public static Key<VMouseDownHandler> KEY = new Key<VMouseDownHandler>();
 
-  private EventData data;
-
-  public SyntheticFocusEvent(EventData data) {
-    super(null);
-    this.data = data;
+  public VMouseDownEvent(EventData data) {
+    super(KEY, data);
   }
 
-  public EventData getData() {
-    return data;
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
+  protected void fireEvent(VMouseDownHandler handler) {
+    handler.onMouseDown(this);
   }
 }

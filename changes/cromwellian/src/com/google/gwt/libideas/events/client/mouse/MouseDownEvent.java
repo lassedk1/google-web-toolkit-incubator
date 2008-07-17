@@ -17,9 +17,22 @@ package com.google.gwt.libideas.events.client.mouse;
 
 import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.BrowserEvents;
+import com.google.gwt.libideas.events.client.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 public class MouseDownEvent extends MouseEvent<MouseDownHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of MouseDown
+   * events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a MouseDownEvent handler.
+     */
+    HandlerRegistration addMouseDownHandler(MouseDownHandler handler);
+  }
 
   public static Key<MouseDownHandler> KEY = new Key<MouseDownHandler>(
       BrowserEvents.ONMOUSEDOWN);

@@ -13,28 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.events.client.synthetic;
+package com.google.gwt.libideas.events.client.virtual;
 
-import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.EventData;
-import com.google.gwt.libideas.events.client.keyboard.KeyDownEvent;
 
-public class SyntheticKeyDownEvent extends KeyDownEvent {
+public class VDoubleClickEvent extends VMouseEvent<VDoubleClickHandler> {
 
-  private EventData data;
+  public static Key<VDoubleClickHandler> KEY = new Key<VDoubleClickHandler>();
 
-  public static AbstractEvent.Key KEY = new AbstractEvent.Key();
-
-  public SyntheticKeyDownEvent(EventData data) {
-    super(null);
-    this.data = data;
+  public VDoubleClickEvent(EventData data) {
+    super(KEY, data);
   }
 
-  protected AbstractEvent.Key getKey() {
-    return KEY;
-  }
-
-  public EventData getData() {
-    return data;
+  protected void fireEvent(VDoubleClickHandler handler) {
+    handler.onDoubleClick(this);
   }
 }

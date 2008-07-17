@@ -17,9 +17,22 @@ package com.google.gwt.libideas.events.client.mouse;
 
 import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.BrowserEvents;
+import com.google.gwt.libideas.events.client.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 public class MouseOverEvent extends MouseEvent<MouseOverHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of MouseOver
+   * events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a MouseOver handler.
+     */
+    HandlerRegistration addMouseOverHandler(MouseOverHandler handler);
+  }
 
   public static Key<MouseOverHandler> KEY = new Key<MouseOverHandler>(
       BrowserEvents.ONMOUSEOVER);

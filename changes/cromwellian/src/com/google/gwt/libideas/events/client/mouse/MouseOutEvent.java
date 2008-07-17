@@ -17,9 +17,22 @@ package com.google.gwt.libideas.events.client.mouse;
 
 import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.BrowserEvents;
+import com.google.gwt.libideas.events.client.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 public class MouseOutEvent extends MouseEvent<MouseOutHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of MouseOut
+   * events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a MouseOut handler.
+     */
+    HandlerRegistration addMouseOutHandler(MouseOutHandler handler);
+  }
 
   public static Key<MouseOutHandler> KEY = new Key<MouseOutHandler>(
       BrowserEvents.ONMOUSEOUT);

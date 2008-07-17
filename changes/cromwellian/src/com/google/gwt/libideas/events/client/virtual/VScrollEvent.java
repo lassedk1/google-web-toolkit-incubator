@@ -13,28 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.events.client.synthetic;
+package com.google.gwt.libideas.events.client.virtual;
 
-import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.EventData;
-import com.google.gwt.libideas.events.client.keyboard.KeyDownEvent;
 
-public class SyntheticErrorEvent extends KeyDownEvent {
+public class VScrollEvent extends VirtualEvent<VScrollHandler> {
 
-  private EventData data;
+  public static Key<VScrollHandler> KEY = new Key<VScrollHandler>();
 
-  public static AbstractEvent.Key KEY = new AbstractEvent.Key();
-
-  public SyntheticErrorEvent(EventData data) {
-    super(null);
-    this.data = data;
+  public VScrollEvent(EventData data) {
+    super(KEY, data);
   }
 
-  protected AbstractEvent.Key getKey() {
-    return KEY;
-  }
-
-  public EventData getData() {
-    return data;
+  protected void fireEvent(VScrollHandler handler) {
+    handler.onScroll(this);
   }
 }

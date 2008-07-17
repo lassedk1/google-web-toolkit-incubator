@@ -17,9 +17,22 @@ package com.google.gwt.libideas.events.client.mouse;
 
 import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.BrowserEvents;
+import com.google.gwt.libideas.events.client.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 public class MouseUpEvent extends MouseEvent<MouseUpHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of MouseUp
+   * events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a MouseUpEvent handler.
+     */
+    HandlerRegistration addMouseUpHandler(MouseUpHandler handler);
+  }
 
   public static Key<MouseUpHandler> KEY = new Key<MouseUpHandler>(
       BrowserEvents.ONMOUSEUP);

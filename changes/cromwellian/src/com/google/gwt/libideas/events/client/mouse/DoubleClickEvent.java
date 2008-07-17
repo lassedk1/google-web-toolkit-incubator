@@ -17,9 +17,22 @@ package com.google.gwt.libideas.events.client.mouse;
 
 import com.google.gwt.libideas.events.client.AbstractEvent;
 import com.google.gwt.libideas.events.client.BrowserEvents;
+import com.google.gwt.libideas.events.client.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 public class DoubleClickEvent extends MouseEvent<DoubleClickHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of DoubleClick
+   * events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a DoubleClickEvent handler.
+     */
+    HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler);
+  }
 
   public static Key<DoubleClickHandler> KEY = new Key<DoubleClickHandler>(
       BrowserEvents.ONDBLCLICK);

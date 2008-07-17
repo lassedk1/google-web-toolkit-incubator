@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.events.client.synthetic;
+package com.google.gwt.libideas.events.client.virtual;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.libideas.events.client.EventData;
@@ -22,7 +22,7 @@ import com.google.gwt.libideas.events.client.EventData;
  * Class used to store mock or synthetic information normally stored in a DOM
  * event object.
  */
-public class SyntheticEventData implements EventData {
+public class EventData implements com.google.gwt.libideas.events.client.EventData {
 
   private boolean altKey;
 
