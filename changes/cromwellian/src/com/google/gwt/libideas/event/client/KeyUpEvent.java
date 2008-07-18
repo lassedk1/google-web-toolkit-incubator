@@ -15,26 +15,44 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.shared.AbstractEvent;
-import com.google.gwt.libideas.event.client.BrowserEvents;
-import com.google.gwt.libideas.event.client.KeyboardEvent;
-import com.google.gwt.libideas.event.client.KeyUpHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.libideas.event.shared.HandlerRegistration;
 
+/**
+  * Represents a KeyUpEvent event.
+  */
 public class KeyUpEvent extends KeyboardEvent<KeyUpHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of KeyUpEvent
+   * events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a {@link KeyUpEvent} handler.
+     *
+     * @param handler the handler
+     */
+    HandlerRegistration addKeyUpHandler(KeyUpHandler handler);
+  }
 
   public static Key<KeyUpHandler> KEY = new Key<KeyUpHandler>(
       BrowserEvents.ONKEYUP);
 
+  /**
+    * Constructs a KeyUpEvent event.
+    * @param e An event object, typically from an onBrowserEvent call
+    */
   public KeyUpEvent(Event e) {
-    super(e);
+    super(KEY, e);
   }
 
+  /**
+    * Fires a KeyUpEvent.
+    * @param handler the handler
+    */
   protected void fireEvent(KeyUpHandler handler) {
     handler.onKeyUp(this);
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
   }
 }

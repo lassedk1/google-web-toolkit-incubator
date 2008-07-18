@@ -15,21 +15,24 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.shared.AbstractEvent;
-import com.google.gwt.libideas.event.client.BrowserEvents;
 import com.google.gwt.libideas.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
+/**
+ * Represents a ScrollEvent event.
+ */
 public class ScrollEvent extends MouseEvent<ScrollHandler> {
 
   /**
-   * A widget that implements this interface is a public source of Scroll
+   * A widget that implements this interface is a public source of ScrollEvent
    * events.
    */
   public static interface Source {
 
     /**
-     * Adds a Scroll handler.
+     * Adds a {@link ScrollEvent} handler.
+     *
+     * @param handler the handler
      */
     HandlerRegistration addScrollHandler(ScrollHandler handler);
   }
@@ -37,15 +40,21 @@ public class ScrollEvent extends MouseEvent<ScrollHandler> {
   public static Key<ScrollHandler> KEY = new Key<ScrollHandler>(
       BrowserEvents.ONSCROLL);
 
-  protected ScrollEvent(Event e) {
-    super(e);
+  /**
+   * Constructs a ScrollEvent event.
+   *
+   * @param e An event object, typically from an onBrowserEvent call
+   */
+  public ScrollEvent(Event e) {
+    super(KEY, e);
   }
 
+  /**
+   * Fires a ScrollEvent.
+   *
+   * @param handler the handler
+   */
   protected void fireEvent(ScrollHandler handler) {
     handler.onScroll(this);
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
   }
 }

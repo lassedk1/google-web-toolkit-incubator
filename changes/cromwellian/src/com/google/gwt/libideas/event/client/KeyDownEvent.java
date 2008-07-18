@@ -15,26 +15,44 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.shared.AbstractEvent;
-import com.google.gwt.libideas.event.client.BrowserEvents;
-import com.google.gwt.libideas.event.client.KeyboardEvent;
-import com.google.gwt.libideas.event.client.KeyDownHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.libideas.event.shared.HandlerRegistration;
 
+/**
+  * Represents a KeyDownEvent event.
+  */
 public class KeyDownEvent extends KeyboardEvent<KeyDownHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of KeyDownEvent
+   * events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a {@link KeyDownEvent} handler.
+     *
+     * @param handler the handler
+     */
+    HandlerRegistration addKeyDownHandler(KeyDownHandler handler);
+  }
 
   public static Key<KeyDownHandler> KEY = new Key<KeyDownHandler>(
       BrowserEvents.ONKEYDOWN);
 
+  /**
+    * Constructs a KeyDownEvent event.
+    * @param e An event object, typically from an onBrowserEvent call
+    */
   public KeyDownEvent(Event e) {
-    super(e);
+    super(KEY, e);
   }
 
+  /**
+    * Fires a KeyDownEvent.
+    * @param handler the handler
+    */
   protected void fireEvent(KeyDownHandler handler) {
     handler.onKeyDown(this);
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
   }
 }

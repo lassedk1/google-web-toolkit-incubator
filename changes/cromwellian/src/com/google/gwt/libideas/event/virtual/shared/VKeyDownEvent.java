@@ -15,8 +15,6 @@
  */
 package com.google.gwt.libideas.event.virtual.shared;
 
-import com.google.gwt.libideas.event.virtual.shared.EventData;
-
 public class VKeyDownEvent extends VKeyboardEvent<VKeyDownHandler> {
 
   public static Key<VKeyDownHandler> KEY = new Key<VKeyDownHandler>();

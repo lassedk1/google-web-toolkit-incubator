@@ -15,31 +15,9 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.client.KeyDownEvent;
-import com.google.gwt.libideas.event.client.KeyDownHandler;
-import com.google.gwt.libideas.event.client.KeyPressedEvent;
-import com.google.gwt.libideas.event.client.KeyPressedHandler;
-import com.google.gwt.libideas.event.client.KeyUpEvent;
-import com.google.gwt.libideas.event.client.KeyUpHandler;
-import com.google.gwt.libideas.event.client.ClickEvent;
-import com.google.gwt.libideas.event.client.ClickHandler;
-import com.google.gwt.libideas.event.client.DoubleClickEvent;
-import com.google.gwt.libideas.event.client.DoubleClickHandler;
-import com.google.gwt.libideas.event.client.MouseDownEvent;
-import com.google.gwt.libideas.event.client.MouseDownHandler;
-import com.google.gwt.libideas.event.client.MouseMoveEvent;
-import com.google.gwt.libideas.event.client.MouseMoveHandler;
-import com.google.gwt.libideas.event.client.MouseOutEvent;
-import com.google.gwt.libideas.event.client.MouseOutHandler;
-import com.google.gwt.libideas.event.client.MouseOverEvent;
-import com.google.gwt.libideas.event.client.MouseOverHandler;
-import com.google.gwt.libideas.event.client.MouseUpEvent;
-import com.google.gwt.libideas.event.client.MouseUpHandler;
-import com.google.gwt.libideas.event.client.MouseWheelEvent;
-import com.google.gwt.libideas.event.client.MouseWheelHandler;
 import com.google.gwt.libideas.event.shared.AbstractEvent;
-import com.google.gwt.libideas.event.shared.HandlerRegistration;
 import com.google.gwt.libideas.event.shared.HandlerManager;
+import com.google.gwt.libideas.event.shared.HandlerRegistration;
 
 import junit.framework.TestCase;
 
@@ -83,9 +61,7 @@ public class EventsTest extends TestCase {
     checkFire(new KeyUpEvent(null), upRegistration, flag, "onKeyUp");
     checkFire(new KeyPressedEvent(null), pressRegistration, flag,
         "onKeyPressed");
-
   }
-
 
   public void testMouseEvents() {
 
@@ -154,8 +130,6 @@ public class EventsTest extends TestCase {
     checkFire(new ClickEvent(null), clickRegistration, flag, "onClick");
     checkFire(new DoubleClickEvent(null), dblclickRegistration, flag,
         "onDoubleClick");
-
-
   }
 
   private void checkFire(AbstractEvent event, HandlerRegistration registration,
@@ -170,6 +144,4 @@ public class EventsTest extends TestCase {
     manager.fireEvent(event);
     assertTrue(eventName + " fired when it shouldn't have.", !flag.flag);
   }
-
-
 }

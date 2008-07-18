@@ -15,11 +15,9 @@
  */
 package com.google.gwt.libideas.event.shared;
 
-import com.google.gwt.libideas.event.shared.EventHandler;
-
 /**
  * AbstractEvent is the root of all events.
- * 
+ *
  * @param <T> the type of handler used for this event
  */
 public abstract class AbstractEvent<T extends EventHandler> {
@@ -28,9 +26,13 @@ public abstract class AbstractEvent<T extends EventHandler> {
    * Key class used to register events with HandlerManager.
    */
   public static class Key<T extends EventHandler> {
+
     private static int INDEX_SOURCE;
+
     static int EXPECTED_MAX_HANDLERS_PER_WIDGET = 5;
+
     private int index;
+
     {
       index = INDEX_SOURCE;
       INDEX_SOURCE += EXPECTED_MAX_HANDLERS_PER_WIDGET;
@@ -45,17 +47,6 @@ public abstract class AbstractEvent<T extends EventHandler> {
 
   private Object source;
 
-  /**
-   * Constructs a new event with the given event source.
-   */
-  protected AbstractEvent(Object source) {
-    setSource(source);
-  }
-
-  /**
-   * Constructs a new event with no event source. The event source may be
-   * specified by a followup call to setSource()
-   */
   protected AbstractEvent() {
   }
 
@@ -68,7 +59,7 @@ public abstract class AbstractEvent<T extends EventHandler> {
 
   /**
    * Fires event for given handler type.
-   * 
+   *
    * @param handler of type T
    */
   protected abstract void fireEvent(T handler);
@@ -80,7 +71,7 @@ public abstract class AbstractEvent<T extends EventHandler> {
 
   /**
    * Set the source that triggered this event.
-   * 
+   *
    * @param source An object of type F
    */
   void setSource(Object source) {

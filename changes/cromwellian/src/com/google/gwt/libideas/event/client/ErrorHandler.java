@@ -16,9 +16,15 @@
 package com.google.gwt.libideas.event.client;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
-import com.google.gwt.libideas.event.client.ErrorEvent;
 
+/**
+  * Handler interface for {@link ErrorEvent} events. 
+  */
 public interface ErrorHandler extends EventHandler {
 
+  /**
+    * Called when ErrorEvent is fired.
+    * @param event the {@link ErrorEvent} that was fired
+    */
   void onError(ErrorEvent event);
 }

@@ -15,15 +15,24 @@
  */
 package com.google.gwt.libideas.event.virtual.shared;
 
-public class VLoseCaptureEvent extends VirtualEvent<VLoseCaptureHandler> {
+/**
+ * Virtual events which support propagation should implement this on their
+ * respective EventData classes.
+ */
+public interface IsSuppressable {
 
-  public static Key<VLoseCaptureHandler> KEY = new Key<VLoseCaptureHandler>();
+  /**
+   * Returns true if the event has been supressed.
+   */
+  boolean isSuppressed();
+  
+  /**
+   * Prevents default event handler from firing.
+   */
+  void preventDefault();
 
-  public VLoseCaptureEvent(EventData data) {
-    super(KEY, data);
-  }
-
-  protected void fireEvent(VLoseCaptureHandler handler) {
-    handler.onLoseCapture(this);
-  }
+  /**
+   * Stops propagation of this event, if it can propagate.
+   */
+  void stopPropagation();
 }

@@ -15,15 +15,8 @@
  */
 package com.google.gwt.libideas.event.virtual.shared;
 
-public class VLoseCaptureEvent extends VirtualEvent<VLoseCaptureHandler> {
+import com.google.gwt.libideas.event.shared.EventHandler;
 
-  public static Key<VLoseCaptureHandler> KEY = new Key<VLoseCaptureHandler>();
-
-  public VLoseCaptureEvent(EventData data) {
-    super(KEY, data);
-  }
-
-  protected void fireEvent(VLoseCaptureHandler handler) {
-    handler.onLoseCapture(this);
-  }
+public interface VMouseWheelHandler extends EventHandler {
+  void onMouseWheel(VMouseWheelEvent event);
 }

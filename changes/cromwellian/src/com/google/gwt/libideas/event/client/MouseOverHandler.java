@@ -17,7 +17,14 @@ package com.google.gwt.libideas.event.client;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
 
+/**
+  * Handler interface for {@link MouseOverEvent} events. 
+  */
 public interface MouseOverHandler extends EventHandler {
 
+  /**
+    * Called when MouseOverEvent is fired.
+    * @param event the {@link MouseOverEvent} that was fired
+    */
   void onMouseOver(MouseOverEvent event);
 }

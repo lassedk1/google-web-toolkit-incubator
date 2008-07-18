@@ -15,21 +15,24 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.shared.AbstractEvent;
-import com.google.gwt.libideas.event.client.BrowserEvents;
 import com.google.gwt.libideas.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
+/**
+  * Represents a MouseOverEvent event.
+  */
 public class MouseOverEvent extends MouseEvent<MouseOverHandler> {
 
   /**
-   * A widget that implements this interface is a public source of MouseOver
+   * A widget that implements this interface is a public source of MouseOverEvent
    * events.
    */
   public static interface Source {
 
     /**
-     * Adds a MouseOver handler.
+     * Adds a {@link MouseOverEvent} handler.
+     *
+     * @param handler the handler
      */
     HandlerRegistration addMouseOverHandler(MouseOverHandler handler);
   }
@@ -37,15 +40,19 @@ public class MouseOverEvent extends MouseEvent<MouseOverHandler> {
   public static Key<MouseOverHandler> KEY = new Key<MouseOverHandler>(
       BrowserEvents.ONMOUSEOVER);
 
+  /**
+    * Constructs a MouseOverEvent event.
+    * @param e An event object, typically from an onBrowserEvent call
+    */
   public MouseOverEvent(Event e) {
-    super(e);
+    super(KEY, e);
   }
 
+  /**
+    * Fires a MouseOverEvent.
+    * @param handler the handler
+    */
   protected void fireEvent(MouseOverHandler handler) {
     handler.onMouseOver(this);
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
   }
 }

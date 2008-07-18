@@ -16,9 +16,15 @@
 package com.google.gwt.libideas.event.client;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
-import com.google.gwt.libideas.event.client.LoseCaptureEvent;
 
+/**
+  * Handler interface for {@link LoseCaptureEvent} events. 
+  */
 public interface LoseCaptureHandler extends EventHandler {
 
+  /**
+    * Called when LoseCaptureEvent is fired.
+    * @param event the {@link LoseCaptureEvent} that was fired
+    */
   void onLoseCapture(LoseCaptureEvent event);
 }

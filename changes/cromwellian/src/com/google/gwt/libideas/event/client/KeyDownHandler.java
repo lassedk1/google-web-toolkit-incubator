@@ -16,9 +16,14 @@
 package com.google.gwt.libideas.event.client;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
-import com.google.gwt.libideas.event.client.KeyDownEvent;
 
+/**
+  * Handler interface for {@link KeyDownEvent} events. 
+  */
 public interface KeyDownHandler extends EventHandler {
-
+  /**
+    * Called when KeyDownEvent is fired.
+    * @param event the {@link KeyDownEvent} that was fired
+    */
   void onKeyDown(KeyDownEvent event);
 }

@@ -19,7 +19,7 @@ public class VBlurEvent extends VirtualEvent<VBlurHandler> {
 
   public static Key<VBlurHandler> KEY = new Key<VBlurHandler>();
 
-  public VBlurEvent(VEventData data) {
+  public VBlurEvent(VEventDataImpl data) {
     super(KEY, data);
   }
 

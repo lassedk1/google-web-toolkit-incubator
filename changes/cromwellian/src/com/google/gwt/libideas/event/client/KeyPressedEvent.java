@@ -15,26 +15,44 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.shared.AbstractEvent;
-import com.google.gwt.libideas.event.client.BrowserEvents;
-import com.google.gwt.libideas.event.client.KeyboardEvent;
-import com.google.gwt.libideas.event.client.KeyPressedHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.libideas.event.shared.HandlerRegistration;
 
+/**
+  * Represents a KeyPressedEvent event.
+  */
 public class KeyPressedEvent extends KeyboardEvent<KeyPressedHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of KeyPressedEvent
+   * events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a {@link KeyPressedEvent} handler.
+     *
+     * @param handler the handler
+     */
+    HandlerRegistration addKeyPressedHandler(KeyPressedHandler handler);
+  }
 
   public static Key<KeyPressedHandler> KEY = new Key<KeyPressedHandler>(
       BrowserEvents.ONKEYPRESSED);
 
+  /**
+    * Constructs a KeyPressedEvent event.
+    * @param e An event object, typically from an onBrowserEvent call
+    */
   public KeyPressedEvent(Event e) {
-    super(e);
+    super(KEY, e);
   }
 
+  /**
+    * Fires a KeyPressedEvent.
+    * @param handler the handler
+    */
   protected void fireEvent(KeyPressedHandler handler) {
     handler.onKeyPressed(this);
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
   }
 }

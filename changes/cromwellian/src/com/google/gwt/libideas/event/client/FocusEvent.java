@@ -15,26 +15,44 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.shared.AbstractEvent;
-import com.google.gwt.libideas.event.client.BrowserEvent;
-import com.google.gwt.libideas.event.client.BrowserEvents;
-import com.google.gwt.libideas.event.client.FocusHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.libideas.event.shared.HandlerRegistration;
 
+/**
+  * Represents a FocusEvent event.
+  */
 public class FocusEvent extends BrowserEvent<FocusHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of FocusEvent
+   * events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a {@link FocusEvent} handler.
+     *
+     * @param handler the handler
+     */
+    HandlerRegistration addFocusHandler(FocusHandler handler);
+  }
 
   public static Key<FocusHandler> KEY = new Key<FocusHandler>(
       BrowserEvents.ONFOCUS);
 
-  protected FocusEvent(Event e) {
-    super(e);
+  /**
+    * Constructs a FocusEvent event.
+    * @param e An event object, typically from an onBrowserEvent call
+    */
+  public FocusEvent(Event e) {
+    super(KEY, e);
   }
 
+  /**
+    * Fires a FocusEvent.
+    * @param handler the handler
+    */
   protected void fireEvent(FocusHandler handler) {
     handler.onFocus(this);
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
   }
 }

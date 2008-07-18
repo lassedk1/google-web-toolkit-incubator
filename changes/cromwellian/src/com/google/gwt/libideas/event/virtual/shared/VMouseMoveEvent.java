@@ -15,8 +15,6 @@
  */
 package com.google.gwt.libideas.event.virtual.shared;
 
-import com.google.gwt.libideas.event.virtual.shared.EventData;
-
 public class VMouseMoveEvent extends VMouseEvent<VMouseMoveHandler> {
 
   public static Key<VMouseMoveHandler> KEY = new Key<VMouseMoveHandler>();

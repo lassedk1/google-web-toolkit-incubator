@@ -15,9 +15,9 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.user.client.Event;
 import com.google.gwt.libideas.event.shared.AbstractEvent;
 import com.google.gwt.libideas.event.shared.EventHandler;
+import com.google.gwt.user.client.Event;
 
 /**
  * BrowserEvent is a subclass of AbstractEvent that provides events that map to
@@ -54,9 +54,12 @@ public abstract class BrowserEvent<T extends EventHandler>
     }
   }
 
+  private Key<T> key;
+
   private Event browserEvent;
 
-  protected BrowserEvent(Event browserEvent) {
+  protected BrowserEvent(Key<T> key, Event browserEvent) {
+    this.key = key;
     this.browserEvent = browserEvent;
   }
 
@@ -70,5 +73,9 @@ public abstract class BrowserEvent<T extends EventHandler>
 
   public void stopPropagation() {
     browserEvent.cancelBubble(true);
+  }
+  
+  protected BrowserEvent.Key<T> getKey() {
+    return key;
   }
 }

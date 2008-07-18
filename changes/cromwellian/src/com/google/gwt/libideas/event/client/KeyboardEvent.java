@@ -15,18 +15,18 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.client.BrowserEvent;
 import com.google.gwt.libideas.event.shared.EventHandler;
 import com.google.gwt.user.client.Event;
 
 /**
  * Base class for Keyboard events.
+ * @param <T> an EventHandler subtype
  */
 public abstract class KeyboardEvent<T extends EventHandler>
     extends BrowserEvent<T> {
 
-  protected KeyboardEvent(Event e) {
-    super(e);
+  protected KeyboardEvent(Key<T> key, Event e) {
+    super(key, e);
   }
 
   /**
@@ -83,5 +83,4 @@ public abstract class KeyboardEvent<T extends EventHandler>
   public boolean isShiftKeyDown() {
     return getBrowserEvent().getShiftKey();
   }
-
 }

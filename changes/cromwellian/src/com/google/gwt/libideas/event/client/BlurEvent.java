@@ -15,26 +15,46 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.shared.AbstractEvent;
-import com.google.gwt.libideas.event.client.BrowserEvent;
-import com.google.gwt.libideas.event.client.BrowserEvents;
-import com.google.gwt.libideas.event.client.BlurHandler;
+import com.google.gwt.libideas.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
+/**
+ * Represents a BlurEvent event.
+ */
 public class BlurEvent extends BrowserEvent<BlurHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of BlurEvent
+   * events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a {@link BlurEvent} handler.
+     *
+     * @param handler the handler
+     */
+    HandlerRegistration addBlurHandler(BlurHandler handler);
+  }
 
   public static Key<BlurHandler> KEY = new Key<BlurHandler>(
       BrowserEvents.ONBLUR);
 
-  protected BlurEvent(Event e) {
-    super(e);
+  /**
+   * Constructs a BlurEvent event.
+   *
+   * @param e An event object, typically from an onBrowserEvent call
+   */
+  public BlurEvent(Event e) {
+    super(KEY, e);
   }
 
+  /**
+   * Fires a BlurEvent.
+   *
+   * @param handler the handler
+   */
   protected void fireEvent(BlurHandler handler) {
     handler.onBlur(this);
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
   }
 }

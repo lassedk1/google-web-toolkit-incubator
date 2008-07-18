@@ -16,9 +16,16 @@
 package com.google.gwt.libideas.event.client;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
-import com.google.gwt.libideas.event.client.KeyUpEvent;
 
+/**
+ * Handler interface for {@link KeyUpEvent} events.
+ */
 public interface KeyUpHandler extends EventHandler {
 
+  /**
+   * Called when KeyUpEvent is fired.
+   *
+   * @param event the {@link KeyUpEvent} that was fired
+   */
   void onKeyUp(KeyUpEvent event);
 }

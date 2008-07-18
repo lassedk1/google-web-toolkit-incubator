@@ -21,7 +21,8 @@ import com.google.gwt.dom.client.Element;
  * Class used to store mock or synthetic information normally stored in a DOM
  * event object.
  */
-public class VEventData implements EventData {
+public class VEventDataImpl
+    implements HasKeyboardData, HasMouseData, IsSuppressable {
 
   private boolean altKey;
 
@@ -45,8 +46,7 @@ public class VEventData implements EventData {
 
   private boolean shiftKey;
 
-  public void cancelBubble(boolean cancel) {
-  }
+  private boolean suppressed = false;
 
   public boolean getAltKey() {
     return altKey;
@@ -124,6 +124,10 @@ public class VEventData implements EventData {
     return 0;
   }
 
+  public boolean isSuppressed() {
+    return suppressed;
+  }
+
   public void preventDefault() {
   }
 
@@ -172,5 +176,6 @@ public class VEventData implements EventData {
   }
 
   public void stopPropagation() {
+    suppressed = true;
   }
 }

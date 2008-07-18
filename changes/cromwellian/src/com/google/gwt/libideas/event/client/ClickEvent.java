@@ -15,23 +15,24 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.shared.AbstractEvent;
 import com.google.gwt.libideas.event.shared.HandlerRegistration;
-import com.google.gwt.libideas.event.client.BrowserEvents;
-import com.google.gwt.libideas.event.client.MouseEvent;
-import com.google.gwt.libideas.event.client.ClickHandler;
 import com.google.gwt.user.client.Event;
 
+/**
+  * Represents a ClickEvent event.
+  */
 public class ClickEvent extends MouseEvent<ClickHandler> {
 
   /**
-   * A widget that implements this interface is a public source of Click
+   * A widget that implements this interface is a public source of ClickEvent
    * events.
    */
   public static interface Source {
 
     /**
-     * Adds a ClickEvent handler.
+     * Adds a {@link ClickEvent} handler.
+     *
+     * @param handler the handler
      */
     HandlerRegistration addClickHandler(ClickHandler handler);
   }
@@ -39,15 +40,19 @@ public class ClickEvent extends MouseEvent<ClickHandler> {
   public static Key<ClickHandler> KEY = new Key<ClickHandler>(
       BrowserEvents.ONCLICK);
 
+  /**
+    * Constructs a ClickEvent event.
+    * @param e An event object, typically from an onBrowserEvent call
+    */
   public ClickEvent(Event e) {
-    super(e);
+    super(KEY, e);
   }
 
+  /**
+    * Fires a ClickEvent.
+    * @param handler the handler
+    */
   protected void fireEvent(ClickHandler handler) {
     handler.onClick(this);
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
   }
 }

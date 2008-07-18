@@ -15,10 +15,12 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.client.BrowserEvent;
 import com.google.gwt.libideas.event.shared.EventHandler;
 import com.google.gwt.user.client.Event;
 
+/**
+ * Absract class representing mouse events.
+ */
 public abstract class MouseEvent<T extends EventHandler>
     extends BrowserEvent<T> {
 
@@ -40,8 +42,8 @@ public abstract class MouseEvent<T extends EventHandler>
     }
   }
 
-  protected MouseEvent(Event e) {
-    super(e);
+  protected MouseEvent(Key<T> key, Event e) {
+    super(key, e);
   }
 
   public Button getButton() {

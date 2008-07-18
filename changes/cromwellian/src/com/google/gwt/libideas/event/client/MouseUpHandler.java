@@ -17,7 +17,14 @@ package com.google.gwt.libideas.event.client;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
 
+/**
+  * Handler interface for {@link MouseUpEvent} events. 
+  */
 public interface MouseUpHandler extends EventHandler {
 
+  /**
+    * Called when MouseUpEvent is fired.
+    * @param event the {@link MouseUpEvent} that was fired
+    */
   void onMouseUp(MouseUpEvent event);
 }

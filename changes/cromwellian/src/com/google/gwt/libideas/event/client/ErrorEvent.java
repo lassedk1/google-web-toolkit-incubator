@@ -15,26 +15,44 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.shared.AbstractEvent;
-import com.google.gwt.libideas.event.client.BrowserEvent;
-import com.google.gwt.libideas.event.client.BrowserEvents;
-import com.google.gwt.libideas.event.client.ErrorHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.libideas.event.shared.HandlerRegistration;
 
+/**
+  * Represents a ErrorEvent event.
+  */
 public class ErrorEvent extends BrowserEvent<ErrorHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of ErrorEvent
+   * events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a {@link ErrorHandler} handler.
+     *
+     * @param handler the handler
+     */
+    HandlerRegistration addErrorHandler(ErrorHandler handler);
+  }
 
   public static Key<ErrorHandler> KEY = new Key<ErrorHandler>(
       BrowserEvents.ONERROR);
 
-  protected ErrorEvent(Event e) {
-    super(e);
+  /**
+    * Constructs a ErrorEvent event.
+    * @param e An event object, typically from an onBrowserEvent call
+    */
+  public ErrorEvent(Event e) {
+    super(KEY, e);
   }
 
+  /**
+    * Fires a ErrorEvent.
+    * @param handler the handler
+    */
   protected void fireEvent(ErrorHandler handler) {
     handler.onError(this);
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
   }
 }

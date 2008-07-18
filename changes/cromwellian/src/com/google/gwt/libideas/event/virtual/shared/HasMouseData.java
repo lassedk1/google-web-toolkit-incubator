@@ -13,40 +13,44 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.event.client;
+package com.google.gwt.libideas.event.virtual.shared;
 
-import com.google.gwt.libideas.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Event;
+import com.google.gwt.dom.client.Element;
 
 /**
-  * Represents a MouseWheelEvent event.
-  */
-public class MouseWheelEvent extends MouseEvent<MouseWheelHandler> {
+ * Represents Virtual events which have corresponding mouse event data.
+ */
+public interface HasMouseData extends HasModifierData {
 
   /**
-   * A widget that implements this interface is a public source of MouseWheelEvent
-   * events.
+   * Gets the mouse buttons that were depressed when the given event occurred.
+   *
+   * @return a bit-field, defined by {@link Event#BUTTON_LEFT}, {@link
+   *         Event#BUTTON_MIDDLE}, and {@link Event#BUTTON_RIGHT}
    */
-  public static interface Source {
-
-    /**
-     * Adds a {@link MouseWheelEvent} handler.
-     *
-     * @param handler the handler
-     */
-    HandlerRegistration addMouseWheelHandler(MouseWheelHandler handler);
-  }
-
-  public static Key<MouseWheelHandler> KEY = new Key<MouseWheelHandler>(
-      BrowserEvents.ONMOUSEWHEEL);
+  int getButton();
 
   /**
-    * Constructs a MouseWheelEvent event.
-    * @param e An event object, typically from an onBrowserEvent call
-    */
-  public MouseWheelEvent(Event e) {
-    super(KEY, e);
-  }
+   * Gets the mouse x-position within the browser window's client area.
+   *
+   * @return the mouse x-position
+   */
+  int getClientX();
+
+  /**
+   * Gets the mouse y-position within the browser window's client area.
+   *
+   * @return the mouse y-position
+   */
+  int getClientY();
+
+  /**
+   * Gets the element from which the mouse pointer was moved (only valid for
+   * {@link Event#ONMOUSEOVER}).
+   *
+   * @return the element from which the mouse pointer was moved
+   */
+  Element getFromElement();
 
   /**
    * Gets the velocity of the mouse wheel associated with the event along the Y
@@ -60,15 +64,19 @@ public class MouseWheelEvent extends MouseEvent<MouseWheelHandler> {
    *
    * @return The velocity of the mouse wheel.
    */
-  public int getMouseWheelVelocityY() {
-    return getBrowserEvent().getMouseWheelVelocityY();
-  }
+  int getMouseWheelVelocityY();
 
   /**
-    * Fires a MouseWheelEvent.
-    * @param handler the handler
-    */
-  protected void fireEvent(MouseWheelHandler handler) {
-    handler.onMouseWheel(this);
-  }
+   * Gets the mouse x-position on the user's display.
+   *
+   * @return the mouse x-position
+   */
+  int getScreenX();
+
+  /**
+   * Gets the mouse y-position on the user's display.
+   *
+   * @return the mouse y-position
+   */
+  int getScreenY();
 }

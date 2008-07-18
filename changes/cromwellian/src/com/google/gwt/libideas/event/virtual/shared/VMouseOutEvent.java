@@ -15,8 +15,6 @@
  */
 package com.google.gwt.libideas.event.virtual.shared;
 
-import com.google.gwt.libideas.event.virtual.shared.EventData;
-
 public class VMouseOutEvent extends VMouseEvent<VMouseOutHandler> {
 
   public static Key<VMouseOutHandler> KEY = new Key<VMouseOutHandler>();

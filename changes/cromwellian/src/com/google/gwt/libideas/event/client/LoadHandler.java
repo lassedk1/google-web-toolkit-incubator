@@ -16,9 +16,15 @@
 package com.google.gwt.libideas.event.client;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
-import com.google.gwt.libideas.event.client.LoadEvent;
 
+/**
+  * Handler interface for {@link LoadEvent} events. 
+  */
 public interface LoadHandler extends EventHandler {
 
+  /**
+    * Called when LoadEvent is fired.
+    * @param event the {@link LoadEvent} that was fired
+    */
   void onLoad(LoadEvent event);
 }

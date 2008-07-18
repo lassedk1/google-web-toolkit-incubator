@@ -1,3 +1,19 @@
+/*
+ * Copyright 2007 Google Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.google.gwt.libideas.event.shared;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -11,11 +27,8 @@ import java.util.HashMap;
  */
 abstract interface HandlerRegistry {
   void addHandler(AbstractEvent.Key eventKey, EventHandler handler);
-
   EventHandler getHandler(AbstractEvent.Key eventKey, int index);
-
   int getHandlerCount(AbstractEvent.Key eventKey);
-
   void removeHandler(AbstractEvent.Key eventKey, EventHandler handler);
 
   static class JavaHandlerRegistry extends HashMap<AbstractEvent.Key, ArrayList<EventHandler>>
@@ -28,14 +41,12 @@ abstract interface HandlerRegistry {
         super.put(eventKey, l);
       }
       l.add(handler);
-
     }
 
     public EventHandler getHandler(AbstractEvent.Key eventKey, int index) {
       assert (index < getHandlerCount(eventKey));
       ArrayList<EventHandler> l = super.get(eventKey);
       return l.get(index);
-
     }
 
     public int getHandlerCount(AbstractEvent.Key eventKey) {
@@ -129,6 +140,5 @@ abstract interface HandlerRegistry {
     private native void setCount(JavaScriptObject transcript, int index, int count) /*-{
       transcript[index] = count;
     }-*/;
-
   }
 }

@@ -15,21 +15,24 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.shared.AbstractEvent;
 import com.google.gwt.libideas.event.shared.HandlerRegistration;
-import com.google.gwt.libideas.event.client.BrowserEvents;
 import com.google.gwt.user.client.Event;
 
+/**
+  * Represents a MouseOutEvent event.
+  */
 public class MouseOutEvent extends MouseEvent<MouseOutHandler> {
 
   /**
-   * A widget that implements this interface is a public source of MouseOut
+   * A widget that implements this interface is a public source of MouseOutEvent
    * events.
    */
   public static interface Source {
 
     /**
-     * Adds a MouseOut handler.
+     * Adds a {@link MouseOutEvent} handler.
+     *
+     * @param handler the handler
      */
     HandlerRegistration addMouseOutHandler(MouseOutHandler handler);
   }
@@ -37,15 +40,19 @@ public class MouseOutEvent extends MouseEvent<MouseOutHandler> {
   public static Key<MouseOutHandler> KEY = new Key<MouseOutHandler>(
       BrowserEvents.ONMOUSEOUT);
 
+  /**
+    * Constructs a MouseOutEvent event.
+    * @param e An event object, typically from an onBrowserEvent call
+    */
   public MouseOutEvent(Event e) {
-    super(e);
+    super(KEY, e);
   }
 
+  /**
+    * Fires a MouseOutEvent.
+    * @param handler the handler
+    */
   protected void fireEvent(MouseOutHandler handler) {
     handler.onMouseOut(this);
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
   }
 }

@@ -17,7 +17,14 @@ package com.google.gwt.libideas.event.client;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
 
+/**
+  * Handler interface for {@link DoubleClickEvent} events. 
+  */
 public interface DoubleClickHandler extends EventHandler {
 
+  /**
+    * Called when DoubleClickEvent is fired.
+    * @param event the {@link DoubleClickEvent} that was fired
+    */
   void onDoubleClick(DoubleClickEvent event);
 }

@@ -16,9 +16,15 @@
 package com.google.gwt.libideas.event.client;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
-import com.google.gwt.libideas.event.client.FocusEvent;
 
+/**
+  * Handler interface for {@link FocusEvent} events. 
+  */
 public interface FocusHandler extends EventHandler {
 
+  /**
+    * Called when FocusEvent is fired.
+    * @param event the {@link FocusEvent} that was fired
+    */
   void onFocus(FocusEvent event);
 }

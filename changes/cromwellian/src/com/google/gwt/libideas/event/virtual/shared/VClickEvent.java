@@ -15,8 +15,6 @@
  */
 package com.google.gwt.libideas.event.virtual.shared;
 
-import com.google.gwt.libideas.event.virtual.shared.EventData;
-
 public class VClickEvent extends VMouseEvent<VClickHandler> {
 
   public static Key<VClickHandler> KEY = new Key<VClickHandler>();

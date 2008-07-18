@@ -13,39 +13,29 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.event.client;
+package com.google.gwt.libideas.event.virtual.shared;
 
+import com.google.gwt.libideas.event.client.MouseWheelHandler;
 import com.google.gwt.libideas.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Event;
 
-/**
-  * Represents a MouseWheelEvent event.
-  */
-public class MouseWheelEvent extends MouseEvent<MouseWheelHandler> {
+public class VMouseWheelEvent extends VMouseEvent<VMouseWheelHandler> {
 
   /**
-   * A widget that implements this interface is a public source of MouseWheelEvent
+   * A widget that implements this interface is a public source of MouseWheel
    * events.
    */
   public static interface Source {
 
     /**
-     * Adds a {@link MouseWheelEvent} handler.
-     *
-     * @param handler the handler
+     * Adds a MouseWheel handler.
      */
     HandlerRegistration addMouseWheelHandler(MouseWheelHandler handler);
   }
 
-  public static Key<MouseWheelHandler> KEY = new Key<MouseWheelHandler>(
-      BrowserEvents.ONMOUSEWHEEL);
+  public static Key<VMouseWheelHandler> KEY = new Key<VMouseWheelHandler>();
 
-  /**
-    * Constructs a MouseWheelEvent event.
-    * @param e An event object, typically from an onBrowserEvent call
-    */
-  public MouseWheelEvent(Event e) {
-    super(KEY, e);
+  public VMouseWheelEvent(EventData data) {
+    super(KEY, data);
   }
 
   /**
@@ -61,14 +51,10 @@ public class MouseWheelEvent extends MouseEvent<MouseWheelHandler> {
    * @return The velocity of the mouse wheel.
    */
   public int getMouseWheelVelocityY() {
-    return getBrowserEvent().getMouseWheelVelocityY();
+    return getEventData().getMouseWheelVelocityY();
   }
 
-  /**
-    * Fires a MouseWheelEvent.
-    * @param handler the handler
-    */
-  protected void fireEvent(MouseWheelHandler handler) {
+  protected void fireEvent(VMouseWheelHandler handler) {
     handler.onMouseWheel(this);
   }
 }

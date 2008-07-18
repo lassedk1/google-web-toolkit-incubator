@@ -16,9 +16,15 @@
 package com.google.gwt.libideas.event.client;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
-import com.google.gwt.libideas.event.client.BlurEvent;
 
+/**
+  * Handler interface for {@link BlurEvent} events. 
+  */
 public interface BlurHandler extends EventHandler {
 
+  /**
+    * Called when BlurEvent is fired.
+    * @param event the {@link BlurEvent} that was fired
+    */
   void onBlur(BlurEvent event);
 }

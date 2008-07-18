@@ -15,26 +15,41 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.shared.AbstractEvent;
-import com.google.gwt.libideas.event.client.BrowserEvent;
-import com.google.gwt.libideas.event.client.BrowserEvents;
-import com.google.gwt.libideas.event.client.ChangeHandler;
+import com.google.gwt.libideas.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
+/**
+ * Represents a ChangeEvent event.
+ */
 public class ChangeEvent extends BrowserEvent<ChangeHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of ChangeEvent
+   * events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a {@link ChangeEvent} handler.
+     *
+     * @param handler the handler
+     */
+    HandlerRegistration addChangeHandler(ChangeHandler handler);
+  }
 
   public static Key<ChangeHandler> KEY = new Key<ChangeHandler>(
       BrowserEvents.ONCHANGE);
 
-  protected ChangeEvent(Event e) {
-    super(e);
+  public ChangeEvent(Event e) {
+    super(KEY, e);
   }
 
+  /**
+   * Fires a ChangeEvent.
+   *
+   * @param handler the handler
+   */
   protected void fireEvent(ChangeHandler handler) {
     handler.onChange(this);
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
   }
 }

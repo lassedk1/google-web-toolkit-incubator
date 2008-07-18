@@ -15,21 +15,24 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.shared.AbstractEvent;
 import com.google.gwt.libideas.event.shared.HandlerRegistration;
-import com.google.gwt.libideas.event.client.BrowserEvents;
 import com.google.gwt.user.client.Event;
 
+/**
+  * Represents a MouseMoveEvent event.
+  */
 public class MouseMoveEvent extends MouseEvent<MouseMoveHandler> {
 
   /**
-   * A widget that implements this interface is a public source of
-   * MouseMove events.
+   * A widget that implements this interface is a public source of MouseMoveEvent
+   * events.
    */
   public static interface Source {
 
     /**
-     * Adds a MouseMoveEvent handler.
+     * Adds a {@link MouseMoveEvent} handler.
+     *
+     * @param handler the handler
      */
     HandlerRegistration addMouseMoveHandler(MouseMoveHandler handler);
   }
@@ -37,15 +40,19 @@ public class MouseMoveEvent extends MouseEvent<MouseMoveHandler> {
   public static Key<MouseMoveHandler> KEY = new Key<MouseMoveHandler>(
       BrowserEvents.ONMOUSEMOVE);
 
+  /**
+    * Constructs a MouseMoveEvent event.
+    * @param e An event object, typically from an onBrowserEvent call
+    */
   public MouseMoveEvent(Event e) {
-    super(e);
+    super(KEY, e);
   }
 
+  /**
+    * Fires a MouseMoveEvent.
+    * @param handler the handler
+    */
   protected void fireEvent(MouseMoveHandler handler) {
     handler.onMouseMove(this);
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
   }
 }

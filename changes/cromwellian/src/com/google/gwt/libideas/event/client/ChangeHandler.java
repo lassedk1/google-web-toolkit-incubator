@@ -16,9 +16,15 @@
 package com.google.gwt.libideas.event.client;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
-import com.google.gwt.libideas.event.client.ChangeEvent;
 
+/**
+  * Handler interface for {@link ChangeEvent} events. 
+  */
 public interface ChangeHandler extends EventHandler {
 
+  /**
+    * Called when ChangeEvent is fired.
+    * @param event the {@link ChangeEvent} that was fired
+    */
   void onChange(ChangeEvent event);
 }

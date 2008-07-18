@@ -16,18 +16,18 @@
 package com.google.gwt.libideas.event.shared;
 
 import com.google.gwt.libideas.event.shared.AbstractEvent.Key;
-import com.google.gwt.libideas.event.shared.EventHandler;
-import com.google.gwt.libideas.event.shared.HandlerManager;
 
 /**
- * HandlerRegistration instances are returned by
- * HandlerManager.addEventHandler() and used to remove event handler
- * registrations. Should be as vanilla as possible, as we want it optimized out
- * in the common case.
+ * HandlerRegistration instances are returned by HandlerManager.addEventHandler()
+ * and used to remove event handler registrations. Should be as vanilla as
+ * possible, as we want it optimized out in the common case.
  */
 public class HandlerRegistration {
+
   private HandlerManager target;
+
   private EventHandler handler;
+
   private Key key;
 
   HandlerRegistration(HandlerManager target, Key key, EventHandler handler) {

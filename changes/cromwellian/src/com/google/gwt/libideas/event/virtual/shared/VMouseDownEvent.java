@@ -15,8 +15,6 @@
  */
 package com.google.gwt.libideas.event.virtual.shared;
 
-import com.google.gwt.libideas.event.virtual.shared.EventData;
-
 public class VMouseDownEvent extends VMouseEvent<VMouseDownHandler> {
 
   public static Key<VMouseDownHandler> KEY = new Key<VMouseDownHandler>();

@@ -16,23 +16,27 @@
 package com.google.gwt.libideas.event.virtual.shared;
 
 /**
- * Represents event target and type information for Virtual events.
+ * Represents virtual events that have corresponding keyboard data.
  */
-public interface EventData {
+public interface HasKeyboardData extends HasModifierData {
 
   /**
-   * Gets the target Object of this event. If this is an event which doesn't
-   * propagate, it returns the source object on which the handler was
-   * registered.
+   * Gets the key code associated with this event.
    *
-   * @return the event's current target object
+   * <p> For {@link Event#ONKEYPRESS}, this method returns the Unicode value
+   * of the character generated. For {@link Event#ONKEYDOWN} and {@link
+   * Event#ONKEYUP}, it returns the code associated with the physical key.
+   * </p>
+   *
+   * @return the Unicode character or key code.
+   * @see com.google.gwt.user.client.ui.KeyboardListener
    */
-  Object getTarget();
+  int getKeyCode();
 
   /**
-   * Gets a string representation of this event.
+   * Gets the key-repeat state of this event.
    *
-   * @return the string representation of this event
+   * @return <code>true</code> if this key event was an auto-repeat
    */
-  String getType();
+  boolean getRepeat();
 }

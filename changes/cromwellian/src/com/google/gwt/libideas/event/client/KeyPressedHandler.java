@@ -16,9 +16,15 @@
 package com.google.gwt.libideas.event.client;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
-import com.google.gwt.libideas.event.client.KeyPressedEvent;
 
+/**
+  * Handler interface for {@link KeyPressedEvent} events. 
+  */
 public interface KeyPressedHandler extends EventHandler {
 
+  /**
+    * Called when KeyPressedEvent is fired.
+    * @param event the {@link KeyPressedEvent} that was fired
+    */
   void onKeyPressed(KeyPressedEvent event);
 }

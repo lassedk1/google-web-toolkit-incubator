@@ -15,8 +15,6 @@
  */
 package com.google.gwt.libideas.event.virtual.shared;
 
-import com.google.gwt.libideas.event.virtual.shared.EventData;
-
 public class VLoadEvent extends VirtualEvent<VLoadHandler> {
 
   public static Key<VLoadHandler> KEY = new Key<VLoadHandler>();

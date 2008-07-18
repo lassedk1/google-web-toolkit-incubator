@@ -15,8 +15,6 @@
  */
 package com.google.gwt.libideas.event.virtual.shared;
 
-import com.google.gwt.libideas.event.virtual.shared.EventData;
-
 public class VErrorEvent extends VirtualEvent<VErrorHandler> {
 
   public static Key<VErrorHandler> KEY = new Key<VErrorHandler>();

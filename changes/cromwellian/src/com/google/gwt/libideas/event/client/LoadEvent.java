@@ -15,26 +15,44 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.shared.AbstractEvent;
-import com.google.gwt.libideas.event.client.BrowserEvent;
-import com.google.gwt.libideas.event.client.BrowserEvents;
-import com.google.gwt.libideas.event.client.LoadHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.libideas.event.shared.HandlerRegistration;
 
+/**
+  * Represents a LoadEvent event.
+  */
 public class LoadEvent extends BrowserEvent<LoadHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of LoadEvent
+   * events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a {@link LoadEvent} handler.
+     *
+     * @param handler the handler
+     */
+    HandlerRegistration addLoadHandler(LoadHandler handler);
+  }
 
   public static Key<LoadHandler> KEY = new Key<LoadHandler>(
       BrowserEvents.ONLOAD);
 
-  protected LoadEvent(Event e) {
-    super(e);
+  /**
+    * Constructs a LoadEvent event.
+    * @param e An event object, typically from an onBrowserEvent call
+    */
+  public LoadEvent(Event e) {
+    super(KEY, e);
   }
 
+  /**
+    * Fires a LoadEvent.
+    * @param handler the handler
+    */
   protected void fireEvent(LoadHandler handler) {
     handler.onLoad(this);
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
   }
 }

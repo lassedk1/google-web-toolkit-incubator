@@ -25,7 +25,18 @@ import com.google.gwt.libideas.event.shared.HandlerRegistry.JavaHandlerRegistry;
  */
 public class HandlerManager {
 
+  private static HandlerRegistry pickRegistry() {
+    // TODO(ECC) once fully debugged, should also you java version in hosted
+    // mode.
+    if (GWT.isClient()) {
+      return new JSHandlerRegistry();
+    } else {
+      return new JavaHandlerRegistry();
+    }
+  }
+
   private HandlerRegistry registry;
+
   private Object source;
 
   public HandlerManager(Object source, HandlerRegistry registry) {
@@ -35,17 +46,12 @@ public class HandlerManager {
 
   public HandlerManager(Object source) {
     this(source, pickRegistry());
-
   }
 
-  private static HandlerRegistry pickRegistry() {
-    // TODO(ECC) once fully debugged, should also you java version in hosted
-    // mode.
-    if (GWT.isClient()) {
-      return new JSHandlerRegistry();
-    } else {
-      return new JavaHandlerRegistry();
-    }
+  public <T extends EventHandler> HandlerRegistration addEventHandler(
+      AbstractEvent.Key<T> key, final T handler) {
+    registry.addHandler(key, handler);
+    return new HandlerRegistration(this, key, handler);
   }
 
   public void fireEvent(AbstractEvent event) {
@@ -58,15 +64,8 @@ public class HandlerManager {
     }
   }
 
-  public <T extends EventHandler> HandlerRegistration addEventHandler(
-      AbstractEvent.Key<T> key, final T handler) {
-    registry.addHandler(key, handler);
-    return new HandlerRegistration(this, key, handler);
-  }
-
   // Overridable by subclasses.
   protected void removeHandler(Key key, EventHandler handler) {
     registry.removeHandler(key, handler);
   }
-
 }

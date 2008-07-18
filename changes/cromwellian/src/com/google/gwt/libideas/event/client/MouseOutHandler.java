@@ -17,7 +17,14 @@ package com.google.gwt.libideas.event.client;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
 
+/**
+  * Handler interface for {@link MouseOutEvent} events. 
+  */
 public interface MouseOutHandler extends EventHandler {
 
+  /**
+    * Called when MouseOutEvent is fired.
+    * @param event the {@link MouseOutEvent} that was fired
+    */
   void onMouseOut(MouseOutEvent event);
 }

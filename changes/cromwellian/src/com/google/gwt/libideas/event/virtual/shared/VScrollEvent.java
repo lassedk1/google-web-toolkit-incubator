@@ -15,8 +15,6 @@
  */
 package com.google.gwt.libideas.event.virtual.shared;
 
-import com.google.gwt.libideas.event.virtual.shared.EventData;
-
 public class VScrollEvent extends VirtualEvent<VScrollHandler> {
 
   public static Key<VScrollHandler> KEY = new Key<VScrollHandler>();

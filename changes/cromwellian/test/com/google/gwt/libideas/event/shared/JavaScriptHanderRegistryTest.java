@@ -21,7 +21,6 @@ import com.google.gwt.libideas.event.client.ClickEvent;
 import com.google.gwt.libideas.event.client.ClickHandler;
 import com.google.gwt.libideas.event.client.MouseDownEvent;
 import com.google.gwt.libideas.event.client.MouseDownHandler;
-import com.google.gwt.libideas.event.shared.HandlerRegistry;
 
 /**
  * Basic tests for Handler registry's. Not much to it as most testing should be
@@ -45,8 +44,20 @@ public class JavaScriptHanderRegistryTest extends LibTestBase {
 
     public void onClick(ClickEvent event) {
     }
-
   };
+
+  public void testAccesors() {
+    HandlerRegistry registry = new HandlerRegistry.JSHandlerRegistry();
+    registry.addHandler(MouseDownEvent.KEY, mouseDownHandler);
+    registry.addHandler(ClickEvent.KEY, clickHandler);
+    registry.addHandler(MouseDownEvent.KEY, mouseDownHandler2);
+    registry.removeHandler(MouseDownEvent.KEY, mouseDownHandler);
+
+    assertEquals(1, registry.getHandlerCount(MouseDownEvent.KEY));
+    assertEquals(1, registry.getHandlerCount(ClickEvent.KEY));
+    assertEquals(mouseDownHandler2, registry.getHandler(MouseDownEvent.KEY, 0));
+    assertEquals(clickHandler, registry.getHandler(ClickEvent.KEY, 0));
+  }
 
   public void testAdd() {
     HandlerRegistry registry = new HandlerRegistry.JSHandlerRegistry();
@@ -59,19 +70,5 @@ public class JavaScriptHanderRegistryTest extends LibTestBase {
     registry.addHandler(MouseDownEvent.KEY, mouseDownHandler);
     registry.removeHandler(MouseDownEvent.KEY, mouseDownHandler);
     assertEquals(0, registry.getHandlerCount(MouseDownEvent.KEY));
-  }
-
-  public void testAccesors() {
-    HandlerRegistry registry = new HandlerRegistry.JSHandlerRegistry();
-    registry.addHandler(MouseDownEvent.KEY, mouseDownHandler);
-    registry.addHandler(ClickEvent.KEY, clickHandler);
-    registry.addHandler(MouseDownEvent.KEY, mouseDownHandler2);
-    registry.removeHandler(MouseDownEvent.KEY, mouseDownHandler);
-    
-    assertEquals(1, registry.getHandlerCount(MouseDownEvent.KEY));
-    assertEquals(1, registry.getHandlerCount(ClickEvent.KEY));
-    assertEquals(mouseDownHandler2, registry.getHandler(MouseDownEvent.KEY,0));
-    assertEquals(clickHandler, registry.getHandler(ClickEvent.KEY, 0));
-    
   }
 }

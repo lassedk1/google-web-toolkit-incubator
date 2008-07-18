@@ -16,9 +16,14 @@
 package com.google.gwt.libideas.event.client;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
-import com.google.gwt.libideas.event.client.ClickEvent;
 
+/**
+  * Handler interface for {@link ClickEvent} events. 
+  */
 public interface ClickHandler extends EventHandler {
-
+  /**
+    * Called when ClickEvent is fired.
+    * @param event the {@link ClickEvent} that was fired
+    */
   void onClick(ClickEvent event);
 }

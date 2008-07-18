@@ -15,26 +15,44 @@
  */
 package com.google.gwt.libideas.event.client;
 
-import com.google.gwt.libideas.event.shared.AbstractEvent;
-import com.google.gwt.libideas.event.client.BrowserEvent;
-import com.google.gwt.libideas.event.client.BrowserEvents;
-import com.google.gwt.libideas.event.client.LoseCaptureHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.libideas.event.shared.HandlerRegistration;
 
+/**
+  * Represents a LoseCaptureEvent event.
+  */
 public class LoseCaptureEvent extends BrowserEvent<LoseCaptureHandler> {
+
+  /**
+   * A widget that implements this interface is a public source of LoseCaptureEvent
+   * events.
+   */
+  public static interface Source {
+
+    /**
+     * Adds a {@link LoseCaptureEvent} handler.
+     *
+     * @param handler the handler
+     */
+    HandlerRegistration addLoseCaptureHandler(LoseCaptureHandler handler);
+  }
 
   public static Key<LoseCaptureHandler> KEY = new Key<LoseCaptureHandler>(
       BrowserEvents.ONLOSECAPTURE);
 
-  protected LoseCaptureEvent(Event e) {
-    super(e);
+  /**
+    * Constructs a LoseCaptureEvent event.
+    * @param e An event object, typically from an onBrowserEvent call
+    */
+  public LoseCaptureEvent(Event e) {
+    super(KEY, e);
   }
 
+  /**
+    * Fires a LoseCaptureEvent.
+    * @param handler the handler
+    */
   protected void fireEvent(LoseCaptureHandler handler) {
     handler.onLoseCapture(this);
-  }
-
-  protected AbstractEvent.Key getKey() {
-    return KEY;
   }
 }

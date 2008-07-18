@@ -17,7 +17,14 @@ package com.google.gwt.libideas.event.client;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
 
+/**
+  * Handler interface for {@link MouseMoveEvent} events. 
+  */
 public interface MouseMoveHandler extends EventHandler {
 
+  /**
+    * Called when MouseMoveEvent is fired.
+    * @param event the {@link MouseMoveEvent} that was fired
+    */
   void onMouseMove(MouseMoveEvent event);
 }
