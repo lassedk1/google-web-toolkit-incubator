@@ -1,25 +1,26 @@
 <!-- A file to define the test sets for Incubator testing -->
 
 <project name="testsets">
+    
+    <condition property="project.test.filter" value="**/IncubatorSuite.class">
+        <not>
+            <isset property="project.test.filter"/>
+        </not>
+    </condition>
 
-  <!-- Default test set: -->
-  <patternset id="default.tests" >
-    <include name="**/*Test.class" />
-    <exclude name="**/*VisualTest.class" />
-  </patternset>
-
-  <!-- Hosted mode tests: -->
-  <fileset id="default.hosted.tests" dir="${javac.junit.out}" >
-     <patternset refid="default.tests" />
-
-     <!-- here's how to exclude a given test, if you need to:
-      <exclude name="com/google/gwt/junit/client/ParallelRemoteTest.class" />
-     -->
-  </fileset>
-
-  <!-- Web mode tests: -->
-  <fileset id="default.web.tests" dir="${javac.junit.out}" >
-     <patternset refid="default.tests" />
-  </fileset>
-
-</project>  
+    <!-- Default test set: -->
+    <patternset id="default.tests">
+        <include name="${project.test.filter}"/>
+    </patternset>
+    
+    <!-- Hosted mode tests: -->
+    <fileset id="default.hosted.tests" dir="${project.test.bin}">
+        <patternset refid="default.tests"/>
+    </fileset>
+    
+    <!-- Web mode tests: -->
+    <fileset id="default.web.tests" dir="${project.test.bin}">
+        <patternset refid="default.tests"/>
+    </fileset>
+    
+</project>

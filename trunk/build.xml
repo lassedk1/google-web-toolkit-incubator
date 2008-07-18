@@ -1,151 +1,289 @@
-<project name="gwt-incubator" default="dist">
-  <property name="gwt.root" location="." />  
-  <property name="project.tail" value="" />  
+<!--##########################
+  As an interm solution until we have a formatter that is not tied to an IDE, if you wish to 
+  auto-format incubator ant files you must use eclipse with the following configuration:  
+    Tab size: 2
+    |  | Use tab character instead of spaces
+    Maximum line width: 100
+    |x| Wrap long element tags
+    |  | Align final '>' in multi-line element tags
+    
+  Long term todos:
+     see if project.external.bin -> project.bin safely
+     create flag that wipes all test results, by default wipe only current
+     there exists a [out-of-date] command which may allow us to avoid the .body tasks.
+ -->
 
-  <!-- if gwt.home isn't set, check if env $GWT_HOME is, or gwt.location,
-       or it's on the classpath anyway -->
+<project name="gwt-incubator" default="build">
+
+  <!-- "build" is the default incubator target -->
+  <property name="project.target" value="build" />
+
+  <!-- Set up initial environment -->
+  <property name="project.root" location="." />
+
+  <property name="project.build.properties" value="${project.root}/build.properties" />
+
+  <property file="${project.build.properties}" />
+
   <property environment="env" />
-  <condition property="gwt.home" value="${env.GWT_HOME}" >
-     <isset property="env.GWT_HOME" />
-  </condition>
-  <condition property="gwt.home" value="${gwt.location}" >
-     <and>
-        <not> <isset property="gwt.home" /> </not>
-        <isset property="gwt.location" />
-     </and>
-  </condition>
-  <condition property="gwt.home" value="" >
-     <and>
-       <not> <isset property="gwt.home" /> </not>
-         <available classname="com.google.gwt.core.client.EntryPoint" />
-     </and>
+
+  <!-- 
+    Check for gwt.home.
+   -->
+
+  <condition property="gwt.home" value="${env.GWT_HOME}">
+    <isset property="env.GWT_HOME" />
   </condition>
 
-  <import file="${gwt.root}/common.ant.xml" />
 
-  <!-- "build" is the default when subprojects are directly targetted -->
-   <property name="target" value="build" />
+  <!-- import common config -->
+  <import file="${project.root}/common.ant.xml" />
+  <import file="${project.root}/testsets.ant.xml" />
 
-  <target name="inithome" unless="gwt.home">
+  <!-- Specify project jars -->
+  <property name="project.jar" value="${project.dist}/gwt-incubator.jar" />
+  <property name="project.test.jar" location="${project.test}/incubator_tests.jar" />
+
+
+  <!-- With a project.external.bin specified, set project.bin to it -->
+  <available file="${gwt.tools}" type="dir" property="gwt.tools.exists" />
+
+
+  <!-- Setting up the project bin -->
+  <fail if="project.bin"
+        message="Cannot override project.bin. If you are trying to use class files compiled outside of ant, set project.external.bin instead" />
+
+  <condition property="project.bin" value="${project.external.bin}">
+    <isset property="project.external.bin" />
+  </condition>
+
+  <property name="project.bin" value="${project.build}/bin" />
+
+
+  <!--As the ant task selector puts tasks in the order given by the build file, 
+  we have sorted all common public tasks first-->
+  <target name="build" depends="checksetup, compile" description="Packages the incubator jar">
+    <mkdir dir="build" />
+    <mkdir dir="${project.dist}" />
+    <jar destfile="${project.jar}">
+      <zipfileset src="${gwt.tools}/lib/javaswf/javaswf-20050404.jar" />
+      <zipfileset src="${gwt.tools}/lib/w3c/sac/sac-1.3.jar" />
+      <zipfileset src="${gwt.tools}/lib/w3c/flute/flute-1.3.jar" />
+      <fileset dir="src">
+        <exclude name="**/demos/**" />
+        <exclude name="**/examples/**" />
+      </fileset>
+      <fileset dir="${project.bin}">
+        <exclude name="**/demos/**" />
+        <exclude name="**/examples/**" />
+      </fileset>
+    </jar>
+  </target>
+  <target name="help" description="Short description of incubator properties and tasks">
+    <echo>
+Incubator properties
+  gwt.home
+    The location of the GWT jars you wish to compile and run against.
+     
+  gwt.tools 
+    The location of your GWT tools dir.
+     
+  gwt.remote.browsers
+    list of remote browsers to run while running junit tests.
+     
+  project.jar
+    Where should the gwt-incubator jar be created.
+     
+  project.external.bin
+    If you a running in a very tight debug loop, you can set this property 
+    so ant won't recompile your source. Instead ant will use the classes 
+    provided by the project.external.bin directory.
+    Note: No validation checking is done, so only use this flag if you are
+    absolutely sure that your external.bin is up to date and valid.
+
+  project.test.filter
+    We will run only the tests which match the filter provided when the 
+    user invokes a testing task.  
+      
+  project.build.properties
+    Where you have defined the above propeties. 
+  
+Incubator tasks
+  The incubator tasks are self-documenting. The list of public ones are
+  build,help,dist,clean,all,test, test.hosted,test.web,test.remoteweb</echo>
+  </target>
+
+
+  <target name="dist" depends="build" description="Assembles the full incubator distribution.">
+    <mkdir dir="${project.out}" />
+
+    <copy todir="${project.out}/doc">
+      <fileset dir="doc/javadoc">
+        <exclude name="**Impl.java" />
+        <exclude name="**/impl/**" />
+        <include name="**/libideas/**" />
+        <include name="**/widgetideas/**" />
+      </fileset>
+    </copy>
+    <mkdir dir="${project.demos}" />
+    <jar destfile="${project.demos}/incubator-demos.jar">
+      <fileset dir="${project.src}">
+        <include name="**/demos/**" />
+        <include name="**/examples/**" />
+      </fileset>
+      <fileset dir="${project.bin}">
+        <include name="**/demos/**" />
+        <include name="**/examples/**" />
+      </fileset>
+    </jar>
+    <copy todir="${project.demos}/web">
+      <fileset dir="demo">
+      </fileset>
+    </copy>
+    <mkdir dir="${project.dist}" />
+    <zip destfile="${project.dist}/gwt-incubator.zip" includesFile="${project.jar}">
+      <zipfileset dir="${project.out}" />
+      <fileset dir="${project.dist}" includes="${project.jar}" />
+    </zip>
+  </target>
+
+  <target name="clean" description="Cleans intermediate and output files">
+    <delete dir="${project.build}" />
+  </target>
+
+  <target name="all"
+          description=" Cleans, builds,tests, and packages incubator"
+          depends="clean,build,test,dist" />
+
+
+  <!-- Testing public tasks -->
+  <target name="test"
+          depends="build.tests"
+          description="Run hosted-mode, web-mode, and remoteweb tests for this project.">
+    <!--
+        Run hosted and web mode tests for the platform on which this build
+        is executing
+        -->
+    <limit failonerror="true" hours="2">
+      <parallel threadsPerProcessor="2">
+        <!-- test.remoteweb.body is a no-op unless gwt.remote.browsers is defined -->
+        <antcall target="test.remoteweb.body" inheritAll="No" />
+        <antcall target="test.hosted.body" inheritAll="No" />
+        <antcall target="test.web.body" inheritAll="No" />
+      </parallel>
+    </limit>
+  </target>
+
+  <target name="test.hosted"
+          depends="build.tests, test.hosted.body"
+          description="Runs only hosted mode tests">
+  </target>
+
+  <target name="test.web"
+          depends="build.tests, test.web.body"
+          description="Run only web-mode tests, locally, for this project.">
+  </target>
+
+  <target name="test.remoteweb"
+          description="Run a remoteweb test at the given host and path"
+          depends="build.tests,test.remoteweb.body">
+  </target>
+
+
+  <!-- Helper tasks -->
+
+  <target name="checkhome">
     <fail message="can't find gwt, please set gwt.home property (ant -Dgwt.home=...)"
           unless="gwt.home" />
-
+    <available file="${gwt.home}" type="dir" property="gwt.home.exists" />
+    <fail unless="gwt.home.exists" message="gwt.home directory '${gwt.home}' doesn't exist" />
   </target>
 
-  <target name="inittools" unless="gwt.tools">
-    <!-- if gwt.tools isn't set, check if env $GWT_TOOLS is -->
-    <condition property="gwt.tools" value="${env.GWT_TOOLS}" >
-       <isset property="env.GWT_TOOLS" />
-    </condition>
-    <fail message="can't find gwt tools, please set gwt.tools property (ant -Dgwt.tools=...)"
-          unless="gwt.tools" />
-  </target>
-
-  <target name="checksetup" depends="inithome,inittools">
+  <target name="checksetup" depends="checkhome">
     <fail message="unknown platform" unless="gwt.platform" />
     <echo message="gwt.home = ${gwt.home}" />
     <echo message="gwt.tools = ${gwt.tools}" />
     <echo message="gwt.platform = ${gwt.platform}" />
+    <if>
+      <isset property="project.external.bin" />
+      <then>
+        <echo message="project.external.bin = ${project.external.bin}" />
+      </then>
+    </if>
   </target>
 
-  <target name="build" depends="checksetup">
-    <mkdir dir="${javac.out}"/>
-    <javac compiler="javac1.4" listfiles="true" destdir="${javac.out}">
-       <src path="src"/>
-       <classpath location="${gwt.user.jar}"/>
-       <classpath location="${gwt.dev.jar}"/>
-       <classpath location="${gwt.tools}/lib/javaswf/javaswf-20050404.jar"/>
-       <classpath location="${gwt.tools}/lib/w3c/sac/sac-1.3.jar"/>
-       <classpath location="${gwt.tools}/lib/w3c/flute/flute-1.3.jar"/>
-    </javac>
-    <copy todir="${javac.out}">
-       <fileset dir="src">
-          <include name="**/public/**"/>
-          <exclude name="**/.svn/**"/>
-       </fileset>
-    </copy>
+  <!-- Compile the project, unless project.external.bin is specified -->
+  <target name="compile" unless="project.external.bin">
+    <mkdir dir="${project.bin}" />
+    <echo message="Compiling source..." />
+    <gwt.javac destdir="${project.bin}">
+      <classpath>
+        <pathelement location="${gwt.user.jar}" />
+        <pathelement location="${gwt.dev.jar}" />
+        <pathelement location="${gwt.tools}/lib/javaswf/javaswf-20050404.jar" />
+        <pathelement location="${gwt.tools}/lib/w3c/sac/sac-1.3.jar" />
+        <pathelement location="${gwt.tools}/lib/w3c/flute/flute-1.3.jar" />
+      </classpath>
+    </gwt.javac>
+
   </target>
 
-  <target name="dist" depends="build">
-    <mkdir dir="${project.build}/doc"/>
-    <copy todir="${project.build}/doc">
-       <fileset dir="doc">
-          <exclude name="**/.svn/**"/>
-       </fileset>
-    </copy>
-    <mkdir dir="${project.build}/demo"/>
-    <copy todir="${project.build}/demo">
-       <fileset dir="demo">
-          <exclude name="**/.svn/**"/>
-       </fileset>
-    </copy>
-    <mkdir dir="build/dist"/>
-    <jar destfile="build/dist/gwt-incubator.jar" >
-       <zipfileset dir="${javac.out}" />
-       <zipfileset dir="${project.build}/demo" prefix="demo/" />
-       <zipfileset dir="${project.build}/doc" prefix="doc/" />
-       <zipfileset src="${gwt.tools}/lib/javaswf/javaswf-20050404.jar" />
-       <zipfileset src="${gwt.tools}/lib/w3c/sac/sac-1.3.jar"/>
-       <zipfileset src="${gwt.tools}/lib/w3c/flute/flute-1.3.jar"/>
-       <zipfileset dir="src" prefix="" defaultexcludes="yes" />
+  <!--#############################
+   Testing helper tasks 
+   -->
+
+  <!-- cleans the report dir to avoid confusion when tracking down unit test failures -->
+  <target name="clean.test.results">
+    <echo message = "cleaning all test results"/>
+    <delete dir="${project.test.results}" />
+  </target>
+
+  <!-- compiles the test code. Even if an exteral bin is set, ant still must compile the tests, 
+  as we want to only include files reachable from the test source directory-->
+  <target name="compile.tests">
+    <mkdir dir="${project.test.bin}" />
+    <gwt.javac destdir="${project.test.bin}">
+      <classpath>
+        <pathelement location="${gwt.tools.lib}/junit/junit-3.8.1.jar" />
+        <pathelement location="${gwt.user.jar}" />
+        <pathelement location="${gwt.dev.jar}" />
+        <pathelement location="${project.jar}" />
+        <pathelement location="${project.bin}" />
+        <pathelement location="${gwt.tools}/lib/javaswf/javaswf-20050404.jar" />
+        <pathelement location="${gwt.tools}/lib/w3c/sac/sac-1.3.jar" />
+        <pathelement location="${gwt.tools}/lib/w3c/flute/flute-1.3.jar" />
+      </classpath>
+      <src>
+        <pathelement location="./test" />
+      </src>
+    </gwt.javac>
+  </target>
+
+  <!-- compiles the test code for this project -->
+  <target name="build.tests" depends="clean.test.results,build, compile.tests">
+    <mkdir dir="${project.test}" />
+    <jar destfile="${project.test.jar}">
+      <fileset dir="${project.test.bin}" />
+      <fileset dir="test" />
     </jar>
   </target>
 
-  <import file="testsets.ant.xml" />
-
-  <target name="build.tests" depends="build"
-          description="Compiles the test code for this project">
-     <mkdir dir="${javac.junit.out}" />
-     <echo message="dev is ${gwt.dev.jar}"/>
-
-     <gwt.javac destdir="${javac.junit.out}">
-        <classpath>
-	   <pathelement location="${javac.out}" />
-           <pathelement location="${gwt.tools.lib}/junit/junit-3.8.1.jar" />
-           <pathelement location="${gwt.user.jar}"/>
-           <pathelement location="${gwt.dev.jar}"/>
-           <pathelement location="${gwt.tools}/lib/javaswf/javaswf-20050404.jar"/>
-           <pathelement location="${gwt.tools}/lib/w3c/sac/sac-1.3.jar"/>
-           <pathelement location="${gwt.tools}/lib/w3c/flute/flute-1.3.jar"/>
-        </classpath>
-        <src>
-	   <pathelement location="./test" />
-        </src>
-     </gwt.javac>
-   </target>
-
-  <target name="remoteweb-test" 
-          description="Run a remoteweb test at the given host and path">
-     <echo message="Performing remote browser testing at rmi://${gwt.remote.browser}" />
-     <gwt.junit 
-         test.args="-out www -web -remoteweb rmi://${gwt.remote.browser}" 
-         test.out="${junit.out}/${gwt.remote.browser}" 
-         test.cases="default.web.tests" />
+  <target name="test.hosted.body">
+    <gwt.junit test.out="${project.test.results}/${gwt.platform}-hosted-mode"
+               test.cases="default.hosted.tests" />
   </target>
 
-  <target name="test" depends="build, test.hosted, test.web, test.remoteweb">
+  <target name="test.web.body">
+    <gwt.junit test.args="-out www -web"
+               test.out="${project.test.results}/${gwt.platform}-web-mode"
+               test.cases="default.web.tests" />
   </target>
 
-  <target name="test.hosted" depends="build, build.tests">
-     <gwt.junit test.out="${junit.out}/${gwt.platform}-hosted-mode" test.cases="default.hosted.tests" />
+  <target name="test.remoteweb.body" if="gwt.remote.browsers">
+    <echo message="Performing remote browser testing at ${gwt.remote.browsers}" />
+    <gwt.junit test.args="-out www -remoteweb ${gwt.remote.browsers}"
+               test.out="${project.test.results}/remoteweb"
+               test.cases="default.web.tests">
+    </gwt.junit>
   </target>
-
-  <target name="test.web" depends="build, build.tests" 
-          description="Run only web-mode tests, locally, for this project.">
-     <gwt.junit test.args="-out www -web" 
-                test.out="${junit.out}/${gwt.platform}-web-mode" 
-                test.cases="default.web.tests" />
-  </target>
-
-  <target name="test.remoteweb" depends="build, build.tests" 
-          description="Run remote web-mode tests, using gwt.remote.browsers (e.g. -Dgwt.remote.browsers=gwt-tester-02/ie6,gwt-tester-03/ie7)">
-     <foreach list="${gwt.remote.browsers}" delimiter="," parallel="true" 
-              maxThreads="5" target="remoteweb-test" 
-              param="gwt.remote.browser" />
-  </target>
-
-  <target name="clean">
-     <delete dir="build"/>
-  </target>
-
 </project>
