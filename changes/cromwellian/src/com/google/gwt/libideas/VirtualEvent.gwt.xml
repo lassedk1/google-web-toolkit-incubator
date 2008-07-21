@@ -18,5 +18,5 @@
     <inherits name="com.google.gwt.libideas.Event"/>   
 
     <!-- We're using a two-level package naming scheme -->
-    <source path="vevent/shared"/>
+    <source path="event/virtual/shared"/>
 </module>
