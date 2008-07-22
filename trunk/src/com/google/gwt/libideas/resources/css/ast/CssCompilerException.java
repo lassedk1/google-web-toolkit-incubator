@@ -19,11 +19,11 @@ package com.google.gwt.libideas.resources.css.ast;
  * Used by {@link CssVisitor}.
  */
 public class CssCompilerException extends RuntimeException {
-  CssCompilerException(String message) {
+  public CssCompilerException(String message) {
     super(message);
   }
   
-  CssCompilerException(String message, Throwable cause) {
+  public CssCompilerException(String message, Throwable cause) {
     super(message, cause);
   }
   

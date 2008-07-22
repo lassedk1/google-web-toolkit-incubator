@@ -26,28 +26,55 @@ import java.lang.annotation.Target;
 /**
  * Aggregates and minifies CSS stylesheets. A CssResource represents a regular
  * CSS file with GWT-specific at-rules.
+ * <p>
+ * Currently-supported accessor functions:
  * 
+ * <ul>
+ * <li>{@code String someClassName();} will allow the css class
+ * <code>.someClassName</code> to be obfuscated at runtime. The function will
+ * return the obfuscated class name.</li>
+ * <li>{@code Sprite someSpriteName();} allows bundled images to be used as CSS
+ * background images. Use {@link Sprite#apply(Element)} to display the sprite in
+ * the given Element.</li>
+ * </ul>
+ * 
+ * <p>
  * Currently-supported rules:
  * 
  * <ul>
  * <li>{@code @def NAME literal-value; .myClass {background: NAME;}} Define a
- * static constant.
+ * static constant.</li>
  * <li>{@code @eval NAME Java-expression; .myClass {background: NAME;}} Define
- * a constant based on a Java expression.
+ * a constant based on a Java expression.</li>
  * <li>{@code @if [!]property (list of values) {ruleBlock}} Include or exclude
- * CSS rules based on the value of a deferred-binding property.
+ * CSS rules based on the value of a deferred-binding property.</li>
  * <li>{@code @if Java-expression {ruleBlock}} Include or exclude CSS rules
- * based on a boolean Java expression.
+ * based on a boolean Java expression.</li>
  * <li>{@code @sprite className siblingImageResource;} Return a {@link Sprite}
- * to access the style.
+ * to access the style.</li>
  * <li>{@code @url NAME siblingDataResource; .myClass {background: NAME repeat-x;}}
- * Use a DataResource to generate a <code>url('...'}</code> value.
+ * Use a DataResource to generate a <code>url('...'}</code> value.</li>
  * </ul>
+ * 
+ * @see <a
+ *      href="http://code.google.com/p/google-web-toolkit-incubator/wiki/CssResource">
+ *      CssResource design doc</a>
  */
 @ResourceGeneratorType(CssResourceGenerator.class)
 public interface CssResource extends ResourcePrototype {
   /**
-   * The original CSS class name specified in the resource.
+   * The original CSS class name specified in the resource. This allows CSS
+   * classes that do not correspond to Java identifiers to be mapped onto
+   * obfuscated class accessors.
+   * 
+   * <pre>
+   * .some-non-java-ident { background: blue; }
+   * 
+   * interface MyCssResource extends CssResource {
+   *   {@literal @}ClassName("some-non-java-ident")
+   *   String classAccessor();
+   * }
+   * </pre>
    */
   @Documented
   @Target(ElementType.METHOD)
@@ -56,7 +83,7 @@ public interface CssResource extends ResourcePrototype {
   }
 
   /**
-   * Override the prefix used for obfuscated CSS class names within a bundle
+   * Overrides the prefix used for obfuscated CSS class names within a bundle
    * type. This annotation must be applied to the enclosing
    * ImmutableResourceBundle because the bundle itself defines the scope in
    * which the obfuscation of CSS class identifiers is applied.
@@ -83,5 +110,8 @@ public interface CssResource extends ResourcePrototype {
     void apply(Element e);
   }
 
+  /**
+   * Provides the contents of the CssResource.
+   */
   String getText();
 }

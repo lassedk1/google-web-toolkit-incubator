@@ -15,8 +15,6 @@
  */
 package com.google.gwt.libideas.resources.client.impl;
 
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 
 /**
@@ -24,19 +22,18 @@ import com.google.gwt.dom.client.Element;
  */
 public class SpriteImpl {
   /**
-   * 
+   * We need a second element to actually display the background image.
    */
   public static class SpriteImplIE6 extends SpriteImpl {
     @Override
     public void apply(Element e, String className) {
       e.setClassName(className);
-
-      DivElement screen = Document.get().createDivElement();
-      e.appendChild(screen);
+      e.setInnerHTML("<div></div>");
     }
   }
 
   public void apply(Element e, String className) {
     e.setClassName(className);
+    e.setInnerHTML("");
   }
 }
