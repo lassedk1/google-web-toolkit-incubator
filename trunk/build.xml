@@ -192,14 +192,8 @@ Incubator tasks
 
   <!-- Helper tasks -->
 
-  <target name="checkhome">
-    <fail message="can't find gwt, please set gwt.home property (ant -Dgwt.home=...)"
-          unless="gwt.home" />
-    <available file="${gwt.home}" type="dir" property="gwt.home.exists" />
-    <fail unless="gwt.home.exists" message="gwt.home directory '${gwt.home}' doesn't exist" />
-  </target>
 
-  <target name="checksetup" depends="checkhome">
+  <target name="checksetup">
     <fail message="unknown platform" unless="gwt.platform" />
     <echo message="gwt.home = ${gwt.home}" />
     <echo message="gwt.tools = ${gwt.tools}" />
@@ -234,7 +228,7 @@ Incubator tasks
 
   <!-- cleans the report dir to avoid confusion when tracking down unit test failures -->
   <target name="clean.test.results">
-    <echo message = "cleaning all test results"/>
+    <echo message="cleaning all test results" />
     <delete dir="${project.test.results}" />
   </target>
 

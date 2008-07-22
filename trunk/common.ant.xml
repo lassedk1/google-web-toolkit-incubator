@@ -35,7 +35,7 @@
   <fail unless="gwt.platform" message="Building on ${os.name} is not supported" />
 
   <condition property="junit.platform.args" value="-XstartOnFirstThread" else="">
-     <isset property="build.host.ismac" />     
+    <isset property="build.host.ismac" />
   </condition>
 
   <!--########################## 
@@ -45,9 +45,7 @@
 
   <!-- Global Properties -->
   <property environment="env" />
-  <condition property="gwt.tools.check" value="${env.GWT_TOOLS}">
-    <isset property="env.GWT_TOOLS" />
-  </condition>
+
 
   <!-- All the project specific locations-->
   <property name="project.build" location="${project.root}/build" />
@@ -57,7 +55,16 @@
   <property name="project.src" location="${project.root}/src" />
 
   <!-- GWT specific properties -->
-  <property name="gwt.tools" location="${gwt.tools.check}" />
+  <condition property="gwt.tools" value="${env.GWT_TOOLS}">
+    <isset property="env.GWT_TOOLS" />
+  </condition>
+
+  <condition property="gwt.home" value="${env.GWT_HOME}">
+    <isset property="env.GWT_HOME" />
+  </condition>
+
+  <!-- If not set, try to set tools to a sibling of the project root -->
+  <property name="gwt.tools" value="${project.root}/../tools" />
   <property name="gwt.tools.lib" location="${gwt.tools}/lib" />
   <property name="gwt.tools.antlib" location="${gwt.tools}/antlib" />
   <property name="gwt.dev.jar" location="${gwt.home}/gwt-dev-${gwt.platform}.jar" />
@@ -65,10 +72,22 @@
 
 
 
+
   <!-- Sanity checks -->
   <available file="${gwt.tools}" type="dir" property="gwt.tools.exists" />
   <fail unless="gwt.tools.exists"
         message="can't find gwt tools, please set gwt.tools property (ant -Dgwt.tools=...) or define the GWT_TOOLS environment variable" />
+
+  <available file="${gwt.tools.lib}" type="dir" property="gwt.tools.lib.exists" />
+  <fail unless="gwt.tools.lib.exists"
+        message="can't find gwt tools lib, check your gwt tools directory '${gwt.tools}'" />
+
+  <fail unless="gwt.home"
+        message="can't find gwt home, please set gwt.home property (ant -Dgwt.home=...) or define the GWT_HOME environment variable" />
+ 
+  <available file="${gwt.user.jar}" type="file" property="gwt.user.exists" />
+  <fail unless="gwt.user.exists"
+        message="gwt user jar does not appear to exist, check your gwt home directory '${gwt.home}'" />
 
 
   <!-- Javac properties used to invoke java-->
@@ -105,7 +124,7 @@
 
 
   <!-- Project specific junit properties -->
-  <property name="project.test" location="${project.build}/test"/>
+  <property name="project.test" location="${project.build}/test" />
   <property name="project.test.bin" location="${project.test}/bin" />
   <property name="project.test.results" location="${project.test}/results" />
 
