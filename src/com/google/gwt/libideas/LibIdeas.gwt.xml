@@ -21,4 +21,5 @@
   <inherits name="com.google.gwt.libideas.StyleInjector" />
   <inherits name="com.google.gwt.libideas.Logging" />
   <inherits name="com.google.gwt.libideas.Validation" />
+  <inherits name="com.google.gwt.libideas.Event" />
 </module>
