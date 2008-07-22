@@ -121,7 +121,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       for (String c : missingClasses) {
         errorLogger.log(TreeLogger.ERROR, c + ": Fix by adding ." + c + "{}");
       }
-      throw new RuntimeException("Missing a CSS replacement");
+      throw new CssCompilerException("Missing a CSS replacement");
     }
   }
 
@@ -193,7 +193,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
           ctx.removeMe();
         } catch (BadPropertyValueException e) {
           logger.log(TreeLogger.ERROR, "Unable to evaluate @if block", e);
-          throw new RuntimeException("Unable to parse CSS", e);
+          throw new CssCompilerException("Unable to parse CSS", e);
         }
       }
     }
@@ -357,29 +357,39 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
    * ImageResource.
    */
   private static class Spriter extends CssModVisitor {
-    private final TreeLogger logger;
     private final ResourceContext context;
+    private final JClassType cssResourceType;
+    private final TreeLogger logger;
 
-    public Spriter(TreeLogger logger, ResourceContext context) {
+    public Spriter(TreeLogger logger, ResourceContext context,
+        JClassType cssResourceType) {
       this.logger = logger.branch(TreeLogger.DEBUG,
           "Creating image sprite classes");
       this.context = context;
+      this.cssResourceType = cssResourceType;
     }
 
     @Override
     public void endVisit(CssSprite x, Context ctx) {
+      JClassType bundleType = context.getResourceBundleType();
       String className = x.getCssClass();
       String functionName = x.getResourceFunction();
 
-      // Find the method
-      JMethod method = context.getResourceBundleType().findMethod(functionName,
-          new JType[0]);
+      // Ensure that there is a Sprite method defined in the interface
+      JMethod spriteMethod = cssResourceType.findMethod(className, new JType[0]);
+      if (spriteMethod == null) {
+        logger.log(TreeLogger.ERROR, "Unable to find method \"Sprite "
+            + className + "()\" in " + cssResourceType.getQualifiedSourceName());
+        throw new CssCompilerException("Cannot find Sprite method");
+      }
 
-      if (method == null) {
+      // Find the image accessor method
+      JMethod imageMethod = bundleType.findMethod(functionName, new JType[0]);
+
+      if (imageMethod == null) {
         logger.log(TreeLogger.ERROR, "Unable to find ImageResource method "
-            + functionName + " in "
-            + context.getResourceBundleType().getQualifiedSourceName());
-        throw new RuntimeException("Cannot find image function");
+            + functionName + " in " + bundleType.getQualifiedSourceName());
+        throw new CssCompilerException("Cannot find image function");
       }
 
       CssRule spriteRule = new CssRule();
@@ -416,7 +426,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       try {
         if (context.getGeneratorContext().getPropertyOracle().getPropertyValue(
             logger, "user.agent").equals("ie6")) {
-
           CssRule screenRule = new CssRule();
           CssSelector screenSelector = new CssSelector(
               classSelector.getSelector() + " div");
@@ -445,7 +454,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         }
       } catch (BadPropertyValueException e) {
         logger.log(TreeLogger.ERROR, "No user.agent property", e);
-        throw new RuntimeException("No user.agent property");
+        throw new CssCompilerException("No user.agent property");
       }
       ctx.replaceMe(spriteRule);
     }
@@ -515,7 +524,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
             logger.log(TreeLogger.ERROR, "Unable to find DataResource method "
                 + functionName + " in "
                 + context.getResourceBundleType().getQualifiedSourceName());
-            throw new RuntimeException("Cannot find data function");
+            throw new CssCompilerException("Cannot find data function");
           }
 
           String instance = "((" + DataResource.class.getName() + ")("
@@ -663,7 +672,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     sw.println("public String getText() {");
     sw.indent();
 
-    String cssExpression = makeExpression(logger, resource, replacements);
+    String cssExpression = makeExpression(logger,
+        method.getReturnType().isClassOrInterface(), resource, replacements);
     sw.println("return " + cssExpression + ";");
     sw.outdent();
     sw.println("}");
@@ -843,8 +853,9 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
    * Create a Java expression that evaluates to the string representation of the
    * stylesheet resource.
    */
-  private String makeExpression(TreeLogger logger, URL css,
-      Map<String, String> classReplacements) throws UnableToCompleteException {
+  private String makeExpression(TreeLogger logger, JClassType cssResourceType,
+      URL css, Map<String, String> classReplacements)
+      throws UnableToCompleteException {
 
     try {
       // Create the base AST
@@ -861,7 +872,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
           context.getGeneratorContext().getPropertyOracle())).accept(sheet);
 
       // Create CSS sprites
-      (new Spriter(logger, context)).accept(sheet);
+      (new Spriter(logger, context, cssResourceType)).accept(sheet);
 
       // Rename css .class selectors
       (new ClassRenamer(logger, classReplacements)).accept(sheet);
@@ -877,8 +888,10 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       return makeExpression(logger, sheet);
 
     } catch (CssCompilerException e) {
-      // Take this as a sign that one of the visitors was unhappy
-      logger.log(TreeLogger.ERROR, "Unable to process CSS", e);
+      // Take this as a sign that one of the visitors was unhappy, but only
+      // log the stack trace if there's a causal (i.e. unknown) exception.
+      logger.log(TreeLogger.ERROR, "Unable to process CSS",
+          e.getCause() == null ? null : e);
       throw new UnableToCompleteException();
     }
   }
