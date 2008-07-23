@@ -17,10 +17,15 @@ package com.google.gwt.libideas.event.virtual.shared;
 
 import com.google.gwt.libideas.event.shared.AbstractEvent;
 import com.google.gwt.libideas.event.shared.EventHandler;
-
+/**
+ * TODO
+ * @param <T> event handler type
+ */
 public abstract class VirtualEvent<T extends EventHandler>
     extends AbstractEvent<T> {
-
+  /**
+   * TODO
+   */
   public static class Key<T extends EventHandler> extends AbstractEvent.Key<T> {
   }
 

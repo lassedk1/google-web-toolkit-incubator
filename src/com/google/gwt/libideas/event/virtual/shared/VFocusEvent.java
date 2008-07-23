@@ -14,7 +14,9 @@
  * the License.
  */
 package com.google.gwt.libideas.event.virtual.shared;
-
+/**
+ * TODO
+ */
 public class VFocusEvent extends VirtualEvent<VFocusHandler> {
 
   public static Key<VFocusHandler> KEY = new Key<VFocusHandler>();

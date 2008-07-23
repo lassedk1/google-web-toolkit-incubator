@@ -36,7 +36,6 @@ public abstract class PopupWidgetLogHandler<T extends Widget> extends
     this.popup = new PopupPanel(autoShow);
     getPopup().setStyleName("gwt-PopupWidgetHandler");
     this.autoShow = autoShow;
-    setPopupPosition(0, 0);
     this.widget = widget;
     getPopup().setWidget(widget);
   }
@@ -54,6 +53,7 @@ public abstract class PopupWidgetLogHandler<T extends Widget> extends
   }
 
   public void showLog() {
+    
     if (getPopup().equals(getWidget().getParent())) {
       getPopup().show();
     }

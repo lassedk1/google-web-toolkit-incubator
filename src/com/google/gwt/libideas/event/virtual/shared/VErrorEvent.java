@@ -14,7 +14,9 @@
  * the License.
  */
 package com.google.gwt.libideas.event.virtual.shared;
-
+/**
+ * TODO
+ */
 public class VErrorEvent extends VirtualEvent<VErrorHandler> {
 
   public static Key<VErrorHandler> KEY = new Key<VErrorHandler>();

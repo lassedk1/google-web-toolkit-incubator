@@ -14,7 +14,9 @@
  * the License.
  */
 package com.google.gwt.libideas.event.virtual.shared;
-
+/**
+ * TODO
+ */
 public class VMouseUpEvent extends VMouseEvent<VMouseUpHandler> {
 
   public static Key<VMouseUpHandler> KEY = new Key<VMouseUpHandler>();

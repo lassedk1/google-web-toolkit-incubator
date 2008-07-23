@@ -59,6 +59,9 @@ Visual styling
   background: url('%treeClosed%') no-repeat center left;
 }
 
+.gwt-FastTreeItem-leaf {
+  background: url('%treeClosed%') no-repeat center left;
+}
 .gwt-FastTree .treeItemContent {
   padding: 2px;
 }

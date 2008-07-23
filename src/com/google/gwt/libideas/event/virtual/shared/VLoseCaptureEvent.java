@@ -14,7 +14,9 @@
  * the License.
  */
 package com.google.gwt.libideas.event.virtual.shared;
-
+/**
+ * TODO
+ */
 public class VLoseCaptureEvent extends VirtualEvent<VLoseCaptureHandler> {
 
   public static Key<VLoseCaptureHandler> KEY = new Key<VLoseCaptureHandler>();

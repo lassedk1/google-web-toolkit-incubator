@@ -14,7 +14,9 @@
  * the License.
  */
 package com.google.gwt.libideas.event.virtual.shared;
-
+/**
+ * TODO
+ */
 public class VBlurEvent extends VirtualEvent<VBlurHandler> {
 
   public static Key<VBlurHandler> KEY = new Key<VBlurHandler>();

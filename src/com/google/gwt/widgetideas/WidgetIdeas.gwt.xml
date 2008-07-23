@@ -18,6 +18,7 @@
 <!-- Most new code should inherit this module.                              -->
 <!--                                                                        -->
 <module>
+	<inherits name='com.google.gwt.widgetideas.BasicWidget' />
 	<inherits name='com.google.gwt.widgetideas.BasicTable' />
 	<inherits name='com.google.gwt.widgetideas.ScrollTable' />
 	<inherits name='com.google.gwt.widgetideas.GlassPanel' />

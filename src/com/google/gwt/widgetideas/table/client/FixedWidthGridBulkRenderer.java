@@ -56,6 +56,18 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
   private String[] colStarts;
   private String[] colEnds;
 
+  private RenderingOptions options = new RenderingOptions() {
+    @Override
+    public String getEndCell(int column) {
+      return colEnds[column];
+    }
+
+    @Override
+    public String getStartCell(int column) {
+      return colStarts[column];
+    }
+  };
+
   /**
    * Constructor. Takes in the number of columns in the table to allow efficient
    * creation of the header row.
@@ -70,29 +82,6 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
     initCustomRenderValues();
   }
 
-  private RenderingOptions options = new RenderingOptions() {
-    @Override
-    public String getEndCell(int column) {
-      return colEnds[column];
-    }
-
-    @Override
-    public String getStartCell(int column) {
-      return colStarts[column];
-    }
-  };
-
-  @Override
-  protected RenderingOptions createRenderingOptions() {
-    initCustomRenderValues();
-    return options;
-  }
-
-  protected void setColumnBeginAndEnd(int column, String start, String end) {
-    colStarts[column] = start;
-    colEnds[column] = end;
-  }
-
   /**
    * Sets all the style names for cells in a given column.
    * 
@@ -104,24 +93,16 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
     colStarts[column] = "<td class='" + styleName + "'><span>";
   }
 
-  private void initCustomRenderValues() {
-    if (colStarts == null) {
-      colStarts = new String[numColumns];
-      for (int i = 0; i < numColumns; i++) {
-        colStarts[i] = "<td>";
-      }
-
-      colEnds = new String[numColumns];
-      for (int i = 0; i < numColumns; i++) {
-        colEnds[i] = "</td>";
-      }
-    }
-  }
-
   @Override
   protected void addChainingCallback(final RenderingOptions options) {
     // Set the callback.
     options.callback = new ChainingCallback(options.callback);
+  }
+
+  @Override
+  protected RenderingOptions createRenderingOptions() {
+    initCustomRenderValues();
+    return options;
   }
 
   /**
@@ -147,5 +128,24 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
     table.updateGhostRow();
     options.headerRow = DOM.toString(table.getGhostRow());
     super.renderRows(iterator, options);
+  }
+
+  protected void setColumnBeginAndEnd(int column, String start, String end) {
+    colStarts[column] = start;
+    colEnds[column] = end;
+  }
+
+  private void initCustomRenderValues() {
+    if (colStarts == null) {
+      colStarts = new String[numColumns];
+      for (int i = 0; i < numColumns; i++) {
+        colStarts[i] = "<td>";
+      }
+
+      colEnds = new String[numColumns];
+      for (int i = 0; i < numColumns; i++) {
+        colEnds[i] = "</td>";
+      }
+    }
   }
 }

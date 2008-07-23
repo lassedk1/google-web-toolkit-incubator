@@ -146,11 +146,10 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
       return getModel().createKeyFromDate(d);
     }
   }
-
+  
   private EventHandlers handlers = new EventHandlers();
 
   private DateStyler styler = new DateStyler();
-
   private Date highlightedDate;
   private MonthSelector monthSelector;
   private CalendarView calendar;

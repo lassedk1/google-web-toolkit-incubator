@@ -1,7 +1,21 @@
+/*
+ * Copyright 2008 Google Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.google.gwt.demos.event.client;
 
 import com.google.gwt.core.client.Duration;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -11,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+/**
+ * TODO
+ */
 public class VirtualRootPanel extends SimplePanel {
 
   private GWTCanvas canvas;
@@ -36,6 +53,12 @@ public class VirtualRootPanel extends SimplePanel {
     sinkEvents(Event.ONMOUSEWHEEL);
   }
 
+  public void add(CanvasWidget widget) {
+    widgets.add(widget);
+    widget.setVirtualRoot(this);
+    redraw();
+  }
+
   public void onBrowserEvent(Event event) {
     switch (event.getTypeInt()) {
       case Event.ONMOUSEDOWN:
@@ -49,6 +72,19 @@ public class VirtualRootPanel extends SimplePanel {
         break;
       default:
         super.onBrowserEvent(event);
+    }
+  }
+
+  public void remove(CanvasWidget widget) {
+    widgets.remove(widget);
+    widget.setVirtualRoot(null);
+    redraw();
+  }
+
+  void redraw() {
+    canvas.clear();
+    for (CanvasWidget widget : widgets) {
+      widget.paint(canvas);
     }
   }
 
@@ -72,8 +108,9 @@ public class VirtualRootPanel extends SimplePanel {
       int lx = event.getClientX() - DOM.getAbsoluteLeft(getElement());
       int ly = event.getClientY() - DOM.getAbsoluteTop(getElement());
       if (canvasWidget.contains(lx, ly)) {
-        if(dragging && canvasWidget != lastWidget && event.getTypeInt() ==
-            Event.ONMOUSEMOVE) continue;
+        if (dragging && canvasWidget != lastWidget
+            && event.getTypeInt() == Event.ONMOUSEMOVE)
+          continue;
         if (Event.ONMOUSEDOWN == event.getTypeInt()) {
           dragTimestamp = Duration.currentTimeMillis();
           maybeDrag = true;
@@ -89,13 +126,13 @@ public class VirtualRootPanel extends SimplePanel {
           }
           canvasWidget.fireVirtualEvent(Event.ONMOUSEOVER, vEventData);
         } else {
-//          GWT.log("lx-dragx="+Math.abs(lx-dragX)+" ly-dragy="+Math.abs(ly-dragY)+" dragging="+dragging+" maybedrag="+maybeDrag, null);
+          // GWT.log("lx-dragx="+Math.abs(lx-dragX)+"
+          // ly-dragy="+Math.abs(ly-dragY)+" dragging="+dragging+"
+          // maybedrag="+maybeDrag, null);
           if (!dragging && maybeDrag && event.getTypeInt() == Event.ONMOUSEMOVE
-              && (Math.abs(lx - dragX) > 3 || Math
-              .abs(ly - dragY) > 3)) {
+              && (Math.abs(lx - dragX) > 3 || Math.abs(ly - dragY) > 3)) {
             dragging = true;
-            canvasWidget
-                .fireCustomVirtualEvent(VDragStartEvent.KEY, vEventData);
+            canvasWidget.fireCustomVirtualEvent(VDragStartEvent.KEY, vEventData);
             return;
           } else if (dragging && event.getTypeInt() == Event.ONMOUSEMOVE) {
             vEventData.setDragX(lx - dragX);
@@ -116,8 +153,7 @@ public class VirtualRootPanel extends SimplePanel {
           }
         }
         lastWidget = canvasWidget;
-        canvasWidget
-            .fireVirtualEvent(event.getTypeInt(), vEventData);
+        canvasWidget.fireVirtualEvent(event.getTypeInt(), vEventData);
 
         return;
       }
@@ -125,25 +161,6 @@ public class VirtualRootPanel extends SimplePanel {
     if (lastWidget != null) {
       lastWidget.fireVirtualEvent(Event.ONMOUSEOUT, vEventData);
       lastWidget = null;
-    }
-  }
-
-  public void add(CanvasWidget widget) {
-    widgets.add(widget);
-    widget.setVirtualRoot(this);
-    redraw();
-  }
-
-  public void remove(CanvasWidget widget) {
-    widgets.remove(widget);
-    widget.setVirtualRoot(null);
-    redraw();
-  }
-
-  void redraw() {
-    canvas.clear();
-    for (CanvasWidget widget : widgets) {
-      widget.paint(canvas);
     }
   }
 }

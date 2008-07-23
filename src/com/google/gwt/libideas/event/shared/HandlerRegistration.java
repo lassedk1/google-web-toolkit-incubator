@@ -36,7 +36,7 @@ public class HandlerRegistration {
     this.key = key;
   }
 
-  void removeHandler() {
+  public void removeHandler() {
     target.removeHandler(key, handler);
   }
 }

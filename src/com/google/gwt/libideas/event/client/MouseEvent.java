@@ -19,11 +19,14 @@ import com.google.gwt.libideas.event.shared.EventHandler;
 import com.google.gwt.user.client.Event;
 
 /**
- * Absract class representing mouse events.
+ * Abstract class representing mouse events.
+ * @param <T> event handler type
  */
 public abstract class MouseEvent<T extends EventHandler>
     extends BrowserEvent<T> {
-
+  /**
+   * TODO
+   */
   public enum Button {
 
     LEFT, MIDDLE, RIGHT;

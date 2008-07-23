@@ -17,10 +17,15 @@ package com.google.gwt.libideas.event.virtual.shared;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
 import com.google.gwt.user.client.Event;
-
+/**
+ * TODO
+ * @param <T> event handler type
+ */
 public abstract class VMouseEvent<T extends EventHandler>
     extends VirtualEvent<T> {
-
+  /**
+   * TODO
+   */
   public enum Button {
 
     LEFT, MIDDLE, RIGHT;

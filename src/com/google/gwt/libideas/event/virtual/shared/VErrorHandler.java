@@ -17,7 +17,9 @@
 package com.google.gwt.libideas.event.virtual.shared;
 
 import com.google.gwt.libideas.event.shared.EventHandler;
-
+/**
+ * TODO
+ */
 public interface VErrorHandler extends EventHandler {
 
   void onError(VErrorEvent event);
