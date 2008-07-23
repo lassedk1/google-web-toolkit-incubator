@@ -14,7 +14,9 @@
  * the License.
  */
 package com.google.gwt.libideas.event.virtual.shared;
-
+/**
+ * TODO
+ */
 public class VDoubleClickEvent extends VMouseEvent<VDoubleClickHandler> {
 
   public static Key<VDoubleClickHandler> KEY = new Key<VDoubleClickHandler>();

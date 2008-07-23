@@ -14,7 +14,9 @@
  * the License.
  */
 package com.google.gwt.libideas.event.virtual.shared;
-
+/**
+ * TODO
+ */
 public class VChangeEvent extends VirtualEvent<VChangeHandler> {
 
   public static Key<VChangeHandler> KEY = new Key<VChangeHandler>();

@@ -19,6 +19,7 @@ import com.google.gwt.libideas.event.shared.EventHandler;
 
 /**
  * Represents a subclass of Virtual events analogous to the KeyboardEvent.
+ * @param <T> event handler type
  */
 public abstract class VKeyboardEvent<T extends EventHandler>
     extends VirtualEvent<T> {

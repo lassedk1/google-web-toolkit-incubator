@@ -19,8 +19,7 @@ package com.google.gwt.widgetideas.client.event;
 /**
  * Key board handler.
  */
-
-@SuppressWarnings(value = {"*"})
+ //CHECKSTYLE_OFF
 public interface KeyboardHandler extends EventHandler {
   int KEY_ALT = 18;
   int KEY_BACKSPACE = 8;
@@ -43,4 +42,5 @@ public interface KeyboardHandler extends EventHandler {
   int MODIFIER_CTRL = 2;
   int MODIFIER_META = 8;
   int MODIFIER_SHIFT = 1;
+ 
 }

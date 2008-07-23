@@ -16,6 +16,7 @@
 
 package com.google.gwt.widgetideas.table.client;
 
+import com.google.gwt.core.client.Duration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
@@ -280,7 +281,7 @@ public abstract class TableBulkRenderer {
     if (options.headerRow != null) {
       temp.append(options.headerRow);
     }
-    final long endTime = System.currentTimeMillis() + MAX_TIME;
+    final double endTime = Duration.currentTimeMillis() + MAX_TIME;
 
     class RenderTableCommand implements IncrementalCommand {
       int rowIndex = 0;
@@ -292,11 +293,11 @@ public abstract class TableBulkRenderer {
           return false;
         }
         int checkRow = ROWS_PER_TIME_CHECK;
-        long endSlice = System.currentTimeMillis() + TIME_SLICE;
+        double endSlice = Duration.currentTimeMillis() + TIME_SLICE;
         for (; rows.hasNext(); ++rowIndex) {
           if (options.syncCall == false && --checkRow == 0) {
             checkRow = ROWS_PER_TIME_CHECK;
-            long time = System.currentTimeMillis();
+            double time = Duration.currentTimeMillis();
             if (time > endSlice) {
               // We only check endTime at each slice.
               if (time > endTime) {

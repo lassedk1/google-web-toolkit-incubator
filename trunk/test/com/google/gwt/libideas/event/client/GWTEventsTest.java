@@ -19,7 +19,9 @@ import com.google.gwt.libideas.client.LibTestBase;
 import com.google.gwt.libideas.event.shared.AbstractEvent;
 import com.google.gwt.libideas.event.shared.HandlerManager;
 import com.google.gwt.libideas.event.shared.HandlerRegistration;
-
+/**
+ * TODO
+ */
 public class GWTEventsTest extends LibTestBase {
 
   HandlerManager manager;
@@ -33,21 +35,21 @@ public class GWTEventsTest extends LibTestBase {
 
     final Flag flag = new Flag();
     manager = new HandlerManager(flag);
-    HandlerRegistration downRegistration = manager
-        .addEventHandler(KeyDownEvent.KEY, new KeyDownHandler() {
+    HandlerRegistration downRegistration = manager.addEventHandler(
+        KeyDownEvent.KEY, new KeyDownHandler() {
           public void onKeyDown(KeyDownEvent event) {
             flag.flag = true;
           }
         });
-    HandlerRegistration upRegistration = manager
-        .addEventHandler(KeyUpEvent.KEY, new KeyUpHandler() {
+    HandlerRegistration upRegistration = manager.addEventHandler(
+        KeyUpEvent.KEY, new KeyUpHandler() {
           public void onKeyUp(KeyUpEvent event) {
             flag.flag = true;
           }
         });
 
-    HandlerRegistration pressRegistration = manager
-        .addEventHandler(KeyPressedEvent.KEY, new KeyPressedHandler() {
+    HandlerRegistration pressRegistration = manager.addEventHandler(
+        KeyPressedEvent.KEY, new KeyPressedHandler() {
           public void onKeyPressed(KeyPressedEvent event) {
             flag.flag = true;
           }
@@ -64,55 +66,55 @@ public class GWTEventsTest extends LibTestBase {
     final Flag flag = new Flag();
     manager = new HandlerManager(flag);
 
-    HandlerRegistration downRegistration = manager
-        .addEventHandler(MouseDownEvent.KEY, new MouseDownHandler() {
+    HandlerRegistration downRegistration = manager.addEventHandler(
+        MouseDownEvent.KEY, new MouseDownHandler() {
           public void onMouseDown(MouseDownEvent event) {
             flag.flag = true;
           }
         });
-    HandlerRegistration upRegistration = manager
-        .addEventHandler(MouseUpEvent.KEY, new MouseUpHandler() {
+    HandlerRegistration upRegistration = manager.addEventHandler(
+        MouseUpEvent.KEY, new MouseUpHandler() {
           public void onMouseUp(MouseUpEvent event) {
             flag.flag = true;
           }
         });
 
-    HandlerRegistration clickRegistration = manager
-        .addEventHandler(ClickEvent.KEY, new ClickHandler() {
+    HandlerRegistration clickRegistration = manager.addEventHandler(
+        ClickEvent.KEY, new ClickHandler() {
           public void onClick(ClickEvent event) {
             flag.flag = true;
           }
         });
 
-    HandlerRegistration dblclickRegistration = manager
-        .addEventHandler(DoubleClickEvent.KEY, new DoubleClickHandler() {
+    HandlerRegistration dblclickRegistration = manager.addEventHandler(
+        DoubleClickEvent.KEY, new DoubleClickHandler() {
           public void onDoubleClick(DoubleClickEvent event) {
             flag.flag = true;
           }
         });
 
-    HandlerRegistration outRegistration = manager
-        .addEventHandler(MouseOutEvent.KEY, new MouseOutHandler() {
+    HandlerRegistration outRegistration = manager.addEventHandler(
+        MouseOutEvent.KEY, new MouseOutHandler() {
           public void onMouseOut(MouseOutEvent event) {
             flag.flag = true;
           }
         });
-    HandlerRegistration overRegistration = manager
-        .addEventHandler(MouseOverEvent.KEY, new MouseOverHandler() {
+    HandlerRegistration overRegistration = manager.addEventHandler(
+        MouseOverEvent.KEY, new MouseOverHandler() {
           public void onMouseOver(MouseOverEvent event) {
             flag.flag = true;
           }
         });
 
-    HandlerRegistration moveRegistration = manager
-        .addEventHandler(MouseMoveEvent.KEY, new MouseMoveHandler() {
+    HandlerRegistration moveRegistration = manager.addEventHandler(
+        MouseMoveEvent.KEY, new MouseMoveHandler() {
           public void onMouseMove(MouseMoveEvent event) {
             flag.flag = true;
           }
         });
 
-    HandlerRegistration wheelRegistration = manager
-        .addEventHandler(MouseWheelEvent.KEY, new MouseWheelHandler() {
+    HandlerRegistration wheelRegistration = manager.addEventHandler(
+        MouseWheelEvent.KEY, new MouseWheelHandler() {
           public void onMouseWheel(MouseWheelEvent event) {
             flag.flag = true;
           }

@@ -14,7 +14,9 @@
  * the License.
  */
 package com.google.gwt.libideas.event.virtual.shared;
-
+/**
+ * TODO
+ */
 public class VLoadEvent extends VirtualEvent<VLoadHandler> {
 
   public static Key<VLoadHandler> KEY = new Key<VLoadHandler>();

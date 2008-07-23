@@ -14,7 +14,9 @@
  * the License.
  */
 package com.google.gwt.libideas.event.virtual.shared;
-
+/**
+ * TODO
+ */
 public class VScrollEvent extends VirtualEvent<VScrollHandler> {
 
   public static Key<VScrollHandler> KEY = new Key<VScrollHandler>();

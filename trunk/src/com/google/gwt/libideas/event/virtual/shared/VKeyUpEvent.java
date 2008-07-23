@@ -14,7 +14,9 @@
  * the License.
  */
 package com.google.gwt.libideas.event.virtual.shared;
-
+/**
+ * TODO
+ */
 public class VKeyUpEvent extends VKeyboardEvent<VKeyUpHandler> {
 
   public static Key<VKeyUpHandler> KEY = new Key<VKeyUpHandler>();

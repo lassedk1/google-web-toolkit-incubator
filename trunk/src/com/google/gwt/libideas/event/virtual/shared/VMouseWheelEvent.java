@@ -17,7 +17,9 @@ package com.google.gwt.libideas.event.virtual.shared;
 
 import com.google.gwt.libideas.event.client.MouseWheelHandler;
 import com.google.gwt.libideas.event.shared.HandlerRegistration;
-
+/**
+ * TODO
+ */
 public class VMouseWheelEvent extends VMouseEvent<VMouseWheelHandler> {
 
   /**
