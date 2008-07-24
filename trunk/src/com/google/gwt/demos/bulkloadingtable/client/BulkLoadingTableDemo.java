@@ -72,11 +72,12 @@ public class BulkLoadingTableDemo implements EntryPoint {
     }
   };
 
-  public void log(String log){
+  public void log(String log) {
     Window.setTitle(log);
   }
+
   public void onModuleLoad() {
-   
+
     panel = new VerticalPanel();
     RootPanel.get().add(panel);
     panel.add(new HTML(
@@ -142,7 +143,7 @@ public class BulkLoadingTableDemo implements EntryPoint {
     Button detachedGridAPI = new Button("Go", new ClickListener() {
       public void onClick(Widget sender) {
         clearTable();
-        
+
         long milli = System.currentTimeMillis();
         Grid table = new Grid();
         curTable = table;
@@ -151,13 +152,11 @@ public class BulkLoadingTableDemo implements EntryPoint {
         usingGridAPI(table);
         log("Finished in " + (System.currentTimeMillis() - milli)
             + " milliseconds");
-         
-       
       }
 
     });
     panel.add(detachedGridAPI);
-    
+
     panel.add(new HTML("<p/><p/><b> Use Async BulkLoadedTable API</b>"));
     Button asyncAPI = new Button("Go", new ClickListener() {
       public void onClick(Widget sender) {
@@ -202,8 +201,7 @@ public class BulkLoadingTableDemo implements EntryPoint {
     panel.add(table);
 
     table.setWidget(0, 3, new Button("A widget"));
-    log("Finished in " + (System.currentTimeMillis() - milli)
-        + " milliseconds");
+    log("Finished in " + (System.currentTimeMillis() - milli) + " milliseconds");
   }
 
   private void usingBulkLoadedTableAPI(final FlexTable table, final long milli) {
