@@ -17,6 +17,7 @@
 package com.google.gwt.demos.bulkloadingtable.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -46,7 +47,36 @@ public class BulkLoadingTableDemo implements EntryPoint {
   HTMLTable curTable;
   Panel panel;
 
+  ClientTableModel<Object> tableModel = new ClientTableModel<Object>() {
+    @Override
+    public Object getCell(int rowNum, int cellNum) {
+      if (rowNum >= numRows | cellNum >= numColumns) {
+        return null;
+      }
+      return "cell " + rowNum + ", " + cellNum;
+    }
+
+    @Override
+    protected boolean onRowInserted(int beforeRow) {
+      return false;
+    }
+
+    @Override
+    protected boolean onRowRemoved(int row) {
+      return false;
+    }
+
+    @Override
+    protected boolean onSetData(int row, int cell, Object data) {
+      return false;
+    }
+  };
+
+  public void log(String log){
+    Window.setTitle(log);
+  }
   public void onModuleLoad() {
+   
     panel = new VerticalPanel();
     RootPanel.get().add(panel);
     panel.add(new HTML(
@@ -108,6 +138,26 @@ public class BulkLoadingTableDemo implements EntryPoint {
     });
     panel.add(gridAPI);
 
+    panel.add(new HTML("<p/><p/><b> Use the attached Grid API</b>"));
+    Button detachedGridAPI = new Button("Go", new ClickListener() {
+      public void onClick(Widget sender) {
+        clearTable();
+        
+        long milli = System.currentTimeMillis();
+        Grid table = new Grid();
+        curTable = table;
+        table.setBorderWidth(2);
+        panel.add(table);
+        usingGridAPI(table);
+        log("Finished in " + (System.currentTimeMillis() - milli)
+            + " milliseconds");
+         
+       
+      }
+
+    });
+    panel.add(detachedGridAPI);
+    
     panel.add(new HTML("<p/><p/><b> Use Async BulkLoadedTable API</b>"));
     Button asyncAPI = new Button("Go", new ClickListener() {
       public void onClick(Widget sender) {
@@ -152,7 +202,7 @@ public class BulkLoadingTableDemo implements EntryPoint {
     panel.add(table);
 
     table.setWidget(0, 3, new Button("A widget"));
-    Window.alert("Finished in " + (System.currentTimeMillis() - milli)
+    log("Finished in " + (System.currentTimeMillis() - milli)
         + " milliseconds");
   }
 
@@ -163,30 +213,6 @@ public class BulkLoadingTableDemo implements EntryPoint {
       }
     };
 
-    ClientTableModel<Object> tableModel = new ClientTableModel<Object>() {
-      @Override
-      public Object getCell(int rowNum, int cellNum) {
-        if (rowNum >= numRows | cellNum >= numColumns) {
-          return null;
-        }
-        return "cell " + rowNum + ", " + cellNum;
-      }
-
-      @Override
-      protected boolean onRowInserted(int beforeRow) {
-        return false;
-      }
-
-      @Override
-      protected boolean onRowRemoved(int row) {
-        return false;
-      }
-
-      @Override
-      protected boolean onSetData(int row, int cell, Object data) {
-        return false;
-      }
-    };
     FlexTableBulkRenderer renderer = new FlexTableBulkRenderer(table);
     renderer.renderRows(tableModel, callback);
   }
