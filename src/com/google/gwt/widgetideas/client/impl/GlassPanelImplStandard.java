@@ -23,6 +23,7 @@ import com.google.gwt.widgetideas.client.GlassPanel;
  * standards.
  */
 public abstract class GlassPanelImplStandard extends GlassPanelImpl {
+  @Override
   public void matchDocumentSize(GlassPanel glassPanel, boolean dueToResize) {
     int clientWidth = Window.getClientWidth();
     int clientHeight = Window.getClientHeight();
@@ -33,6 +34,7 @@ public abstract class GlassPanelImplStandard extends GlassPanelImpl {
     int width = Math.max(clientWidth, scrollWidth);
     int height = Math.max(clientHeight, scrollHeight);
 
-    glassPanel.setPixelSize(width, height);
+    glassPanel.setPixelSize(width - 1, height - 1);
   }
+
 }
