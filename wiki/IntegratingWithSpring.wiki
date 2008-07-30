@@ -2,7 +2,7 @@
 #labels Type-FAQ
 
 = Explained: How to Integrate GWT with Spring 2.0 =
-  _original by [http://gwttips.blogpspot.com/ Richard Bondi]_
+  _original by [http://gwttips.blogspot.com/ Richard Bondi]_
 
 These instructions are based on [http://groups.google.com/group/Google-Web-Toolkit/browse_frm/thread/c50c76d0f88ba919 this GWT newsgroup post].
 
