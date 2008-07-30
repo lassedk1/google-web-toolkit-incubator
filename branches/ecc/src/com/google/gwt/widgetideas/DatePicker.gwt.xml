@@ -1,5 +1,0 @@
-<module>
-	<inherits name="com.google.gwt.widgetideas.BasicWidget" />
-	<source path="datepicker/client/" />
-</module>
-
