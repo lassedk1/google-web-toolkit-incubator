@@ -16,6 +16,7 @@
 package com.google.gwt.libideas;
 
 import com.google.gwt.junit.tools.GWTTestSuite;
+import com.google.gwt.libideas.event.client.EventsTest;
 import com.google.gwt.libideas.logging.LogServerTest;
 import com.google.gwt.libideas.logging.client.LogTest;
 import com.google.gwt.libideas.resources.ResourcesSuite;
@@ -34,7 +35,8 @@ public class LibIdeasSuite {
     suite.addTestSuite(LogTest.class);
     suite.addTestSuite(LogServerTest.class);
     suite.addTestSuite(LocaleMatcherTest.class);
-    
+    suite.addTestSuite(EventsTest.class);
+
     return suite;
   }
 }

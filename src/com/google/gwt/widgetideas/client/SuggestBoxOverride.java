@@ -13,15 +13,39 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.user.client.ui;
+package com.google.gwt.widgetideas.client;
 
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DelegatingChangeListenerCollection;
+import com.google.gwt.user.client.ui.DelegatingClickListenerCollection;
+import com.google.gwt.user.client.ui.DelegatingFocusListenerCollection;
+import com.google.gwt.user.client.ui.DelegatingKeyboardListenerCollection;
+import com.google.gwt.user.client.ui.FiresSuggestionEvents;
+import com.google.gwt.user.client.ui.FocusListener;
+import com.google.gwt.user.client.ui.HasAnimation;
+import com.google.gwt.user.client.ui.HasFocus;
+import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.KeyboardListener;
+import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
+import com.google.gwt.user.client.ui.MultiWordSuggestOracleOverride;
+import com.google.gwt.user.client.ui.SourcesChangeEvents;
+import com.google.gwt.user.client.ui.SourcesClickEvents;
+import com.google.gwt.user.client.ui.SourcesFocusEvents;
+import com.google.gwt.user.client.ui.SourcesKeyboardEvents;
+import com.google.gwt.user.client.ui.SuggestOracleOverride;
+import com.google.gwt.user.client.ui.SuggestionEvent;
+import com.google.gwt.user.client.ui.SuggestionHandler;
+import com.google.gwt.user.client.ui.SuggestionMenuImpl;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.TextBoxBase;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.SuggestOracle.Callback;
 import com.google.gwt.user.client.ui.SuggestOracle.Request;
 import com.google.gwt.user.client.ui.SuggestOracle.Response;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
-import com.google.gwt.widgetideas.client.DropDownPanel;
+import com.google.gwt.user.client.ui.SuggestionMenuImpl.SuggestionItem;
 import com.google.gwt.widgetideas.client.event.EventHandlers;
 import com.google.gwt.widgetideas.client.event.FiresHighlightEvents;
 import com.google.gwt.widgetideas.client.event.HighlightEvent;
@@ -29,7 +53,6 @@ import com.google.gwt.widgetideas.client.event.HighlightHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * A {@link SuggestBoxOverride} is a text box or text area which displays a
@@ -93,105 +116,6 @@ public final class SuggestBoxOverride extends Composite implements HasText,
     HasFocus, HasAnimation, SourcesClickEvents, SourcesFocusEvents,
     SourcesChangeEvents, SourcesKeyboardEvents, FiresSuggestionEvents,
     FiresHighlightEvents<Suggestion> {
-  /**
-   * The SuggestionMenu class is used for the display and selection of
-   * suggestions in the SuggestBox widget. SuggestionMenu differs from MenuBar
-   * in that it always has a vertical orientation, and it has no submenus. It
-   * also allows for programmatic selection of items in the menu, and
-   * programmatically performing the action associated with the selected item.
-   * In the MenuBar class, items cannot be selected programatically - they can
-   * only be selected when the user places the mouse over a particlar item.
-   * Additional methods in SuggestionMenu provide information about the number
-   * of items in the menu, and the index of the currently selected item.
-   */
-  private class SuggestionMenu extends MenuBar {
-
-    public SuggestionMenu(boolean vertical) {
-      super(vertical);
-      // Make sure that CSS styles specified for the default Menu classes
-      // do not affect this menu
-      setStyleName("");
-    }
-
-    public void doSelectedItemAction() {
-      // In order to perform the action of the item that is currently
-      // selected, the menu must be showing.
-      MenuItem selectedItem = getSelectedItem();
-      if (selectedItem != null) {
-        doItemAction(selectedItem, true);
-      }
-    }
-
-    public int getNumItems() {
-      return getItems().size();
-    }
-
-    /**
-     * Returns the index of the menu item that is currently selected.
-     */
-    public int getSelectedItemIndex() {
-      // The index of the currently selected item can only be
-      // obtained if the menu is showing.
-      MenuItem selectedItem = getSelectedItem();
-      if (selectedItem != null) {
-        return getItems().indexOf(selectedItem);
-      }
-      return -1;
-    }
-
-    /**
-     * Selects the item at the specified index in the menu. Selecting the item
-     * does not perform the item's associated action; it only changes the style
-     * of the item and updates the value of SuggestionMenu.selectedItem.
-     */
-    public void selectItem(int index) {
-      List<MenuItem> items = getItems();
-      if (index > -1 && index < items.size()) {
-        itemOver(items.get(index));
-      }
-    }
-
-    @Override
-    void itemOver(MenuItem item) {
-      super.itemOver(item);
-      if (item != null) {
-        Suggestion s = ((SuggestionMenuItem) item).getSuggestion();
-        handlers.fire(new HighlightEvent<Suggestion>(SuggestBoxOverride.this, s));
-      }
-    }
-  }
-
-  /**
-   * Class for menu items in a SuggestionMenu. A SuggestionMenuItem differs from
-   * a MenuItem in that each item is backed by a Suggestion object. The text of
-   * each menu item is derived from the display string of a Suggestion object,
-   * and each item stores a reference to its Suggestion object.
-   */
-  private static class SuggestionMenuItem extends MenuItem {
-
-    private static final String STYLENAME_DEFAULT = "item";
-
-    private Suggestion suggestion;
-
-    public SuggestionMenuItem(Suggestion suggestion, boolean asHTML) {
-      super(suggestion.getDisplayString(), asHTML);
-      // Each suggestion should be placed in a single row in the suggestion
-      // menu. If the window is resized and the suggestion cannot fit on a
-      // single row, it should be clipped (instead of wrapping around and
-      // taking up a second row).
-      DOM.setStyleAttribute(getElement(), "whiteSpace", "nowrap");
-      setStyleName(STYLENAME_DEFAULT);
-      setSuggestion(suggestion);
-    }
-
-    public Suggestion getSuggestion() {
-      return suggestion;
-    }
-
-    public void setSuggestion(Suggestion suggestion) {
-      this.suggestion = suggestion;
-    }
-  }
 
   private static final String STYLENAME_DEFAULT = "gwt-SuggestBox";
 
@@ -223,7 +147,7 @@ public final class SuggestBoxOverride extends Composite implements HasText,
   private int limit = 20;
   private SuggestOracleOverride oracle;
   private String currentText;
-  private final SuggestionMenu suggestionMenu;
+  private final SuggestionMenuImpl suggestionMenu;
   private final DropDownPanel<SuggestBoxOverride> suggestionPopup;
   private final TextBoxBase box;
   private ArrayList<SuggestionHandler> suggestionHandlers = null;
@@ -245,6 +169,7 @@ public final class SuggestBoxOverride extends Composite implements HasText,
    */
   public SuggestBoxOverride() {
     this(new MultiWordSuggestOracleOverride());
+    setAnimationEnabled(true);
   }
 
   /**
@@ -288,12 +213,27 @@ public final class SuggestBoxOverride extends Composite implements HasText,
       DropDownPanel<SuggestBoxOverride> suggestionPopup) {
     this.box = box;
     initWidget(box);
-    suggestionMenu = new SuggestionMenu(true);
+    suggestionMenu = new SuggestionMenuImpl() {
+
+      @Override
+      protected void onHighlight(SuggestionItem s) {
+        if (s != null) {
+          handlers.fire(new HighlightEvent<Suggestion>(SuggestBoxOverride.this,
+              s.getSuggestion()));
+        }
+      }
+
+      @Override
+      protected void onValueUpdated(SuggestionItem s) {
+        setNewSelection(s);
+      }
+    };
     this.suggestionPopup = suggestionPopup;
     suggestionPopup.setWidget(suggestionMenu);
     addKeyboardSupport();
     setOracle(oracle);
     setStyleName(STYLENAME_DEFAULT);
+    setAnimationEnabled(true);
   }
 
   /**
@@ -347,7 +287,7 @@ public final class SuggestBoxOverride extends Composite implements HasText,
   }
 
   /**
-   * Adds a listener to recieve keyboard events on the SuggestBox's text box.
+   * Adds a listener to receive keyboard events on the SuggestBox's text box.
    * The source Widget for these events will be the SuggestBox.
    * 
    * @param listener the listener interface to add
@@ -441,7 +381,7 @@ public final class SuggestBoxOverride extends Composite implements HasText,
    * @param index the index of the ith item in the current popup
    */
   public void selectSuggestion(int index) {
-    suggestionMenu.selectItem(index);
+    suggestionMenu.highlightItem(index);
   }
 
   public void setAccessKey(char key) {
@@ -470,7 +410,7 @@ public final class SuggestBoxOverride extends Composite implements HasText,
    * Sets the style name of the suggestion popup.
    * 
    * @param style the new primary style name
-   * @see UIObject#setStyleName(String)
+   * @see UIObject#setBaseName(String)
    */
   public void setPopupStyleName(String style) {
     suggestionPopup.setStyleName(style);
@@ -486,7 +426,7 @@ public final class SuggestBoxOverride extends Composite implements HasText,
 
   /**
    * Show current suggestions. Does not do anything unless suggest box is
-   * attatched to DOM.
+   * attached to DOM.
    */
   public void showSuggestions() {
     if (this.isAttached()) {
@@ -507,7 +447,7 @@ public final class SuggestBoxOverride extends Composite implements HasText,
   protected void onEnsureDebugId(String baseID) {
     super.onEnsureDebugId(baseID);
     suggestionPopup.ensureDebugId(baseID + "-popup");
-    suggestionMenu.setMenuItemDebugIds(baseID);
+    suggestionMenu.ensureDebugId(baseID);
   }
 
   private void addKeyboardSupport() {
@@ -520,14 +460,14 @@ public final class SuggestBoxOverride extends Composite implements HasText,
         if (suggestionPopup.isAttached()) {
           switch (keyCode) {
             case KeyboardListener.KEY_DOWN:
-              suggestionMenu.selectItem(suggestionMenu.getSelectedItemIndex() + 1);
+              suggestionMenu.highlightItem(suggestionMenu.getHighlightedIndex() + 1);
               break;
             case KeyboardListener.KEY_UP:
-              suggestionMenu.selectItem(suggestionMenu.getSelectedItemIndex() - 1);
+              suggestionMenu.highlightItem(suggestionMenu.getHighlightedIndex() - 1);
               break;
             case KeyboardListener.KEY_ENTER:
             case KeyboardListener.KEY_TAB:
-              suggestionMenu.doSelectedItemAction();
+              suggestionMenu.doCurrentAction();
               break;
           }
         }
@@ -564,7 +504,7 @@ public final class SuggestBoxOverride extends Composite implements HasText,
     showSuggestions(text);
   }
 
-  private void setNewSelection(SuggestionMenuItem menuItem) {
+  private void setNewSelection(SuggestionItem menuItem) {
     Suggestion curSuggestion = menuItem.getSuggestion();
     currentText = curSuggestion.getReplacementString();
     box.setText(currentText);
@@ -609,17 +549,8 @@ public final class SuggestBoxOverride extends Composite implements HasText,
       suggestionMenu.clearItems();
 
       for (Suggestion curSuggestion : suggestions) {
-        final SuggestionMenuItem menuItem = new SuggestionMenuItem(
-            curSuggestion, oracle.isDisplayStringHTML());
-        menuItem.setCommand(new Command() {
-          public void execute() {
-            SuggestBoxOverride.this.setNewSelection(menuItem);
-          }
-        });
-
-        suggestionMenu.addItem(menuItem);
+        suggestionMenu.addItem(curSuggestion, oracle.isDisplayStringHTML());
       }
-
       suggestionPopup.showRelativeTo(this);
     } else {
       suggestionPopup.hide();

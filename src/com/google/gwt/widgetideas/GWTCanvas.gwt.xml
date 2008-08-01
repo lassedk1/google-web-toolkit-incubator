@@ -26,4 +26,6 @@
   	</replace-with>
   	
     <source path="graphics/client/"/>
+    
+    <inherits name='com.google.gwt.widgetideas.WidgetBase'/>
 </module>

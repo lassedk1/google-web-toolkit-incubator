@@ -1,5 +1,5 @@
-<module>
-	<inherits name="com.google.gwt.widgetideas.BasicWidget" />
+<module>  
+  <inherits name='com.google.gwt.widgetideas.WidgetBase'/>
 	<inherits name="com.google.gwt.widgetideas.BasicTable" />
 	<source path="datepicker/client/" />
 </module>

@@ -31,7 +31,8 @@ import java.lang.annotation.Target;
  */
 @ResourceGeneratorType(BundleResourceGenerator.class)
 public interface ImmutableResourceBundle {
-
+ 
+  
   /**
    * Specifies the classpath location of the resource or resources associated
    * with the {@link ResourcePrototype}.

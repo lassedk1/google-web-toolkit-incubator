@@ -26,8 +26,7 @@ import com.google.gwt.libideas.event.shared.HandlerRegistry.JavaHandlerRegistry;
 public class HandlerManager {
 
   private static HandlerRegistry pickRegistry() {
-    // TODO(ECC) once fully debugged, should also you java version in hosted
-    // mode.
+    // TODO(ECC) once fully debugged, should use java mode for hosted mode.
     if (GWT.isClient()) {
       return new JSHandlerRegistry();
     } else {
@@ -39,13 +38,13 @@ public class HandlerManager {
 
   private Object source;
 
+  public HandlerManager(Object source) {
+    this(source, pickRegistry());
+  }
+
   public HandlerManager(Object source, HandlerRegistry registry) {
     this.registry = registry;
     this.source = source;
-  }
-
-  public HandlerManager(Object source) {
-    this(source, pickRegistry());
   }
 
   public <T extends EventHandler> HandlerRegistration addEventHandler(
@@ -62,6 +61,16 @@ public class HandlerManager {
       EventHandler handler = registry.getHandler(key, i);
       event.fireEvent(handler);
     }
+  }
+
+  /**
+   * Are their handlers in this manager listening to the given event key?
+   * 
+   * @param key the event key
+   * @return are handlers listening
+   */
+  public boolean listeningTo(Key key) {
+    return registry.getHandlerCount(key) > 0;
   }
 
   // Overridable by subclasses.

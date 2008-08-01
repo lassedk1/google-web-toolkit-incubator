@@ -17,6 +17,7 @@
 package com.google.gwt.widgetideas;
 
 import com.google.gwt.widgetideas.client.CollapsiblePanelTest;
+import com.google.gwt.widgetideas.client.CustomListBoxTest;
 import com.google.gwt.widgetideas.client.FastTreeTest;
 import com.google.gwt.widgetideas.client.ProgressBarTest;
 import com.google.gwt.widgetideas.client.SliderBarTest;
@@ -36,6 +37,7 @@ public class TopLevelWidgetsTestSuite {
     suite.addTestSuite(SliderBarTest.class);
     suite.addTestSuite(CollapsiblePanelTest.class);
     suite.addTestSuite(FastTreeTest.class);
+    suite.addTestSuite(CustomListBoxTest.class);
     return suite;
   }
 

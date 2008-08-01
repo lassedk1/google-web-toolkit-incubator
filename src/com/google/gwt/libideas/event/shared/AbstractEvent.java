@@ -17,19 +17,22 @@ package com.google.gwt.libideas.event.shared;
 
 /**
  * AbstractEvent is the root of all events.
- *
+ * 
  * @param <T> the type of handler used for this event
  */
 public abstract class AbstractEvent<T extends EventHandler> {
 
   /**
    * Key class used to register events with HandlerManager.
+   * <p>
+   * Key is parameterized by the event handler type in order to make the
+   * addHandler method type safe.
    */
   public static class Key<T extends EventHandler> {
 
-    private static int INDEX_SOURCE;
-
     static int EXPECTED_MAX_HANDLERS_PER_WIDGET = 5;
+
+    private static int INDEX_SOURCE;
 
     private int index;
 
@@ -38,7 +41,7 @@ public abstract class AbstractEvent<T extends EventHandler> {
       INDEX_SOURCE += EXPECTED_MAX_HANDLERS_PER_WIDGET;
     }
 
-    // We override hashcode to make it as efficent as possible.
+    // We override hash code to make it as efficient as possible.
     @Override
     public int hashCode() {
       return index;
@@ -51,6 +54,20 @@ public abstract class AbstractEvent<T extends EventHandler> {
   }
 
   /**
+   * This is a method used primarily for debugging. It gives a string
+   * representation of the event details. This does not override the toString
+   * method because the compiler cannot always optimize toString out correctly.
+   * Event types should override as desired.
+   * 
+   * @return a string
+   */
+  public String getEventDetails() {
+    String name = this.getClass().getName();
+    name = name.substring(name.lastIndexOf("."));
+    return name + ": source = " + source;
+  }
+
+  /**
    * Returns the source that generated the event.
    */
   public Object getSource() {
@@ -59,7 +76,7 @@ public abstract class AbstractEvent<T extends EventHandler> {
 
   /**
    * Fires event for given handler type.
-   *
+   * 
    * @param handler of type T
    */
   protected abstract void fireEvent(T handler);
@@ -71,7 +88,7 @@ public abstract class AbstractEvent<T extends EventHandler> {
 
   /**
    * Set the source that triggered this event.
-   *
+   * 
    * @param source An object of type F
    */
   void setSource(Object source) {
