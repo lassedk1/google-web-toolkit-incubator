@@ -1,7 +1,5 @@
 <module>
-  <inherits name="com.google.gwt.core.Core"/>
-  <inherits name="com.google.gwt.user.UserAgent"/>
-
+  <inherits name='com.google.gwt.widgetideas.WidgetBase'/>
   <replace-with class="com.google.gwt.widgetideas.client.impl.GlassPanelImplOpera">
     <when-type-is class="com.google.gwt.widgetideas.client.impl.GlassPanelImpl"/>
     <when-property-is name="user.agent" value="opera"/>

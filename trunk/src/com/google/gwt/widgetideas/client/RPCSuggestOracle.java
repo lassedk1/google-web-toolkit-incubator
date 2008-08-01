@@ -14,11 +14,14 @@
  * the License.
  */
 
-package com.google.gwt.user.client.ui;
+package com.google.gwt.widgetideas.client;
+
+import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.SuggestOracleOverride;
 
 /**
- * This is a stubbed out RPC {@link SuggestOracleOverride} for use by {@link SuggestBoxOverride}
- * instances backed by server side data.
+ * This is a stubbed out RPC {@link SuggestOracleOverride} for use by
+ * {@link SuggestBoxOverride} instances backed by server side data.
  * 
  * This oracle allows only one request to be sent out at a time. The reason is
  * because we do not want to accidently create a denial of service attack on our
@@ -26,7 +29,7 @@ package com.google.gwt.user.client.ui;
  * someone rapidly typing in a suggest box.
  */
 
-public abstract class RPCSuggestOracleOverride extends SuggestOracleOverride {
+public abstract class RPCSuggestOracle extends SuggestOracleOverride {
   private HasText suggester;
   private Callback currentCallback;
   private Request pendingRequest;
@@ -50,7 +53,7 @@ public abstract class RPCSuggestOracleOverride extends SuggestOracleOverride {
 
   };
 
-  public RPCSuggestOracleOverride() {
+  public RPCSuggestOracle() {
   }
 
   @Override
@@ -74,9 +77,9 @@ public abstract class RPCSuggestOracleOverride extends SuggestOracleOverride {
   public abstract void sendRequest(Request request, Callback callback);
 
   /**
-   * Sets the widget who is using the {@link SuggestOracleOverride}. Usually it is a
-   * {@link SuggestBoxOverride}, however to support the use of custom suggest widgets,
-   * any widget that implements HasText can be passed in here.
+   * Sets the widget who is using the {@link SuggestOracleOverride}. Usually it
+   * is a {@link SuggestBoxOverride}, however to support the use of custom
+   * suggest widgets, any widget that implements HasText can be passed in here.
    * 
    * @param suggestBox the widget calling to this oracle.
    */

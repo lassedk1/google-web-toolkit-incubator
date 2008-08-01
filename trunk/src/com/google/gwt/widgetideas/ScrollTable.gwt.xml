@@ -18,25 +18,25 @@
 <!--                                                                        -->
 <module>
     
-	<inherits name="com.google.gwt.core.Core" />
-	<inherits name="com.google.gwt.user.UserAgent" />
-	<inherits name='com.google.gwt.widgetideas.BasicWidget' />
-	<inherits name='com.google.gwt.widgetideas.table.OverrideDOM' />
-  <inherits name='com.google.gwt.widgetideas.table.FixedWidthGrid'/>
-  <inherits name='com.google.gwt.widgetideas.table.FixedWidthFlexTable'/>
-	<inherits name='com.google.gwt.widgetideas.BasicTable'/>
-	<!-- Fall through to this rule is the browser isn't Opera -->
-	<replace-with
-		class="com.google.gwt.widgetideas.table.client.ScrollTable.MouseResizeWorker">
-		<when-type-is
-			class="com.google.gwt.widgetideas.table.client.ScrollTable.MouseResizeWorker" />
-	</replace-with>
-
-	<!-- Opera has a different MouseWorker implementation -->
-	<replace-with
-		class="com.google.gwt.widgetideas.table.client.ScrollTable.MouseResizeWorkerOpera">
-		<when-type-is
-			class="com.google.gwt.widgetideas.table.client.ScrollTable.MouseResizeWorker" />
-		<when-property-is name="user.agent" value="opera" />
-	</replace-with>
+    <inherits name="com.google.gwt.core.Core"/>
+    <inherits name="com.google.gwt.user.UserAgent"/>
+    <inherits name='com.google.gwt.widgetideas.WidgetBase'/>
+    <inherits name='com.google.gwt.widgetideas.table.OverrideDOM'/>
+    <inherits name='com.google.gwt.widgetideas.table.FixedWidthGrid'/>
+    <inherits name='com.google.gwt.widgetideas.table.FixedWidthFlexTable'/>
+    <inherits name='com.google.gwt.widgetideas.BasicTable'/>
+    <!-- Fall through to this rule is the browser isn't Opera -->
+    <replace-with
+     class="com.google.gwt.widgetideas.table.client.ScrollTable.MouseResizeWorker">
+        <when-type-is
+         class="com.google.gwt.widgetideas.table.client.ScrollTable.MouseResizeWorker"/>
+    </replace-with>
+    
+    <!-- Opera has a different MouseWorker implementation -->
+    <replace-with
+     class="com.google.gwt.widgetideas.table.client.ScrollTable.MouseResizeWorkerOpera">
+        <when-type-is
+         class="com.google.gwt.widgetideas.table.client.ScrollTable.MouseResizeWorker"/>
+        <when-property-is name="user.agent" value="opera"/>
+    </replace-with>
 </module>
