@@ -14,5 +14,18 @@ Each `Decorator` must represent a single static html decorator. Each decorator m
       Decorator myDecorator = new Decorator(root, toAttach);
 }}}
 
+There are two ways to use decorators, you can either have them wrap a node or a string. 
+There is a special default decorator that is a straight pass-through, so that the default widget does not pay a runtime cost for having subclasses with decorators.
 
- There are two ways to use decorators, you can either have them wrap a node or a string. Each widget which is decorator aware should provide templated methods
+
+Each widget which is decorator aware should provide templated methods, for example, `CustomListBox` has the following templated decorators
+
+{{{
+  protected Decorator getButtonDecorator() {
+    return Decorator.DEFAULT;
+  }
+
+  protected Decorator getItemDecorator() {
+    return Decorator.DEFAULT;
+  }
+}}}
