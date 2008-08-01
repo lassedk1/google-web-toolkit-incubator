@@ -25,7 +25,7 @@ import java.util.Date;
 /**
  * Model used to get calendar information.
  */
-@SuppressWarnings( {"deprecation"})
+@SuppressWarnings({"deprecation"})
 public class CalendarModel {
 
   public static final int WEEKS_IN_MONTH = 6;
@@ -346,7 +346,8 @@ public class CalendarModel {
   public Date getFirstDayOfCurrentFirstWeek() {
     int wkDayOfMonth1st = curMonthAndYear.getDay();
     if (wkDayOfMonth1st == getLocaleStartingDayOfWeek()) {
-      return curMonthAndYear;
+      // always return a copy to allow SimpleCalendarView to adjust first display date
+      return new Date(curMonthAndYear.getTime());
     } else {
       Date d = new Date(curMonthAndYear.getTime());
       int offset = wkDayOfMonth1st - getLocaleStartingDayOfWeek() > 0
