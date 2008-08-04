@@ -27,9 +27,9 @@ public abstract class AbstractEvent<T extends EventHandler> {
    */
   public static class Key<T extends EventHandler> {
 
-    private static int INDEX_SOURCE;
-
     static int EXPECTED_MAX_HANDLERS_PER_WIDGET = 5;
+
+    private static int INDEX_SOURCE;
 
     private int index;
 
@@ -47,6 +47,8 @@ public abstract class AbstractEvent<T extends EventHandler> {
 
   private Object source;
 
+  private Object userData;
+
   protected AbstractEvent() {
   }
 
@@ -55,6 +57,20 @@ public abstract class AbstractEvent<T extends EventHandler> {
    */
   public Object getSource() {
     return source;
+  }
+
+  /**
+   * Returns a user attached object to this event.
+   */
+  public Object getUserData() {
+    return userData;
+  }
+
+  /**
+   * Attaches a user-defined object to this event.
+   */
+  public void setUserData(Object userData) {
+    this.userData = userData;
   }
 
   /**
