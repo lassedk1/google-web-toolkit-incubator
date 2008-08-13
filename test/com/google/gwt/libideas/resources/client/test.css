@@ -23,8 +23,8 @@
  */
 
 /* Test @sprite expansion */
-@sprite spriteClass spriteMethod;
-.spriteClass {
+@sprite .spriteClass, .extraSpriteClass {
+  gwt-image: "spriteMethod";
   more: properties;
 }
 

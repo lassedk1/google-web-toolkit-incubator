@@ -15,7 +15,6 @@
  */
 package com.google.gwt.libideas.resources.client;
 
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.libideas.resources.rebind.ResourceGeneratorType;
 import com.google.gwt.libideas.resources.rg.CssResourceGenerator;
 
@@ -33,9 +32,6 @@ import java.lang.annotation.Target;
  * <li>{@code String someClassName();} will allow the css class
  * <code>.someClassName</code> to be obfuscated at runtime. The function will
  * return the obfuscated class name.</li>
- * <li>{@code Sprite someSpriteName();} allows bundled images to be used as CSS
- * background images. Use {@link Sprite#apply(Element)} to display the sprite in
- * the given Element.</li>
  * </ul>
  * 
  * <p>
@@ -50,8 +46,7 @@ import java.lang.annotation.Target;
  * CSS rules based on the value of a deferred-binding property.</li>
  * <li>{@code @if Java-expression {ruleBlock}} Include or exclude CSS rules
  * based on a boolean Java expression.</li>
- * <li>{@code @sprite className siblingImageResource;} Return a {@link Sprite}
- * to access the style.</li>
+ * <li>{@code @sprite .any .selector {gwt-image: "imageResourceFunction";}}.</li>
  * <li>{@code @url NAME siblingDataResource; .myClass {background: NAME repeat-x;}}
  * Use a DataResource to generate a <code>url('...'}</code> value.</li>
  * </ul>
@@ -97,17 +92,6 @@ public interface CssResource extends ResourcePrototype {
   @Target(ElementType.TYPE)
   @interface ClassPrefix {
     String value();
-  }
-
-  /**
-   * Represents a {@literal @sprite} meta-class in the stylesheet.
-   */
-  interface Sprite {
-    /**
-     * Alters an Element to show the sprite. The structure of the Element should
-     * be considered opaque after applying the Sprite function.
-     */
-    void apply(Element e);
   }
 
   /**
