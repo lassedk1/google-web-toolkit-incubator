@@ -23,15 +23,11 @@ import com.google.gwt.libideas.client.LibTestBase;
  */
 public class CSSResourceTest extends LibTestBase {
 
-  public static String red() {
-    return "orange";
-  }
-
   interface MyCssResource extends CssResource {
-    String replacement();
-
     @ClassName("replacement-not-java-ident")
     String nameOverride();
+
+    String replacement();
   }
 
   /*
@@ -47,11 +43,11 @@ public class CSSResourceTest extends LibTestBase {
     @Resource("test.css")
     MyCssResourceWithSprite css();
 
-    @Resource("16x16.png")
-    ImageResource spriteMethod();
-
     @Resource("32x32.png")
     DataResource dataMethod();
+
+    @Resource("16x16.png")
+    ImageResource spriteMethod();
   }
 
   @CssResource.ClassPrefix("T")
@@ -61,6 +57,10 @@ public class CSSResourceTest extends LibTestBase {
 
     @Resource("siblingTestB.css")
     MyCssResource b();
+  }
+
+  public static String red() {
+    return "orange";
   }
 
   public void testCSS() {

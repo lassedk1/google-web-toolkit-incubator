@@ -30,6 +30,8 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.libideas.resources.client.CssResource;
 import com.google.gwt.libideas.resources.client.DataResource;
 import com.google.gwt.libideas.resources.client.CssResource.ClassName;
+import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
+import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
 import com.google.gwt.libideas.resources.client.impl.ImageResourcePrototype;
 import com.google.gwt.libideas.resources.client.impl.SpriteImpl;
 import com.google.gwt.libideas.resources.css.CssGenerationVisitor;
@@ -392,6 +394,14 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         throw new CssCompilerException("Cannot find image function");
       }
 
+      ImageOptions options = imageMethod.getAnnotation(ImageOptions.class);
+      RepeatStyle repeatStyle;
+      if (options != null) {
+        repeatStyle = options.repeatStyle();
+      } else {
+        repeatStyle = RepeatStyle.None;
+      }
+
       CssRule spriteRule = new CssRule();
       CssSelector classSelector = new CssSelector("." + className);
       spriteRule.getSelectors().add(classSelector);
@@ -433,9 +443,13 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
           List<CssProperty> screenProperties = screenRule.getProperties();
 
+          // Fake repeating with scaling
+          String sizingMethod = repeatStyle == RepeatStyle.None ? "crop"
+              : "scale";
           screenProperties.add(new CssProperty("filter",
               "\"progid:DXImageTransform.Microsoft.AlphaImageLoader(src='\" + "
-                  + instance + ".getURL() + \"',sizingMethod='crop')\"", false));
+                  + instance + ".getURL() + \"',sizingMethod='" + sizingMethod
+                  + "')\"", false));
           screenProperties.add(new CssProperty("margin-left", "\"-\" + "
               + instance + ".getLeft() + \"px\"", false));
           screenProperties.add(new CssProperty("margin-top", "\"-\" + "
@@ -447,10 +461,27 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
           ctx.insertAfter(screenRule);
         } else {
+          String repeatText;
+          switch (repeatStyle) {
+            case None:
+              repeatText = " no-repeat";
+              break;
+            case Horizontal:
+              repeatText = " repeat-x";
+              break;
+            case Vertical:
+              repeatText = " repeat-y";
+              break;
+            case Both:
+              repeatText = " repeat";
+              break;
+            default:
+              throw new RuntimeException("Unknown repeatStyle " + repeatStyle);
+          }
           properties.add(new CssProperty("background", "\"url(\\\"\" + "
               + instance + ".getURL() + \"\\\") -\" + " + instance
-              + ".getLeft() + \"px -\" + " + instance + ".getTop() + \"px\"",
-              false));
+              + ".getLeft() + \"px -\" + " + instance + ".getTop() + \"px "
+              + repeatText + "\"", false));
         }
       } catch (BadPropertyValueException e) {
         logger.log(TreeLogger.ERROR, "No user.agent property", e);
