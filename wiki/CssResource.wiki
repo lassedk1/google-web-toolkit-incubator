@@ -103,29 +103,32 @@ background: userBackground;
     * If the function in the first form can be statically evaluated by the compiler in a permutation, there is no runtime cost.  The second form will never have a runtime cost because it is evaluated during compilation.
   * CSS Image Sprites (*Working*):
 {{{
-@sprite mySpriteClass imageResourceFuncName; => generates =>
+@sprite .mySpriteClass {gwt-image: "imageAccessor"; other: property;} => generates =>
   .mySpriteClass {
     background-image: url(gen.png);
     clip: ...;
     width: 27px;
     height: 42px;
+    other: property;
   }
 }}}
 {{{
 class MyCssResource extends CssResource {
-  Sprite mySpriteClass();
+  String mySpriteClass();
 }
 
 class MyResources extends ImmutableResourceBundle {
   @Resource("my.css")
   MyCssResource css();
-}
 
-myResources.css().mySpriteClass().apply(someElement)
+  @Resource("some.png")
+  ImageResource imageAccessor();
+}
 }}}
     * @sprite is sensitive to the FooBundle in which the CSSResource is declared; a sibling ImageResource method named in the @sprite declaration will be used to compose the background sprite.
     * @sprite entries will be expanded to static CSS rules, possibly with data: urls
-    * The only way to make this work on ie6 is to modify the structure of the element.  For @style (and maybe a general class of meta-styles), the CssResource member function returns a MetaStyle instance with an apply(Element e) method.  The contract is that the Element passed in will be modified to have the meta-style applied.  The effects of the application depend on the specifics of the meta-style.
+    * Any CSS selector can be specified for @sprite.
+    * Support for IE6 isn't feasible in this format, because structural changes to the DOM are necessary to implement a "windowing" effect.  Once it's possible to distinguish ie6 and ie7 in user.agent, we could revisit support for ie6.  In the current implementation, the ie6 code won't render correctly, although is a purely cosmetic issue.
   * References to DataResources (*Working*)
 {{{
 @url myBackgroundUrl siblingDataResource;
