@@ -23,6 +23,7 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JType;
+import com.google.gwt.core.ext.typeinfo.NotFoundException;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.dev.util.DefaultTextOutput;
 import com.google.gwt.dev.util.Util;
@@ -52,6 +53,11 @@ import com.google.gwt.libideas.resources.css.ast.CssStylesheet;
 import com.google.gwt.libideas.resources.css.ast.CssUrl;
 import com.google.gwt.libideas.resources.css.ast.CssVisitor;
 import com.google.gwt.libideas.resources.css.ast.HasNodes;
+import com.google.gwt.libideas.resources.css.ast.CssProperty.DotPathValue;
+import com.google.gwt.libideas.resources.css.ast.CssProperty.ExpressionValue;
+import com.google.gwt.libideas.resources.css.ast.CssProperty.ListValue;
+import com.google.gwt.libideas.resources.css.ast.CssProperty.StringValue;
+import com.google.gwt.libideas.resources.css.ast.CssProperty.Value;
 import com.google.gwt.libideas.resources.rebind.AbstractResourceGenerator;
 import com.google.gwt.libideas.resources.rebind.ResourceContext;
 import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
@@ -286,15 +292,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     public boolean visit(CssRule x, Context ctx) {
       StringBuilder b = new StringBuilder();
       for (CssProperty p : x.getProperties()) {
-        b.append(p.getName()).append(":");
-        if (p.getExpression() != null) {
-          b.append(p.getExpression());
-        } else {
-          for (String s : p.getValues()) {
-            b.append(s).append(" ");
-          }
-          b.append(";");
-        }
+        b.append(p.getName()).append(":").append(p.getValues().getExpression());
       }
 
       String content = b.toString();
@@ -412,16 +410,17 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
       if (repeatStyle == RepeatStyle.None
           || repeatStyle == RepeatStyle.Horizontal) {
-        properties.add(new CssProperty("height", instance
-            + ".getHeight() + \"px\"", true));
+        properties.add(new CssProperty("height", new ExpressionValue(instance
+            + ".getHeight() + \"px\""), true));
       }
 
       if (repeatStyle == RepeatStyle.None
           || repeatStyle == RepeatStyle.Vertical) {
-        properties.add(new CssProperty("width", instance
-            + ".getWidth() + \"px\"", true));
+        properties.add(new CssProperty("width", new ExpressionValue(instance
+            + ".getWidth() + \"px\""), true));
       }
-      properties.add(new CssProperty("overflow", "\"hidden\"", true));
+      properties.add(new CssProperty("overflow", new StringValue("hidden"),
+          true));
 
       String repeatText;
       switch (repeatStyle) {
@@ -440,10 +439,13 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         default:
           throw new RuntimeException("Unknown repeatStyle " + repeatStyle);
       }
-      properties.add(new CssProperty("background", "\"url(\\\"\" + " + instance
+
+      String backgroundExpression = "\"url(\\\"\" + " + instance
           + ".getURL() + \"\\\") -\" + " + instance
           + ".getLeft() + \"px -\" + " + instance + ".getTop() + \"px "
-          + repeatText + "\"", true));
+          + repeatText + "\"";
+      properties.add(new CssProperty("background", new ExpressionValue(
+          backgroundExpression), true));
 
       // Retain any user-specified properties
       properties.addAll(x.getProperties());
@@ -471,6 +473,9 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     }
   }
 
+  /**
+   * Substitute symbolic replacements into string values.
+   */
   private static class SubstitutionReplacer extends CssVisitor {
     private final ResourceContext context;
     private final TreeLogger logger;
@@ -485,26 +490,28 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
     @Override
     public void endVisit(CssProperty x, Context ctx) {
-      // Nothing to do
-      if (x.getValues().isEmpty()) {
+      if (x.getValues() == null) {
+        // Nothing to do
         return;
       }
 
-      // Only use the expression form if it's really necessary to do so
-      StringBuilder expression = new StringBuilder();
-      boolean useExpression = false;
+      List<Value> values = x.getValues().getValues();
 
-      for (ListIterator<String> i = x.getValues().listIterator(); i.hasNext();) {
-        String value = i.next();
+      for (ListIterator<Value> i = values.listIterator(); i.hasNext();) {
+        Value v = i.next();
+
+        if (!(v instanceof StringValue)) {
+          // Don't try to substitute into anything other than string values
+          continue;
+        }
+
+        String value = ((StringValue) v).getValue();
         CssDef def = substitutions.get(value);
 
         if (def == null) {
-          expression.append('"');
-          expression.append(Generator.escape(value));
-          expression.append('"');
+          continue;
         } else if (def instanceof CssEval) {
-          expression.append(def.getValue());
-          useExpression = true;
+          i.set(new ExpressionValue(def.getValue()));
         } else if (def instanceof CssUrl) {
           String functionName = def.getValue();
 
@@ -523,29 +530,18 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
               + context.getImplementationSimpleSourceName() + ".this."
               + functionName + "()))";
 
+          StringBuilder expression = new StringBuilder();
           expression.append("\"url('\" + ");
           expression.append(instance).append(".getUrl()");
           expression.append(" + \"')\"");
-          useExpression = true;
+          i.set(new ExpressionValue(expression.toString()));
 
         } else {
-          expression.append('"');
-          expression.append(Generator.escape(def.getValue()));
-          if (i.hasNext()) {
-            expression.append(' ');
-          }
-          expression.append('"');
-          i.set(def.getValue());
-        }
-
-        if (i.hasNext()) {
-          expression.append(" + \" \" + ");
+          i.set(new StringValue(def.getValue()));
         }
       }
 
-      if (useExpression) {
-        x.setExpression(expression.toString());
-      }
+      x.setValue(new ListValue(values));
     }
   }
 
@@ -787,18 +783,22 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
       // Add the nodes at the substitution point
       for (CssNode x : entry.getValue()) {
+        TreeLogger loopLogger = logger.branch(TreeLogger.DEBUG,
+            "Performing substitution in node " + x.toString());
+
         if (x instanceof CssIf) {
           CssIf asIf = (CssIf) x;
 
           // Generate the sub-expressions
-          String expression = makeExpression(logger, new CollapsedNode(asIf));
+          String expression = makeExpression(loopLogger,
+              new CollapsedNode(asIf));
 
           String elseExpression;
           if (asIf.getElseNodes().isEmpty()) {
             // We'll treat an empty else block as an empty string
             elseExpression = "\"\"";
           } else {
-            elseExpression = makeExpression(logger, new CollapsedNode(
+            elseExpression = makeExpression(loopLogger, new CollapsedNode(
                 asIf.getElseNodes()));
           }
 
@@ -809,15 +809,15 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         } else if (x instanceof CssProperty) {
           CssProperty property = (CssProperty) x;
 
-          // Should have been fully-converted to an expression
-          assert property.getValues().isEmpty();
+          validateValue(loopLogger, property.getValues());
 
           // (expr) +
-          b.append("(" + property.getExpression() + ") + ");
+          b.append("(" + property.getValues().getExpression() + ") + ");
 
         } else {
           // This indicates that some magic node is slipping by our visitors
-          logger.log(TreeLogger.ERROR, "Unhandled substitution " + x.getClass());
+          loopLogger.log(TreeLogger.ERROR, "Unhandled substitution "
+              + x.getClass());
           throw new UnableToCompleteException();
         }
       }
@@ -876,6 +876,44 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       logger.log(TreeLogger.ERROR, "Unable to process CSS",
           e.getCause() == null ? null : e);
       throw new UnableToCompleteException();
+    }
+  }
+
+  /**
+   * This function validates any context-sensitive Values.
+   */
+  private void validateValue(TreeLogger logger, Value value)
+      throws UnableToCompleteException {
+    if (value instanceof DotPathValue) {
+      DotPathValue dot = (DotPathValue) value;
+      String[] elements = dot.getPath().split("\\.");
+      if (elements.length == 0) {
+        logger.log(TreeLogger.ERROR, "value() functions must specify a path");
+        throw new UnableToCompleteException();
+      }
+
+      JType currentType = context.getResourceBundleType();
+      for (Iterator<String> i = Arrays.asList(elements).iterator(); i.hasNext();) {
+        String pathElement = i.next();
+
+        JClassType referenceType = currentType.isClassOrInterface();
+        if (referenceType == null) {
+          logger.log(TreeLogger.ERROR, "Cannot resolve member " + pathElement
+              + " on non-reference type "
+              + currentType.getQualifiedSourceName());
+          throw new UnableToCompleteException();
+        }
+
+        try {
+          JMethod m = referenceType.getMethod(pathElement, new JType[0]);
+          currentType = m.getReturnType();
+        } catch (NotFoundException e) {
+          logger.log(TreeLogger.ERROR, "Could not find no-arg method named "
+              + pathElement + " in type "
+              + currentType.getQualifiedSourceName());
+          throw new UnableToCompleteException();
+        }
+      }
     }
   }
 

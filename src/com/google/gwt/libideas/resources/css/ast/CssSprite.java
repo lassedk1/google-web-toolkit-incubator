@@ -15,6 +15,10 @@
  */
 package com.google.gwt.libideas.resources.css.ast;
 
+import com.google.gwt.libideas.resources.css.ast.CssProperty.ListValue;
+import com.google.gwt.libideas.resources.css.ast.CssProperty.StringValue;
+import com.google.gwt.libideas.resources.css.ast.CssProperty.Value;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -176,18 +180,27 @@ public class CssSprite extends CssRule {
     return false;
   }
 
-  private void setImageProperty(List<String> values) {
-    if (values.size() == 1) {
-      resourceFunction = values.get(0);
+  private void setImageProperty(Value value) {
+
+    if (value instanceof StringValue) {
+      resourceFunction = ((StringValue) value).getValue();
 
       // Allow the user to use both raw idents and quoted strings
       if (resourceFunction.startsWith("\"")) {
         resourceFunction = resourceFunction.substring(1,
             resourceFunction.length() - 1);
       }
+
+    } else if (value instanceof ListValue) {
+      ListValue list = (ListValue) value;
+      List<Value> values = list.getValues();
+      if (values.size() == 1) {
+        setImageProperty(values.get(0));
+      }
+
     } else {
-      throw new IllegalArgumentException(
-          "The image property of @sprite must have exactly one value");
+      throw new IllegalArgumentException("The " + IMAGE_PROPERTY_NAME
+          + " property of @sprite must have exactly one value");
     }
   }
 }
