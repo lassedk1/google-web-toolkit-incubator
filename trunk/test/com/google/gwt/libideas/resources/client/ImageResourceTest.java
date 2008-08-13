@@ -17,7 +17,8 @@ package com.google.gwt.libideas.resources.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.libideas.client.LibTestBase;
-import com.google.gwt.libideas.resources.client.impl.ImageResourcePrototype;
+import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
+import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.LoadListener;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -34,6 +35,22 @@ public class ImageResourceTest extends LibTestBase {
 
     @Resource("32x32.png")
     ImageResource i32x32();
+
+    @Resource("16x16.png")
+    @ImageOptions(repeatStyle = RepeatStyle.Vertical)
+    ImageResource i16x16Vertical();
+
+    @Resource("32x32.png")
+    @ImageOptions(repeatStyle = RepeatStyle.Vertical)
+    ImageResource i32x32Vertical();
+
+    @Resource("16x16.png")
+    @ImageOptions(repeatStyle = RepeatStyle.Horizontal)
+    ImageResource i16x16Horizontal();
+
+    @Resource("32x32.png")
+    @ImageOptions(repeatStyle = RepeatStyle.Horizontal)
+    ImageResource i32x32Horizontal();
 
     @Resource("64x64.png")
     ImageResource i64x64();
@@ -54,10 +71,9 @@ public class ImageResourceTest extends LibTestBase {
   public void testPacking() {
     Resources r = GWT.create(Resources.class);
 
-    // Cast to impl type for testing
-    ImageResourcePrototype i64 = (ImageResourcePrototype) r.i64x64();
-    ImageResourcePrototype lossy = (ImageResourcePrototype) r.largeLossy();
-    ImageResourcePrototype lossless = (ImageResourcePrototype) r.largeLossless();
+    ImageResource i64 = r.i64x64();
+    ImageResource lossy = r.largeLossy();
+    ImageResource lossless = r.largeLossless();
 
     // The large, lossless image should be bundled
     if (!i64.getURL().startsWith("data:")) {
@@ -66,15 +82,20 @@ public class ImageResourceTest extends LibTestBase {
 
     // Make sure that the large, lossy image isn't bundled with the rest
     assertTrue(!i64.getURL().equals(lossy.getURL()));
+    
+    assertEquals(16, r.i16x16Vertical().getWidth());
+    assertEquals(16, r.i16x16Vertical().getHeight());
+    
+    assertEquals(16, r.i16x16Horizontal().getWidth());
+    assertEquals(16, r.i16x16Horizontal().getHeight());
   }
 
   public void testDedup() {
     Resources r = GWT.create(Resources.class);
 
-    // Cast to impl type for testing
-    ImageResourcePrototype a = (ImageResourcePrototype) r.i64x64();
-    ImageResourcePrototype b = (ImageResourcePrototype) r.i64x64Dup();
-    ImageResourcePrototype c = (ImageResourcePrototype) r.i64x64Dup2();
+    ImageResource a = r.i64x64();
+    ImageResource b = r.i64x64Dup();
+    ImageResource c = r.i64x64Dup2();
     assertEquals(64, a.getHeight());
     assertEquals(64, a.getWidth());
 
