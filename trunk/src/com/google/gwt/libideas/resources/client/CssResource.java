@@ -51,6 +51,16 @@ import java.lang.annotation.Target;
  * Use a DataResource to generate a <code>url('...'}</code> value.</li>
  * </ul>
  * 
+ * <p>
+ * Currently-supported CSS functions:
+ * <ul>
+ * <li>{@code value("bundleFunction.someFunction[.other[...]]" [, "suffix"])}
+ * substitute the value of a sequence of named zero-arg function invocations. An
+ * optional suffix will be appended to the return value of the function. The
+ * first name is resolved relative to the bundle interface passed to
+ * {@link com.google.gwt.core.client.GWT#create(Class)}.</li>
+ * </ul>
+ * 
  * @see <a
  *      href="http://code.google.com/p/google-web-toolkit-incubator/wiki/CssResource">
  *      CssResource design doc</a>

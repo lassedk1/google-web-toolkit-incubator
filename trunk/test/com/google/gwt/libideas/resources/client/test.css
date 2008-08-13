@@ -28,6 +28,10 @@
   more: properties;
 }
 
+.affectedBySprite {
+    offset-left: "guard" value("spriteMethod.getWidth", "px") !important;
+    offset: value("spriteMethod.getWidth", "px") value("spriteMethod.getHeight", "px");
+}
 
 /* Test value substitution */
 div {

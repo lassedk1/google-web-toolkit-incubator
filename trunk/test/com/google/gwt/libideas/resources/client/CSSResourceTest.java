@@ -72,6 +72,10 @@ public class CSSResourceTest extends LibTestBase {
     assertTrue(text.contains("height:16px"));
     assertTrue(text.contains("width:16px"));
 
+    // Check the value() expansion
+    assertTrue(text.contains("offset-left:\"guard\" 16px !important;"));
+    assertTrue(text.contains("offset:16px 16px;"));
+
     // Make sure renaming works
     assertFalse("replacement".equals(css.replacement()));
     assertTrue(text.contains("." + css.replacement()));
