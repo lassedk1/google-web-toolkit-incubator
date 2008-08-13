@@ -54,7 +54,13 @@ border: small solid black;
   * Runtime substitution (*Working*)
 {{{
 @eval userBackground com.module.UserPreferences.getUserBackground();
-background: userBackground;
+div {
+  background: userBackground;
+}
+
+otherDiv {
+  offset-left: value('imageResource.getWidth', 'px');
+}
 }}}
     * Provides runtime support for evaluating static methods when the stylesheet is injected.  Triggered / dynamic updates could be added in the future if we allow programmatic manipulation of the style elements.
       * If the user-defined function can be statically evaluated by the compiler, then the implementation of the specific CssResource should collapse to just a string literal.
@@ -62,7 +68,8 @@ background: userBackground;
     * Generated implementations of CSSResources can do fast string slicing since offsets of substitutions are known at compile time.
     * Allow an @import statement for unqualified names?
     * CSSResource.getText() or CSSResource.inject() necessary
-  * Compile-time import (_TODO_)
+    * The `value()` function takes a sequence of dot-separated identifiers and an optional suffix.  The identifiers are interpreted as zero-arg method invocations, using the interface passed to GWT.create() as the root namespace.  By only allowing zero-arg methods, there's no need to attempt to perform type checking in the Generator.  The only validation necessary is to ensure that the sequence of methods exists.  There may be arbitrarily many identifiers in the chain.
+  * Compile-time import (~~Not planned~~)
 {{{
 @import cssResourceFunctionName;
 }}}
