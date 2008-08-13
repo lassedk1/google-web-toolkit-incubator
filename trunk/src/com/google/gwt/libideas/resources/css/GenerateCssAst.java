@@ -173,6 +173,12 @@ public class GenerateCssAst {
      */
     private final Errors errors;
 
+    /**
+     * Used by {@link #startSelector(SelectorList)} to suppress the creation of
+     * new CssRules in favor of retaining {@link #currentRule}.
+     */
+    private boolean nextSelectorCreatesRule = true;
+
     public GenerationHandler(Errors errors) {
       this.errors = errors;
       currentParent.push(css);
@@ -265,12 +271,20 @@ public class GenerateCssAst {
     }
 
     public void startSelector(SelectorList selectors) throws CSSException {
-      CssRule r = new CssRule();
-      addNode(r);
+      CssRule r;
+
+      if (nextSelectorCreatesRule) {
+        r = new CssRule();
+        addNode(r);
+        currentRule = r;
+      } else {
+        r = (CssRule) currentRule;
+        nextSelectorCreatesRule = true;
+      }
+
       for (int i = 0; i < selectors.getLength(); i++) {
         r.getSelectors().add(new CssSelector(valueOf(selectors.item(i))));
       }
-      currentRule = r;
     }
 
     void parseDef(String atRule) {
@@ -403,16 +417,27 @@ public class GenerateCssAst {
     }
 
     void parseSprite(String atRule) throws CSSException {
-      // @sprite className methodName
-      String[] parts = atRule.substring(0, atRule.length() - 1).split("\\s");
-
-      if (parts.length != 3) {
-        throw new CSSException(CSSException.SAC_SYNTAX_ERR,
-            "Incorrect number of parts for @sprite", null);
-      }
-
-      CssSprite sprite = new CssSprite(parts[1], parts[2]);
+      CssSprite sprite = new CssSprite();
+      currentRule = sprite;
       addNode(sprite);
+
+      // Flag to tell startSelector() to use the CssSprite instead of creating
+      // its own CssRule.
+      nextSelectorCreatesRule = false;
+
+      // parse the inner text
+      InputSource s = new InputSource();
+      s.setCharacterStream(new StringReader(atRule.substring(7)));
+      Parser parser = new Parser();
+      parser.setDocumentHandler(this);
+      parser.setErrorHandler(errors);
+
+      try {
+        parser.parseRule(s);
+      } catch (IOException e) {
+        throw new CSSException(CSSException.SAC_SYNTAX_ERR,
+            "Unable to parse @sprite", e);
+      }
     }
 
     void parseUrl(String atRule) throws CSSException {

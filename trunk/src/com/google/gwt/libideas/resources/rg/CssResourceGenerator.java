@@ -354,35 +354,31 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   }
 
   /**
-   * The real trick with spriting the images is to reuse the ImageResource
-   * processing framework by requiring the sprite to be defined in terms of an
-   * ImageResource.
+   * Replaces CssSprite nodes with CssRule nodes that will display the sprited
+   * image. The real trick with spriting the images is to reuse the
+   * ImageResource processing framework by requiring the sprite to be defined in
+   * terms of an ImageResource.
    */
   private static class Spriter extends CssModVisitor {
     private final ResourceContext context;
-    private final JClassType cssResourceType;
     private final TreeLogger logger;
 
-    public Spriter(TreeLogger logger, ResourceContext context,
-        JClassType cssResourceType) {
+    public Spriter(TreeLogger logger, ResourceContext context) {
       this.logger = logger.branch(TreeLogger.DEBUG,
           "Creating image sprite classes");
       this.context = context;
-      this.cssResourceType = cssResourceType;
     }
 
     @Override
     public void endVisit(CssSprite x, Context ctx) {
       JClassType bundleType = context.getResourceBundleType();
-      String className = x.getCssClass();
       String functionName = x.getResourceFunction();
 
-      // Ensure that there is a Sprite method defined in the interface
-      JMethod spriteMethod = cssResourceType.findMethod(className, new JType[0]);
-      if (spriteMethod == null) {
-        logger.log(TreeLogger.ERROR, "Unable to find method \"Sprite "
-            + className + "()\" in " + cssResourceType.getQualifiedSourceName());
-        throw new CssCompilerException("Cannot find Sprite method");
+      if (functionName == null) {
+        logger.log(TreeLogger.ERROR, "The @sprite rule " + x.getSelectors()
+            + " must specify the " + CssSprite.IMAGE_PROPERTY_NAME
+            + " property");
+        throw new CssCompilerException("No image property specified");
       }
 
       // Find the image accessor method
@@ -402,10 +398,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         repeatStyle = RepeatStyle.None;
       }
 
-      CssRule spriteRule = new CssRule();
-      CssSelector classSelector = new CssSelector("." + className);
-      spriteRule.getSelectors().add(classSelector);
-
       /*
        * This casts the ImageResource to ImageResourcePrototype to get at the
        * precomputed size metrics.
@@ -414,80 +406,49 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
           + context.getImplementationSimpleSourceName() + ".this."
           + functionName + "()))";
 
-      // Set the class to constrain the height and width of the element
-      List<CssProperty> properties = spriteRule.getProperties();
+      CssRule replacement = new CssRule();
+      replacement.getSelectors().addAll(x.getSelectors());
+      List<CssProperty> properties = replacement.getProperties();
 
-      // TODO Decide if the sprite should constrain the size.
-      properties.add(new CssProperty("height", instance
-          + ".getHeight() + \"px\"", false));
-      properties.add(new CssProperty("width",
-          instance + ".getWidth() + \"px\"", false));
-      properties.add(new CssProperty("overflow", "\"hidden\"", false));
-
-      /*
-       * IE6 needs a clipper element sized to the size of the image which
-       * contains a screen that displays the image. If the user is running in
-       * IE6, then we'll create some extra rules for the child div (to be
-       * created by SpriteImpl at runtime) to show the image.
-       * 
-       * Otherwise, we'll just set the background to the URL of the
-       * ImageResource.
-       */
-      try {
-        if (context.getGeneratorContext().getPropertyOracle().getPropertyValue(
-            logger, "user.agent").equals("ie6")) {
-          CssRule screenRule = new CssRule();
-          CssSelector screenSelector = new CssSelector(
-              classSelector.getSelector() + " div");
-          screenRule.getSelectors().add(screenSelector);
-
-          List<CssProperty> screenProperties = screenRule.getProperties();
-
-          // Fake repeating with scaling
-          String sizingMethod = repeatStyle == RepeatStyle.None ? "crop"
-              : "scale";
-          screenProperties.add(new CssProperty("filter",
-              "\"progid:DXImageTransform.Microsoft.AlphaImageLoader(src='\" + "
-                  + instance + ".getURL() + \"',sizingMethod='" + sizingMethod
-                  + "')\"", false));
-          screenProperties.add(new CssProperty("margin-left", "\"-\" + "
-              + instance + ".getLeft() + \"px\"", false));
-          screenProperties.add(new CssProperty("margin-top", "\"-\" + "
-              + instance + ".getTop() + \"px\"", false));
-          screenProperties.add(new CssProperty("width", "(" + instance
-              + ".getLeft() + " + instance + ".getWidth()) + \"px\"", false));
-          screenProperties.add(new CssProperty("height", "(" + instance
-              + ".getTop() + " + instance + ".getHeight()) + \"px\"", false));
-
-          ctx.insertAfter(screenRule);
-        } else {
-          String repeatText;
-          switch (repeatStyle) {
-            case None:
-              repeatText = " no-repeat";
-              break;
-            case Horizontal:
-              repeatText = " repeat-x";
-              break;
-            case Vertical:
-              repeatText = " repeat-y";
-              break;
-            case Both:
-              repeatText = " repeat";
-              break;
-            default:
-              throw new RuntimeException("Unknown repeatStyle " + repeatStyle);
-          }
-          properties.add(new CssProperty("background", "\"url(\\\"\" + "
-              + instance + ".getURL() + \"\\\") -\" + " + instance
-              + ".getLeft() + \"px -\" + " + instance + ".getTop() + \"px "
-              + repeatText + "\"", false));
-        }
-      } catch (BadPropertyValueException e) {
-        logger.log(TreeLogger.ERROR, "No user.agent property", e);
-        throw new CssCompilerException("No user.agent property");
+      if (repeatStyle == RepeatStyle.None
+          || repeatStyle == RepeatStyle.Horizontal) {
+        properties.add(new CssProperty("height", instance
+            + ".getHeight() + \"px\"", true));
       }
-      ctx.replaceMe(spriteRule);
+
+      if (repeatStyle == RepeatStyle.None
+          || repeatStyle == RepeatStyle.Vertical) {
+        properties.add(new CssProperty("width", instance
+            + ".getWidth() + \"px\"", true));
+      }
+      properties.add(new CssProperty("overflow", "\"hidden\"", true));
+
+      String repeatText;
+      switch (repeatStyle) {
+        case None:
+          repeatText = " no-repeat";
+          break;
+        case Horizontal:
+          repeatText = " repeat-x";
+          break;
+        case Vertical:
+          repeatText = " repeat-y";
+          break;
+        case Both:
+          repeatText = " repeat";
+          break;
+        default:
+          throw new RuntimeException("Unknown repeatStyle " + repeatStyle);
+      }
+      properties.add(new CssProperty("background", "\"url(\\\"\" + " + instance
+          + ".getURL() + \"\\\") -\" + " + instance
+          + ".getLeft() + \"px -\" + " + instance + ".getTop() + \"px "
+          + repeatText + "\"", true));
+
+      // Retain any user-specified properties
+      properties.addAll(x.getProperties());
+
+      ctx.replaceMe(replacement);
     }
   }
 
@@ -643,7 +604,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   private boolean prettyOutput;
   private Map<String, String> replacements;
   private JClassType spriteImplType;
-  private JClassType spriteType;
   private JClassType stringType;
   private Map<JMethod, URL> urlMap;
 
@@ -688,10 +648,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       if (toImplement.getReturnType().equals(stringType)
           && toImplement.getParameters().length == 0) {
         writeClassAssignment(sw, toImplement, obfuscatedClassName);
-
-      } else if (toImplement.getReturnType().equals(spriteType)
-          && toImplement.getParameters().length == 0) {
-        writeSpriteAssignment(sw, toImplement, obfuscatedClassName);
 
       } else {
         logger.log(TreeLogger.ERROR, "Don't know how to implement method "
@@ -749,10 +705,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
     stringType = typeOracle.findType(String.class.getName());
     assert stringType != null;
-
-    spriteType = typeOracle.findType(CssResource.Sprite.class.getName().replace(
-        '$', '.'));
-    assert spriteType != null;
 
     spriteImplType = typeOracle.findType(SpriteImpl.class.getName());
     assert spriteImplType != null;
@@ -892,6 +844,9 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       // Create the base AST
       CssStylesheet sheet = GenerateCssAst.exec(logger, css);
 
+      // Create CSS sprites
+      (new Spriter(logger, context)).accept(sheet);
+
       // Perform @def and @eval substitutions
       SubstitutionCollector collector = new SubstitutionCollector();
       collector.accept(sheet);
@@ -901,9 +856,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       // Evaluate @if statements based on deferred binding properties
       (new IfEvaluator(logger,
           context.getGeneratorContext().getPropertyOracle())).accept(sheet);
-
-      // Create CSS sprites
-      (new Spriter(logger, context, cssResourceType)).accept(sheet);
 
       // Rename css .class selectors
       (new ClassRenamer(logger, classReplacements)).accept(sheet);
@@ -937,38 +889,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         + "{");
     sw.indent();
     sw.println("return \"" + className + "\";");
-    sw.outdent();
-    sw.println("}");
-  }
-
-  /**
-   * Write the CssResource accessor method for Sprite return values.
-   */
-  private void writeSpriteAssignment(SourceWriter sw, JMethod toImplement,
-      String className) {
-
-    sw.println(toImplement.getReadableDeclaration(false, true, true, true, true)
-        + "{");
-    sw.indent();
-
-    // return new Sprite() {
-    sw.println("return new "
-        + toImplement.getReturnType().getQualifiedSourceName() + "() {");
-    sw.indent();
-
-    // public void apply(Element e) {
-    sw.println("public void apply(" + elementType.getQualifiedSourceName()
-        + " element) {");
-    sw.indent();
-
-    // GWT.create(Sprite.class).apply(e, "replacementClass")
-    sw.println("((" + spriteImplType.getQualifiedSourceName() + ")GWT.create("
-        + spriteImplType.getQualifiedSourceName()
-        + ".class)).apply(element, \"" + className + "\");");
-    sw.outdent();
-    sw.println("};");
-    sw.outdent();
-    sw.println("};");
     sw.outdent();
     sw.println("}");
   }

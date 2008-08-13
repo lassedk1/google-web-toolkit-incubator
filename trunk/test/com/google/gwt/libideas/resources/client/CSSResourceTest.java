@@ -34,7 +34,7 @@ public class CSSResourceTest extends LibTestBase {
    * Check type inheritance.
    */
   interface MyCssResourceWithSprite extends MyCssResource {
-    Sprite spriteClass();
+    String extraSpriteClass();
   }
 
   interface Resources extends ImmutableResourceBundle {
