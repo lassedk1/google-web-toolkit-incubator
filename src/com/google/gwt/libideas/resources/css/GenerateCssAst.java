@@ -148,7 +148,7 @@ public class GenerateCssAst {
     private static String join(Iterable<Value> elements, String separator) {
       StringBuilder b = new StringBuilder();
       for (Iterator<Value> i = elements.iterator(); i.hasNext();) {
-        b.append((StringValue) i.next());
+        b.append(((StringValue) i.next()).getValue());
         if (i.hasNext()) {
           b.append(separator);
         }
