@@ -130,10 +130,15 @@ class MyResources extends ImmutableResourceBundle {
 
   @Resource("some.png")
   ImageResource imageAccessor();
+
+  @Resource("some.png")
+  @ImageOptions(repeatStyle=RepeatStyle.Horizontal)
+  ImageResource repeatingImage();
 }
 }}}
     * @sprite is sensitive to the FooBundle in which the CSSResource is declared; a sibling ImageResource method named in the @sprite declaration will be used to compose the background sprite.
-    * @sprite entries will be expanded to static CSS rules, possibly with data: urls
+    * @sprite entries will be expanded to static CSS rules, possibly with data: urls.
+    * The expansion is sensitive to any RepeatStyle value defined on the ImageResource accessor function.  The appropriate `repeat-x` or `repeat-y` properties will be added to the @sprite selector.
     * Any CSS selector can be specified for @sprite.
     * Support for IE6 isn't feasible in this format, because structural changes to the DOM are necessary to implement a "windowing" effect.  Once it's possible to distinguish ie6 and ie7 in user.agent, we could revisit support for ie6.  In the current implementation, the ie6 code won't render correctly, although is a purely cosmetic issue.
   * References to DataResources (*Working*)
