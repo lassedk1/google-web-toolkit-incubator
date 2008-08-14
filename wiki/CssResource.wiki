@@ -293,12 +293,27 @@ Promotion of rules follows the previously-established rule of not promoting a ru
   * To allow for client-side tweaking of the effective (i.e. permutation-specific) style rules, you can store the value of CssResource.getText() into a TextArea.  Wire some UI action to pass the contents of the TextArea into `StyleInjector.setContents()` to overwrite the original, injected stylesheet.
 = Implementation Details =
 == Scope ==
-In order to allow obfuscation to avoid duplicating shared css structure, a user must be able to define a scope across separate css resources. The scope will both define the unique prefix prepended to class names and the obfuscation context.  Two class names within a single scope will always be obfuscated the same way.
+Scoping of obfuscated class names is defined by CssResource interface inheritance.  Given the following:
 
-Scope may be applied to either a bundle as a whole or on each individual CSSResource within a bundle.  
+{{{
+interface A extends CssResource {
+  String foo();
+}
 
- 
- 
+interface B extends A {
+  String local();
+}
+
+interface C extends A {
+  String foo();
+  String local();
+}
+}}}
+
+It will be true that A.foo() == B.foo() == C.foo(); hower B.local() != C.local().  Behavior in the case of multiple-inheritance of the same accessor function from unrelated supertypes is undefined.
+
+The short version is that if distinct CSS files need to share obfuscated class names, the CssResource subtypes to which they are attached must share a common supertype that defines accessors for those names.
+
 =Important open questions=
   * Can we manipulate style rules across browsers?
     * Maybe make MyCSSResource.mySpriteClass() return Rule object
