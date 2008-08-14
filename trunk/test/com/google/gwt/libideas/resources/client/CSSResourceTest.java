@@ -30,6 +30,17 @@ public class CSSResourceTest extends LibTestBase {
     String replacement();
   }
 
+  interface MyCssResourceA extends MyCssResource {
+    String local();
+    
+    // This shouldn't make a difference
+    String replacement();
+  }
+
+  interface MyCssResourceB extends MyCssResource {
+    String local();
+  }
+
   /*
    * Check type inheritance.
    */
@@ -50,13 +61,12 @@ public class CSSResourceTest extends LibTestBase {
     ImageResource spriteMethod();
   }
 
-  @CssResource.ClassPrefix("T")
   interface SiblingResources extends ImmutableResourceBundle {
     @Resource("siblingTestA.css")
-    MyCssResource a();
+    MyCssResourceA a();
 
     @Resource("siblingTestB.css")
-    MyCssResource b();
+    MyCssResourceB b();
   }
 
   public static String red() {
@@ -120,6 +130,7 @@ public class CSSResourceTest extends LibTestBase {
     SiblingResources r = GWT.create(SiblingResources.class);
 
     assertEquals(r.a().replacement(), r.b().replacement());
+    assertFalse(r.a().local().equals(r.b().local()));
 
     String a = r.a().getText();
     String b = r.b().getText();
@@ -129,5 +140,9 @@ public class CSSResourceTest extends LibTestBase {
 
     assertTrue(a.contains(".other"));
     assertTrue(b.contains(".other"));
+    assertTrue(a.contains(r.a().local()));
+    assertTrue(b.contains(r.b().local()));
+    assertFalse(a.contains(r.b().local()));
+    assertFalse(b.contains(r.a().local()));
   }
 }

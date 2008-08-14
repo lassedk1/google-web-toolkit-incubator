@@ -88,23 +88,6 @@ public interface CssResource extends ResourcePrototype {
   }
 
   /**
-   * Overrides the prefix used for obfuscated CSS class names within a bundle
-   * type. This annotation must be applied to the enclosing
-   * ImmutableResourceBundle because the bundle itself defines the scope in
-   * which the obfuscation of CSS class identifiers is applied.
-   * <p>
-   * The default algorithm is designed to be safe, but will not produce the
-   * shortest possible CSS class identifiers. The developer should choose a
-   * prefix that is known to not conflict with external CSS class names. An
-   * application written by FooBar Inc. might choose to use a prefix
-   * <code>FB</code>.
-   */
-  @Target(ElementType.TYPE)
-  @interface ClassPrefix {
-    String value();
-  }
-
-  /**
    * Provides the contents of the CssResource.
    */
   String getText();

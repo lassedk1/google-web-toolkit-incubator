@@ -2,4 +2,5 @@
 /* This is the first half of the sibling test. */
 .replacement { background:red; }
 .replacement-not-java-ident {color: blue;}
+.local {background: green; }
 .other {background: blue; }

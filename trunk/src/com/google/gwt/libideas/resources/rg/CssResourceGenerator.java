@@ -34,7 +34,6 @@ import com.google.gwt.libideas.resources.client.CssResource.ClassName;
 import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
 import com.google.gwt.libideas.resources.client.impl.ImageResourcePrototype;
-import com.google.gwt.libideas.resources.client.impl.SpriteImpl;
 import com.google.gwt.libideas.resources.css.CssGenerationVisitor;
 import com.google.gwt.libideas.resources.css.GenerateCssAst;
 import com.google.gwt.libideas.resources.css.ast.Context;
@@ -64,8 +63,6 @@ import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
 import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
 import com.google.gwt.user.rebind.SourceWriter;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -545,6 +542,22 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     }
   }
 
+  /**
+   * A lookup table of base-32 chars we use to encode CSS idents. Because CSS
+   * class selectors may be case-insensitive, we don't have enough characters to
+   * use a base-64 encoding.
+   */
+  private static final char[] BASE32_CHARS = new char[] {
+      'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+      'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', '0',
+      '1', '2', '3', '4'};
+
+  public static void main(String[] args) {
+    for (int i = 0; i < 1000; i++) {
+      System.out.println(makeIdent(i));
+    }
+  }
+
   static boolean haveCommonProperties(CssRule a, CssRule b) {
     if (a.getProperties().size() == 0 || b.getProperties().size() == 0) {
       return false;
@@ -592,14 +605,29 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     return false;
   }
 
+  private static String makeIdent(int id) {
+    assert id >= 0;
+
+    StringBuilder b = new StringBuilder();
+
+    // Use only guaranteed-alpha characters for the first character
+    b.append(BASE32_CHARS[id & 0xf]);
+    id >>= 4;
+
+    while (id != 0) {
+      b.append(BASE32_CHARS[id & 0x1f]);
+      id >>= 5;
+    }
+
+    return b.toString();
+  }
+
   private String classPrefix;
-  private Adler32 classPrefixHash;
   private ResourceContext context;
   private JClassType elementType;
   private boolean enableMerge;
   private boolean prettyOutput;
-  private Map<String, String> replacements;
-  private JClassType spriteImplType;
+  private Map<JClassType, Map<String, String>> replacementsByType;
   private JClassType stringType;
   private Map<JMethod, URL> urlMap;
 
@@ -617,33 +645,19 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     // Convenience when examining the generated code.
     sw.println("// " + resource.toExternalForm());
 
-    for (JMethod toImplement : method.getReturnType().isClassOrInterface().getOverridableMethods()) {
+    JClassType cssResourceSubtype = method.getReturnType().isClassOrInterface();
+    Map<String, String> replacements = computeReplacementsForType(cssResourceSubtype);
+    assert replacements != null;
+
+    for (JMethod toImplement : cssResourceSubtype.getOverridableMethods()) {
       String name = toImplement.getName();
       if ("getName".equals(name) || "getText".equals(name)) {
         continue;
       }
 
-      // The user provided the class name to use
-      ClassName classNameOverride = toImplement.getAnnotation(ClassName.class);
-      if (classNameOverride != null) {
-        name = classNameOverride.value();
-      }
-
-      String obfuscatedClassName;
-      if (replacements.containsKey(name)) {
-        // A replacement may have already been declared in a sibling CssResource
-        obfuscatedClassName = replacements.get(name);
-      } else if (prettyOutput) {
-        obfuscatedClassName = name;
-      } else {
-        obfuscatedClassName = classPrefix + replacements.size();
-      }
-      replacements.put(name, obfuscatedClassName);
-
-      // TODO check for string, no-args etc....
       if (toImplement.getReturnType().equals(stringType)
           && toImplement.getParameters().length == 0) {
-        writeClassAssignment(sw, toImplement, obfuscatedClassName);
+        writeClassAssignment(sw, toImplement, replacements);
 
       } else {
         logger.log(TreeLogger.ERROR, "Don't know how to implement method "
@@ -655,8 +669,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     sw.println("public String getText() {");
     sw.indent();
 
-    String cssExpression = makeExpression(logger,
-        method.getReturnType().isClassOrInterface(), resource, replacements);
+    String cssExpression = makeExpression(logger, cssResourceSubtype, resource,
+        replacements);
     sw.println("return " + cssExpression + ";");
     sw.outdent();
     sw.println("}");
@@ -687,11 +701,19 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       String merge = propertyOracle.getPropertyValue(logger,
           "CssResource.enableMerge").toLowerCase();
       enableMerge = merge.equals("true");
+
+      classPrefix = propertyOracle.getPropertyValue(logger,
+          "CssResource.globalPrefix");
     } catch (BadPropertyValueException e) {
-      logger.log(
-          TreeLogger.WARN,
-          "Unable to determine desired output format, defaulting to obfuscated",
-          e);
+      logger.log(TreeLogger.WARN, "Unable to query module property", e);
+      throw new UnableToCompleteException();
+    }
+
+    if ("default".equals(classPrefix)) {
+      // Compute it later in computeObfuscatedNames();
+      classPrefix = null;
+    } else if ("empty".equals(classPrefix)) {
+      classPrefix = "";
     }
 
     // Find all of the types that we care about in the type system
@@ -702,25 +724,10 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     stringType = typeOracle.findType(String.class.getName());
     assert stringType != null;
 
-    spriteImplType = typeOracle.findType(SpriteImpl.class.getName());
-    assert spriteImplType != null;
-
-    replacements = new HashMap<String, String>();
+    replacementsByType = new IdentityHashMap<JClassType, Map<String, String>>();
     urlMap = new IdentityHashMap<JMethod, URL>();
 
-    // Determine the prefix to use for obfuscated CSS class names.
-    CssResource.ClassPrefix prefixAnnotation = context.getResourceBundleType().getAnnotation(
-        CssResource.ClassPrefix.class);
-    if (prefixAnnotation != null) {
-      classPrefix = prefixAnnotation.value();
-      if (!Util.isValidJavaIdent(classPrefix)) {
-        logger.log(TreeLogger.ERROR,
-            "The @ClassPrefix annotation must be a valid Java identifier");
-        throw new UnableToCompleteException();
-      }
-    } else {
-      classPrefixHash = new Adler32();
-    }
+    computeObfuscatedNames(logger);
   }
 
   @Override
@@ -738,24 +745,124 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
     URL resource = resources[0];
     urlMap.put(method, resource);
+  }
 
-    if (classPrefixHash == null) {
-      // A prefix was specified on the bundle type so we don't need to
-      return;
-    }
+  private void computeObfuscatedNames(TreeLogger logger) {
+    logger = logger.branch(TreeLogger.DEBUG, "Computing CSS class replacements");
 
-    try {
-      InputStream in = resource.openStream();
-      byte[] buffer = new byte[4096];
-      int len = in.read(buffer);
-      while (len > 0) {
-        classPrefixHash.update(buffer, 0, len);
-        len = in.read(buffer);
+    TypeOracle oracle = context.getGeneratorContext().getTypeOracle();
+    JClassType cssResourceType = oracle.findType(CssResource.class.getName());
+    assert cssResourceType != null;
+
+    if (classPrefix == null) {
+      Adler32 checksum = new Adler32();
+      for (JClassType type : cssResourceType.getSubtypes()) {
+        checksum.update(Util.getBytes(type.getQualifiedSourceName()));
       }
       classPrefix = "G"
-          + Long.toString(classPrefixHash.getValue(), Character.MAX_RADIX);
-    } catch (IOException e) {
-      logger.log(TreeLogger.ERROR, "Unable to compute prefix", e);
+          + Long.toString(checksum.getValue(), Character.MAX_RADIX);
+    }
+
+    int count = 0;
+    for (JClassType type : cssResourceType.getSubtypes()) {
+      Map<String, String> replacements = new HashMap<String, String>();
+      replacementsByType.put(type, replacements);
+
+      for (JMethod method : type.getMethods()) {
+        String name = method.getName();
+        if ("getName".equals(name) || "getText".equals(name)) {
+          continue;
+        }
+
+        // The user provided the class name to use
+        ClassName classNameOverride = method.getAnnotation(ClassName.class);
+        if (classNameOverride != null) {
+          name = classNameOverride.value();
+        }
+
+        String obfuscatedClassName;
+        if (prettyOutput) {
+          obfuscatedClassName = type.getQualifiedSourceName().replaceAll(
+              "[.$]", "-")
+              + "-" + name;
+        } else {
+          obfuscatedClassName = classPrefix + makeIdent(count++);
+        }
+
+        replacements.put(name, obfuscatedClassName);
+        logger.log(TreeLogger.SPAM, "Mapped " + type.getQualifiedSourceName()
+            + "." + name + " to " + obfuscatedClassName);
+      }
+    }
+  }
+
+  /**
+   * Compute the mapping of original class names to obfuscated type names for a
+   * given subtype of CssResource. Mappings are inherited from the type's
+   * supertypes.
+   */
+  private Map<String, String> computeReplacementsForType(JClassType type) {
+    Map<String, String> toReturn = new HashMap<String, String>();
+    if (type == null) {
+      return toReturn;
+    }
+
+    // Later putAlls replace current putalls
+    if (replacementsByType.containsKey(type)) {
+      toReturn.putAll(replacementsByType.get(type));
+    }
+
+    toReturn.putAll(computeReplacementsForType(type.getSuperclass()));
+    for (JClassType superInterface : type.getImplementedInterfaces()) {
+      toReturn.putAll(computeReplacementsForType(superInterface));
+    }
+
+    return toReturn;
+  }
+
+  /**
+   * Create a Java expression that evaluates to the string representation of the
+   * stylesheet resource.
+   */
+  private String makeExpression(TreeLogger logger, JClassType cssResourceType,
+      URL css, Map<String, String> classReplacements)
+      throws UnableToCompleteException {
+
+    try {
+      // Create the base AST
+      CssStylesheet sheet = GenerateCssAst.exec(logger, css);
+
+      // Create CSS sprites
+      (new Spriter(logger, context)).accept(sheet);
+
+      // Perform @def and @eval substitutions
+      SubstitutionCollector collector = new SubstitutionCollector();
+      collector.accept(sheet);
+
+      (new SubstitutionReplacer(logger, context, collector.substitutions)).accept(sheet);
+
+      // Evaluate @if statements based on deferred binding properties
+      (new IfEvaluator(logger,
+          context.getGeneratorContext().getPropertyOracle())).accept(sheet);
+
+      // Rename css .class selectors
+      (new ClassRenamer(logger, classReplacements)).accept(sheet);
+
+      // Combine rules with identical selectors
+      if (enableMerge) {
+        // TODO This is an off-switch while this is being developed; remove
+        (new SplitRulesVisitor()).accept(sheet);
+        (new MergeIdenticalSelectorsVisitor()).accept(sheet);
+        (new MergeRulesByContentVisitor()).accept(sheet);
+      }
+
+      return makeExpression(logger, sheet);
+
+    } catch (CssCompilerException e) {
+      // Take this as a sign that one of the visitors was unhappy, but only
+      // log the stack trace if there's a causal (i.e. unknown) exception.
+      logger.log(TreeLogger.ERROR, "Unable to process CSS",
+          e.getCause() == null ? null : e);
       throw new UnableToCompleteException();
     }
   }
@@ -833,53 +940,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   }
 
   /**
-   * Create a Java expression that evaluates to the string representation of the
-   * stylesheet resource.
-   */
-  private String makeExpression(TreeLogger logger, JClassType cssResourceType,
-      URL css, Map<String, String> classReplacements)
-      throws UnableToCompleteException {
-
-    try {
-      // Create the base AST
-      CssStylesheet sheet = GenerateCssAst.exec(logger, css);
-
-      // Create CSS sprites
-      (new Spriter(logger, context)).accept(sheet);
-
-      // Perform @def and @eval substitutions
-      SubstitutionCollector collector = new SubstitutionCollector();
-      collector.accept(sheet);
-
-      (new SubstitutionReplacer(logger, context, collector.substitutions)).accept(sheet);
-
-      // Evaluate @if statements based on deferred binding properties
-      (new IfEvaluator(logger,
-          context.getGeneratorContext().getPropertyOracle())).accept(sheet);
-
-      // Rename css .class selectors
-      (new ClassRenamer(logger, classReplacements)).accept(sheet);
-
-      // Combine rules with identical selectors
-      if (enableMerge) {
-        // TODO This is an off-switch while this is being developed; remove
-        (new SplitRulesVisitor()).accept(sheet);
-        (new MergeIdenticalSelectorsVisitor()).accept(sheet);
-        (new MergeRulesByContentVisitor()).accept(sheet);
-      }
-
-      return makeExpression(logger, sheet);
-
-    } catch (CssCompilerException e) {
-      // Take this as a sign that one of the visitors was unhappy, but only
-      // log the stack trace if there's a causal (i.e. unknown) exception.
-      logger.log(TreeLogger.ERROR, "Unable to process CSS",
-          e.getCause() == null ? null : e);
-      throw new UnableToCompleteException();
-    }
-  }
-
-  /**
    * This function validates any context-sensitive Values.
    */
   private void validateValue(TreeLogger logger, Value value)
@@ -921,12 +981,21 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
    * Write the CssResource accessor method for simple String return values.
    */
   private void writeClassAssignment(SourceWriter sw, JMethod toImplement,
-      String className) {
+      Map<String, String> classReplacements) {
+
+    String name = toImplement.getName();
+    ClassName nameOverride = toImplement.getAnnotation(ClassName.class);
+    if (nameOverride != null) {
+      name = nameOverride.value();
+    }
+
+    String replacement = classReplacements.get(name);
+    assert replacement != null;
 
     sw.println(toImplement.getReadableDeclaration(false, true, true, true, true)
         + "{");
     sw.indent();
-    sw.println("return \"" + className + "\";");
+    sw.println("return \"" + replacement + "\";");
     sw.outdent();
     sw.println("}");
   }
