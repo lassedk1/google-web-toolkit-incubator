@@ -57,7 +57,6 @@ public class CustomListBoxDemo implements EntryPoint {
    * CSS resource for {@link WrappedCustomListBox}.
    * 
    */
-  @CssResource.ClassPrefix("C")
   public interface Resources extends ImmutableResourceBundle {
 
     @Resource("com/google/gwt/widgetideas/theme/public/CustomListBox.css")
