@@ -402,8 +402,16 @@ class ImageBundleBuilder {
     return imageNameToImageRectMap.get(imageName);
   }
 
+  public ImageRect removeMapping(String imageName) {
+    return imageNameToImageRectMap.remove(imageName);
+  }
+
   public String writeBundledImage(TreeLogger logger, ResourceContext context,
       Arranger arranger) throws UnableToCompleteException {
+
+    if (imageNameToImageRectMap.isEmpty()) {
+      return null;
+    }
 
     // Create the bundled image from all of the constituent images.
     BufferedImage bundledImage = drawBundledImage(arranger);

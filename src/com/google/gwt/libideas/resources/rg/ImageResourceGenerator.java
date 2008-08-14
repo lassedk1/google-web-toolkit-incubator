@@ -110,6 +110,11 @@ public final class ImageResourceGenerator extends AbstractResourceGenerator {
 
       String bundleUrlExpression = builder.writeBundledImage(logger.branch(
           TreeLogger.DEBUG, "Writing image strip", null), context, arranger);
+
+      if (bundleUrlExpression == null) {
+        continue;
+      }
+
       TypeOracle typeOracle = context.getGeneratorContext().getTypeOracle();
       JClassType stringType = typeOracle.findType(String.class.getName());
       assert stringType != null;
@@ -149,8 +154,8 @@ public final class ImageResourceGenerator extends AbstractResourceGenerator {
       if (context.supportsDataUrls()
           || getRepeatStyle(method) == RepeatStyle.Both) {
         // Just use the calculated meta-data
-        ImageRect r = builder.getMapping(name);
-        r.setPosition(0, r.getTop());
+        ImageRect r = builder.removeMapping(name);
+        r.setPosition(0, 0);
         throw new UnsuitableForStripException(r);
       }
     } catch (UnsuitableForStripException e) {
