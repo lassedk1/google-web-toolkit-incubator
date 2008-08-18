@@ -17,7 +17,6 @@
 package com.google.gwt.demos.bulkloadingtable.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
