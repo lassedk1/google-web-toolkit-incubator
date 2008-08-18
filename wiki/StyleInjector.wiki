@@ -20,7 +20,8 @@ public interface Resources extends ImmutableResourceBundle {
       GWT.create(Resources.class);
 
   @Resource("myBackground.png")
-  public DataResource backgroundFunction();
+  @ImageOptions(repeatStyle = RepeatStyle.Horizontal)
+  public ImageResource backgroundFunction();
 
   @Resource("myCss.css")
   public CssResource css();
@@ -30,10 +31,10 @@ public interface Resources extends ImmutableResourceBundle {
 The CSS contents (see CssResource for more information):
 {{{
 /* The format is @url <id> <function name>; */
-@url backgroundUrl backgroundFunction;
-body {
-  background: backgroundUrl repeat-x;
+@sprite .some .selector {
+  gwt-image: 'backgroundFunction';
 }
+
 }}}
 
 In your `onModuleLoad`:
@@ -42,7 +43,7 @@ StyleInjector.injectStylesheet(Resources.INSTANCE.css().getText());
 }}}
 
 
-You now have your stylesheet applied to the document while taking advantage of strongly-named or inlined resource URLs.  Because the standard I18N-style of resource naming is applied to the `DataResource` instance, it is possible to provide localized CSS background images without the need for multiple, per-locale stylesheets.  It is now possible to have `myBackground_fr.png` and `myBackground_en.png` substituted based on the `locale` deferred binding property.
+You now have your stylesheet applied to the document while taking advantage of strongly-named or inlined resource URLs.  Because the standard I18N-style of resource naming is applied to the `ImageResource` instance, it is possible to provide localized CSS background images without the need for multiple, per-locale stylesheets.  It is now possible to have `myBackground_fr.png` and `myBackground_en.png` substituted based on the `locale` deferred binding property.
 
 It is possible to update the contents of a previously-injected stylesheet using the `setContents()` method:
 {{{
