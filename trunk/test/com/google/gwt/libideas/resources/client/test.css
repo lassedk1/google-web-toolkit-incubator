@@ -170,3 +170,16 @@ div {
 @page :left {
   margin: 4cm;
 }
+
+/* Ensure multi-class selectors fully obfuscate */
+.multiClassA {
+  border: 1px solid red;
+}
+
+.multiClassB {
+  border: 1px solid blue;
+}
+
+.multiClassA.multiClassB {
+  border: 1px solid blue;
+}
