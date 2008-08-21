@@ -1,0 +1,3 @@
+#summary Developers guide for gen2 widgets
+= Introduction =
+This guide is for 
