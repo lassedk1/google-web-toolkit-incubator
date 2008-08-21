@@ -32,7 +32,7 @@ public class CSSResourceTest extends LibTestBase {
 
   interface MyCssResourceA extends MyCssResource {
     String local();
-    
+
     // This shouldn't make a difference
     String replacement();
   }
@@ -46,6 +46,10 @@ public class CSSResourceTest extends LibTestBase {
    */
   interface MyCssResourceWithSprite extends MyCssResource {
     String extraSpriteClass();
+
+    String multiClassA();
+
+    String multiClassB();
   }
 
   interface Resources extends ImmutableResourceBundle {
@@ -91,6 +95,11 @@ public class CSSResourceTest extends LibTestBase {
     assertTrue(text.contains("." + css.replacement()));
     assertTrue(text.contains("." + css.replacement() + ":after"));
     assertTrue(text.contains("." + css.nameOverride()));
+
+    // Make sure renaming for multi-class selectors (.foo.bar) works
+    assertFalse("multiClassA".equals(css.multiClassA()));
+    assertFalse("multiClassB".equals(css.multiClassB()));
+    assertTrue(text.contains("." + css.multiClassA() + "." + css.multiClassB()));
 
     // Check static if evaluation
     assertTrue(text.contains("static:PASSED;"));

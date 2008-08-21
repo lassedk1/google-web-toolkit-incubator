@@ -33,7 +33,6 @@ import com.google.gwt.libideas.resources.client.DataResource;
 import com.google.gwt.libideas.resources.client.CssResource.ClassName;
 import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
-import com.google.gwt.libideas.resources.client.impl.ImageResourcePrototype;
 import com.google.gwt.libideas.resources.css.CssGenerationVisitor;
 import com.google.gwt.libideas.resources.css.GenerateCssAst;
 import com.google.gwt.libideas.resources.css.ast.Context;
@@ -102,7 +101,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       // TODO This would be simplified by having a class hierarchy for selectors
       for (Map.Entry<String, String> entry : classReplacements.entrySet()) {
         Pattern p = Pattern.compile("(.*)\\.(" + Pattern.quote(entry.getKey())
-            + ")([ :>+#].*|$)");
+            + ")([ :>+#.].*|$)");
         Matcher m = p.matcher(sel);
         if (m.find()) {
           sel = m.group(1) + "." + entry.getValue() + m.group(3);
@@ -393,13 +392,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         repeatStyle = RepeatStyle.None;
       }
 
-      /*
-       * This casts the ImageResource to ImageResourcePrototype to get at the
-       * precomputed size metrics.
-       */
-      String instance = "((" + ImageResourcePrototype.class.getName() + ")("
-          + context.getImplementationSimpleSourceName() + ".this."
-          + functionName + "()))";
+      String instance = "(" + context.getImplementationSimpleSourceName()
+          + ".this." + functionName + "())";
 
       CssRule replacement = new CssRule();
       replacement.getSelectors().addAll(x.getSelectors());
@@ -408,16 +402,16 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       if (repeatStyle == RepeatStyle.None
           || repeatStyle == RepeatStyle.Horizontal) {
         properties.add(new CssProperty("height", new ExpressionValue(instance
-            + ".getHeight() + \"px\""), true));
+            + ".getHeight() + \"px\""), false));
       }
 
       if (repeatStyle == RepeatStyle.None
           || repeatStyle == RepeatStyle.Vertical) {
         properties.add(new CssProperty("width", new ExpressionValue(instance
-            + ".getWidth() + \"px\""), true));
+            + ".getWidth() + \"px\""), false));
       }
       properties.add(new CssProperty("overflow", new StringValue("hidden"),
-          true));
+          false));
 
       String repeatText;
       switch (repeatStyle) {
@@ -442,7 +436,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
           + ".getLeft() + \"px -\" + " + instance + ".getTop() + \"px "
           + repeatText + "\"";
       properties.add(new CssProperty("background", new ExpressionValue(
-          backgroundExpression), true));
+          backgroundExpression), false));
 
       // Retain any user-specified properties
       properties.addAll(x.getProperties());
