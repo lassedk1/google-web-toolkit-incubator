@@ -135,6 +135,14 @@ public class CSSResourceTest extends LibTestBase {
     assertTrue(text.indexOf("prevent:true") < text.indexOf("may-not-combine2"));
   }
 
+  public void testMultipleBundles() {
+    Resources r1 = GWT.create(Resources.class);
+    SiblingResources r2 = GWT.create(SiblingResources.class);
+
+    assertEquals(r1.css().replacement(), r2.a().replacement());
+    assertEquals(r1.css().replacement(), r2.b().replacement());
+  }
+
   public void testSiblingCSS() {
     SiblingResources r = GWT.create(SiblingResources.class);
 
