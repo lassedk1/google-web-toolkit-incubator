@@ -203,7 +203,6 @@
           <fileset refid="@{test.cases}" />
         </batchtest>
       </junit>
-      <fail message="One or more junit tests failed" if="junit.failure" />
     </sequential>
   </macrodef>
 
