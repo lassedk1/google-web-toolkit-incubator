@@ -50,8 +50,6 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
 
 
   <!-- Setting up the project bin -->
-  <fail if="project.bin"
-        message="Cannot override project.bin. If you are trying to use class files compiled outside of ant, set project.external.bin instead" />
 
   <condition property="project.bin" value="${project.external.bin}">
     <isset property="project.external.bin" />
@@ -186,9 +184,9 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
     <limit failonerror="true" hours="2">
       <parallel threadsPerProcessor="2">
         <!-- test.remoteweb.body is a no-op unless gwt.remote.browsers is defined -->
-        <antcall target="test.remoteweb.body" inheritAll="No" />
-        <antcall target="test.hosted.body" inheritAll="No" />
-        <antcall target="test.web.body" inheritAll="No" />
+        <antcall target="test.remoteweb.body" />
+        <antcall target="test.hosted.body" />
+        <antcall target="test.web.body" />
       </parallel>
     </limit>
   </target>
@@ -305,12 +303,14 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
   <target name="test.hosted.body">
     <gwt.junit test.out="${project.test.results}/${gwt.platform}-hosted-mode"
                test.cases="default.hosted.tests" />
+    <fail message="Hosted mode tests failed, log should be in '${project.test.results}\${gwt.platform}-hosted-mode\reports\' directory" if="junit.failure" />
   </target>
 
   <target name="test.web.body">
     <gwt.junit test.args="-out www -web"
                test.out="${project.test.results}/${gwt.platform}-web-mode"
                test.cases="default.web.tests" />
+    <fail message="Web mode tests failed, log should be in '${project.test.results}\${gwt.platform}-web-mode\reports\' directory" if="junit.failure" />
   </target>
 
   <target name="test.remoteweb.body" if="gwt.remote.browsers">
@@ -319,5 +319,7 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
                test.out="${project.test.results}/remoteweb"
                test.cases="default.web.tests">
     </gwt.junit>
+    <fail message="Remote web mode tests failed, log should be in '${project.test.results}\${gwt.platform}-\reports\' directory" if="junit.failure" />
+
   </target>
 </project>
