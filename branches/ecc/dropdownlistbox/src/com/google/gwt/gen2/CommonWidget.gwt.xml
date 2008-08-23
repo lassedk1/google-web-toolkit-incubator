@@ -1,0 +1,8 @@
+<module>
+    <inherits name='com.google.gwt.gen2.Widget'/>
+    <source path="commonwidget/client"/>
+	
+    
+    <!-- Needed to support css infrastructure -->
+    <inherits name="com.google.gwt.gen2.Widget"/>
+</module>

@@ -1,0 +1,24 @@
+<module>
+    <!-- We do not want to have to check for the existance
+    of user module when compiling gen2 widgets, so where we assume in -->
+    <inherits name='com.google.gwt.user.User'/>
+    
+    <!-- All gen2 modules should extend Gen2Base -->
+    <inherits name='com.google.gwt.gen2.Gen2Base'/>
+    
+    <!-- Needs the event support -->
+    <inherits name='com.google.gwt.gen2.Event'/>
+    
+  
+    
+    <!-- Needed to support logging in base incubator widget -->
+    <inherits name="com.google.gwt.libideas.Logging"/>
+    
+	
+    
+    <!-- Needed to support css infrastructure -->
+    <inherits name="com.google.gwt.gen2.widget.Css"/>
+    
+    <!-- Source path -->
+    <source path="widget/client"/>
+</module>

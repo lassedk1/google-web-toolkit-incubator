@@ -1,0 +1,6 @@
+<!-- inherits all top-level modules of then gen2 package.-->
+<module>
+    <!-- All gen2 modules should extend Gen@Base-->
+	<!-- Selection currently inherits all of them -->
+    <inherits name='com.google.gwt.gen2.Selection'/>
+</module>
