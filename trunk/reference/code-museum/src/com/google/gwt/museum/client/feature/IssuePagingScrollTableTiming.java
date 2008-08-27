@@ -19,7 +19,6 @@ package com.google.gwt.museum.client.feature;
 import com.google.gwt.libideas.logging.shared.TimingLog;
 import com.google.gwt.museum.client.common.AbstractIssueOverride;
 import com.google.gwt.museum.client.common.MoneyTableModel;
-import com.google.gwt.museum.client.common.SampleTableModel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
