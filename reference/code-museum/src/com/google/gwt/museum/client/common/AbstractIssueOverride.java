@@ -21,9 +21,9 @@ import com.google.gwt.libideas.logging.shared.Log;
 
 public abstract class AbstractIssueOverride extends AbstractIssue {
   static {
-    try{
-    Log.addLogHandler(new SimpleLogHandler(true));
-    }catch(Throwable t){
+    try {
+      Log.addLogHandler(new SimpleLogHandler(true));
+    } catch (Throwable t) {
       System.err.println(t);
     }
   }

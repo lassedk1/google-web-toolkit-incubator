@@ -24,7 +24,6 @@ import com.google.gwt.museum.client.viewer.Museum;
  */
 public class FeatureMuseum extends Museum {
   public FeatureMuseum() {
-    addIssue(new IssuePagingScrollTableTiming());
-
+    addIssue(new FastTreeVisualSuite());
   }
 }
