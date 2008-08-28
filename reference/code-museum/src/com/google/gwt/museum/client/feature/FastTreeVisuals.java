@@ -37,7 +37,7 @@ import com.google.gwt.widgetideas.client.FastTreeItem;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class FastTreeVisualSuite extends AbstractIssueOverride {
+public class FastTreeVisuals extends AbstractIssueOverride {
 
   @Override
   public StackPanel createIssue() {
