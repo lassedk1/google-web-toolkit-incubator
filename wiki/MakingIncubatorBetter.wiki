@@ -57,3 +57,11 @@ example:
   Looking for Incubator sponsor for DatePicker.
 
 At this point someone who already is a committer to gwt-incubator must be willing to sponsor your code. You will work with the sponsor to get the code in shape for submittal.  You may then petition to become a committer to gwt-incubator.
+
+=== The incubator reference project ===
+GWT incubator contains its own reference project. This has a copy of the gwt museum source code.  
+
+This project is right now set up directly for eclipse. To use it:
+  # Ensure your gwt-incubator project is named "gwt-incubator" and exports all of its resources.
+  # import the project defined in \reference. 
+ You should now see a reference project and two launch configs, the `IncubatorMuseum` config includes all visual suites in the reference project. `SingleIssue` is a config to target a single issue, edit the `SingleIssue.gwt.xml` file.
