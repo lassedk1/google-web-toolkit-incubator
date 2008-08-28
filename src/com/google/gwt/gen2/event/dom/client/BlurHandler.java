@@ -13,9 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.event.client;
+package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.libideas.event.shared.EventHandler;
+import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
   * Handler interface for {@link BlurEvent} events. 

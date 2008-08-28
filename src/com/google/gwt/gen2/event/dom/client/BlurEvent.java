@@ -13,9 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.event.client;
+package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.libideas.event.shared.HandlerRegistration;
+import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 /**
@@ -54,6 +54,7 @@ public class BlurEvent extends BrowserEvent<BlurHandler> {
    *
    * @param handler the handler
    */
+  @Override
   protected void fireEvent(BlurHandler handler) {
     handler.onBlur(this);
   }

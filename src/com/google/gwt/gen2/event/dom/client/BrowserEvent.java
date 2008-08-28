@@ -13,10 +13,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.event.client;
+package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.libideas.event.shared.AbstractEvent;
-import com.google.gwt.libideas.event.shared.EventHandler;
+import com.google.gwt.gen2.event.shared.AbstractEvent;
+import com.google.gwt.gen2.event.shared.EventHandler;
 import com.google.gwt.user.client.Event;
 
 /**
@@ -24,11 +24,13 @@ import com.google.gwt.user.client.Event;
  * DOM Level 2 Events. It provides an additional method to access the underlying
  * native browser event object as well as a subclass of AbstractEvent.Key that
  * understands GWT event bits used by sinkEvents().
- *
+ * 
+ * TODO(ecc) Talk to Ray about intance key in these browser events.
+ * 
  * @param <T> the type of handler used by the event
  */
-public abstract class BrowserEvent<T extends EventHandler>
-    extends AbstractEvent<T> {
+public abstract class BrowserEvent<T extends EventHandler> extends
+    AbstractEvent<T> {
 
   /**
    * Key class used by BrowserEvent subclasses. Includes extra method to return
@@ -54,6 +56,8 @@ public abstract class BrowserEvent<T extends EventHandler>
     }
   }
 
+  // TODO(ecc) This is convenient, but must be eventually be removed as we do not
+  // want to pay for the overhead of a separate key field per event.
   private Key<T> key;
 
   private Event browserEvent;
@@ -74,7 +78,8 @@ public abstract class BrowserEvent<T extends EventHandler>
   public void stopPropagation() {
     browserEvent.cancelBubble(true);
   }
-  
+
+  @Override
   protected BrowserEvent.Key<T> getKey() {
     return key;
   }
