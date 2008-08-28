@@ -13,9 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.event.client;
+package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.libideas.event.shared.HandlerRegistration;
+import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 /**
@@ -48,6 +48,7 @@ public class DoubleClickEvent extends MouseEvent<DoubleClickHandler> {
     * Fires a DoubleClickEvent.
     * @param handler the handler
     */
+  @Override
   protected void fireEvent(DoubleClickHandler handler) {
     handler.onDoubleClick(this);
   }

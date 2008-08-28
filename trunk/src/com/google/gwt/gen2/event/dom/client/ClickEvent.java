@@ -13,14 +13,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.event.client;
+package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.libideas.event.shared.HandlerRegistration;
+import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 /**
-  * Represents a ClickEvent event.
-  */
+ * Represents a ClickEvent event.
+ */
 public class ClickEvent extends MouseEvent<ClickHandler> {
 
   /**
@@ -31,7 +31,7 @@ public class ClickEvent extends MouseEvent<ClickHandler> {
 
     /**
      * Adds a {@link ClickEvent} handler.
-     *
+     * 
      * @param handler the handler
      */
     HandlerRegistration addClickHandler(ClickHandler handler);
@@ -41,17 +41,20 @@ public class ClickEvent extends MouseEvent<ClickHandler> {
       BrowserEvents.ONCLICK);
 
   /**
-    * Constructs a ClickEvent event.
-    * @param e An event object, typically from an onBrowserEvent call
-    */
+   * Constructs a ClickEvent event.
+   * 
+   * @param e An event object, typically from an onBrowserEvent call
+   */
   public ClickEvent(Event e) {
     super(KEY, e);
   }
 
   /**
-    * Fires a ClickEvent.
-    * @param handler the handler
-    */
+   * Fires a ClickEvent.
+   * 
+   * @param handler the handler
+   */
+  @Override
   protected void fireEvent(ClickHandler handler) {
     handler.onClick(this);
   }
