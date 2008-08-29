@@ -91,7 +91,7 @@ public class DateBox extends Composite implements FiresKeyDownEvents,
       }
 
     });
-    
+
     picker.addRenderingHandler(new RenderingHandler() {
 
       public void onRendered(RenderingEvent event) {
@@ -102,7 +102,8 @@ public class DateBox extends Composite implements FiresKeyDownEvents,
           }
         });
         box.setFocus(true);
-      }});
+      }
+    });
 
     box.addFocusListener(new FocusListener() {
       public void onFocus(Widget sender) {
@@ -243,6 +244,13 @@ public class DateBox extends Composite implements FiresKeyDownEvents,
         }
       }
     }
+  }
+
+  /**
+   * Sets whether the date box is enabled
+   */
+  public void setEnabled(boolean enabled) {
+    box.setEnabled(enabled);
   }
 
   /**
