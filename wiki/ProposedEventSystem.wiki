@@ -90,7 +90,7 @@ This is the API that will be used by most widget creators who are creating and p
 === Class overview ===
   
   * `AbstractEvent.Key`
-   * The unique key used to represent a event type. It is primarily used to associate handers and events. 
+   * The unique key used to represent an event type. It is primarily used to associate handlers and events. 
    * For each event type, we have a specific key
      * `ClickEvent.KEY`
        * The key used to register handlers on a click event.
