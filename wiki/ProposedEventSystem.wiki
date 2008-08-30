@@ -69,7 +69,7 @@ This is the API that will be used by all GWT users. It allows users to add new h
    * ...
 === How it works ===
   * Each handler has a single method with a single argument, such as `void onClick(ClickEvent event)` or `void onKeyDown(KeyDownEvent event)`.
-  * Each widget supporting an event type will implement the appropriate `Fires` interface and therefore have a method of the form `HandlerRegistration addFooHandler(FooEvent . For example a widget supporting a click handler must implement `FiresClickEvents`. 
+  * Each widget supporting an event type will implement the appropriate `Fires` interface and therefore have a method of the form `HandlerRegistration addFooHandler(FooEvent)`. For example a widget supporting a click handler must implement `FiresClickEvents`. 
   * To remove a handler, you must save the `HandlerRegistration` instance returned from the handler's add method and call `removeHandler()` on it.
 
 === Sample use of a handler ==
