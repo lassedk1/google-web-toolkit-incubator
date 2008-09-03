@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.gwt.gen2.selection.client;
+package com.google.gwt.gen2.commonwidget.client;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.gen2.base.client.Gen2TestBase;
