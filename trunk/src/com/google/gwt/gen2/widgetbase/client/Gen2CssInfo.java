@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.gwt.gen2.widget.client;
+package com.google.gwt.gen2.widgetbase.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.libideas.client.StyleInjector;
@@ -25,13 +25,16 @@ import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 /**
  * Helper class to allow widgets to manage their css info.
  */
-public class WidgetCssInfo {
+public class Gen2CssInfo {
   /**
-   * CSS resources for all included widgte files.
+   * CSS resources for all gen2 widgets.
    */
-  public static interface DefaultBundle extends ImmutableResourceBundle {
-    @Resource("com/google/gwt/gen2/widget/public/DropDownListBox.css")
-    CssResource customListBoxCss();
+  static interface DefaultBundle extends ImmutableResourceBundle {
+    @Resource("com/google/gwt/gen2/widgetbase/public/DropDownListBox.css")
+    CssResource dropDownListBoxCss();
+
+    @Resource("com/google/gwt/gen2/widgetbase/public/ToggleButton.css")
+    CssResource toggleButtonCss();
   }
 
   static class DisabledMode extends Mode {
@@ -56,18 +59,29 @@ public class WidgetCssInfo {
     }
   }
 
-  public static DefaultBundle DEFAULT_CSS_FILES = GWT.create(DefaultBundle.class);
+  static DefaultBundle DEFAULT_CSS_FILES = GWT.create(DefaultBundle.class);
 
   private static Mode m = GWT.create(Mode.class);
 
   /**
-   * If css dependency injection is enabled, adds the DropDownListBox.css file
-   * included under public/widget.
+   * If css dependency injection is enabled, adds the DropDownListBox.css file.
    */
-  public static void addDefaultDropDownListBoxFile() {
-    inject(DEFAULT_CSS_FILES.customListBoxCss());
+  public static void addDropDownListBoxDefault() {
+    inject(DEFAULT_CSS_FILES.dropDownListBoxCss());
   }
 
+  /**
+   * If css dependency injection is enabled, adds the ToggleButton.css file
+   * included under public/widget.
+   */
+  public static void addToggleButtonDefault() {
+    inject(DEFAULT_CSS_FILES.toggleButtonCss());
+  }
+
+  /**
+   * Injects the given css resource into the program when DebugCss is not
+   * included.
+   */
   public static <CssType extends CssResource> CssType inject(CssType b) {
     m.inject(b);
     return b;
@@ -78,10 +92,5 @@ public class WidgetCssInfo {
    */
   public static boolean isInjectionEnabled() {
     return m.shouldInject();
-  }
-
-  protected static void validate(Object currentBundle, Object newBundle) {
-    assert currentBundle == null : "Should not initialize css info after the info has been accessed";
-    assert newBundle != null : "Should never set a null resources";
   }
 }

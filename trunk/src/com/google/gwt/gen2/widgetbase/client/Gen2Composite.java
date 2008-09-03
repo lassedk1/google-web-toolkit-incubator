@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.gwt.gen2.widget.client;
+package com.google.gwt.gen2.widgetbase.client;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -29,10 +29,9 @@ import com.google.gwt.user.client.ui.WidgetAdaptorImpl;
  * parameterized.
  * 
  * @param <WidgetType> the wrapped widget type
- * @param <CSS> the AbstractCss type used by this widget.
  */
-public abstract class IncubatorComposite<WidgetType extends Widget, CSS extends IncubatorWidget.AbstractCss>
-    extends IncubatorWidget<CSS> {
+public abstract class Gen2Composite<WidgetType extends Widget> extends
+    Gen2Widget {
   private WidgetType widget;
 
   @Override
@@ -50,6 +49,16 @@ public abstract class IncubatorComposite<WidgetType extends Widget, CSS extends 
   public void setStylePrimaryName(String style) {
     super.setStylePrimaryName(style);
     getWidget().setStylePrimaryName(style);
+  }
+
+  @Override
+  protected BaseCss css() {
+    assert (widget != null) : "Should not ask for a widget's css before calling initWidget()";
+    if (widget instanceof Gen2Widget) {
+      return ((Gen2Widget) widget).css();
+    } else {
+      return new LegacyCss(widget);
+    }
   }
 
   /**
@@ -116,5 +125,4 @@ public abstract class IncubatorComposite<WidgetType extends Widget, CSS extends 
       WidgetAdaptorImpl.onDetach(widget);
     }
   }
-
 }

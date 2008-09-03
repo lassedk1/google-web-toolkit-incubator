@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.gwt.gen2.widget.client;
+package com.google.gwt.gen2.widgetbase.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
@@ -29,6 +29,9 @@ import com.google.gwt.user.client.ui.UIObject;
  */
 public class Decorator {
 
+  /**
+   * The default decorator. Simply returns the element/text input as its output.
+   */
   public static final Decorator DEFAULT = new Decorator() {
     @Override
     public void wrapElementInPlace(Element element) {
@@ -67,6 +70,7 @@ public class Decorator {
     e.setClassName(className);
     return new Decorator(e, e);
   }
+
   private Element templateRoot;
 
   private String decoratorId = DOM.createUniqueId();
@@ -80,9 +84,8 @@ public class Decorator {
    */
   public Decorator(Element templateRoot, Element templateAttach) {
     setTemplateElements(templateRoot, templateAttach);
-  } 
-  
- 
+  }
+
   // Used for default decorator.
   private Decorator() {
   }
