@@ -9,10 +9,6 @@
     <!--  As new widgets are created, they should be able to use all of our gwt libraries -->
     <inherits name="com.google.gwt.user.User"/>
     
-    <!-- Widgets are now styled using the theme package by default -->
-    <!-- Include DebugCss to edit the css files within needing to compile your application -->
-    <!-- Use DisableDefaultCss to disable the injection of the default css resources -->    
-     <inherits name="com.google.gwt.widgetideas.theme.Css"/>
-   
+    <!-- Base source path to prevent base from picking up client. -->
     <source path="common"/>
 </module>
