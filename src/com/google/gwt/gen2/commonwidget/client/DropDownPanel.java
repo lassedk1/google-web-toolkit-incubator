@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.impl.PopupImpl;
  * @param <R> Relative widget type
  */
 public class DropDownPanel<R extends Widget> extends PopupPanel {
+  
   /**
    * An {@link Animation} used to enlarge the popup into view.
    */
@@ -165,15 +166,20 @@ public class DropDownPanel<R extends Widget> extends PopupPanel {
 
   private R anchor;
 
+  /**
+   * Constructor.
+   */
   public DropDownPanel() {
     super(false);
   }
-  
+
   @Override
   public void hide() {
     hide(false);
   }
+  
 
+  @Override
   public void hide(boolean autohide) {
     if (!showing) {
       return;
@@ -193,7 +199,7 @@ public class DropDownPanel<R extends Widget> extends PopupPanel {
   @Override
   public boolean onEventPreview(Event event) {
     Element target = event.getTarget();
-
+ 
     boolean eventTargetsPopup = (target != null)
         && getElement().isOrHasChild(target);
 
@@ -249,7 +255,7 @@ public class DropDownPanel<R extends Widget> extends PopupPanel {
 
     });
   }
- 
+
   /**
    * Positions the popup, called after the offset width and height of the drop
    * down are known.
@@ -378,7 +384,7 @@ public class DropDownPanel<R extends Widget> extends PopupPanel {
       top += relativeWidget.getOffsetHeight();
     }
     setPopupPosition(left, top);
-  } 
+  }
 
   private void animate() {
     if (rollDownAnimation == null) {
@@ -390,4 +396,5 @@ public class DropDownPanel<R extends Widget> extends PopupPanel {
   private native PopupListenerCollection getPopupListeners()/*-{
     this.@com.google.gwt.user.client.ui.PopupPanel::popupListeners;
   }-*/;
+
 }

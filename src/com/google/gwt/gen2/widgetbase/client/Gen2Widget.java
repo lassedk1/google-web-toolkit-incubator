@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.gwt.gen2.widget.client;
+package com.google.gwt.gen2.widgetbase.client;
 
 import com.google.gwt.gen2.event.shared.AbstractEvent;
 import com.google.gwt.gen2.event.shared.EventHandler;
@@ -23,41 +23,48 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * All top-level incubator widgets should extend {@link IncubatorWidget}.
- * {@link IncubatorWidget} will eventually include all the extra handler and
+ * All top-level incubator widgets should extend {@link Gen2Widget}.
+ * {@link Gen2Widget} will eventually include all the extra handler and
  * styling information.
- * 
- * @param <Css> css helper class.
  */
-public abstract class IncubatorWidget<Css extends IncubatorWidget.AbstractCss>
-    extends Widget {
+public abstract class Gen2Widget extends Widget {
+
   /**
    * All Css interfaces for incubator widgets must extends this one.
    */
-  public static interface AbstractCss {
+  public static interface BaseCss {
+    /**
+     * Base style name for the current widget.
+     */
     String styleName();
   }
 
   /**
    * {@link CssAdaptor} is a temporary helper class so:
    * <ul>
-   * <li> applications can use advanced CSSResource features, such as
-   * obfuscation and dead-css stanza elimination. </li>
-   * <li> unless the CSS-enabled interface is invoked explicitly, setStyleName
-   * will continue to work. </li>
-   * <li> with reasonable, if not optimal size/performance metrics, we can
+   * <li>applications can use advanced CSSResource features, such as obfuscation
+   * and dead-css stanza elimination.</li>
+   * <li>unless the CSS-enabled interface is invoked explicitly, setStyleName
+   * will continue to work.</li>
+   * <li>with reasonable, if not optimal size/performance metrics, we can
    * heavily use dependent styles to support the
    * avoid-descendant-selectors-if-at-all-possible directive.</li>
    * </ul>
    */
-  public abstract static class CssAdaptor implements AbstractCss {
+  public abstract static class CssAdaptor<WidgetType> implements BaseCss {
     private String baseName;
 
+    /**
+     * Constructor.
+     */
     public CssAdaptor(String baseStyleName) {
       this.baseName = baseStyleName;
     }
 
-    public abstract CssAdaptor copy(String name);
+    /**
+     * Configures the current widget to use the given style name.
+     */
+    public abstract void assignStyleName(WidgetType widget, String name);
 
     /**
      * Gets the style name. Conforming to Constant/CssResource pattern of
@@ -80,13 +87,49 @@ public abstract class IncubatorWidget<Css extends IncubatorWidget.AbstractCss>
     }
   }
 
-  private Css css;
+  /**
+   * A Legacy Css classis used whenever the underlying widget is not enabled to
+   * work with any cool
+   * {@link com.google.gwt.libideas.resources.client.CssResource} features.
+   * 
+   */
+  public static final class LegacyCss extends CssAdaptor<Widget> {
+    /**
+     * Constructor.
+     */
+    Widget legacyWidget;
+
+    /**
+     * Constructor.
+     */
+    public LegacyCss(Widget legacyWidget) {
+      super(null);
+      this.legacyWidget = legacyWidget;
+      assert (legacyWidget != null);
+    }
+
+    @Override
+    public void assignStyleName(Widget widget, String name) {
+      legacyWidget.setStylePrimaryName(name);
+    }
+
+    /**
+     * Gets the style name. Conforming to Constant/CssResource pattern of
+     * omitting the "get".
+     * 
+     * @return the style name.
+     */
+    @Override
+    public String styleName() {
+      return legacyWidget.getStyleName();
+    }
+  }
 
   private HandlerManager handlers;
 
   @Override
   public String getStylePrimaryName() {
-    return css == null ? null : css.styleName();
+    return css() == null ? null : css().styleName();
   }
 
   @Override
@@ -131,9 +174,7 @@ public abstract class IncubatorWidget<Css extends IncubatorWidget.AbstractCss>
    * 
    * @return access to css accessor methods.
    */
-  protected final Css css() {
-    return css;
-  }
+  protected abstract BaseCss css();
 
   /**
    * Fires an event.
@@ -153,34 +194,10 @@ public abstract class IncubatorWidget<Css extends IncubatorWidget.AbstractCss>
     return handlers == null ? false : handlers.isEventHandled(key);
   }
 
-  /**
-   * On css init.
-   * 
-   * @param css the new css.
-   */
-
-  protected void onSet(Css css, boolean initializing) {
-    getElement().setClassName(css.styleName());
-  }
-
-  /**
-   * Sets your css object.
-   * 
-   * @param css css
-   */
-  protected final void setCss(Css css) {
-    boolean init = this.css == null;
-    this.css = css;
-    onSet(css, init);
-  }
-
   private void adaptCssFor(String name) {
-    if (!(css instanceof CssAdaptor)) {
-      assert false : "If you plan to call setStyleName() on your widget, do not override the default css resources for that widget. Your are using "
-          + css.getClass();
-      throw new IllegalStateException();
-    }
-    CssAdaptor newCss = ((CssAdaptor) css).copy(name);
-    setCss((Css) newCss);
+    assert css() instanceof CssAdaptor : "If you plan to call setStyleName() on your widget, do not override the default css resources for that widget. Your are using "
+        + css().getClass();
+    ((CssAdaptor) css()).assignStyleName(this, name);
   }
+
 }
