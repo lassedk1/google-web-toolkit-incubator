@@ -224,7 +224,7 @@ public final class SuggestBoxOverride extends Composite implements HasText,
       }
 
       @Override
-      protected void onValueUpdated(SuggestionItem s) {
+      protected void onSelection(SuggestionItem s) {
         setNewSelection(s);
       }
     };
