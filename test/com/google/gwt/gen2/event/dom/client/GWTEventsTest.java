@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.gen2.client.Gen2TestBase;
+import com.google.gwt.gen2.base.client.Gen2TestBase;
 import com.google.gwt.gen2.event.shared.AbstractEvent;
 import com.google.gwt.gen2.event.shared.HandlerManager;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;

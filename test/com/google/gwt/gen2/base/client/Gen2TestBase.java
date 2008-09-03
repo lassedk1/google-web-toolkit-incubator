@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.gwt.gen2.client;
+package com.google.gwt.gen2.base.client;
 
 import com.google.gwt.junit.client.GWTTestCase;
 
