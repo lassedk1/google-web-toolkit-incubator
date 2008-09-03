@@ -25,7 +25,7 @@ import com.google.gwt.user.client.ui.impl.PopupImpl;
  * popup fields it needs..
  * 
  * <br/> For now, we have introduced PopupPanelOverride to allow
- * SuggestBoxOverride and CustomListBox to work with gwt trunk and RC1. This
+ * SuggestBoxOverride and DropDownListBox to work with gwt trunk and RC1. This
  * need will soon go away.
  * 
  */
