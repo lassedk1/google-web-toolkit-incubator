@@ -32,14 +32,14 @@ import java.util.List;
  * create one, however this is is not it. Really, I mean it.
  * <p>
  * The SuggestionMenuImpl used for the display and selection of suggestions in
- * the SuggestBox and CustomListBox widgets. SuggestionMenu differs from MenuBar
- * in that it always has a vertical orientation, and it has no submenus. It also
- * allows for programmatic selection of items in the menu, and programmatically
- * performing the action associated with the selected item. In the MenuBar
- * class, items cannot be selected programatically - they can only be selected
- * when the user places the mouse over a particlar item. Additional methods in
- * SuggestionMenu provide information about the number of items in the menu, and
- * the index of the currently selected item.
+ * the SuggestBox and DropDownListBox widgets. SuggestionMenu differs from
+ * MenuBar in that it always has a vertical orientation, and it has no submenus.
+ * It also allows for programmatic selection of items in the menu, and
+ * programmatically performing the action associated with the selected item. In
+ * the MenuBar class, items cannot be selected programatically - they can only
+ * be selected when the user places the mouse over a particlar item. Additional
+ * methods in SuggestionMenu provide information about the number of items in
+ * the menu, and the index of the currently selected item.
  */
 public abstract class SuggestionMenuImpl extends MenuBar {
 
@@ -48,6 +48,7 @@ public abstract class SuggestionMenuImpl extends MenuBar {
    * a MenuItem in that each item is backed by a Suggestion object. The text of
    * each menu item is derived from the display string of a Suggestion object,
    * and each item stores a reference to its Suggestion object.
+   * 
    */
   public class SuggestionItem extends MenuItem {
 
@@ -66,7 +67,7 @@ public abstract class SuggestionMenuImpl extends MenuBar {
       setSuggestion(suggestion);
       setCommand(new Command() {
         public void execute() {
-          onValueUpdated(SuggestionItem.this);
+          onSelection(SuggestionItem.this);
         }
       });
     }
@@ -86,6 +87,7 @@ public abstract class SuggestionMenuImpl extends MenuBar {
     /**
      * Converting overridable method from selection --> highlight.
      */
+    @Override
     void setSelectionStyle(boolean selected) {
       updateStyle(selected);
     }
@@ -137,8 +139,13 @@ public abstract class SuggestionMenuImpl extends MenuBar {
   public void highlightItem(int index) {
     List<MenuItem> items = getItems();
     if (index > -1 && index < items.size()) {
-      itemOver(items.get(index));
+      super.itemOver(items.get(index));
     }
+  }
+
+  @Override
+  public void onLoad() {
+    itemOver(null);
   }
 
   protected SuggestionItem getHighlightedItem() {
@@ -146,7 +153,7 @@ public abstract class SuggestionMenuImpl extends MenuBar {
   }
 
   protected final void highlightItem(SuggestionItem s) {
-    selectItem(s);
+    super.selectItem(s);
   }
 
   /**
@@ -166,8 +173,22 @@ public abstract class SuggestionMenuImpl extends MenuBar {
 
   protected abstract void onHighlight(SuggestionItem s);
 
-  protected abstract void onValueUpdated(SuggestionItem s);
+  protected abstract void onSelection(SuggestionItem s);
 
+  @Override
+  void itemOver(MenuItem menuItem) {
+    SuggestionItem item = ((SuggestionItem) menuItem);
+    onHighlight(item);
+    if (getSelectedItem() != null) {
+      ((SuggestionItem) getSelectedItem()).updateStyle(false);
+    }
+    if (menuItem != null) {
+      item.updateStyle(true);
+    }
+    super.itemOver(item);
+  }
+
+  @Override
   final void selectItem(MenuItem item) {
     super.selectItem(item);
     onHighlight((SuggestionItem) item);
