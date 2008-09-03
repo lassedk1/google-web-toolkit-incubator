@@ -19,10 +19,11 @@ package com.google.gwt.widgetideas.client.overrides;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.KeyboardListener;
 
 /**
- * Useful DOM methods not included in {@link  com.google.gwt.user.client.Window}
+ * Useful DOM methods not included in {@link com.google.gwt.user.client.Window}
  * or {@link com.google.gwt.user.client.DOM}.
  * 
  */
@@ -61,6 +62,15 @@ public class DOMHelper {
     }
   }
 
+  public static boolean hasModifiers(Event event) {
+    boolean alt = event.getAltKey();
+    boolean ctrl = event.getCtrlKey();
+    boolean meta = event.getMetaKey();
+    boolean shift = event.getShiftKey();
+
+    return alt || ctrl || meta || shift;
+  }
+
   public static boolean isArrowKey(int code) {
     switch (code) {
       case OTHER_KEY_DOWN:
@@ -82,7 +92,7 @@ public class DOMHelper {
    * element to use this method safely.
    */
   public static native Element rawFirstChild(Element elem) /*-{
-   return elem.firstChild;
+    return elem.firstChild;
   }-*/;
 
   /**
