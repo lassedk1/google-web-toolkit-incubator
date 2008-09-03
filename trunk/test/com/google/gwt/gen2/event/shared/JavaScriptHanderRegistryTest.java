@@ -16,7 +16,7 @@
 
 package com.google.gwt.gen2.event.shared;
 
-import com.google.gwt.gen2.client.Gen2TestBase;
+import com.google.gwt.gen2.base.client.Gen2TestBase;
 import com.google.gwt.gen2.event.dom.client.ClickEvent;
 import com.google.gwt.gen2.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.event.dom.client.MouseDownEvent;
