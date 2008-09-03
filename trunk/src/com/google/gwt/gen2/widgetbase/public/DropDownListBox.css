@@ -1,0 +1,50 @@
+/**
+ * Default DropDownListBox styling.
+ */
+.gwt-DropDownListBox-listBox {
+  background-color: #efefef;
+}
+
+.gwt-DropDownListBox {
+  
+}
+
+.gwt-DropDownListBox-item {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-left: 9px;
+}
+
+.gwt-DropDownListBox-highlightedItem {
+  background: #b7d6f6;
+}
+
+.gwt-DropDownListBox-selectedItem {
+  background: #95b4d4;
+}
+
+.gwt-DropDownListBox-selectedAndHighlightedItem {
+  background: #84c5e5;
+}
+
+.gwt-DropDownListBox-selectedAndDisabledItem {
+  background: #84c5e5;
+  color: #efefef;
+}
+
+.gwt-DropDownListBox-disabledItem {
+  color: #efefef;
+}
+
+.gwt-DropDownListBox-outerSeparator {
+  padding: 2px 0px;
+}
+
+.gwt-DropDownListBox-innerSeparator {
+  height: 1px;
+  padding: 0px;
+  border: 0px;
+  border-top: 1px solid #777777;
+  background: #ddddee;
+  overflow: hidden;
+}
