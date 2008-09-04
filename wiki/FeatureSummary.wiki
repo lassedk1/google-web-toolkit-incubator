@@ -1,6 +1,12 @@
 #summary What are the current features included in incubator?
+ 
+We are very lucky to have a great group of engineers that contribute to the incubator project, without them none of this could happen.  A special thanks to  Freeland Abbott, Ray Cromwell,Jason Essington, Daniel Florey, John LaBanca, Fred Sauer, Bob Vawter, and Noam Wolf for all their dedicated work.
 
-= Introduction =
- 
-= Details =
- 
+
+We have a variety of small widgets peculating in incubator right now,  here are some of the highlights below.
+  * DatePicker, a fully internationalized and extensible date picking widget.
+  * GlassPanel, exactly what is sounds, very useful to produce translucent effects. 
+  * FastTree, a fully customizable tree with a rich event model.
+  * SliderBar/ProgressBar/Spinner, A set of really useful widgets to add zazz to your project. 
+
+  
