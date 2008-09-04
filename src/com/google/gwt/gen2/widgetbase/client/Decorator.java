@@ -124,7 +124,6 @@ public class Decorator {
     hiddenDiv.setInnerHTML(html);
     Node e = hiddenDiv.getFirstChild();
     assert (e != null) : html + " does not return a inner child";
-    System.err.println(DOM.toString((com.google.gwt.user.client.Element) e));
     Element result = wrapImpl(e);
     return DOM.toString((com.google.gwt.user.client.Element) result);
   }
