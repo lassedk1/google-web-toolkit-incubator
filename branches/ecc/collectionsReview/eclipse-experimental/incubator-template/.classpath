@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src-demo"/>
+	<classpathentry kind="src" path="super"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/gwt-incubator-resources"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.plugin.GWT_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
