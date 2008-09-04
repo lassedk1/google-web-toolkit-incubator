@@ -1,5 +1,6 @@
 #summary Table of contents for GWT incubator documentation
 #labels Type-Guide
+  * [FeatureSummary]
   * [Libraries]
     * [DeclarativeUi]
     * [ImmutableResourceBundle]
