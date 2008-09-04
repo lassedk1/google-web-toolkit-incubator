@@ -7,7 +7,7 @@ We have a variety of small widgets percolating in incubator right now,  we've hi
   * DatePicker, a fully internationalized and extensible date picking widget.
   * GlassPanel, exactly what is sounds, very useful to produce translucent effects. 
   * FastTree, a fully customizable tree with a rich event model.
-  * SliderBar/ProgressBar/Spinner, A set of really useful widgets to add zazz to your project. 
+  * SliderBar/ProgressBar/[Spinner], A set of really useful widgets to add zazz to your project. 
  
 We are working of a full [Tables gwt table suite], which include:
   * bulk rendering of tables(up to 10x faster then normal rendering)
