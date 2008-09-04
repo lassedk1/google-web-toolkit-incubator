@@ -3,17 +3,21 @@
 We are very lucky to have a great group of engineers that contribute to the incubator project,without them none of this could happen.  A special thanks to  Freeland Abbott, Ray Cromwell, Jason Essington, Daniel Florey,  John Labanca, Fred Sauer, Bob Vawter, and Noam Wolf for all their dedicated work.
 
 
-We have a variety of small widgets percolating in incubator right now,  here are some of the highlights below.
+We have a variety of small widgets percolating in incubator right now,  we've highlighted some of them below.
   * DatePicker, a fully internationalized and extensible date picking widget.
   * GlassPanel, exactly what is sounds, very useful to produce translucent effects. 
   * FastTree, a fully customizable tree with a rich event model.
   * SliderBar/ProgressBar/Spinner, A set of really useful widgets to add zazz to your project. 
  
-We are working of a full table suite, which include bulk rendering of tables (up to 10x faster then normal rendering), paging, scrolling, editable tables, complete with common cell editors. Read more about it [Tables here].
+We are working of a full [Tables gwt table widget suite], which include 
+  * bulk rendering of tables (up to 10x faster then normal rendering)
+  * paging
+  * scrolling
+  * editable tables, complete with common cell editors.
+ 
+We have a complete [Logging gwtlogging] system as well. The logging system can be either completely or partially compiled out in production mode. We also include log handlers that output to everything from firebug to a fully formmated GWT tree widget.
 
-We have a complete [Logging gwt logging] system with binding such that logging can be either completely or partially compiled out in production mode either all logging can be removed in production code. We have log handlers that output to everything from firebug to a GWT tree widget.
-
-For those of you with heavily styled applications, you know what a tension between readable and modular CSS verses css that is actually fast and efficient to download. With CssResource you can now have your cake and eat it to.  Your css files can be spread across many different directories and littered with comments and white space, yet when your application is deployed in production, all that css will be stripped of comments, whitespace, and aggregated into your single html file.
+For those of you that use css  heavily, you know what a tension between readable and modular CSS verses css that is actually fast and efficient to download. With CssResource you can now have your cake and eat it to.  Your css files can be spread across many different directories and littered with comments and white space, yet when your application is deployed in production, all that css will be stripped of comments, whitespace, and aggregated into your single html file.
 
 
 
