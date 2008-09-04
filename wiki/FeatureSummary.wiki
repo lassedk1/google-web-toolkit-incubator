@@ -1,6 +1,6 @@
 #summary DRAFT What are the current features included in incubator?
  
-We are very lucky to have a great group of engineers that contribute to the incubator project,without them none of this could happen.  A special thanks to  Freeland Abbott, Ray Cromwell,Jason Essington, Daniel Florey, John LaBanca, Fred Sauer, Bob Vawter, and Noam Wolf for all their dedicated work.
+We are very lucky to have a great group of engineers that contribute to the incubator project,without them none of this could happen.  A special thanks to  Freeland Abbott, Ray Cromwell, Jason Essington, Daniel Florey,  John Labanca, Fred Sauer, Bob Vawter, and Noam Wolf for all their dedicated work.
 
 
 We have a variety of small widgets percolating in incubator right now,  here are some of the highlights below.
