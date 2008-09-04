@@ -10,9 +10,9 @@
   * [Widgets]
     * [Tables]
       * [ScrollTable]
+      * [PagingScrollTable]
       * [BulkTableRenderers]
     * Panels
-      * TitledPanel
       * [PinnedPanel]
       * [GlassPanel]
       * [FastTree]
