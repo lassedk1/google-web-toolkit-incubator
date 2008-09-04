@@ -9,15 +9,19 @@ We have a variety of small widgets percolating in incubator right now,  we've hi
   * FastTree, a fully customizable tree with a rich event model.
   * SliderBar/ProgressBar/Spinner, A set of really useful widgets to add zazz to your project. 
  
-We are working of a full [Tables gwt table widget suite], which include 
-  * bulk rendering of tables (up to 10x faster then normal rendering)
-  * paging
-  * scrolling
+We are working of a full [Tables gwt table suite], which include:
+  * bulk rendering of tables(up to 10x faster then normal rendering)
+  * scrolling tables, where the footer and header are fixed
+  * paging tables, where the table can page through arbitrary data sets
   * editable tables, complete with common cell editors.
  
-We have a complete [Logging gwtlogging] system as well. The logging system can be either completely or partially compiled out in production mode. We also include log handlers that output to everything from firebug to a fully formmated GWT tree widget.
+We have a complete [Logging gwt logging] system as well, it includes
+  * logging levels based on java's logging system
+  * categories and filters to narrow
+  * compilation options so logging can be completely removed or minimally included for production mode.
+  * a variety of default logging handler that output to everything from firebug to a GWT tree widget.
 
-For those of you that use css  heavily, you know what a tension between readable and modular CSS verses css that is actually fast and efficient to download. With CssResource you can now have your cake and eat it to.  Your css files can be spread across many different directories and littered with comments and white space, yet when your application is deployed in production, all that css will be stripped of comments, whitespace, and aggregated into your single html file.
+For those of you that use css  heavily, you know the trade-offs between readable and modular CSS and css that is actually fast and efficient to download. With CssResource your css source files can be fully commented and modulized, because in production all those files will be stripped of comments, whitespace, and aggregated into your single html file.
 
 
 
