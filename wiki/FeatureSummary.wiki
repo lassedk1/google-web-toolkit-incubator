@@ -25,5 +25,8 @@ We have a complete [Logging gwt logging suite] as well, it includes
 For those of you that use css  heavily, you know the trade-offs between readable/modular `css` and `css` that is efficient to download. With CssResource your `css` source files can be fully commented and modulized, because in production all those files will be stripped of comments, whitespace, and aggregated into your single html file.
 
 
-
-
+Vector graphics have also made their way to the GWT Incubator. The GWTCanvas Widget exposes an API for drawing and transforming shapes and images, as well as for defining paths to create custom shapes. GWTCanvas currently supports:
+ * Rotations, scales, and translations.
+ * Custom paths including arcs, lines and curves.
+ * Image drawing and transformation.
+ * Compositing operations and transparency.
