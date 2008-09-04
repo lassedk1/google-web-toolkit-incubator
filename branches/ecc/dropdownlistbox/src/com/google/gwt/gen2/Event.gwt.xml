@@ -1,7 +1,0 @@
-<module>
-    <!-- This module could be broken down into much finer detail -->
-    <inherits name='com.google.gwt.gen2.Gen2Base'/>
-    <source path="event/shared"/>
-    <source path="event/virtual/shared"/>
-    <source path="event/dom/client"/>
-</module>
