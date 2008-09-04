@@ -15,13 +15,14 @@ We are working of a full [Tables gwt table suite], which include:
   * paging tables, where the table can page through arbitrary data sets
   * editable tables, complete with common cell editors.
  
-We have a complete [Logging gwt logging] system as well, it includes
+We have a complete [Logging gwt logging suite] as well, it includes
   * logging levels based on java's logging system
-  * categories and filters to narrow
-  * compilation options so logging can be completely removed or minimally included for production mode.
-  * a variety of default logging handler that output to everything from firebug to a GWT tree widget.
+  * categories and filters to narrow logging output
+  * a native java mode for shared code, where the output can be intagrated with your server logging system
+  * compilation options so logging can be completely removed or minimally included for production mode
+  * a variety of default logging handler that output to everything from firebug to a GWT tree widget
 
-For those of you that use css  heavily, you know the trade-offs between readable and modular CSS and css that is actually fast and efficient to download. With CssResource your css source files can be fully commented and modulized, because in production all those files will be stripped of comments, whitespace, and aggregated into your single html file.
+For those of you that use css  heavily, you know the trade-offs between readable/modular `css` and `css` that is efficient to download. With CssResource your `css` source files can be fully commented and modulized, because in production all those files will be stripped of comments, whitespace, and aggregated into your single html file.
 
 
 
