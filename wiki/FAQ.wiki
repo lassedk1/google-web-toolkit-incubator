@@ -4,25 +4,8 @@
 = Google-Widget-Toolkit group FAQ =
 
 This FAQ contains answers to questions often encountered on the [http://groups.google.com/group/Google-Web-Toolkit GWT newsgroup].
-
-== Quick questions ==
-
-=== _How do I call a GWT Java or JSNI method from javascript?_ ===
-
-A: You can't do that directly, you must set up a 'hook'. For example:
-{{{
-    native void setupHookForJavascript() /*-{
-        $wnd.myJavaMethod = function(param1, param2) {
-            $this.@com.whatever.Whatever::myJavaMethod(ILjava/lang/String;)(param1, param2);
-        };
-    }-*/;
-}}}
-
-Call that method as soon as you can, in your !EntryPoint, and from that point onwards, any JavaScript code can just call your Java method using `myJavaMethod(param1, param2);`. See the [http://code.google.com/webtoolkit/documentation/com.google.gwt.doc.DeveloperGuide.JavaScriptNativeInterface.html JSNI Documentation] for more information.
-
-=== _Why doesn't google use GWT?_ ===
-
-Google actually does use GWT! Many Google products, such as Google Health, Google Mashup Editor, Google Base, and Google Checkout are all made with GWT. It's true that Google Reader and GMail don't use GWT, but GWT had not yet been developed when they were first built.
+ 
+ 
 
 == In-Depth Articles ==
 
