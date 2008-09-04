@@ -41,6 +41,10 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     init();
   }
 
+  /**
+   * Takes in a double and returns a floored int.
+   * Leverages the fact that bitwise OR intifies the value.
+   */
   public static native int doubleToFlooredInt(double val) /*-{
    return (val | 0);
   }-*/;

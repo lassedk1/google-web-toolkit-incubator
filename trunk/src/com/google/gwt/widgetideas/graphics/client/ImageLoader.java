@@ -53,10 +53,14 @@ public class ImageLoader {
   public static void loadImages(String[] urls, CallBack cb) {
     ImageLoader il = new ImageLoader();
     for (int i = 0;i < urls.length;i++) {
-      il.addHandle(il.loadImage(urls[i]));
+      il.addHandle(il.prepareImage(urls[i]));
     }
     il.finalize(cb);
     ImageLoader.imageLoaders.add(il);
+    // Go ahead and fetch the images now
+    for (int i = 0; i < urls.length; i++) {
+      il.images.get(i).setSrc(urls[i]);
+    }
   }
   
   private CallBack callBack = null;
@@ -115,7 +119,7 @@ public class ImageLoader {
   /**
    * Returns a handle to an img object. Ties back to the ImageLoader instance
    */
-  private native ImageElement loadImage(String url)/*-{
+  private native ImageElement prepareImage(String url)/*-{
     // if( callback specified )
     // do nothing
      
@@ -140,8 +144,6 @@ public class ImageLoader {
         __this.@com.google.gwt.widgetideas.graphics.client.ImageLoader::dispatchIfComplete()();   
       }
     }
-    
-    img.src = url;
     
     return img;
   }-*/;
