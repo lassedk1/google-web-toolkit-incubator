@@ -10,13 +10,10 @@ The most current incubator libraries may be [http://code.google.com/p/google-web
 ===Documentation===
 See the [http://code.google.com/docreader/#p=google-web-toolkit-incubator&s=google-web-toolkit-incubator&t=FeatureSummary incubator documentation] to learn more about the current set of widgets and libraries.
 
+For specific API documentation, please see the [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/index.html API class reference] (Javadoc)
+
 ===Contribute===
-
-The best way to find out how to contribute is to read our contributors guide MakingGWTIncubatorBetter.
-
-The current javadocs can be found here.
-
-The current incubator jar can be downloaded from here. 
+If you are interested in contributing to the incubator, please read [MakingGWTIncubatorBetter Making the GWT Incubator Better] guide. 
 
 
 ===Compatability===
