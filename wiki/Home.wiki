@@ -1,7 +1,6 @@
 #summary One-sentence summary of this page.
 
 = Google Web Toolkit Incubator =
-
 The Google Web Toolkit (GWT) Incubator fosters additional widgets and libraries for GWT before they are added to the core toolkit. The project is managed by the GWT engineering team at Google, and is used as a place to share, discuss, and vet future or speculative GWT features. Future releases of GWT may or may not use these features, but you are welcome to pull them from here to use today.
 
 ===Downloads===
