@@ -1,0 +1,23 @@
+#summary One-sentence summary of this page.
+
+= Google Web Toolkit Incubator =
+
+The Google Web Toolkit (GWT) Incubator fosters additional widgets and libraries to GWT before they are added to the core toolkit. The project is managed by the GWT engineering team at Google, and is used as a place to share, discuss, and vet future or speculative GWT features. Future releases of GWT may or may not use these features, but you are welcome to pull them from here to use today.
+
+===Downloads===
+The most current incubator libraries may be [http://code.google.com/p/google-web-toolkit-incubator/downloads/list downloaded here]. They are contained in a single jar file for convenience. 
+
+===Documentation===
+See the [http://code.google.com/docreader/#p=google-web-toolkit-incubator&s=google-web-toolkit-incubator&t=FeatureSummary incubator documentation] to learn more about the current set of widgets and libraries.
+
+===Contribute===
+
+The best way to find out how to contribute is to read our contributors guide MakingGWTIncubatorBetter.
+
+The current javadocs can be found here.
+
+The current incubator jar can be downloaded from here. 
+
+
+===Compatability===
+Incubator code is currently compatible with the GWT Trunk and GWT 1.5 or above. 
