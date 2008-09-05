@@ -4,7 +4,7 @@
 Here are the design principles for the js Map library.
   * Must be as fast and have the smallest memory footprint as possible, even if that leads to an uglier API.
   * Code size should be kept small.
-  * "put" speed optimized over "get" speed, as "puts" tend to happen at program initialization.
+  * Many "puts" in sequence should be optimized, if possible, to allow for fast program setup.
   * If we need to use a different implementation in hosted mode, that decision should be transparent to the users.
   * Should have well understood constraints for key/value values.
   * API should be easy to use.
