@@ -1,5 +1,0 @@
-<module>
-    <!-- Selection includes Gen2Base, Event, CommonWidget -->
-    <inherits name='com.google.gwt.gen2.Gen2'/> 
-    <inherits name="com.google.gwt.gen2.collection.CollectionSuite"/>
-</module>
