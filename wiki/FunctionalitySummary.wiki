@@ -34,7 +34,7 @@ CssResource optimizes `css` source files for download, allowing them to be fully
  
  
 == Graphics ==
-The GWTCanvas Widget exposes an API for drawing and transforming shapes and images, as well as for defining paths to create custom shapes. GWTCanvas currently supports:
+The [GWTCanvas GWTCanvas Widget] exposes an API for drawing and transforming shapes and images, as well as for defining paths to create custom shapes. GWTCanvas currently supports:
  * Rotations, scales, and translations.
  * Custom paths including arcs, lines and curves.
  * Image drawing and transformation.
