@@ -1,0 +1,5 @@
+<module>
+    <!-- Selection includes Gen2Base, Event, CommonWidget -->
+    <inherits name='com.google.gwt.gen2.collection.Collection'/> 
+    <inherits name='org.apache.commons.Collections'/>
+</module>
