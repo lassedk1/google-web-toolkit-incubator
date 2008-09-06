@@ -1,5 +1,0 @@
-<module>
-    <inherits name='com.google.gwt.gen2.base.Base'/>
-    <source path="client"/>
-    <source path="shared"/>
-</module>
