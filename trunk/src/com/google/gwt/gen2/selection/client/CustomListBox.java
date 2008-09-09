@@ -23,7 +23,6 @@ import com.google.gwt.gen2.event.shared.SelectionHandler;
 import com.google.gwt.gen2.widgetbase.client.Decorator;
 import com.google.gwt.gen2.widgetbase.client.Gen2Composite;
 import com.google.gwt.gen2.widgetbase.client.Gen2Widget;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -152,27 +151,17 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
 
   private class ItemList extends CellGridImpl<ValueType, ItemList.Item> {
     private class Item extends CellGridImpl<ValueType, ItemList.Item>.Cell {
-      private String toolTip;
       private String summary;
 
-      public Item(Element element, ValueType value, String tooltip,
-          String summary) {
+      public Item(Element element, ValueType value, String summary) {
         super(element, value);
-        this.toolTip = tooltip;
+
         this.summary = summary;
-        getElement().setClassName(css().item());
+        updateStyle();
       }
 
       public String getSummary() {
         return summary;
-      }
-
-      public String getTooltip() {
-        return toolTip;
-      }
-
-      public ValueType getValue() {
-        return value;
       }
 
       @Override
@@ -180,39 +169,27 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
       }
 
       @Override
-      public void onHighlight() {
+      public void onHighlight(boolean highlight) {
         updateStyle();
       }
 
       @Override
-      public void onHighlightLost() {
+      public void onSelected(boolean selected) {
         updateStyle();
       }
 
-      @Override
-      public void onKeyDown(int keyCode) {
-        verticalNavigation(keyCode);
-      }
-
-      @Override
-      public void onSelected() {
-        setSelected(this);
-      }
-
-      public void updateStyle() {
+      private void updateStyle() {
         String style = css.item() + " ";
-        if (highlighted && selected) {
+        if (isHighlighted() && isSelected()) {
           style += css().selectedAndHighlightedItem();
-        } else if (highlighted) {
+        } else if (isHighlighted()) {
           style += css().highlightedItem();
-        } else if (selected) {
+        } else if (isSelected()) {
           style += css().selectedItem();
         }
-        this.getElement().setClassName(style);
+        setStyleName(style);
       }
     }
-
-    private Item selected;
 
     public ItemList() {
       resizeColumns(1);
@@ -223,32 +200,22 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
       assert (html != null);
       assert (value != null);
       Element e = itemList.addHtml(supplyItemDecorator().wrapHTML(html));
-      new Item(e, value, tooltip, summary);
+      e.setTitle(tooltip);
+      new Item(e, value, summary);
     }
 
     public void addSeparator() {
-      Element outer = DOM.createDiv();
-      outer.setClassName(css.innerSeparator());
-
-      Element inner = DOM.createDiv();
-      inner.setClassName(css.outerSeparator());
-
-      outer.appendChild(inner);
-      itemList.addElement(outer);
+      itemList.addHtml("<div class='" + css.innerSeparator()
+          + "'> <div class='" + css.outerSeparator() + "'/></div>");
     }
 
-    public void setSelectedValue(ValueType value) {
-      setSelected(getCellFromValue(value));
-    }
-
-    protected ValueType getSelectedValue() {
-      return (selected != null) ? selected.getValue() : null;
-    }
-
-    private void addElement(Element elem) {
-      int nextRow = this.numRows;
-      resizeRows(nextRow + 1);
-      setElement(nextRow, 0, (com.google.gwt.user.client.Element) elem);
+    @Override
+    protected void onSelected(Item oldItem, Item newItem) {
+      currentSummary = defaultSummary;
+      if (newItem != null && newItem.summary != null) {
+        currentSummary = newItem.summary;
+      }
+      fireEvent(new SelectionEvent(getValue(oldItem), getValue(newItem)));
     }
 
     private Element addHtml(String html) {
@@ -256,29 +223,6 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
       resizeRows(nextRow + 1);
       setHTML(nextRow, 0, html);
       return getCellFormatter().getElement(nextRow, 0);
-    }
-
-    private void setSelected(Item newItem) {
-      ValueType oldValue = null;
-      if (selected != null) {
-        selected.selected = false;
-        selected.updateStyle();
-        oldValue = selected.getValue();
-      }
-
-      selected = (Item) newItem;
-      currentSummary = defaultSummary;
-      ValueType newValue = null;
-      if (newItem != null) {
-        selected.selected = true;
-        selected.updateStyle();
-        newValue = selected.getValue();
-        if (currentSummary == null) {
-          currentSummary = defaultSummary;
-        }
-      }
-      System.err.println("fired");
-      fireEvent(new SelectionEvent(oldValue, newValue));
     }
   }
 

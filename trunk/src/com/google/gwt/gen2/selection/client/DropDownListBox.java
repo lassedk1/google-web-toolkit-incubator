@@ -40,21 +40,40 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
     implements HasAnimation, BeforeShowEvent.Source {
 
   /**
+   * Drop down panel class.
+   */
+  private class MyDropDown extends DropDownPanel<ToggleButton> {
+
+    // This will be replaced with an AfterHide event, at which point MyDropDown
+    // class can be removed.
+    @Override
+    public void hide(boolean b) {
+      hideItems();
+    }
+
+    public void onHide() {
+      // auto closed not tracked, for now.
+      super.hide(false);
+    }
+  }
+
+  /**
    * Provides the default css info for this widget.
    */
   public static DropDownListBox.Css DEFAULT_CSS = new CssAdaptor(
       "gwt-DropDownListBox");
 
   /**
-   * Inject the default css for this widget. 
+   * Inject the default css for this widget.
    */
   public static void injectDefaultCss() {
     if (Gen2CssInfo.isInjectionEnabled()) {
       Gen2CssInfo.addDropDownListBoxDefault();
     }
   }
-   
+
   private final ToggleButton button = new ToggleButton() {
+    boolean cancelNextClick;
 
     @Override
     public void onBrowserEvent(Event e) {
@@ -69,7 +88,17 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
             showItems();
           }
           getListBox().onBrowserEvent(e);
-          break;
+          if (keycode == KeyboardListener.KEY_ENTER) {
+            if (keycode == '\n' || keycode == '\r') {
+              cancelNextClick = true;
+            }
+          }
+          return;
+        case Event.ONKEYPRESS:
+          if (cancelNextClick) {
+            cancelNextClick = false;
+            return;
+          }
       }
       super.onBrowserEvent(e);
     }
@@ -85,14 +114,7 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
     }
   };
 
-  private DropDownPanel<ToggleButton> dropDown = new DropDownPanel<ToggleButton>() {
-
-    // This will be replaced with an AfterHide event.
-    @Override
-    public void hide() {
-      hideItems();
-    }
-  };
+  private MyDropDown dropDown = new MyDropDown();
 
   /**
    * Default constructor.
@@ -152,7 +174,7 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
    */
   public final void hideItems() {
     button.setDown(false);
-    dropDown.hide(false);
+    dropDown.onHide();
   }
 
   public final boolean isAnimationEnabled() {
