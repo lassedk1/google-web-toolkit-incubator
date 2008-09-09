@@ -12,7 +12,8 @@
 .gwt-DropDownListBox-item {
   padding-left: 10px;
   padding-right: 10px;
-  padding-left: 9px;
+  padding-top: 5px;
+  padding-bottom: 2px;
 }
 
 .gwt-DropDownListBox-highlightedItem {
