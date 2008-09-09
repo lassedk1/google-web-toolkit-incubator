@@ -17,6 +17,7 @@
 package com.google.gwt.gen2.selection.client;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.gen2.commonwidget.impl.KeyboardSupportImpl;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.KeyboardListener;
@@ -30,8 +31,11 @@ import java.util.Iterator;
 /**
  * Highlighting, selectable cell grid. Base class for {@link CustomListBox} and
  * (eventually) Calendar view.
+ * 
+ * @param <CellType> type of cell used.
+ * @param <ValueType> type of value in grid.
  */
-abstract class CellGridImpl<ValueType, CellType extends CellGridImpl.Cell>
+public abstract class CellGridImpl<ValueType, CellType extends CellGridImpl.Cell>
     extends com.google.gwt.widgetideas.table.client.overrides.Grid {
 
   /**
@@ -39,10 +43,8 @@ abstract class CellGridImpl<ValueType, CellType extends CellGridImpl.Cell>
    * 
    */
   protected abstract class Cell extends UIObject {
-    public boolean enabled = true;
-    public boolean highlighted = false;
-    public boolean selected = false;
-    protected ValueType value;
+    private boolean enabled = true;
+    private ValueType value;
     private int index;
 
     public Cell(Element elem, ValueType value) {
@@ -56,38 +58,28 @@ abstract class CellGridImpl<ValueType, CellType extends CellGridImpl.Cell>
       elementToCell.put(current);
     }
 
-    public abstract void onEnabled(boolean enabled);
+    public ValueType getValue() {
+      return value;
+    }
 
-    public abstract void onHighlight();
+    public boolean isEnabled() {
+      return enabled;
+    }
 
-    public abstract void onHighlightLost();
+    public boolean isHighlighted() {
+      return this == highlightedCell;
+    }
 
-    public abstract void onKeyDown(int keyCode);
+    public boolean isSelected() {
+      return selectedCell == this;
+    }
 
-    public abstract void onSelected();
-
-    public void setEnabled(boolean enabled) {
+    public final void setEnabled(boolean enabled) {
       this.enabled = enabled;
       onEnabled(enabled);
     }
 
-    protected CellType nextItem() {
-      if (index != cellList.size() - 1) {
-        return cellList.get(index + 1);
-      } else {
-        return null;
-      }
-    }
-
-    protected CellType previousItem() {
-      if (index != 0) {
-        return cellList.get(index - 1);
-      } else {
-        return null;
-      }
-    }
-
-    protected void verticalNavigation(int keyCode) {
+    public void verticalNavigation(int keyCode) {
       switch (keyCode) {
         case KeyboardListener.KEY_UP:
           setHighlighted(previousItem());
@@ -99,39 +91,44 @@ abstract class CellGridImpl<ValueType, CellType extends CellGridImpl.Cell>
           // Figure out new event for this.
           break;
         case KeyboardListener.KEY_ENTER:
-          processSelected();
+          setSelected((CellType) this);
           break;
       }
     }
 
-    private void processHighlight() {
-      if (!highlighted) {
-        highlighted = true;
-        onHighlight();
-        lastHighlighted = (CellType) this;
+    protected CellType nextItem() {
+      if (index == getLastIndex()) {
+        return cellList.get(0);
+      } else {
+        return cellList.get(index + 1);
       }
     }
 
-    private void processHighlightLost() {
-      if (highlighted) {
-        highlighted = false;
-        onHighlightLost();
-        lastHighlighted = null;
+    protected abstract void onEnabled(boolean enabled);
+
+    protected abstract void onHighlight(boolean highlighted);
+
+    protected abstract void onSelected(boolean selected);
+
+    protected CellType previousItem() {
+      if (index != 0) {
+        return cellList.get(index - 1);
+      } else {
+        return cellList.get(getLastIndex());
       }
     }
 
-    private void processSelected() {
-      selected = true;
-      onSelected();
+    private int getLastIndex() {
+      return cellList.size() - 1;
     }
   }
 
-  protected CellType lastHighlighted;
+  private CellType highlightedCell;
+
+  private CellType selectedCell;
 
   private HashMap<ValueType, CellType> valueToCell = new HashMap<ValueType, CellType>();
-
   private ElementMapper<CellType> elementToCell = new ElementMapper<CellType>();
-
   private ArrayList<CellType> cellList = new ArrayList<CellType>();
 
   protected CellGridImpl() {
@@ -145,8 +142,20 @@ abstract class CellGridImpl<ValueType, CellType extends CellGridImpl.Cell>
     return cellList.iterator();
   }
 
+  public CellType getHighlightedCell() {
+    return highlightedCell;
+  }
+
   public int getNumCells() {
     return valueToCell.size();
+  }
+
+  public CellType getSelectedCell() {
+    return selectedCell;
+  }
+
+  public ValueType getSelectedValue() {
+    return getValue(selectedCell);
   }
 
   @Override
@@ -156,7 +165,7 @@ abstract class CellGridImpl<ValueType, CellType extends CellGridImpl.Cell>
       case Event.ONCLICK: {
         Cell cell = getCell(event);
         if (isActive(cell)) {
-          cell.processSelected();
+          setSelected(cell);
         }
         break;
       }
@@ -164,8 +173,8 @@ abstract class CellGridImpl<ValueType, CellType extends CellGridImpl.Cell>
         Element e = DOM.eventGetFromElement(event);
         if (e != null) {
           Cell cell = elementToCell.get((com.google.gwt.user.client.Element) e);
-          if (cell != null) {
-            cell.processHighlightLost();
+          if (cell == highlightedCell) {
+            setHighlighted(null);
           }
         }
         break;
@@ -175,25 +184,25 @@ abstract class CellGridImpl<ValueType, CellType extends CellGridImpl.Cell>
         if (e != null) {
           CellType cell = elementToCell.get((com.google.gwt.user.client.Element) e);
           if (isActive(cell)) {
-            cell.processHighlight();
+            setHighlighted(cell);
           }
         }
         break;
       }
       case Event.ONKEYDOWN: {
-        if (isActive(lastHighlighted)) {
-          lastHighlighted.onKeyDown(event.getKeyCode());
-        }
-      }
+        onKeyDown(highlightedCell, event);
         break;
+      }
     }
   }
 
   @Override
   public void onUnload() {
-    if (lastHighlighted != null) {
-      lastHighlighted.processHighlightLost();
-    }
+    setHighlighted(null);
+  }
+
+  public final void setSelectedValue(ValueType value) {
+    setSelected(getCellFromValue(value));
   }
 
   protected CellType getCell(Event e) {
@@ -215,16 +224,53 @@ abstract class CellGridImpl<ValueType, CellType extends CellGridImpl.Cell>
     return valueToCell.get(value);
   }
 
-  private boolean isActive(Cell cell) {
-    return cell != null && cell.enabled;
+  protected ValueType getValue(Cell cell) {
+    // ValueType == Object, so cast should be removed in real code.
+    return (ValueType) (cell == null ? null : cell.getValue());
   }
 
-  private void setHighlighted(CellType highlighted) {
-    if (lastHighlighted != null) {
-      lastHighlighted.processHighlightLost();
+  protected void onKeyDown(CellType lastHighlighted, Event event) {
+    if (KeyboardSupportImpl.hasModifiers(event)) {
+      return;
     }
-    if (highlighted != null) {
-      highlighted.processHighlight();
+    int keyCode = event.getKeyCode();
+    if (lastHighlighted == null) {
+      if (keyCode == KeyboardListener.KEY_DOWN && cellList.size() > 0) {
+        setHighlighted(cellList.get(0));
+      }
+    } else {
+      lastHighlighted.verticalNavigation(keyCode);
     }
+  }
+
+  protected abstract void onSelected(CellType lastSelected, CellType cell);
+
+  private boolean isActive(Cell cell) {
+    return cell != null && cell.isEnabled();
+  }
+
+  private void setHighlighted(CellType nextHighlighted) {
+
+    CellType oldHighlighted = highlightedCell;
+    highlightedCell = nextHighlighted;
+    if (oldHighlighted != null) {
+      oldHighlighted.onHighlight(false);
+    }
+    if (highlightedCell != null) {
+      highlightedCell.onHighlight(true);
+    }
+  }
+
+  private void setSelected(Cell cell) {
+    CellType last = getSelectedCell();
+    selectedCell = (CellType) cell;
+
+    if (last != null) {
+      last.onSelected(false);
+    }
+    if (selectedCell != null) {
+      selectedCell.onSelected(true);
+    }
+    onSelected(last, selectedCell);
   }
 }

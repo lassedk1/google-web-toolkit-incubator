@@ -16,7 +16,6 @@
 
 package com.google.gwt.gen2.event.shared;
 
-
 /**
  * This synthetic event that is called before a widget shows its contents.
  */
@@ -26,7 +25,7 @@ public class BeforeShowEvent extends AbstractEvent<BeforeShowHandler> {
    */
   public static interface Source<ValueType> {
     /**
-     * Adds a new before drop down handler
+     * Adds a new before show handler.
      * 
      * @param handler handler
      * @return the handler registration
