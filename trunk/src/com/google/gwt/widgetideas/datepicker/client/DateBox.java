@@ -159,6 +159,14 @@ public class DateBox extends Composite implements FiresKeyDownEvents,
   }
 
   /**
+   * Clears the current selection.
+   */
+  public void clear() {
+    picker.setSelectedDate(null, false);
+    box.setText("");
+  }
+
+  /**
    * Gets the current cursor position in the date box.
    */
   public int getCursorPos() {
