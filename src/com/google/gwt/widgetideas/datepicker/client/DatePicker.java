@@ -146,7 +146,7 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
       return getModel().createKeyFromDate(d);
     }
   }
-  
+
   private EventHandlers handlers = new EventHandlers();
 
   private DateStyler styler = new DateStyler();
@@ -360,7 +360,9 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
     }
 
     selectedDate = CalendarModel.copy(date);
-    addGlobalDateStyle(selectedDate, Styles.SELECTED_CELL);
+    if (selectedDate != null) {
+      addGlobalDateStyle(selectedDate, Styles.SELECTED_CELL);
+    }
   }
 
   /**
