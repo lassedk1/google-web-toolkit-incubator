@@ -25,6 +25,9 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
 
   <property file="${project.build.properties}" />
  
+  <!-- Also check for global-incubator.properties in the directory above -->
+  <property file="${project.root}/../global-incubator.properties" />
+  
   <property environment="env" />
 
   <!--
