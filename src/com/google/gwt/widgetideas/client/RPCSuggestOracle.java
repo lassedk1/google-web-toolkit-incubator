@@ -17,7 +17,10 @@
 package com.google.gwt.widgetideas.client;
 
 import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.SuggestOracleOverride;
+import com.google.gwt.user.client.ui.SuggestOracle;
+import com.google.gwt.user.client.ui.SuggestOracle.Callback;
+import com.google.gwt.user.client.ui.SuggestOracle.Request;
+import com.google.gwt.user.client.ui.SuggestOracle.Response;
 
 /**
  * This is a stubbed out RPC {@link SuggestOracleOverride} for use by
@@ -29,7 +32,7 @@ import com.google.gwt.user.client.ui.SuggestOracleOverride;
  * someone rapidly typing in a suggest box.
  */
 
-public abstract class RPCSuggestOracle extends SuggestOracleOverride {
+public abstract class RPCSuggestOracle extends SuggestOracle {
   private HasText suggester;
   private Callback currentCallback;
   private Request pendingRequest;
