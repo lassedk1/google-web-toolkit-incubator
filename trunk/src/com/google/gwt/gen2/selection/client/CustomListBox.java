@@ -16,20 +16,16 @@
 
 package com.google.gwt.gen2.selection.client;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.event.shared.SelectionEvent;
 import com.google.gwt.gen2.event.shared.SelectionHandler;
 import com.google.gwt.gen2.widgetbase.client.Decorator;
 import com.google.gwt.gen2.widgetbase.client.Gen2Composite;
 import com.google.gwt.gen2.widgetbase.client.Gen2Widget;
-import com.google.gwt.libideas.resources.client.CssResource.ClassName;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.MenuItemSeparator;
-import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
-import com.google.gwt.user.client.ui.SuggestionMenuImpl;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.HashMap;
 
 /**
  * A custom list box. Used as a base class for {@link DropDownListBox} and
@@ -37,14 +33,12 @@ import java.util.HashMap;
  * composite to allow inherited classes to specialize the look and feel of the
  * widget.
  * 
- * <br/> Use {@link Gen2CssInfo#addDropDownListBoxDefault()} to inject the
- * default list box css when css injection is enabled, include the DebugCss
- * module (which picks up all the default css files), to debug the default css.
+ * <br/>
  * 
  * @param <ValueType> the type of the values backing this list box
  */
-public abstract class CustomListBox<ValueType> extends
-    Gen2Composite<Widget> implements SelectionEvent.Source<ValueType> {
+public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
+    implements SelectionEvent.Source<ValueType> {
 
   /**
    * Interface used to allow the widget access to css style names. <p/> The
@@ -84,22 +78,18 @@ public abstract class CustomListBox<ValueType> extends
     /**
      * Selected and disabled item.
      */
-    @ClassName("gwt-CustomListBox-selectedAndDisabledItem")
     String selectedAndDisabledItem();
 
     /**
      * Selected and highlighted item.
      */
-    @ClassName("gwt-CustomListBox-selectedAndHighlightedItem")
     String selectedAndHighlightedItem();
 
     /**
      * Selected item.
      */
-    @ClassName("gwt-CustomListBox-selectedItem")
     String selectedItem();
 
-    @ClassName("gwt-CustomListBox")
     String styleName();
   }
 
@@ -160,138 +150,142 @@ public abstract class CustomListBox<ValueType> extends
     }
   }
 
-  /**
-   * Menu shared with SuggestBox for efficiency.
-   */
-  private class ItemMenu extends SuggestionMenuImpl {
-    private class Item extends SuggestionItem {
+  private class ItemList extends CellGridImpl<ValueType, ItemList.Item> {
+    private class Item extends CellGridImpl<ValueType, ItemList.Item>.Cell {
+      private String toolTip;
+      private String summary;
 
-      private ValueType value;
-
-      public Item(String html, ValueType value, String tooltip, String summary) {
-
-        super(new MultiWordSuggestOracle.MultiWordSuggestion(summary, html),
-            true);
-        this.value = value;
-        if (tooltip != null) {
-          this.setTitle(tooltip);
-        }
+      public Item(Element element, ValueType value, String tooltip,
+          String summary) {
+        super(element, value);
+        this.toolTip = tooltip;
+        this.summary = summary;
+        getElement().setClassName(css().item());
       }
 
       public String getSummary() {
-        return this.getSuggestion().getReplacementString();
+        return summary;
       }
 
       public String getTooltip() {
-        return getSuggestion().getReplacementString();
+        return toolTip;
       }
 
       public ValueType getValue() {
         return value;
       }
 
-      public boolean isHighlighted() {
-        return getHighlightedItem() == this;
+      @Override
+      public void onEnabled(boolean enabled) {
       }
 
-      public boolean isSelected() {
-        return this == selected;
+      @Override
+      public void onHighlight() {
+        updateStyle();
       }
 
-      public void updateStyle(boolean isHighlighted, boolean isSelected) {
+      @Override
+      public void onHighlightLost() {
+        updateStyle();
+      }
+
+      @Override
+      public void onKeyDown(int keyCode) {
+        verticalNavigation(keyCode);
+      }
+
+      @Override
+      public void onSelected() {
+        setSelected(this);
+      }
+
+      public void updateStyle() {
         String style = css.item() + " ";
-        if (isHighlighted && isSelected) {
+        if (highlighted && selected) {
           style += css().selectedAndHighlightedItem();
-        } else if (isHighlighted) {
+        } else if (highlighted) {
           style += css().highlightedItem();
-        } else if (isSelected) {
+        } else if (selected) {
           style += css().selectedItem();
         }
         this.getElement().setClassName(style);
       }
-
-      @Override
-      protected void updateStyle(boolean isHighlighted) {
-        updateStyle(isHighlighted, isSelected());
-      }
     }
-
-    private HashMap<ValueType, Item> map = new HashMap<ValueType, Item>();
 
     private Item selected;
 
+    public ItemList() {
+      resizeColumns(1);
+    }
+
     public void addItem(String html, ValueType value, String tooltip,
-        String replacement) {
+        String summary) {
       assert (html != null);
       assert (value != null);
-
-      Item menuItem = new Item(supplyItemDecorator().wrapHTML(html), value,
-          tooltip, replacement);
-      menuItem.setStyleName(css().item());
-      map.put(value, menuItem);
-      super.addItem(menuItem);
+      Element e = itemList.addHtml(supplyItemDecorator().wrapHTML(html));
+      new Item(e, value, tooltip, summary);
     }
 
-    public ValueType getHighlightedValue() {
-      return getValue(getHighlightedItem());
+    public void addSeparator() {
+      Element outer = DOM.createDiv();
+      outer.setClassName(css.innerSeparator());
+
+      Element inner = DOM.createDiv();
+      inner.setClassName(css.outerSeparator());
+
+      outer.appendChild(inner);
+      itemList.addElement(outer);
     }
 
-    public void onHide() {
-      // TODO(ecc) once we get rid of the PopupPanelOverride hack, should be
-      // able to again pass in dropdown.
-      super.onPopupClosed(null, false);
-
-      // Clear selected highlight.
-      highlightItem(null);
+    public void setSelectedValue(ValueType value) {
+      setSelected(getCellFromValue(value));
     }
 
     protected ValueType getSelectedValue() {
-      return getValue(selected);
+      return (selected != null) ? selected.getValue() : null;
     }
 
-    @Override
-    protected void onHighlight(SuggestionItem s) {
+    private void addElement(Element elem) {
+      int nextRow = this.numRows;
+      resizeRows(nextRow + 1);
+      setElement(nextRow, 0, (com.google.gwt.user.client.Element) elem);
     }
 
-    @Override
-    protected void onSelection(SuggestionItem newItem) {
+    private Element addHtml(String html) {
+      int nextRow = this.numRows;
+      resizeRows(nextRow + 1);
+      setHTML(nextRow, 0, html);
+      return getCellFormatter().getElement(nextRow, 0);
+    }
 
+    private void setSelected(Item newItem) {
       ValueType oldValue = null;
       if (selected != null) {
-        selected.updateStyle(selected.isHighlighted(), false);
+        selected.selected = false;
+        selected.updateStyle();
         oldValue = selected.getValue();
       }
 
       selected = (Item) newItem;
+      currentSummary = defaultSummary;
+      ValueType newValue = null;
       if (newItem != null) {
-        selected.updateStyle(selected.isHighlighted(), true);
-        currentSummary = selected.getSummary();
+        selected.selected = true;
+        selected.updateStyle();
+        newValue = selected.getValue();
         if (currentSummary == null) {
           currentSummary = defaultSummary;
         }
       }
-
-      ValueType newValue = selected == null ? null : selected.getValue();
+      System.err.println("fired");
       fireEvent(new SelectionEvent(oldValue, newValue));
-    }
-
-    protected final void select(ValueType value) {
-      onSelection(getItem(value));
-    }
-
-    Item getItem(ValueType value) {
-      return map.get(value);
-    }
-
-    private ValueType getValue(SuggestionItem item) {
-      return (item == null ? null : ((Item) item).getValue());
     }
   }
 
   private Css css;
 
-  // The fact that we are backed by an item menu is not part of the public API
-  private ItemMenu itemMenu = new ItemMenu();
+  // The fact that we are backed by an item grid is not part of the public API.
+  private ItemList itemList = new ItemList();
 
   /**
    * default summary for this list box.
@@ -338,7 +332,7 @@ public abstract class CustomListBox<ValueType> extends
    * @param tooltip tooltip
    */
   public final void addItem(String html, ValueType value, String tooltip) {
-    itemMenu.addItem(html, value, tooltip, null);
+    itemList.addItem(html, value, tooltip, null);
   }
 
   /**
@@ -352,7 +346,7 @@ public abstract class CustomListBox<ValueType> extends
    */
   public final void addItem(String html, ValueType value, String tooltip,
       String buttonFace) {
-    itemMenu.addItem(html, value, tooltip, buttonFace);
+    itemList.addItem(html, value, tooltip, buttonFace);
   }
 
   public final HandlerRegistration addSelectionHandler(
@@ -364,9 +358,7 @@ public abstract class CustomListBox<ValueType> extends
    * Adds a list item separator.
    */
   public final void addSeparator() {
-    MenuItemSeparator sep = itemMenu.addSeparator();
-    sep.setStyleName(css().outerSeparator());
-    sep.getElement().getFirstChildElement().setClassName(css().innerSeparator());
+    itemList.addSeparator();
   }
 
   @Override
@@ -375,22 +367,15 @@ public abstract class CustomListBox<ValueType> extends
   }
 
   /**
-   * Gets the highlighted value.
-   */
-  public final ValueType getHighlightedValue() {
-    return itemMenu.getHighlightedValue();
-  }
-
-  /**
    * Gets the number of items in the list.
    */
   public int getNumItems() {
-    return itemMenu.getNumItems();
+    return itemList.getNumCells();
   }
 
   @Override
   public void onBrowserEvent(Event e) {
-    itemMenu.onBrowserEvent(e);
+    itemList.onBrowserEvent(e);
     super.onBrowserEvent(e);
   }
 
@@ -400,21 +385,21 @@ public abstract class CustomListBox<ValueType> extends
    * @param value the selected value
    */
   public final void setSelectedValue(ValueType value) {
-    itemMenu.select(value);
+    itemList.setSelectedValue(value);
   }
 
   /**
    * Gets the title for the most recently selected value.
    */
   protected final ValueType getLastSelectedValue() {
-    return itemMenu.getSelectedValue();
+    return itemList.getSelectedValue();
   }
 
   /**
    * Returns the actual list box widget.
    */
   protected Widget getListBox() {
-    return itemMenu;
+    return itemList;
   }
 
   /**
@@ -449,6 +434,6 @@ public abstract class CustomListBox<ValueType> extends
    */
   private void setCss(Css css) {
     this.css = css;
-    itemMenu.setStylePrimaryName(css.listBox());
+    itemList.setStylePrimaryName(css.listBox());
   }
 }

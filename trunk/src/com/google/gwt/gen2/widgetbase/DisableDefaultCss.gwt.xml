@@ -14,7 +14,7 @@
 
 <module>
 	<replace-with
-		class="com.google.gwt.gen2.widgetbase.client.WidgetCssInfo.DisabledMode">
-		<when-type-is class="com.google.gwt.gen2.widgetbase.client.WidgetCssInfo.Mode" />
+		class="com.google.gwt.gen2.widgetbase.client.Gen2CssInfo.DisabledMode">
+		<when-type-is class="com.google.gwt.gen2.widgetbase.client.Gen2CssInfo.Mode" />
 	</replace-with>
 </module>
