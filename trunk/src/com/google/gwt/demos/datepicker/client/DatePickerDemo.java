@@ -118,8 +118,9 @@ public class DatePickerDemo implements EntryPoint {
             @Override
             public void run() {
               start.setFocus(true);
-            }};
-            t.schedule(350);
+            }
+          };
+          t.schedule(350);
         }
       }
 
@@ -182,6 +183,13 @@ public class DatePickerDemo implements EntryPoint {
       public void onClick(Widget sender) {
         start.setDateFormat(DateTimeFormat.getLongDateFormat());
         end.setDateFormat(DateTimeFormat.getLongDateFormat());
+      }
+    }));
+
+    h2.add(new Button("clear", new ClickListener() {
+      public void onClick(Widget sender) {
+        start.clear();
+        end.clear();
       }
     }));
     return v;
