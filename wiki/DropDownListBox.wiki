@@ -10,7 +10,7 @@ The native `<select>` element is a perfectly functional drop-down select box. Un
 || Demo || Coming soon || 
 || Sample Code || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src-demo/com/google/gwt/gen2/selection/client/DropDownListBoxDemo.java demo code] ||
 || Module || `com.google.gwt.gen2.selection.Selection` ||
-|| Source starting point || http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/selection/DropDownListBox.java ||
+|| Source starting point || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/selection/client/DropDownListBox.java src code]||
 
  
  
