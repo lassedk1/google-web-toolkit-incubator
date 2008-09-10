@@ -19,6 +19,6 @@ Your application is very `put`/`get` intensive.  So the speed performance for Ja
   
 = Benchmarks =
 == Baseline Hash Table ==
-http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/doc/wiki-support/images/JsMap-hash-benchmark.jpg
+http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/doc/wiki-support/images/JsMap-hash-benchmark.JPG
 == Production JS Map ==
 == Wrapped JS Map == 
