@@ -18,7 +18,10 @@ Your application is very `put`/`get` intensive.  So the speed performance for Ja
   * Your application has a lot of small maps associated with value objects. You would prefer have those maps stored as efficiently as possible.
   
 = Benchmarks =
+Unfortunately, the memory allocation from one test interferes with the running time of the  next. Therefore, we profile each map separately.
 == Baseline Hash Table ==
-http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/doc/wiki-support/images/JsMap-hash-benchmark.png
+http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/JsMap-hash-benchmark.png
 == Production JS Map ==
+http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/JsMap-js-production.png
 == Wrapped JS Map == 
+http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/JsMap-js-wrapped.png
