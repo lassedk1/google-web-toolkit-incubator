@@ -1,0 +1,16 @@
+#summary summary of the drop down list box.
+
+= Introduction =
+ 
+The native `<select>` element is a perfectly functional drop-down select box. Unfortunately, it can only be limitedly styled, so is not suitable for applications that require more customizable drop down lists. Therefore, we have introduced the `DropDownListBox`, a fully customizable drop-down list box widget. 
+  
+== Summary Table ==
+
+|| *Field* || * Location * ||
+|| Demo || Coming soon || 
+|| Sample Code || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src-demo/com/google/gwt/gen2/selection/client/DropDownListBoxDemo.java demo code] ||
+|| Module || `com.google.gwt.gen2.selection.Selection` ||
+|| Source starting point || http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/selection/DropDownListBox.java ||
+
+ 
+ 
