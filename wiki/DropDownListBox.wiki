@@ -1,4 +1,5 @@
-#summary summary of the drop down list box.
+#summary Custom drop down list box widget
+#labels Type-Widget
 
 = Introduction =
  
@@ -8,7 +9,7 @@ The native `<select>` element is a perfectly functional drop-down select box. Un
 
 || *Field* || * Location * ||
 || Demo || Coming soon || 
-|| Sample Code || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src-demo/com/google/gwt/gen2/selection/client/DropDownListBoxDemo.java demo code] ||
+|| Sample Code || [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src-demo/com/google/gwt/gen2/demo/dropdownlistbox/client/DropDownListBoxDemo.java?r=956 DropDownListBoxDemo] ||
 || Module || `com.google.gwt.gen2.selection.Selection` ||
 || Source starting point || [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/selection/client/DropDownListBox.java src code]||
 
