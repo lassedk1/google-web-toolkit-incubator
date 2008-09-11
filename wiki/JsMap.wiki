@@ -19,6 +19,8 @@ Your application is very `put`/`get` intensive.  So the speed performance for Ja
   
 = Benchmarks =
 Unfortunately, the memory allocation from one test interferes with the running time of the  next. Therefore, we profile each map separately.
+
+Each benchmark has X puts + X gets per test. So if the size is 1000, then means the time measured is the time taken for a 1000 puts and then a 1000 gets.
 == Baseline Hash Table ==
 http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/JsMap-hash-benchmark.png
 == Production JS Map ==
