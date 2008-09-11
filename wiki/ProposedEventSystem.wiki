@@ -299,3 +299,6 @@ http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/im
 ||(6) Boiler plate code || Between `Widget` enhancements and `HandlerManager` classes, most boiler plate code removed. Remaining boiler plate code will be inlined ||
 || (7) All event sources must be widgets || sources simply must implement the `Fires*` interface ||
 || (8) All widgets must manage sinking of events || All standard widgets have events sunk automatically ||
+
+== Migration Path ==
+Removing all the listener methods within a single iteration of a library would be very disruptive. Instead, the listeners methods will be deprecated.  In order to avoid supporting both sets of machinery within each widget, we will introduce a `ListenerHandlerAdaptor` class per package with unique listeners. The `ListenerHandlerAdaptor` class will include wrap methods for each listener type that converts that listener to the appropriate  set of handlers.
