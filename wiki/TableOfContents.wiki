@@ -5,6 +5,7 @@
   * [Libraries]
     * [DeclarativeUi]
     * [ImmutableResourceBundle]
+      * [CssResource]
       * [SoundResource]
       * [StyleInjector]
     * [Logging]
