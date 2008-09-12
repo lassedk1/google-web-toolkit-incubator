@@ -1,6 +1,8 @@
 #summary Compile-time CSS processing
 #labels Phase-Implementation,Type-Library
 
+See also the CssResourceCookbook
+
 =Goals=
 
   * Primary
