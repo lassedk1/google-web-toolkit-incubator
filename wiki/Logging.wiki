@@ -79,7 +79,7 @@ A LogHandler is a class which actually handles the logging messages.  Its API is
 Defines the current logging Level. Based on the java logging Level class.
 
 == Categories ==
-Categories are currently represented by strings rather then a Category class. This was done because strings are optimized away more often then class objects.
+Categories are represented by strings rather then a Category class. This was done because strings are optimized away more often then class objects.
 
 Categories are hierarchical using the "." notation. For instance, the following snippet of code uses categories to selectively log messages.
 {{{
@@ -102,10 +102,18 @@ Categories are hierarchical using the "." notation. For instance, the following 
   # Logging is fully enabled
   # Default handler is `GWTHandler` in hosted mode, `TreeHandler` in web. We use a default widget handler in web mode to ensure the first time someone tries to use the logging system they can find their messages.  
   # Default log level is read as a URL argument parameter.  For example `http://myurl logLevel=INFO`
-
  
 === Minimal ===
   # Only severe error messages are enabled
   # No default handler
 === None ===
 No logging support
+
+= Gen2 Proposed modifications =
+
+== `LogEvent` ==
+A  `LogEvent` is created once the Log class determines that a `LogHandler` is able to recieve a logging message.
+== LogHandler ==
+LogHandlers would now be interfaces with a single method `onLog(LogEvent)`. an AbstactLogHandler class would be introduced that contains most of the current base functionality needed by a log handler.
+== Log ==
+ 
