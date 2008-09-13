@@ -113,7 +113,7 @@ No logging support
 
 == `LogEvent` ==
 A  `LogEvent` is created once the Log class determines that a `LogHandler` is able to recieve a logging message.
-== LogHandler ==
-LogHandlers would now be interfaces with a single method `onLog(LogEvent)`. an AbstactLogHandler class would be introduced that contains most of the current base functionality needed by a log handler. 
+== `LogHandler` ==
+`LogHandler` would now be an interface with a single method `onLog(LogEvent)`. an `AbstactLogHandler` class would be introduced that contains most of the current base functionality needed by a log handler. 
 == Log ==
 Log would have the ability to add log handlers by level, so if, for example, and `RPCLogHandler` was added at level `warn`, only messages at level `warn' or above would be fired to `RPCLogHandler`
