@@ -56,28 +56,28 @@ public abstract class AbstractEvent<T extends EventHandler> {
   }
 
   /**
-   * This is a method used primarily for debugging. It gives a string
-   * representation of the event details. This does not override the toString
-   * method because the compiler cannot always optimize toString out correctly.
-   * Event types should override as desired.
-   * 
-   * @return a string
-   */
-  public String getEventDetails() {
-    String name = this.getClass().getName();
-    name = name.substring(name.lastIndexOf("."));
-    return name + ": source = " + source;
-  }
-
-  /**
-   * Returns the source that generated the event.
+   * Returns the source that last fired this event.
    */
   public Object getSource() {
     return source;
   }
 
   /**
-   * Fires event for given handler type.
+   * This is a method used primarily for debugging. It gives a string
+   * representation of the event details. This does not override the toString
+   * method because the compiler cannot always optimize toString out correctly.
+   * Event types should override as desired.
+   * 
+   * @return a string representing the event's specifics.
+   */
+  public String toDebugString() {
+    String name = this.getClass().getName();
+    name = name.substring(name.lastIndexOf("."));
+    return name + ": source = " + source;
+  }
+
+  /**
+   * Fires an event for given handler type.
    * 
    * @param handler of type T
    */
@@ -91,7 +91,6 @@ public abstract class AbstractEvent<T extends EventHandler> {
   /**
    * Set the source that triggered this event.
    * 
-   * @param source An object of type F
    */
   void setSource(Object source) {
     this.source = source;
