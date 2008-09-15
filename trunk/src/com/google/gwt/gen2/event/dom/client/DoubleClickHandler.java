@@ -18,13 +18,14 @@ package com.google.gwt.gen2.event.dom.client;
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
-  * Handler interface for {@link DoubleClickEvent} events. 
-  */
+ * Handler interface for {@link DoubleClickEvent} events.
+ */
 public interface DoubleClickHandler extends EventHandler {
 
   /**
-    * Called when DoubleClickEvent is fired.
-    * @param event the {@link DoubleClickEvent} that was fired
-    */
+   * Called when a {@link DoubleClickEvent} is fired.
+   * 
+   * @param event the {@link DoubleClickEvent} that was fired
+   */
   void onDoubleClick(DoubleClickEvent event);
 }

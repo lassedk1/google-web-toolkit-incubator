@@ -15,47 +15,37 @@
  */
 package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 /**
- * Represents a BlurEvent event.
+ * Represents a native blur event.
  */
-public class BlurEvent extends BrowserEvent<BlurHandler> {
+public class BlurEvent extends DomEvent<BlurHandler> {
 
-  /**
-   * A widget that implements this interface is a public source of BlurEvent
-   * events.
-   */
-  public static interface Source {
-
-    /**
-     * Adds a {@link BlurEvent} handler.
-     *
-     * @param handler the handler
-     */
-    HandlerRegistration addBlurHandler(BlurHandler handler);
-  }
-
-  public static Key<BlurHandler> KEY = new Key<BlurHandler>(
-      BrowserEvents.ONBLUR);
+  public static final Key<BlurHandler> KEY = new Key<BlurHandler>(
+      NativeEventType.ONBLUR);
 
   /**
    * Constructs a BlurEvent event.
-   *
-   * @param e An event object, typically from an onBrowserEvent call
+   * 
+   * @param nativeEvent the native event object wrapped by this event
    */
   public BlurEvent(Event e) {
-    super(KEY, e);
+    super(e);
   }
 
   /**
-   * Fires a BlurEvent.
-   *
+   * Fires a {@link BlurEvent}.
+   * 
    * @param handler the handler
    */
   @Override
   protected void fireEvent(BlurHandler handler) {
     handler.onBlur(this);
+  }
+
+  @Override
+  protected Key getKey() {
+    return KEY;
   }
 }

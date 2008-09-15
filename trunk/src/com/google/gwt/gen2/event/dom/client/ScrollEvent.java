@@ -15,47 +15,38 @@
  */
 package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 /**
- * Represents a ScrollEvent event.
+ * Represents a native scroll event.
  */
-public class ScrollEvent extends MouseEvent<ScrollHandler> {
+public class ScrollEvent extends  DomEvent<ScrollHandler> {
 
-  /**
-   * A widget that implements this interface is a public source of ScrollEvent
-   * events.
-   */
-  public static interface Source {
-
-    /**
-     * Adds a {@link ScrollEvent} handler.
-     *
-     * @param handler the handler
-     */
-    HandlerRegistration addScrollHandler(ScrollHandler handler);
-  }
-
-  public static Key<ScrollHandler> KEY = new Key<ScrollHandler>(
-      BrowserEvents.ONSCROLL);
+ 
+  public static final Key<ScrollHandler> KEY = new Key<ScrollHandler>(
+      NativeEventType.ONSCROLL);
 
   /**
    * Constructs a ScrollEvent event.
-   *
-   * @param e An event object, typically from an onBrowserEvent call
+   * 
+   * @param nativeEvent the native event object wrapped by this event
    */
   public ScrollEvent(Event e) {
-    super(KEY, e);
+    super(e);
   }
-
+  
   /**
-   * Fires a ScrollEvent.
-   *
+   * Fires a {@link ScrollEvent}.
+   * 
    * @param handler the handler
    */
   @Override
   protected void fireEvent(ScrollHandler handler) {
     handler.onScroll(this);
+  }
+
+  @Override
+  protected Key getKey() {
+    return KEY;
   }
 }

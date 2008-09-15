@@ -15,45 +15,38 @@
  */
 package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 /**
-  * Represents a MouseUpEvent event.
-  */
-public class MouseUpEvent extends MouseEvent<MouseUpHandler> {
+ * Represents a native mouse up event.
+ */
+public class MouseUpEvent extends  MouseEvent<MouseUpHandler> {
+
+ 
+  public static final Key<MouseUpHandler> KEY = new Key<MouseUpHandler>(
+      NativeEventType.ONMOUSEUP);
 
   /**
-   * A widget that implements this interface is a public source of MouseUpEvent
-   * events.
+   * Constructs a MouseUpEvent event.
+   * 
+   * @param nativeEvent the native event object wrapped by this event
    */
-  public static interface Source {
-
-    /**
-     * Adds a {@link MouseUpEvent} handler.
-     *
-     * @param handler the handler
-     */
-    HandlerRegistration addMouseUpHandler(MouseUpHandler handler);
-  }
-
-  public static Key<MouseUpHandler> KEY = new Key<MouseUpHandler>(
-      BrowserEvents.ONMOUSEUP);
-
-  /**
-    * Constructs a MouseUpEvent event.
-    * @param e An event object, typically from an onBrowserEvent call
-    */
   public MouseUpEvent(Event e) {
-    super(KEY, e);
+    super(e);
   }
-
+  
   /**
-    * Fires a MouseUpEvent.
-    * @param handler the handler
-    */
+   * Fires a {@link MouseUpEvent}.
+   * 
+   * @param handler the handler
+   */
   @Override
   protected void fireEvent(MouseUpHandler handler) {
     handler.onMouseUp(this);
+  }
+
+  @Override
+  protected Key getKey() {
+    return KEY;
   }
 }

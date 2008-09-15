@@ -18,13 +18,14 @@ package com.google.gwt.gen2.event.dom.client;
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
-  * Handler interface for {@link LoseCaptureEvent} events. 
-  */
+ * Handler interface for {@link LoseCaptureEvent} events.
+ */
 public interface LoseCaptureHandler extends EventHandler {
 
   /**
-    * Called when LoseCaptureEvent is fired.
-    * @param event the {@link LoseCaptureEvent} that was fired
-    */
+   * Called when LoseCaptureEvent is fired.
+   * 
+   * @param event the {@link LoseCaptureEvent} that was fired
+   */
   void onLoseCapture(LoseCaptureEvent event);
 }

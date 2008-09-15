@@ -16,44 +16,37 @@
 package com.google.gwt.gen2.event.dom.client;
 
 import com.google.gwt.user.client.Event;
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 
 /**
-  * Represents a LoadEvent event.
-  */
-public class LoadEvent extends BrowserEvent<LoadHandler> {
+ * Represents a native load event.
+ */
+public class LoadEvent extends  DomEvent<LoadHandler> {
+
+ 
+  public static final Key<LoadHandler> KEY = new Key<LoadHandler>(
+      NativeEventType.ONLOAD);
 
   /**
-   * A widget that implements this interface is a public source of LoadEvent
-   * events.
+   * Constructs a LoadEvent event.
+   * 
+   * @param nativeEvent the native event object wrapped by this event
    */
-  public static interface Source {
-
-    /**
-     * Adds a {@link LoadEvent} handler.
-     *
-     * @param handler the handler
-     */
-    HandlerRegistration addLoadHandler(LoadHandler handler);
-  }
-
-  public static Key<LoadHandler> KEY = new Key<LoadHandler>(
-      BrowserEvents.ONLOAD);
-
-  /**
-    * Constructs a LoadEvent event.
-    * @param e An event object, typically from an onBrowserEvent call
-    */
   public LoadEvent(Event e) {
-    super(KEY, e);
+    super(e);
   }
-
+  
   /**
-    * Fires a LoadEvent.
-    * @param handler the handler
-    */
+   * Fires a {@link LoadEvent}.
+   * 
+   * @param handler the handler
+   */
   @Override
   protected void fireEvent(LoadHandler handler) {
     handler.onLoad(this);
+  }
+
+  @Override
+  protected Key getKey() {
+    return KEY;
   }
 }

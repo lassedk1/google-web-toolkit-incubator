@@ -18,13 +18,14 @@ package com.google.gwt.gen2.event.dom.client;
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
-  * Handler interface for {@link MouseUpEvent} events. 
-  */
+ * Handler interface for {@link MouseUpEvent} events.
+ */
 public interface MouseUpHandler extends EventHandler {
 
   /**
-    * Called when MouseUpEvent is fired.
-    * @param event the {@link MouseUpEvent} that was fired
-    */
+   * Called when MouseUpEvent is fired.
+   * 
+   * @param event the {@link MouseUpEvent} that was fired
+   */
   void onMouseUp(MouseUpEvent event);
 }

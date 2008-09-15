@@ -18,13 +18,14 @@ package com.google.gwt.gen2.event.dom.client;
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
-  * Handler interface for {@link MouseMoveEvent} events. 
-  */
+ * Handler interface for {@link MouseMoveEvent} events.
+ */
 public interface MouseMoveHandler extends EventHandler {
 
   /**
-    * Called when MouseMoveEvent is fired.
-    * @param event the {@link MouseMoveEvent} that was fired
-    */
+   * Called when MouseMoveEvent is fired.
+   * 
+   * @param event the {@link MouseMoveEvent} that was fired
+   */
   void onMouseMove(MouseMoveEvent event);
 }

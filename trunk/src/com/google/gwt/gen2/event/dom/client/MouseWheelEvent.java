@@ -15,61 +15,38 @@
  */
 package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 /**
-  * Represents a MouseWheelEvent event.
-  */
-public class MouseWheelEvent extends MouseEvent<MouseWheelHandler> {
+ * Represents a native mouse wheel event.
+ */
+public class MouseWheelEvent extends  MouseEvent<MouseWheelHandler> {
+
+ 
+  public static final Key<MouseWheelHandler> KEY = new Key<MouseWheelHandler>(
+      NativeEventType.ONMOUSEWHEEL);
 
   /**
-   * A widget that implements this interface is a public source of MouseWheelEvent
-   * events.
+   * Constructs a MouseWheelEvent event.
+   * 
+   * @param nativeEvent the native event object wrapped by this event
    */
-  public static interface Source {
-
-    /**
-     * Adds a {@link MouseWheelEvent} handler.
-     *
-     * @param handler the handler
-     */
-    HandlerRegistration addMouseWheelHandler(MouseWheelHandler handler);
-  }
-
-  public static Key<MouseWheelHandler> KEY = new Key<MouseWheelHandler>(
-      BrowserEvents.ONMOUSEWHEEL);
-
-  /**
-    * Constructs a MouseWheelEvent event.
-    * @param e An event object, typically from an onBrowserEvent call
-    */
   public MouseWheelEvent(Event e) {
-    super(KEY, e);
+    super(e);
   }
-
+  
   /**
-   * Gets the velocity of the mouse wheel associated with the event along the Y
-   * axis. <p> The velocity of the event is an artifical measurement for
-   * relative comparisons of wheel activity. It is affected by some non-browser
-   * factors, including choice of input hardware and mouse acceleration
-   * settings. The sign of the velocity measurement agrees with the screen
-   * coordinate system; negative values are towards the origin and positive
-   * values are away from the origin. Standard scrolling speed is approximately
-   * ten units per event. </p>
-   *
-   * @return The velocity of the mouse wheel.
+   * Fires a {@link MouseWheelEvent}.
+   * 
+   * @param handler the handler
    */
-  public int getMouseWheelVelocityY() {
-    return getBrowserEvent().getMouseWheelVelocityY();
-  }
-
-  /**
-    * Fires a MouseWheelEvent.
-    * @param handler the handler
-    */
   @Override
   protected void fireEvent(MouseWheelHandler handler) {
     handler.onMouseWheel(this);
+  }
+
+  @Override
+  protected Key getKey() {
+    return KEY;
   }
 }

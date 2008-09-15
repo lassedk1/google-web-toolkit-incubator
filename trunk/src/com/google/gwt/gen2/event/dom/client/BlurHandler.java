@@ -18,13 +18,14 @@ package com.google.gwt.gen2.event.dom.client;
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
-  * Handler interface for {@link BlurEvent} events. 
-  */
+ * Handler interface for {@link BlurEvent} events.
+ */
 public interface BlurHandler extends EventHandler {
 
   /**
-    * Called when BlurEvent is fired.
-    * @param event the {@link BlurEvent} that was fired
-    */
+   * Called when BlurEvent is fired.
+   * 
+   * @param event the {@link BlurEvent} that was fired
+   */
   void onBlur(BlurEvent event);
 }

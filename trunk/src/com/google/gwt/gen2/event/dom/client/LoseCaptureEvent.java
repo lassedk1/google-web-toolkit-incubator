@@ -16,44 +16,37 @@
 package com.google.gwt.gen2.event.dom.client;
 
 import com.google.gwt.user.client.Event;
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 
 /**
-  * Represents a LoseCaptureEvent event.
-  */
-public class LoseCaptureEvent extends BrowserEvent<LoseCaptureHandler> {
+ * Represents a native lose capture event.
+ */
+public class LoseCaptureEvent extends  DomEvent<LoseCaptureHandler> {
+
+ 
+  public static final Key<LoseCaptureHandler> KEY = new Key<LoseCaptureHandler>(
+      NativeEventType.ONLOSECAPTURE);
 
   /**
-   * A widget that implements this interface is a public source of LoseCaptureEvent
-   * events.
+   * Constructs a LoseCaptureEvent event.
+   * 
+   * @param nativeEvent the native event object wrapped by this event
    */
-  public static interface Source {
-
-    /**
-     * Adds a {@link LoseCaptureEvent} handler.
-     *
-     * @param handler the handler
-     */
-    HandlerRegistration addLoseCaptureHandler(LoseCaptureHandler handler);
-  }
-
-  public static Key<LoseCaptureHandler> KEY = new Key<LoseCaptureHandler>(
-      BrowserEvents.ONLOSECAPTURE);
-
-  /**
-    * Constructs a LoseCaptureEvent event.
-    * @param e An event object, typically from an onBrowserEvent call
-    */
   public LoseCaptureEvent(Event e) {
-    super(KEY, e);
+    super(e);
   }
-
+  
   /**
-    * Fires a LoseCaptureEvent.
-    * @param handler the handler
-    */
+   * Fires a {@link LoseCaptureEvent}.
+   * 
+   * @param handler the handler
+   */
   @Override
   protected void fireEvent(LoseCaptureHandler handler) {
     handler.onLoseCapture(this);
+  }
+
+  @Override
+  protected Key getKey() {
+    return KEY;
   }
 }

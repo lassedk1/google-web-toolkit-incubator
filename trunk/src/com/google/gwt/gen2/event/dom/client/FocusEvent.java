@@ -16,44 +16,37 @@
 package com.google.gwt.gen2.event.dom.client;
 
 import com.google.gwt.user.client.Event;
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 
 /**
-  * Represents a FocusEvent event.
-  */
-public class FocusEvent extends BrowserEvent<FocusHandler> {
+ * Represents a native focus event.
+ */
+public class FocusEvent extends  DomEvent<FocusHandler> {
+
+ 
+  public static final Key<FocusHandler> KEY = new Key<FocusHandler>(
+      NativeEventType.ONFOCUS);
 
   /**
-   * A widget that implements this interface is a public source of FocusEvent
-   * events.
+   * Constructs a FocusEvent event.
+   * 
+   * @param nativeEvent the native event object wrapped by this event
    */
-  public static interface Source {
-
-    /**
-     * Adds a {@link FocusEvent} handler.
-     *
-     * @param handler the handler
-     */
-    HandlerRegistration addFocusHandler(FocusHandler handler);
-  }
-
-  public static Key<FocusHandler> KEY = new Key<FocusHandler>(
-      BrowserEvents.ONFOCUS);
-
-  /**
-    * Constructs a FocusEvent event.
-    * @param e An event object, typically from an onBrowserEvent call
-    */
   public FocusEvent(Event e) {
-    super(KEY, e);
+    super(e);
   }
-
+  
   /**
-    * Fires a FocusEvent.
-    * @param handler the handler
-    */
+   * Fires a {@link FocusEvent}.
+   * 
+   * @param handler the handler
+   */
   @Override
   protected void fireEvent(FocusHandler handler) {
     handler.onFocus(this);
+  }
+
+  @Override
+  protected Key getKey() {
+    return KEY;
   }
 }

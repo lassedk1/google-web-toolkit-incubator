@@ -15,45 +15,38 @@
  */
 package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 /**
-  * Represents a MouseMoveEvent event.
-  */
-public class MouseMoveEvent extends MouseEvent<MouseMoveHandler> {
+ * Represents a native mouse move event.
+ */
+public class MouseMoveEvent extends  MouseEvent<MouseMoveHandler> {
+
+ 
+  public static final Key<MouseMoveHandler> KEY = new Key<MouseMoveHandler>(
+      NativeEventType.ONMOUSEMOVE);
 
   /**
-   * A widget that implements this interface is a public source of MouseMoveEvent
-   * events.
+   * Constructs a MouseMoveEvent event.
+   * 
+   * @param nativeEvent the native event object wrapped by this event
    */
-  public static interface Source {
-
-    /**
-     * Adds a {@link MouseMoveEvent} handler.
-     *
-     * @param handler the handler
-     */
-    HandlerRegistration addMouseMoveHandler(MouseMoveHandler handler);
-  }
-
-  public static Key<MouseMoveHandler> KEY = new Key<MouseMoveHandler>(
-      BrowserEvents.ONMOUSEMOVE);
-
-  /**
-    * Constructs a MouseMoveEvent event.
-    * @param e An event object, typically from an onBrowserEvent call
-    */
   public MouseMoveEvent(Event e) {
-    super(KEY, e);
+    super(e);
   }
-
+  
   /**
-    * Fires a MouseMoveEvent.
-    * @param handler the handler
-    */
+   * Fires a {@link MouseMoveEvent}.
+   * 
+   * @param handler the handler
+   */
   @Override
   protected void fireEvent(MouseMoveHandler handler) {
     handler.onMouseMove(this);
+  }
+
+  @Override
+  protected Key getKey() {
+    return KEY;
   }
 }

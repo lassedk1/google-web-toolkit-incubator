@@ -18,13 +18,14 @@ package com.google.gwt.gen2.event.dom.client;
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
-  * Handler interface for {@link ErrorEvent} events. 
-  */
+ * Handler interface for {@link ErrorEvent} events.
+ */
 public interface ErrorHandler extends EventHandler {
 
   /**
-    * Called when ErrorEvent is fired.
-    * @param event the {@link ErrorEvent} that was fired
-    */
+   * Called when ErrorEvent is fired.
+   * 
+   * @param event the {@link ErrorEvent} that was fired
+   */
   void onError(ErrorEvent event);
 }

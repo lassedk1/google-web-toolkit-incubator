@@ -20,15 +20,15 @@ import com.google.gwt.user.client.Event;
 
 /**
  * Abstract class representing mouse events.
+ * 
  * @param <T> event handler type
  */
-public abstract class MouseEvent<T extends EventHandler>
-    extends BrowserEvent<T> {
+public abstract class MouseEvent<T extends EventHandler> extends DomEvent<T> {
+
   /**
-   * TODO
+   * The native Dom button codes.
    */
   public enum Button {
-
     LEFT, MIDDLE, RIGHT;
 
     public static Button valueOf(int buttonCode) {
@@ -45,83 +45,83 @@ public abstract class MouseEvent<T extends EventHandler>
     }
   }
 
-  protected MouseEvent(Key<T> key, Event e) {
-    super(key, e);
+  protected MouseEvent(Event e) {
+    super(e);
   }
 
   public Button getButton() {
-    return Button.valueOf(getBrowserEvent().getButton());
+    return Button.valueOf(getNativeEvent().getButton());
   }
 
   /**
    * Gets the mouse x-position within the browser window's client area.
-   *
+   * 
    * @return the mouse x-position
    */
   public int getClientX() {
-    return getBrowserEvent().getClientX();
+    return getNativeEvent().getClientX();
   }
 
   /**
    * Gets the mouse y-position within the browser window's client area.
-   *
+   * 
    * @return the mouse y-position
    */
   public int getClientY() {
-    return getBrowserEvent().getClientY();
+    return getNativeEvent().getClientY();
   }
 
   /**
    * Gets the mouse x-position on the user's display.
-   *
+   * 
    * @return the mouse x-position
    */
   public int getScreenX() {
-    return getBrowserEvent().getScreenX();
+    return getNativeEvent().getScreenX();
   }
 
   /**
    * Gets the mouse y-position on the user's display.
-   *
+   * 
    * @return the mouse y-position
    */
   public int getScreenY() {
-    return getBrowserEvent().getScreenY();
+    return getNativeEvent().getScreenY();
   }
 
   /**
    * Is <code>alt</code> key down.
-   *
+   * 
    * @return whether the alt key is down
    */
   public boolean isAltKeyDown() {
-    return getBrowserEvent().getAltKey();
+    return getNativeEvent().getAltKey();
   }
 
   /**
    * Is <code>control</code> key down.
-   *
+   * 
    * @return whether the control key is down
    */
   public boolean isControlKeyDown() {
-    return getBrowserEvent().getCtrlKey();
+    return getNativeEvent().getCtrlKey();
   }
 
   /**
    * Is <code>meta</code> key down.
-   *
+   * 
    * @return whether the meta key is down
    */
   public boolean isMetaKeyDown() {
-    return getBrowserEvent().getMetaKey();
+    return getNativeEvent().getMetaKey();
   }
 
   /**
    * Is <code>shift</code> key down.
-   *
+   * 
    * @return whether the shift key is down
    */
   public boolean isShiftKeyDown() {
-    return getBrowserEvent().getShiftKey();
+    return getNativeEvent().getShiftKey();
   }
 }

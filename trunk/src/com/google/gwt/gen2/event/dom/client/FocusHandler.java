@@ -18,13 +18,14 @@ package com.google.gwt.gen2.event.dom.client;
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
-  * Handler interface for {@link FocusEvent} events. 
-  */
+ * Handler interface for {@link FocusEvent} events.
+ */
 public interface FocusHandler extends EventHandler {
 
   /**
-    * Called when FocusEvent is fired.
-    * @param event the {@link FocusEvent} that was fired
-    */
+   * Called when FocusEvent is fired.
+   * 
+   * @param event the {@link FocusEvent} that was fired
+   */
   void onFocus(FocusEvent event);
 }
