@@ -20,17 +20,14 @@ import com.google.gwt.gen2.event.shared.EventHandler;
 import com.google.gwt.user.client.Event;
 
 /**
- * BrowserEvent is a subclass of AbstractEvent that provides events that map to
- * DOM Level 2 Events. It provides an additional method to access the underlying
- * native browser event object as well as a subclass of AbstractEvent.Key that
- * understands GWT event bits used by sinkEvents().
- * 
- * TODO(ecc) Talk to Ray about intance key in these browser events.
+ * {@link DomEvent} is a subclass of AbstractEvent that provides events that map
+ * to DOM Level 2 Events. It provides an additional method to access the
+ * underlying native browser event object as well as a subclass of
+ * AbstractEvent.Key that understands GWT event bits used by sinkEvents().
  * 
  * @param <T> the type of handler used by the event
  */
-public abstract class BrowserEvent<T extends EventHandler> extends
-    AbstractEvent<T> {
+public abstract class DomEvent<T extends EventHandler> extends AbstractEvent<T> {
 
   /**
    * Key class used by BrowserEvent subclasses. Includes extra method to return
@@ -40,15 +37,16 @@ public abstract class BrowserEvent<T extends EventHandler> extends
 
     private int eventBits;
 
-    // type safe constructor, unfortunately only a single event supported
-    // as EnumSet is not efficient on GWT
-    public Key(BrowserEvents event) {
-      this.eventBits = event.getEventBits();
-    }
-
     // old style, multi-bits
     public Key(int eventBits) {
       this.eventBits = eventBits;
+    }
+
+    /**
+     * Construct the given key using the type safe {@link NativeEventType} enum.
+     */
+    public Key(NativeEventType event) {
+      this.eventBits = event.getEventBits();
     }
 
     public int getEventBitsToSink() {
@@ -56,18 +54,13 @@ public abstract class BrowserEvent<T extends EventHandler> extends
     }
   }
 
-  // TODO(ecc) This is convenient, but must be eventually be removed as we do not
-  // want to pay for the overhead of a separate key field per event.
-  private Key<T> key;
-
   private Event browserEvent;
 
-  protected BrowserEvent(Key<T> key, Event browserEvent) {
-    this.key = key;
+  protected DomEvent(Event browserEvent) {
     this.browserEvent = browserEvent;
   }
 
-  public Event getBrowserEvent() {
+  public Event getNativeEvent() {
     return browserEvent;
   }
 
@@ -79,8 +72,4 @@ public abstract class BrowserEvent<T extends EventHandler> extends
     browserEvent.cancelBubble(true);
   }
 
-  @Override
-  protected BrowserEvent.Key<T> getKey() {
-    return key;
-  }
 }
