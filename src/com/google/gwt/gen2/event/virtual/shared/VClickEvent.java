@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.event.virtual.shared;
 /**
- * TODO
+ * TODO(cromwellian).
  */
 public class VClickEvent extends VMouseEvent<VClickHandler> {
 
@@ -25,6 +25,7 @@ public class VClickEvent extends VMouseEvent<VClickHandler> {
     super(KEY, data);
   }
 
+  @Override
   protected void fireEvent(VClickHandler handler) {
     handler.onClick(this);
   }

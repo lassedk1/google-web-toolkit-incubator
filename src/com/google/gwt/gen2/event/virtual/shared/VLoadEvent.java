@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.event.virtual.shared;
 /**
- * TODO
+ * TODO(cromwellian).
  */
 public class VLoadEvent extends VirtualEvent<VLoadHandler> {
 
@@ -25,6 +25,7 @@ public class VLoadEvent extends VirtualEvent<VLoadHandler> {
     super(KEY, data);
   }
 
+  @Override
   protected void fireEvent(VLoadHandler handler) {
     handler.onLoad(this);
   }

@@ -16,7 +16,7 @@
 package com.google.gwt.gen2.event.virtual.shared;
 
 /**
- * TODO
+ * TODO(cromwellian).
  */
 public class VMouseDownEvent extends VMouseEvent<VMouseDownHandler> {
 
@@ -26,6 +26,7 @@ public class VMouseDownEvent extends VMouseEvent<VMouseDownHandler> {
     super(KEY, data);
   }
 
+  @Override
   protected void fireEvent(VMouseDownHandler handler) {
     handler.onMouseDown(this);
   }

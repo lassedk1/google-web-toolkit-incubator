@@ -18,13 +18,13 @@ package com.google.gwt.gen2.event.virtual.shared;
 import com.google.gwt.gen2.event.shared.AbstractEvent;
 import com.google.gwt.gen2.event.shared.EventHandler;
 /**
- * TODO
+ * TODO(cromwellian).
  * @param <T> event handler type
  */
 public abstract class VirtualEvent<T extends EventHandler>
     extends AbstractEvent<T> {
   /**
-   * TODO
+   * TODO(cromwellian).
    */
   public static class Key<T extends EventHandler> extends AbstractEvent.Key<T> {
   }
@@ -42,6 +42,7 @@ public abstract class VirtualEvent<T extends EventHandler>
     return eventData;
   }
 
+  @Override
   public AbstractEvent.Key<T> getKey() {
     return key;
   }

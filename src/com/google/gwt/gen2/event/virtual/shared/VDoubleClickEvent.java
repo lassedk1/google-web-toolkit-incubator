@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.event.virtual.shared;
 /**
- * TODO
+ * TODO(cromwellian).
  */
 public class VDoubleClickEvent extends VMouseEvent<VDoubleClickHandler> {
 
@@ -25,6 +25,7 @@ public class VDoubleClickEvent extends VMouseEvent<VDoubleClickHandler> {
     super(KEY, data);
   }
 
+  @Override
   protected void fireEvent(VDoubleClickHandler handler) {
     handler.onDoubleClick(this);
   }

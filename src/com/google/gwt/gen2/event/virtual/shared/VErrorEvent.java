@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.event.virtual.shared;
 /**
- * TODO
+ * TODO(cromwellian).
  */
 public class VErrorEvent extends VirtualEvent<VErrorHandler> {
 
@@ -25,6 +25,7 @@ public class VErrorEvent extends VirtualEvent<VErrorHandler> {
     super(KEY, data);
   }
 
+  @Override
   protected void fireEvent(VErrorHandler handler) {
     handler.onError(this);
   }

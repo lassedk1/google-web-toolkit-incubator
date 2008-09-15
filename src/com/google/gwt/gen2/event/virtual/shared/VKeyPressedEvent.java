@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.event.virtual.shared;
 /**
- * TODO
+ * TODO(cromwellian).
  */
 public class VKeyPressedEvent extends VKeyboardEvent<VKeyPressedHandler> {
 
@@ -27,6 +27,7 @@ public class VKeyPressedEvent extends VKeyboardEvent<VKeyPressedHandler> {
     super(KEY, data);
   }
 
+  @Override
   protected void fireEvent(VKeyPressedHandler handler) {
     handler.onKeyPressed(this);
   }

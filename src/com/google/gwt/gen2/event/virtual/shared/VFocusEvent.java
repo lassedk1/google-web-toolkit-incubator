@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.event.virtual.shared;
 /**
- * TODO
+ * TODO(cromwellian).
  */
 public class VFocusEvent extends VirtualEvent<VFocusHandler> {
 
@@ -25,6 +25,7 @@ public class VFocusEvent extends VirtualEvent<VFocusHandler> {
     super(KEY, data);
   }
 
+  @Override
   protected void fireEvent(VFocusHandler handler) {
     handler.onFocus(this);
   }

@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.event.virtual.shared;
 /**
- * TODO
+ * TODO(cromwellian).
  */
 public class VBlurEvent extends VirtualEvent<VBlurHandler> {
 
@@ -25,6 +25,7 @@ public class VBlurEvent extends VirtualEvent<VBlurHandler> {
     super(KEY, data);
   }
 
+  @Override
   protected void fireEvent(VBlurHandler handler) {
     handler.onBlurEvent(this);
   }

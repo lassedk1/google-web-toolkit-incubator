@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.event.virtual.shared;
 /**
- * TODO
+ * TODO(cromwellian).
  */
 public class VChangeEvent extends VirtualEvent<VChangeHandler> {
 
@@ -25,6 +25,7 @@ public class VChangeEvent extends VirtualEvent<VChangeHandler> {
     super(KEY, data);
   }
 
+  @Override
   protected void fireEvent(VChangeHandler handler) {
     handler.onChange(this);
   }
