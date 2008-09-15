@@ -19,36 +19,26 @@ import com.google.gwt.user.client.Event;
 
 /**
  * Enum used to model GWT eventBits and add slightly more type-safety to some
- * constructors.
+ * constructors.The final home for this enum is as a sub class of {@link Event}.
  */
-public enum BrowserEvents {
-
-  ONKEYDOWN(Event.ONKEYDOWN),
-  ONKEYUP(Event.ONKEYUP),
-  ONKEYPRESSED(Event.ONKEYPRESS),
-  ONMOUSEDOWN(Event.ONMOUSEDOWN),
-  ONMOUSEUP(Event.ONMOUSEUP),
-  ONMOUSEOVER(Event.ONMOUSEOVER),
-  ONMOUSEOUT(Event.ONMOUSEOUT),
-  ONOUSEMOVE(Event.ONMOUSEMOVE),
-  ONCLICK(Event.ONCLICK),
-  ONDBLCLICK(Event.ONDBLCLICK),
-  ONERROR(Event.ONERROR),
-  ONFOCUS(Event.ONFOCUS),
-  ONBLUR(Event.ONBLUR),
-  ONLOSECAPTURE(Event.ONLOSECAPTURE),
-  ONLOAD(Event.ONLOAD),
-  ONSCROLL(Event.ONSCROLL),
-  ONMOUSEWHEEL(Event.ONMOUSEWHEEL),
-  ONCHANGE(Event.ONCHANGE), ONMOUSEMOVE(Event.ONMOUSEMOVE);
+public enum NativeEventType {
+  ONKEYDOWN(Event.ONKEYDOWN), ONKEYUP(Event.ONKEYUP), ONKEYPRESS(
+      Event.ONKEYPRESS), ONMOUSEDOWN(Event.ONMOUSEDOWN), ONMOUSEUP(
+      Event.ONMOUSEUP), ONMOUSEOVER(Event.ONMOUSEOVER), ONMOUSEOUT(
+      Event.ONMOUSEOUT), ONOUSEMOVE(Event.ONMOUSEMOVE), ONCLICK(Event.ONCLICK), ONDOUBLECLICK(
+      Event.ONDBLCLICK), ONERROR(Event.ONERROR), ONFOCUS(Event.ONFOCUS), ONBLUR(
+      Event.ONBLUR), ONLOSECAPTURE(Event.ONLOSECAPTURE), ONLOAD(Event.ONLOAD), ONSCROLL(
+      Event.ONSCROLL), ONMOUSEWHEEL(Event.ONMOUSEWHEEL), ONCHANGE(
+      Event.ONCHANGE), ONMOUSEMOVE(Event.ONMOUSEMOVE);
 
   private int eventBits;
 
-  BrowserEvents(int bits) {
+  NativeEventType(int bits) {
     this.eventBits = bits;
   }
 
   public int getEventBits() {
     return eventBits;
   }
+
 }
