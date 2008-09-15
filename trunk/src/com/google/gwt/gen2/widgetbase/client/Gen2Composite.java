@@ -32,6 +32,7 @@ import com.google.gwt.user.client.ui.WidgetAdaptorImpl;
  */
 public abstract class Gen2Composite<WidgetType extends Widget> extends
     Gen2Widget {
+
   private WidgetType widget;
 
   @Override
@@ -46,19 +47,15 @@ public abstract class Gen2Composite<WidgetType extends Widget> extends
   }
 
   @Override
-  public void setStylePrimaryName(String style) {
-    super.setStylePrimaryName(style);
-    getWidget().setStylePrimaryName(style);
+  public void setStyleName(String styleName) {
+    assert (widget != null) : "Should not ask for a widget's css before calling initWidget()";
+    widget.setStyleName(styleName);
   }
 
   @Override
-  protected BaseCss css() {
+  public void setStylePrimaryName(String styleName) {
     assert (widget != null) : "Should not ask for a widget's css before calling initWidget()";
-    if (widget instanceof Gen2Widget) {
-      return ((Gen2Widget) widget).css();
-    } else {
-      return new LegacyCss(widget);
-    }
+    widget.setStylePrimaryName(styleName);
   }
 
   /**
