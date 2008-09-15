@@ -18,7 +18,6 @@ package com.google.gwt.gen2.commonwidget.client;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.gen2.base.client.Gen2TestBase;
-import com.google.gwt.gen2.widgetbase.client.Decorator;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.RootPanel;
 
