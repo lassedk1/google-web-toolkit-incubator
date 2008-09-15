@@ -16,15 +16,15 @@
 
 package com.google.gwt.gen2.selection.client;
 
+import com.google.gwt.gen2.commonwidget.client.Decorator;
+import com.google.gwt.gen2.commonwidget.client.DecoratorPanel;
 import com.google.gwt.gen2.commonwidget.client.DropDownPanel;
-import com.google.gwt.gen2.event.shared.BeforeShowEvent;
-import com.google.gwt.gen2.event.shared.BeforeShowHandler;
+import com.google.gwt.gen2.event.logical.shared.BeforeShowEvent;
+import com.google.gwt.gen2.event.logical.shared.BeforeShowHandler;
+import com.google.gwt.gen2.event.logical.shared.HasBeforeShowHandlers;
+import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
+import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
-import com.google.gwt.gen2.event.shared.SelectionEvent;
-import com.google.gwt.gen2.event.shared.SelectionHandler;
-import com.google.gwt.gen2.widgetbase.client.Decorator;
-import com.google.gwt.gen2.widgetbase.client.DecoratorPanel;
-import com.google.gwt.gen2.widgetbase.client.Gen2CssInfo;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HasAnimation;
 import com.google.gwt.user.client.ui.KeyboardListener;
@@ -37,7 +37,7 @@ import com.google.gwt.user.client.ui.ToggleButton;
  * @param <ValueType> the type of values stored in the list box.
  */
 public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
-    implements HasAnimation, BeforeShowEvent.Source {
+    implements HasAnimation, HasBeforeShowHandlers {
 
   /**
    * Drop down panel class.
@@ -60,17 +60,7 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
   /**
    * Provides the default css info for this widget.
    */
-  public static DropDownListBox.Css DEFAULT_CSS = new CssAdaptor(
-      "gwt-DropDownListBox");
-
-  /**
-   * Inject the default css for this widget.
-   */
-  public static void injectDefaultCss() {
-    if (Gen2CssInfo.isInjectionEnabled()) {
-      Gen2CssInfo.addDropDownListBoxDefault();
-    }
-  }
+  public static DropDownListBox.Css DEFAULT_CSS = CustomListBox.createCss("gwt-DropDownListBox");
 
   private final ToggleButton button = new ToggleButton() {
     boolean cancelNextClick;
@@ -126,28 +116,28 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
   /**
    * Constructor.
    */
-  public DropDownListBox(String defaultFace) {
-    this(defaultFace, DEFAULT_CSS);
+  public DropDownListBox(String buttonHtml) {
+    this(buttonHtml, DEFAULT_CSS);
   }
 
   /**
    * Constructor.
    */
-  public DropDownListBox(String defaultFace, Css css) {
-    super(css, defaultFace);
+  public DropDownListBox(String buttonHtml, Css css) {
+    super(css, buttonHtml);
     initWidget(new DecoratorPanel(button, supplyButtonDecorator()));
 
-    getWidget().setStyleName(css.styleName());
+    getWidget().setStyleName(css.baseName());
 
     dropDown.add(new DecoratorPanel(getListBox(), supplyListBoxDecorator()));
 
     this.addSelectionHandler(new SelectionHandler<ValueType>() {
       public void onSelection(SelectionEvent<ValueType> event) {
-        updateFace();
+        updateButtonHtml();
         hideItems();
       }
     });
-    updateFace();
+    updateButtonHtml();
   }
 
   public HandlerRegistration addBeforeShowHandler(BeforeShowHandler handler) {
@@ -195,7 +185,8 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
   }
 
   /**
-   * Supplied a decorator to wrap around the toggle button.
+   * Supplied a decorator to wrap around the drop down list button's primary
+   * html.
    * 
    * @return the decorator;
    */
@@ -204,24 +195,11 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
   }
 
   /**
-   * Supply a decorator for the toggle down face.
-   * 
+   * Updates the current button html. Called whenever a new list item is
+   * selected.
    */
-  protected Decorator supplyFaceDownDecorator() {
-    return Decorator.DEFAULT;
+  protected void updateButtonHtml() {
+    button.getUpFace().setHTML(getSummary());
   }
 
-  /**
-   * Supply a decorator for the toggle up face.
-   * 
-   */
-  protected Decorator supplyFaceUpDecorator() {
-    return Decorator.DEFAULT;
-  }
-
-  private void updateFace() {
-    String summary = getSummary();
-    button.getUpFace().setHTML(supplyFaceUpDecorator().wrapHTML(summary));
-    button.getDownFace().setHTML(supplyFaceUpDecorator().wrapHTML(summary));
-  }
 }

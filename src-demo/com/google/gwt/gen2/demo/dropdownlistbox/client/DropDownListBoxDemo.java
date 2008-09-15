@@ -18,11 +18,11 @@ package com.google.gwt.gen2.demo.dropdownlistbox.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.gen2.event.shared.SelectionEvent;
-import com.google.gwt.gen2.event.shared.SelectionHandler;
+import com.google.gwt.gen2.commonwidget.client.Decorator;
+import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
+import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
 import com.google.gwt.gen2.selection.client.DropDownListBox;
-import com.google.gwt.gen2.widgetbase.client.Decorator;
-import com.google.gwt.gen2.widgetbase.client.Gen2CssInfo;
+import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
 import com.google.gwt.libideas.client.StyleInjector;
 import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.libideas.resources.client.CssResource;
@@ -54,6 +54,9 @@ public class DropDownListBoxDemo implements EntryPoint {
    * 
    */
   public static interface BundledCss extends CssResource, DropDownListBox.Css {
+    @ClassName("gwt-DropDownListBox")
+    String baseName();
+
     /**
      * Disabled item.
      */
@@ -107,9 +110,6 @@ public class DropDownListBoxDemo implements EntryPoint {
      */
     @ClassName("gwt-DropDownListBox-selectedItem")
     String selectedItem();
-
-    @ClassName("gwt-DropDownListBox")
-    String styleName();
   }
 
   /**
@@ -137,11 +137,6 @@ public class DropDownListBoxDemo implements EntryPoint {
 
     @Override
     protected Decorator supplyItemDecorator() {
-      return DIV_WRAPPER;
-    }
-
-    @Override
-    protected Decorator supplyFaceDownDecorator() {
       return DIV_WRAPPER;
     }
 
@@ -281,11 +276,11 @@ public class DropDownListBoxDemo implements EntryPoint {
   static {
     // By default, all widgets use non-css resources, here we override that if
     // we are not suppressing them altogether.
-    if (Gen2CssInfo.isInjectionEnabled()) {
+    if (Gen2CssInjector.isInjectionEnabled()) {
       BundledCss css = ((Resources) GWT.create(Resources.class)).dropDownListBoxCss();
       StyleInjector.injectStylesheet(css.getText());
       DropDownListBox.DEFAULT_CSS = css;
-      Gen2CssInfo.addToggleButtonDefault();
+      Gen2CssInjector.addToggleButtonDefault();
     } else {
       Log.info("Using debug css");
     }
