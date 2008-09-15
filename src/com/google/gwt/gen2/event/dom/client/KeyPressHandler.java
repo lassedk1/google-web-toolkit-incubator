@@ -18,13 +18,14 @@ package com.google.gwt.gen2.event.dom.client;
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
-  * Handler interface for {@link KeyPressedEvent} events. 
-  */
-public interface KeyPressedHandler extends EventHandler {
+ * Handler interface for {@link KeyPressEvent} events.
+ */
+public interface KeyPressHandler extends EventHandler {
 
   /**
-    * Called when KeyPressedEvent is fired.
-    * @param event the {@link KeyPressedEvent} that was fired
-    */
-  void onKeyPressed(KeyPressedEvent event);
+   * Called when KeyPressEvent is fired.
+   * 
+   * @param event the {@link KeyPressEvent} that was fired
+   */
+  void onKeyPressed(KeyPressEvent event);
 }
