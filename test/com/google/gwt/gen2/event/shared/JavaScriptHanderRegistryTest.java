@@ -47,7 +47,7 @@ public class JavaScriptHanderRegistryTest extends Gen2TestBase {
   };
 
   public void testAccesors() {
-    HandlerRegistry registry = new HandlerRegistry.JSHandlerRegistry();
+    JsHandlerRegistry registry = JsHandlerRegistry.create();
     registry.addHandler(MouseDownEvent.KEY, mouseDownHandler);
     assertEquals(mouseDownHandler, registry.getHandler(MouseDownEvent.KEY, 0));
 
@@ -63,13 +63,13 @@ public class JavaScriptHanderRegistryTest extends Gen2TestBase {
   }
 
   public void testAdd() {
-    HandlerRegistry registry = new HandlerRegistry.JSHandlerRegistry();
+    JsHandlerRegistry registry = JsHandlerRegistry.create();
     registry.addHandler(MouseDownEvent.KEY, mouseDownHandler);
     assertEquals(1, registry.getHandlerCount(MouseDownEvent.KEY));
   }
 
   public void testRemove() {
-    HandlerRegistry registry = new HandlerRegistry.JSHandlerRegistry();
+    JsHandlerRegistry registry = JsHandlerRegistry.create();
     registry.addHandler(MouseDownEvent.KEY, mouseDownHandler);
     assertEquals(1, registry.getHandlerCount(MouseDownEvent.KEY));
     registry.removeHandler(MouseDownEvent.KEY, mouseDownHandler);

@@ -17,64 +17,100 @@ package com.google.gwt.gen2.event.shared;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.event.shared.AbstractEvent.Key;
-import com.google.gwt.gen2.event.shared.HandlerRegistry.JSHandlerRegistry;
-import com.google.gwt.gen2.event.shared.HandlerRegistry.JavaHandlerRegistry;
 
 /**
- * Manages a type-safe map of event keys to event handlers.
+ * Manager responsible for adding handlers to events and firing those handlers
+ * on the given events.
  */
 public class HandlerManager {
-
-  private static HandlerRegistry pickRegistry() {
-    // TODO(ECC) once fully debugged, should use java mode for hosted mode.
-    if (GWT.isClient()) {
-      return new JSHandlerRegistry();
-    } else {
-      return new JavaHandlerRegistry();
-    }
-  }
-
-  private final HandlerRegistry registry;
-
+  // TODO(ECC) once fully vetted, we should use java mode for hosted mode.
+  private static final boolean useJs = GWT.isClient();
+  private final JsHandlerRegistry javaScriptRegistry;
+  private final JavaHandlerRegistry javaRegistry;
   private final Object source;
 
   public HandlerManager(Object source) {
-    this(source, pickRegistry());
-  }
-
-  public HandlerManager(Object source, HandlerRegistry registry) {
-    this.registry = registry;
+    if (useJs) {
+      javaScriptRegistry = JsHandlerRegistry.create();
+      javaRegistry = null;
+    } else {
+      javaRegistry = new JavaHandlerRegistry();
+      javaScriptRegistry = null;
+    }
     this.source = source;
   }
 
+  /**
+   * Adds a handler to this registry.
+   * 
+   * @param <T> The type of handler.
+   * @param key the event key associated with this handler
+   * @param handler the handler
+   * @return the handler registration, can be stored in order to remove the
+   *         handler later.
+   */
   public <T extends EventHandler> HandlerRegistration addHandler(
       AbstractEvent.Key<T> key, final T handler) {
-    registry.addHandler(key, handler);
+    if (useJs) {
+      javaScriptRegistry.addHandler(key, handler);
+    } else {
+      javaRegistry.addHandler(key, handler);
+    }
     return new HandlerRegistration(this, key, handler);
   }
 
+  /**
+   * Fires the given event to the handlers listening to the event's key.
+   * 
+   * @param event the event
+   */
   public void fireEvent(AbstractEvent event) {
-    Key key = event.getKey();
-    int count = registry.getHandlerCount(key);
     event.setSource(source);
-    for (int i = 0; i < count; i++) {
-      EventHandler handler = registry.getHandler(key, i);
-      event.fireEvent(handler);
+    if (useJs) {
+      javaScriptRegistry.fireEvent(event);
+    } else {
+      javaRegistry.fireEvent(event);
     }
   }
 
   /**
-   * Are their handlers in this manager listening to the given event key?
+   * Gets the number of handlers listening to the event key.
+   * 
+   * @param key the event key
+   * @return the number of registered handlers
+   */
+  public int getHandlerCount(Key key) {
+    if (useJs) {
+      return javaScriptRegistry.getHandlerCount(key);
+    } else {
+      return javaRegistry.getHandlerCount(key);
+    }
+  }
+
+  /**
+   * Are there handlers in this manager listening to the given event key?
    * 
    * @param key the event key
    * @return are handlers listening
    */
   public boolean isEventHandled(Key key) {
-    return registry.getHandlerCount(key) > 0;
+    return getHandlerCount(key) > 0;
   }
 
-  // Overridable by subclasses.
-  protected void removeHandler(Key key, EventHandler handler) {
-    registry.removeHandler(key, handler);
+  /**
+   * Removes the given handler from the specified event key. Normally,
+   * applications should call {@link HandlerRegistration#removeHandler()}
+   * instead. This method is provided primary to support deprecated APIS.
+   * 
+   * @param key the event key
+   * @param handler the handler
+   */
+  public <T extends EventHandler> void removeHandler(AbstractEvent.Key<T> key,
+      final T handler) {
+    if (useJs) {
+      javaScriptRegistry.removeHandler(key, handler);
+    } else {
+      javaRegistry.removeHandler(key, handler);
+    }
   }
 }

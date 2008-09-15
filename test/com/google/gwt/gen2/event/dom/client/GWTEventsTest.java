@@ -51,15 +51,15 @@ public class GWTEventsTest extends Gen2TestBase {
         });
 
     HandlerRegistration pressRegistration = manager.addHandler(
-        KeyPressedEvent.KEY, new KeyPressedHandler() {
-          public void onKeyPressed(KeyPressedEvent event) {
+        KeyPressEvent.KEY, new KeyPressHandler() {
+          public void onKeyPressed(KeyPressEvent event) {
             flag.flag = true;
           }
         });
 
     checkFire(new KeyDownEvent(null), downRegistration, flag, "onKeyDown");
     checkFire(new KeyUpEvent(null), upRegistration, flag, "onKeyUp");
-    checkFire(new KeyPressedEvent(null), pressRegistration, flag,
+    checkFire(new KeyPressEvent(null), pressRegistration, flag,
         "onKeyPressed");
   }
 
