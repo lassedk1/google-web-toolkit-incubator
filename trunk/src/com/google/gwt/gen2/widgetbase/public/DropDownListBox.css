@@ -3,6 +3,7 @@
  */
 .gwt-DropDownListBox-listBox {
   background-color: #efefef;
+  border: 1px dotted gray;
 }
 
 .gwt-DropDownListBox {
