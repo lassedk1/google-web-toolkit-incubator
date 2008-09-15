@@ -193,6 +193,7 @@
           <pathelement location="${gwt.user.jar}" />
           <pathelement location="${gwt.dev.jar}" />
           <pathelement location="${gwt.tools.lib}/junit/junit-3.8.1.jar" />
+          <pathelement location="${gwt.tools.lib}/selenium/selenium-java-client-driver.jar" />
           <extraclasspaths />
         </classpath>
 
