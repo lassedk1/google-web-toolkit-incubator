@@ -18,13 +18,14 @@ package com.google.gwt.gen2.event.dom.client;
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
-  * Handler interface for {@link MouseOverEvent} events. 
-  */
+ * Handler interface for {@link MouseOverEvent} events.
+ */
 public interface MouseOverHandler extends EventHandler {
 
   /**
-    * Called when MouseOverEvent is fired.
-    * @param event the {@link MouseOverEvent} that was fired
-    */
+   * Called when MouseOverEvent is fired.
+   * 
+   * @param event the {@link MouseOverEvent} that was fired
+   */
   void onMouseOver(MouseOverEvent event);
 }

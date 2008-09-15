@@ -15,47 +15,38 @@
  */
 package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 /**
- * Represents a ClickEvent event.
+ * Represents a native click event.
  */
-public class ClickEvent extends MouseEvent<ClickHandler> {
+public class ClickEvent extends  DomEvent<ClickHandler> {
 
-  /**
-   * A widget that implements this interface is a public source of ClickEvent
-   * events.
-   */
-  public static interface Source {
-
-    /**
-     * Adds a {@link ClickEvent} handler.
-     * 
-     * @param handler the handler
-     */
-    HandlerRegistration addClickHandler(ClickHandler handler);
-  }
-
-  public static Key<ClickHandler> KEY = new Key<ClickHandler>(
-      BrowserEvents.ONCLICK);
+ 
+  public static final Key<ClickHandler> KEY = new Key<ClickHandler>(
+      NativeEventType.ONCLICK);
 
   /**
    * Constructs a ClickEvent event.
    * 
-   * @param e An event object, typically from an onBrowserEvent call
+   * @param nativeEvent the native event object wrapped by this event
    */
   public ClickEvent(Event e) {
-    super(KEY, e);
+    super(e);
   }
-
+  
   /**
-   * Fires a ClickEvent.
+   * Fires a {@link ClickEvent}.
    * 
    * @param handler the handler
    */
   @Override
   protected void fireEvent(ClickHandler handler) {
     handler.onClick(this);
+  }
+
+  @Override
+  protected Key getKey() {
+    return KEY;
   }
 }

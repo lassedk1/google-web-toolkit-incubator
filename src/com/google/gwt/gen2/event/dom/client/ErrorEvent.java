@@ -16,44 +16,37 @@
 package com.google.gwt.gen2.event.dom.client;
 
 import com.google.gwt.user.client.Event;
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 
 /**
-  * Represents a ErrorEvent event.
-  */
-public class ErrorEvent extends BrowserEvent<ErrorHandler> {
+ * Represents a native error event.
+ */
+public class ErrorEvent extends  DomEvent<ErrorHandler> {
+
+ 
+  public static final Key<ErrorHandler> KEY = new Key<ErrorHandler>(
+      NativeEventType.ONERROR);
 
   /**
-   * A widget that implements this interface is a public source of ErrorEvent
-   * events.
+   * Constructs a ErrorEvent event.
+   * 
+   * @param nativeEvent the native event object wrapped by this event
    */
-  public static interface Source {
-
-    /**
-     * Adds a {@link ErrorHandler} handler.
-     *
-     * @param handler the handler
-     */
-    HandlerRegistration addErrorHandler(ErrorHandler handler);
-  }
-
-  public static Key<ErrorHandler> KEY = new Key<ErrorHandler>(
-      BrowserEvents.ONERROR);
-
-  /**
-    * Constructs a ErrorEvent event.
-    * @param e An event object, typically from an onBrowserEvent call
-    */
   public ErrorEvent(Event e) {
-    super(KEY, e);
+    super(e);
   }
-
+  
   /**
-    * Fires a ErrorEvent.
-    * @param handler the handler
-    */
+   * Fires a {@link ErrorEvent}.
+   * 
+   * @param handler the handler
+   */
   @Override
   protected void fireEvent(ErrorHandler handler) {
     handler.onError(this);
+  }
+
+  @Override
+  protected Key getKey() {
+    return KEY;
   }
 }

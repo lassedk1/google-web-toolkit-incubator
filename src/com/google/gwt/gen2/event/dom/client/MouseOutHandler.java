@@ -18,13 +18,14 @@ package com.google.gwt.gen2.event.dom.client;
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
-  * Handler interface for {@link MouseOutEvent} events. 
-  */
+ * Handler interface for {@link MouseOutEvent} events.
+ */
 public interface MouseOutHandler extends EventHandler {
 
   /**
-    * Called when MouseOutEvent is fired.
-    * @param event the {@link MouseOutEvent} that was fired
-    */
+   * Called when MouseOutEvent is fired.
+   * 
+   * @param event the {@link MouseOutEvent} that was fired
+   */
   void onMouseOut(MouseOutEvent event);
 }

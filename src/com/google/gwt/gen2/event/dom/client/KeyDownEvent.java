@@ -16,44 +16,37 @@
 package com.google.gwt.gen2.event.dom.client;
 
 import com.google.gwt.user.client.Event;
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 
 /**
-  * Represents a KeyDownEvent event.
-  */
-public class KeyDownEvent extends KeyboardEvent<KeyDownHandler> {
+ * Represents a native key down event.
+ */
+public class KeyDownEvent extends  KeyboardEvent<KeyDownHandler> {
+
+ 
+  public static final Key<KeyDownHandler> KEY = new Key<KeyDownHandler>(
+      NativeEventType.ONKEYDOWN);
 
   /**
-   * A widget that implements this interface is a public source of KeyDownEvent
-   * events.
+   * Constructs a KeyDownEvent event.
+   * 
+   * @param nativeEvent the native event object wrapped by this event
    */
-  public static interface Source {
-
-    /**
-     * Adds a {@link KeyDownEvent} handler.
-     *
-     * @param handler the handler
-     */
-    HandlerRegistration addKeyDownHandler(KeyDownHandler handler);
-  }
-
-  public static Key<KeyDownHandler> KEY = new Key<KeyDownHandler>(
-      BrowserEvents.ONKEYDOWN);
-
-  /**
-    * Constructs a KeyDownEvent event.
-    * @param e An event object, typically from an onBrowserEvent call
-    */
   public KeyDownEvent(Event e) {
-    super(KEY, e);
+    super(e);
   }
-
+  
   /**
-    * Fires a KeyDownEvent.
-    * @param handler the handler
-    */
+   * Fires a {@link KeyDownEvent}.
+   * 
+   * @param handler the handler
+   */
   @Override
   protected void fireEvent(KeyDownHandler handler) {
     handler.onKeyDown(this);
+  }
+
+  @Override
+  protected Key getKey() {
+    return KEY;
   }
 }

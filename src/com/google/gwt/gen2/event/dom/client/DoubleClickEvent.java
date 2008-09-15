@@ -15,41 +15,38 @@
  */
 package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 /**
-  * Represents a DoubleClickEvent event.
-  */
-public class DoubleClickEvent extends MouseEvent<DoubleClickHandler> {
+ * Represents a native double click event.
+ */
+public class DoubleClickEvent extends  DomEvent<DoubleClickHandler> {
+
+ 
+  public static final Key<DoubleClickHandler> KEY = new Key<DoubleClickHandler>(
+      NativeEventType.ONDOUBLECLICK);
 
   /**
-   * A widget that implements this interface is a public source of DoubleClickEvent
-   * events.
+   * Constructs a DoubleClickEvent event.
+   * 
+   * @param nativeEvent the native event object wrapped by this event
    */
-  public static interface Source {
-
-    /**
-     * Adds a {@link DoubleClickHandler} handler.
-     *
-     * @param handler the handler
-     */
-    HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler);
-  }
-
-  public static Key<DoubleClickHandler> KEY = new Key<DoubleClickHandler>(
-      BrowserEvents.ONDBLCLICK);
-
   public DoubleClickEvent(Event e) {
-    super(KEY, e);
+    super(e);
   }
-
+  
   /**
-    * Fires a DoubleClickEvent.
-    * @param handler the handler
-    */
+   * Fires a {@link DoubleClickEvent}.
+   * 
+   * @param handler the handler
+   */
   @Override
   protected void fireEvent(DoubleClickHandler handler) {
     handler.onDoubleClick(this);
+  }
+
+  @Override
+  protected Key getKey() {
+    return KEY;
   }
 }

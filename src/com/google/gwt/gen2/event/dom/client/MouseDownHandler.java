@@ -18,13 +18,14 @@ package com.google.gwt.gen2.event.dom.client;
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
-  * Handler interface for {@link MouseDownEvent} events. 
-  */
+ * Handler interface for {@link MouseDownEvent} events.
+ */
 public interface MouseDownHandler extends EventHandler {
 
   /**
-    * Called when MouseDown is fired.
-    * @param event the {@link MouseDownEvent} that was fired
-    */
+   * Called when MouseDown is fired.
+   * 
+   * @param event the {@link MouseDownEvent} that was fired
+   */
   void onMouseDown(MouseDownEvent event);
 }

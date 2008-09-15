@@ -15,45 +15,38 @@
  */
 package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 /**
-  * Represents a MouseOutEvent event.
-  */
-public class MouseOutEvent extends MouseEvent<MouseOutHandler> {
+ * Represents a native mouse out event.
+ */
+public class MouseOutEvent extends  MouseEvent<MouseOutHandler> {
+
+ 
+  public static final Key<MouseOutHandler> KEY = new Key<MouseOutHandler>(
+      NativeEventType.ONMOUSEOUT);
 
   /**
-   * A widget that implements this interface is a public source of MouseOutEvent
-   * events.
+   * Constructs a MouseOutEvent event.
+   * 
+   * @param nativeEvent the native event object wrapped by this event
    */
-  public static interface Source {
-
-    /**
-     * Adds a {@link MouseOutEvent} handler.
-     *
-     * @param handler the handler
-     */
-    HandlerRegistration addMouseOutHandler(MouseOutHandler handler);
-  }
-
-  public static Key<MouseOutHandler> KEY = new Key<MouseOutHandler>(
-      BrowserEvents.ONMOUSEOUT);
-
-  /**
-    * Constructs a MouseOutEvent event.
-    * @param e An event object, typically from an onBrowserEvent call
-    */
   public MouseOutEvent(Event e) {
-    super(KEY, e);
+    super(e);
   }
-
+  
   /**
-    * Fires a MouseOutEvent.
-    * @param handler the handler
-    */
+   * Fires a {@link MouseOutEvent}.
+   * 
+   * @param handler the handler
+   */
   @Override
   protected void fireEvent(MouseOutHandler handler) {
     handler.onMouseOut(this);
+  }
+
+  @Override
+  protected Key getKey() {
+    return KEY;
   }
 }

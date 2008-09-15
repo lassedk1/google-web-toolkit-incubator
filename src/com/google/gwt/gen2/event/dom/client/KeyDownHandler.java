@@ -18,12 +18,13 @@ package com.google.gwt.gen2.event.dom.client;
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
-  * Handler interface for {@link KeyDownEvent} events. 
-  */
+ * Handler interface for {@link KeyDownEvent} events.
+ */
 public interface KeyDownHandler extends EventHandler {
   /**
-    * Called when KeyDownEvent is fired.
-    * @param event the {@link KeyDownEvent} that was fired
-    */
+   * Called when KeyDownEvent is fired.
+   * 
+   * @param event the {@link KeyDownEvent} that was fired
+   */
   void onKeyDown(KeyDownEvent event);
 }

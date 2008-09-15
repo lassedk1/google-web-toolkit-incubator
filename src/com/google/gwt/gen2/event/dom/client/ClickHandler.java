@@ -18,13 +18,14 @@ package com.google.gwt.gen2.event.dom.client;
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
-  * Handler interface for {@link ClickEvent} events. 
-  */
+ * Handler for {@link ClickEvent} events.
+ */
 public interface ClickHandler extends EventHandler {
   /**
-    * Called when ClickEvent is fired.
-    * @param event the {@link ClickEvent} that was fired
-    */
+   * Called when a native click event is fired.
+   * 
+   * @param event the {@link ClickEvent} that was fired
+   */
   void onClick(ClickEvent event);
-  
+
 }

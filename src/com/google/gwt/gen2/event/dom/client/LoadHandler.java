@@ -18,13 +18,14 @@ package com.google.gwt.gen2.event.dom.client;
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
-  * Handler interface for {@link LoadEvent} events. 
-  */
+ * Handler interface for {@link LoadEvent} events.
+ */
 public interface LoadHandler extends EventHandler {
 
   /**
-    * Called when LoadEvent is fired.
-    * @param event the {@link LoadEvent} that was fired
-    */
+   * Called when LoadEvent is fired.
+   * 
+   * @param event the {@link LoadEvent} that was fired
+   */
   void onLoad(LoadEvent event);
 }

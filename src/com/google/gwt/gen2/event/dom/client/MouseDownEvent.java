@@ -15,47 +15,38 @@
  */
 package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 /**
- * Represents a MouseDownEvent event.
+ * Represents a native mouse down event.
  */
-public class MouseDownEvent extends MouseEvent<MouseDownHandler> {
+public class MouseDownEvent extends  MouseEvent<MouseDownHandler> {
 
-  /**
-   * A widget that implements this interface is a public source of
-   * MouseDownEvent events.
-   */
-  public static interface Source {
-
-    /**
-     * Adds a {@link MouseDownEvent} handler.
-     *
-     * @param handler the handler
-     */
-    HandlerRegistration addMouseDownHandler(MouseDownHandler handler);
-  }
-
-  public static Key<MouseDownHandler> KEY = new Key<MouseDownHandler>(
-      BrowserEvents.ONMOUSEDOWN);
+ 
+  public static final Key<MouseDownHandler> KEY = new Key<MouseDownHandler>(
+      NativeEventType.ONMOUSEDOWN);
 
   /**
    * Constructs a MouseDownEvent event.
-   *
-   * @param e An event object, typically from an onBrowserEvent call
+   * 
+   * @param nativeEvent the native event object wrapped by this event
    */
   public MouseDownEvent(Event e) {
-    super(KEY, e);
+    super(e);
   }
-
+  
   /**
-   * Fires a MouseDownEvent.
-   *
+   * Fires a {@link MouseDownEvent}.
+   * 
    * @param handler the handler
    */
   @Override
   protected void fireEvent(MouseDownHandler handler) {
     handler.onMouseDown(this);
+  }
+
+  @Override
+  protected Key getKey() {
+    return KEY;
   }
 }

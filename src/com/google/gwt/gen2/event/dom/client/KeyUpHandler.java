@@ -24,7 +24,7 @@ public interface KeyUpHandler extends EventHandler {
 
   /**
    * Called when KeyUpEvent is fired.
-   *
+   * 
    * @param event the {@link KeyUpEvent} that was fired
    */
   void onKeyUp(KeyUpEvent event);

@@ -15,42 +15,38 @@
  */
 package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 /**
- * Represents a ChangeEvent event.
+ * Represents a native change event.
  */
-public class ChangeEvent extends BrowserEvent<ChangeHandler> {
+public class ChangeEvent extends  DomEvent<ChangeHandler> {
+
+ 
+  public static final Key<ChangeHandler> KEY = new Key<ChangeHandler>(
+      NativeEventType.ONCHANGE);
 
   /**
-   * A widget that implements this interface is a public source of ChangeEvent
-   * events.
+   * Constructs a ChangeEvent event.
+   * 
+   * @param nativeEvent the native event object wrapped by this event
    */
-  public static interface Source {
-
-    /**
-     * Adds a {@link ChangeEvent} handler.
-     *
-     * @param handler the handler
-     */
-    HandlerRegistration addChangeHandler(ChangeHandler handler);
-  }
-
-  public static Key<ChangeHandler> KEY = new Key<ChangeHandler>(
-      BrowserEvents.ONCHANGE);
-
   public ChangeEvent(Event e) {
-    super(KEY, e);
+    super(e);
   }
-
+  
   /**
-   * Fires a ChangeEvent.
-   *
+   * Fires a {@link ChangeEvent}.
+   * 
    * @param handler the handler
    */
   @Override
   protected void fireEvent(ChangeHandler handler) {
     handler.onChange(this);
+  }
+
+  @Override
+  protected Key getKey() {
+    return KEY;
   }
 }

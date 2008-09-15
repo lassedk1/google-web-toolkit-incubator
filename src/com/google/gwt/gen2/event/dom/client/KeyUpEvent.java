@@ -16,44 +16,37 @@
 package com.google.gwt.gen2.event.dom.client;
 
 import com.google.gwt.user.client.Event;
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 
 /**
-  * Represents a KeyUpEvent event.
-  */
-public class KeyUpEvent extends KeyboardEvent<KeyUpHandler> {
+ * Represents a native key up event.
+ */
+public class KeyUpEvent extends  KeyboardEvent<KeyUpHandler> {
+
+ 
+  public static final Key<KeyUpHandler> KEY = new Key<KeyUpHandler>(
+      NativeEventType.ONKEYUP);
 
   /**
-   * A widget that implements this interface is a public source of KeyUpEvent
-   * events.
+   * Constructs a KeyUpEvent event.
+   * 
+   * @param nativeEvent the native event object wrapped by this event
    */
-  public static interface Source {
-
-    /**
-     * Adds a {@link KeyUpEvent} handler.
-     *
-     * @param handler the handler
-     */
-    HandlerRegistration addKeyUpHandler(KeyUpHandler handler);
-  }
-
-  public static Key<KeyUpHandler> KEY = new Key<KeyUpHandler>(
-      BrowserEvents.ONKEYUP);
-
-  /**
-    * Constructs a KeyUpEvent event.
-    * @param e An event object, typically from an onBrowserEvent call
-    */
   public KeyUpEvent(Event e) {
-    super(KEY, e);
+    super(e);
   }
-
+  
   /**
-    * Fires a KeyUpEvent.
-    * @param handler the handler
-    */
+   * Fires a {@link KeyUpEvent}.
+   * 
+   * @param handler the handler
+   */
   @Override
   protected void fireEvent(KeyUpHandler handler) {
     handler.onKeyUp(this);
+  }
+
+  @Override
+  protected Key getKey() {
+    return KEY;
   }
 }
