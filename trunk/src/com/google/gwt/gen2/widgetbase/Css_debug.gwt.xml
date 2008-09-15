@@ -22,7 +22,7 @@
 	-->
 <module>
 	<inherits name="com.google.gwt.gen2.widgetbase._Resources" />
-	<inherits name="com.google.gwt.gen2.widgetbase.DisableDefaultCss" />
+	<inherits name="com.google.gwt.gen2.widgetbase.Css_disableDefault" />
 	<stylesheet src='DropDownListBox.css' />
 	<stylesheet src='ToggleButton.css' />
 </module>
