@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.event.virtual.shared;
 /**
- * TODO
+ * TODO(cromwellian).
  */
 public class VScrollEvent extends VirtualEvent<VScrollHandler> {
 
@@ -25,6 +25,7 @@ public class VScrollEvent extends VirtualEvent<VScrollHandler> {
     super(KEY, data);
   }
 
+  @Override
   protected void fireEvent(VScrollHandler handler) {
     handler.onScroll(this);
   }

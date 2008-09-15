@@ -28,6 +28,7 @@ public abstract class VKeyboardEvent<T extends EventHandler>
     super(key, eventData);
   }
 
+  @Override
   public HasKeyboardData getEventData() {
     return (HasKeyboardData) super.getEventData();
   }

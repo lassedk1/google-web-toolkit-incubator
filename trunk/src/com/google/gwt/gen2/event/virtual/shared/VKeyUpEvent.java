@@ -15,18 +15,17 @@
  */
 package com.google.gwt.gen2.event.virtual.shared;
 /**
- * TODO
+ * TODO(cromwellian).
  */
 public class VKeyUpEvent extends VKeyboardEvent<VKeyUpHandler> {
 
   public static Key<VKeyUpHandler> KEY = new Key<VKeyUpHandler>();
-
-  private EventData data;
-
+ 
   public VKeyUpEvent(EventData data) {
     super(KEY, data);
   }
 
+  @Override
   protected void fireEvent(VKeyUpHandler handler) {
     handler.onKeyUp(this);
   }

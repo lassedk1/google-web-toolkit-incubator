@@ -18,7 +18,7 @@ package com.google.gwt.gen2.event.virtual.shared;
 import com.google.gwt.gen2.event.dom.client.MouseWheelHandler;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 /**
- * TODO
+ * TODO(cromwellian).
  */
 public class VMouseWheelEvent extends VMouseEvent<VMouseWheelHandler> {
 
@@ -56,6 +56,7 @@ public class VMouseWheelEvent extends VMouseEvent<VMouseWheelHandler> {
     return getEventData().getMouseWheelVelocityY();
   }
 
+  @Override
   protected void fireEvent(VMouseWheelHandler handler) {
     handler.onMouseWheel(this);
   }

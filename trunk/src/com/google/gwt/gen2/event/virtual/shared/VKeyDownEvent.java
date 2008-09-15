@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.event.virtual.shared;
 /**
- * TODO
+ * TODO(cromwellian).
  */
 public class VKeyDownEvent extends VKeyboardEvent<VKeyDownHandler> {
 
@@ -25,6 +25,7 @@ public class VKeyDownEvent extends VKeyboardEvent<VKeyDownHandler> {
     super(KEY, data);
   }
 
+  @Override
   protected void fireEvent(VKeyDownHandler handler) {
     handler.onKeyDown(this);
   }

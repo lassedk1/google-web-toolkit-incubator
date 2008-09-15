@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.event.virtual.shared;
 /**
- * TODO
+ * TODO(cromwellian).
  */
 public class VMouseOutEvent extends VMouseEvent<VMouseOutHandler> {
 
@@ -25,6 +25,7 @@ public class VMouseOutEvent extends VMouseEvent<VMouseOutHandler> {
     super(KEY, data);
   }
 
+  @Override
   protected void fireEvent(VMouseOutHandler handler) {
     handler.onMouseOut(this);
   }

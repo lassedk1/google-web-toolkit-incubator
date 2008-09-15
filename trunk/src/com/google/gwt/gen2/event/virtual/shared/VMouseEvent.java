@@ -18,13 +18,13 @@ package com.google.gwt.gen2.event.virtual.shared;
 import com.google.gwt.gen2.event.shared.EventHandler;
 import com.google.gwt.user.client.Event;
 /**
- * TODO
+ * TODO(cromwellian).
  * @param <T> event handler type
  */
 public abstract class VMouseEvent<T extends EventHandler>
     extends VirtualEvent<T> {
   /**
-   * TODO
+   * TODO(cromwellian).
    */
   public enum Button {
 
@@ -70,6 +70,7 @@ public abstract class VMouseEvent<T extends EventHandler>
     return getEventData().getClientY();
   }
 
+  @Override
   public HasMouseData getEventData() {
     return (HasMouseData) super.getEventData();
   }

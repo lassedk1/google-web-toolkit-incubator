@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.event.virtual.shared;
 /**
- * TODO
+ * TODO(cromwellian).
  */
 public class VMouseUpEvent extends VMouseEvent<VMouseUpHandler> {
 
@@ -25,6 +25,7 @@ public class VMouseUpEvent extends VMouseEvent<VMouseUpHandler> {
     super(KEY, data);
   }
 
+  @Override
   protected void fireEvent(VMouseUpHandler handler) {
     handler.onMouseUp(this);
   }
