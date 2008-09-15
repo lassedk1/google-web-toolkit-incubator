@@ -23,9 +23,9 @@ import com.google.gwt.libideas.resources.client.CssResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 
 /**
- * Helper class to allow widgets to manage their css info.
+ * Helper class to allow developers to easily inject css for their widgets.
  */
-public class Gen2CssInfo {
+public class Gen2CssInjector {
   /**
    * CSS resources for all gen2 widgets.
    */
