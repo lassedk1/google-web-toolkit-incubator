@@ -14,53 +14,36 @@
  * the License.
  */
 
-package com.google.gwt.gen2.event.shared;
+package com.google.gwt.gen2.event.logical.shared;
+
+import com.google.gwt.gen2.event.shared.AbstractEvent;
 
 /**
- * This synthetic event is called after a value has been selected.
+ * Logical event fired after the widget has selected a value.
  * 
- * @param <Value> the type of value being updated.
+ * @param <Value> the type of value the widget has selected
  */
 public class SelectionEvent<Value> extends
     AbstractEvent<SelectionHandler<Value>> {
-  /**
-   * Convenience interface used to supply default add handler method.
-   * 
-   */
-  public static interface Source<ValueType> {
-    /**
-     * Adds a new selection handler
-     * 
-     * @param handler handler
-     * @return the handler registration
-     */
-    HandlerRegistration addSelectionHandler(SelectionHandler<ValueType> handler);
-  }
 
   /**
    * The event key.
    */
-  public static Key<SelectionHandler> KEY = new Key<SelectionHandler>();
+  public static final Key<SelectionHandler> KEY = new Key<SelectionHandler>();
 
   private Value oldValue;
-
   private Value newValue;
 
   /**
    * Constructor.
    * 
-   * @param oldValue old value
-   * @param newValue new value
+   * @param oldValue the old value
+   * @param newValue the new value
    */
 
   public SelectionEvent(Value oldValue, Value newValue) {
     this.oldValue = oldValue;
     this.newValue = newValue;
-  }
-
-  @Override
-  public String getEventDetails() {
-    return super.getEventDetails() + " old = " + oldValue + " new =" + newValue;
   }
 
   /**
@@ -75,6 +58,11 @@ public class SelectionEvent<Value> extends
    */
   public Value getOldValue() {
     return oldValue;
+  }
+
+  @Override
+  public String toDebugString() {
+    return super.toDebugString() + " old = " + oldValue + " new =" + newValue;
   }
 
   @Override
