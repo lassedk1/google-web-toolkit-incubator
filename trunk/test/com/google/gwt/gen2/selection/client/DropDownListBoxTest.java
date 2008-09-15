@@ -18,9 +18,9 @@ package com.google.gwt.gen2.selection.client;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.gen2.base.client.Gen2TestBase;
-import com.google.gwt.gen2.event.shared.SelectionEvent;
-import com.google.gwt.gen2.event.shared.SelectionHandler;
-import com.google.gwt.gen2.widgetbase.client.Decorator;
+import com.google.gwt.gen2.commonwidget.client.Decorator;
+import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
+import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.DOM;
 
 /**

@@ -18,25 +18,28 @@ package com.google.gwt.gen2.event.shared;
 import com.google.gwt.gen2.event.shared.AbstractEvent.Key;
 
 /**
- * HandlerRegistration instances are returned by HandlerManager.addEventHandler()
- * and used to remove event handler registrations. Should be as vanilla as
- * possible, as we want it optimized out in the common case.
+ * HandlerRegistration instances are returned by
+ * HandlerManager.addEventHandler() and used to remove event handler
+ * registrations.
  */
 public class HandlerRegistration {
 
-  private HandlerManager target;
+  private HandlerManager manager;
 
   private EventHandler handler;
 
   private Key key;
 
   HandlerRegistration(HandlerManager target, Key key, EventHandler handler) {
-    this.target = target;
+    this.manager = target;
     this.handler = handler;
     this.key = key;
   }
 
+  /**
+   * Removes the given handler from its manager.
+   */
   public void removeHandler() {
-    target.removeHandler(key, handler);
+    manager.removeHandler(key, handler);
   }
 }
