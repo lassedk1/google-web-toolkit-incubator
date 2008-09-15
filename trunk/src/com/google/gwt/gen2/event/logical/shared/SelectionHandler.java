@@ -14,14 +14,20 @@
  * the License.
  */
 
-package com.google.gwt.gen2.event.shared;
+package com.google.gwt.gen2.event.logical.shared;
+
+import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
- * Event handler for when the widget's about to show its contents.
+ * Handler for {@link SelectionEvent} events.
+ * 
+ * @param <Value> type of the selected value
  */
-public interface BeforeShowHandler extends EventHandler {
+public interface SelectionHandler<Value> extends EventHandler {
   /**
-   * Fired before the widget's contents is shown.
+   * Fired once a value has been selected
+   * 
+   * @param event the event
    */
-  void beforeShow(BeforeShowEvent event);
+  void onSelection(SelectionEvent<Value> event);
 }

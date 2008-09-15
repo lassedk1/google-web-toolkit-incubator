@@ -14,10 +14,12 @@
  * the License.
  */
 
-package com.google.gwt.gen2.event.shared;
+package com.google.gwt.gen2.event.logical.shared;
+
+import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
- * Event handler for when the widget's just hidden its contents.
+ * Receives events of type {@link AfterHideEvent}.
  */
 public interface AfterHideHandler extends EventHandler {
   /**

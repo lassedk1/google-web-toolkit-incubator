@@ -14,36 +14,28 @@
  * the License.
  */
 
-package com.google.gwt.gen2.event.shared;
+package com.google.gwt.gen2.event.logical.shared;
+
+import com.google.gwt.gen2.event.shared.AbstractEvent;
 
 /**
- * This synthetic event that is called after a widget hides its contents.
+ * Logical event called before a widget shows its contents.
  */
-public class AfterHideEvent extends AbstractEvent<AfterHideHandler> {
-  /**
-   * Convenience interface used to supply default add handler method.
-   */
-  public static interface Source {
-    /**
-     * Called after a widget hides its contents.
-     */
-    HandlerRegistration addAfterHideHandler(AfterHideHandler handler);
-  }
-
+public class BeforeShowEvent extends AbstractEvent<BeforeShowHandler> {
   /**
    * The event key.
    */
-  public static Key<AfterHideHandler> KEY = new Key<AfterHideHandler>();
+  public static final Key<BeforeShowHandler> KEY = new Key<BeforeShowHandler>();
 
   /**
    * Constructor.
    */
-  public AfterHideEvent() {
+  public BeforeShowEvent() {
   }
 
   @Override
-  protected void fireEvent(AfterHideHandler handler) {
-    handler.afterHide(this);
+  protected void fireEvent(BeforeShowHandler handler) {
+    handler.beforeShow(this);
   }
 
   @Override
