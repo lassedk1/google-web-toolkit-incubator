@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.gwt.gen2.widgetbase.client;
+package com.google.gwt.gen2.commonwidget.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
