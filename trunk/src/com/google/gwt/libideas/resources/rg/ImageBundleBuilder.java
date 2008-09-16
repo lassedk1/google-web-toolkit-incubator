@@ -38,63 +38,32 @@ import javax.imageio.ImageIO;
  * Accumulates state for the bundled image.
  */
 class ImageBundleBuilder {
-  public interface Arranger {
+  /**
+   * Abstracts the process of arranging a number of images into a composite
+   * image.
+   */
+  interface Arranger {
+    /**
+     * Determine the total area required to store a composite image.
+     */
     Size arrangeImages(Collection<? extends HasRect> rects);
 
+    /**
+     * Draw an image into a bounded canvas.
+     */
     void place(Size canvasSize, Graphics2D canvas, ImageRect imageRect);
   }
 
   /**
-   * The rectangle at which the original image is placed into the composite
-   * image.
+   * Arranges the images to try to decrease the overall area of the resulting
+   * bundle. This uses a strategy that is basically Next-Fit Decreasing Height
+   * Decreasing Width (NFDHDW). The rectangles to be packed are sorted in
+   * decreasing order by height. The tallest rectangle is placed at the far
+   * left. We attempt to stack the remaining rectangles on top of one another to
+   * construct as many columns as necessary. After finishing each column, we
+   * also attempt to do some horizontal packing to fill up the space left due to
+   * widths of rectangles differing in the column.
    */
-  public static class ImageRect implements HasRect {
-
-    private final String name;
-    private final int height, width;
-    private final BufferedImage image;
-    private int left, top;
-
-    private boolean hasBeenPositioned;
-
-    public ImageRect(String name, BufferedImage image) {
-      this.name = name;
-      this.image = image;
-      this.width = image.getWidth();
-      this.height = image.getHeight();
-    }
-
-    public int getHeight() {
-      return height;
-    }
-
-    public int getLeft() {
-      return left;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public int getTop() {
-      return top;
-    }
-
-    public int getWidth() {
-      return width;
-    }
-
-    public boolean hasBeenPositioned() {
-      return hasBeenPositioned;
-    }
-
-    public void setPosition(int left, int top) {
-      hasBeenPositioned = true;
-      this.left = left;
-      this.top = top;
-    }
-  }
-
   static class BestFitArranger implements Arranger {
     private static final Comparator<HasRect> decreasingHeightComparator = new Comparator<HasRect>() {
       public int compare(HasRect a, HasRect b) {
@@ -114,16 +83,6 @@ class ImageBundleBuilder {
       }
     };
 
-    /**
-     * Arranges the images to try to decrease the overall area of the resulting
-     * bundle. This uses a strategy that is basically Next-Fit Decreasing Height
-     * Decreasing Width (NFDHDW). The rectangles to be packed are sorted in
-     * decreasing order by height. The tallest rectangle is placed at the far
-     * left. We attempt to stack the remaining rectangles on top of one another
-     * to construct as many columns as necessary. After finishing each column,
-     * we also attempt to do some horizontal packing to fill up the space left
-     * due to widths of rectangles differing in the column.
-     */
     public Size arrangeImages(Collection<? extends HasRect> rects) {
       if (rects.size() == 0) {
         return new Size(0, 0);
@@ -302,6 +261,57 @@ class ImageBundleBuilder {
   }
 
   /**
+   * The rectangle at which the original image is placed into the composite
+   * image.
+   */
+  static class ImageRect implements HasRect {
+
+    private final String name;
+    private final int height, width;
+    private final BufferedImage image;
+    private int left, top;
+
+    private boolean hasBeenPositioned;
+
+    public ImageRect(String name, BufferedImage image) {
+      this.name = name;
+      this.image = image;
+      this.width = image.getWidth();
+      this.height = image.getHeight();
+    }
+
+    public int getHeight() {
+      return height;
+    }
+
+    public int getLeft() {
+      return left;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public int getTop() {
+      return top;
+    }
+
+    public int getWidth() {
+      return width;
+    }
+
+    public boolean hasBeenPositioned() {
+      return hasBeenPositioned;
+    }
+
+    public void setPosition(int left, int top) {
+      hasBeenPositioned = true;
+      this.left = left;
+      this.top = top;
+    }
+  }
+
+  /**
    * Used to return the size of the resulting image from the method
    * {@link ImageBundleBuilder#arrangeImages()}.
    */
@@ -352,7 +362,10 @@ class ImageBundleBuilder {
   private static final String BUNDLE_MIME_TYPE = "image/png";
   private static final int IMAGE_MAX_SIZE = 256;
 
-  static int gcd(int a, int b) {
+  /**
+   * Compute the greatest common denominator of two numbers.
+   */
+  private static int gcd(int a, int b) {
     while (b != 0) {
       int t = b;
       b = a % b;
@@ -361,7 +374,13 @@ class ImageBundleBuilder {
     return a;
   }
 
-  static int lcm(int a, int b) {
+  /**
+   * Compute the least common multiple of two numbers. This is used by
+   * {@link HorizontalArranger} and {@link VerticalArranger} to determine how
+   * large the composite image should be to allow every image to line up when
+   * repeated.
+   */
+  private static int lcm(int a, int b) {
     return b / gcd(a, b) * a;
   }
 
@@ -374,6 +393,7 @@ class ImageBundleBuilder {
    * 
    * @param logger a hierarchical logger which logs to the hosted console
    * @param imageName the name of an image that can be found on the classpath
+   * @param resource the URL from which the image data wil be loaded
    * @throws UnableToCompleteException if the image with name
    *           <code>imageName</code> cannot be added to the master composite
    *           image
@@ -406,6 +426,16 @@ class ImageBundleBuilder {
     return imageNameToImageRectMap.remove(imageName);
   }
 
+  /**
+   * Write all images into the output.
+   * 
+   * @param logger a hierarchical logger which logs to the hosted console
+   * @param context the local ResourceContext that is being used to accumulate
+   *          output files
+   * @param arranger a provider of image layout logic
+   * @return a Java expression which will evaluate to the location of the
+   *         composite image at runtime
+   */
   public String writeBundledImage(TreeLogger logger, ResourceContext context,
       Arranger arranger) throws UnableToCompleteException {
 
