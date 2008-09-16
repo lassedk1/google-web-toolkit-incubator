@@ -206,6 +206,8 @@ public final class ResourceGeneratorUtil {
 
   /**
    * This performs the locale lookup function for a given resource name.
+   * It looks for resources on the context class loader; see
+   * {@link Thread#getContextClassLoader()}.
    * 
    * @param resourceName the string name of the desired resource
    * @param locale the locale of the current rebind permutation
@@ -214,7 +216,7 @@ public final class ResourceGeneratorUtil {
    */
   private static URL tryFindResource(String resourceName, String locale) {
     URL toReturn = null;
-    ClassLoader cl = ClassLoader.getSystemClassLoader();
+    ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
     // Look for locale-specific variants of individual resources
     if (locale != null) {

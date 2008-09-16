@@ -243,12 +243,12 @@ public class MakeBundle extends ToolBase {
   }
 
   /**
-   * Instantiate the ResourceOracle used to find resources in the classpath.
+   * Instantiate the ResourceOracle used to find resources via the context class
+   * loader.
    */
   private ResourceOracle createResourceOracle(TreeLogger logger) {
     logger = logger.branch(TreeLogger.DEBUG, "Creating ResourceOracle");
-    ResourceOracleImpl oracle = new ResourceOracleImpl(logger,
-        getClass().getClassLoader());
+    ResourceOracleImpl oracle = new ResourceOracleImpl(logger);
 
     PathPrefixSet pps = new PathPrefixSet();
     pps.add(new PathPrefix(packageName.replace('.', '/') + '/',
