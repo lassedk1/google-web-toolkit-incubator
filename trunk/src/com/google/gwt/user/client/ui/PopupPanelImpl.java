@@ -24,12 +24,10 @@ import com.google.gwt.user.client.ui.impl.PopupImpl;
  * Adaptor for incubator's DropDownPanel so DropDownPanel can get access to the
  * popup fields it needs..
  * 
- * <br/> For now, we have introduced PopupPanelOverride to allow
- * SuggestBoxOverride and DropDownListBox to work with gwt trunk and RC1. This
- * need will soon go away.
  * 
  */
-public class PopupPanelImpl extends PopupPanelOverride {
+public class PopupPanelImpl extends PopupPanel {
+
   /**
    * Creates a PopupAnimation.
    */
@@ -38,20 +36,28 @@ public class PopupPanelImpl extends PopupPanelOverride {
       super(panel);
     }
 
+    protected void clip(int top, int right, int bottom, int left) {
+      impl.setClip(getPanel().getElement(), getRectString(top, right, bottom,
+          left));
+    }
+
+    protected final native int getOffsetHeight()/*-{
+      return this.@com.google.gwt.user.client.ui.PopupPanel.ResizeAnimation::offsetHeight;
+    }-*/;
+
+    protected final native int getOffsetWidth()/*-{
+      return this.@com.google.gwt.user.client.ui.PopupPanel.ResizeAnimation::offsetWidth;
+    }-*/;
+
     /**
      * Returns the {@link PopupPanelOverride} associated with this animation.
      * 
      * @return the popup panel;
      */
 
-    public native PopupPanelImpl getPanel()/*-{
-      return this.@com.google.gwt.user.client.ui.PopupPanelOverride.ResizeAnimation::curPanel;
+    protected final native PopupPanelImpl getPanel()/*-{
+      return this.@com.google.gwt.user.client.ui.PopupPanel.ResizeAnimation::curPanel;
     }-*/;
-
-    protected void clip(int top, int left, int right, int bottom) {
-      impl.setClip(getPanel().getElement(), getRectString(top, right, bottom,
-          left));
-    }
 
     /**
      * Is the {@link PopupPanelOverride} being shown?
@@ -60,7 +66,7 @@ public class PopupPanelImpl extends PopupPanelOverride {
      */
 
     protected native boolean isShowing()/*-{
-      return this.@com.google.gwt.user.client.ui.PopupPanelOverride.ResizeAnimation::showing;
+      return this.@com.google.gwt.user.client.ui.PopupPanel.ResizeAnimation::showing;
     }-*/;
 
     /**
@@ -84,6 +90,16 @@ public class PopupPanelImpl extends PopupPanelOverride {
   public PopupPanelImpl(boolean autoHide) {
     super(autoHide);
   }
+
+  /**
+   * Is the {@link PopupPanelOverride} being shown?
+   * 
+   * @return whether the widget is being shown
+   */
+
+  protected native boolean isShowing()/*-{
+    return this.@com.google.gwt.user.client.ui.PopupPanel::showing;
+  }-*/;
 
   protected void setAnimation(PopupAnimation animation) {
     assert (this.isAttached() == false);
