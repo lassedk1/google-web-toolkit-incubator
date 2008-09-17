@@ -18,6 +18,7 @@ package com.google.gwt.gen2.widgetbase.client;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.WidgetAdaptorImpl;
 
 import java.util.Iterator;
 
@@ -32,14 +33,14 @@ public abstract class Gen2PanelComposite<PanelType extends Widget & HasWidgets>
   /**
    * Constructor.
    */
-  public Gen2PanelComposite(PanelType widget) {
-    initWidget(widget);
+  public Gen2PanelComposite() {
   }
 
   /**
    * Constructor.
    */
-  public Gen2PanelComposite() {
+  public Gen2PanelComposite(PanelType widget) {
+    initWidget(widget);
   }
 
   public void add(Widget w) {
@@ -56,5 +57,9 @@ public abstract class Gen2PanelComposite<PanelType extends Widget & HasWidgets>
 
   public boolean remove(Widget w) {
     return getWidget().remove(w);
+  }
+
+  protected final void adopt(Widget widget) {
+    WidgetAdaptorImpl.setParent(widget, this);
   }
 }
