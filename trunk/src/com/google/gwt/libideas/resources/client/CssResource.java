@@ -15,7 +15,7 @@
  */
 package com.google.gwt.libideas.resources.client;
 
-import com.google.gwt.libideas.resources.rebind.ResourceGeneratorType;
+import com.google.gwt.libideas.resources.ext.ResourceGeneratorType;
 import com.google.gwt.libideas.resources.rg.CssResourceGenerator;
 
 import java.lang.annotation.Documented;
@@ -38,17 +38,23 @@ import java.lang.annotation.Target;
  * Currently-supported rules:
  * 
  * <ul>
- * <li>{@code @def NAME literal-value; .myClass {background: NAME;}} Define a
+ * <li>{@code @def NAME literal-value; .myClass background: NAME;} Define a
  * static constant.</li>
- * <li>{@code @eval NAME Java-expression; .myClass {background: NAME;}} Define
- * a constant based on a Java expression.</li>
- * <li>{@code @if [!]property (list of values) {ruleBlock}} Include or exclude
- * CSS rules based on the value of a deferred-binding property.</li>
- * <li>{@code @if Java-expression {ruleBlock}} Include or exclude CSS rules
- * based on a boolean Java expression.</li>
- * <li>{@code @sprite .any .selector {gwt-image: "imageResourceFunction";}}.</li>
- * <li>{@code @url NAME siblingDataResource; .myClass {background: NAME repeat-x;}}
- * Use a DataResource to generate a <code>url('...'}</code> value.</li>
+ * <li>{@code @eval NAME Java-expression; .myClass background: NAME;} Define a
+ * constant based on a Java expression.</li>
+ * <li><code>{@literal @if} [!]property (list of values) {ruleBlock}</code> Include
+ * or exclude CSS rules based on the value of a deferred-binding property. Also
+ * {@code @elif} and {@code @else} follow the same pattern.</li>
+ * <li><code>{@literal @if} Java-expression {ruleBlock}</code> Include or exclude
+ * CSS rules based on a boolean Java expression.</li>
+ * <li>
+ * <code>{@literal @}sprite .any .selector {gwt-image: "imageResourceFunction";}</code>
+ * . The appearance, size, and height of the sprite will be affected by any
+ * {@link ImageResource.ImageOptions} annotations present on the related
+ * {@link ImageResource} accessor function. Additional properties may be
+ * specified in the rule block.</li>
+ * <li>{@code @url NAME siblingDataResource; .myClass background: NAME
+ * repeat-x;} Use a DataResource to generate a <code>url('...'}</code> value.</li>
  * </ul>
  * 
  * <p>
@@ -61,9 +67,9 @@ import java.lang.annotation.Target;
  * {@link com.google.gwt.core.client.GWT#create(Class)}.</li>
  * </ul>
  * 
- * @see <a
- *      href="http://code.google.com/p/google-web-toolkit-incubator/wiki/CssResource">
- *      CssResource design doc</a>
+ * @see <a href= *
+ *      "http://code.google.com/p/google-web-toolkit-incubator/wiki/CssResource"
+ *      * >CssResource design doc< /a>
  */
 @ResourceGeneratorType(CssResourceGenerator.class)
 public interface CssResource extends ResourcePrototype {
@@ -75,10 +81,9 @@ public interface CssResource extends ResourcePrototype {
    * <pre>
    * .some-non-java-ident { background: blue; }
    * 
-   * interface MyCssResource extends CssResource {
-   *   {@literal @}ClassName("some-non-java-ident")
-   *   String classAccessor();
+   * interface MyCssResource extends CssResource { {@literal @}ClassName("some-non-java-ident") String classAccessor();
    * }
+   * 
    * </pre>
    */
   @Documented

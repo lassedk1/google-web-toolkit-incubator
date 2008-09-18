@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.resources.rebind;
+package com.google.gwt.libideas.resources.rebind.context;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.ext.BadPropertyValueException;
@@ -30,6 +30,10 @@ import com.google.gwt.dev.generator.NameFactory;
 import com.google.gwt.dev.util.Util;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.libideas.resources.client.ResourcePrototype;
+import com.google.gwt.libideas.resources.ext.FieldAccumulator;
+import com.google.gwt.libideas.resources.ext.ResourceContext;
+import com.google.gwt.libideas.resources.ext.ResourceGenerator;
+import com.google.gwt.libideas.resources.ext.ResourceGeneratorType;
 import com.google.gwt.libideas.resources.rg.BundleResourceGenerator;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;

@@ -15,7 +15,7 @@
  */
 package com.google.gwt.libideas.resources.client;
 
-import com.google.gwt.libideas.resources.rebind.ResourceGeneratorType;
+import com.google.gwt.libideas.resources.ext.ResourceGeneratorType;
 import com.google.gwt.libideas.resources.rg.DataResourceGenerator;
 
 /**

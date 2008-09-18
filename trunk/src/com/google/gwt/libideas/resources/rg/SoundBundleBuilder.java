@@ -17,8 +17,8 @@ package com.google.gwt.libideas.resources.rg;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
-import com.google.gwt.libideas.resources.rebind.ResourceContext;
-import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
+import com.google.gwt.libideas.resources.ext.ResourceContext;
+import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 
 import com.anotherbigidea.flash.SWFConstants;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;

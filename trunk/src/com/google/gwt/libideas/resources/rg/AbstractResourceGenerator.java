@@ -13,11 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.resources.rebind;
+package com.google.gwt.libideas.resources.rg;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
+import com.google.gwt.libideas.resources.ext.FieldAccumulator;
+import com.google.gwt.libideas.resources.ext.ResourceContext;
+import com.google.gwt.libideas.resources.ext.ResourceGenerator;
+import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 
 /**
  * A base class providing common methods for ResourceGenerator implementations.

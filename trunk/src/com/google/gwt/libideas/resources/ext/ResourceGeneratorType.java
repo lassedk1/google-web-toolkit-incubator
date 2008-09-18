@@ -13,12 +13,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.resources.rebind;
+package com.google.gwt.libideas.resources.ext;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 
 /**
  * Specifies the implementation of ResourceGenerator to use for a type of
  * {@link com.google.gwt.libideas.resources.client.ResourcePrototype}.
  */
+@Target(ElementType.TYPE)
 public @interface ResourceGeneratorType {
   Class<? extends ResourceGenerator> value();
 }

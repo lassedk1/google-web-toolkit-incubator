@@ -28,7 +28,9 @@ import java.lang.reflect.Method;
  * code.
  * 
  * @param <T> The type of value on which the Transformer operates
+ * @deprecated with no replacement
  */
+@Deprecated
 public abstract class Transformer<T> {
 
   /**

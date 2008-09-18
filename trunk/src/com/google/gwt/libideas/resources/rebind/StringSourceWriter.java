@@ -26,6 +26,10 @@ import java.io.StringWriter;
  * {@link #toString()} method.
  */
 public class StringSourceWriter implements SourceWriter {
+  /*
+   * TODO(bobv): Move this type into a gwt.dev utility package.
+   */
+
   private final StringWriter buffer = new StringWriter();
   private int indentLevel = 0;
   private String indentPrefix = "";
