@@ -15,7 +15,7 @@
  */
 package com.google.gwt.libideas.resources.client;
 
-import com.google.gwt.libideas.resources.rebind.ResourceGeneratorType;
+import com.google.gwt.libideas.resources.ext.ResourceGeneratorType;
 import com.google.gwt.libideas.resources.rg.BundleResourceGenerator;
 
 import java.lang.annotation.ElementType;
@@ -31,14 +31,15 @@ import java.lang.annotation.Target;
  */
 @ResourceGeneratorType(BundleResourceGenerator.class)
 public interface ImmutableResourceBundle {
- 
-  
+  // TODO(bobv): Rename to ClientBundle
+
   /**
    * Specifies the classpath location of the resource or resources associated
    * with the {@link ResourcePrototype}.
    */
   @Target(ElementType.METHOD)
   public @interface Resource {
+    // TODO(bobv): Rename to @Source
     String[] value();
   }
 
@@ -46,7 +47,10 @@ public interface ImmutableResourceBundle {
    * Specifies a sequence of transformation to be applied to the resource. The
    * transformation may be a well-known short name or a fully-qualified class
    * name.
+   * 
+   * @deprecated with no replacement
    */
+  @Deprecated
   @Target(ElementType.METHOD)
   public @interface Transform {
     String[] value();
@@ -56,14 +60,15 @@ public interface ImmutableResourceBundle {
    * Find a resource by the name of the function in which it is declared.
    * 
    * @param name the name of the desired resource
-   * @return the resource, or <code>null</code> if no such resource is
-   *         defined.
+   * @return the resource, or <code>null</code> if no such resource is defined.
    */
+  // TODO(bobv): Move this to ClientBundleWithLookup
   ResourcePrototype getResource(String name);
 
   /**
    * A convenience method to iterate over all ResourcePrototypes contained in
    * the ResourceBundle.
    */
+  // TODO(bobv): Move this to ClientBundleWithLookup
   ResourcePrototype[] getResources();
 }

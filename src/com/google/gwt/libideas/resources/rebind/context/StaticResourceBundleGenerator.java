@@ -21,8 +21,7 @@ import com.google.gwt.core.ext.PropertyOracle;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
-import com.google.gwt.libideas.resources.rebind.AbstractResourceBundleGenerator;
-import com.google.gwt.libideas.resources.rebind.ResourceContext;
+import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.user.rebind.SourceWriter;
 
 /**

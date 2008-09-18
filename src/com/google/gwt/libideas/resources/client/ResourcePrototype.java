@@ -16,7 +16,7 @@
 package com.google.gwt.libideas.resources.client;
 
 /**
- * Encapsulates information about a particular resource.
+ * The base interface all bundle resource types must extend.
  */
 public interface ResourcePrototype {
   /**

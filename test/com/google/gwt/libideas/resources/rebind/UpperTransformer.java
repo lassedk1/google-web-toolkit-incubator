@@ -21,7 +21,7 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
  * Used by TextResourceText. Transformers are not guaranteed to be translatable,
  * so they exist outside of the client source-path.
  */
-class UpperTransformer extends Transformer<String> {
+public class UpperTransformer extends Transformer<String> {
   public String transform(JMethod method, String input) {
     return input.toUpperCase();
   }

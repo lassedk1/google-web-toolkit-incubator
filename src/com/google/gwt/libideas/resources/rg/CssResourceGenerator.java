@@ -56,9 +56,8 @@ import com.google.gwt.libideas.resources.css.ast.CssProperty.ExpressionValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.ListValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.StringValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.Value;
-import com.google.gwt.libideas.resources.rebind.AbstractResourceGenerator;
-import com.google.gwt.libideas.resources.rebind.ResourceContext;
-import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
+import com.google.gwt.libideas.resources.ext.ResourceContext;
+import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
 import com.google.gwt.user.rebind.SourceWriter;
 

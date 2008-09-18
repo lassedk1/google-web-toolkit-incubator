@@ -40,8 +40,7 @@ public class TextResourceTest extends LibTestBase {
     TextResource helloWorldUpper();
   }
 
-  // DISABLED_TEST
-  public void disabledTestExternal() throws ResourceException {
+  public void testExternal() throws ResourceException {
     final Resources r = GWT.create(Resources.class);
 
     ResourceCallback<TextResource> c = new ResourceCallback<TextResource>() {

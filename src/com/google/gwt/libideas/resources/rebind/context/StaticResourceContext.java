@@ -22,8 +22,7 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.dev.util.Util;
-import com.google.gwt.libideas.resources.rebind.AbstractResourceContext;
-import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
+import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 import com.google.gwt.user.rebind.SourceWriter;
 
 import java.io.IOException;

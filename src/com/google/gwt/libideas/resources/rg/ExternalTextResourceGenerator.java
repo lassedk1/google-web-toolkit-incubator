@@ -25,10 +25,9 @@ import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.dev.util.Util;
 import com.google.gwt.libideas.resources.client.TextResource;
 import com.google.gwt.libideas.resources.client.impl.ExternalTextResourcePrototype;
-import com.google.gwt.libideas.resources.rebind.AbstractResourceGenerator;
-import com.google.gwt.libideas.resources.rebind.FieldAccumulator;
-import com.google.gwt.libideas.resources.rebind.ResourceContext;
-import com.google.gwt.libideas.resources.rebind.ResourceGeneratorUtil;
+import com.google.gwt.libideas.resources.ext.FieldAccumulator;
+import com.google.gwt.libideas.resources.ext.ResourceContext;
+import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
 import com.google.gwt.user.rebind.SourceWriter;
 

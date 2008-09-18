@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.libideas.resources.rebind;
+package com.google.gwt.libideas.resources.ext;
 
 import com.google.gwt.core.ext.BadPropertyValueException;
 import com.google.gwt.core.ext.PropertyOracle;
@@ -22,6 +22,7 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle.Resource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle.Transform;
+import com.google.gwt.libideas.resources.rebind.Transformer;
 
 import java.net.URL;
 
@@ -45,7 +46,9 @@ public final class ResourceGeneratorUtil {
    * @param input the value to transform
    * @return the transformed value.
    * @throws UnableToCompleteException
+   * @deprecated with no replacement
    */
+  @Deprecated
   @SuppressWarnings("unchecked")
   public static <T> T applyTransformations(TreeLogger logger, JMethod method,
       Class<T> baseType, T input) throws UnableToCompleteException {
@@ -61,7 +64,7 @@ public final class ResourceGeneratorUtil {
         // Emit a deprecation warning about metadata:
         logger.log(TreeLogger.WARN, "Method " + method.getName() + " uses a "
             + "deprecated @gwt.transformer metadata annotation.  Convert to @"
-            + Transform.class.getName(), null);
+            + Transform.class.getName());
 
         int index = 0;
         for (String[] elt : md) {
@@ -71,7 +74,7 @@ public final class ResourceGeneratorUtil {
     }
 
     logger = logger.branch(TreeLogger.DEBUG,
-        "Applying transformations for method " + method.getName(), null);
+        "Applying transformations for method " + method.getName());
 
     try {
       // TODO Implement a short-name system
@@ -118,17 +121,59 @@ public final class ResourceGeneratorUtil {
   }
 
   /**
-   * Find all resources referenced by a method on the bundle.
+   * Find all resources referenced by a method in a bundle. The method's
+   * {@link Resource} annotation will be examined and the specified locations
+   * will be expanded into URLs by which they may be accessed on the local
+   * system.
+   * <p>
+   * This method is sensitive to the <code>locale</code> deferred-binding
+   * property and will attempt to use a best-match lookup by removing locale
+   * components.
+   * <p>
+   * The current Thread's context ClassLoader will be used to resolve resource
+   * locations. If it is necessary to alter the manner in which resources are
+   * resolved, use the overload that accepts an arbitrary ClassLoader.
    * 
-   * @param context
-   * @param method
-   * @return URLs for each resource annotation defined on the method.
+   * @param logger a TreeLogger that will be used to report errors or warnings
+   * @param context the ResourceContext in which the ResourceGenerator is
+   *          operating
+   * @param method the method to examine for {@link Resource} annotations
+   * @return URLs for each {@link Resource} annotation defined on the method.
    * @throws UnableToCompleteException if the method has no resource annotations
-   *           or ore or more of the resources could not be found
+   *           or ore or more of the resources could not be found. The error
+   *           will be reported via the <code>logger</code> provided to this
+   *           method
    */
   public static URL[] findResources(TreeLogger logger, ResourceContext context,
       JMethod method) throws UnableToCompleteException {
-    logger = logger.branch(TreeLogger.DEBUG, "Finding resources", null);
+    return findResources(logger,
+        Thread.currentThread().getContextClassLoader(), context, method);
+  }
+
+  /**
+   * Find all resources referenced by a method in a bundle. The method's
+   * {@link Resource} annotation will be examined and the specified locations
+   * will be expanded into URLs by which they may be accessed on the local
+   * system.
+   * <p>
+   * This method is sensitive to the <code>locale</code> deferred-binding
+   * property and will attempt to use a best-match lookup by removing locale
+   * components.
+   * 
+   * @param logger a TreeLogger that will be used to report errors or warnings
+   * @param context the ResourceContext in which the ResourceGenerator is
+   *          operating
+   * @param classLoader the ClassLoader to use when locating resources
+   * @param method the method to examine for {@link Resource} annotations
+   * @return URLs for each {@link Resource} annotation defined on the method.
+   * @throws UnableToCompleteException if the method has no resource annotations
+   *           or ore or more of the resources could not be found. The error
+   *           will be reported via the <code>logger</code> provided to this
+   *           method
+   */
+  public static URL[] findResources(TreeLogger logger, ClassLoader classLoader,
+      ResourceContext context, JMethod method) throws UnableToCompleteException {
+    logger = logger.branch(TreeLogger.DEBUG, "Finding resources");
 
     String[] resources;
     // Check for Resource annotations first:
@@ -139,16 +184,15 @@ public final class ResourceGeneratorUtil {
       String[][] md = method.getMetaData(METADATA_TAG);
 
       if (md.length == 0) {
-        logger.log(TreeLogger.ERROR,
-            "Method " + method.getName() + " does not have a @"
-                + Resource.class.getName() + " annotations.", null);
+        logger.log(TreeLogger.ERROR, "Method " + method.getName()
+            + " does not have a @" + Resource.class.getName() + " annotations.");
         throw new UnableToCompleteException();
       }
 
       // Emit a deprecation warning about metadata:
       logger.log(TreeLogger.WARN, "Method " + method.getName() + " uses a "
           + "deprecated @gwt.resources metadata annotation.  Convert to @"
-          + Resource.class.getName(), null);
+          + Resource.class.getName());
 
       resources = new String[md.length];
       for (int tagIndex = 0; tagIndex < md.length; tagIndex++) {
@@ -179,12 +223,12 @@ public final class ResourceGeneratorUtil {
         resource = pkgName.replace('.', '/') + "/" + resource;
       }
 
-      URL resourceURL = tryFindResource(resource, locale);
+      URL resourceURL = tryFindResource(classLoader, resource, locale);
 
       if (resourceURL == null) {
         logger.log(TreeLogger.ERROR, "Resource " + resource
             + " not found on classpath. Is the name specified as "
-            + "Class.getResource() would expect?", null);
+            + "Class.getResource() would expect?");
         error = true;
       }
 
@@ -195,28 +239,29 @@ public final class ResourceGeneratorUtil {
       throw new UnableToCompleteException();
     }
 
-    // In the future, it would be desirable to be able to automatically
-    // determine the resource name to use from the method declaration. We're
-    // currently limited by the inability to list the contents of the classpath
-    // and not having a set number of file extensions to empirically test.
-    // It would also be worthwhile to be able to search for globs of files.
+    /*
+     * In the future, it would be desirable to be able to automatically
+     * determine the resource name to use from the method declaration. We're
+     * currently limited by the inability to list the contents of the classpath
+     * and not having a set number of file extensions to empirically test. It
+     * would also be worthwhile to be able to search for globs of files.
+     */
 
     return toReturn;
   }
 
   /**
    * This performs the locale lookup function for a given resource name.
-   * It looks for resources on the context class loader; see
-   * {@link Thread#getContextClassLoader()}.
    * 
+   * @param classLoader the ClassLoader to use to load the resources
    * @param resourceName the string name of the desired resource
    * @param locale the locale of the current rebind permutation
-   * @return a URL by which the resource can be loaded, <code>null</code> if
-   *         one cannot be found
+   * @return a URL by which the resource can be loaded, <code>null</code> if one
+   *         cannot be found
    */
-  private static URL tryFindResource(String resourceName, String locale) {
+  private static URL tryFindResource(ClassLoader classLoader,
+      String resourceName, String locale) {
     URL toReturn = null;
-    ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
     // Look for locale-specific variants of individual resources
     if (locale != null) {
@@ -232,13 +277,13 @@ public final class ResourceGeneratorUtil {
           localeInsert += "_" + localeSegments[j];
         }
 
-        toReturn = cl.getResource(prefix + localeInsert + extension);
+        toReturn = classLoader.getResource(prefix + localeInsert + extension);
         if (toReturn != null) {
           break;
         }
       }
     } else {
-      toReturn = cl.getResource(resourceName);
+      toReturn = classLoader.getResource(resourceName);
     }
 
     return toReturn;

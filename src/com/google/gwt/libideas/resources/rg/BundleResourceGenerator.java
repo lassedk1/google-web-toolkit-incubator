@@ -20,8 +20,7 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
-import com.google.gwt.libideas.resources.rebind.AbstractResourceGenerator;
-import com.google.gwt.libideas.resources.rebind.ResourceContext;
+import com.google.gwt.libideas.resources.ext.ResourceContext;
 
 /**
  * This is a special case of ResourceGenerator that handles nested bundles.
