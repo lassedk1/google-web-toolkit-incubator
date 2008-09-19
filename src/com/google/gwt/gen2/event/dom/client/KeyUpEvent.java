@@ -20,11 +20,23 @@ import com.google.gwt.user.client.Event;
 /**
  * Represents a native key up event.
  */
-public class KeyUpEvent extends  KeyboardEvent<KeyUpHandler> {
+public class KeyUpEvent extends KeyboardEvent {
 
- 
-  public static final Key<KeyUpHandler> KEY = new Key<KeyUpHandler>(
-      NativeEventType.ONKEYUP);
+  /**
+   * Event Key for KeyUp.
+   */
+  public static final Key<KeyUpEvent, KeyUpHandler> KEY = new Key<KeyUpEvent, KeyUpHandler>(
+      Event.ONKEYUP) {
+    @Override
+    protected void fire(KeyUpHandler handler, KeyUpEvent event) {
+      handler.onKeyUp(event);
+    }
+
+    @Override
+    public KeyUpEvent wrap(Event nativeEvent) {
+      return new KeyUpEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructs a KeyUpEvent event.
@@ -33,16 +45,6 @@ public class KeyUpEvent extends  KeyboardEvent<KeyUpHandler> {
    */
   public KeyUpEvent(Event e) {
     super(e);
-  }
-  
-  /**
-   * Fires a {@link KeyUpEvent}.
-   * 
-   * @param handler the handler
-   */
-  @Override
-  protected void fireEvent(KeyUpHandler handler) {
-    handler.onKeyUp(this);
   }
 
   @Override

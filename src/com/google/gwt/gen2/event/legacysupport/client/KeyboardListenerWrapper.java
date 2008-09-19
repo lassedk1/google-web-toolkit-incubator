@@ -44,7 +44,7 @@ public class KeyboardListenerWrapper extends
         event.getKeyboardModifiers());
   }
 
-  public void onKeyPressed(KeyPressEvent event) {
+  public void onKeyPress(KeyPressEvent event) {
     listener.onKeyPress(source(event), (char) event.getKeyCode(),
         event.getKeyboardModifiers());
   }

@@ -20,11 +20,23 @@ import com.google.gwt.user.client.Event;
 /**
  * Represents a native key down event.
  */
-public class KeyDownEvent extends  KeyboardEvent<KeyDownHandler> {
+public class KeyDownEvent extends KeyboardEvent {
 
- 
-  public static final Key<KeyDownHandler> KEY = new Key<KeyDownHandler>(
-      NativeEventType.ONKEYDOWN);
+  /**
+   * Event Key for KeyDown.
+   */
+  public static final Key<KeyDownEvent, KeyDownHandler> KEY = new Key<KeyDownEvent, KeyDownHandler>(
+      Event.ONKEYDOWN) {
+    @Override
+    protected void fire(KeyDownHandler handler, KeyDownEvent event) {
+      handler.onKeyDown(event);
+    }
+
+    @Override
+    public KeyDownEvent wrap(Event nativeEvent) {
+      return new KeyDownEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructs a KeyDownEvent event.
@@ -33,16 +45,6 @@ public class KeyDownEvent extends  KeyboardEvent<KeyDownHandler> {
    */
   public KeyDownEvent(Event e) {
     super(e);
-  }
-  
-  /**
-   * Fires a {@link KeyDownEvent}.
-   * 
-   * @param handler the handler
-   */
-  @Override
-  protected void fireEvent(KeyDownHandler handler) {
-    handler.onKeyDown(this);
   }
 
   @Override

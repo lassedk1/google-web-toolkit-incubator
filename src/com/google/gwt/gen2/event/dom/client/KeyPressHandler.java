@@ -27,5 +27,5 @@ public interface KeyPressHandler extends EventHandler {
    * 
    * @param event the {@link KeyPressEvent} that was fired
    */
-  void onKeyPressed(KeyPressEvent event);
+  void onKeyPress(KeyPressEvent event);
 }

@@ -16,17 +16,14 @@
 
 package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
-
 /**
- * A widget that implements this interface is a public source of
- * {@link KeyPresEvent} events.
+ * Convenience interface used for widgets that wish to implement all mouse
+ * handlers. Note, as new mouse handlers are added to GWT, this interface will
+ * be expanded, so only implement this interface if you wish to have your widget
+ * break when a new mouse event type is introduced.
+ * 
  */
-public interface HasKeyPressedHandlers {
-  /**
-   * Adds a {@link HasKeyPressedEvent} handler.
-   * 
-   * @param handler the handler
-   */
-  HandlerRegistration addKeyPressedHandler(KeyPressHandler handler);
+public interface HasMouseHandlers extends HasMouseOutHandlers,
+    HasMouseOverHandlers, HasMouseUpHandlers, HasMouseDownHandlers,
+    HasMouseMoveHandlers, HasMouseWheelHandlers {
 }

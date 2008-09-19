@@ -15,7 +15,6 @@
  */
 package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.gen2.event.shared.EventHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.KeyboardListener;
@@ -23,18 +22,16 @@ import com.google.gwt.user.client.ui.KeyboardListener;
 /**
  * Base class for Keyboard events.
  * 
- * @param <T> an EventHandler subtype
  */
-public abstract class KeyboardEvent<T extends EventHandler> extends DomEvent<T> {
+public abstract class KeyboardEvent extends DomEvent {
 
   protected KeyboardEvent(Event e) {
     super(e);
   }
 
   /**
-   * Gets the keyboard modifiers associated with this event
+   * Gets the keyboard modifiers associated with this event.
    * 
-   * @param event the event.
    * @return the modifiers as defined in {@link KeyboardListener}.
    */
   public int getKeyboardModifiers() {

@@ -21,7 +21,6 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.libideas.resources.ext.FieldAccumulator;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGenerator;
-import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 
 /**
  * A base class providing common methods for ResourceGenerator implementations.

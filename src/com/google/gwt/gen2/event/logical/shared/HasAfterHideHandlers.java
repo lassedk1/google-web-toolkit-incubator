@@ -13,21 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.gwt.gen2.event.logical.shared;
 
-import com.google.gwt.gen2.event.shared.EventHandler;
+import com.google.gwt.gen2.event.shared.HandlerRegistration;
 
 /**
- * Handler for {@link SelectionEvent} events.
- * 
- * @param <Value> type of the selected value
+ * A widget that implements this interface is a public source of
+ * {@link AfterHideEvent} events.
  */
-public interface SelectionHandler<Value> extends EventHandler {
+public interface HasAfterHideHandlers {
   /**
-   * Fired once a value has been selected.
+   * Adds a {@link HasAfterHideEvent} handler.
    * 
-   * @param event the event
+   * @param handler the handler
    */
-  void onSelection(SelectionEvent<Value> event);
+  HandlerRegistration addAfterHideHandler(AfterHideHandler handler);
 }

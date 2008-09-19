@@ -20,11 +20,23 @@ import com.google.gwt.user.client.Event;
 /**
  * Represents a native double click event.
  */
-public class DoubleClickEvent extends  DomEvent<DoubleClickHandler> {
+public class DoubleClickEvent extends DomEvent {
 
- 
-  public static final Key<DoubleClickHandler> KEY = new Key<DoubleClickHandler>(
-      NativeEventType.ONDOUBLECLICK);
+  /**
+   * Event Key for DoubleClick.
+   */
+  public static final Key<DoubleClickEvent, DoubleClickHandler> KEY = new Key<DoubleClickEvent, DoubleClickHandler>(
+      Event.ONDBLCLICK) {
+    @Override
+    protected void fire(DoubleClickHandler handler, DoubleClickEvent event) {
+      handler.onDoubleClick(event);
+    }
+
+    @Override
+    public DoubleClickEvent wrap(Event nativeEvent) {
+      return new DoubleClickEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructs a DoubleClickEvent event.
@@ -33,16 +45,6 @@ public class DoubleClickEvent extends  DomEvent<DoubleClickHandler> {
    */
   public DoubleClickEvent(Event e) {
     super(e);
-  }
-  
-  /**
-   * Fires a {@link DoubleClickEvent}.
-   * 
-   * @param handler the handler
-   */
-  @Override
-  protected void fireEvent(DoubleClickHandler handler) {
-    handler.onDoubleClick(this);
   }
 
   @Override

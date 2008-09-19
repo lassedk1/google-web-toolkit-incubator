@@ -19,11 +19,11 @@ import com.google.gwt.gen2.base.client.Gen2TestBase;
 import com.google.gwt.gen2.event.shared.AbstractEvent;
 import com.google.gwt.gen2.event.shared.HandlerManager;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
- 
+
 /**
  * Events test.
  */
-//TODO(ECC) check that max handlers work properly.
+// TODO(ECC) check that max handlers work properly.
 public class GWTEventsTest extends Gen2TestBase {
 
   HandlerManager manager;
@@ -37,14 +37,14 @@ public class GWTEventsTest extends Gen2TestBase {
 
     final Flag flag = new Flag();
     manager = new HandlerManager(flag);
-    HandlerRegistration downRegistration = manager.addHandler(
-        KeyDownEvent.KEY, new KeyDownHandler() {
+    HandlerRegistration downRegistration = manager.addHandler(KeyDownEvent.KEY,
+        new KeyDownHandler() {
           public void onKeyDown(KeyDownEvent event) {
             flag.flag = true;
           }
         });
-    HandlerRegistration upRegistration = manager.addHandler(
-        KeyUpEvent.KEY, new KeyUpHandler() {
+    HandlerRegistration upRegistration = manager.addHandler(KeyUpEvent.KEY,
+        new KeyUpHandler() {
           public void onKeyUp(KeyUpEvent event) {
             flag.flag = true;
           }
@@ -52,15 +52,14 @@ public class GWTEventsTest extends Gen2TestBase {
 
     HandlerRegistration pressRegistration = manager.addHandler(
         KeyPressEvent.KEY, new KeyPressHandler() {
-          public void onKeyPressed(KeyPressEvent event) {
+          public void onKeyPress(KeyPressEvent event) {
             flag.flag = true;
           }
         });
 
     checkFire(new KeyDownEvent(null), downRegistration, flag, "onKeyDown");
     checkFire(new KeyUpEvent(null), upRegistration, flag, "onKeyUp");
-    checkFire(new KeyPressEvent(null), pressRegistration, flag,
-        "onKeyPressed");
+    checkFire(new KeyPressEvent(null), pressRegistration, flag, "onKeyPressed");
   }
 
   public void testMouseEvents() {
@@ -74,15 +73,15 @@ public class GWTEventsTest extends Gen2TestBase {
             flag.flag = true;
           }
         });
-    HandlerRegistration upRegistration = manager.addHandler(
-        MouseUpEvent.KEY, new MouseUpHandler() {
+    HandlerRegistration upRegistration = manager.addHandler(MouseUpEvent.KEY,
+        new MouseUpHandler() {
           public void onMouseUp(MouseUpEvent event) {
             flag.flag = true;
           }
         });
 
-    HandlerRegistration clickRegistration = manager.addHandler(
-        ClickEvent.KEY, new ClickHandler() {
+    HandlerRegistration clickRegistration = manager.addHandler(ClickEvent.KEY,
+        new ClickHandler() {
           public void onClick(ClickEvent event) {
             flag.flag = true;
           }
@@ -95,8 +94,8 @@ public class GWTEventsTest extends Gen2TestBase {
           }
         });
 
-    HandlerRegistration outRegistration = manager.addHandler(
-        MouseOutEvent.KEY, new MouseOutHandler() {
+    HandlerRegistration outRegistration = manager.addHandler(MouseOutEvent.KEY,
+        new MouseOutHandler() {
           public void onMouseOut(MouseOutEvent event) {
             flag.flag = true;
           }

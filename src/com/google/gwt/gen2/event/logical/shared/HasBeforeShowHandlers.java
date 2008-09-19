@@ -12,19 +12,17 @@
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- */
-
-package com.google.gwt.gen2.event.logical.shared;
+ */package com.google.gwt.gen2.event.logical.shared;
 
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 
 /**
- * This widget can add {@link BeforeShowHandler} handlers to itself.
- * 
+ * A widget that implements this interface is a public source of
+ * {@link BeforeShowEvent} events.
  */
 public interface HasBeforeShowHandlers {
   /**
-   * Adds a {@link BeforeShowHandler} handler.
+   * Adds a {@link HasBeforeShowEvent} handler.
    * 
    * @param handler the handler
    */

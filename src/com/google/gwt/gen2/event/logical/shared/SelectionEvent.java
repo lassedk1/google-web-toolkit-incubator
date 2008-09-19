@@ -23,13 +23,18 @@ import com.google.gwt.gen2.event.shared.AbstractEvent;
  * 
  * @param <Value> the type of value the widget has selected
  */
-public class SelectionEvent<Value> extends
-    AbstractEvent<SelectionHandler<Value>> {
+public class SelectionEvent<Value> extends AbstractEvent {
 
   /**
    * The event key.
    */
-  public static final Key<SelectionHandler> KEY = new Key<SelectionHandler>();
+  public static final Key<SelectionEvent, SelectionHandler> KEY = new Key<SelectionEvent, SelectionHandler>() {
+
+    @Override
+    protected void fire(SelectionHandler handler, SelectionEvent event) {
+      handler.onSelection(event);
+    }
+  };
 
   private Value oldValue;
   private Value newValue;
@@ -63,11 +68,6 @@ public class SelectionEvent<Value> extends
   @Override
   public String toDebugString() {
     return super.toDebugString() + " old = " + oldValue + " new =" + newValue;
-  }
-
-  @Override
-  protected void fireEvent(SelectionHandler<Value> handler) {
-    handler.onSelection(this);
   }
 
   @Override

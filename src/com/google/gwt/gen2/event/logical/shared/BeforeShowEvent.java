@@ -13,29 +13,29 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.gwt.gen2.event.logical.shared;
 
 import com.google.gwt.gen2.event.shared.AbstractEvent;
 
 /**
- * Logical event called before a widget shows its contents.
+ * Represents a logical before show event.
  */
-public class BeforeShowEvent extends AbstractEvent<BeforeShowHandler> {
-  /**
-   * The event key.
-   */
-  public static final Key<BeforeShowHandler> KEY = new Key<BeforeShowHandler>();
+public class BeforeShowEvent extends AbstractEvent {
 
   /**
-   * Constructor.
+   * Event Key for BeforeShow.
+   */
+  public static final Key<BeforeShowEvent, BeforeShowHandler> KEY = new Key<BeforeShowEvent, BeforeShowHandler>() {
+    @Override
+    protected void fire(BeforeShowHandler handler, BeforeShowEvent event) {
+      handler.onBeforeShow(event);
+    }
+  };
+
+  /**
+   * Constructs a BeforeShowEvent event.
    */
   public BeforeShowEvent() {
-  }
-
-  @Override
-  protected void fireEvent(BeforeShowHandler handler) {
-    handler.beforeShow(this);
   }
 
   @Override

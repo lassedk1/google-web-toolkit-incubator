@@ -13,29 +13,29 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.gwt.gen2.event.logical.shared;
 
 import com.google.gwt.gen2.event.shared.AbstractEvent;
 
 /**
- * Logical event fired after a widget hides its contents.
+ * Represents a logical after hide event.
  */
-public class AfterHideEvent extends AbstractEvent<AfterHideHandler> {
-  /**
-   * The event key.
-   */
-  public static final Key<AfterHideHandler> KEY = new Key<AfterHideHandler>();
+public class AfterHideEvent extends AbstractEvent {
 
   /**
-   * Constructor.
+   * Event Key for AfterHide.
+   */
+  public static final Key<AfterHideEvent, AfterHideHandler> KEY = new Key<AfterHideEvent, AfterHideHandler>() {
+    @Override
+    protected void fire(AfterHideHandler handler, AfterHideEvent event) {
+      handler.onAfterHide(event);
+    }
+  };
+
+  /**
+   * Constructs a AfterHideEvent event.
    */
   public AfterHideEvent() {
-  }
-
-  @Override
-  protected void fireEvent(AfterHideHandler handler) {
-    handler.afterHide(this);
   }
 
   @Override

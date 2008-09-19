@@ -17,11 +17,11 @@
 package com.google.gwt.gen2.widgetbase.client;
 
 import com.google.gwt.gen2.event.dom.client.DomEvent;
-import com.google.gwt.gen2.event.dom.client.DomEvent.Key;
 import com.google.gwt.gen2.event.shared.AbstractEvent;
 import com.google.gwt.gen2.event.shared.EventHandler;
 import com.google.gwt.gen2.event.shared.HandlerManager;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -32,6 +32,11 @@ import com.google.gwt.user.client.ui.Widget;
 public abstract class Gen2Widget extends Widget {
 
   private HandlerManager handlers;
+
+  @Override
+  public void onBrowserEvent(Event nativeEvent) {
+    DomEvent.fireNativeEvent(nativeEvent, getHandlerManager());
+  }
 
   @Override
   public void setStyleName(String name) {
@@ -56,15 +61,25 @@ public abstract class Gen2Widget extends Widget {
    * @param key the event key
    * @param handler the handler
    */
-  protected <T extends EventHandler> HandlerRegistration addHandler(
-      AbstractEvent.Key<T> key, final T handler) {
+  protected <HandlerType extends EventHandler> HandlerRegistration addHandler(
+      AbstractEvent.Key<?, HandlerType> key, final HandlerType handler) {
     if (handlers == null) {
       handlers = createHandlerManager();
     }
-    if (!handlers.isEventHandled(key)) {
-      subscribeTo(key);
-    }
     return handlers.addHandler(key, handler);
+  }
+
+  /**
+   * Adds a native event handler to the widget and sinks the corresponding
+   * native event.
+   * 
+   * @param key the event key
+   * @param handler the handler
+   */
+  protected <T extends EventHandler> HandlerRegistration addHandlerAndSink(
+      DomEvent.Key<?, T> key, final T handler) {
+    sinkEvents(key.getNativeEventType());
+    return addHandler(key, handler);
   }
 
   /**
@@ -111,25 +126,11 @@ public abstract class Gen2Widget extends Widget {
    * @param handler the handler
    */
   protected <T extends EventHandler> void removeHandler(
-      AbstractEvent.Key<T> key, final T handler) {
+      AbstractEvent.Key<?, T> key, final T handler) {
     if (handlers == null) {
       handlers = new HandlerManager(this);
     }
     handlers.removeHandler(key, handler);
-  }
-
-  /**
-   * Subscribes a widget to the event type represented by the given event key.
-   * <p/> By default, when subscribing to dom events, the widget sinks the
-   * native events specified by {@link Key#getEventBitsToSink()}.
-   * 
-   * @param key event key
-   */
-  protected void subscribeTo(AbstractEvent.Key key) {
-    if (key instanceof DomEvent.Key) {
-      DomEvent.Key domKey = (Key) key;
-      sinkEvents(domKey.getEventBitsToSink());
-    }
   }
 
 }

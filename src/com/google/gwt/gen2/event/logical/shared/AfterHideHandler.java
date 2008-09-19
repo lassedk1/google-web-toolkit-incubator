@@ -13,17 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.gwt.gen2.event.logical.shared;
 
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
- * Receives events of type {@link AfterHideEvent}.
+ * Handler interface for {@link AfterHideEvent} events.
  */
 public interface AfterHideHandler extends EventHandler {
+
   /**
-   * Fired after the widget's contents is hidden.
+   * Called when AfterHideEvent is fired.
+   * 
+   * @param event the {@link AfterHideEvent} that was fired
    */
-  void afterHide(AfterHideEvent event);
+  void onAfterHide(AfterHideEvent event);
 }

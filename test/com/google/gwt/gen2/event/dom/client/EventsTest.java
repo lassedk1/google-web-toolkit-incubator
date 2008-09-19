@@ -40,14 +40,14 @@ public class EventsTest extends TestCase {
   public void testKeyEvents() {
 
     final Flag flag = new Flag();
-    HandlerRegistration downRegistration = manager.addHandler(
-        KeyDownEvent.KEY, new KeyDownHandler() {
+    HandlerRegistration downRegistration = manager.addHandler(KeyDownEvent.KEY,
+        new KeyDownHandler() {
           public void onKeyDown(KeyDownEvent event) {
             flag.flag = true;
           }
         });
-    HandlerRegistration upRegistration = manager.addHandler(
-        KeyUpEvent.KEY, new KeyUpHandler() {
+    HandlerRegistration upRegistration = manager.addHandler(KeyUpEvent.KEY,
+        new KeyUpHandler() {
           public void onKeyUp(KeyUpEvent event) {
             flag.flag = true;
           }
@@ -55,15 +55,14 @@ public class EventsTest extends TestCase {
 
     HandlerRegistration pressRegistration = manager.addHandler(
         KeyPressEvent.KEY, new KeyPressHandler() {
-          public void onKeyPressed(KeyPressEvent event) {
+          public void onKeyPress(KeyPressEvent event) {
             flag.flag = true;
           }
         });
 
     checkFire(new KeyDownEvent(null), downRegistration, flag, "onKeyDown");
     checkFire(new KeyUpEvent(null), upRegistration, flag, "onKeyUp");
-    checkFire(new KeyPressEvent(null), pressRegistration, flag,
-        "onKeyPressed");
+    checkFire(new KeyPressEvent(null), pressRegistration, flag, "onKeyPressed");
   }
 
   public void testMouseEvents() {
@@ -75,15 +74,15 @@ public class EventsTest extends TestCase {
             flag.flag = true;
           }
         });
-    HandlerRegistration upRegistration = manager.addHandler(
-        MouseUpEvent.KEY, new MouseUpHandler() {
+    HandlerRegistration upRegistration = manager.addHandler(MouseUpEvent.KEY,
+        new MouseUpHandler() {
           public void onMouseUp(MouseUpEvent event) {
             flag.flag = true;
           }
         });
 
-    HandlerRegistration clickRegistration = manager.addHandler(
-        ClickEvent.KEY, new ClickHandler() {
+    HandlerRegistration clickRegistration = manager.addHandler(ClickEvent.KEY,
+        new ClickHandler() {
           public void onClick(ClickEvent event) {
             flag.flag = true;
           }
@@ -96,8 +95,8 @@ public class EventsTest extends TestCase {
           }
         });
 
-    HandlerRegistration outRegistration = manager.addHandler(
-        MouseOutEvent.KEY, new MouseOutHandler() {
+    HandlerRegistration outRegistration = manager.addHandler(MouseOutEvent.KEY,
+        new MouseOutHandler() {
           public void onMouseOut(MouseOutEvent event) {
             flag.flag = true;
           }
