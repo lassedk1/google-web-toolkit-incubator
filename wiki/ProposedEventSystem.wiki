@@ -61,16 +61,16 @@ This is the API that will be used by all GWT users. It allows users to add new h
      * `onKeyDown(KeyDownEvent event)`
     * ...
   * For each event, we create an interface for adding event handlers..
-   * `FiresClickEvents`
+   * `HasClickHandlers`
     * `HandlerRegistation addClickHandler(ClickHandler handler)`
        * Adds a click handler to the given widget.
-   * `FiresKeyDownEvents`
+   * `HasKeyDownHandlers`
     * `HandlerRegistration addKeyDownHandler(KeyDownHandler event)`
       * Adds a key down handler to the given widget.
    * ...
 === How it works ===
   * Each handler has a single method with a single argument, such as `void onClick(ClickEvent event)` or `void onKeyDown(KeyDownEvent event)`.
-  * Each widget supporting an event type will implement the appropriate `Fires` interface and therefore have a method of the form `HandlerRegistration addFooHandler(FooEvent)`. For example a widget supporting a click handler must implement `FiresClickEvents`. 
+  * Each widget supporting an event type will implement the appropriate `Has*Handlers` interface and therefore have a method of the form `HandlerRegistration addFooHandler(FooEvent)`. For example a widget supporting a click handler must implement `HasClickHandlers`. 
   * To remove a handler, you must save the `HandlerRegistration` instance returned from the handler's add method and call `removeHandler()` on it.
 
 === Sample use of a handler ==
@@ -91,7 +91,7 @@ This is the API that will be used by most widget creators who are creating and p
 === Class overview ===
   
   * `AbstractEvent.Key`
-   * The unique key used to represent an event type. It is primarily used to associate handlers and events. 
+   * The unique key used to represent an event type. It encapsulates the meta information about an event.  
    * For each event type, we have a specific key
      * `ClickEvent.KEY`
        * The key used to register handlers on a click event.
