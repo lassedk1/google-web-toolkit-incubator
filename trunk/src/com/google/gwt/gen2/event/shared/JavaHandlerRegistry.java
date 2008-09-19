@@ -41,7 +41,7 @@ class JavaHandlerRegistry extends
     int count = getHandlerCount(key);
     for (int i = 0; i < count; i++) {
       EventHandler handler = getHandler(key, i);
-      event.fireEvent(handler);
+      key.fire(handler, event);
     }
   }
 

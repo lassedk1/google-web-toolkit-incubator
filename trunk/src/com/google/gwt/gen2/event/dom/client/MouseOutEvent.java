@@ -20,11 +20,23 @@ import com.google.gwt.user.client.Event;
 /**
  * Represents a native mouse out event.
  */
-public class MouseOutEvent extends  MouseEvent<MouseOutHandler> {
+public class MouseOutEvent extends MouseEvent {
 
- 
-  public static final Key<MouseOutHandler> KEY = new Key<MouseOutHandler>(
-      NativeEventType.ONMOUSEOUT);
+  /**
+   * Event Key for MouseOut.
+   */
+  public static final Key<MouseOutEvent, MouseOutHandler> KEY = new Key<MouseOutEvent, MouseOutHandler>(
+      Event.ONMOUSEOUT) {
+    @Override
+    protected void fire(MouseOutHandler handler, MouseOutEvent event) {
+      handler.onMouseOut(event);
+    }
+
+    @Override
+    public MouseOutEvent wrap(Event nativeEvent) {
+      return new MouseOutEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructs a MouseOutEvent event.
@@ -33,16 +45,6 @@ public class MouseOutEvent extends  MouseEvent<MouseOutHandler> {
    */
   public MouseOutEvent(Event e) {
     super(e);
-  }
-  
-  /**
-   * Fires a {@link MouseOutEvent}.
-   * 
-   * @param handler the handler
-   */
-  @Override
-  protected void fireEvent(MouseOutHandler handler) {
-    handler.onMouseOut(this);
   }
 
   @Override

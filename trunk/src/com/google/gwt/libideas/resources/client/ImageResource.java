@@ -26,10 +26,10 @@ import java.lang.annotation.Target;
 /**
  * Provides access to image resources at runtime.
  * <p>
- * <b>Note on deprecated methods:</b> In order to allow ImageResource to be
- * used with UI toolkits that are not derived from the standard GWT UI library,
- * the methods relating to {@link Image} have been deprecated in favor of
- * exposing the ImageResource's metadata in the public API.
+ * <b>Note on deprecated methods:</b> In order to allow ImageResource to be used
+ * with UI toolkits that are not derived from the standard GWT UI library, the
+ * methods relating to {@link Image} have been deprecated in favor of exposing
+ * the ImageResource's metadata in the public API.
  */
 @ResourceGeneratorType(ImageResourceGenerator.class)
 public interface ImageResource extends ResourcePrototype {

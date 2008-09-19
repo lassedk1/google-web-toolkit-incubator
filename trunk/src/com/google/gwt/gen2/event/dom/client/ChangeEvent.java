@@ -20,11 +20,23 @@ import com.google.gwt.user.client.Event;
 /**
  * Represents a native change event.
  */
-public class ChangeEvent extends  DomEvent<ChangeHandler> {
+public class ChangeEvent extends DomEvent {
 
- 
-  public static final Key<ChangeHandler> KEY = new Key<ChangeHandler>(
-      NativeEventType.ONCHANGE);
+  /**
+   * Event Key for Change.
+   */
+  public static final Key<ChangeEvent, ChangeHandler> KEY = new Key<ChangeEvent, ChangeHandler>(
+      Event.ONCHANGE) {
+    @Override
+    protected void fire(ChangeHandler handler, ChangeEvent event) {
+      handler.onChange(event);
+    }
+
+    @Override
+    public ChangeEvent wrap(Event nativeEvent) {
+      return new ChangeEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructs a ChangeEvent event.
@@ -33,16 +45,6 @@ public class ChangeEvent extends  DomEvent<ChangeHandler> {
    */
   public ChangeEvent(Event e) {
     super(e);
-  }
-  
-  /**
-   * Fires a {@link ChangeEvent}.
-   * 
-   * @param handler the handler
-   */
-  @Override
-  protected void fireEvent(ChangeHandler handler) {
-    handler.onChange(this);
   }
 
   @Override

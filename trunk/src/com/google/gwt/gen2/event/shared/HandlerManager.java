@@ -50,7 +50,7 @@ public class HandlerManager {
    *         handler later.
    */
   public <T extends EventHandler> HandlerRegistration addHandler(
-      AbstractEvent.Key<T> key, final T handler) {
+      AbstractEvent.Key<?, T> key, final T handler) {
     if (useJs) {
       javaScriptRegistry.addHandler(key, handler);
     } else {
@@ -105,8 +105,8 @@ public class HandlerManager {
    * @param key the event key
    * @param handler the handler
    */
-  public <T extends EventHandler> void removeHandler(AbstractEvent.Key<T> key,
-      final T handler) {
+  public <T extends EventHandler> void removeHandler(
+      AbstractEvent.Key<?, T> key, final T handler) {
     if (useJs) {
       javaScriptRegistry.removeHandler(key, handler);
     } else {

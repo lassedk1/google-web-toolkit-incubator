@@ -20,11 +20,23 @@ import com.google.gwt.user.client.Event;
 /**
  * Represents a native load event.
  */
-public class LoadEvent extends  DomEvent<LoadHandler> {
+public class LoadEvent extends DomEvent {
 
- 
-  public static final Key<LoadHandler> KEY = new Key<LoadHandler>(
-      NativeEventType.ONLOAD);
+  /**
+   * Event Key for Load.
+   */
+  public static final Key<LoadEvent, LoadHandler> KEY = new Key<LoadEvent, LoadHandler>(
+      Event.ONLOAD) {
+    @Override
+    protected void fire(LoadHandler handler, LoadEvent event) {
+      handler.onLoad(event);
+    }
+
+    @Override
+    public LoadEvent wrap(Event nativeEvent) {
+      return new LoadEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructs a LoadEvent event.
@@ -33,16 +45,6 @@ public class LoadEvent extends  DomEvent<LoadHandler> {
    */
   public LoadEvent(Event e) {
     super(e);
-  }
-  
-  /**
-   * Fires a {@link LoadEvent}.
-   * 
-   * @param handler the handler
-   */
-  @Override
-  protected void fireEvent(LoadHandler handler) {
-    handler.onLoad(this);
   }
 
   @Override

@@ -18,9 +18,8 @@ package com.google.gwt.gen2.event.shared;
 /**
  * AbstractEvent is the root of all events.
  * 
- * @param <T> the type of handler used for this event
  */
-public abstract class AbstractEvent<T extends EventHandler> {
+public abstract class AbstractEvent {
 
   /**
    * Key class used to register events with HandlerManager.
@@ -28,7 +27,7 @@ public abstract class AbstractEvent<T extends EventHandler> {
    * Key is parameterized by the event handler type in order to make the
    * addHandler method type safe.
    */
-  public static class Key<T extends EventHandler> {
+  public abstract static class Key<EventType extends AbstractEvent, HandlerType extends EventHandler> {
 
     static int EXPECTED_MAX_HANDLERS_PER_WIDGET = 5;
 
@@ -48,10 +47,18 @@ public abstract class AbstractEvent<T extends EventHandler> {
     public final int hashCode() {
       return index;
     }
+
+    /**
+     * Fires the given handler on the supplied event.
+     */
+    protected abstract void fire(HandlerType handler, EventType event);
   }
 
   private Object source;
 
+  /**
+   * Constructor.
+   */
   protected AbstractEvent() {
   }
 
@@ -76,12 +83,10 @@ public abstract class AbstractEvent<T extends EventHandler> {
     return name + ": source = " + source;
   }
 
-  /**
-   * Fires an event for given handler type.
-   * 
-   * @param handler of type T
-   */
-  protected abstract void fireEvent(T handler);
+  @Override
+  public String toString() {
+    return "event type";
+  }
 
   /**
    * Returns the Key used to register this event.

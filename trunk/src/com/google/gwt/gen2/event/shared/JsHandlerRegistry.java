@@ -58,7 +58,7 @@ class JsHandlerRegistry extends JavaScriptObject {
     int count = getHandlerCount(key);
     for (int i = 0; i < count; i++) {
       EventHandler handler = getHandler(key, i);
-      event.fireEvent(handler);
+      key.fire(handler, event);
     }
   }
 
@@ -79,41 +79,41 @@ class JsHandlerRegistry extends JavaScriptObject {
   }
 
   private native EventHandler get(JavaScriptObject me, int index) /*-{
-    return this[index];
-  }-*/;
+     return this[index];
+   }-*/;
 
   private native int getCount(JavaScriptObject me, int index) /*-{
-    var count = this[index];
-    if(count == null){
-      return 0;
-    } else{
-      return count;
-    }
-  }-*/;
+     var count = this[index];
+     if(count == null){
+       return 0;
+     } else{
+       return count;
+     }
+   }-*/;
 
   private native void remove(JavaScriptObject me, int base, EventHandler handler) /*-{
-    var count = this[base];
-    var index = base + 1;
-    var last =  base + count;
+     var count = this[base];
+     var index = base + 1;
+     var last =  base + count;
 
-    for(;index <= last;index++){
-      if(this[index] == handler){
-        break;
-      }
-    }
+     for(;index <= last;index++){
+       if(this[index] == handler){
+         break;
+       }
+     }
 
-    for(; index < last; index++){
-      this[index] = this[index+1]
-    }
-    this[last] = null;
-    --this[base];
-  }-*/;
+     for(; index < last; index++){
+       this[index] = this[index+1]
+     }
+     this[last] = null;
+     --this[base];
+   }-*/;
 
   private native void set(JavaScriptObject me, int slot, EventHandler handler) /*-{
-    this[slot] = handler;
-  }-*/;
+     this[slot] = handler;
+   }-*/;
 
   private native void setCount(JavaScriptObject me, int index, int count) /*-{
-    this[index] = count;
-  }-*/;
+     this[index] = count;
+   }-*/;
 }

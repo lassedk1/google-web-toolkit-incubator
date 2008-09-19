@@ -22,7 +22,7 @@ package com.google.gwt.gen2.event.dom.client;
  * 
  * <br/> WARNING, PLEASE READ: As this interface is intended for developers who
  * wish to handle all mouse events in GWT, new mouse event handlers will be
- * added to it. Therefore, updates can and will cause breaking API changes.
+ * added to it. Therefore, updates can cause breaking API changes.
  * 
  */
 public interface HasAllMouseHandlers extends HasMouseDownHandlers,

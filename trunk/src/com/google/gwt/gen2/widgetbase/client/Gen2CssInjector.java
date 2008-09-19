@@ -18,7 +18,6 @@ package com.google.gwt.gen2.widgetbase.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.libideas.client.StyleInjector;
-import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.libideas.resources.client.CssResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 
@@ -40,7 +39,6 @@ public class Gen2CssInjector {
   static class DisabledMode extends Mode {
     @Override
     public void inject(CssResource res) {
-      Log.info("default css is disabled, so not including " + res.getName());
     }
 
     @Override

@@ -20,11 +20,23 @@ import com.google.gwt.user.client.Event;
 /**
  * Represents a native lose capture event.
  */
-public class LoseCaptureEvent extends  DomEvent<LoseCaptureHandler> {
+public class LoseCaptureEvent extends DomEvent {
 
- 
-  public static final Key<LoseCaptureHandler> KEY = new Key<LoseCaptureHandler>(
-      NativeEventType.ONLOSECAPTURE);
+  /**
+   * Event Key for LoseCapture.
+   */
+  public static final Key<LoseCaptureEvent, LoseCaptureHandler> KEY = new Key<LoseCaptureEvent, LoseCaptureHandler>(
+      Event.ONLOSECAPTURE) {
+    @Override
+    protected void fire(LoseCaptureHandler handler, LoseCaptureEvent event) {
+      handler.onLoseCapture(event);
+    }
+
+    @Override
+    public LoseCaptureEvent wrap(Event nativeEvent) {
+      return new LoseCaptureEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructs a LoseCaptureEvent event.
@@ -33,16 +45,6 @@ public class LoseCaptureEvent extends  DomEvent<LoseCaptureHandler> {
    */
   public LoseCaptureEvent(Event e) {
     super(e);
-  }
-  
-  /**
-   * Fires a {@link LoseCaptureEvent}.
-   * 
-   * @param handler the handler
-   */
-  @Override
-  protected void fireEvent(LoseCaptureHandler handler) {
-    handler.onLoseCapture(this);
   }
 
   @Override

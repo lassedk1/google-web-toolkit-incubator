@@ -13,17 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.gwt.gen2.event.logical.shared;
 
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
- * Event handler for {@link BeforeShowEvent} event.
+ * Handler interface for {@link BeforeShowEvent} events.
  */
 public interface BeforeShowHandler extends EventHandler {
+
   /**
-   * Fired before the widget's contents is shown.
+   * Called when BeforeShowEvent is fired.
+   * 
+   * @param event the {@link BeforeShowEvent} that was fired
    */
-  void beforeShow(BeforeShowEvent event);
+  void onBeforeShow(BeforeShowEvent event);
 }

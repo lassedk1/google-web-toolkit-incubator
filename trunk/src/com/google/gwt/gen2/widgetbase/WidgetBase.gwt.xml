@@ -14,10 +14,6 @@
 	<!--  Needed to pick up image resources -->
 	<inherits name="com.google.gwt.gen2.widgetbase._Resources" />
 
-	<!-- Needed to support logging in base incubator widget -->
-	<inherits name="com.google.gwt.libideas.Logging" />
-
-
 	<!-- Needed to support css infrastructure -->
 	<inherits name='com.google.gwt.libideas.StyleInjector' />
 	<inherits name='com.google.gwt.libideas.ImmutableResources' />

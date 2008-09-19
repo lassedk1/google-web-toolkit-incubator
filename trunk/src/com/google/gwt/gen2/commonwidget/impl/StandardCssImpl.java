@@ -16,6 +16,7 @@
 
 package com.google.gwt.gen2.commonwidget.impl;
 
+import com.google.gwt.gen2.widgetbase.client.WidgetCss;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -24,7 +25,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @param <WidgetType> the type of widget
  */
-public abstract class StandardCssImpl<WidgetType extends Widget> {
+public class StandardCssImpl<WidgetType extends Widget> implements WidgetCss {
   private String baseName;
 
   /**

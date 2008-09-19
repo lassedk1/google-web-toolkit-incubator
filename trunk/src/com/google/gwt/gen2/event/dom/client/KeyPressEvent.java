@@ -15,48 +15,36 @@
  */
 package com.google.gwt.gen2.event.dom.client;
 
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 /**
- * Represents a native key pressed event.
+ * Represents a native key press event.
  */
-public class KeyPressEvent extends KeyboardEvent<KeyPressHandler> {
+public class KeyPressEvent extends KeyboardEvent {
 
   /**
-   * A widget that implements this interface is a public source of
-   * {@link KeyPressEvent} events.
+   * Event Key for KeyPress.
    */
-  public static interface Source {
+  public static final Key<KeyPressEvent, KeyPressHandler> KEY = new Key<KeyPressEvent, KeyPressHandler>(
+      Event.ONKEYPRESS) {
+    @Override
+    protected void fire(KeyPressHandler handler, KeyPressEvent event) {
+      handler.onKeyPress(event);
+    }
 
-    /**
-     * Adds a {@link KeyPressEvent} handler.
-     * 
-     * @param handler the handler
-     */
-    HandlerRegistration addKeyPressedHandler(KeyPressHandler handler);
-  }
-
-  public static final Key<KeyPressHandler> KEY = new Key<KeyPressHandler>(
-      NativeEventType.ONKEYPRESS);
+    @Override
+    public KeyPressEvent wrap(Event nativeEvent) {
+      return new KeyPressEvent(nativeEvent);
+    }
+  };
 
   /**
-   * Constructs a KeyPressedEvent event.
+   * Constructs a KeyPressEvent event.
    * 
    * @param nativeEvent the native event object wrapped by this event
    */
   public KeyPressEvent(Event e) {
     super(e);
-  }
-
-  /**
-   * Fires a {@link KeyPressEvent}.
-   * 
-   * @param handler the handler
-   */
-  @Override
-  protected void fireEvent(KeyPressHandler handler) {
-    handler.onKeyPressed(this);
   }
 
   @Override

@@ -20,11 +20,23 @@ import com.google.gwt.user.client.Event;
 /**
  * Represents a native mouse wheel event.
  */
-public class MouseWheelEvent extends  MouseEvent<MouseWheelHandler> {
+public class MouseWheelEvent extends MouseEvent {
 
- 
-  public static final Key<MouseWheelHandler> KEY = new Key<MouseWheelHandler>(
-      NativeEventType.ONMOUSEWHEEL);
+  /**
+   * Event Key for MouseWheel.
+   */
+  public static final Key<MouseWheelEvent, MouseWheelHandler> KEY = new Key<MouseWheelEvent, MouseWheelHandler>(
+      Event.ONMOUSEWHEEL) {
+    @Override
+    protected void fire(MouseWheelHandler handler, MouseWheelEvent event) {
+      handler.onMouseWheel(event);
+    }
+
+    @Override
+    public MouseWheelEvent wrap(Event nativeEvent) {
+      return new MouseWheelEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructs a MouseWheelEvent event.
@@ -33,16 +45,6 @@ public class MouseWheelEvent extends  MouseEvent<MouseWheelHandler> {
    */
   public MouseWheelEvent(Event e) {
     super(e);
-  }
-  
-  /**
-   * Fires a {@link MouseWheelEvent}.
-   * 
-   * @param handler the handler
-   */
-  @Override
-  protected void fireEvent(MouseWheelHandler handler) {
-    handler.onMouseWheel(this);
   }
 
   @Override
