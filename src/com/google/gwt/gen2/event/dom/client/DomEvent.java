@@ -15,11 +15,14 @@
  */
 package com.google.gwt.gen2.event.dom.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.gen2.event.shared.AbstractEvent;
 import com.google.gwt.gen2.event.shared.EventHandler;
 import com.google.gwt.gen2.event.shared.HandlerManager;
 import com.google.gwt.user.client.Event;
+
+import java.util.HashMap;
 
 /**
  * {@link DomEvent} is a subclass of AbstractEvent that provides events that map
@@ -60,24 +63,53 @@ public abstract class DomEvent extends AbstractEvent {
   }
 
   // Eventually should be replaced by JsIntMap.
-  private static class KeyMap extends JavaScriptObject {
-    public static KeyMap create() {
-      return (KeyMap) JavaScriptObject.createArray();
+  private static class WrappedKeyMap {
+    private KeyMap map;
+    private HashMap<Integer, DomEvent.Key> javaMap;
+
+    WrappedKeyMap() {
+      if (GWT.isClient()) {
+        map = KeyMap.create();
+      } else {
+        javaMap = new HashMap<Integer, DomEvent.Key>();
+      }
     }
 
-    protected KeyMap() {
+    public final DomEvent.Key get(int nativeEventType) {
+      if (GWT.isClient()) {
+        return map.get(nativeEventType);
+      } else {
+        return javaMap.get(nativeEventType);
+      }
     }
 
-    public final native DomEvent.Key get(int nativeEventType) /*-{
-      return this[nativeEventType];
-    }-*/;
+    public final void put(int nativeEventType, DomEvent.Key key) {
+      if (GWT.isClient()) {
+        map.put(nativeEventType, key);
+      } else {
+        javaMap.put(nativeEventType, key);
+      }
+    }
 
-    public final native DomEvent.Key put(int nativeEventType, DomEvent.Key key) /*-{
-      this[nativeEventType] = key;
-    }-*/;
+    private static class KeyMap extends JavaScriptObject {
+      public static KeyMap create() {
+        return (KeyMap) JavaScriptObject.createArray();
+      }
+
+      protected KeyMap() {
+      }
+
+      public final native DomEvent.Key get(int nativeEventType) /*-{
+        return this[nativeEventType];
+      }-*/;
+
+      public final native void put(int nativeEventType, DomEvent.Key key) /*-{
+        this[nativeEventType] = key;
+      }-*/;
+    }
   }
 
-  private static KeyMap registered = KeyMap.create();
+  private static WrappedKeyMap registered = new WrappedKeyMap();
 
   /**
    * Fires the given native event on the manager.
