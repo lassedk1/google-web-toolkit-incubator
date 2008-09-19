@@ -76,24 +76,29 @@ public class SimpleWidget extends Gen2Widget implements HasMouseHandlers,
   }
 
   /**
-   * Constructor.
+   * Constructor. The element passed in should not be attached to a parent and
+   * should support mouse events and clicks.
    */
   public SimpleWidget(Element e) {
     this(e, ensureDefaultCss());
   }
 
   /**
-   * Constructor.
+   * Constructor. The element passed in should not be attached to a parent and
+   * should support mouse events and clicks.
    */
   public SimpleWidget(Element e, WidgetCss css) {
     assert (e != null);
     assert (css != null);
+    assert (e.getParentElement() == null);
     setElement(e);
     setStyleName(e, css.baseName());
   }
 
   /**
-   * Constructor.
+   * Constructor. The html passed in to this constructor should represent a
+   * single element and its children. The element, or one of its children,
+   * should support click and mouse events.
    */
   public SimpleWidget(String html) {
     this(convertHtml(html), ensureDefaultCss());
