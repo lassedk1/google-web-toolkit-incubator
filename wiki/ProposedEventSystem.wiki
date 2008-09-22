@@ -262,7 +262,6 @@ http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/im
     * cast the current handler as a `MyEventHandler`
     * call correct handler method on the current handler, passing in the current event.
  
-
  
 == How the handler system solves problems ==
 
@@ -277,4 +276,59 @@ http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/im
 || (8) All widgets must manage sinking of events || All standard widgets have events sunk automatically ||
 
 == Migration Path ==
-Removing all the listener methods within a single iteration of a library would be very disruptive. Instead, the listeners methods will be deprecated.  In order to avoid supporting both sets of machinery within each widget, we will introduce a `ListenerHandlerAdaptor` class per package with unique listeners. The `ListenerHandlerAdaptor` class will include wrap methods for each listener type that converts that listener to the appropriate  set of handlers.
+Removing all the listener methods within a single iteration of a library would be very disruptive. Instead, the listeners methods will be deprecated.  In order to avoid supporting both sets of machinery within each widget, we will introduce wrapper classes to convert listeners to handlers.
+== Default `OnBrowserEvent` implementation == 
+We already have a significant amount of boiler plate code in the libraries code to wire up native dom events. The conversion of listeners --> handlers makes this boiler plate code event larger, which would lead to more code overall in GWT applications, a prospect we would rather avoid.
+
+Additionally, by adding addHandlerAndSink() to widget, we have successfully hidden half the complexity of dealing with native browser events. If the default onBrowserEvent just did the right thing, then it would be much easier for beginning GWT developers to create widgets directly, which leads to tighter smaller code.
+
+=== Solution ===
+We wire up DomEvent so it can fire a native event directly on the handler manager.
+
+We then only register dom event keys when the key is instantiated, therefore we can still dead-strip all unused events.
+
+=== How it works ===
+
+In `Widget`:
+{{{
+ public void onBrowserEvent(Event e){
+     DomEvent.fireEvent(e,getHandlerManager());
+ }
+}}}
+
+In `DomEvent` 
+`DomEvent` creates a specialized `Key` type with the following information:
+  * Each dom class should be associated with a single event type.
+  * When constructed, the event key should be globally registered. 
+  * Each dom event key should be able to wrap its coorisponding native event.
+
+For instance, here is the DomEvent.Key for click events:
+{{{
+  /**
+   * Event Key for Click.
+   */
+  public static final Key<ClickEvent, ClickHandler> KEY = new Key<ClickEvent, ClickHandler>(
+      Event.ONCLICK) {
+    @Override
+    protected void fire(ClickHandler handler, ClickEvent event) {
+      handler.onClick(event);
+    }
+
+    @Override
+    public ClickEvent wrap(Event nativeEvent) {
+      return new ClickEvent(nativeEvent);
+    }
+  };
+}}}
+
+In `DomEvent`, then we have the fire event method.  
+
+{{{
+   public static void fireEvent(Event e, HandlerManager m) {
+     DomEvent.Key eventKey = registeredDomKeys.get(e.getEventType());
+     if(m.hasHandlersFor(eventKey)) {
+        m.fireEvent(eventKey, eventKey.wrap(e));
+     }
+  }
+}}}
+ 
