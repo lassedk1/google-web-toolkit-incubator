@@ -115,6 +115,7 @@ This is the API that will be used by most widget creators who are creating and p
  public void addKeyDownHandler(KeyDownHandler handler) {
     addHandler(KeyDownEvent.KEY, handler);
  } 
+}}}
 
   * To use the widget's handlers, the widget must create an event object, then call `Widget`'s `fireEvent`.  
 {{{
