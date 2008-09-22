@@ -91,22 +91,24 @@ This is the API that will be used by most widget creators who are creating and p
 === Class overview ===
   
   * `AbstractEvent.Key`
-   * The unique key used to represent an event type. It encapsulates the meta information about an event.  
+   * The unique key used to represent an event type. It encapsulates the meta information about an event. 
    * For each event type, we have a specific key
      * `ClickEvent.KEY`
        * The key used to register handlers on a click event.
      * `KeyDownEvent.KEY`
        * The key used to register  handlers on a key down event.
      * ...
+   * Each event key has the following information
+     * Unique id associated with the key (used to store handlers)
+     * How to fire the handler method 
 === Protected methods ===
   * In `Widget` 
-    * `protected final HandlerRegistration addEventHandler(AbstractEvent.Key key, EventHandler handler)`
-      *  Registers the handler for the specific type represented by the event key.
+    * `protected final HandlerRegistration addHandler(AbstractEvent.Key<?,HandlerType> key, HandlerType handler)`
+    * `protected final HandlerRegistration addHandlerAndSink(DomEvent.Key<?,HandlerType> key, HandlerType handler)`
+      *  Registers the handler and also sinks events
     * `protected final void fireEvent(AbstractEvent event)`
-      *  Fires the event to all registered handlers. 
-    * `protected void  subscribeTo(AbstractEvent.Key eventKey)`
-      *  Prepares the widget to fire the given event type.   The default implementation sinks native events where appropriate.
-
+      *  Fires the event to all registered handlers 
+   
 === How it works ===
   * When a handler is added to a widget, the widget calls `addEventHandler` with the event's key and the supplied handler.
 {{{
