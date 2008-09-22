@@ -280,7 +280,7 @@ Removing all the listener methods within a single iteration of a library would b
 == Default `OnBrowserEvent` implementation == 
 We already have a significant amount of boiler plate code in the libraries code to fire native dom events to listeners. The conversion of listeners --> handlers makes this boiler plate code event larger, which would lead to more code overall in GWT applications, a prospect we would rather avoid.
 
-Additionally, by adding addHandlerAndSink() to widget, we have successfully hidden half the complexity of dealing with native browser events. If the default onBrowserEvent just did the right thing, then it would be much easier for beginning GWT developers to create widgets directly, which leads to tighter, smaller code.
+Additionally, by adding `addHandlerAndSink()` to `Widget`, we have successfully hidden half the complexity of dealing with native browser events. If the default `onBrowserEvent` just did the right thing, then it would be much easier for beginning GWT developers to create widgets directly, which leads to tighter, smaller code.
 
 === Solution ===
 We wire up `DomEvent` so it can fire a native event directly on the handler manager.
@@ -295,11 +295,12 @@ We register dom event keys lazily, so that unused event types (i.e. ones where n
  }
 }}}
 
-==== `DomEvent` ====
+==== DomEvent ====
 `DomEvent` creates a specialized `Key` type with the following information:
   * A single native event type 
   * A global mapping which registers each key based on the native event type. 
-  * A helper `wrap` method which wraps a native event in the coorisponding dom event. For instance, here is the `DomEvent.Key` for click events:
+  * A helper `wrap` method which wraps a native event in the coorisponding dom event. 
+For instance, here is the `DomEvent.Key` for click events:
 {{{
   /**
    * Event Key for Click.
