@@ -199,7 +199,7 @@ class HappyEvent extends AbstractEvent{
 }}}
   # Wire up the handler's `fire` method
 {{{
-class HappyEvent extends AbstractEvent <HappyHandler> {
+class HappyEvent extends AbstractEvent {
   static Key<HappyEvent,HappyHandler> KEY = new Key<HappyEvent,HappyHandler>(){
     protected void fire(HappyHandler handler, HappyEvent event) {
        handler.onHappiness(event);
@@ -222,7 +222,7 @@ public interface HasHappyEvents {
   public HandlerRegistration addHappyHandler(HappyHandler handler);
 }
 
-public class HappyEvent extends AbstractEvent <HappyHandler> { 
+public class HappyEvent extends AbstractEvent { 
   public final static Key<HappyEvent,HappyHandler> KEY = new Key<HappyEvent,HappyHandler>(){
     protected void fire(HappyHandler handler, HappyEvent event) {
        handler.onHappiness(event);
