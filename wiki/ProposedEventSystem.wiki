@@ -196,6 +196,7 @@ class HappyEvent extends AbstractEvent{
   }
   ...
 }
+}}}
   # Wire up the handler's `fire` method
 {{{
 class HappyEvent extends AbstractEvent <HappyHandler> {
