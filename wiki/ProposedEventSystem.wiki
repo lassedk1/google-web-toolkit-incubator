@@ -101,14 +101,13 @@ This is the API that will be used by most widget creators who are creating and p
    * Each event key has the following information
      * Unique id associated with the key (used to store handlers)
      * How to fire the handler method 
-=== Protected methods ===
-  * In `Widget` 
-    * `protected final HandlerRegistration addHandler(AbstractEvent.Key<?,HandlerType> key, HandlerType handler)`
-      * Registers the handler for the event type.
-    * `protected final HandlerRegistration addHandlerAndSink(DomEvent.Key<?,HandlerType> key, HandlerType handler)`
-      *  Registers the handler and also sinks events on it.
-    * `protected final void fireEvent(AbstractEvent event)`
-      *  Fires the event to all registered handlers 
+=== Extra Widget methods===
+   * `protected final HandlerRegistration addHandler(AbstractEvent.Key<?,HandlerType> key, HandlerType handler)`
+       * Registers the handler for the event type.
+   * `protected final HandlerRegistration addHandlerAndSink(DomEvent.Key<?,HandlerType> key, HandlerType handler)`
+       *  Registers the handler and also sinks events on it.
+   * `protected final void fireEvent(AbstractEvent event)`
+       *  Fires the event to all registered handlers 
    
 === How it works ===
   * When a handler is added to a widget, the widget calls `addEventHandler` with the event's key and the supplied handler.
