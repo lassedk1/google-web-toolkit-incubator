@@ -288,18 +288,18 @@ We wire up `DomEvent` so it can fire a native event directly on the handler mana
 We register dom event keys lazily, so that unused event types (i.e. ones where no handler is ever constructed) are still dead-stripped in the compiled output.
 
 === How it works ===
-==== Widget ====
+==== In `Widget` ====
 {{{
  public void onBrowserEvent(Event e){
      DomEvent.fireEvent(e,getHandlerManager());
  }
 }}}
 
-==== `DomEvent` ====
+==== In `DomEvent` ====
 `DomEvent` creates a specialized `Key` type with the following information:
   * A single native event type 
   * A global mapping which registers each key based on the native event type. 
-  * A helper `wrap` method which wraps a native event in the coorisponding dom event. 
+  * A helper `wrap` method which wraps a native event in the corresponding dom event. 
 For instance, here is the `DomEvent.Key` for click events:
 {{{
   /**
