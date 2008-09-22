@@ -295,7 +295,7 @@ We register dom event keys lazily, so that unused event types (i.e. ones where n
  }
 }}}
 
-==== DomEvent ====
+==== `DomEvent` ====
 `DomEvent` creates a specialized `Key` type with the following information:
   * A single native event type 
   * A global mapping which registers each key based on the native event type. 
