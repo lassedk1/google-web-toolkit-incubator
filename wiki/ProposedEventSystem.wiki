@@ -296,8 +296,8 @@ We register dom event keys lazily, so that unused event types (i.e. ones where n
 }}}
 
 ==== In `DomEvent` ====
-`DomEvent` creates a specialized `Key` type with the following information:
-  * A single native event type 
+We introduce a specialized `Key` type with the following information:
+  * A single native event type.
   * A global mapping which registers each key based on the native event type. 
   * A helper `wrap` method which wraps a native event in the corresponding dom event. 
 For instance, here is the `DomEvent.Key` for click events:
