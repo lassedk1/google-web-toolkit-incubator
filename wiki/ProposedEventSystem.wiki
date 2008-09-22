@@ -234,12 +234,6 @@ public class HappyEvent extends AbstractEvent {
 }
 
 }}}
-== Class Diagram ==
-  * Widget API classes are in blue
-  * Widget developer classes are in green
-  * Advanced widget developer classes are in black
-
-http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/HandlerDesign.jpg
  
 == How it actually works ==
  * Adding event handler *myHandler* as a handler for `MyEvent`
