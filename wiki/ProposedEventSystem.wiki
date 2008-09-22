@@ -114,18 +114,8 @@ This is the API that will be used by most widget creators who are creating and p
 {{{
  public void addKeyDownHandler(KeyDownHandler handler) {
     addHandler(KeyDownEvent.KEY, handler);
- }
-}}}
-  *  If this is the first time a handler of a given type has been added a widget, the widget's `subscribeTo` method is called. 
-{{{
-  public void subscribeTo(AbstractEvent.Key key) {
-     if(key instanceof BrowserEvent.Key) {
-       int eventToSink = ((BrowserEvent.Key)key).getEventToSink();
-       sinkEvents(eventToSink);
-     }
-  } 
+ } 
 
-}}} 
   * To use the widget's handlers, the widget must create an event object, then call `Widget`'s `fireEvent`.  
 {{{
   @Override
@@ -168,12 +158,12 @@ This API is for those widget creators who need to create custom events and for t
    * Each `HandlerManager` is associated with a single widget. That widget is set as the source for all events passed into the manager.   
 
 === Protected methods ===
- * `AbstractEvent.Key`
-   * `protected abstract void fire(EventHandler handler, EventKey key)`
-     * Allows event instance to call correct handler method. 
  * `AbstractEvent`
    * `abstract AbstractEvent.Key getKey()`
      * Allows event instances to specify the static event key.  
+ * `AbstractEvent.Key`
+   * `protected abstract void fire(EventHandler handler, EventKey key)`
+     * Allows event manager to call correct handler method on the instance. 
 
 
 === Steps to create a custom event ===
@@ -185,39 +175,37 @@ public class HappyEvent extends AbstractEvent{
    ...
 }
 }}}
-  # Define a new handler and fires class for the event class.
+  # Define a new handler and marker interface for the event class.
 {{{
 interface HappyHandler extends EventHandler {
   public void onHappiness(HappyEvent event);
 }
 
-interface FiresHappyEvents {
+interface HasHappyEvents {
   public HandlerRegistration addHappyHandler(HappyHandler handler);
 }
 }}}
   # Add a unique event key
 {{{
-class HappyEvent extends AbstractEvent <HappyHandler>{
-  public static AbstractEvent.Key KEY = new AbstractEvent.Key();
+class HappyEvent extends AbstractEvent{
+  public static AbstractEvent.Key KEY = new AbstractEvent.Key(){...}
  
   public AbstractEvent.Key getKey(){
     return KEY; 
   }
   ...
 }
-  # Wire up the `fire` method
+  # Wire up the handler's `fire` method
 {{{
 class HappyEvent extends AbstractEvent <HappyHandler> {
   static Key<HappyEvent,HappyHandler> KEY = new Key<HappyEvent,HappyHandler>(){
-    protected void fire(HappyHandler handler) {
-       happyHandler.onHappiness(this);
-    }
-  }}}
-  ...
+    protected void fire(HappyHandler handler, HappyEvent event) {
+       handler.onHappiness(event);
+    };
+   ...
 }
 }}}
 
-}}}
  
 === Full code needed to create a `Happy` handler === 
 
@@ -226,21 +214,21 @@ public interface HappyHandler extends EventHandler {
   public void onHappiness(HappyEvent event);
 }
 
-public interface FiresHappyEvents {
+
+
+public interface HasHappyEvents {
   public HandlerRegistration addHappyHandler(HappyHandler handler);
 }
 
-public class HappyEvent extends AbstractEvent <HappyHandler> {
-  public static AbstractEvent.Key KEY = new AbstractEvent.Key( );
+public class HappyEvent extends AbstractEvent <HappyHandler> { 
+  public final static Key<HappyEvent,HappyHandler> KEY = new Key<HappyEvent,HappyHandler>(){
+    protected void fire(HappyHandler handler, HappyEvent event) {
+       handler.onHappiness(event);
+    }
 
   public AbstractEvent.Key getKey(){
     return KEY; 
-  }
-
-  public void fire(HappyHandler handler) {
-    handler.onHappiness(this);
-  }
-   
+  } 
 }
 
 }}}
