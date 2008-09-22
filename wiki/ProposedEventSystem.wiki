@@ -110,10 +110,10 @@ This is the API that will be used by most widget creators who are creating and p
        *  Fires the event to all registered handlers 
    
 === How it works ===
-  * When a handler is added to a widget, the widget calls `addEventHandler` with the event's key and the supplied handler.
+  * When a handler is added to a widget, the widget calls `addHandler` with the event's key and the supplied handler.
 {{{
  public void addKeyDownHandler(KeyDownHandler handler) {
-    addEventHandler(KeyDownEvent.KEY, handler);
+    addHandler(KeyDownEvent.KEY, handler);
  }
 }}}
   *  If this is the first time a handler of a given type has been added a widget, the widget's `subscribeTo` method is called. 
@@ -146,8 +146,8 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
 
  // implements FiresKeyDownEvents.addKeyDownHandler
  public void addKeyDownHandler(KeyDownHandler handler) {
-    // Widget's addEventHandler method. Registers the current handler as a KeyDownEvent handler.
-    addEventHandler(KeyDownEvent.KEY, handler);
+    // Widget's addHandler method. Registers the current handler as a KeyDownEvent handler.
+    addHandler(KeyDownEvent.KEY, handler);
  }
   @Override
   public void onBrowserEvent(Event e){
@@ -164,35 +164,16 @@ This API is for those widget creators who need to create custom events and for t
 
 === Class Overview ===
   * `HandlerManager`
-   * Manages all event handlers for widgets. `Widget` lazily creates a `HandlerManager` instance when `addEventHandler` is called.
-   * Each `HandlerManager` is associated with a single widget. That widget is set as the source for all events passed into the manager. The associated 'widget' must implement a  characteristic interface. The exact name of the interface is To be determined.
+   * Manages all event handlers for widgets. `Widget` lazily creates a `HandlerManager` instance when `addHandler` is called.
+   * Each `HandlerManager` is associated with a single widget. That widget is set as the source for all events passed into the manager.   
 
 === Protected methods ===
+ * `AbstractEvent.Key`
+   * `protected abstract void fire(EventHandler handler, EventKey key)`
+     * Allows event instance to call correct handler method. 
  * `AbstractEvent`
-  * `protected abstract void fire(EventHandler handler)`
-   * Allows event instance to call correct handler method. For example 
-{{{
-public class KeyDownEvent extends KeyEvent<KeyDownHandler> {
-  public void fire(KeyDownHandler handler) {
-     handler.onKeyDown(this);
-  }
- ...
-}
-}}}
-  * `abstract AbstractEvent.Key getKey()`
-   * Allows event instances to specify the static event key.  The event key can also contain additional useful information about the event type. For example
-{{{
-public class KeyDownEvent extends BrowserEvent {
-  
-  // BrowserEvent.Key overrides Key and adds a getEventToSink() attribute.  
-  public static final BrowserEvent.Key KEY = new BrowserEvent.Key(Event.ON_KEY_DOWN);
- 
-   // This method allows the event, once created, to identify its key. The handler manager uses that information to dispatch the event to the correct handlers.
-   public AbstractEvent.Key getKey(){
-    return KEY;
-  }
-}
-}}}
+   * `abstract AbstractEvent.Key getKey()`
+     * Allows event instances to specify the static event key.  
 
 
 === Steps to create a custom event ===
@@ -214,15 +195,6 @@ interface FiresHappyEvents {
   public HandlerRegistration addHappyHandler(HappyHandler handler);
 }
 }}}
-  # Wire up the `HappyEvent.fire` method
-{{{
-class HappyEvent extends AbstractEvent <HappyHandler> {
-  protected void fire(HappyHandler handler) {
-     happyHandler.onHappiness(this);
-  }
-  ...
-}
-}}}
   # Add a unique event key
 {{{
 class HappyEvent extends AbstractEvent <HappyHandler>{
@@ -233,6 +205,18 @@ class HappyEvent extends AbstractEvent <HappyHandler>{
   }
   ...
 }
+  # Wire up the `fire` method
+{{{
+class HappyEvent extends AbstractEvent <HappyHandler> {
+  static Key<HappyEvent,HappyHandler> KEY = new Key<HappyEvent,HappyHandler>(){
+    protected void fire(HappyHandler handler) {
+       happyHandler.onHappiness(this);
+    }
+  }}}
+  ...
+}
+}}}
+
 }}}
  
 === Full code needed to create a `Happy` handler === 
@@ -271,7 +255,7 @@ http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/im
  * Adding event handler *myHandler* as a handler for `MyEvent`
    # In `Widget`
     * ensure `HandlerManager` *handlerManager* instance exists
-    * call `handlerManager.addEventHandler(MyEvent.KEY, myHandler)`
+    * call `handlerManager.addHandler(MyEvent.KEY, myHandler)`
    # In `HandlerManager`  
     * store *myHandler* in a map indexed by event key
     * if this is the first handler of the given type, call `source.subscribeToEvent(myEvent.KEY)' for event specific setup
