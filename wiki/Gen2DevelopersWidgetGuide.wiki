@@ -11,7 +11,10 @@ A gen2 widget is the new, and improved, way of writing gwt widgets.  There are t
 ----
 == Styles ==
 Each widget needs an inner Css interface, assume the name of your widget is MyGen2Widget
+{{{
   public static Css interface extends Widget Css
+}}}
+
 This is where you'll define any style you want to inject into your widget.
 You will need a default css static field for any concrete widget type and a static createCss(String baseName) method.
   
