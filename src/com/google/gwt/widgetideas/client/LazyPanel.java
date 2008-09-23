@@ -29,27 +29,6 @@ import com.google.gwt.user.client.ui.Widget;
  * @param <T> widget type
  */
 public abstract class LazyPanel<T extends Widget> extends SimplePanel {
-  /**
-   * Adds a tab listener to ensure that any {@link LazyPanel} instances are
-   * loaded when a tab panel selects the lazy panel's tab.
-   * 
-   * @param panel to add listener to
-   */
-  public static void addTabListener(final TabPanel panel) {
-    panel.addTabListener(new TabListener() {
-
-      public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
-        Widget widget = panel.getWidget(tabIndex);
-        if (widget instanceof LazyPanel) {
-          ((LazyPanel) widget).ensureWidget();
-        }
-        return true;
-      }
-
-      public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
-      }
-    });
-  }
 
   public LazyPanel() {
   }
@@ -89,8 +68,8 @@ public abstract class LazyPanel<T extends Widget> extends SimplePanel {
   /**
    * Sets whether this object is visible. Creates the widget if necessary.
    * 
-   * @param visible <code>true</code> to show the object, <code>false</code>
-   *          to hide it
+   * @param visible <code>true</code> to show the object, <code>false</code> to
+   * hide it
    */
   public void setVisible(boolean visible) {
     if (visible) {
