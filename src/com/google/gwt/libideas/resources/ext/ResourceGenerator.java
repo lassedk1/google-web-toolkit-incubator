@@ -32,7 +32,7 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
  * <ol>
  * <li>{@link #init(TreeLogger, ResourceContext)}</li>
  * <li>{@link #prepare(TreeLogger, JMethod)} once for each method</li>
- * <li>{@link #createFields(TreeLogger, FieldAccumulator)}</li>
+ * <li>{@link #createFields(TreeLogger, Fields)}</li>
  * <li>{@link #createAssignment(TreeLogger, JMethod)} once for each method</li>
  * <li>{@link #finish(TreeLogger)}</li>
  * </ol>
@@ -67,15 +67,15 @@ public interface ResourceGenerator {
 
   /**
    * The ResourceGenerator can create fields within the implementation of the
-   * bundle type. The instance of FieldAccumulator passed into this method is
-   * used to declare, and possibly initialize, Java fields within the final
-   * implementation of the resource bundle type.
+   * bundle type. The Fields object passed into this method is used to declare,
+   * and possibly initialize, Java fields within the final implementation of the
+   * resource bundle type.
    * <p>
-   * The FieldAccumulator should not be retained beyond the lifetime of this
-   * method as operation on the FieldAccumulator are not defined after the
-   * implementation of this method returns.
+   * The Fields instance should not be retained beyond the lifetime of this
+   * method as operation on this object is not defined after the implementation
+   * of this method returns.
    */
-  void createFields(TreeLogger logger, FieldAccumulator fields)
+  void createFields(TreeLogger logger, Fields fields)
       throws UnableToCompleteException;
 
   /**

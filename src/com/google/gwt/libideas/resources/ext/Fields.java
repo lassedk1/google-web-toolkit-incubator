@@ -18,11 +18,20 @@ package com.google.gwt.libideas.resources.ext;
 import com.google.gwt.core.ext.typeinfo.JType;
 
 /**
- * This interface insulates fields declared in a bundle by different
- * ResourceGenerators from one another. Instances of this type are provided by
- * the resource generation framework to {@link ResourceGenerator#createFields}.
+ * Allows ResourceGenerators to define fields within the implementation class
+ * for a bundle type. An instance of this interface will be provided via the
+ * {@link ResourceGenerator#createFields} method.
+ * <p>
+ * Because multiple, unrelated ResourceGenerators may be generating method
+ * implementations within a single bundle implementation, it is necessary to
+ * ensure that they do not attempt to declare multiple fields with the same
+ * name. The methods in this interface will provide a guaranteed-unique
+ * identifier to use when generating method implementations.
+ * <p>
+ * Multiple invocations of the {@link #define} method with the same inputs will
+ * result in different identifiers being produced.
  */
-public interface FieldAccumulator {
+public interface Fields {
   /**
    * Adds a field to the bundle. Equivalent to
    * <code>addField(type, name, null, true, false)</code>.
@@ -32,7 +41,7 @@ public interface FieldAccumulator {
    *          field
    * @return the identifier that must be used to access the field
    */
-  String addField(JType type, String name);
+  String define(JType type, String name);
 
   /**
    * Adds a field to the bundle.
@@ -48,6 +57,6 @@ public interface FieldAccumulator {
    * @param isFinal if <code>true</code> the fields will be declared as final
    * @return the identifier that must be used to access the field
    */
-  String addField(JType type, String name, String initializer,
-      boolean isStatic, boolean isFinal);
+  String define(JType type, String name, String initializer, boolean isStatic,
+      boolean isFinal);
 }

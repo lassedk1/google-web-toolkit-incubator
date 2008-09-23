@@ -23,7 +23,7 @@ import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
 import com.google.gwt.libideas.resources.client.impl.ImageResourcePrototype;
-import com.google.gwt.libideas.resources.ext.FieldAccumulator;
+import com.google.gwt.libideas.resources.ext.Fields;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
@@ -82,7 +82,7 @@ public final class ImageResourceGenerator extends AbstractResourceGenerator {
   }
 
   @Override
-  public void createFields(TreeLogger logger, FieldAccumulator fields)
+  public void createFields(TreeLogger logger, Fields fields)
       throws UnableToCompleteException {
     for (Map.Entry<RepeatStyle, ImageBundleBuilder> entry : builders.entrySet()) {
       RepeatStyle repeatStyle = entry.getKey();
@@ -118,7 +118,7 @@ public final class ImageResourceGenerator extends AbstractResourceGenerator {
       JClassType stringType = typeOracle.findType(String.class.getName());
       assert stringType != null;
 
-      imageResourceBundleUrlIdents.put(repeatStyle, fields.addField(stringType,
+      imageResourceBundleUrlIdents.put(repeatStyle, fields.define(stringType,
           "imageResourceBundleUrl" + repeatStyle, bundleUrlExpression, true,
           true));
     }

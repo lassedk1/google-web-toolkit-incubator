@@ -18,7 +18,7 @@ package com.google.gwt.libideas.resources.rg;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
-import com.google.gwt.libideas.resources.ext.FieldAccumulator;
+import com.google.gwt.libideas.resources.ext.Fields;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGenerator;
 
@@ -34,7 +34,7 @@ public abstract class AbstractResourceGenerator implements ResourceGenerator {
   /**
    * A no-op implementation.
    */
-  public void createFields(TreeLogger logger, FieldAccumulator fields)
+  public void createFields(TreeLogger logger, Fields fields)
       throws UnableToCompleteException {
   }
 
