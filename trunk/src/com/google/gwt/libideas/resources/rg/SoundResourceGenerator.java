@@ -23,7 +23,7 @@ import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.libideas.resources.client.impl.SoundResourcePrototype;
-import com.google.gwt.libideas.resources.ext.FieldAccumulator;
+import com.google.gwt.libideas.resources.ext.Fields;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
@@ -70,7 +70,7 @@ public class SoundResourceGenerator extends AbstractResourceGenerator {
    * Save the plugins's Element in a class field.
    */
   @Override
-  public void createFields(TreeLogger logger, FieldAccumulator fields)
+  public void createFields(TreeLogger logger, Fields fields)
       throws UnableToCompleteException {
 
     String urlExpression;
@@ -84,7 +84,7 @@ public class SoundResourceGenerator extends AbstractResourceGenerator {
     JClassType elementType = typeOracle.findType(Element.class.getName());
     assert elementType != null;
 
-    flashElementIdent = fields.addField(elementType, "flashElement",
+    flashElementIdent = fields.define(elementType, "flashElement",
         SoundResourcePrototype.class.getName() + ".attach(" + urlExpression
             + ")", true, true);
   }

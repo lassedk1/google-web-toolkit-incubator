@@ -25,7 +25,7 @@ import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.dev.util.Util;
 import com.google.gwt.libideas.resources.client.TextResource;
 import com.google.gwt.libideas.resources.client.impl.ExternalTextResourcePrototype;
-import com.google.gwt.libideas.resources.ext.FieldAccumulator;
+import com.google.gwt.libideas.resources.ext.Fields;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
@@ -71,7 +71,7 @@ public final class ExternalTextResourceGenerator extends
   }
 
   @Override
-  public void createFields(TreeLogger logger, FieldAccumulator fields)
+  public void createFields(TreeLogger logger, Fields fields)
       throws UnableToCompleteException {
     data.append(']');
 
@@ -84,14 +84,14 @@ public final class ExternalTextResourceGenerator extends
     JClassType stringType = typeOracle.findType(String.class.getName());
     assert stringType != null;
 
-    externalTextUrlIdent = fields.addField(stringType, "externalTextUrl",
+    externalTextUrlIdent = fields.define(stringType, "externalTextUrl",
         urlExpression, true, true);
 
     JClassType textResourceType = typeOracle.findType(TextResource.class.getName());
     assert textResourceType != null;
     JType textResourceArrayType = typeOracle.getArrayType(textResourceType);
 
-    externalTextCacheIdent = fields.addField(textResourceArrayType,
+    externalTextCacheIdent = fields.define(textResourceArrayType,
         "externalTextCache", "new " + TextResource.class.getName() + "["
             + currentIndex + "]", true, true);
   }

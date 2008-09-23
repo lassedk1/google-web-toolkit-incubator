@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -30,7 +30,7 @@ import com.google.gwt.dev.generator.NameFactory;
 import com.google.gwt.dev.util.Util;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.libideas.resources.client.ResourcePrototype;
-import com.google.gwt.libideas.resources.ext.FieldAccumulator;
+import com.google.gwt.libideas.resources.ext.Fields;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGenerator;
 import com.google.gwt.libideas.resources.ext.ResourceGeneratorType;
@@ -54,16 +54,16 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
    * An implementation of FieldAccumulator that immediately composes its output
    * into a StringWriter.
    */
-  private static class Fields implements FieldAccumulator {
+  private static class FieldsImpl implements Fields {
     private final NameFactory factory = new NameFactory();
     private final StringWriter buffer = new StringWriter();
     private final PrintWriter pw = new PrintWriter(buffer);
 
-    public String addField(JType type, String name) {
-      return addField(type, name, null, true, false);
+    public String define(JType type, String name) {
+      return define(type, name, null, true, false);
     }
 
-    public String addField(JType type, String name, String initializer,
+    public String define(JType type, String name, String initializer,
         boolean isStatic, boolean isFinal) {
 
       assert Util.isValidJavaIdent(name) : name
@@ -180,7 +180,7 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
 
       // Aggregates the field names of the resources for use with
       // ResourceBundle.getResources()
-      Fields fields = new Fields();
+      Fields fields = new FieldsImpl();
 
       // Try to provide as many errors as possible before failing.
       boolean success = true;
@@ -445,7 +445,7 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
         continue;
       }
 
-      String ident = fields.addField(m.getReturnType().isClassOrInterface(),
+      String ident = fields.define(m.getReturnType().isClassOrInterface(),
           m.getName(), null, true, false);
 
       // Strip off all but the access modifiers
