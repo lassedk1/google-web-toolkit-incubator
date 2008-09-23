@@ -56,7 +56,9 @@ public class MyGen2Widget implements ClickEvent.Source {
 You need to still handle onBrowseEvent by switching on the event type, but instead of sinking the event, checking if any listeners are 
 registered you can simply call:
 
+{{{
 super.fireEvent(ClickEvent.KEY, new ClickEvent(nativeEvent));
+}}}
 
 = Template Methods =
 ----
