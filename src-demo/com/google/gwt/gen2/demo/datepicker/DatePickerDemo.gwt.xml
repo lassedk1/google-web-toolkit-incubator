@@ -1,0 +1,13 @@
+<module>
+
+	<!-- Inherit the core Web Toolkit stuff.                  -->
+	<inherits name='com.google.gwt.user.User' />
+
+	<!--  Inherit Date picker-->
+	<inherits name='com.google.gwt.gen2.datepicker.DatePicker' />
+
+	<!-- Specify the app entry point class.                   -->
+	<entry-point
+		class='com.google.gwt.gen2.demo.datepicker.client.DatePickerDemo' />
+	<stylesheet src='DatePickerDemo.css' />
+</module>
