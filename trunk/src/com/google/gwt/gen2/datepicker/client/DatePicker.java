@@ -186,6 +186,8 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
 
     static void injectCss() {
       BundledCss css = ((Resources) GWT.create(Resources.class)).css();
+      assert (!css.weekdayLabel().equals("null")) : "Something has gone wrong with your css injection for date picker";
+      System.err.println("css week day:" + css.weekdayLabel());
       StyleInjector.injectStylesheet(css.getText());
       DatePicker.DEFAULT_CSS = css;
     }
