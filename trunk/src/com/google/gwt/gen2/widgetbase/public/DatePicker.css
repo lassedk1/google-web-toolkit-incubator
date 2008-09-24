@@ -1,19 +1,22 @@
+/* 
+* Global widget style. 
+*/
 .gwt-DatePicker {
-  width: 150px;
   border: 1px solid #f1f1f1;
   border-bottom: 2px solid #f1f1f1;
   color: 6b6b6b;
   cursor: default;
-} 
+  width: 7em;
+}
 
-.gwt-DatePicker td {
+.gwt-DatePicker-day,.gwt-DatePicker-weekdayLabel,.gwt-DatePicker-weekendLabel
+  {
   font-family: Arial;
   font-size: 65%;
   padding: 2px;
   text-align: center;
   padding: 2px;
   outline: none;
-  -moz-outline: none;
   cursor: default;
 }
 
@@ -25,75 +28,77 @@
   width: 8em;
 }
 
-/**
-Calendar styles
+/* 
+* Calendar styles 
 */
 .gwt-DatePicker-days {
   background-color: white;
   width: 100%;
 }
 
-
-.gwt-DatePicker-dayTitle {
+.gwt-DatePicker-weekdayLabel {
   background: #dbe6de;
+}
+
+.gwt-DatePicker-weekendLabel {
+  background: #dbe7ef;
 }
 
 .gwt-DatePicker-day {
   padding: 1px;
-  cursor:hand;
+  cursor: hand;
+  width: 1em;
 }
 
-.gwt-DatePicker-fillerCell {
+.gwt-DatePicker-day-filler {
   color: #bfbfbf;
   padding: 1px;
   cursor: hand;
 }
 
-.gwt-DatePicker-selectedCell {
+.gwt-DatePicker-day-selected {
   background: #aaccee;
 }
 
-.gwt-DatePicker-disabledCell  {
+.gwt-DatePicker-day-disabled {
   color: graytext;
 }
 
-
-.gwt-DatePicker-highlightedCell {
+.gwt-DatePicker-day-highlighted {
   border: 1px solid #eeeeee;
   padding: 0px;
 }
 
-.gwt-DatePicker-todayCell {
+.gwt-DatePicker-day-today {
   border: 1px solid black;
   padding: 0px;
 }
 
-.gwt-DatePicker-weekendColumn{ 
+.gwt-DatePicker-day-weekend {
   background: #f1f1f1;
 }
 
-/*
-Month selector styles
+/* 
+* Month selector styles 
 */
-.gwt-DatePicker-monthSelector{
+.gwt-DatePicker-monthSelector {
   background: #dbe6de;
   width: 100%;
+  border: 1px solid black;
   text-align: center;
 }
 
-.gwt-DatePicker-monthSelector td {
+.gwt-DatePicker-monthLabel {
+  text-align: center;
+  white-space: nowrap;
   font-weight: bold;
   font-size: 70%;
-}
-
-.gwt-DatePicker-title {
-  text-align: center;
-  background: #dbe6de;
 }
 
 .gwt-DatePicker-previousButton {
   padding-right: 2em;
 }
-.gwt-DatePicker-nextButton{
- padding-left: 2em;
-} 
+
+.gwt-DatePicker-nextButton {
+  padding-left: 2em;
+}

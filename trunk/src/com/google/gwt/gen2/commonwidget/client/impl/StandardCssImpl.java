@@ -23,6 +23,9 @@ import com.google.gwt.user.client.ui.Widget;
  * An impl class that provides basic functionally to support the standard
  * handling of css interface classes.
  * 
+ * Applications that care about Css size and performance should use css
+ * resources.
+ * 
  * @param <WidgetType> the type of widget
  */
 public class StandardCssImpl<WidgetType extends Widget> implements WidgetCss {
@@ -45,17 +48,30 @@ public class StandardCssImpl<WidgetType extends Widget> implements WidgetCss {
     return baseName;
   }
 
+  /**
+   * Sets the base name.
+   */
   protected void setBaseStyleName(String style) {
     baseName = style;
   }
 
   /**
-   * Wraps the given dependent style name.
+   * Prepends the base name to the given style.
+   * 
+   * @param style style name
+   * @return style name
+   */
+  protected String wrap(String styleName) {
+    return baseName + "-" + styleName;
+  }
+
+  /**
+   * Creates the given dependent style name.
    * 
    * @param dependent dependent style name
    * @return style name
    */
-  protected String wrap(String dependent) {
-    return baseName + "-" + dependent;
+  protected String wrap(String base, String dependent) {
+    return baseName + "-" + base + "-" + dependent;
   }
 }

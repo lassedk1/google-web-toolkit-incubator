@@ -29,7 +29,7 @@ public abstract class CalendarView extends DatePickerComponent {
   }
 
   /**
-   * Adds a stylename to the cell of the supplied date. TEMP
+   * Adds a style name to the cell of the supplied date.
    * 
    * @param date date that will have the supplied style added
    * @param styleName style name to add
@@ -86,13 +86,16 @@ public abstract class CalendarView extends DatePickerComponent {
    * @param dates dates to [en|dis]able
    * @param enabled true to enable, false to disable
    */
-  public void setEnabledDates(Iterable<Date> dates, boolean enabled) {
+  public void setDatesEnabled(Iterable<Date> dates, boolean enabled) {
     for (Date date : dates) {
       setDateEnabled(date, enabled);
     }
   }
 
-  protected final void updateHighlightedDate(Date date) {
+  /**
+   * Allows the calendar view to update the date picker's highlighted date.
+   */
+  protected final void setDateHighlighted(Date date) {
     getDatePicker().setHighlightedDate(date);
   }
 }

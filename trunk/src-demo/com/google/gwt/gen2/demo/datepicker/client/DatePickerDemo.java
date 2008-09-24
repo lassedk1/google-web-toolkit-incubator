@@ -22,7 +22,6 @@ import com.google.gwt.gen2.datepicker.client.DatePicker;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.libideas.logging.client.SimpleLogHandler;
 import com.google.gwt.libideas.logging.shared.Log;
-import com.google.gwt.libideas.resources.client.CssResource;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -49,23 +48,6 @@ import java.util.Date;
  * Date picker demo.
  */
 public class DatePickerDemo implements EntryPoint {
-
-  /**
-   * Convenience class to group css handling code.
-   * 
-   */
-  static class CssHandling {
-
-    /**
-     * Trivial extender.
-     */
-    private static interface Css extends DatePicker.Css, CssResource {
-    }
-
-    private void injectCss() {
-    }
-  }
-
   private DateBox start;
 
   /**
@@ -76,6 +58,7 @@ public class DatePickerDemo implements EntryPoint {
     SimpleLogHandler handler = new SimpleLogHandler(false);
     Log.addLogHandler(handler);
 
+    DatePicker.injectDefaultCss();
     TabPanel panel = new TabPanel();
     panel.getDeckPanel().setAnimationEnabled(true);
     master.add(panel);
@@ -200,15 +183,15 @@ public class DatePickerDemo implements EntryPoint {
     // Log hover events.
     HighlightHandler<Date> logHovers = new HighlightHandler<Date>() {
       public void onHighlight(HighlightEvent<Date> event) {
-        Log.info("Hover:" + event.getHighlightedValue());
+        Log.info("Highlight: " + event.getHighlightedValue());
       }
     };
-    monitorEvents.add(toggleHandler("Log hover events", picker, logHovers));
+    monitorEvents.add(toggleHandler("Log highlight events", picker, logHovers));
 
     // Log select events.
     ChangeHandler<Date> logSelects = new ChangeHandler<Date>() {
       public void onChange(ChangeEvent<Date> event) {
-        Log.info("Select:" + event.getOldValue() + "-->" + event.getNewValue());
+        Log.info("Select: " + event.getOldValue() + "-->" + event.getNewValue());
       }
     };
     monitorEvents.add(toggleHandler("Log select events", picker, logSelects));
