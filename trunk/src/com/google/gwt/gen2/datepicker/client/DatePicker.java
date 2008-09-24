@@ -234,22 +234,33 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
   /**
    * Default Css for {@link DatePicker}
    */
-  public static Css DEFAULT_CSS = new CssHandling.StandardCss("gwt-DatePicker");
+  public static Css DEFAULT_CSS;
 
   /**
    * Injects the default css for DatePicker.
    */
   public static void injectDefaultCss() {
+    if (DEFAULT_CSS != null) {
+      assert (false) : "At least one date picker was instaciated with the previous default";
+      throw new IllegalStateException();
+    }
     CssHandling.injectCss();
   }
 
-  private EventHandlers handlers = new EventHandlers();
+  private static Css ensureDefaultCss() {
+    if (DEFAULT_CSS == null) {
+      DEFAULT_CSS = new CssHandling.StandardCss("gwt-DatePicker");
+    }
+    return DEFAULT_CSS;
+  }
 
+  private EventHandlers handlers = new EventHandlers();
   private DateStyler styler = new DateStyler();
   private Date highlightedDate;
   private MonthSelector monthSelector;
   private CalendarView calendar;
   private CalendarModel model;
+
   private Date selectedDate;
 
   private Css css;
@@ -259,7 +270,7 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
    */
   public DatePicker() {
     this(new DefaultMonthSelector(), new DefaultCalendarView(),
-        new CalendarModel(), DEFAULT_CSS);
+        new CalendarModel(), ensureDefaultCss());
   }
 
   /**
