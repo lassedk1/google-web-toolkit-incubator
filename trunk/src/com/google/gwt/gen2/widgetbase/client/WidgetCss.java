@@ -16,8 +16,6 @@
 
 package com.google.gwt.gen2.widgetbase.client;
 
-import com.google.gwt.libideas.resources.client.CssResource;
-
 /**
  * Returns all the css style names used by a widget. Each widget supporting this
  * interface should provide its own custom sub-interface and a concrete standard

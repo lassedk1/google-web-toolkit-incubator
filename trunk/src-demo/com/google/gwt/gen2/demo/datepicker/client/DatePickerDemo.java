@@ -16,8 +16,6 @@
 
 package com.google.gwt.gen2.demo.datepicker.client;
 
-import java.util.Date;
-
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.gen2.datepicker.client.DateBox;
 import com.google.gwt.gen2.datepicker.client.DatePicker;
@@ -25,15 +23,12 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.libideas.logging.client.SimpleLogHandler;
 import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.libideas.resources.client.CssResource;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -48,6 +43,11 @@ import com.google.gwt.widgetideas.client.event.KeyDownHandler;
 import com.google.gwt.widgetideas.client.event.RenderingEvent;
 import com.google.gwt.widgetideas.client.event.RenderingHandler;
 
+import java.util.Date;
+
+/**
+ * Date picker demo.
+ */
 public class DatePickerDemo implements EntryPoint {
 
   /**
@@ -63,7 +63,6 @@ public class DatePickerDemo implements EntryPoint {
     }
 
     private void injectCss() {
-
     }
   }
 

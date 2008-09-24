@@ -163,7 +163,6 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
       setHTML(nextRow, 0, html);
       return getCellFormatter().getElement(nextRow, 0);
     }
-
   }
 
   /**

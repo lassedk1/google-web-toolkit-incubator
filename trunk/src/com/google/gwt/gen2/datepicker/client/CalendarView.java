@@ -22,11 +22,8 @@ import java.util.Date;
  * The CalendarView is a calendar grid that represents the current view of a
  * {@link DatePicker}.
  * 
- * @param <MyDatePicker> the date picker type used with this calendar view.
- * 
  */
-public abstract class CalendarView 
-    extends DatePickerComponent {
+public abstract class CalendarView extends DatePickerComponent {
 
   public CalendarView() {
   }

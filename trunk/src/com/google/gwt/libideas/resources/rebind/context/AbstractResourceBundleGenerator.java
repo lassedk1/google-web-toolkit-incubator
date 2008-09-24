@@ -59,6 +59,10 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
     private final StringWriter buffer = new StringWriter();
     private final PrintWriter pw = new PrintWriter(buffer);
 
+    public void addName(String name) {
+      factory.addName(name);
+    }
+
     public String define(JType type, String name) {
       return define(type, name, null, true, false);
     }
@@ -93,10 +97,6 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
       pw.println(";");
 
       return ident;
-    }
-
-    public void addName(String name) {
-      factory.addName(name);
     }
 
     public String toString() {

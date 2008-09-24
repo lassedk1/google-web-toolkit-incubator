@@ -17,9 +17,6 @@
 package com.google.gwt.widgetideas.client;
 
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -65,7 +62,7 @@ public abstract class LazyPanel<T extends Widget> extends SimplePanel {
   }
 
   @Override
-  /**
+  /*
    * Sets whether this object is visible. Creates the widget if necessary.
    * 
    * @param visible <code>true</code> to show the object, <code>false</code> to
