@@ -25,8 +25,8 @@ import java.util.Date;
  * @param <MyDatePicker> the date picker type used with this calendar view.
  * 
  */
-public abstract class CalendarView<MyDatePicker extends DatePicker>
-    extends DatePickerComponent<MyDatePicker> {
+public abstract class CalendarView 
+    extends DatePickerComponent {
 
   public CalendarView() {
   }

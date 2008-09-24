@@ -15,16 +15,12 @@
  */
 package com.google.gwt.gen2.datepicker.client;
 
-import java.util.ArrayList;
 import java.util.Date;
 
-import com.google.gwt.gen2.datepicker.client.DatePicker.Styles;
-import com.google.gwt.gen2.datepicker.client.DefaultCalendarView.CellGrid.Cell;
+import com.google.gwt.gen2.commonwidget.client.impl.CellGridImpl;
+import com.google.gwt.gen2.datepicker.client.DefaultCalendarView.CellGrid.DateCell;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.UIObject;
-import com.google.gwt.widgetideas.table.client.overrides.ElementMapper;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.CellFormatter;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.ColumnFormatter;
 
@@ -33,151 +29,71 @@ import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.ColumnFormatt
  * 
  */
 @SuppressWarnings( {"deprecation"})
-public class DefaultCalendarView extends CalendarView<DatePicker> {
+public class DefaultCalendarView extends CalendarView {
 
-  /*
-   * note the fully-qualified extends classname above: a bug in JDK1.5 (at least
-   * 1.5.0_10 & 12) can't find the symbol "Grid" if unqualified, despite the
-   * identical import (on line 25 as a write this, but subject to change).
-   * --fabbott, 20mar08
-   */
-  class CellGrid extends com.google.gwt.widgetideas.table.client.overrides.Grid {
+  public class CellGrid extends CellGridImpl<Date> {
 
-    class Cell extends UIObject {
-      int index;
-      Date date = new Date();
-      boolean enabled = true;
+    public class DateCell extends Cell {
+      String baseStyle;
 
-      Cell(Element td, int column) {
-        index = cellList.size();
-        cellList.add(this);
-        setElement(td);
-        cellMap.put(this);
-      }
-
-      public Date getDate() {
-        return date;
+      DateCell(Element td) {
+        super(td, new Date());
       }
 
       public boolean isFiller() {
-        return !getModel().isInCurrentMonth(date);
+        return !getModel().isInCurrentMonth(getValue());
       }
 
-      public void onClick(Event event) {
-        if (enabled == false) {
-          return;
-        }
+      @Override
+      public void updateStyle() {
 
-        getDatePicker().setSelectedDate(date);
-        if (isFiller()) {
-          getDatePicker().showDate(date);
-        }
-      }
-
-      public void onHover() {
-        if (enabled == false) {
-          return;
-        }
-        updateHighlightedDate(date);
-      }
-
-      public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-        if (enabled) {
-          removeStyleName(Styles.DISABLED_CELL);
-        } else {
-          addStyleName(Styles.DISABLED_CELL);
-        }
       }
 
       public void update(Date current) {
-        enabled = true;
-        this.date.setTime(current.getTime());
-        String value = getModel().formatDayOfMonth(date);
+        setEnabled(true);
+        deregisterValue(getValue());
+        getValue().setTime(current.getTime());
+        registerValue(getValue());
+        String value = getModel().formatDayOfMonth(getValue());
         setText(value);
+        String baseStyle = css().day();
         if (isFiller()) {
-          setStyleName(Styles.FILLER_CELL);
-        } else {
-          setStyleName(Styles.DATE_CELL);
+          baseStyle += css().fillerCell();
         }
-        setStyleName(this.getElement(), Styles.FILLER_CELL, isFiller());
-        String extraStyle = getDatePicker().getGlobalDateStyle(date);
+        String extraStyle = getDatePicker().getGlobalDateStyle(getValue());
         if (extraStyle != null) {
-          setStyleName(this.getElement(), extraStyle, true);
+          baseStyle += " " + extraStyle;
         }
+        updateStyle();
       }
 
       private void setText(String value) {
         DOM.setInnerText(getElement(), value);
       }
-    }
 
-    private ElementMapper<Cell> cellMap = new ElementMapper<Cell>();
-
-    private ArrayList<Cell> cellList = new ArrayList<Cell>();
-
-    CellGrid() {
-      super(CalendarModel.WEEKS_IN_MONTH + 1, CalendarModel.DAYS_IN_WEEK);
-      setCellPadding(0);
-      setCellSpacing(0);
-      sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT);
-    }
-
-    @Override
-    public void onBrowserEvent(Event event) {
-
-      switch (DOM.eventGetType(event)) {
-        case Event.ONCLICK: {
-          Cell cell = getCell(event);
-          if (cell != null) {
-            cell.onClick(event);
+      @Override
+      public void onSelected(boolean selected) {
+        if (selected) {
+          getDatePicker().setSelectedDate(getValue());
+          if (isFiller()) {
+            getDatePicker().showDate(getValue());
           }
-          break;
         }
-        case Event.ONMOUSEOUT: {
-          Element e = DOM.eventGetFromElement(event);
-          if (e != null) {
-            Cell cell = cellMap.get(e);
-            if (cell != null) {
-              cell.removeStyleName(Styles.HIGHLIGHTED_CELL);
-              Element target = DOM.eventGetToElement(event);
-              if (target != null && cellMap.get(target) == null) {
-                updateHighlightedDate(null);
-              }
-            }
-          }
-          break;
-        }
-        case Event.ONMOUSEOVER: {
-          Element e = DOM.eventGetToElement(event);
-          if (e != null) {
-            Cell cell = cellMap.get(e);
-            if (cell != null) {
-              cell.addStyleName(Styles.HIGHLIGHTED_CELL);
-              cell.onHover();
-            }
-          }
-          break;
-        }
+        super.onSelected(selected);
       }
     }
 
-    public int size() {
-      return cellList.size();
+    CellGrid() {
+      resize(CalendarModel.WEEKS_IN_MONTH + 1, CalendarModel.DAYS_IN_WEEK);
     }
 
-    private Cell getCell(Event e) {
-      // Find out which cell was actually clicked.
-      Element td = getEventTargetCell(e);
-      return td != null ? cellMap.get(td) : null;
+    @Override
+    protected void onSelected(Cell lastSelected, Cell cell) {
     }
 
-    private Cell getCell(int i) {
-      return cellList.get(i);
-    }
   }
 
-  CellGrid grid = new CellGrid();
+  private CellGrid grid = new CellGrid();
 
   private Date firstDisplayed;
 
@@ -203,25 +119,23 @@ public class DefaultCalendarView extends CalendarView<DatePicker> {
 
   @Override
   public boolean isDateEnabled(Date d) {
-    return getCell(d).enabled;
+    return getCell(d).isEnabled();
   }
 
   public void refresh() {
     firstDisplayed = getModel().getFirstDayOfCurrentFirstWeek();
-    
+
     if (firstDisplayed.getDate() == 1) {
-     // show one empty week if date is monday the first in month
-     // see http://code.google.com/p/google-web-toolkit-incubator/issues/detail?id=100
-     CalendarModel.shiftDays(firstDisplayed, -7);
-   }
+      // show one empty week if date is Monday is the first in month.
+      CalendarModel.shiftDays(firstDisplayed, -7);
+    }
 
     lastDisplayed.setTime(firstDisplayed.getTime());
-
-    for (int i = 0; i < grid.cellList.size(); i++) {
+    for (int i = 0; i < grid.getNumCells(); i++) {
       if (i != 0) {
         CalendarModel.shiftDays(lastDisplayed, 1);
       }
-      Cell cell = grid.cellList.get(i);
+      DateCell cell = (DateCell) grid.getCell(i);
       cell.update(lastDisplayed);
     }
   }
@@ -245,34 +159,34 @@ public class DefaultCalendarView extends CalendarView<DatePicker> {
       int dayIdx = i + shift < CalendarModel.DAYS_IN_WEEK ? i + shift : i
           + shift - CalendarModel.DAYS_IN_WEEK;
       grid.setText(0, i, getModel().formatDayOfWeek(dayIdx));
-      formatter.setStyleName(0, i, Styles.DAY_TITLE);
+      formatter.setStyleName(0, i, css().dayTitle());
     }
 
     for (int row = 1; row <= CalendarModel.WEEKS_IN_MONTH; row++) {
       for (int column = 0; column < CalendarModel.DAYS_IN_WEEK; column++) {
-        grid.new Cell(formatter.getElement(row, column), column);
+        grid.new DateCell(formatter.getElement(row, column));
       }
     }
     initWidget(grid);
-    setStyleName(Styles.CALENDAR_VIEW);
+    setStyleName(css().days());
     ColumnFormatter columnFormatter = grid.getColumnFormatter();
     for (int i = 0; i < 7; i++) {
       int shift = CalendarModel.getLocaleStartingDayOfWeek();
       int dayIdx = i + shift < CalendarModel.DAYS_IN_WEEK ? i + shift : i
           + shift - CalendarModel.DAYS_IN_WEEK;
       if (getModel().isWeekend(dayIdx)) {
-        columnFormatter.addStyleName(i, Styles.WEEKEND);
+        columnFormatter.addStyleName(i, css().days());
       }
     }
   }
 
-  private Cell getCell(Date d) {
+  private DateCell getCell(Date d) {
     int index = CalendarModel.diffDays(firstDisplayed, d);
 
-    Cell cell = grid.getCell(index);
-    if (cell.date.getDate() != d.getDate()) {
+    DateCell cell = (DateCell) grid.getCell(index);
+    if (cell.getValue().getDate() != d.getDate()) {
       throw new IllegalStateException(d + " cannot be associated with cell "
-          + cell + " as it has date " + cell.date);
+          + cell + " as it has date " + cell.getValue());
     }
     return cell;
   }

@@ -18,7 +18,6 @@ package com.google.gwt.gen2.datepicker.client;
 
 import java.util.Date;
 
-import com.google.gwt.gen2.datepicker.client.DatePicker.Styles;
 import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -29,7 +28,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * A simple {@link MonthSelector} used for the default date picker.
  */
-public class DefaultMonthSelector extends MonthSelector<DatePicker> {
+public class DefaultMonthSelector extends MonthSelector {
 
   PushButton backwards = new PushButton();
   PushButton forwards = new PushButton();
@@ -57,14 +56,14 @@ public class DefaultMonthSelector extends MonthSelector<DatePicker> {
   protected void setup() {
     HorizontalPanel p = new HorizontalPanel();
     p.add(backwards);
-    backwards.addStyleName(Styles.MONTH_BACKWARD);
+    backwards.addStyleName(css().previousButton());
     p.add(label);
-    label.addStyleName(Styles.MONTH_LABEL);
+    label.addStyleName(css().title());
     p.add(forwards);
     p.setCellWidth(label, "100%");
-    forwards.addStyleName(Styles.MONTH_FORWARD);
+    forwards.addStyleName(css().nextButton());
     initWidget(p);
-    setStyleName(Styles.MONTH_SELECTOR);
+    setStyleName(css().days());
 
     backwards.addClickListener(new ClickListener() {
       public void onClick(Widget sender) {

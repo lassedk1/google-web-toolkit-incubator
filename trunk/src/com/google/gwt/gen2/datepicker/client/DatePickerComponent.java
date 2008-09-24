@@ -18,9 +18,8 @@ package com.google.gwt.gen2.datepicker.client;
 
 import com.google.gwt.user.client.ui.Composite;
 
-abstract class DatePickerComponent<MyDatePicker extends DatePicker> extends
-    Composite {
-  private MyDatePicker datePicker;
+abstract class DatePickerComponent extends Composite {
+  private DatePicker datePicker;
 
   public CalendarModel getModel() {
     return datePicker.getModel();
@@ -31,7 +30,7 @@ abstract class DatePickerComponent<MyDatePicker extends DatePicker> extends
     getDatePicker().refresh();
   }
 
-  protected MyDatePicker getDatePicker() {
+  protected DatePicker getDatePicker() {
     return datePicker;
   }
 
@@ -46,8 +45,11 @@ abstract class DatePickerComponent<MyDatePicker extends DatePicker> extends
    */
   protected abstract void setup();
 
-  void setDatePicker(MyDatePicker dp) {
-    this.datePicker = dp;
+  void setDatePicker(DatePicker me) {
+    this.datePicker = me;
   }
 
+  protected DatePicker.Css css() {
+    return datePicker.css();
+  }
 }
