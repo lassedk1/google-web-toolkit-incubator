@@ -34,7 +34,7 @@ import com.google.gwt.core.ext.typeinfo.JType;
 public interface Fields {
   /**
    * Adds a field to the bundle. Equivalent to
-   * <code>addField(type, name, null, true, false)</code>.
+   * <code>defineField(type, name, null, true, false)</code>.
    * 
    * @param type the declared type of the field
    * @param name a Java identifier to be used as the basis for the name of the
