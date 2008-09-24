@@ -15,14 +15,14 @@
  */
 package com.google.gwt.gen2.datepicker.client;
 
-import java.util.Date;
-
 import com.google.gwt.gen2.commonwidget.client.impl.CellGridImpl;
 import com.google.gwt.gen2.datepicker.client.DefaultCalendarView.CellGrid.DateCell;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.CellFormatter;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.ColumnFormatter;
+
+import java.util.Date;
 
 /**
  * Simple calendar view.
@@ -31,7 +31,11 @@ import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.ColumnFormatt
 @SuppressWarnings( {"deprecation"})
 public class DefaultCalendarView extends CalendarView {
 
-  public class CellGrid extends CellGridImpl<Date> {
+  /**
+   * Cell grid.
+   * 
+   */
+  class CellGrid extends CellGridImpl<Date> {
 
     public class DateCell extends Cell {
       String baseStyle;
@@ -45,8 +49,14 @@ public class DefaultCalendarView extends CalendarView {
       }
 
       @Override
-      public void updateStyle() {
-
+      public void onSelected(boolean selected) {
+        if (selected) {
+          getDatePicker().setSelectedDate(getValue());
+          if (isFiller()) {
+            getDatePicker().showDate(getValue());
+          }
+        }
+        super.onSelected(selected);
       }
 
       public void update(Date current) {
@@ -56,7 +66,7 @@ public class DefaultCalendarView extends CalendarView {
         registerValue(getValue());
         String value = getModel().formatDayOfMonth(getValue());
         setText(value);
-        String baseStyle = css().day();
+        String style = css().day();
         if (isFiller()) {
           baseStyle += css().fillerCell();
         }
@@ -67,19 +77,12 @@ public class DefaultCalendarView extends CalendarView {
         updateStyle();
       }
 
-      private void setText(String value) {
-        DOM.setInnerText(getElement(), value);
+      @Override
+      public void updateStyle() {
       }
 
-      @Override
-      public void onSelected(boolean selected) {
-        if (selected) {
-          getDatePicker().setSelectedDate(getValue());
-          if (isFiller()) {
-            getDatePicker().showDate(getValue());
-          }
-        }
-        super.onSelected(selected);
+      private void setText(String value) {
+        DOM.setInnerText(getElement(), value);
       }
     }
 
@@ -90,7 +93,6 @@ public class DefaultCalendarView extends CalendarView {
     @Override
     protected void onSelected(Cell lastSelected, Cell cell) {
     }
-
   }
 
   private CellGrid grid = new CellGrid();

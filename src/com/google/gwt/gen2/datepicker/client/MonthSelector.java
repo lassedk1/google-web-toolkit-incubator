@@ -20,7 +20,6 @@ import java.util.Date;
 /**
  * Abstract month selector widget.
  * 
- * @param <MyDatePicker> date picker used with this month selector
  */
 public abstract class MonthSelector extends DatePickerComponent {
 

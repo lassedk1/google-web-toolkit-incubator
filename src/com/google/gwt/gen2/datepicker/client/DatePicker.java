@@ -16,11 +16,6 @@
 
 package com.google.gwt.gen2.datepicker.client;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import com.google.gwt.gen2.widgetbase.client.WidgetCss;
 import com.google.gwt.libideas.resources.client.CssResource.ClassName;
 import com.google.gwt.user.client.ui.Composite;
@@ -37,30 +32,23 @@ import com.google.gwt.widgetideas.client.event.HighlightHandler;
 import com.google.gwt.widgetideas.client.event.RenderingEvent;
 import com.google.gwt.widgetideas.client.event.RenderingHandler;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 /**
  * Date picker.
  */
 public class DatePicker extends Composite implements FiresChangeEvents<Date>,
     FiresHighlightEvents<Date>, FiresRenderingEvents {
 
-  public static Css DEFAULT_CSS;
-
-  private static Css ensureDefaultCss() {
-    if (DEFAULT_CSS == null) {
-      DEFAULT_CSS = new StandardCss("gwt-DatePicker");
-    }
-    return DEFAULT_CSS;
-  }
-
+  /**
+   * GWT Date picker css.
+   */
   public interface Css extends WidgetCss {
-    @ClassName("gwt-DatePicker-nextButton")
-    public String nextButton();
-
-    @ClassName("gwt-DatePicker-previousButton")
-    public String previousButton();
-
-    @ClassName("gwt-DatePicker-title")
-    public String title();
+    @ClassName("gwt-DatePicker-day")
+    public String day();
 
     @ClassName("gwt-DatePicker-days")
     public String days();
@@ -68,93 +56,35 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
     @ClassName("gwt-DatePicker-dayTitle")
     public String dayTitle();
 
-    @ClassName("gwt-DatePicker-weekendColumn")
-    public String weekendColumn();
-
-    @ClassName("gwt-DatePicker-day")
-    public String day();
+    @ClassName("gwt-DatePicker-disabledCell")
+    public String disabledCell();
 
     @ClassName("gwt-DatePicker-fillerCell")
     public String fillerCell();
 
-    @ClassName("gwt-DatePicker-selectedCell")
-    public String selectedCell();
-
     @ClassName("gwt-DatePicker-highlightedCell")
     public String highlightedCell();
+
+    @ClassName("gwt-DatePicker-nextButton")
+    public String nextButton();
+
+    @ClassName("gwt-DatePicker-previousButton")
+    public String previousButton();
 
     @ClassName("gwt-DatePicker-selectedAndHighlightedCell")
     public String selectedAndHighlightedCell();
 
-    @ClassName("gwt-DatePicker-disabledCell")
-    public String disabledCell();
+    @ClassName("gwt-DatePicker-selectedCell")
+    public String selectedCell();
+
+    @ClassName("gwt-DatePicker-title")
+    public String title();
 
     @ClassName("gwt-DatePicker-todayCell")
     public String todayCell();
-  }
 
-  private static class StandardCss extends
-      com.google.gwt.gen2.commonwidget.client.impl.StandardCssImpl<DatePicker>
-      implements Css {
-    public StandardCss(String baseStyleName) {
-      super(baseStyleName);
-    }
-
-    public String nextButton() {
-      return wrap("nextButton");
-    }
-
-    public String previousButton() {
-      return wrap("previousButton");
-    }
-
-    public String title() {
-      return wrap("title");
-
-    }
-
-    public String days() {
-      return wrap("days");
-    }
-
-    public String dayTitle() {
-      return wrap("dayTitle");
-    }
-
-    public String weekendColumn() {
-      return wrap("weekendColumn");
-    }
-
-    public String day() {
-      return wrap("day");
-
-    }
-
-    public String fillerCell() {
-      return wrap("fillerCell");
-    }
-
-    public String selectedCell() {
-      return wrap("selectedCell");
-    }
-
-    public String highlightedCell() {
-      return wrap("highlightedCell");
-    }
-
-    public String selectedAndHighlightedCell() {
-      return wrap("selectedAndHighlightedCell");
-    }
-
-    public String disabledCell() {
-      return wrap("disabledCell");
-
-    }
-
-    public String todayCell() {
-      return wrap("todayCell");
-
-    }
+    @ClassName("gwt-DatePicker-weekendColumn")
+    public String weekendColumn();
   }
 
   private class DateStyler {
@@ -195,6 +125,75 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
     private String genKey(Date d) {
       return getModel().createKeyFromDate(d);
     }
+  }
+
+  private static class StandardCss extends
+      com.google.gwt.gen2.commonwidget.client.impl.StandardCssImpl<DatePicker>
+      implements Css {
+    public StandardCss(String baseStyleName) {
+      super(baseStyleName);
+    }
+
+    public String day() {
+      return wrap("day");
+    }
+
+    public String days() {
+      return wrap("days");
+    }
+
+    public String dayTitle() {
+      return wrap("dayTitle");
+    }
+
+    public String disabledCell() {
+      return wrap("disabledCell");
+    }
+
+    public String fillerCell() {
+      return wrap("fillerCell");
+    }
+
+    public String highlightedCell() {
+      return wrap("highlightedCell");
+    }
+
+    public String nextButton() {
+      return wrap("nextButton");
+    }
+
+    public String previousButton() {
+      return wrap("previousButton");
+    }
+
+    public String selectedAndHighlightedCell() {
+      return wrap("selectedAndHighlightedCell");
+    }
+
+    public String selectedCell() {
+      return wrap("selectedCell");
+    }
+
+    public String title() {
+      return wrap("title");
+    }
+
+    public String todayCell() {
+      return wrap("todayCell");
+    }
+
+    public String weekendColumn() {
+      return wrap("weekendColumn");
+    }
+  }
+
+  public static Css DEFAULT_CSS;
+
+  private static Css ensureDefaultCss() {
+    if (DEFAULT_CSS == null) {
+      DEFAULT_CSS = new StandardCss("gwt-DatePicker");
+    }
+    return DEFAULT_CSS;
   }
 
   private EventHandlers handlers = new EventHandlers();
@@ -246,10 +245,6 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
     addGlobalDateStyle(new Date(), css().todayCell());
   }
 
-  public final Css css() {
-    return css;
-  }
-
   public final void addChangeHandler(ChangeHandler<Date> handler) {
     handlers.add(ChangeEvent.class, handler);
   }
@@ -298,6 +293,10 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
    */
   public final void addVisibleDateStyles(Iterable<Date> dates, String styleName) {
     getCalendarView().addDateStyles(dates, styleName);
+  }
+
+  public final Css css() {
+    return css;
   }
 
   /**

@@ -17,7 +17,6 @@
 package com.google.gwt.gen2.commonwidget.client.impl;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.gen2.selection.client.CustomListBox;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.KeyboardListener;
@@ -32,7 +31,6 @@ import java.util.Iterator;
  * Highlighting, selectable cell grid. Base class for {@link CustomListBox} and
  * (eventually) Calendar view.
  * 
- * @param <CellType> type of cell used.
  * @param <ValueType> type of value in grid.
  */
 @SuppressWarnings("unchecked")
@@ -194,6 +192,11 @@ public abstract class CellGridImpl<ValueType> extends
     return getValue(selectedCell);
   }
 
+  public ValueType getValue(Cell cell) {
+    // ValueType == Object, so cast should be removed in real code.
+    return (ValueType) (cell == null ? null : cell.getValue());
+  }
+
   @Override
   public void onBrowserEvent(Event event) {
 
@@ -241,11 +244,6 @@ public abstract class CellGridImpl<ValueType> extends
     setSelected(getCellFromValue(value));
   }
 
-  public ValueType getValue(Cell cell) {
-    // ValueType == Object, so cast should be removed in real code.
-    return (ValueType) (cell == null ? null : cell.getValue());
-  }
-
   protected void onKeyDown(Cell lastHighlighted, Event event) {
     if (KeyboardSupportImpl.hasModifiers(event)) {
       return;
@@ -261,10 +259,6 @@ public abstract class CellGridImpl<ValueType> extends
   }
 
   protected abstract void onSelected(Cell lastSelected, Cell cell);
-
-  private boolean isActive(Cell cell) {
-    return cell != null && cell.isEnabled();
-  }
 
   protected void setHighlighted(Cell nextHighlighted) {
     if (nextHighlighted == highlightedCell) {
@@ -291,5 +285,9 @@ public abstract class CellGridImpl<ValueType> extends
       selectedCell.onSelected(true);
     }
     onSelected(last, selectedCell);
+  }
+
+  private boolean isActive(Cell cell) {
+    return cell != null && cell.isEnabled();
   }
 }

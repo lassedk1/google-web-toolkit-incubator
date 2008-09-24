@@ -16,14 +16,14 @@
 
 package com.google.gwt.gen2.datepicker.client;
 
-import java.util.Date;
-
 import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Date;
 
 /**
  * A simple {@link MonthSelector} used for the default date picker.
