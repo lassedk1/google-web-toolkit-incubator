@@ -20,28 +20,32 @@ import com.google.gwt.gen2.datepicker.client.DefaultCalendarView.CellGrid.DateCe
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.CellFormatter;
-import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.ColumnFormatter;
 
 import java.util.Date;
 
 /**
- * Simple calendar view.
- * 
+ * Simple calendar view. Not part of the public API as we wish to evolve it freely
+ * over time.  Please copy though, as we like it getting used.
  */
-@SuppressWarnings( {"deprecation"})
-public class DefaultCalendarView extends CalendarView {
+
+@SuppressWarnings(/* Date manipulation required */{"deprecation"})
+class DefaultCalendarView extends CalendarView {
 
   /**
    * Cell grid.
    * 
    */
   class CellGrid extends CellGridImpl<Date> {
+    class DateCell extends Cell {
+      String cellStyle;
+      String dateStyle;
 
-    public class DateCell extends Cell {
-      String baseStyle;
-
-      DateCell(Element td) {
+      DateCell(Element td, boolean isWeekend) {
         super(td, new Date());
+        cellStyle = css().day();
+        if (isWeekend) {
+          cellStyle += " " + css().dayIsWeekend();
+        }
       }
 
       public boolean isFiller() {
@@ -66,19 +70,33 @@ public class DefaultCalendarView extends CalendarView {
         registerValue(getValue());
         String value = getModel().formatDayOfMonth(getValue());
         setText(value);
-        String style = css().day();
+        dateStyle = cellStyle;
         if (isFiller()) {
-          baseStyle += css().fillerCell();
+          dateStyle += " " + css().dayIsFiller();
         }
-        String extraStyle = getDatePicker().getGlobalDateStyle(getValue());
+        String extraStyle = getDatePicker().getGlobalDateStyle(current);
         if (extraStyle != null) {
-          baseStyle += " " + extraStyle;
+          dateStyle += " " + extraStyle;
         }
         updateStyle();
       }
 
       @Override
       public void updateStyle() {
+        String accum = dateStyle;
+        if (isSelected()) {
+          accum += " " + css().dayIsSelected();
+        }
+        if (isHighlighted()) {
+          accum += " " + css().dayIsHighlighted();
+        }
+        if (isHighlighted() && isSelected()) {
+          accum += " " + css().dayIsSelectedAndHighlighted();
+        }
+        if (!isEnabled()) {
+          accum += " " + css().dayIsDisabled();
+        }
+        setStyleName(accum);
       }
 
       private void setText(String value) {
@@ -101,6 +119,9 @@ public class DefaultCalendarView extends CalendarView {
 
   private Date lastDisplayed = new Date();
 
+  /**
+   * Constructor.
+   */
   public DefaultCalendarView() {
   }
 
@@ -124,6 +145,7 @@ public class DefaultCalendarView extends CalendarView {
     return getCell(d).isEnabled();
   }
 
+  @Override
   public void refresh() {
     firstDisplayed = getModel().getFirstDayOfCurrentFirstWeek();
 
@@ -133,6 +155,7 @@ public class DefaultCalendarView extends CalendarView {
     }
 
     lastDisplayed.setTime(firstDisplayed.getTime());
+
     for (int i = 0; i < grid.getNumCells(); i++) {
       if (i != 0) {
         CalendarModel.shiftDays(lastDisplayed, 1);
@@ -154,32 +177,41 @@ public class DefaultCalendarView extends CalendarView {
 
   @Override
   public void setup() {
+    // Preparation
     CellFormatter formatter = grid.getCellFormatter();
-    // Set up title.
+    int weekendStartColumn = -1;
+    int weekendEndColumn = -1;
+
+    // Set up the day labels.
     for (int i = 0; i < CalendarModel.DAYS_IN_WEEK; i++) {
       int shift = CalendarModel.getLocaleStartingDayOfWeek();
       int dayIdx = i + shift < CalendarModel.DAYS_IN_WEEK ? i + shift : i
           + shift - CalendarModel.DAYS_IN_WEEK;
       grid.setText(0, i, getModel().formatDayOfWeek(dayIdx));
-      formatter.setStyleName(0, i, css().dayTitle());
+
+      if (getModel().isWeekend(dayIdx)) {
+        formatter.setStyleName(0, i, css().weekendLabel());
+        if (weekendStartColumn == -1) {
+          weekendStartColumn = i;
+        } else {
+          weekendEndColumn = i;
+        }
+      } else {
+        formatter.setStyleName(0, i, css().weekdayLabel());
+      }
     }
 
+    // Set up the calendar grid.
     for (int row = 1; row <= CalendarModel.WEEKS_IN_MONTH; row++) {
       for (int column = 0; column < CalendarModel.DAYS_IN_WEEK; column++) {
-        grid.new DateCell(formatter.getElement(row, column));
+        // set up formatter.
+        Element e = formatter.getElement(row, column);
+        grid.new DateCell(e, column == weekendStartColumn
+            || column == weekendEndColumn);
       }
     }
     initWidget(grid);
-    setStyleName(css().days());
-    ColumnFormatter columnFormatter = grid.getColumnFormatter();
-    for (int i = 0; i < 7; i++) {
-      int shift = CalendarModel.getLocaleStartingDayOfWeek();
-      int dayIdx = i + shift < CalendarModel.DAYS_IN_WEEK ? i + shift : i
-          + shift - CalendarModel.DAYS_IN_WEEK;
-      if (getModel().isWeekend(dayIdx)) {
-        columnFormatter.addStyleName(i, css().days());
-      }
-    }
+    grid.setStyleName(css().days());
   }
 
   private DateCell getCell(Date d) {

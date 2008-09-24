@@ -26,9 +26,12 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Date;
 
 /**
- * A simple {@link MonthSelector} used for the default date picker.
+ * A simple {@link MonthSelector} used for the default date picker. Not part of
+ * the public API as we wish to evolve it freely over time. Please copy though,
+ * as we like it getting used.
  */
-public class DefaultMonthSelector extends MonthSelector {
+
+class DefaultMonthSelector extends MonthSelector {
 
   PushButton backwards = new PushButton();
   PushButton forwards = new PushButton();
@@ -41,12 +44,14 @@ public class DefaultMonthSelector extends MonthSelector {
     forwards.getUpFace().setHTML("&raquo;");
   }
 
+  @Override
   public void setAllowableDateRange(Date from, Date to) {
     this.from = from;
     this.to = to;
     Log.info("setAllowableDateRange is not yet implemented");
   }
 
+  @Override
   protected void refresh() {
     String text = getModel().formatCurrentMonth();
     label.setText(text);
@@ -58,7 +63,7 @@ public class DefaultMonthSelector extends MonthSelector {
     p.add(backwards);
     backwards.addStyleName(css().previousButton());
     p.add(label);
-    label.addStyleName(css().title());
+    label.addStyleName(css().month());
     p.add(forwards);
     p.setCellWidth(label, "100%");
     forwards.addStyleName(css().nextButton());

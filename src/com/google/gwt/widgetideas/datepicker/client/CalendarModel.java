@@ -25,7 +25,7 @@ import java.util.Date;
 /**
  * Model used to get calendar information.
  */
-@SuppressWarnings( {"deprecation"})
+@SuppressWarnings("deprecation")
 public class CalendarModel {
 
   public static final int WEEKS_IN_MONTH = 6;

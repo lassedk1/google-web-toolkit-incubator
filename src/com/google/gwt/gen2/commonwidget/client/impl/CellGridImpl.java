@@ -181,7 +181,7 @@ public abstract class CellGridImpl<ValueType> extends
   }
 
   public int getNumCells() {
-    return valueToCell.size();
+    return cellList.size();
   }
 
   public Cell getSelectedCell() {
