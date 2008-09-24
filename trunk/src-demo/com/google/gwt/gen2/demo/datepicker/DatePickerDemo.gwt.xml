@@ -10,4 +10,7 @@
 	<entry-point
 		class='com.google.gwt.gen2.demo.datepicker.client.DatePickerDemo' />
 	<stylesheet src='DatePickerDemo.css' />
+	
+	<!-- used to debug this widget's css -->
+   <inherits name='com.google.gwt.gen2.widgetbase.Css_debug' />  
 </module>

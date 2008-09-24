@@ -24,6 +24,7 @@ import com.google.gwt.gen2.datepicker.client.DatePicker;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.libideas.logging.client.SimpleLogHandler;
 import com.google.gwt.libideas.logging.shared.Log;
+import com.google.gwt.libideas.resources.client.CssResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -47,12 +48,26 @@ import com.google.gwt.widgetideas.client.event.KeyDownHandler;
 import com.google.gwt.widgetideas.client.event.RenderingEvent;
 import com.google.gwt.widgetideas.client.event.RenderingHandler;
 
-/**
- * Entry point classes define <code>onModuleLoad()</code>.
- */
 public class DatePickerDemo implements EntryPoint {
 
-  DateBox start = new DateBox();
+  /**
+   * Convenience class to group css handling code.
+   * 
+   */
+  static class CssHandling {
+
+    /**
+     * Trivial extender.
+     */
+    private static interface Css extends DatePicker.Css, CssResource {
+    }
+
+    private void injectCss() {
+
+    }
+  }
+
+  private DateBox start;
 
   /**
    * This is the entry point method.
@@ -64,10 +79,9 @@ public class DatePickerDemo implements EntryPoint {
 
     TabPanel panel = new TabPanel();
     panel.getDeckPanel().setAnimationEnabled(true);
-    LazyPanel.addTabListener(panel);
     master.add(panel);
     master.add(handler.getWidget());
-    panel.add(new LazyPanel() {
+    panel.add(new LazyPanel<Widget>() {
 
       @Override
       public Widget createWidget() {
@@ -76,7 +90,7 @@ public class DatePickerDemo implements EntryPoint {
 
     }, "simple");
 
-    panel.add(new LazyPanel() {
+    panel.add(new LazyPanel<Widget>() {
 
       @Override
       public Widget createWidget() {
@@ -85,7 +99,7 @@ public class DatePickerDemo implements EntryPoint {
 
     }, "events");
 
-    panel.add(new LazyPanel() {
+    panel.add(new LazyPanel<Widget>() {
 
       @Override
       public Widget createWidget() {
@@ -94,7 +108,7 @@ public class DatePickerDemo implements EntryPoint {
 
     }, "styles");
 
-    panel.add(new LazyPanel() {
+    panel.add(new LazyPanel<Widget>() {
 
       @Override
       public Widget createWidget() {
@@ -104,27 +118,7 @@ public class DatePickerDemo implements EntryPoint {
     }, "date range");
 
     panel.selectTab(0);
-    panel.addTabListener(new TabListener() {
 
-      public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
-
-        return true;
-      }
-
-      public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
-        if (tabIndex == 3) {
-          Timer t = new Timer() {
-
-            @Override
-            public void run() {
-              start.setFocus(true);
-            }
-          };
-          t.schedule(350);
-        }
-      }
-
-    });
     RootPanel.get().add(master);
   }
 
@@ -205,7 +199,7 @@ public class DatePickerDemo implements EntryPoint {
     panel.add(monitorEvents);
 
     // Log hover events.
-    HighlightHandler logHovers = new HighlightHandler<Date>() {
+    HighlightHandler<Date> logHovers = new HighlightHandler<Date>() {
       public void onHighlight(HighlightEvent<Date> event) {
         Log.info("Hover:" + event.getHighlightedValue());
       }
@@ -213,7 +207,7 @@ public class DatePickerDemo implements EntryPoint {
     monitorEvents.add(toggleHandler("Log hover events", picker, logHovers));
 
     // Log select events.
-    ChangeHandler logSelects = new ChangeHandler<Date>() {
+    ChangeHandler<Date> logSelects = new ChangeHandler<Date>() {
       public void onChange(ChangeEvent<Date> event) {
         Log.info("Select:" + event.getOldValue() + "-->" + event.getNewValue());
       }
@@ -221,7 +215,7 @@ public class DatePickerDemo implements EntryPoint {
     monitorEvents.add(toggleHandler("Log select events", picker, logSelects));
 
     // Disable selected date
-    ChangeHandler toggleEnabled = new ChangeHandler<Date>() {
+    ChangeHandler<Date> toggleEnabled = new ChangeHandler<Date>() {
       public void onChange(ChangeEvent<Date> event) {
         Date d = event.getNewValue();
         picker.setVisibleDateEnabled(d, !picker.isDateEnabled(d));
