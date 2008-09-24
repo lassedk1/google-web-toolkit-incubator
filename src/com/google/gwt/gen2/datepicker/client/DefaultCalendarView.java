@@ -33,9 +33,9 @@ class DefaultCalendarView extends CalendarView {
 
   /**
    * Cell grid.
-   * 
    */
-  class CellGrid extends CellGridImpl<Date> {
+  //Javac bug requires that date be fully specified here.
+  class CellGrid extends CellGridImpl<java.util.Date> {
     class DateCell extends Cell {
       String cellStyle;
       String dateStyle;
