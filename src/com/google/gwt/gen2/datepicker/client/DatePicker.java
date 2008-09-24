@@ -16,6 +16,13 @@
 
 package com.google.gwt.gen2.datepicker.client;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import com.google.gwt.gen2.widgetbase.client.WidgetCss;
+import com.google.gwt.libideas.resources.client.CssResource.ClassName;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -30,81 +37,124 @@ import com.google.gwt.widgetideas.client.event.HighlightHandler;
 import com.google.gwt.widgetideas.client.event.RenderingEvent;
 import com.google.gwt.widgetideas.client.event.RenderingHandler;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 /**
  * Date picker.
  */
 public class DatePicker extends Composite implements FiresChangeEvents<Date>,
     FiresHighlightEvents<Date>, FiresRenderingEvents {
 
-  /**
-   * Styles used for the DatePicker family of widgets.
-   */
-  protected static class Styles {
-    /**
-     * Style for month selector.
-     */
-    public static final String MONTH_SELECTOR = "month-selector";
-    /**
-     * The month forward widget.
-     */
-    public static final String MONTH_FORWARD = "month-forward";
-    /**
-     * The month backward widget.
-     */
-    public static final String MONTH_BACKWARD = "month-backward";
-    /**
-     * The label displaying the current month.
-     */
-    public static final String MONTH_LABEL = "month-label";
-    /**
-     * Date picker style name.
-     */
-    public static final String DEFAULT = "gwt-DatePicker";
+  public static Css DEFAULT_CSS;
 
-    /**
-     * The full date cell grid.
-     */
-    public static final String CALENDAR_VIEW = "calendar-view";
-    /**
-     * Day of week title i.e. "M/Tu/W/...
-     */
-    public static final String DAY_TITLE = "day-title";
-    /**
-     * Weekend modifier.
-     */
-    public static final String WEEKEND = "weekend";
+  private static Css ensureDefaultCss() {
+    if (DEFAULT_CSS == null) {
+      DEFAULT_CSS = new StandardCss("gwt-DatePicker");
+    }
+    return DEFAULT_CSS;
+  }
 
-    /**
-     * Active date cell.
-     */
-    public static final String DATE_CELL = "date-cell";
+  public interface Css extends WidgetCss {
+    @ClassName("gwt-DatePicker-nextButton")
+    public String nextButton();
 
-    /**
-     * Filler begin or ending date cell.
-     */
-    public static final String FILLER_CELL = "filler-cell";
-    /**
-     * Selected date cell.
-     */
-    public static final String SELECTED_CELL = "selected-cell";
-    /**
-     * highlighted date cell.
-     */
-    public static final String HIGHLIGHTED_CELL = "highlighted-cell";
+    @ClassName("gwt-DatePicker-previousButton")
+    public String previousButton();
 
-    /**
-     * Disabled date cell.
-     */
-    public static final String DISABLED_CELL = "disabled-cell";
-    /**
-     * Today's date cell.
-     */
-    public static final String TODAY_CELL = "today-cell";
+    @ClassName("gwt-DatePicker-title")
+    public String title();
+
+    @ClassName("gwt-DatePicker-days")
+    public String days();
+
+    @ClassName("gwt-DatePicker-dayTitle")
+    public String dayTitle();
+
+    @ClassName("gwt-DatePicker-weekendColumn")
+    public String weekendColumn();
+
+    @ClassName("gwt-DatePicker-day")
+    public String day();
+
+    @ClassName("gwt-DatePicker-fillerCell")
+    public String fillerCell();
+
+    @ClassName("gwt-DatePicker-selectedCell")
+    public String selectedCell();
+
+    @ClassName("gwt-DatePicker-highlightedCell")
+    public String highlightedCell();
+
+    @ClassName("gwt-DatePicker-selectedAndHighlightedCell")
+    public String selectedAndHighlightedCell();
+
+    @ClassName("gwt-DatePicker-disabledCell")
+    public String disabledCell();
+
+    @ClassName("gwt-DatePicker-todayCell")
+    public String todayCell();
+  }
+
+  private static class StandardCss extends
+      com.google.gwt.gen2.commonwidget.client.impl.StandardCssImpl<DatePicker>
+      implements Css {
+    public StandardCss(String baseStyleName) {
+      super(baseStyleName);
+    }
+
+    public String nextButton() {
+      return wrap("nextButton");
+    }
+
+    public String previousButton() {
+      return wrap("previousButton");
+    }
+
+    public String title() {
+      return wrap("title");
+
+    }
+
+    public String days() {
+      return wrap("days");
+    }
+
+    public String dayTitle() {
+      return wrap("dayTitle");
+    }
+
+    public String weekendColumn() {
+      return wrap("weekendColumn");
+    }
+
+    public String day() {
+      return wrap("day");
+
+    }
+
+    public String fillerCell() {
+      return wrap("fillerCell");
+    }
+
+    public String selectedCell() {
+      return wrap("selectedCell");
+    }
+
+    public String highlightedCell() {
+      return wrap("highlightedCell");
+    }
+
+    public String selectedAndHighlightedCell() {
+      return wrap("selectedAndHighlightedCell");
+    }
+
+    public String disabledCell() {
+      return wrap("disabledCell");
+
+    }
+
+    public String todayCell() {
+      return wrap("todayCell");
+
+    }
   }
 
   private class DateStyler {
@@ -155,13 +205,22 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
   private CalendarView calendar;
   private CalendarModel model;
   private Date selectedDate;
+  private Css css;
 
   /**
    * Constructor.
    */
   public DatePicker() {
     this(new DefaultMonthSelector(), new DefaultCalendarView(),
-        new CalendarModel());
+        new CalendarModel(), ensureDefaultCss());
+  }
+
+  /**
+   * Constructor.
+   */
+  public DatePicker(Css css) {
+    this(new DefaultMonthSelector(), new DefaultCalendarView(),
+        new CalendarModel(), css);
   }
 
   /**
@@ -171,9 +230,11 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
    * @param calendarView the calendar view
    * @param model the calendar model
    */
+
   protected DatePicker(MonthSelector monthSelector, CalendarView calendarView,
-      CalendarModel model) {
+      CalendarModel model, Css css) {
     this.setModel(model);
+    this.css = css;
     this.monthSelector = monthSelector;
     monthSelector.setDatePicker(this);
     this.calendar = calendarView;
@@ -182,7 +243,11 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
     monthSelector.setup();
     this.setup();
     showDate(new Date());
-    addGlobalDateStyle(new Date(), Styles.TODAY_CELL);
+    addGlobalDateStyle(new Date(), css().todayCell());
+  }
+
+  public final Css css() {
+    return css;
   }
 
   public final void addChangeHandler(ChangeHandler<Date> handler) {
@@ -356,12 +421,12 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
       handlers.fire(event);
     }
     if (old != null) {
-      removeGlobalDateStyle(old, Styles.SELECTED_CELL);
+      removeGlobalDateStyle(old, css().selectedCell());
     }
 
     selectedDate = CalendarModel.copy(date);
     if (selectedDate != null) {
-      addGlobalDateStyle(selectedDate, Styles.SELECTED_CELL);
+      addGlobalDateStyle(selectedDate, css().selectedCell());
     }
   }
 
@@ -428,9 +493,8 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
   protected void setup() {
     FlowPanel panel = new FlowPanel();
     initWidget(panel);
-    setStyleName(Styles.DEFAULT);
+    setStyleName(css().baseName());
     panel.add(this.getMonthSelector());
-    showDate(new Date());
     panel.add(this.getCalendarView());
   }
 
