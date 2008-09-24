@@ -17,7 +17,7 @@
 package com.google.gwt.gen2.commonwidget.client;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.gen2.commonwidget.impl.StandardCssImpl;
+import com.google.gwt.gen2.commonwidget.client.impl.StandardCssImpl;
 import com.google.gwt.gen2.event.dom.client.ClickEvent;
 import com.google.gwt.gen2.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.event.dom.client.HasClickHandlers;
@@ -56,7 +56,7 @@ public class SimpleWidget extends Gen2Widget implements HasMouseHandlers,
    * Create the css for this widget with the given base name.
    */
   public static WidgetCss createCss(String baseName) {
-    return new StandardCssImpl(baseName);
+    return new StandardCssImpl<SimpleWidget>(baseName);
   }
 
   private static Element convertHtml(String html) {

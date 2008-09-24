@@ -1,0 +1,99 @@
+.gwt-DatePicker {
+  width: 150px;
+  border: 1px solid #f1f1f1;
+  border-bottom: 2px solid #f1f1f1;
+  color: 6b6b6b;
+  cursor: default;
+} 
+
+.gwt-DatePicker td {
+  font-family: Arial;
+  font-size: 65%;
+  padding: 2px;
+  text-align: center;
+  padding: 2px;
+  outline: none;
+  -moz-outline: none;
+  cursor: default;
+}
+
+.gwt-DatePicker td,.month-selector td :focus {
+  outline: none
+}
+
+.gwt-DateBox input {
+  width: 8em;
+}
+
+/**
+Calendar styles
+*/
+.gwt-DatePicker-days {
+  background-color: white;
+  width: 100%;
+}
+
+
+.gwt-DatePicker-dayTitle {
+  background: #dbe6de;
+}
+
+.gwt-DatePicker-day {
+  padding: 1px;
+  cursor:hand;
+}
+
+.gwt-DatePicker-fillerCell {
+  color: #bfbfbf;
+  padding: 1px;
+  cursor: hand;
+}
+
+.gwt-DatePicker-selectedCell {
+  background: #aaccee;
+}
+
+.gwt-DatePicker-disabledCell  {
+  color: graytext;
+}
+
+
+.gwt-DatePicker-highlightedCell {
+  border: 1px solid #eeeeee;
+  padding: 0px;
+}
+
+.gwt-DatePicker-todayCell {
+  border: 1px solid black;
+  padding: 0px;
+}
+
+.gwt-DatePicker-weekendColumn{ 
+  background: #f1f1f1;
+}
+
+/*
+Month selector styles
+*/
+.gwt-DatePicker-monthSelector{
+  background: #dbe6de;
+  width: 100%;
+  text-align: center;
+}
+
+.gwt-DatePicker-monthSelector td {
+  font-weight: bold;
+  font-size: 70%;
+}
+
+.gwt-DatePicker-title {
+  text-align: center;
+  background: #dbe6de;
+}
+
+.gwt-DatePicker-previousButton {
+  padding-right: 2em;
+}
+.gwt-DatePicker-nextButton{
+ padding-left: 2em;
+} 

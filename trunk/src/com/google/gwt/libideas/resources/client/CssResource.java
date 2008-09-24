@@ -88,7 +88,7 @@ public interface CssResource extends ResourcePrototype {
    */
   @Documented
   @Target(ElementType.METHOD)
-  @interface ClassName {
+  public @interface ClassName {
     String value();
   }
 
