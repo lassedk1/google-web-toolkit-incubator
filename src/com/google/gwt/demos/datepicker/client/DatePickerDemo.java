@@ -64,7 +64,6 @@ public class DatePickerDemo implements EntryPoint {
 
     TabPanel panel = new TabPanel();
     panel.getDeckPanel().setAnimationEnabled(true);
-    LazyPanel.addTabListener(panel);
     master.add(panel);
     master.add(handler.getWidget());
     panel.add(new LazyPanel() {
