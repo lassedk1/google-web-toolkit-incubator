@@ -18,7 +18,8 @@ package com.google.gwt.gen2.selection.client;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.gen2.commonwidget.client.Decorator;
-import com.google.gwt.gen2.commonwidget.impl.StandardCssImpl;
+import com.google.gwt.gen2.commonwidget.client.impl.CellGridImpl;
+import com.google.gwt.gen2.commonwidget.client.impl.StandardCssImpl;
 import com.google.gwt.gen2.event.logical.shared.HasSelectionHandlers;
 import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
 import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
@@ -95,8 +96,10 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
     String selectedItem();
   }
 
-  private class ItemList extends CellGridImpl<ValueType, ItemList.Item> {
-    private class Item extends CellGridImpl<ValueType, ItemList.Item>.Cell {
+  private class ItemList extends CellGridImpl<ValueType> {
+    private Cell oldCell;
+
+    private class Item extends Cell {
       private String summary;
 
       public Item(Element element, ValueType value, String summary) {
@@ -110,21 +113,7 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
         return summary;
       }
 
-      @Override
-      public void onEnabled(boolean enabled) {
-      }
-
-      @Override
-      public void onHighlight(boolean highlight) {
-        updateStyle();
-      }
-
-      @Override
-      public void onSelected(boolean selected) {
-        updateStyle();
-      }
-
-      private void updateStyle() {
+      protected void updateStyle() {
         String style = css.item() + " ";
         if (isHighlighted() && isSelected()) {
           style += css.selectedAndHighlightedItem();
@@ -156,12 +145,16 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
     }
 
     @Override
-    protected void onSelected(Item oldItem, Item newItem) {
+    protected void onSelected(Cell oldCell, Cell newCell) {
+      Item oldItem = (Item) oldCell;
+      Item newItem = (Item) newCell;
+
       currentSummary = defaultSummary;
-      if (newItem != null && newItem.summary != null) {
+      if (newItem != null && (newItem.summary != null)) {
         currentSummary = newItem.summary;
       }
-      fireEvent(new SelectionEvent(getValue(oldItem), getValue(newItem)));
+      fireEvent(new SelectionEvent<ValueType>(getValue(oldItem),
+          getValue(newItem)));
     }
 
     private Element addHtml(String html) {
@@ -170,12 +163,13 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
       setHTML(nextRow, 0, html);
       return getCellFormatter().getElement(nextRow, 0);
     }
+
   }
 
   /**
    * Creates the standard css instance used for this widget.
    */
-  private static class StandardCss extends StandardCssImpl<CustomListBox>
+  private static class StandardCss extends StandardCssImpl<CustomListBox<?>>
       implements CustomListBox.Css {
 
     /**
