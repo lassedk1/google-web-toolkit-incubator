@@ -15,32 +15,19 @@
  */
 package com.google.gwt.gen2.event.logical.shared;
 
-import com.google.gwt.gen2.event.shared.AbstractEvent; 
-
+import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
- * Represents a before show event.
+ * Handler interface for {@link ShowRangeEvent} events.
+ * 
+ * @param <Value> the range's value
  */
-public class BeforeShowEvent extends AbstractEvent {
+public interface ShowRangeHandler<Value> extends EventHandler {
 
   /**
-    Event Key for BeforeShow.
-  */
-  public static final Key<BeforeShowEvent, BeforeShowHandler> KEY = new Key<BeforeShowEvent,BeforeShowHandler>() {
-     @Override
-     protected void fire(BeforeShowHandler handler, BeforeShowEvent event) {
-       handler.onBeforeShow(event);
-     }
-   };
-
-  /**
-   * Constructs a BeforeShowEvent event.
+   * Called when ShowRangeEvent is fired.
+   * 
+   * @param event the {@link ShowRangeEvent} that was fired
    */
-  public BeforeShowEvent() {
-   }
-  
-  @Override
-  protected Key getKey() {
-    return KEY;
-  }
+  void onShowRange(ShowRangeEvent<Value> event);
 }

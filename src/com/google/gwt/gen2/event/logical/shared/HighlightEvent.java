@@ -15,30 +15,29 @@
  */
 package com.google.gwt.gen2.event.logical.shared;
 
-import com.google.gwt.gen2.event.shared.AbstractEvent; 
-
-
 /**
- * Represents a before show event.
+ * Represents a highlight event.
+ * 
+ * @param <Value> the value of the element highlighted
  */
-public class BeforeShowEvent extends AbstractEvent {
-
+public class HighlightEvent<Value> extends ValueEvent<Value> {
   /**
-    Event Key for BeforeShow.
-  */
-  public static final Key<BeforeShowEvent, BeforeShowHandler> KEY = new Key<BeforeShowEvent,BeforeShowHandler>() {
-     @Override
-     protected void fire(BeforeShowHandler handler, BeforeShowEvent event) {
-       handler.onBeforeShow(event);
-     }
-   };
-
-  /**
-   * Constructs a BeforeShowEvent event.
+   * Event Key for Highlight.
    */
-  public BeforeShowEvent() {
-   }
-  
+  public static final Key<HighlightEvent, HighlightHandler> KEY = new Key<HighlightEvent, HighlightHandler>() {
+    @Override
+    protected void fire(HighlightHandler handler, HighlightEvent event) {
+      handler.onHighlight(event);
+    }
+  };
+
+  /**
+   * Constructs a HighlightEvent event.
+   */
+  public HighlightEvent(Value value) {
+    super(value);
+  }
+
   @Override
   protected Key getKey() {
     return KEY;

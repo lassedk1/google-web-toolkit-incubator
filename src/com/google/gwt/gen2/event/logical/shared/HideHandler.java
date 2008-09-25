@@ -15,31 +15,17 @@
  */
 package com.google.gwt.gen2.event.logical.shared;
 
-import com.google.gwt.gen2.event.shared.AbstractEvent;
+import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
- * Represents a logical after hide event.
+ * Handler interface for {@link HideEvent} events.
  */
-public class AfterHideEvent extends AbstractEvent {
+public interface HideHandler extends EventHandler {
 
   /**
-   * Event Key for AfterHide.
+   * Called when HideEvent is fired.
+   * 
+   * @param event the {@link HideEvent} that was fired
    */
-  public static final Key<AfterHideEvent, AfterHideHandler> KEY = new Key<AfterHideEvent, AfterHideHandler>() {
-    @Override
-    protected void fire(AfterHideHandler handler, AfterHideEvent event) {
-      handler.onAfterHide(event);
-    }
-  };
-
-  /**
-   * Constructs a AfterHideEvent event.
-   */
-  public AfterHideEvent() {
-  }
-
-  @Override
-  protected Key getKey() {
-    return KEY;
-  }
+  void onHide(HideEvent event);
 }

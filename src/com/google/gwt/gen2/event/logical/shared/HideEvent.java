@@ -19,24 +19,24 @@ import com.google.gwt.gen2.event.shared.AbstractEvent;
 
 
 /**
- * Represents a before show event.
+ * Represents a hide event.
  */
-public class BeforeShowEvent extends AbstractEvent {
+public class HideEvent extends AbstractEvent {
 
   /**
-    Event Key for BeforeShow.
+    Event Key for Hide.
   */
-  public static final Key<BeforeShowEvent, BeforeShowHandler> KEY = new Key<BeforeShowEvent,BeforeShowHandler>() {
+  public static final Key<HideEvent, HideHandler> KEY = new Key<HideEvent,HideHandler>() {
      @Override
-     protected void fire(BeforeShowHandler handler, BeforeShowEvent event) {
-       handler.onBeforeShow(event);
+     protected void fire(HideHandler handler, HideEvent event) {
+       handler.onHide(event);
      }
    };
 
   /**
-   * Constructs a BeforeShowEvent event.
+   * Constructs a HideEvent event.
    */
-  public BeforeShowEvent() {
+  public HideEvent() {
    }
   
   @Override

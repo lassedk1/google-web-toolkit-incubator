@@ -13,34 +13,29 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.google.gwt.gen2.event.logical.shared;
 
-import com.google.gwt.gen2.event.shared.AbstractEvent; 
-
+import com.google.gwt.gen2.event.shared.AbstractEvent;
 
 /**
- * Represents a before show event.
+ * Value based event.
+ * 
+ * @param <Value>
  */
-public class BeforeShowEvent extends AbstractEvent {
+abstract class ValueEvent<Value> extends AbstractEvent {
+  private Value value;
+
+  public ValueEvent(Value value) {
+    this.value = value;
+  }
 
   /**
-    Event Key for BeforeShow.
-  */
-  public static final Key<BeforeShowEvent, BeforeShowHandler> KEY = new Key<BeforeShowEvent,BeforeShowHandler>() {
-     @Override
-     protected void fire(BeforeShowHandler handler, BeforeShowEvent event) {
-       handler.onBeforeShow(event);
-     }
-   };
-
-  /**
-   * Constructs a BeforeShowEvent event.
+   * Gets this event's value.
+   * 
+   * @return the value
    */
-  public BeforeShowEvent() {
-   }
-  
-  @Override
-  protected Key getKey() {
-    return KEY;
+  public Value getValue() {
+    return value;
   }
 }

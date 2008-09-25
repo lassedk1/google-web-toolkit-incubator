@@ -18,14 +18,16 @@ package com.google.gwt.gen2.event.logical.shared;
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
- * Handler interface for {@link AfterHideEvent} events.
+ * Handler interface for {@link HighlightEvent} events.
+ * 
+ * @param <Value> the value associated with the highlight event
  */
-public interface AfterHideHandler extends EventHandler {
+public interface HighlightHandler<Value> extends EventHandler {
 
   /**
-   * Called when AfterHideEvent is fired.
+   * Called when HighlightEvent is fired.
    * 
-   * @param event the {@link AfterHideEvent} that was fired
+   * @param event the {@link HighlightEvent} that was fired
    */
-  void onAfterHide(AfterHideEvent event);
+  void onHighlight(HighlightEvent<Value> event);
 }
