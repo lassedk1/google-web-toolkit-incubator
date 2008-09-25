@@ -12,20 +12,19 @@
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- */
-package com.google.gwt.gen2.event.logical.shared;
+ */package com.google.gwt.gen2.event.logical.shared;
 
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 
 /**
  * A widget that implements this interface is a public source of
- * {@link AfterHideEvent} events.
+ * {@link WrongFormatEvent} events.
  */
-public interface HasAfterHideHandlers {
+public interface HasWrongFormatHandlers {
   /**
-   * Adds a {@link HasAfterHideEvent} handler.
+   * Adds a {@link HasWrongFormatEvent} handler.
    * 
    * @param handler the handler
    */
-  HandlerRegistration addAfterHideHandler(AfterHideHandler handler);
+  HandlerRegistration addWrongFormatHandler(WrongFormatHandler handler);
 }

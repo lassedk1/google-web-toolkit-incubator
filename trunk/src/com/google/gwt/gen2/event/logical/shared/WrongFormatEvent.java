@@ -15,30 +15,32 @@
  */
 package com.google.gwt.gen2.event.logical.shared;
 
-import com.google.gwt.gen2.event.shared.AbstractEvent; 
-
-
 /**
- * Represents a before show event.
+ * Represents a wrong format event.
+ * 
+ * @param <Value> the type of value with the wrong format
  */
-public class BeforeShowEvent extends AbstractEvent {
+public class WrongFormatEvent<Value> extends ValueEvent<Value> {
 
   /**
-    Event Key for BeforeShow.
-  */
-  public static final Key<BeforeShowEvent, BeforeShowHandler> KEY = new Key<BeforeShowEvent,BeforeShowHandler>() {
-     @Override
-     protected void fire(BeforeShowHandler handler, BeforeShowEvent event) {
-       handler.onBeforeShow(event);
-     }
-   };
-
-  /**
-   * Constructs a BeforeShowEvent event.
+   * Event Key for WrongFormat.
    */
-  public BeforeShowEvent() {
-   }
-  
+  public static final Key<WrongFormatEvent, WrongFormatHandler> KEY = new Key<WrongFormatEvent, WrongFormatHandler>() {
+    @Override
+    protected void fire(WrongFormatHandler handler, WrongFormatEvent event) {
+      handler.onWrongFormat(event);
+    }
+  };
+
+  /**
+   * Constructs a {@link WrongFormatEvent} event.
+   * 
+   * @param value the value with the wrong format
+   */
+  public WrongFormatEvent(Value value) {
+    super(value);
+  }
+
   @Override
   protected Key getKey() {
     return KEY;
