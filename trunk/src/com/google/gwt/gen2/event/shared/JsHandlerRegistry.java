@@ -22,14 +22,15 @@ import com.google.gwt.gen2.event.shared.AbstractEvent.Key;
 /**
  * Default JavaScript handler registry. This is in the shared package so we
  * don't have to make it public, should never be called outside of GWT.
+ * 
+ * The {@link JsHandlerRegistry} makes use of the fact that in the large
+ * majority of cases, only one or two handlers are added for each event type.
+ * Therefore, rather than storing handlers in a list of lists, we store then in
+ * a single flattened array with an escape clause to handler the rare case where
+ * we have more handlers then expected.
  */
 class JsHandlerRegistry extends JavaScriptObject {
 
-  /**
-   * Create a {@link JsHandlerRegistry} object.
-   * 
-   * @return the handler
-   */
   public static JsHandlerRegistry create() {
     return (JsHandlerRegistry) JavaScriptObject.createObject();
   }
@@ -42,78 +43,126 @@ class JsHandlerRegistry extends JavaScriptObject {
 
   public final void addHandler(AbstractEvent.Key eventKey, EventHandler handler) {
     int base = eventKey.hashCode();
-    int count = getCount(this, base);
-    if (count < AbstractEvent.Key.EXPECTED_MAX_HANDLERS_PER_WIDGET) {
-      ++count;
-      int slot = base + count;
-      set(this, slot, handler);
-      setCount(this, base, count);
-    } else {
-      throw new IllegalStateException("Else case not implemented yet");
+    int count = getCount(base);
+
+    // Switch from flattened list of handlers to list of list of handlers.
+    if (count == HandlerManager.EXPECTED_HANDLERS && isFlattened(base)) {
+      unflatten(base);
     }
+    setHandler(base, count, handler, isFlattened(base));
+    setCount(base, count + 1);
+  }
+
+  public final void clearHandlers(Key<?, ?> key) {
+    int base = key.hashCode();
+    unflatten(base);
+    setHandlerList(base + 1, JavaScriptObject.createArray());
+    setCount(base, 0);
   }
 
   public final void fireEvent(AbstractEvent event) {
     Key key = event.getKey();
-    int count = getHandlerCount(key);
+    int base = key.hashCode();
+    int count = getCount(base);
+    boolean isFlattened = isFlattened(base);
+
     for (int i = 0; i < count; i++) {
-      EventHandler handler = getHandler(key, i);
+      EventHandler handler = getHandler(base, i, isFlattened);
       key.fire(handler, event);
     }
   }
 
   public final EventHandler getHandler(AbstractEvent.Key eventKey, int index) {
-    assert (index < getHandlerCount(eventKey));
-    int findAt = eventKey.hashCode() + index + 1;
-    return get(this, findAt);
+    int base = eventKey.hashCode();
+    int count = getCount(base);
+    if (index >= count) {
+      throw new IndexOutOfBoundsException("index: " + index);
+    }
+    return getHandler(base, index, isFlattened(base));
   }
 
   public final int getHandlerCount(AbstractEvent.Key eventKey) {
-    int index = eventKey.hashCode();
-    return getCount(this, index);
+    return getCount(eventKey.hashCode());
   }
 
   public final void removeHandler(AbstractEvent.Key eventKey,
       EventHandler handler) {
-    remove(this, eventKey.hashCode(), handler);
+    int base = eventKey.hashCode();
+
+    // Removing a handler is unusual, so smaller code is preferable then
+    // handling both flat and dangling list of pointers.
+    unflatten(base);
+    boolean result = removeHelper(base, handler);
+    assert result : handler + " did not exist";
   }
 
-  private native EventHandler get(JavaScriptObject me, int index) /*-{
-     return this[index];
-   }-*/;
+  private native int getCount(int index) /*-{
+    var count = this[index];
+    return count == null? 0:count;
+  }-*/;
 
-  private native int getCount(JavaScriptObject me, int index) /*-{
-     var count = this[index];
-     if(count == null){
-       return 0;
-     } else{
-       return count;
-     }
-   }-*/;
+  private native EventHandler getHandler(int base, int index, boolean flattened) /*-{
+    if(flattened) {
+      return this[base + 2 + index];
+    } else {
+     return this[base + 1][index];
+    }
+  }-*/;
 
-  private native void remove(JavaScriptObject me, int base, EventHandler handler) /*-{
-     var count = this[base];
-     var index = base + 1;
-     var last =  base + count;
+  private native boolean isFlattened(int base) /*-{
+    return this[base + 1] == null;
+  }-*/;
 
-     for(;index <= last;index++){
-       if(this[index] == handler){
-         break;
-       }
-     }
+  private native boolean removeHelper(int base, EventHandler handler) /*-{
+    // Find the handler.
+    var count = this[base];
+    var handlerList = this[base + 1];
+    var handlerIndex = -1;
+    for(var index = 0;  index < count; index++){
+      if(handlerList[index] == handler){
+        handlerIndex = index;
+        break;
+      }
+    }
+    if(handlerIndex == -1) {
+      return false;
+    }
 
-     for(; index < last; index++){
-       this[index] = this[index+1]
-     }
-     this[last] = null;
-     --this[base];
-   }-*/;
+    // Remove the handler.
+    var last = count -1;
+    for(; handlerIndex < last; handlerIndex++){
+      handlerList[handlerIndex] = handlerList[handlerIndex+1]
+    }
+    handlerList[last] = null;
+    --this[base];
+    return true;
+  }-*/;
 
-  private native void set(JavaScriptObject me, int slot, EventHandler handler) /*-{
-     this[slot] = handler;
-   }-*/;
+  private native void setCount(int index, int count) /*-{
+    this[index] = count;
+  }-*/;
 
-  private native void setCount(JavaScriptObject me, int index, int count) /*-{
-     this[index] = count;
-   }-*/;
+  private native void setHandler(int base, int index, EventHandler handler,
+      boolean flattened) /*-{
+    if(flattened) {
+      this[base + 2 + index] = handler;
+    } else {
+      this[base + 1][index] = handler;
+    }
+  }-*/;
+
+  private native void setHandlerList(int base, JavaScriptObject handlerList) /*-{
+    this[base + 1] = handlerList;
+  }-*/;
+
+  private native void unflatten(int base) /*-{
+    var handlerList = {};
+    var count = this[base];
+    var start = base + 2;
+     for(var i = 0; i < count;i++){
+       handlerList[i] = this[start + i];
+       this[start + i] = null;
+      }
+     this[base + 1] = handlerList;
+  }-*/;
 }
