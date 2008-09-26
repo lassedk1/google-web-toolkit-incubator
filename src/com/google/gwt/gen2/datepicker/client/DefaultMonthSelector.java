@@ -18,10 +18,10 @@ package com.google.gwt.gen2.datepicker.client;
 
 import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.widgetideas.table.client.overrides.Grid;
+import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.CellFormatter;
 
 import java.util.Date;
 
@@ -33,54 +33,57 @@ import java.util.Date;
 
 class DefaultMonthSelector extends MonthSelector {
 
-  PushButton backwards = new PushButton();
-  PushButton forwards = new PushButton();
-  Label label = new Label();
-  Date from;
-  Date to;
+  private PushButton backwards;
+  private PushButton forwards;
+  private Grid grid;
 
   public DefaultMonthSelector() {
-    backwards.getUpFace().setHTML("&laquo;");
-    forwards.getUpFace().setHTML("&raquo;");
   }
 
   @Override
   public void setAllowableDateRange(Date from, Date to) {
-    this.from = from;
-    this.to = to;
     Log.info("setAllowableDateRange is not yet implemented");
   }
 
   @Override
   protected void refresh() {
-    String text = getModel().formatCurrentMonth();
-    label.setText(text);
+    String formattedMonth = getModel().formatCurrentMonth();
+    grid.setText(0, 1, formattedMonth);
   }
 
   @Override
   protected void setup() {
-    HorizontalPanel p = new HorizontalPanel();
-    p.add(backwards);
-    backwards.addStyleName(css().previousButton());
-    p.add(label);
-    label.addStyleName(css().month());
-    p.add(forwards);
-    p.setCellWidth(label, "100%");
-    forwards.addStyleName(css().nextButton());
-    initWidget(p);
-    setStyleName(css().days());
-
+    // Set up backwards.
+    backwards = new PushButton();
     backwards.addClickListener(new ClickListener() {
       public void onClick(Widget sender) {
         addMonths(-1);
       }
     });
 
+    backwards.getUpFace().setHTML("&laquo;");
+    backwards.setStyleName(css().previousButton());
+
+    forwards = new PushButton();
+    forwards.getUpFace().setHTML("&raquo;");
+    forwards.setStyleName(css().nextButton());
     forwards.addClickListener(new ClickListener() {
       public void onClick(Widget sender) {
         addMonths(+1);
       }
     });
+
+    // Set up grid.
+    grid = new Grid(1, 3);
+    grid.setWidget(0, 0, backwards);
+    grid.setWidget(0, 2, forwards);
+
+    CellFormatter formatter = grid.getCellFormatter();
+    formatter.setStyleName(0, 1, css().month());
+    formatter.setWidth(0, 0, "20%");
+    formatter.setWidth(0, 2, "20%");
+    grid.setStyleName(css().days());
+    initWidget(grid);
   }
 
 }

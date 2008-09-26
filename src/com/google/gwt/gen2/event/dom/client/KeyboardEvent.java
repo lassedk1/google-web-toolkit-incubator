@@ -25,6 +25,37 @@ import com.google.gwt.user.client.ui.KeyboardListener;
  */
 public abstract class KeyboardEvent extends DomEvent {
 
+  public static final int KEY_ALT = 18;
+  public static final int KEY_BACKSPACE = 8;
+  public static final int KEY_CTRL = 17;
+  public static final int KEY_DELETE = 46;
+  public static final int KEY_DOWN = 40;
+  public static final int KEY_END = 35;
+  public static final int KEY_ENTER = 13;
+  public static final int KEY_ESCAPE = 27;
+  public static final int KEY_HOME = 36;
+  public static final int KEY_LEFT = 37;
+  public static final int KEY_PAGEDOWN = 34;
+  public static final int KEY_PAGEUP = 33;
+  public static final int KEY_RIGHT = 39;
+  public static final int KEY_SHIFT = 16;
+  public static final int KEY_TAB = 9;
+  public static final int KEY_UP = 38;
+
+  public static final int MODIFIER_ALT = 4;
+  public static final int MODIFIER_CTRL = 2;
+  public static final int MODIFIER_META = 8;
+  public static final int MODIFIER_SHIFT = 1;
+
+  // I'm hoping these can eventually go away as safari fixes its bugs.
+  private static final int OTHER_KEY_UP = 63232;
+
+  private static final int OTHER_KEY_DOWN = 63233;
+
+  private static final int OTHER_KEY_LEFT = 63234;
+
+  private static final int OTHER_KEY_RIGHT = 63235;
+
   protected KeyboardEvent(Event e) {
     super(e);
   }
@@ -36,10 +67,10 @@ public abstract class KeyboardEvent extends DomEvent {
    */
   public int getKeyboardModifiers() {
     Event event = getNativeEvent();
-    return (DOM.eventGetShiftKey(event) ? KeyboardListener.MODIFIER_SHIFT : 0)
-        | (DOM.eventGetMetaKey(event) ? KeyboardListener.MODIFIER_META : 0)
-        | (DOM.eventGetCtrlKey(event) ? KeyboardListener.MODIFIER_CTRL : 0)
-        | (DOM.eventGetAltKey(event) ? KeyboardListener.MODIFIER_ALT : 0);
+    return (DOM.eventGetShiftKey(event) ? MODIFIER_SHIFT : 0)
+        | (DOM.eventGetMetaKey(event) ? MODIFIER_META : 0)
+        | (DOM.eventGetCtrlKey(event) ? MODIFIER_CTRL : 0)
+        | (DOM.eventGetAltKey(event) ? MODIFIER_ALT : 0);
   }
 
   /**
@@ -71,6 +102,25 @@ public abstract class KeyboardEvent extends DomEvent {
   }
 
   /**
+   * Does the key code represent an arrow key?
+   */
+  public boolean isArrowKeyCode(int code) {
+    switch (code) {
+      case OTHER_KEY_DOWN:
+      case OTHER_KEY_RIGHT:
+      case OTHER_KEY_UP:
+      case OTHER_KEY_LEFT:
+      case KeyboardListener.KEY_DOWN:
+      case KeyboardListener.KEY_RIGHT:
+      case KeyboardListener.KEY_UP:
+      case KeyboardListener.KEY_LEFT:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  /**
    * Gets the key-repeat state of this event.
    * 
    * @return <code>true</code> if this key event was an auto-repeat
@@ -89,11 +139,39 @@ public abstract class KeyboardEvent extends DomEvent {
   }
 
   /**
+   * Is this a key right?
+   */
+  public boolean isDownKeyCode() {
+    return getKeyCode() == KEY_DOWN || getKeyCode() == OTHER_KEY_DOWN;
+  }
+
+  /**
+   * Is this a key right?
+   */
+  public boolean isLeftKeyCode() {
+    return getKeyCode() == KEY_LEFT || getKeyCode() == OTHER_KEY_LEFT;
+  }
+
+  /**
+   * Is this a key right?
+   */
+  public boolean isRightKeyCode() {
+    return getKeyCode() == KEY_RIGHT || getKeyCode() == OTHER_KEY_RIGHT;
+  }
+
+  /**
    * Is <code>shift</code> key down.
    * 
    * @return whether the shift key is down
    */
   public boolean isShiftKeyDown() {
     return getNativeEvent().getShiftKey();
+  }
+
+  /**
+   * Is this a key up?
+   */
+  public boolean isUpKeyCode() {
+    return getKeyCode() == KEY_UP || getKeyCode() == OTHER_KEY_UP;
   }
 }

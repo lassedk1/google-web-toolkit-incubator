@@ -23,6 +23,9 @@ import java.util.Date;
  */
 public abstract class MonthSelector extends DatePickerComponent {
 
+  /**
+   * Sets the date range that this month selector is allowed to chose from.
+   */
   public abstract void setAllowableDateRange(Date from, Date to);
 
 }

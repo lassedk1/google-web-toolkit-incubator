@@ -26,7 +26,7 @@ import com.google.gwt.gen2.event.dom.client.MouseDownHandler;
  * Basic tests for Handler registry's. Not much to it as most testing should be
  * in GWTEventsTest.
  */
-public class JavaScriptHanderRegistryTest extends Gen2TestBase {
+public class JSHanderRegistryTest extends Gen2TestBase {
   // Most testing is done using server side logging, this is just a liveness
   // check.
 
@@ -74,5 +74,7 @@ public class JavaScriptHanderRegistryTest extends Gen2TestBase {
     assertEquals(1, registry.getHandlerCount(MouseDownEvent.KEY));
     registry.removeHandler(MouseDownEvent.KEY, mouseDownHandler);
     assertEquals(0, registry.getHandlerCount(MouseDownEvent.KEY));
+    // Nothing should happen now.
+    registry.fireEvent(new MouseDownEvent(null));
   }
 }

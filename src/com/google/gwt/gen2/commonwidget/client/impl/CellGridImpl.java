@@ -46,6 +46,9 @@ public abstract class CellGridImpl<ValueType> extends
     private ValueType value;
     private int index;
 
+    /**
+     * Create a cell grid.
+     */
     public Cell(Element elem, ValueType value) {
       this.value = value;
       Cell current = (Cell) this;
@@ -240,6 +243,33 @@ public abstract class CellGridImpl<ValueType> extends
     setHighlighted(null);
   }
 
+  public final void setHighlighted(Cell nextHighlighted) {
+    if (nextHighlighted == highlightedCell) {
+      return;
+    }
+    Cell oldHighlighted = highlightedCell;
+    highlightedCell = nextHighlighted;
+    if (oldHighlighted != null) {
+      oldHighlighted.onHighlight(false);
+    }
+    if (highlightedCell != null) {
+      highlightedCell.onHighlight(true);
+    }
+  }
+
+  public final void setSelected(Cell cell) {
+    Cell last = getSelectedCell();
+    selectedCell = cell;
+
+    if (last != null) {
+      last.onSelected(false);
+    }
+    if (selectedCell != null) {
+      selectedCell.onSelected(true);
+    }
+    onSelected(last, selectedCell);
+  }
+
   public final void setSelectedValue(ValueType value) {
     setSelected(getCellFromValue(value));
   }
@@ -259,33 +289,6 @@ public abstract class CellGridImpl<ValueType> extends
   }
 
   protected abstract void onSelected(Cell lastSelected, Cell cell);
-
-  protected void setHighlighted(Cell nextHighlighted) {
-    if (nextHighlighted == highlightedCell) {
-      return;
-    }
-    Cell oldHighlighted = highlightedCell;
-    highlightedCell = nextHighlighted;
-    if (oldHighlighted != null) {
-      oldHighlighted.onHighlight(false);
-    }
-    if (highlightedCell != null) {
-      highlightedCell.onHighlight(true);
-    }
-  }
-
-  protected void setSelected(Cell cell) {
-    Cell last = getSelectedCell();
-    selectedCell = cell;
-
-    if (last != null) {
-      last.onSelected(false);
-    }
-    if (selectedCell != null) {
-      selectedCell.onSelected(true);
-    }
-    onSelected(last, selectedCell);
-  }
 
   private boolean isActive(Cell cell) {
     return cell != null && cell.isEnabled();

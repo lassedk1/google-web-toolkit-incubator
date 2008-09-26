@@ -84,21 +84,21 @@
 .gwt-DatePicker-monthSelector {
   background: #dbe6de;
   width: 100%;
-  border: 1px solid black;
   text-align: center;
 }
 
-.gwt-DatePicker-monthLabel {
+.gwt-DatePicker-month {
   text-align: center;
+  vertical-align:center;
   white-space: nowrap;
   font-weight: bold;
   font-size: 70%;
 }
 
 .gwt-DatePicker-previousButton {
-  padding-right: 2em;
+   
 }
 
 .gwt-DatePicker-nextButton {
-  padding-left: 2em;
+ 
 }

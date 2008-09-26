@@ -24,8 +24,8 @@ import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.CellFormatter
 import java.util.Date;
 
 /**
- * Simple calendar view. Not part of the public API as we wish to evolve it freely
- * over time.  Please copy though, as we like it getting used.
+ * Simple calendar view. Not part of the public API as we wish to evolve it
+ * freely over time. Please copy though, as we like it getting used.
  */
 
 @SuppressWarnings(/* Date manipulation required */{"deprecation"})
@@ -34,7 +34,7 @@ class DefaultCalendarView extends CalendarView {
   /**
    * Cell grid.
    */
-  //Javac bug requires that date be fully specified here.
+  // Javac bug requires that date be fully specified here.
   class CellGrid extends CellGridImpl<java.util.Date> {
     class DateCell extends Cell {
       String cellStyle;

@@ -19,6 +19,19 @@ package com.google.gwt.gen2.demo.datepicker.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.gen2.datepicker.client.DateBox;
 import com.google.gwt.gen2.datepicker.client.DatePicker;
+import com.google.gwt.gen2.event.dom.client.KeyDownEvent;
+import com.google.gwt.gen2.event.dom.client.KeyDownHandler;
+import com.google.gwt.gen2.event.logical.shared.HasHighlightHandlers;
+import com.google.gwt.gen2.event.logical.shared.HasSelectionHandlers;
+import com.google.gwt.gen2.event.logical.shared.HasShowRangeHandlers;
+import com.google.gwt.gen2.event.logical.shared.HighlightEvent;
+import com.google.gwt.gen2.event.logical.shared.HighlightHandler;
+import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
+import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
+import com.google.gwt.gen2.event.logical.shared.ShowRangeEvent;
+import com.google.gwt.gen2.event.logical.shared.ShowRangeHandler;
+import com.google.gwt.gen2.event.shared.EventHandler;
+import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.libideas.logging.client.SimpleLogHandler;
 import com.google.gwt.libideas.logging.shared.Log;
@@ -32,15 +45,6 @@ import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.LazyPanel;
-import com.google.gwt.widgetideas.client.event.ChangeEvent;
-import com.google.gwt.widgetideas.client.event.ChangeHandler;
-import com.google.gwt.widgetideas.client.event.EventHandler;
-import com.google.gwt.widgetideas.client.event.HighlightEvent;
-import com.google.gwt.widgetideas.client.event.HighlightHandler;
-import com.google.gwt.widgetideas.client.event.KeyDownEvent;
-import com.google.gwt.widgetideas.client.event.KeyDownHandler;
-import com.google.gwt.widgetideas.client.event.RenderingEvent;
-import com.google.gwt.widgetideas.client.event.RenderingHandler;
 
 import java.util.Date;
 
@@ -48,12 +52,84 @@ import java.util.Date;
  * Date picker demo.
  */
 public class DatePickerDemo implements EntryPoint {
+  private abstract class HandlerCheckBox<EventHandlerType extends EventHandler, HasHandlers>
+      extends CheckBox {
+    protected HandlerRegistration registration;
+    protected final HasHandlers widget;
+    protected final EventHandlerType handler;
+    String title;
+
+    HandlerCheckBox(final String title, HasHandlers widget,
+        final EventHandlerType handler) {
+      super(title);
+      this.widget = widget;
+      this.handler = handler;
+      this.title = title;
+      this.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          if (isChecked()) {
+            Log.info("Adding handler '" + title + "'");
+            addHandler();
+          } else {
+            Log.info("Removing handler '" + title + "'");
+            registration.removeHandler();
+          }
+        }
+      });
+    }
+
+    abstract void addHandler();
+  }
+
+  private class HighlightHandlerCheckBox extends
+      HandlerCheckBox<HighlightHandler<Date>, HasHighlightHandlers<Date>> {
+
+    HighlightHandlerCheckBox(String title, HasHighlightHandlers<Date> widget,
+        HighlightHandler handler) {
+      super(title, widget, handler);
+    }
+
+    @Override
+    void addHandler() {
+      registration = widget.addHighlightHandler(handler);
+    }
+  }
+
+  private class SelectionHandlerCheckBox extends
+      HandlerCheckBox<SelectionHandler<Date>, HasSelectionHandlers<Date>> {
+
+    SelectionHandlerCheckBox(String title, HasSelectionHandlers<Date> widget,
+        SelectionHandler handler) {
+      super(title, widget, handler);
+    }
+
+    @Override
+    void addHandler() {
+      registration = widget.addSelectionHandler(handler);
+    }
+  }
+
+  private class ShowRangeHandlerCheckBox extends
+      HandlerCheckBox<ShowRangeHandler<Date>, HasShowRangeHandlers<Date>> {
+
+    ShowRangeHandlerCheckBox(String title, HasShowRangeHandlers<Date> widget,
+        ShowRangeHandler handler) {
+      super(title, widget, handler);
+    }
+
+    @Override
+    void addHandler() {
+      registration = widget.addShowRangeHandler(handler);
+    }
+  }
+
   private DateBox start;
 
   /**
    * This is the entry point method.
    */
   public void onModuleLoad() {
+    Log.info("Log messages enabled");
     HorizontalPanel master = new HorizontalPanel();
     SimpleLogHandler handler = new SimpleLogHandler(false);
     Log.addLogHandler(handler);
@@ -115,7 +191,7 @@ public class DatePickerDemo implements EntryPoint {
 
     start.addKeyDownHandler(new KeyDownHandler() {
       public void onKeyDown(KeyDownEvent e) {
-        if (e.getKeyCode() == KEY_RIGHT
+        if (e.isRightKeyCode()
             && start.getCursorPos() == start.getText().length()) {
           start.hideDatePicker();
           end.setFocus(true);
@@ -125,15 +201,15 @@ public class DatePickerDemo implements EntryPoint {
 
     end.addKeyDownHandler(new KeyDownHandler() {
       public void onKeyDown(KeyDownEvent e) {
-        if ((e.getKeyCode() == KEY_LEFT) && end.getCursorPos() == 0) {
+        if ((e.isLeftKeyCode()) && end.getCursorPos() == 0) {
           start.setFocus(true);
           end.hideDatePicker();
         }
       }
     });
 
-    end.getDatePicker().addChangeHandler(new ChangeHandler<Date>() {
-      public void onChange(ChangeEvent<Date> event) {
+    end.getDatePicker().addSelectionHandler(new SelectionHandler<Date>() {
+      public void onSelection(SelectionEvent<Date> event) {
         start.removeStyleName("user-modified");
       }
     });
@@ -180,37 +256,33 @@ public class DatePickerDemo implements EntryPoint {
     VerticalPanel monitorEvents = new VerticalPanel();
     panel.add(monitorEvents);
 
-    // Log hover events.
-    HighlightHandler<Date> logHovers = new HighlightHandler<Date>() {
-      public void onHighlight(HighlightEvent<Date> event) {
-        Log.info("Highlight: " + event.getHighlightedValue());
-      }
-    };
-    monitorEvents.add(toggleHandler("Log highlight events", picker, logHovers));
+    monitorEvents.add(new HighlightHandlerCheckBox("Log highlight events",
+        picker, new HighlightHandler<Date>() {
+          public void onHighlight(HighlightEvent<Date> event) {
+            Log.info("Highlight: " + event.getValue());
+          }
+        }));
 
-    // Log select events.
-    ChangeHandler<Date> logSelects = new ChangeHandler<Date>() {
-      public void onChange(ChangeEvent<Date> event) {
-        Log.info("Select: " + event.getOldValue() + "-->" + event.getNewValue());
-      }
-    };
-    monitorEvents.add(toggleHandler("Log select events", picker, logSelects));
+    monitorEvents.add(new SelectionHandlerCheckBox("Log select events", picker,
+        new SelectionHandler<Date>() {
+          public void onSelection(SelectionEvent<Date> event) {
+            Log.info("Select: " + event.getOldValue() + "-->"
+                + event.getNewValue());
+          }
+        }));
 
-    // Disable selected date
-    ChangeHandler<Date> toggleEnabled = new ChangeHandler<Date>() {
-      public void onChange(ChangeEvent<Date> event) {
-        Date d = event.getNewValue();
-        picker.setVisibleDateEnabled(d, !picker.isDateEnabled(d));
-      }
-    };
-
-    monitorEvents.add(toggleHandler("Toggle enabled property", picker,
-        toggleEnabled));
+    monitorEvents.add(new SelectionHandlerCheckBox("disable selected item",
+        picker, new SelectionHandler<Date>() {
+          public void onSelection(SelectionEvent<Date> event) {
+            Date d = event.getNewValue();
+            picker.setVisibleDateEnabled(d, !picker.isDateEnabled(d));
+          }
+        }));
 
     // Add alerts on bad user input
 
     return panel;
-  }
+  };
 
   private DatePicker simplePicker() {
     DatePicker picker = new DatePicker();
@@ -219,7 +291,7 @@ public class DatePickerDemo implements EntryPoint {
     d.setDate(1);
     picker.setSelectedDate(d);
     return picker;
-  }
+  };
 
   private Widget stylingPicker() {
     final DatePicker picker = new DatePicker();
@@ -228,80 +300,39 @@ public class DatePickerDemo implements EntryPoint {
     VerticalPanel styling = new VerticalPanel();
     panel.add(styling);
 
-    // 5th of each month is red.
-    RenderingHandler redHandler = new RenderingHandler() {
-      public void onRendered(RenderingEvent event) {
-        Date shown = picker.getDateShown();
-        Date d = new Date();
-        d.setYear(shown.getYear());
-        d.setMonth(shown.getMonth());
-        d.setDate(5);
-        picker.addVisibleDateStyle(d, "red-date");
-      }
-    };
+    styling.add(new ShowRangeHandlerCheckBox("5th of the month will be red",
+        picker, new ShowRangeHandler<Date>() {
+          public void onShowRange(ShowRangeEvent<Date> event) {
+            Date startDate = event.getStart();
+            Date d = new Date();
+            d.setYear(startDate.getYear());
+            d.setMonth(startDate.getMonth());
+            d.setDate(5);
+            picker.addVisibleDateStyle(d, "red-date");
+          }
+        }));
 
-    styling.add(toggleHandler("5th of the month will be red", picker,
-        redHandler));
+    styling.add(new SelectionHandlerCheckBox(
+        "Add random style to selected date", picker,
+        new SelectionHandler<Date>() {
+          String[] styles = {
+              "blue-background", "green-border", "red-text", "big-text",
+              "green-background", "underlined-and-bold-text",
+              "yellow-background"};
 
-    // Random style adder.
-    ChangeHandler<Date> randomStyles = new ChangeHandler<Date>() {
-      String[] styles = {
-          "blue-background", "green-border", "red-text", "big-text",
-          "green-background", "underlined-and-bold-text", "yellow-background"};
+          int styleIndex = 0;
 
-      int styleIndex = 0;
+          public void onSelection(SelectionEvent<Date> event) {
+            if (event.getNewValue() != null) {
+              styleIndex = ++styleIndex % styles.length;
+              String styling = styles[styleIndex];
+              Log.info(event.getNewValue() + " has style " + styling, "styling");
+              picker.addGlobalDateStyle(event.getNewValue(), styling);
+            }
+          }
+        }));
 
-      public void onChange(ChangeEvent<Date> event) {
-        if (event.getNewValue() != null) {
-          styleIndex = ++styleIndex % styles.length;
-          String styling = styles[styleIndex];
-          Log.info(event.getNewValue() + " has style " + styling, "styling");
-          picker.addGlobalDateStyle(event.getNewValue(), styling);
-        }
-      }
-    };
-    styling.add(toggleHandler("Add random style to selected date", picker,
-        randomStyles));
-
-    // Visibly disable selected date.
-    ChangeHandler<Date> disabler = new ChangeHandler<Date>() {
-
-      public void onChange(ChangeEvent<Date> event) {
-        if (event.getNewValue() != null) {
-          picker.setVisibleDateEnabled(event.getNewValue(), false);
-        }
-      }
-    };
-    styling.add(toggleHandler("Disable selected date", picker, disabler));
     return panel;
-  }
-
-  private CheckBox toggleHandler(String title, final DatePicker picker,
-      final EventHandler handler) {
-    final CheckBox select = new CheckBox(title);
-    select.addClickListener(new ClickListener() {
-
-      public void onClick(Widget sender) {
-        if (select.isChecked()) {
-          if (handler instanceof ChangeHandler) {
-            picker.addChangeHandler((ChangeHandler<Date>) handler);
-          } else if (handler instanceof HighlightHandler) {
-            picker.addHighlightHandler((HighlightHandler<Date>) handler);
-          } else if (handler instanceof RenderingHandler) {
-            picker.addRenderingHandler((RenderingHandler) handler);
-          }
-        } else {
-          if (handler instanceof ChangeHandler) {
-            picker.removeChangeHandler((ChangeHandler<Date>) handler);
-          } else if (handler instanceof HighlightHandler) {
-            picker.removeHighlightHandler((HighlightHandler<Date>) handler);
-          } else if (handler instanceof RenderingHandler) {
-            picker.removeRenderingHandler((RenderingHandler) handler);
-          }
-        }
-      }
-    });
-    return select;
-  }
+  };
 
 }
