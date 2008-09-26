@@ -69,14 +69,15 @@ public abstract class TableModel<RowType> implements HasRowCountChangeHandlers {
   /**
    * The manager of events.
    */
-  private HandlerManager handlers;
+  private HandlerManager handlers = new HandlerManager(this);
 
   /**
    * The total number of rows available in the model.
    */
   private int rowCount = UNKNOWN_ROW_COUNT;
 
-  public HandlerRegistration addRowCountChangeHandler(RowCountChangeHandler handler) {
+  public HandlerRegistration addRowCountChangeHandler(
+      RowCountChangeHandler handler) {
     return addHandler(RowCountChangeEvent.KEY, handler);
   }
 
@@ -120,19 +121,7 @@ public abstract class TableModel<RowType> implements HasRowCountChangeHandlers {
    */
   protected <HandlerType extends EventHandler> HandlerRegistration addHandler(
       AbstractEvent.Key<?, HandlerType> key, final HandlerType handler) {
-    if (handlers == null) {
-      handlers = createHandlerManager();
-    }
     return handlers.addHandler(key, handler);
-  }
-
-  /**
-   * Creates the {@link HandlerManager} used by this widget for event
-   * management.
-   * 
-   */
-  protected HandlerManager createHandlerManager() {
-    return new HandlerManager(this);
   }
 
   /**
@@ -141,9 +130,7 @@ public abstract class TableModel<RowType> implements HasRowCountChangeHandlers {
    * @param event the event
    */
   protected void fireEvent(AbstractEvent event) {
-    if (handlers != null) {
-      handlers.fireEvent(event);
-    }
+    handlers.fireEvent(event);
   }
 
   /**
@@ -157,7 +144,7 @@ public abstract class TableModel<RowType> implements HasRowCountChangeHandlers {
    * Is the event handled by one or more handlers?
    */
   protected final boolean isEventHandled(AbstractEvent.Key key) {
-    return handlers == null ? false : handlers.isEventHandled(key);
+    return handlers.isEventHandled(key);
   }
 
   /**
@@ -169,10 +156,8 @@ public abstract class TableModel<RowType> implements HasRowCountChangeHandlers {
    * @param key the event key
    * @param handler the handler
    */
-  protected <T extends EventHandler> void removeHandler(AbstractEvent.Key<?, T> key, final T handler) {
-    if (handlers == null) {
-      handlers = new HandlerManager(this);
-    }
+  protected <T extends EventHandler> void removeHandler(
+      AbstractEvent.Key<?, T> key, final T handler) {
     handlers.removeHandler(key, handler);
   }
 }
