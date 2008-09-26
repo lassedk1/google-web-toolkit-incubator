@@ -56,14 +56,23 @@ import java.util.Set;
  * </p>
  * 
  * <h3>CSS Style Rules</h3>
+ * 
  * <ul class="css">
- * <li> .gwt-ScrollTable { applied to the entire widget } </li>
- * <li> .gwt-ScrollTable .headerTable { applied to the header table }
- * <li> .gwt-ScrollTable .dataTable { applied to the data table }
- * <li> .gwt-ScrollTable .footerTable { applied to the footer table }
- * <li> .gwt-ScrollTable .headerWrapper { wrapper around the header table }</li>
- * <li> .gwt-ScrollTable .dataWrapper { wrapper around the data table }</li>
- * <li> .gwt-ScrollTable .footerWrapper { wrapper around the footer table }</li>
+ * 
+ * <li>.gwt-ScrollTable { applied to the entire widget }</li>
+ * 
+ * <li>.gwt-ScrollTable .headerTable { applied to the header table }</li>
+ * 
+ * <li>.gwt-ScrollTable .dataTable { applied to the data table }</li>
+ * 
+ * <li>.gwt-ScrollTable .footerTable { applied to the footer table }</li>
+ * 
+ * <li>.gwt-ScrollTable .headerWrapper { wrapper around the header table }</li>
+ * 
+ * <li>.gwt-ScrollTable .dataWrapper { wrapper around the data table }</li>
+ * 
+ * <li>.gwt-ScrollTable .footerWrapper { wrapper around the footer table }</li>
+ * 
  * </ul>
  */
 public class ScrollTable extends ComplexPanel implements ResizableWidget {
@@ -572,6 +581,11 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   private Element headerWrapper;
 
   /**
+   * The images applied to the table.
+   */
+  private ScrollTableImages images;
+
+  /**
    * The last known height of this widget that the user set.
    */
   private String lastHeight = null;
@@ -656,10 +670,11 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
    * @param images the images to use in the table
    */
   public ScrollTable(FixedWidthGrid dataTable, FixedWidthFlexTable headerTable,
-      final ScrollTableImages images) {
+      ScrollTableImages images) {
     super();
     this.dataTable = dataTable;
     this.headerTable = headerTable;
+    this.images = images;
     resizeWorker.setScrollTable(this);
 
     // Prepare the header and data tables
@@ -738,13 +753,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
           if (column < 0) {
             sortedColumnTrigger = null;
           } else if (sortedColumnTrigger != null) {
-            DOM.appendChild(sortedColumnTrigger, sortedColumnWrapper);
-            if (ascending) {
-              images.scrollTableAscending().applyTo(sortedColumnIndicator);
-            } else {
-              images.scrollTableDescending().applyTo(sortedColumnIndicator);
-            }
-            sortedColumnTrigger = null;
+            applySortedColumnIndicator(sortedColumnTrigger, ascending);
           }
         }
       }
@@ -1253,6 +1262,25 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     if (parent != null) {
       DOM.removeChild(parent, sortedColumnWrapper);
     }
+  }
+
+  /**
+   * Apply the sorted column indicator to a specific table cell in the header
+   * table.
+   * 
+   * @param tdElem the cell in the header table
+   * @param ascending true to apply the ascending indicator, false for
+   *          descending
+   */
+  protected void applySortedColumnIndicator(Element tdElem, boolean ascending) {
+    assert tdElem != null : "tdElem cannot be null";
+    tdElem.appendChild(sortedColumnWrapper);
+    if (ascending) {
+      images.scrollTableAscending().applyTo(sortedColumnIndicator);
+    } else {
+      images.scrollTableDescending().applyTo(sortedColumnIndicator);
+    }
+    sortedColumnTrigger = null;
   }
 
   /**
