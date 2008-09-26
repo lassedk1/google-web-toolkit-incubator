@@ -44,18 +44,24 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * A variation of the {@link Grid} that supports row or cell hovering and row
+ * A variation of the {@link Grid} that supports row or cell highlight and row
  * selection.
  * 
  * <h3>CSS Style Rules</h3>
  * 
- * <ul class="css"> <li>tr.selected { applied to selected rows }</li> <li>
- * tr.hovering { applied to row currently being hovered }</li> <li>td.hovering {
- * applied to cell currently being hovered }</li> </ul>
+ * <ul class="css">
+ * 
+ * <li>tr.selected { applied to selected rows }</li>
+ * 
+ * <li>tr.highlighted { applied to row currently being highlighted }</li>
+ * 
+ * <li>td.highlighted { applied to cell currently being highlighted }</li>
+ * 
+ * </ul>
  */
 public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
-    HasRowUnhighlightHandlers, HasCellHighlightHandlers, HasCellUnhighlightHandlers,
-    HasRowSelectionHandlers {
+    HasRowUnhighlightHandlers, HasCellHighlightHandlers,
+    HasCellUnhighlightHandlers, HasRowSelectionHandlers {
   /**
    * This class contains methods used to format a table's cells.
    */
@@ -90,24 +96,24 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
   }
 
   /**
-   * The cell element currently being hovered.
+   * The cell element currently being highlight.
    */
-  private Element hoveringCellElem = null;
+  private Element highlightedCellElem = null;
 
   /**
-   * The index of the cell currently being hovered.
+   * The index of the cell currently being highlight.
    */
-  private int hoveringCellIndex = -1;
+  private int highlightedCellIndex = -1;
 
   /**
-   * The row element currently being hovered.
+   * The row element currently being highlight.
    */
-  private Element hoveringRowElem = null;
+  private Element highlightedRowElem = null;
 
   /**
-   * The index of the row currently being hovered.
+   * The index of the row currently being highlight.
    */
-  private int hoveringRowIndex = -1;
+  private int highlightedRowIndex = -1;
 
   /**
    * The index of the row that the user selected last.
@@ -133,7 +139,7 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
     setCellFormatter(new SelectionGridCellFormatter());
     setRowFormatter(new SelectionGridRowFormatter());
 
-    // Sink hover and selection events
+    // Sink highlight and selection events
     sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEOUT | Event.ONMOUSEDOWN);
   }
 
@@ -149,11 +155,13 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
     resize(rows, columns);
   }
 
-  public HandlerRegistration addCellHighlightHandler(CellHighlightHandler handler) {
+  public HandlerRegistration addCellHighlightHandler(
+      CellHighlightHandler handler) {
     return addHandler(CellHighlightEvent.KEY, handler);
   }
 
-  public HandlerRegistration addCellUnhighlightHandler(CellUnhighlightHandler handler) {
+  public HandlerRegistration addCellUnhighlightHandler(
+      CellUnhighlightHandler handler) {
     return addHandler(CellUnhighlightEvent.KEY, handler);
   }
 
@@ -165,7 +173,8 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
     return addHandler(RowSelectionEvent.KEY, handler);
   }
 
-  public HandlerRegistration addRowUnhighlightHandler(RowUnhighlightHandler handler) {
+  public HandlerRegistration addRowUnhighlightHandler(
+      RowUnhighlightHandler handler) {
     return addHandler(RowUnhighlightEvent.KEY, handler);
   }
 
@@ -237,34 +246,37 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
     Element targetCell = null;
 
     switch (DOM.eventGetType(event)) {
-      // Hover the cell on mouse over
+      // Highlight the cell on mouse over
       case Event.ONMOUSEOVER:
         Element cellElem = getEventTargetCell(event);
         if (cellElem != null) {
-          hoverCell(cellElem);
+          highlightCell(cellElem);
         }
         break;
 
-      // Unhover on mouse out
+      // Unhighlight on mouse out
       case Event.ONMOUSEOUT:
         Element toElem = DOM.eventGetToElement(event);
-        if (hoveringRowElem != null
-            && (toElem == null || !DOM.isOrHasChild(hoveringRowElem, toElem))) {
+        if (highlightedRowElem != null
+            && (toElem == null || !DOM.isOrHasChild(highlightedRowElem, toElem))) {
           // Check that the coordinates are not directly over the cell
           int clientX = DOM.eventGetClientX(event);
           int clientY = DOM.eventGetClientY(event);
-          int rowLeft = DOM.getAbsoluteLeft(hoveringRowElem);
-          int rowTop = DOM.getAbsoluteTop(hoveringRowElem);
-          int rowWidth = DOM.getElementPropertyInt(hoveringRowElem, "offsetWidth");
-          int rowHeight = DOM.getElementPropertyInt(hoveringRowElem, "offsetHeight");
+          int rowLeft = DOM.getAbsoluteLeft(highlightedRowElem);
+          int rowTop = DOM.getAbsoluteTop(highlightedRowElem);
+          int rowWidth = DOM.getElementPropertyInt(highlightedRowElem,
+              "offsetWidth");
+          int rowHeight = DOM.getElementPropertyInt(highlightedRowElem,
+              "offsetHeight");
           int rowBottom = rowTop + rowHeight;
           int rowRight = rowLeft + rowWidth;
-          if (clientX > rowLeft && clientX < rowRight && clientY > rowTop && clientY < rowBottom) {
+          if (clientX > rowLeft && clientX < rowRight && clientY > rowTop
+              && clientY < rowBottom) {
             return;
           }
 
-          // Unhover the current cell
-          hoverCell(null);
+          // Unhighlight the current cell
+          highlightCell(null);
         }
         break;
 
@@ -281,7 +293,8 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
         // Select the row
         if (selectionPolicy == SelectionPolicy.MULTI_ROW) {
           boolean shiftKey = DOM.eventGetShiftKey(event);
-          boolean ctrlKey = DOM.eventGetCtrlKey(event) || DOM.eventGetMetaKey(event);
+          boolean ctrlKey = DOM.eventGetCtrlKey(event)
+              || DOM.eventGetMetaKey(event);
 
           // Prevent default text selection
           if (ctrlKey || shiftKey) {
@@ -456,14 +469,13 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
   }
 
   /**
-   * Set the current hovering cell.
+   * Set the current highlighted cell.
    * 
    * @param cellElem the cell element
-   * TODO(jlabanca): change all references of hover to highlight
    */
-  protected void hoverCell(Element cellElem) {
-    // Ignore if the cell is already being hovered
-    if (DOM.compare(cellElem, hoveringCellElem)) {
+  protected void highlightCell(Element cellElem) {
+    // Ignore if the cell is already being highlighted
+    if (cellElem == highlightedCellElem) {
       return;
     }
 
@@ -473,38 +485,40 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
       rowElem = DOM.getParent(cellElem);
     }
 
-    // Unhover the current cell
-    if (hoveringCellElem != null) {
-      setStyleName(hoveringCellElem, "hovering", false);
-      fireEvent(new CellUnhighlightEvent(hoveringRowIndex, hoveringCellIndex));
-      hoveringCellElem = null;
-      hoveringCellIndex = -1;
+    // Unhighlight the current cell
+    if (highlightedCellElem != null) {
+      setStyleName(highlightedCellElem, "highlighted", false);
+      fireEvent(new CellUnhighlightEvent(highlightedRowIndex,
+          highlightedCellIndex));
+      highlightedCellElem = null;
+      highlightedCellIndex = -1;
 
-      // Unhover the current row if it changed
-      if (!DOM.compare(rowElem, hoveringRowElem)) {
-        setStyleName(hoveringRowElem, "hovering", false);
-        fireEvent(new RowUnhighlightEvent(hoveringRowIndex));
-        hoveringRowElem = null;
-        hoveringRowIndex = -1;
+      // Unhighlight the current row if it changed
+      if (!DOM.compare(rowElem, highlightedRowElem)) {
+        setStyleName(highlightedRowElem, "highlighted", false);
+        fireEvent(new RowUnhighlightEvent(highlightedRowIndex));
+        highlightedRowElem = null;
+        highlightedRowIndex = -1;
       }
     }
 
-    // Hover the cell
+    // Highlight the cell
     if (cellElem != null) {
-      setStyleName(cellElem, "hovering", true);
-      hoveringCellElem = cellElem;
-      hoveringCellIndex = OverrideDOM.getCellIndex(cellElem);
+      setStyleName(cellElem, "highlighted", true);
+      highlightedCellElem = cellElem;
+      highlightedCellIndex = OverrideDOM.getCellIndex(cellElem);
 
-      // Hover the row if it changed
-      if (hoveringRowElem == null) {
-        setStyleName(rowElem, "hovering", true);
-        hoveringRowElem = rowElem;
-        hoveringRowIndex = getRowIndex(hoveringRowElem);
-        fireEvent(new RowHighlightEvent(hoveringRowIndex));
+      // Highlight the row if it changed
+      if (highlightedRowElem == null) {
+        setStyleName(rowElem, "highlighted", true);
+        highlightedRowElem = rowElem;
+        highlightedRowIndex = getRowIndex(highlightedRowElem);
+        fireEvent(new RowHighlightEvent(highlightedRowIndex));
       }
 
       // Fire listeners
-      fireEvent(new CellHighlightEvent(hoveringRowIndex, hoveringCellIndex));
+      fireEvent(new CellHighlightEvent(highlightedRowIndex,
+          highlightedCellIndex));
     }
   }
 
@@ -528,7 +542,8 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
    * @param unselectAll true to unselect all currently selected rows
    * @param fireEvent true to fire the select event to listeners
    */
-  protected void selectRow(int row, Element rowElem, boolean unselectAll, boolean fireEvent) {
+  protected void selectRow(int row, Element rowElem, boolean unselectAll,
+      boolean fireEvent) {
     // Get the row index if needed
     if (row < 0) {
       row = getRowIndex(rowElem);

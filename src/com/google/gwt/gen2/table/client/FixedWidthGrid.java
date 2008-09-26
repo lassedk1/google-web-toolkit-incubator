@@ -230,7 +230,7 @@ public class FixedWidthGrid extends SortableGrid {
     ghostRow = impl.createGhostRow();
     DOM.insertChild(getBodyElement(), ghostRow, 0);
 
-    // Sink hover and selection events
+    // Sink highlight and selection events
     sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEDOWN | Event.ONCLICK);
   }
 

@@ -29,8 +29,7 @@ import java.util.Map;
 
 /**
  * A variation of the {@link com.google.gwt.gen2.table.client.overrides.Grid}
- * that supports many more options such as lazy row and column creation, row
- * movement, hovering, row selection, and better column resizing.
+ * that supports sorting and row movement.
  */
 public class SortableGrid extends SelectionGrid implements HasColumnSortHandlers {
   /**

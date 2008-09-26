@@ -991,7 +991,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
         }
         break;
       case Event.ONMOUSEOUT:
-        // Unhover if the mouse leaves the table
+        // Unhighlight if the mouse leaves the table
         Element toElem = DOM.eventGetToElement(event);
         if (toElem == null || !DOM.isOrHasChild(dataWrapper, toElem)) {
           // Check that the coordinates are not directly over the table
@@ -1008,7 +1008,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
             return;
           }
 
-          dataTable.hoverCell(null);
+          dataTable.highlightCell(null);
         }
         break;
     }

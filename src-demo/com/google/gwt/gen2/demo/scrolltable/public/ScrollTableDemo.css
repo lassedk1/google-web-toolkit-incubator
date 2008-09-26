@@ -32,11 +32,11 @@
   color: #fff;
 }
 	
-.gwt-ScrollTable .dataTable tr.hovering {
+.gwt-ScrollTable .dataTable tr.highlighted {
   background: #C3D9FF;
 }
 
-.gwt-ScrollTable .dataTable td.hovering {
+.gwt-ScrollTable .dataTable td.highlighted {
   background: #FFFFAA;
   cursor: hand;
   cursor: pointer;

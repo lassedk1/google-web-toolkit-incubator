@@ -33,7 +33,7 @@ public class RowHighlightEvent extends HighlightEvent<RowHighlightEvent.Row> {
   };
 
   /**
-   * Information about the cell that is being hovered.
+   * Information about the row that is being highlighted.
    */
   public static class Row implements Comparable<Row> {
     private int rowIndex;
@@ -83,7 +83,7 @@ public class RowHighlightEvent extends HighlightEvent<RowHighlightEvent.Row> {
   /**
    * Construct a new {@link RowHighlightEvent}.
    * 
-   * @param row the row being hovered
+   * @param row the row being highlighted
    */
   public RowHighlightEvent(Row row) {
     super(row);

@@ -45,7 +45,7 @@ public class RowUnhighlightEvent extends HighlightEvent<Row> {
   /**
    * Construct a new {@link RowUnhighlightEvent}.
    * 
-   * @param row the cell being hovered
+   * @param row the cell being highlighted
    */
   public RowUnhighlightEvent(Row row) {
     super(row);

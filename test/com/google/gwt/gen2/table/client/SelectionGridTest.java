@@ -39,7 +39,8 @@ public class SelectionGridTest extends Gen2TestBase {
   /**
    * A custom handler used for testing.
    */
-  protected static class TestCellHighlightHandler implements CellHighlightHandler {
+  protected static class TestCellHighlightHandler implements
+      CellHighlightHandler {
     private CellHighlightEvent lastEvent = null;
 
     public void assertCellIndex(int cellIndex) {
@@ -68,7 +69,8 @@ public class SelectionGridTest extends Gen2TestBase {
   /**
    * A custom handler used for testing.
    */
-  protected static class TestCellUnhighlightHandler implements CellUnhighlightHandler {
+  protected static class TestCellUnhighlightHandler implements
+      CellUnhighlightHandler {
     private CellUnhighlightEvent lastEvent = null;
 
     public void assertCellIndex(int cellIndex) {
@@ -121,7 +123,8 @@ public class SelectionGridTest extends Gen2TestBase {
   /**
    * A custom handler used for testing.
    */
-  protected static class TestRowUnhighlightHandler implements RowUnhighlightHandler {
+  protected static class TestRowUnhighlightHandler implements
+      RowUnhighlightHandler {
     private RowUnhighlightEvent lastEvent = null;
 
     public void assertNotFired() {
@@ -233,9 +236,11 @@ public class SelectionGridTest extends Gen2TestBase {
 
     // Selection policy
     testGrid.setSelectionPolicy(SelectionGrid.SelectionPolicy.DISABLED);
-    assertEquals(SelectionGrid.SelectionPolicy.DISABLED, testGrid.getSelectionPolicy());
+    assertEquals(SelectionGrid.SelectionPolicy.DISABLED,
+        testGrid.getSelectionPolicy());
     testGrid.setSelectionPolicy(SelectionGrid.SelectionPolicy.ONE_ROW);
-    assertEquals(SelectionGrid.SelectionPolicy.ONE_ROW, testGrid.getSelectionPolicy());
+    assertEquals(SelectionGrid.SelectionPolicy.ONE_ROW,
+        testGrid.getSelectionPolicy());
   }
 
   /**
@@ -298,6 +303,41 @@ public class SelectionGridTest extends Gen2TestBase {
     }
   }
 
+  /**
+   * Test that highlighting a cell correctly sets the style.
+   */
+  public void testHighlight() {
+    // Initialize the grid
+    SelectionGrid testGrid = getSelectionGrid();
+    RowFormatter rowFormatter = testGrid.getRowFormatter();
+    CellFormatter cellFormatter = testGrid.getCellFormatter();
+  
+    // Highlight a cell
+    assertEquals(rowFormatter.getStyleName(1), "");
+    assertEquals(cellFormatter.getStyleName(1, 1), "");
+    testGrid.highlightCell(cellFormatter.getElement(1, 1));
+    assertEquals(rowFormatter.getStyleName(1), "highlighted");
+    assertEquals(cellFormatter.getStyleName(1, 1), "highlighted");
+  
+    // Highlight a cell in the same row
+    testGrid.highlightCell(cellFormatter.getElement(1, 3));
+    assertEquals(rowFormatter.getStyleName(1), "highlighted");
+    assertEquals(cellFormatter.getStyleName(1, 1), "");
+    assertEquals(cellFormatter.getStyleName(1, 3), "highlighted");
+  
+    // Highlight a cell in a different row
+    testGrid.highlightCell(cellFormatter.getElement(2, 4));
+    assertEquals(rowFormatter.getStyleName(1), "");
+    assertEquals(cellFormatter.getStyleName(1, 3), "");
+    assertEquals(rowFormatter.getStyleName(2), "highlighted");
+    assertEquals(cellFormatter.getStyleName(2, 4), "highlighted");
+  
+    // Unhighlight the cell
+    testGrid.highlightCell(null);
+    assertEquals(rowFormatter.getStyleName(2), "");
+    assertEquals(cellFormatter.getStyleName(2, 4), "");
+  }
+
   public void testHighlightHandlers() {
     // Initialize the grid
     SelectionGrid testGrid = getSelectionGrid();
@@ -313,18 +353,18 @@ public class SelectionGridTest extends Gen2TestBase {
     TestCellUnhighlightHandler cuh = new TestCellUnhighlightHandler();
     testGrid.addCellUnhighlightHandler(cuh);
 
-    // Hover a cell
-    testGrid.hoverCell(cellFormatter.getElement(4, 2));
+    // Highlight a cell
+    testGrid.highlightCell(cellFormatter.getElement(4, 2));
     cuh.assertNotFired();
     ruh.assertNotFired();
     rhh.assertRowIndex(4);
     chh.assertRowIndex(4);
     chh.assertCellIndex(2);
 
-    // Hover a cell in the same row
+    // Highlight a cell in the same row
     rhh.reset();
     chh.reset();
-    testGrid.hoverCell(cellFormatter.getElement(4, 3));
+    testGrid.highlightCell(cellFormatter.getElement(4, 3));
     cuh.assertRowIndex(4);
     cuh.assertCellIndex(2);
     ruh.assertNotFired();
@@ -332,51 +372,16 @@ public class SelectionGridTest extends Gen2TestBase {
     chh.assertRowIndex(4);
     chh.assertCellIndex(3);
 
-    // Hover a cell in the different row row
+    // Highlight a cell in the different row row
     rhh.reset();
     chh.reset();
-    testGrid.hoverCell(cellFormatter.getElement(2, 3));
+    testGrid.highlightCell(cellFormatter.getElement(2, 3));
     cuh.assertRowIndex(4);
     cuh.assertCellIndex(3);
     ruh.assertRowIndex(4);
     rhh.assertRowIndex(2);
     chh.assertRowIndex(2);
     chh.assertCellIndex(3);
-  }
-
-  /**
-   * Test that hovering a cell correctly sets the style.
-   */
-  public void testHover() {
-    // Initialize the grid
-    SelectionGrid testGrid = getSelectionGrid();
-    RowFormatter rowFormatter = testGrid.getRowFormatter();
-    CellFormatter cellFormatter = testGrid.getCellFormatter();
-
-    // Hover a cell
-    assertEquals(rowFormatter.getStyleName(1), "");
-    assertEquals(cellFormatter.getStyleName(1, 1), "");
-    testGrid.hoverCell(cellFormatter.getElement(1, 1));
-    assertEquals(rowFormatter.getStyleName(1), "hovering");
-    assertEquals(cellFormatter.getStyleName(1, 1), "hovering");
-
-    // Hover a cell in the same row
-    testGrid.hoverCell(cellFormatter.getElement(1, 3));
-    assertEquals(rowFormatter.getStyleName(1), "hovering");
-    assertEquals(cellFormatter.getStyleName(1, 1), "");
-    assertEquals(cellFormatter.getStyleName(1, 3), "hovering");
-
-    // Hover a cell in a different row
-    testGrid.hoverCell(cellFormatter.getElement(2, 4));
-    assertEquals(rowFormatter.getStyleName(1), "");
-    assertEquals(cellFormatter.getStyleName(1, 3), "");
-    assertEquals(rowFormatter.getStyleName(2), "hovering");
-    assertEquals(cellFormatter.getStyleName(2, 4), "hovering");
-
-    // Unhover the cell
-    testGrid.hoverCell(null);
-    assertEquals(rowFormatter.getStyleName(2), "");
-    assertEquals(cellFormatter.getStyleName(2, 4), "");
   }
 
   /**

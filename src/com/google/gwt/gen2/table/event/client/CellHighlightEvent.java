@@ -33,7 +33,7 @@ public class CellHighlightEvent extends HighlightEvent<CellHighlightEvent.Cell> 
   };
 
   /**
-   * Information about the cell that is being hovered.
+   * Information about the cell that is being highlighted.
    */
   public static class Cell {
     private int cellIndex;
@@ -78,7 +78,7 @@ public class CellHighlightEvent extends HighlightEvent<CellHighlightEvent.Cell> 
   /**
    * Construct a new {@link CellHighlightEvent}.
    * 
-   * @param cell the cell being hovered
+   * @param cell the cell being highlighted
    */
   public CellHighlightEvent(Cell cell) {
     super(cell);
