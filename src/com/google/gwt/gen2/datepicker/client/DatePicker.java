@@ -330,7 +330,7 @@ public class DatePicker extends Gen2Composite implements
   public void addGlobalDateStyle(Date date, String styleName) {
     styler.setStyleName(date, styleName, true);
     if (isDateVisible(date)) {
-      calendar.addDateStyle(date, styleName);
+      calendar.addVisibleDateStyle(date, styleName);
     }
   }
 
@@ -354,7 +354,7 @@ public class DatePicker extends Gen2Composite implements
    * @param styleName style name
    */
   public final void addVisibleDateStyle(Date date, String styleName) {
-    calendar.addDateStyle(date, styleName);
+    calendar.addVisibleDateStyle(date, styleName);
   }
 
   /**
@@ -364,7 +364,7 @@ public class DatePicker extends Gen2Composite implements
    * @param styleName style name to remove
    */
   public final void addVisibleDateStyles(Iterable<Date> dates, String styleName) {
-    getCalendarView().addDateStyles(dates, styleName);
+    getCalendarView().addVisibleDateStyle(dates, styleName);
   }
 
   public final Css css() {
@@ -406,7 +406,7 @@ public class DatePicker extends Gen2Composite implements
    * @return is the date enabled?
    */
   public boolean isDateEnabled(Date date) {
-    return calendar.isDateEnabled(date);
+    return calendar.isEnabled(date);
   }
 
   /**
@@ -428,7 +428,7 @@ public class DatePicker extends Gen2Composite implements
   public void removeGlobalDateStyle(Date date, String styleName) {
     styler.setStyleName(date, styleName, false);
     if (isDateVisible(date)) {
-      calendar.removeStyleName(date, styleName);
+      calendar.removeVisibleStyleName(date, styleName);
     }
   }
 
@@ -442,7 +442,7 @@ public class DatePicker extends Gen2Composite implements
       String styleName) {
     for (; dates.hasNext();) {
       Date date = (Date) dates.next();
-      calendar.removeStyleName(date, styleName);
+      calendar.removeVisibleStyleName(date, styleName);
     }
   }
 
@@ -502,7 +502,7 @@ public class DatePicker extends Gen2Composite implements
    * @param enabled is enabled
    */
   public final void setVisibleDateEnabled(Date date, boolean enabled) {
-    getCalendarView().setDateEnabled(date, enabled);
+    getCalendarView().setEnabledDate(date, enabled);
   }
 
   /**
@@ -513,7 +513,7 @@ public class DatePicker extends Gen2Composite implements
    * @param enabled is enabled
    */
   public final void setVisibleEnabledDates(Iterable<Date> dates, boolean enabled) {
-    getCalendarView().setDatesEnabled(dates, enabled);
+    getCalendarView().setEnabledDates(dates, enabled);
   }
 
   /**
