@@ -25,20 +25,31 @@ import java.util.Date;
  */
 public abstract class CalendarView extends DatePickerComponent {
 
+  /**
+   * Constructor.
+   */
   public CalendarView() {
   }
 
   /**
-   * Adds a style name to the cell of the supplied date.
+   * Adds a style name to the cell of the supplied date. This style is only set
+   * until the next time the {@link CalendarView} is refreshed.
    * 
    * @param date date that will have the supplied style added
    * @param styleName style name to add
    */
-  public abstract void addDateStyle(Date date, String styleName);
+  public abstract void addVisibleDateStyle(Date date, String styleName);
 
-  public void addDateStyles(Iterable<Date> dates, String styleName) {
+  /**
+   * Adds a style name to the cell of the supplied dates. This is only set until
+   * the next time the {@link CalendarView} is refreshed.
+   * 
+   * @param date date that will have the supplied style added
+   * @param styleName style name to add
+   */
+  public void addVisibleDateStyle(Iterable<Date> dates, String styleName) {
     for (Date date : dates) {
-      addDateStyle(date, styleName);
+      addVisibleDateStyle(date, styleName);
     }
   }
 
@@ -52,23 +63,36 @@ public abstract class CalendarView extends DatePickerComponent {
    */
   public abstract Date getLastVisibleDate();
 
-  public abstract boolean isDateEnabled(Date d);
+  /**
+   * Is the cell representing the given date enabled?
+   * 
+   * @param date the date
+   * @return is the date enabled
+   */
+  public abstract boolean isEnabled(Date d);
 
+  /**
+   * Is the cell representing the given date visible?
+   * 
+   * @param date the date
+   * @return whether the date is visible
+   */
   public boolean isVisible(Date date) {
     Date first = getFirstVisibleDate();
     Date last = getLastVisibleDate();
     return (date != null && (first.equals(date) || last.equals(date) || (first.before(date) && last.after(date))));
   }
 
+  @Override
   public abstract void refresh();
 
   /**
-   * Removes a stylename from the cell of the supplied date.
+   * Removes a visible style name from the cell of the supplied date.
    * 
    * @param date date that will have the supplied style added
    * @param styleName style name to remove
    */
-  public abstract void removeStyleName(Date date, String styleName);
+  public abstract void removeVisibleStyleName(Date date, String styleName);
 
   /**
    * Enables or Disables a particular date. by default all valid dates are
@@ -78,7 +102,7 @@ public abstract class CalendarView extends DatePickerComponent {
    * 
    * @param enabled true for enabled, false for disabled
    */
-  public abstract void setDateEnabled(Date date, boolean enabled);
+  public abstract void setEnabledDate(Date date, boolean enabled);
 
   /**
    * Enables or disables multiple dates.
@@ -86,16 +110,16 @@ public abstract class CalendarView extends DatePickerComponent {
    * @param dates dates to [en|dis]able
    * @param enabled true to enable, false to disable
    */
-  public void setDatesEnabled(Iterable<Date> dates, boolean enabled) {
+  public void setEnabledDates(Iterable<Date> dates, boolean enabled) {
     for (Date date : dates) {
-      setDateEnabled(date, enabled);
+      setEnabledDate(date, enabled);
     }
   }
 
   /**
    * Allows the calendar view to update the date picker's highlighted date.
    */
-  protected final void setDateHighlighted(Date date) {
+  protected final void setHighlightedDate(Date date) {
     getDatePicker().setHighlightedDate(date);
   }
 }

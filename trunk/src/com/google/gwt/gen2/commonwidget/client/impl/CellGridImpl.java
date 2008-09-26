@@ -114,7 +114,7 @@ public abstract class CellGridImpl<ValueType> extends
       updateStyle();
     }
 
-    protected void onHighlight(boolean highlighted) {
+    protected void onHighlighted(boolean highlighted) {
       updateStyle();
     }
 
@@ -131,7 +131,7 @@ public abstract class CellGridImpl<ValueType> extends
     }
 
     protected void registerValue(ValueType value) {
-      valueToCell.put(value, (Cell) this);
+      valueToCell.put(value, this);
     }
 
     protected abstract void updateStyle();
@@ -250,10 +250,10 @@ public abstract class CellGridImpl<ValueType> extends
     Cell oldHighlighted = highlightedCell;
     highlightedCell = nextHighlighted;
     if (oldHighlighted != null) {
-      oldHighlighted.onHighlight(false);
+      oldHighlighted.onHighlighted(false);
     }
     if (highlightedCell != null) {
-      highlightedCell.onHighlight(true);
+      highlightedCell.onHighlighted(true);
     }
   }
 

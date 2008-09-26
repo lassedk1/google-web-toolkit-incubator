@@ -36,9 +36,12 @@ class DefaultCalendarView extends CalendarView {
    */
   // Javac bug requires that date be fully specified here.
   class CellGrid extends CellGridImpl<java.util.Date> {
+    /**
+     * A cell representing a date.
+     */
     class DateCell extends Cell {
-      String cellStyle;
-      String dateStyle;
+      private String cellStyle;
+      private String dateStyle;
 
       DateCell(Element td, boolean isWeekend) {
         super(td, new Date());
@@ -48,8 +51,21 @@ class DefaultCalendarView extends CalendarView {
         }
       }
 
+      @Override
+      public void addStyleName(String styleName) {
+        if (dateStyle.indexOf(" " + styleName + " ") == -1) {
+          dateStyle += styleName + " ";
+        }
+        updateStyle();
+      }
+
       public boolean isFiller() {
         return !getModel().isInCurrentMonth(getValue());
+      }
+
+      @Override
+      public void onHighlighted(boolean highlighted) {
+        setHighlightedDate(getValue());
       }
 
       @Override
@@ -63,11 +79,15 @@ class DefaultCalendarView extends CalendarView {
         super.onSelected(selected);
       }
 
+      @Override
+      public void removeStyleName(String styleName) {
+        dateStyle = dateStyle.replace(" " + styleName + " ", " ");
+        updateStyle();
+      }
+
       public void update(Date current) {
         setEnabled(true);
-        deregisterValue(getValue());
         getValue().setTime(current.getTime());
-        registerValue(getValue());
         String value = getModel().formatDayOfMonth(getValue());
         setText(value);
         dateStyle = cellStyle;
@@ -78,6 +98,9 @@ class DefaultCalendarView extends CalendarView {
         if (extraStyle != null) {
           dateStyle += " " + extraStyle;
         }
+        // We want to certify that all date styles have " " before and after
+        // them for ease of adding to and replacing them.
+        dateStyle += " ";
         updateStyle();
       }
 
@@ -126,7 +149,7 @@ class DefaultCalendarView extends CalendarView {
   }
 
   @Override
-  public void addDateStyle(Date date, String styleName) {
+  public void addVisibleDateStyle(Date date, String styleName) {
     getCell(date).addStyleName(styleName);
   }
 
@@ -141,7 +164,7 @@ class DefaultCalendarView extends CalendarView {
   }
 
   @Override
-  public boolean isDateEnabled(Date d) {
+  public boolean isEnabled(Date d) {
     return getCell(d).isEnabled();
   }
 
@@ -166,12 +189,12 @@ class DefaultCalendarView extends CalendarView {
   }
 
   @Override
-  public void removeStyleName(Date date, String styleName) {
+  public void removeVisibleStyleName(Date date, String styleName) {
     getCell(date).removeStyleName(styleName);
   }
 
   @Override
-  public void setDateEnabled(Date date, boolean enabled) {
+  public void setEnabledDate(Date date, boolean enabled) {
     getCell(date).setEnabled(enabled);
   }
 
