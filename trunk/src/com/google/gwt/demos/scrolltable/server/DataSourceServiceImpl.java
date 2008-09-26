@@ -19,8 +19,8 @@ import com.google.gwt.demos.scrolltable.client.DataSourceData;
 import com.google.gwt.demos.scrolltable.client.DataSourceService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
-import com.google.gwt.widgetideas.table.client.TableModel.SerializableResponse;
-import com.google.gwt.widgetideas.table.client.TableModel.Request;
+import com.google.gwt.widgetideas.table.client.TableModelHelper.Request;
+import com.google.gwt.widgetideas.table.client.TableModelHelper.SerializableResponse;
 
 import java.io.Serializable;
 import java.util.ArrayList;

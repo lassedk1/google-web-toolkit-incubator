@@ -15,6 +15,8 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
+import com.google.gwt.widgetideas.table.client.TableModelHelper.Request;
+
 /**
  * Tests methods in the {@link ReadOnlyTableModel} class.
  */

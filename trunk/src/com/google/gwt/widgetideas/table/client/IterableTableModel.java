@@ -15,6 +15,8 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
+import com.google.gwt.widgetideas.table.client.TableModelHelper.Request;
+
 import java.util.Iterator;
 
 /**
@@ -50,10 +52,10 @@ public class IterableTableModel<R> extends ReadOnlyTableModel<R> {
   }
 
   @Override
-  public void requestRows(TableModel.Request request,
+  public void requestRows(Request request,
       TableModel.Callback<R> callback) {
 
-    callback.onRowsReady(request, new TableModel.Response<R>() {
+    callback.onRowsReady(request, new Response<R>() {
 
       @Override
       public Iterator<Iterator<Object>> getIterator() {

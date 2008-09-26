@@ -16,8 +16,8 @@
 package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.widgetideas.table.client.TableModel.Callback;
-import com.google.gwt.widgetideas.table.client.TableModel.Request;
 import com.google.gwt.widgetideas.table.client.TableModel.Response;
+import com.google.gwt.widgetideas.table.client.TableModelHelper.Request;
 
 import java.util.Iterator;
 
