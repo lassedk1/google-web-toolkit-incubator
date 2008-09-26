@@ -165,7 +165,8 @@ public class CachedTableModel<R> extends TableModel<R> {
     }
 
     public boolean hasNext() {
-      return curRow < lastRow;
+      List<Object> rowList = getRowList(curRow + 1);
+      return curRow < lastRow && rowList != null && rowList.size() > 0;
     }
 
     public Iterator<Object> next() {

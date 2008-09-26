@@ -53,15 +53,18 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
    * A {@link ColumnDefinition} applied to Integer columns in {@link Student}
    * row values.
    */
-  private abstract static class IntegerColumnDefinition extends StudentColumnDefinition<Integer> {
+  private abstract static class IntegerColumnDefinition extends
+      StudentColumnDefinition<Integer> {
     @Override
-    public void renderCellValue(Student rowValue, Integer cellValue, HTMLCellView<Student> view) {
+    public void renderCellValue(Student rowValue, Integer cellValue,
+        HTMLCellView<Student> view) {
       view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
       super.renderCellValue(rowValue, cellValue, view);
     }
 
     @Override
-    public void renderCellValue(Student rowValue, Integer cellValue, TableCellView<Student> view) {
+    public void renderCellValue(Student rowValue, Integer cellValue,
+        TableCellView<Student> view) {
       view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
       super.renderCellValue(rowValue, cellValue, view);
     }
@@ -154,8 +157,11 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     TableDefinition<Student> tcr = createTableCellRenderer();
 
     // Create the scroll table
-    scrollTable = new PagingScrollTable<Student>(cachedTableModel, dataTable, headerTable, tcr);
+    scrollTable = new PagingScrollTable<Student>(cachedTableModel, dataTable,
+        headerTable, tcr);
     getPagingScrollTable().setPageSize(50);
+    getPagingScrollTable().setEmptyTableWidget(
+        new HTML("There is no data to display"));
     scrollTable.setFooterTable(getFooterTable());
 
     // Setup the bulk renderer
@@ -221,7 +227,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         }
 
         @Override
-        public void renderCellValue(Student rowValue, Boolean cellValue, HTMLCellView<Student> view) {
+        public void renderCellValue(Student rowValue, Boolean cellValue,
+            HTMLCellView<Student> view) {
           if (cellValue) {
             view.addHTML("male");
           } else {
@@ -230,7 +237,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         }
 
         @Override
-        public void renderCellValue(Student rowValue, Boolean cellValue, TableCellView<Student> view) {
+        public void renderCellValue(Student rowValue, Boolean cellValue,
+            TableCellView<Student> view) {
           if (cellValue) {
             view.setHTML("male");
           } else {
@@ -249,7 +257,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       RadioCellEditor<Boolean> cellEditor = new RadioCellEditor<Boolean>();
       cellEditor.setLabel("Select a gender:");
       cellEditor.addRadioButton(new RadioButton("editorGender", "male"), true);
-      cellEditor.addRadioButton(new RadioButton("editorGender", "female"), false);
+      cellEditor.addRadioButton(new RadioButton("editorGender", "female"),
+          false);
       columnDef.setCellEditor(cellEditor);
     }
 
@@ -286,13 +295,15 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         }
 
         @Override
-        public void renderCellValue(Student rowValue, String cellValue, HTMLCellView<Student> view) {
+        public void renderCellValue(Student rowValue, String cellValue,
+            HTMLCellView<Student> view) {
           view.setStyleAttribute("color", cellValue);
           view.addHTML(cellValue);
         }
 
         @Override
-        public void renderCellValue(Student rowValue, String cellValue, TableCellView<Student> view) {
+        public void renderCellValue(Student rowValue, String cellValue,
+            TableCellView<Student> view) {
           view.setStyleAttribute("color", cellValue);
           view.setHTML(cellValue);
         }
@@ -310,7 +321,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       for (int i = 0; i < StudentGenerator.colors.length; i++) {
         String color = StudentGenerator.colors[i];
         String text = "<FONT color=\"" + color + "\">" + color + "</FONT>";
-        cellEditor.addRadioButton(new RadioButton("editorColor", text, true), color);
+        cellEditor.addRadioButton(new RadioButton("editorColor", text, true),
+            color);
       }
       columnDef.setCellEditor(cellEditor);
     }
@@ -400,7 +412,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       }
 
       @Override
-      public void renderCellValue(Student rowValue, Double cellValue, HTMLCellView<Student> view) {
+      public void renderCellValue(Student rowValue, Double cellValue,
+          HTMLCellView<Student> view) {
         view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         if (cellValue < 2) {
           view.setStyleName("badGPA");
@@ -413,7 +426,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       }
 
       @Override
-      public void renderCellValue(Student rowValue, Double cellValue, TableCellView<Student> view) {
+      public void renderCellValue(Student rowValue, Double cellValue,
+          TableCellView<Student> view) {
         view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         if (cellValue < 2) {
           view.setStyleName("badGPA");

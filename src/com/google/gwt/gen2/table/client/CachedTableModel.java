@@ -151,7 +151,8 @@ public class CachedTableModel<RowType> extends MutableTableModel<RowType> {
     }
 
     public boolean hasNext() {
-      return curRow < lastRow;
+      return curRow < lastRow
+          && rowValuesMap.containsKey(new Integer(curRow + 1));
     }
 
     public RowType next() {

@@ -58,6 +58,11 @@ public class DataSourceTableModel extends MutableTableModel<Student> {
   private boolean rpcMode = false;
 
   /**
+   * A boolean indicating that we should return 0 rows in the response.
+   */
+  private boolean zeroMode = false;
+
+  /**
    * Check if error mode is enabled.
    * 
    * @return true if enabled
@@ -76,6 +81,15 @@ public class DataSourceTableModel extends MutableTableModel<Student> {
   }
 
   /**
+   * Check if zero mode is enabled.
+   * 
+   * @return true if enabled
+   */
+  public boolean isZeroModeEnabled() {
+    return zeroMode;
+  }
+
+  /**
    * Override that can optionally throw an error.
    */
   @Override
@@ -84,6 +98,10 @@ public class DataSourceTableModel extends MutableTableModel<Student> {
     if (errorMode) {
       // Return an error
       callback.onFailure(new Exception("An error has occured."));
+    } else if (zeroMode) {
+      // Return an empty result
+      List<Student> students = data.generateStudents(0);
+      callback.onRowsReady(request, new SerializableResponse<Student>(students));
     } else if (rpcMode) {
       // Create the service if needed
       if (dataService == null) {
@@ -130,6 +148,15 @@ public class DataSourceTableModel extends MutableTableModel<Student> {
    */
   public void setRPCModeEnabled(boolean enabled) {
     this.rpcMode = enabled;
+  }
+
+  /**
+   * Enable or disable zero mode.
+   * 
+   * @param enabled true to enable
+   */
+  public void setZeroModeEnabled(boolean enabled) {
+    this.zeroMode = enabled;
   }
 
   @Override

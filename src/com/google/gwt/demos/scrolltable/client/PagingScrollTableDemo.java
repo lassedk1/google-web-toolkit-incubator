@@ -159,6 +159,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         dataTable, headerTable);
     getPagingScrollTable().setCellRenderer(new CustomCellRenderer());
     getPagingScrollTable().setPageSize(20);
+    getPagingScrollTable().setEmptyTableWidget(
+        new HTML("There is no data to display"));
     scrollTable.setFooterTable(getFooterTable());
     setupCellEditors(getPagingScrollTable());
 

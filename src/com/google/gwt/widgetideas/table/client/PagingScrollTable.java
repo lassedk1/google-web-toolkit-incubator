@@ -16,6 +16,7 @@
 package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
@@ -141,6 +142,11 @@ public class PagingScrollTable<R> extends ScrollTable implements
   private int currentPage = -1;
 
   /**
+   * The wrapper around the empty table widget.
+   */
+  private SimplePanel emptyTableWidgetWrapper = new SimplePanel();
+
+  /**
    * The old page count, used to detect when the number of pages changes.
    */
   private int oldPageCount;
@@ -219,6 +225,7 @@ public class PagingScrollTable<R> extends ScrollTable implements
       FixedWidthFlexTable headerTable, ScrollTableImages images) {
     super(dataTable, headerTable, images);
     this.tableModel = tableModel;
+    insert(emptyTableWidgetWrapper, getElement(), 2, true);
     oldPageCount = getNumPages();
 
     // Listen to table model events
@@ -302,6 +309,13 @@ public class PagingScrollTable<R> extends ScrollTable implements
    */
   public int getCurrentPage() {
     return currentPage;
+  }
+
+  /**
+   * @return the widget displayed when the data table is empty
+   */
+  public Widget getEmptyTableWidget() {
+    return emptyTableWidgetWrapper.getWidget();
   }
 
   /**
@@ -487,6 +501,16 @@ public class PagingScrollTable<R> extends ScrollTable implements
    */
   public void setCellRenderer(CellRenderer cellRenderer) {
     this.cellRenderer = cellRenderer;
+  }
+
+  /**
+   * Set the {@link Widget} that will be displayed in place of the data table
+   * when the data table has no data to display.
+   * 
+   * @param emptyTableWidget the widget to display when the data table is empty
+   */
+  public void setEmptyTableWidget(Widget emptyTableWidget) {
+    emptyTableWidgetWrapper.setWidget(emptyTableWidget);
   }
 
   /**
@@ -693,7 +717,9 @@ public class PagingScrollTable<R> extends ScrollTable implements
   protected void setData(int firstRow, Iterator<Iterator<Object>> rows,
       List<R> rowValues) {
     this.rowValues = rowValues;
-    if (rows != null) {
+    if (rows != null && rows.hasNext()) {
+      setEmptyTableWidgetVisible(false);
+
       // Get an iterator over the visible rows
       int firstVisibleRow = getFirstRow();
       int lastVisibleRow = getLastRow();
@@ -724,9 +750,25 @@ public class PagingScrollTable<R> extends ScrollTable implements
 
       // Get rid of unneeded rows
       getDataTable().resize(rowCount, colCount);
+    } else {
+      setEmptyTableWidgetVisible(true);
+    }
 
-      // Fire page loaded event
-      tableRendererCallback.onRendered();
+    // Fire page loaded event
+    tableRendererCallback.onRendered();
+  }
+
+  /**
+   * Set whether or not the empty table widget is visible.
+   * 
+   * @param visible true to show the empty table widget
+   */
+  private void setEmptyTableWidgetVisible(boolean visible) {
+    emptyTableWidgetWrapper.setVisible(visible);
+    if (visible) {
+      getDataWrapper().getStyle().setProperty("display", "none");
+    } else {
+      getDataWrapper().getStyle().setProperty("display", "");
     }
   }
 }
