@@ -19,7 +19,7 @@ package com.google.gwt.gen2;
 import com.google.gwt.gen2.commonwidget.client.DecoratorTest;
 import com.google.gwt.gen2.event.dom.client.EventsTest;
 import com.google.gwt.gen2.event.dom.client.GWTEventsTest;
-import com.google.gwt.gen2.event.shared.JavaScriptHanderRegistryTest;
+import com.google.gwt.gen2.event.shared.JSHanderRegistryTest;
 import com.google.gwt.gen2.selection.client.DropDownListBoxTest;
 
 import junit.framework.Test;
@@ -35,7 +35,7 @@ public class Gen2Suite {
     // Widget Tests.
     suite.addTestSuite(EventsTest.class);
     suite.addTestSuite(GWTEventsTest.class);
-    suite.addTestSuite(JavaScriptHanderRegistryTest.class);
+    suite.addTestSuite(JSHanderRegistryTest.class);
     suite.addTestSuite(DropDownListBoxTest.class);
     suite.addTestSuite(DecoratorTest.class);
     return suite;
