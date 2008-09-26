@@ -16,8 +16,8 @@
 package com.google.gwt.demos.scrolltable.client;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.widgetideas.table.client.TableModel.Request;
-import com.google.gwt.widgetideas.table.client.TableModel.SerializableResponse;
+import com.google.gwt.widgetideas.table.client.TableModelHelper.Request;
+import com.google.gwt.widgetideas.table.client.TableModelHelper.SerializableResponse;
 
 import java.io.Serializable;
 

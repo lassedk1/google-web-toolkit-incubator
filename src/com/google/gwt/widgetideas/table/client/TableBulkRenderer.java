@@ -21,6 +21,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.widgetideas.table.client.TableModelHelper.Request;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 
 import java.util.Iterator;
@@ -346,14 +347,14 @@ public abstract class TableBulkRenderer {
       public void onFailure(Throwable caught) {
       }
 
-      public void onRowsReady(TableModel.Request request,
+      public void onRowsReady(Request request,
           final TableModel.Response response) {
         final Iterator<Iterator<Object>> rows = response.getIterator();
         renderRows(rows, options);
       }
     };
 
-    tableModel.requestRows(new TableModel.Request(options.startRow,
+    tableModel.requestRows(new Request(options.startRow,
         options.numRows), requestCallback);
   }
 

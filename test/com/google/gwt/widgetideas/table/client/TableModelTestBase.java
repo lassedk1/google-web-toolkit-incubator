@@ -19,8 +19,8 @@ import com.google.gwt.widgetideas.client.WidgetTestBase;
 import com.google.gwt.widgetideas.table.client.TableModel.Callback;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortInfo;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
-import com.google.gwt.widgetideas.table.client.TableModel.Request;
 import com.google.gwt.widgetideas.table.client.TableModel.Response;
+import com.google.gwt.widgetideas.table.client.TableModelHelper.Request;
 
 /**
  * Tests methods in the {@link TableModel} class.

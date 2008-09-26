@@ -25,8 +25,8 @@ import com.google.gwt.widgetideas.table.client.SortableGrid.ColumnSorter;
 import com.google.gwt.widgetideas.table.client.SortableGrid.ColumnSorterCallback;
 import com.google.gwt.widgetideas.table.client.TableModel.Callback;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
-import com.google.gwt.widgetideas.table.client.TableModel.Request;
 import com.google.gwt.widgetideas.table.client.TableModel.Response;
+import com.google.gwt.widgetideas.table.client.TableModelHelper.Request;
 
 import java.util.ArrayList;
 import java.util.HashMap;

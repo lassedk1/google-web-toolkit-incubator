@@ -17,9 +17,9 @@ package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortInfo;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
-import com.google.gwt.widgetideas.table.client.TableModel.Request;
 import com.google.gwt.widgetideas.table.client.TableModel.Response;
-import com.google.gwt.widgetideas.table.client.TableModel.SerializableResponse;
+import com.google.gwt.widgetideas.table.client.TableModelHelper.Request;
+import com.google.gwt.widgetideas.table.client.TableModelHelper.SerializableResponse;
 
 import java.io.Serializable;
 import java.util.ArrayList;
