@@ -452,6 +452,11 @@ public abstract class TableModel<R> implements SourceTableModelEvents {
   public static class SerializableResponse<R extends Serializable> extends
       Response<R> implements IsSerializable {
     /**
+     * The values associated with each row.
+     */
+    private List<R> rowValues;
+
+    /**
      * The 2D {@link Collection} of serializable cell data.
      */
     private Collection<Collection<Serializable>> rows;
@@ -480,7 +485,8 @@ public abstract class TableModel<R> implements SourceTableModelEvents {
      */
     public SerializableResponse(Collection<Collection<Serializable>> rows,
         List<R> rowValues) {
-      super(rowValues);
+      super();
+      this.rowValues = rowValues;
       this.rows = rows;
     }
 
@@ -490,6 +496,11 @@ public abstract class TableModel<R> implements SourceTableModelEvents {
         return null;
       }
       return new SerializableResponseIterator(rows);
+    }
+
+    @Override
+    public List<R> getRowValues() {
+      return rowValues;
     }
   }
 
