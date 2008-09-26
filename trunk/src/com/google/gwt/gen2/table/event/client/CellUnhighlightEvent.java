@@ -46,7 +46,7 @@ public class CellUnhighlightEvent extends UnhighlightEvent<Cell> {
   /**
    * Construct a new {@link CellUnhighlightEvent}.
    * 
-   * @param cell the cell being hovered
+   * @param cell the cell being highlighted
    */
   public CellUnhighlightEvent(Cell cell) {
     super(cell);
