@@ -41,32 +41,32 @@ helper styles
 }
 
 /*  Styles demo*/
-.red-date {
+.gwt-DatePicker .red-date {
   background-color: red;
 }
 
-.blue-background {
+.gwt-DatePicker .blue-background {
   background-color: blue;
 }
 
-.red-text {
+.gwt-DatePicker .red-text {
   color: red;
 }
 
-.green-border {
+.gwt-DatePicker .green-border {
   border: 5px solid green;
 }
 
-.big-text {
+.gwt-DatePicker .big-text {
   font-size: x-large;
 }
 
-.underlined-and-bold-text {
+.gwt-DatePicker .underlined-and-bold-text {
   font-weight: bold;
   text-decoration: underline;
 }
 
-.yellow-background {
+.gwt-DatePicker .yellow-background {
   background-color: yellow;
 }
 
