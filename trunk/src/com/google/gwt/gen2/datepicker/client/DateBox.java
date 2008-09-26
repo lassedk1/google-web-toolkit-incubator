@@ -16,13 +16,21 @@
 
 package com.google.gwt.gen2.datepicker.client;
 
+import com.google.gwt.gen2.event.dom.client.HasKeyDownHandlers;
+import com.google.gwt.gen2.event.dom.client.KeyDownEvent;
+import com.google.gwt.gen2.event.dom.client.KeyDownHandler;
+import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
+import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
+import com.google.gwt.gen2.event.logical.shared.WrongFormatEvent;
+import com.google.gwt.gen2.event.logical.shared.WrongFormatHandler;
+import com.google.gwt.gen2.event.shared.HandlerRegistration;
+import com.google.gwt.gen2.widgetbase.client.Gen2Composite;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.HasAnimation;
@@ -30,28 +38,21 @@ import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.DropDownPanel;
-import com.google.gwt.widgetideas.client.event.ChangeEvent;
-import com.google.gwt.widgetideas.client.event.ChangeHandler;
-import com.google.gwt.widgetideas.client.event.EventHandlers;
-import com.google.gwt.widgetideas.client.event.FiresKeyDownEvents;
-import com.google.gwt.widgetideas.client.event.KeyDownEvent;
-import com.google.gwt.widgetideas.client.event.KeyDownHandler;
-import com.google.gwt.widgetideas.client.event.RenderingEvent;
-import com.google.gwt.widgetideas.client.event.RenderingHandler;
 
 import java.util.Date;
 
 /**
  * A simple date box.
  */
-public class DateBox extends Composite implements FiresKeyDownEvents,
+public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
     HasAnimation {
+
   private static class Styles {
     public static String DEFAULT = "gwt-DateBox";
   }
 
-  private EventHandlers handlers = new EventHandlers();
   private boolean dirtyText = false;
+
   private DropDownPanel<DateBox> popup = new DropDownPanel<DateBox>();
   private TextBox box = new TextBox();
   private DatePicker picker;
@@ -77,32 +78,14 @@ public class DateBox extends Composite implements FiresKeyDownEvents,
     popup.setWidget(picker);
     initWidget(p);
     setStyleName(Styles.DEFAULT);
-    picker.addChangeHandler(new ChangeHandler<Date>() {
-      public void onChange(ChangeEvent<Date> event) {
+    picker.addSelectionHandler(new SelectionHandler<Date>() {
+      public void onSelection(SelectionEvent<Date> event) {
         setText(event.getNewValue());
         hideDatePicker();
-        allowDPShow = false;
-        DeferredCommand.addCommand(new Command() {
-          public void execute() {
-            allowDPShow = true;
-          }
-        });
+        preventDatePickerPopup();
         box.setFocus(true);
       }
 
-    });
-
-    picker.addRenderingHandler(new RenderingHandler() {
-
-      public void onRendered(RenderingEvent event) {
-        allowDPShow = false;
-        DeferredCommand.addCommand(new Command() {
-          public void execute() {
-            allowDPShow = true;
-          }
-        });
-        box.setFocus(true);
-      }
     });
 
     box.addFocusListener(new FocusListener() {
@@ -127,9 +110,8 @@ public class DateBox extends Composite implements FiresKeyDownEvents,
     });
 
     box.addKeyboardListener(new KeyboardListener() {
-
       public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-        handlers.fire(new KeyDownEvent(DOM.eventGetCurrentEvent(), DateBox.this));
+        fireEvent(new KeyDownEvent(DOM.eventGetCurrentEvent()));
 
         switch (keyCode) {
           case KEY_ENTER:
@@ -150,12 +132,11 @@ public class DateBox extends Composite implements FiresKeyDownEvents,
 
       public void onKeyUp(Widget sender, char keyCode, int modifiers) {
       }
-
     });
   }
 
-  public void addKeyDownHandler(KeyDownHandler handler) {
-    handlers.add(KeyDownEvent.class, handler);
+  public HandlerRegistration addKeyDownHandler(KeyDownHandler handler) {
+    return addHandler(KeyDownEvent.KEY, handler);
   }
 
   /**
@@ -214,10 +195,6 @@ public class DateBox extends Composite implements FiresKeyDownEvents,
 
   public boolean isAnimationEnabled() {
     return popup.isAnimationEnabled();
-  }
-
-  public void removeKeyDownHandler(KeyDownHandler handler) {
-    handlers.remove(KeyDownEvent.class, handler);
   }
 
   /**
@@ -321,6 +298,25 @@ public class DateBox extends Composite implements FiresKeyDownEvents,
    */
   protected void handleIllegalInput(String text) {
     Log.info("Format error: " + text);
+  }
+
+  /**
+   * Sets the handler used to handle wrong format events. The previous handler
+   * is removed.
+   * 
+   * @param handler the wrong format handler
+   */
+  protected void setWrongFormatHandler(WrongFormatHandler handler) {
+    getHandlerManager().clearHandlers(WrongFormatEvent.KEY);
+  }
+
+  private void preventDatePickerPopup() {
+    allowDPShow = false;
+    DeferredCommand.addCommand(new Command() {
+      public void execute() {
+        allowDPShow = true;
+      }
+    });
   }
 
   private void setText(Date value) {

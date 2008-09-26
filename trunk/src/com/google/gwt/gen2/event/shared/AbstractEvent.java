@@ -29,17 +29,13 @@ public abstract class AbstractEvent {
    */
   public abstract static class Key<EventType extends AbstractEvent, HandlerType extends EventHandler> {
 
-    static int EXPECTED_MAX_HANDLERS_PER_WIDGET = 5;
-
-    private static int INDEX_SOURCE;
-
     private int index;
 
-    {
-      index = INDEX_SOURCE;
-      // Need space for the count (first slot) and the overflow handlers(last
-      // slot).
-      INDEX_SOURCE += EXPECTED_MAX_HANDLERS_PER_WIDGET + 2;
+    /**
+     * Constructs a new event key.
+     */
+    public Key() {
+      index = HandlerManager.createKeyIndex();
     }
 
     // We override hash code to make it as efficient as possible.

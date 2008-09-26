@@ -18,24 +18,24 @@ package com.google.gwt.gen2.datepicker.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.commonwidget.client.impl.StandardCssImpl;
+import com.google.gwt.gen2.event.logical.shared.HasHighlightHandlers;
+import com.google.gwt.gen2.event.logical.shared.HasSelectionHandlers;
+import com.google.gwt.gen2.event.logical.shared.HasShowRangeHandlers;
+import com.google.gwt.gen2.event.logical.shared.HighlightEvent;
+import com.google.gwt.gen2.event.logical.shared.HighlightHandler;
+import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
+import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
+import com.google.gwt.gen2.event.logical.shared.ShowRangeEvent;
+import com.google.gwt.gen2.event.logical.shared.ShowRangeHandler;
+import com.google.gwt.gen2.event.shared.HandlerRegistration;
+import com.google.gwt.gen2.widgetbase.client.Gen2Composite;
+import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
 import com.google.gwt.gen2.widgetbase.client.WidgetCss;
-import com.google.gwt.libideas.client.StyleInjector;
 import com.google.gwt.libideas.resources.client.CssResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.libideas.resources.client.CssResource.ClassName;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.client.event.ChangeEvent;
-import com.google.gwt.widgetideas.client.event.ChangeHandler;
-import com.google.gwt.widgetideas.client.event.EventHandlers;
-import com.google.gwt.widgetideas.client.event.FiresChangeEvents;
-import com.google.gwt.widgetideas.client.event.FiresHighlightEvents;
-import com.google.gwt.widgetideas.client.event.FiresRenderingEvents;
-import com.google.gwt.widgetideas.client.event.HighlightEvent;
-import com.google.gwt.widgetideas.client.event.HighlightHandler;
-import com.google.gwt.widgetideas.client.event.RenderingEvent;
-import com.google.gwt.widgetideas.client.event.RenderingHandler;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -45,12 +45,16 @@ import java.util.Map;
 /**
  * Standard GWT date picker.
  */
-public class DatePicker extends Composite implements FiresChangeEvents<Date>,
-    FiresHighlightEvents<Date>, FiresRenderingEvents {
+public class DatePicker extends Gen2Composite implements
+    HasSelectionHandlers<Date>, HasHighlightHandlers<Date>,
+    HasShowRangeHandlers<Date> {
   /**
-   * GWT Date picker css.
+   * Css interface for DatePicker.
    */
   public interface Css extends WidgetCss {
+    @ClassName("gwt-DatePicker")
+    String baseName();
+
     @ClassName("gwt-DatePicker-day")
     String day();
 
@@ -185,11 +189,22 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
     }
 
     static void injectCss() {
-      BundledCss css = ((Resources) GWT.create(Resources.class)).css();
-      assert (!css.weekdayLabel().equals("null")) : "Something has gone wrong with your css injection for date picker";
-      System.err.println("css week day:" + css.weekdayLabel());
-      StyleInjector.injectStylesheet(css.getText());
-      DatePicker.DEFAULT_CSS = css;
+      if (DEFAULT_CSS != null) {
+        assert (false) : "At least one date picker was instaciated with the previous default";
+        throw new IllegalStateException();
+      }
+      if (Gen2CssInjector.isInjectionEnabled()) {
+        BundledCss css = ((Resources) GWT.create(Resources.class)).css();
+        assert (!css.weekdayLabel().equals("null")) : "Something has gone wrong with your css injection for date picker";
+        DatePicker.DEFAULT_CSS = Gen2CssInjector.inject(css);
+      }
+    }
+
+    private static Css ensureDefaultCss() {
+      if (DEFAULT_CSS == null) {
+        DEFAULT_CSS = createCss("gwt-DatePicker");
+      }
+      return DEFAULT_CSS;
     }
   }
 
@@ -239,28 +254,27 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
   public static Css DEFAULT_CSS;
 
   /**
+   * Creates a {@link Css} instance with the given base name.
+   * 
+   * @param baseName base style name.
+   */
+  public static Css createCss(String baseName) {
+    return new CssHandling.StandardCss(baseName);
+  }
+
+  /**
    * Injects the default css for DatePicker.
    */
   public static void injectDefaultCss() {
-    if (DEFAULT_CSS != null) {
-      assert (false) : "At least one date picker was instaciated with the previous default";
-      throw new IllegalStateException();
-    }
+
     CssHandling.injectCss();
   }
 
-  private static Css ensureDefaultCss() {
-    if (DEFAULT_CSS == null) {
-      DEFAULT_CSS = new CssHandling.StandardCss("gwt-DatePicker");
-    }
-    return DEFAULT_CSS;
-  }
-
-  private EventHandlers handlers = new EventHandlers();
   private DateStyler styler = new DateStyler();
   private Date highlightedDate;
   private MonthSelector monthSelector;
   private CalendarView calendar;
+
   private CalendarModel model;
 
   private Date selectedDate;
@@ -272,7 +286,7 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
    */
   public DatePicker() {
     this(new DefaultMonthSelector(), new DefaultCalendarView(),
-        new CalendarModel(), ensureDefaultCss());
+        new CalendarModel(), CssHandling.ensureDefaultCss());
   }
 
   /**
@@ -306,10 +320,6 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
     addGlobalDateStyle(new Date(), css().dayIsToday());
   }
 
-  public final void addChangeHandler(ChangeHandler<Date> handler) {
-    handlers.add(ChangeEvent.class, handler);
-  }
-
   /**
    * Globally adds a style name to a date. i.e. the style name is associated
    * with the date each time it is rendered.
@@ -324,15 +334,16 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
     }
   }
 
-  public final void addHighlightHandler(HighlightHandler<Date> handler) {
-    handlers.add(HighlightEvent.class, handler);
+  public HandlerRegistration addHighlightHandler(HighlightHandler<Date> handler) {
+    return addHandler(HighlightEvent.KEY, handler);
   }
 
-  public final void addRenderingHandler(RenderingHandler handler) {
-    handlers.add(RenderingEvent.class, handler);
+  public HandlerRegistration addSelectionHandler(SelectionHandler<Date> handler) {
+    return super.addHandler(SelectionEvent.KEY, handler);
+  }
 
-    // Render onto the current display.
-    handler.onRendered(new RenderingEvent(this));
+  public HandlerRegistration addShowRangeHandler(ShowRangeHandler<Date> handler) {
+    return addHandler(ShowRangeEvent.KEY, handler);
   }
 
   /**
@@ -408,10 +419,6 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
     return calendar.isVisible(date);
   }
 
-  public final void removeChangeHandler(ChangeHandler<Date> handler) {
-    handlers.remove(ChangeEvent.class, handler);
-  }
-
   /**
    * Globally removes a style from a date.
    * 
@@ -423,14 +430,6 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
     if (isDateVisible(date)) {
       calendar.removeStyleName(date, styleName);
     }
-  }
-
-  public final void removeHighlightHandler(HighlightHandler<Date> handler) {
-    handlers.remove(HighlightEvent.class, handler);
-  }
-
-  public final void removeRenderingHandler(RenderingHandler handler) {
-    handlers.remove(RenderingEvent.class, handler);
   }
 
   /**
@@ -474,20 +473,25 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
   /**
    * Sets the selected date.
    */
-  public final void setSelectedDate(Date date, boolean fireEvents) {
-    Date old = selectedDate;
-    if (fireEvents && handlers.has(ChangeEvent.class)) {
-      ChangeEvent event = new ChangeEvent(this, old, date);
-      handlers.fire(event);
+  public final void setSelectedDate(Date newSelected, boolean fireEvents) {
+    Date oldSelected = selectedDate;
+    if (fireEvents && isEventHandled(SelectionEvent.KEY)) {
+      fireEvent(new SelectionEvent<Date>(oldSelected, newSelected));
     }
-    if (old != null) {
-      removeGlobalDateStyle(old, css().dayIsSelected());
+    if (oldSelected != null) {
+      removeGlobalDateStyle(oldSelected, css().dayIsSelected());
     }
 
-    selectedDate = CalendarModel.copy(date);
+    selectedDate = CalendarModel.copy(newSelected);
     if (selectedDate != null) {
       addGlobalDateStyle(selectedDate, css().dayIsSelected());
     }
+  }
+
+  @Override
+  public void setStyleName(String styleName) {
+    css = createCss(styleName);
+    super.setStyleName(styleName);
   }
 
   /**
@@ -518,6 +522,11 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
   public final void showDate(Date date) {
     getModel().setCurrentMonthAndYear(date);
     refresh();
+    if (isEventHandled(ShowRangeEvent.KEY)) {
+      fireEvent(new ShowRangeEvent<Date>(
+          getCalendarView().getFirstVisibleDate(),
+          getCalendarView().getLastVisibleDate()));
+    }
   }
 
   /**
@@ -553,6 +562,7 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
   protected void setup() {
     FlowPanel panel = new FlowPanel();
     initWidget(panel);
+    setStyleName(panel.getElement(), css.baseName());
     setStyleName(css().baseName());
     panel.add(this.getMonthSelector());
     panel.add(this.getCalendarView());
@@ -562,11 +572,6 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
     highlightedDate = null;
     calendar.refresh();
     monthSelector.refresh();
-
-    if (handlers.has(RenderingEvent.class)) {
-      RenderingEvent event = new RenderingEvent((FiresRenderingEvents) this);
-      handlers.fire(event);
-    }
   }
 
   /**
@@ -576,12 +581,10 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
    * @param highlightedDate selected date
    */
   void setHighlightedDate(Date highlightedDate) {
-    if (handlers.has(HighlightEvent.class)) {
-      HighlightEvent<Date> event = new HighlightEvent<Date>(this,
-          highlightedDate);
-      handlers.fire(event);
-    }
     this.highlightedDate = highlightedDate;
+    if (isEventHandled(HighlightEvent.KEY)) {
+      fireEvent(new HighlightEvent<Date>(highlightedDate));
+    }
   }
 
   final void setModel(CalendarModel model) {

@@ -36,6 +36,10 @@ class JavaHandlerRegistry extends
     l.add(handler);
   }
 
+  public void clearHandlers(Key<?, ?> key) {
+    super.remove(key);
+  }
+
   public void fireEvent(AbstractEvent event) {
     Key key = event.getKey();
     int count = getHandlerCount(key);

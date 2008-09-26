@@ -134,7 +134,7 @@ class JsHandlerRegistry extends JavaScriptObject {
       handlerList[handlerIndex] = handlerList[handlerIndex+1]
     }
     handlerList[last] = null;
-    --this[base];
+    this[base] = this[base]-1;
     return true;
   }-*/;
 

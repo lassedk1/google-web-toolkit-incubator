@@ -23,8 +23,19 @@ import com.google.gwt.gen2.event.shared.AbstractEvent.Key;
  * on the given events.
  */
 public class HandlerManager {
+  static int EXPECTED_HANDLERS = 5;
+
   // TODO(ECC) once fully vetted, we should use java mode for hosted mode.
   private static final boolean useJs = GWT.isClient();
+  private static int index = -EXPECTED_HANDLERS;
+
+  static int createKeyIndex() {
+    // Need to leave space for the size and the unflattened list if we end up
+    // needing it.
+    index += EXPECTED_HANDLERS + 2;
+    return index;
+  }
+
   private final JsHandlerRegistry javaScriptRegistry;
   private final JavaHandlerRegistry javaRegistry;
   private final Object source;
@@ -57,6 +68,19 @@ public class HandlerManager {
       javaRegistry.addHandler(key, handler);
     }
     return new HandlerRegistration(this, key, handler);
+  }
+
+  /**
+   * Clears all the handlers associated with the given key.
+   * 
+   * @param key the key
+   */
+  public void clearHandlers(Key<?, ?> key) {
+    if (useJs) {
+      javaScriptRegistry.clearHandlers(key);
+    } else {
+      javaRegistry.clearHandlers(key);
+    }
   }
 
   /**
