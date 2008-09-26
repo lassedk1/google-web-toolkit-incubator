@@ -25,6 +25,8 @@ import com.google.gwt.gen2.table.event.client.PageCountChangeEvent;
 import com.google.gwt.gen2.table.event.client.PageCountChangeHandler;
 import com.google.gwt.gen2.table.event.client.PageLoadEvent;
 import com.google.gwt.gen2.table.event.client.PageLoadHandler;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -171,6 +173,13 @@ public class PagingScrollTableTest extends ScrollTableTest {
     FixedWidthGridBulkRenderer<List<Object>> bulkRenderer = new FixedWidthGridBulkRenderer<List<Object>>(
         grid, table.getTableDefinition());
     table.setBulkRenderer(bulkRenderer);
+    
+    // Empty table widget
+    {
+      Widget emptyTableWidget = new HTML("Empty");
+      table.setEmptyTableWidget(emptyTableWidget);
+      assertEquals(emptyTableWidget, table.getEmptyTableWidget());
+    }
   }
 
   /**

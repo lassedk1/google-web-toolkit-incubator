@@ -1163,7 +1163,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       }
 
       // Adopt the header table into the panel
-      adoptTable(footerTable, footerWrapper, 3);
+      adoptTable(footerTable, footerWrapper,
+          getElement().getChildNodes().getLength());
     }
 
     // Resize the tables
@@ -1282,6 +1283,26 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       images.scrollTableDescending().applyTo(sortedColumnIndicator);
     }
     sortedColumnTrigger = null;
+  }
+
+  /**
+   * Create a wrapper element that will hold a table.
+   * 
+   * @param cssName the style name added to the base name
+   * @return a new wrapper element
+   */
+  protected Element createWrapper(String cssName) {
+    Element wrapper = DOM.createDiv();
+    wrapper.getStyle().setProperty("width", "100%");
+    wrapper.getStyle().setProperty("overflow", "hidden");
+    wrapper.getStyle().setProperty("position", "relative");
+    wrapper.getStyle().setPropertyPx("padding", 0);
+    wrapper.getStyle().setPropertyPx("margin", 0);
+    wrapper.getStyle().setPropertyPx("border", 0);
+    if (cssName != null) {
+      setStyleName(wrapper, cssName);
+    }
+    return wrapper;
   }
 
   /**
@@ -1433,24 +1454,6 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     DOM.setStyleAttribute(spacer, "left", "1px");
     DOM.appendChild(wrapper, spacer);
     return spacer;
-  }
-
-  /**
-   * Create a wrapper element that will hold a table.
-   * 
-   * @param cssName the style name added to the base name
-   * @return a new wrapper element
-   */
-  private Element createWrapper(String cssName) {
-    Element wrapper = DOM.createDiv();
-    wrapper.getStyle().setProperty("width", "100%");
-    wrapper.getStyle().setProperty("overflow", "hidden");
-    wrapper.getStyle().setProperty("position", "relative");
-    wrapper.getStyle().setPropertyPx("padding", 0);
-    wrapper.getStyle().setPropertyPx("margin", 0);
-    wrapper.getStyle().setPropertyPx("border", 0);
-    setStyleName(wrapper, cssName);
-    return wrapper;
   }
 
   /**

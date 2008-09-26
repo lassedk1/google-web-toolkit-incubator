@@ -48,6 +48,7 @@ import com.google.gwt.gen2.table.event.client.RowRemovalEvent;
 import com.google.gwt.gen2.table.event.client.RowRemovalHandler;
 import com.google.gwt.gen2.table.event.client.RowValueChangeEvent;
 import com.google.gwt.gen2.table.event.client.RowValueChangeHandler;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
@@ -65,8 +66,9 @@ import java.util.NoSuchElementException;
  * 
  * @param <RowType> the data type of the row values
  */
-public class PagingScrollTable<RowType> extends ScrollTable implements HasPageCountChangeHandlers,
-    HasPageLoadHandlers, HasPageChangeHandlers, HasPagingFailureHandlers {
+public class PagingScrollTable<RowType> extends ScrollTable implements
+    HasPageCountChangeHandlers, HasPageLoadHandlers, HasPageChangeHandlers,
+    HasPagingFailureHandlers {
   /**
    * An iterator over the visible rows in an iterator over many rows.
    */
@@ -94,8 +96,8 @@ public class PagingScrollTable<RowType> extends ScrollTable implements HasPageCo
      * @param firstVisibleRow the first visible row in this grid
      * @param lastVisibleRow the last visible row in this grid
      */
-    public VisibleRowsIterator(Iterator<RowType> rows, int firstRow, int firstVisibleRow,
-        int lastVisibleRow) {
+    public VisibleRowsIterator(Iterator<RowType> rows, int firstRow,
+        int firstVisibleRow, int lastVisibleRow) {
       this.curRow = firstRow;
       this.lastVisibleRow = lastVisibleRow;
 
@@ -135,6 +137,11 @@ public class PagingScrollTable<RowType> extends ScrollTable implements HasPageCo
   private AbstractCellEditor.Callback cellEditorCallback = null;
 
   /**
+   * The wrapper around the empty table widget.
+   */
+  private SimplePanel emptyTableWidgetWrapper = new SimplePanel();
+
+  /**
    * The definition of the columns in the table.
    */
   private TableDefinition<RowType> tableDefinition = null;
@@ -152,7 +159,8 @@ public class PagingScrollTable<RowType> extends ScrollTable implements HasPageCo
 
     @Override
     public void setHTML(String html) {
-      PagingScrollTable.this.getDataTable().setHTML(getRowIndex(), getCellIndex(), html);
+      PagingScrollTable.this.getDataTable().setHTML(getRowIndex(),
+          getCellIndex(), html);
     }
 
     @Override
@@ -163,24 +171,26 @@ public class PagingScrollTable<RowType> extends ScrollTable implements HasPageCo
 
     @Override
     public void setStyleName(String stylename) {
-      PagingScrollTable.this.getDataTable().getCellFormatter().setStyleName(getRowIndex(),
-          getCellIndex(), stylename);
+      PagingScrollTable.this.getDataTable().getCellFormatter().setStyleName(
+          getRowIndex(), getCellIndex(), stylename);
     }
 
     @Override
     public void setText(String text) {
-      PagingScrollTable.this.getDataTable().setText(getRowIndex(), getCellIndex(), text);
+      PagingScrollTable.this.getDataTable().setText(getRowIndex(),
+          getCellIndex(), text);
     }
 
     @Override
     public void setVerticalAlignment(VerticalAlignmentConstant align) {
-      PagingScrollTable.this.getDataTable().getCellFormatter().setVerticalAlignment(getRowIndex(),
-          getCellIndex(), align);
+      PagingScrollTable.this.getDataTable().getCellFormatter().setVerticalAlignment(
+          getRowIndex(), getCellIndex(), align);
     }
 
     @Override
     public void setWidget(Widget widget) {
-      PagingScrollTable.this.getDataTable().setWidget(getRowIndex(), getCellIndex(), widget);
+      PagingScrollTable.this.getDataTable().setWidget(getRowIndex(),
+          getCellIndex(), widget);
     }
   };
 
@@ -241,8 +251,9 @@ public class PagingScrollTable<RowType> extends ScrollTable implements HasPageCo
    * @param headerTable the header table
    * @param tableDefinition the column definitions
    */
-  public PagingScrollTable(TableModel<RowType> tableModel, FixedWidthGrid dataTable,
-      FixedWidthFlexTable headerTable, TableDefinition<RowType> tableDefinition) {
+  public PagingScrollTable(TableModel<RowType> tableModel,
+      FixedWidthGrid dataTable, FixedWidthFlexTable headerTable,
+      TableDefinition<RowType> tableDefinition) {
     this(tableModel, dataTable, headerTable, tableDefinition,
         GWT.<ScrollTableImages> create(ScrollTableImages.class));
   }
@@ -256,11 +267,12 @@ public class PagingScrollTable<RowType> extends ScrollTable implements HasPageCo
    * @param tableDefinition the column definitions
    * @param images the images to use in the table
    */
-  public PagingScrollTable(TableModel<RowType> tableModel, FixedWidthGrid dataTable,
-      FixedWidthFlexTable headerTable, TableDefinition<RowType> tableDefinition,
-      ScrollTableImages images) {
+  public PagingScrollTable(TableModel<RowType> tableModel,
+      FixedWidthGrid dataTable, FixedWidthFlexTable headerTable,
+      TableDefinition<RowType> tableDefinition, ScrollTableImages images) {
     super(dataTable, headerTable, images);
     this.tableModel = tableModel;
+    insert(emptyTableWidgetWrapper, getElement(), 2, true);
     setTableDefinition(tableDefinition);
     oldPageCount = getPageCount();
 
@@ -321,7 +333,8 @@ public class PagingScrollTable<RowType> extends ScrollTable implements HasPageCo
     return addHandler(PageChangeEvent.KEY, handler);
   }
 
-  public HandlerRegistration addPageCountChangeHandler(PageCountChangeHandler handler) {
+  public HandlerRegistration addPageCountChangeHandler(
+      PageCountChangeHandler handler) {
     return addHandler(PageCountChangeEvent.KEY, handler);
   }
 
@@ -329,7 +342,8 @@ public class PagingScrollTable<RowType> extends ScrollTable implements HasPageCo
     return addHandler(PageLoadEvent.KEY, handler);
   }
 
-  public HandlerRegistration addPagingFailureHandler(PagingFailureHandler handler) {
+  public HandlerRegistration addPagingFailureHandler(
+      PagingFailureHandler handler) {
     return addHandler(PagingFailureEvent.KEY, handler);
   }
 
@@ -338,6 +352,13 @@ public class PagingScrollTable<RowType> extends ScrollTable implements HasPageCo
    */
   public int getCurrentPage() {
     return currentPage;
+  }
+
+  /**
+   * @return the widget displayed when the data table is empty
+   */
+  public Widget getEmptyTableWidget() {
+    return emptyTableWidgetWrapper.getWidget();
   }
 
   /**
@@ -447,7 +468,8 @@ public class PagingScrollTable<RowType> extends ScrollTable implements HasPageCo
       }
 
       // Request the new data from the table model
-      Request request = new Request(currentPage * pageSize, pageSize, dataTable.getColumnSortList());
+      Request request = new Request(currentPage * pageSize, pageSize,
+          dataTable.getColumnSortList());
       tableModel.requestRows(request, pagingCallback);
     }
   }
@@ -477,6 +499,16 @@ public class PagingScrollTable<RowType> extends ScrollTable implements HasPageCo
    */
   public void setBulkRenderer(FixedWidthGridBulkRenderer<RowType> bulkRenderer) {
     this.bulkRenderer = bulkRenderer;
+  }
+
+  /**
+   * Set the {@link Widget} that will be displayed in place of the data table
+   * when the data table has no data to display.
+   * 
+   * @param emptyTableWidget the widget to display when the data table is empty
+   */
+  public void setEmptyTableWidget(Widget emptyTableWidget) {
+    emptyTableWidgetWrapper.setWidget(emptyTableWidget);
   }
 
   /**
@@ -540,7 +572,8 @@ public class PagingScrollTable<RowType> extends ScrollTable implements HasPageCo
    * specified, this method has no effect.
    */
   protected void editCell(int row, int column) {
-    ColumnDefinition<RowType, ?> colDef = tableDefinition.getVisibleColumnDefinitions().get(column);
+    ColumnDefinition<RowType, ?> colDef = tableDefinition.getVisibleColumnDefinitions().get(
+        column);
     CellEditInfo editInfo = new CellEditInfo(getDataTable(), row, column);
     colDef.editCell(editInfo, getRowValue(row), getCellEditorCallback());
   }
@@ -644,12 +677,14 @@ public class PagingScrollTable<RowType> extends ScrollTable implements HasPageCo
    */
   protected void setData(int firstRow, Iterator<RowType> rows) {
     rowValues = new ArrayList<RowType>();
-    if (rows != null) {
+    if (rows != null && rows.hasNext()) {
+      setEmptyTableWidgetVisible(false);
+
       // Get an iterator over the visible rows
       int firstVisibleRow = getFirstRow();
       int lastVisibleRow = getLastRow();
-      Iterator<RowType> visibleIter = new VisibleRowsIterator(rows, firstRow, firstVisibleRow,
-          lastVisibleRow);
+      Iterator<RowType> visibleIter = new VisibleRowsIterator(rows, firstRow,
+          firstVisibleRow, lastVisibleRow);
 
       // Set the row values
       while (visibleIter.hasNext()) {
@@ -668,10 +703,12 @@ public class PagingScrollTable<RowType> extends ScrollTable implements HasPageCo
 
       // Render the rows
       tableDefinition.renderRows(rowValues.iterator(), tableCellView);
-
-      // Fire page loaded event
-      tableRendererCallback.onRendered();
+    } else {
+      setEmptyTableWidgetVisible(true);
     }
+
+    // Fire page loaded event
+    tableRendererCallback.onRendered();
   }
 
   /**
@@ -681,5 +718,19 @@ public class PagingScrollTable<RowType> extends ScrollTable implements HasPageCo
    */
   private void refreshRow(int rowIndex) {
     tableDefinition.renderRow(rowIndex, getRowValue(rowIndex), tableCellView);
+  }
+
+  /**
+   * Set whether or not the empty table widget is visible.
+   * 
+   * @param visible true to show the empty table widget
+   */
+  private void setEmptyTableWidgetVisible(boolean visible) {
+    emptyTableWidgetWrapper.setVisible(visible);
+    if (visible) {
+      getDataWrapper().getStyle().setProperty("display", "none");
+    } else {
+      getDataWrapper().getStyle().setProperty("display", "");
+    }
   }
 }

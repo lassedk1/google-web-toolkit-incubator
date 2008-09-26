@@ -82,6 +82,11 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
   private Button rpcModeButton = new Button("Toggle RPC Mode", this);
 
   /**
+   * The button used to toggle zero mode.
+   */
+  private Button zeroModeButton = new Button("Toggle Zero Mode", this);
+
+  /**
    * Handle click events from the buttons in this panel.
    * 
    * @param sender
@@ -125,6 +130,15 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
         } else {
           grid.setHTML(4, 1, "enabled");
         }
+      } else if (sender == zeroModeButton) {
+        // Toggle RPC mode
+        boolean enabled = tableModel.isZeroModeEnabled();
+        tableModel.setZeroModeEnabled(!enabled);
+        if (enabled) {
+          grid.setHTML(5, 1, "disabled");
+        } else {
+          grid.setHTML(5, 1, "enabled");
+        }
       }
     } catch (NumberFormatException e) {
       Window.alert("Please enter valid integers for the row and column.");
@@ -133,7 +147,7 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
 
   @Override
   protected Widget onInitialize() {
-    grid = new Grid(5, 3);
+    grid = new Grid(6, 3);
 
     // Num Rows
     HorizontalPanel panel1 = new HorizontalPanel();
@@ -175,6 +189,12 @@ public class ModeledTabPaging extends DemoTab implements ClickListener {
     grid.setHTML(4, 1, "disabled");
     grid.setHTML(4, 2, "Retrieve data from a server using an RPC request"
         + " instead of generating data locally. This requests an RPC server.");
+
+    // RPC mode
+    grid.setWidget(5, 0, zeroModeButton);
+    grid.setHTML(5, 1, "disabled");
+    grid.setHTML(5, 2, "Enable to return zero results for each request, "
+        + "resulting in a special widget being display.");
 
     return grid;
   }
