@@ -100,9 +100,9 @@
 }
 
 .datePickerPreviousButton {
-  
+   text-align: left;
 }
 
 .datePickerNextButton {
-  
+     text-align: right; 
 }
