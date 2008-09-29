@@ -62,11 +62,11 @@ class DefaultMonthSelector extends MonthSelector {
     });
 
     backwards.getUpFace().setHTML("&laquo;");
-    backwards.setStyleName(css().previousButton());
+    backwards.setStyleName(css().datePickerPreviousButton());
 
     forwards = new PushButton();
     forwards.getUpFace().setHTML("&raquo;");
-    forwards.setStyleName(css().nextButton());
+    forwards.setStyleName(css().datePickerNextButton());
     forwards.addClickListener(new ClickListener() {
       public void onClick(Widget sender) {
         addMonths(+1);
@@ -79,10 +79,10 @@ class DefaultMonthSelector extends MonthSelector {
     grid.setWidget(0, 2, forwards);
 
     CellFormatter formatter = grid.getCellFormatter();
-    formatter.setStyleName(0, 1, css().month());
+    formatter.setStyleName(0, 1, css().datePickerMonth());
     formatter.setWidth(0, 0, "20%");
     formatter.setWidth(0, 2, "20%");
-    grid.setStyleName(css().days());
+    grid.setStyleName(css().datePickerDays());
     initWidget(grid);
   }
 

@@ -31,9 +31,7 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.widgetbase.client.Gen2Composite;
 import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
 import com.google.gwt.gen2.widgetbase.client.WidgetCss;
-import com.google.gwt.libideas.resources.client.CssResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
-import com.google.gwt.libideas.resources.client.CssResource.ClassName;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -53,161 +51,141 @@ public class DatePicker extends Gen2Composite implements
    */
   public interface Css extends WidgetCss {
     @ClassName("gwt-DatePicker")
-    String baseName();
+    String datePicker();
 
-    @ClassName("gwt-DatePicker-day")
-    String day();
+    String datePickerDay();
 
-    @ClassName("gwt-DatePicker-day-disabled")
-    String dayIsDisabled();
+    String datePickerDayIsDisabled();
 
-    @ClassName("gwt-DatePicker-day-filler")
-    String dayIsFiller();
+    String datePickerDayIsFiller();
 
-    @ClassName("gwt-DatePicker-day-highlighted")
-    String dayIsHighlighted();
+    String datePickerDayIsHighlighted();
 
-    @ClassName("gwt-DatePicker-day-selected")
-    String dayIsSelected();
+    String datePickerDayIsSelected();
 
-    @ClassName("gwt-DatePicker-day-selectedAndHighlighted")
-    String dayIsSelectedAndHighlighted();
+    String datePickerDayIsSelectedAndHighlighted();
 
-    @ClassName("gwt-DatePicker-day-today")
-    String dayIsToday();
+    String datePickerDayIsToday();
 
-    @ClassName("gwt-DatePicker-day-weekend")
-    String dayIsWeekend();
+    String datePickerDayIsWeekend();
 
-    @ClassName("gwt-DatePicker-days")
-    String days();
+    String datePickerDays();
 
-    @ClassName("gwt-DatePicker-month")
-    String month();
+    String datePickerMonth();
 
-    @ClassName("gwt-DatePicker-monthSelector")
-    String monthSelector();
+    String datePickerMonthSelector();
 
-    @ClassName("gwt-DatePicker-nextButton")
-    String nextButton();
+    String datePickerNextButton();
 
-    @ClassName("gwt-DatePicker-previousButton")
-    String previousButton();
+    String datePickerPreviousButton();
 
-    @ClassName("gwt-DatePicker-weekdayLabel")
-    String weekdayLabel();
+    String datePickerWeekdayLabel();
 
-    @ClassName("gwt-DatePicker-weekendLabel")
-    String weekendLabel();
+    String datePickerWeekendLabel();
   }
 
   /**
    * Convenience class to group css handling code.
    * 
    */
-  static class CssHandling {
-    static interface BundledCss extends DatePicker.Css, CssResource {
-    }
-
+  static class StandardCss extends StandardCssImpl implements Css {
     /**
      * CSS resource for {@link WrappedDropDownListBox}.
      * 
      */
     static interface Resources extends ImmutableResourceBundle {
       @Resource("com/google/gwt/gen2/widgetbase/public/DatePicker.css")
-      BundledCss css();
+      Css css();
     }
 
-    static class StandardCss extends StandardCssImpl<DatePicker> implements Css {
-      public StandardCss(String baseStyleName) {
-        super(baseStyleName);
-      }
-
-      public String day() {
-        return wrap("day");
-      }
-
-      public String dayIsDisabled() {
-        return wrap("day", "disabled");
-      }
-
-      public String dayIsFiller() {
-        return wrap("day", "filler");
-      }
-
-      public String dayIsHighlighted() {
-        return wrap("day", "highlighted");
-      }
-
-      public String dayIsSelected() {
-        return wrap("day", "selected");
-      }
-
-      public String dayIsSelectedAndHighlighted() {
-        return wrap("day", "selectedAndHighlighted");
-      }
-
-      public String dayIsToday() {
-        return wrap("day", "today");
-      }
-
-      public String dayIsWeekend() {
-        return wrap("day", "weekend");
-      }
-
-      public String days() {
-        return wrap("days");
-      }
-
-      public String daysLabel() {
-        return wrap("daysLabel");
-      }
-
-      public String month() {
-        return wrap("month");
-      }
-
-      public String monthSelector() {
-        return wrap("monthSelector");
-      }
-
-      public String nextButton() {
-        return wrap("nextButton");
-      }
-
-      public String previousButton() {
-        return wrap("previousButton");
-      }
-
-      public String weekdayLabel() {
-        return wrap("weekdayLabel");
-      }
-
-      public String weekendLabel() {
-        return wrap("weekdayLabel");
-      }
-    }
+    /**
+     * Default Css for {@link DatePicker}
+     */
+    static Css DEFAULT = createCss("gwt-DatePicker");
 
     static void injectCss() {
-      if (DEFAULT_CSS != null) {
-        assert (false) : "At least one date picker was instaciated with the previous default";
-        throw new IllegalStateException();
-      }
       if (Gen2CssInjector.isInjectionEnabled()) {
-        BundledCss css = ((Resources) GWT.create(Resources.class)).css();
-        assert (!css.weekdayLabel().equals("null")) : "Something has gone wrong with your css injection for date picker";
-        DatePicker.DEFAULT_CSS = Gen2CssInjector.inject(css);
+        Css css = ((Resources) GWT.create(Resources.class)).css();
+        DEFAULT = Gen2CssInjector.inject(css);
       }
     }
 
-    private static Css ensureDefaultCss() {
-      if (DEFAULT_CSS == null) {
-        DEFAULT_CSS = createCss("gwt-DatePicker");
-      }
-      return DEFAULT_CSS;
+    public StandardCss(String baseStyleName) {
+      super(baseStyleName);
+    }
+
+    public String datePicker() {
+      return getWidgetStyleName();
+    }
+
+    public String datePickerDay() {
+      return wrap("Day");
+    }
+
+    public String datePickerDayIsDisabled() {
+      return day("Disabled");
+    }
+
+    public String datePickerDayIsFiller() {
+      return day("Filler");
+    }
+
+    public String datePickerDayIsHighlighted() {
+      return day("Highlighted");
+    }
+
+    public String datePickerDayIsSelected() {
+      return day("Selected");
+    }
+
+    public String datePickerDayIsSelectedAndHighlighted() {
+      return datePickerDayIsSelected() + "AndHighlighted";
+    }
+
+    public String datePickerDayIsToday() {
+      return day("Today");
+    }
+
+    public String datePickerDayIsWeekend() {
+      return day("Weekend");
+    }
+
+    public String datePickerDays() {
+      return wrap("Days");
+    }
+
+    public String datePickerMonth() {
+      return wrap("Month");
+    }
+
+    public String datePickerMonthSelector() {
+      return wrap("MonthSelector");
+    }
+
+    public String datePickerNextButton() {
+      return wrap("NextButton");
+    }
+
+    public String datePickerPreviousButton() {
+      return wrap("PreviousButton");
+    }
+
+    public String datePickerWeekdayLabel() {
+      return wrap("WeekdayLabel");
+    }
+
+    public String datePickerWeekendLabel() {
+      return wrap("WeekdayLabel");
+    }
+
+    public String day(String dayModifier) {
+      return datePickerDay() + "Is" + dayModifier;
+    }
+
+    public String daysLabel() {
+      return wrap("DaysLabel");
     }
   }
-
   private class DateStyler {
     private Map<String, String> info = new HashMap<String, String>();
 
@@ -216,26 +194,24 @@ public class DatePicker extends Gen2Composite implements
     }
 
     public void setStyleName(Date d, String styleName, boolean add) {
-      // TODO should use UIObject's code long term. This code therefore is
-      // assuming good input and no StyleNames that are proper subsets of each
-      // other.
+      // Code is easier to maintain if surrounded by " ", and on all browsers
+      // this is a no-op.
+      styleName = " " + styleName + " ";
       String key = genKey(d);
-
       String current = info.get(key);
+
       if (add) {
         if (current == null) {
           info.put(key, styleName);
         } else if (current.indexOf(styleName) == -1) {
-          info.put(key, current + " " + styleName);
+          info.put(key, current + styleName);
         }
       } else {
+        assert current != null : "Removing style " + styleName + " from date "
+            + d + " but the style name wasn't there";
 
-        if (current == null) {
-          throw new IllegalStateException("Removing style " + styleName
-              + " from date " + d + " but the stylename wasn't there");
-        }
         String newValue = current.replaceAll(styleName, "");
-        if (newValue.equals("")) {
+        if (newValue.trim().length() == 0) {
           info.remove(key);
         } else {
           info.put(key, newValue);
@@ -249,17 +225,12 @@ public class DatePicker extends Gen2Composite implements
   }
 
   /**
-   * Default Css for {@link DatePicker}
-   */
-  public static Css DEFAULT_CSS;
-
-  /**
-   * Creates a {@link Css} instance with the given base name.
+   * Creates a {@link Css} instance with the given widget and base name.
    * 
    * @param baseName base style name.
    */
   public static Css createCss(String baseName) {
-    return new CssHandling.StandardCss(baseName);
+    return new StandardCss(baseName);
   }
 
   /**
@@ -267,18 +238,24 @@ public class DatePicker extends Gen2Composite implements
    */
   public static void injectDefaultCss() {
 
-    CssHandling.injectCss();
+    StandardCss.injectCss();
+  }
+
+  /**
+   * Sets the default css for {@link DatePicker}
+   * 
+   * @param css the css.
+   */
+  public static void setDefaultCss(Css css) {
+    StandardCss.DEFAULT = css;
   }
 
   private DateStyler styler = new DateStyler();
   private Date highlightedDate;
   private MonthSelector monthSelector;
   private CalendarView calendar;
-
   private CalendarModel model;
-
   private Date selectedDate;
-
   private Css css;
 
   /**
@@ -286,7 +263,7 @@ public class DatePicker extends Gen2Composite implements
    */
   public DatePicker() {
     this(new DefaultMonthSelector(), new DefaultCalendarView(),
-        new CalendarModel(), CssHandling.ensureDefaultCss());
+        new CalendarModel(), StandardCss.DEFAULT);
   }
 
   /**
@@ -317,7 +294,7 @@ public class DatePicker extends Gen2Composite implements
     monthSelector.setup();
     this.setup();
     showDate(new Date());
-    addGlobalDateStyle(new Date(), css().dayIsToday());
+    addGlobalStyleToDate(new Date(), css().datePickerDayIsToday());
   }
 
   /**
@@ -327,10 +304,10 @@ public class DatePicker extends Gen2Composite implements
    * @param date date
    * @param styleName style name
    */
-  public void addGlobalDateStyle(Date date, String styleName) {
+  public void addGlobalStyleToDate(Date date, String styleName) {
     styler.setStyleName(date, styleName, true);
     if (isDateVisible(date)) {
-      calendar.addVisibleDateStyle(date, styleName);
+      calendar.addStyleToDate(date, styleName);
     }
   }
 
@@ -339,10 +316,14 @@ public class DatePicker extends Gen2Composite implements
   }
 
   public HandlerRegistration addSelectionHandler(SelectionHandler<Date> handler) {
-    return super.addHandler(SelectionEvent.KEY, handler);
+    return addHandler(SelectionEvent.KEY, handler);
   }
 
   public HandlerRegistration addShowRangeHandler(ShowRangeHandler<Date> handler) {
+    // Fire the handler at once to apply it to the current shown month.
+    handler.onShowRange(new ShowRangeEvent(calendar.getFirstDate(),
+        calendar.getLastDate()));
+    // Add it as a handler.
     return addHandler(ShowRangeEvent.KEY, handler);
   }
 
@@ -350,21 +331,23 @@ public class DatePicker extends Gen2Composite implements
    * Shows the given style name on the specified date. This is only set until
    * the next time the DatePicker is refreshed.
    * 
-   * @param date date
+   * @param visibleDate current visible date
    * @param styleName style name
    */
-  public final void addVisibleDateStyle(Date date, String styleName) {
-    calendar.addVisibleDateStyle(date, styleName);
+  public final void addStyleToVisibleDate(Date visibleDate, String styleName) {
+    calendar.addStyleToDate(visibleDate, styleName);
   }
 
   /**
-   * Removes a style name from multiple dates.
+   * Adds a style name on multiple currently visible dates. This is only set
+   * until the next time the DatePicker is refreshed.
    * 
-   * @param dates dates that will have the supplied style removed
+   * @param visibleDates dates that will have the supplied style removed
    * @param styleName style name to remove
    */
-  public final void addVisibleDateStyles(Iterable<Date> dates, String styleName) {
-    getCalendarView().addVisibleDateStyle(dates, styleName);
+  public final void addStyleToVisibleDates(Iterable<Date> visibleDates,
+      String styleName) {
+    getCalendarView().addStyleToDates(visibleDates, styleName);
   }
 
   public final Css css() {
@@ -381,7 +364,7 @@ public class DatePicker extends Gen2Composite implements
   /**
    * Gets the global style name associated with a date.
    */
-  public String getGlobalDateStyle(Date d) {
+  public String getGlobalStyleOfDate(Date d) {
     return styler.getStyleName(d);
   }
 
@@ -406,7 +389,7 @@ public class DatePicker extends Gen2Composite implements
    * @return is the date enabled?
    */
   public boolean isDateEnabled(Date date) {
-    return calendar.isEnabled(date);
+    return calendar.isDateEnabled(date);
   }
 
   /**
@@ -416,7 +399,7 @@ public class DatePicker extends Gen2Composite implements
    * @return is the date currently shown
    */
   public boolean isDateVisible(Date date) {
-    return calendar.isVisible(date);
+    return calendar.isDateVisible(date);
   }
 
   /**
@@ -425,10 +408,10 @@ public class DatePicker extends Gen2Composite implements
    * @param date date
    * @param styleName style name
    */
-  public void removeGlobalDateStyle(Date date, String styleName) {
+  public void removeGlobalStyleFromDate(Date date, String styleName) {
     styler.setStyleName(date, styleName, false);
     if (isDateVisible(date)) {
-      calendar.removeVisibleStyleName(date, styleName);
+      calendar.removeStyleFromDate(date, styleName);
     }
   }
 
@@ -438,11 +421,11 @@ public class DatePicker extends Gen2Composite implements
    * @param dates dates that will have the supplied style removed
    * @param styleName style name to remove
    */
-  public final void removeVisibleDateStyles(Iterator<Date> dates,
+  public final void removeStyleFromVisibleDates(Iterator<Date> dates,
       String styleName) {
     for (; dates.hasNext();) {
       Date date = (Date) dates.next();
-      calendar.removeVisibleStyleName(date, styleName);
+      calendar.removeStyleFromDate(date, styleName);
     }
   }
 
@@ -464,6 +447,29 @@ public class DatePicker extends Gen2Composite implements
   }
 
   /**
+   * Sets a visible date to be enabled or disabled. This is only set until the
+   * next time the DatePicker is refreshed.
+   * 
+   * @param date the date
+   * @param enabled is enabled
+   */
+  public final void setEnabledOnVisibleDate(Date date, boolean enabled) {
+    getCalendarView().setDateEnabled(date, enabled);
+  }
+
+  /**
+   * Sets a group of visible dates to be enabled or disabled. This is only set
+   * until the next time the DatePicker is refreshed.
+   * 
+   * @param dates the dates
+   * @param enabled is enabled
+   */
+  public final void setEnabledOnVisibleDates(Iterable<Date> dates,
+      boolean enabled) {
+    getCalendarView().setDatesEnabled(dates, enabled);
+  }
+
+  /**
    * Sets the selected date.
    */
   public final void setSelectedDate(Date date) {
@@ -475,45 +481,32 @@ public class DatePicker extends Gen2Composite implements
    */
   public final void setSelectedDate(Date newSelected, boolean fireEvents) {
     Date oldSelected = selectedDate;
-    if (fireEvents && isEventHandled(SelectionEvent.KEY)) {
-      fireEvent(new SelectionEvent<Date>(oldSelected, newSelected));
-    }
+
     if (oldSelected != null) {
-      removeGlobalDateStyle(oldSelected, css().dayIsSelected());
+      removeGlobalStyleFromDate(oldSelected, css().datePickerDayIsSelected());
     }
 
     selectedDate = CalendarModel.copy(newSelected);
     if (selectedDate != null) {
-      addGlobalDateStyle(selectedDate, css().dayIsSelected());
+      addGlobalStyleToDate(selectedDate, css().datePickerDayIsSelected());
+    }
+
+    if (fireEvents && isEventHandled(SelectionEvent.KEY)) {
+      fireEvent(new SelectionEvent<Date>(oldSelected, newSelected));
     }
   }
 
+  /**
+   * Sets the date picker style name and all related style names.
+   * <p>
+   * So for style name "gwt-Foo", the widget's name would be "gwt-Foo" and the
+   * month selector's name would be "fooMonthSelector". For style name "Bar",
+   * the month selector would be "barMonthSelector".
+   */
   @Override
   public void setStyleName(String styleName) {
     css = createCss(styleName);
     super.setStyleName(styleName);
-  }
-
-  /**
-   * Sets a visible date to be enabled or disabled. This is only set until the
-   * next time the DatePicker is refreshed.
-   * 
-   * @param date the date
-   * @param enabled is enabled
-   */
-  public final void setVisibleDateEnabled(Date date, boolean enabled) {
-    getCalendarView().setEnabledDate(date, enabled);
-  }
-
-  /**
-   * Sets a group of visible dates to be enabled or disabled. This is only set
-   * until the next time the DatePicker is refreshed.
-   * 
-   * @param dates the dates
-   * @param enabled is enabled
-   */
-  public final void setVisibleEnabledDates(Iterable<Date> dates, boolean enabled) {
-    getCalendarView().setEnabledDates(dates, enabled);
   }
 
   /**
@@ -522,11 +515,6 @@ public class DatePicker extends Gen2Composite implements
   public final void showDate(Date date) {
     getModel().setCurrentMonthAndYear(date);
     refresh();
-    if (isEventHandled(ShowRangeEvent.KEY)) {
-      fireEvent(new ShowRangeEvent<Date>(
-          getCalendarView().getFirstVisibleDate(),
-          getCalendarView().getLastVisibleDate()));
-    }
   }
 
   /**
@@ -562,8 +550,8 @@ public class DatePicker extends Gen2Composite implements
   protected void setup() {
     FlowPanel panel = new FlowPanel();
     initWidget(panel);
-    setStyleName(panel.getElement(), css.baseName());
-    setStyleName(css().baseName());
+    setStyleName(panel.getElement(), css.datePicker());
+    setStyleName(css().datePicker());
     panel.add(this.getMonthSelector());
     panel.add(this.getCalendarView());
   }
@@ -572,13 +560,17 @@ public class DatePicker extends Gen2Composite implements
     highlightedDate = null;
     calendar.refresh();
     monthSelector.refresh();
+    if (isEventHandled(ShowRangeEvent.KEY)) {
+
+      fireEvent(new ShowRangeEvent<Date>(getCalendarView().getFirstDate(),
+          getCalendarView().getLastDate()));
+    }
   }
 
   /**
-   * Sets the highlighted date. Only {@link CalendarView} can set the
-   * highlighted date.
+   * Sets the highlighted date.
    * 
-   * @param highlightedDate selected date
+   * @param highlightedDate highlighted date
    */
   void setHighlightedDate(Date highlightedDate) {
     this.highlightedDate = highlightedDate;

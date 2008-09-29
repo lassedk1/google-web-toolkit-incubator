@@ -47,16 +47,36 @@ public class SimpleWidget extends Gen2Widget implements HasMouseHandlers,
     HasClickHandlers {
 
   /**
-   * Default css.
+   * Css for simple widget.
    */
-  public static WidgetCss DEFAULT_CSS;
+  public static interface Css extends WidgetCss {
+    /**
+     * Base name.
+     */
+    @ClassName("gwt-SimpleWidget")
+    String simpleWidget();
+  }
+
+  /**
+   * Standard Css for simple widget.
+   */
+  public static Css DEFAULT_CSS;
   private static Element translater;
 
   /**
    * Create the css for this widget with the given base name.
    */
-  public static WidgetCss createCss(String baseName) {
-    return new StandardCssImpl<SimpleWidget>(baseName);
+  public static Css createCss(final String baseName) {
+    class Standard extends StandardCssImpl implements Css {
+      Standard() {
+        super(baseName);
+      }
+
+      public String simpleWidget() {
+        return getWidgetStyleName();
+      }
+    }
+    return new Standard();
   }
 
   private static Element convertHtml(String html) {
@@ -68,7 +88,7 @@ public class SimpleWidget extends Gen2Widget implements HasMouseHandlers,
     return translater.getFirstChildElement();
   }
 
-  private static WidgetCss ensureDefaultCss() {
+  private static Css ensureDefaultCss() {
     if (DEFAULT_CSS == null) {
       DEFAULT_CSS = createCss("gwt-SimpleWidget");
     }
@@ -87,12 +107,12 @@ public class SimpleWidget extends Gen2Widget implements HasMouseHandlers,
    * Constructor. The element passed in should not be attached to a parent and
    * should support mouse events and clicks.
    */
-  public SimpleWidget(Element e, WidgetCss css) {
+  public SimpleWidget(Element e, Css css) {
     assert (e != null);
     assert (css != null);
     assert (e.getParentElement() == null);
     setElement(e);
-    setStyleName(e, css.baseName());
+    setStyleName(e, css.simpleWidget());
   }
 
   /**

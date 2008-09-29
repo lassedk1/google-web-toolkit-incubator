@@ -20,7 +20,8 @@ import java.util.Date;
 
 /**
  * The CalendarView is a calendar grid that represents the current view of a
- * {@link DatePicker}.
+ * {@link DatePicker}. Note, the calendar view only deals with the currently
+ * visible dates and all state is flushed when the calendar view is refreshed.
  * 
  */
 public abstract class CalendarView extends DatePickerComponent {
@@ -38,30 +39,30 @@ public abstract class CalendarView extends DatePickerComponent {
    * @param date date that will have the supplied style added
    * @param styleName style name to add
    */
-  public abstract void addVisibleDateStyle(Date date, String styleName);
+  public abstract void addStyleToDate(Date date, String styleName);
 
   /**
-   * Adds a style name to the cell of the supplied dates. This is only set until
-   * the next time the {@link CalendarView} is refreshed.
+   * Adds a style to the cell of the supplied dates. This is only set until the
+   * next time the {@link CalendarView} is refreshed.
    * 
    * @param date date that will have the supplied style added
    * @param styleName style name to add
    */
-  public void addVisibleDateStyle(Iterable<Date> dates, String styleName) {
+  public void addStyleToDates(Iterable<Date> dates, String styleName) {
     for (Date date : dates) {
-      addVisibleDateStyle(date, styleName);
+      addStyleToDate(date, styleName);
     }
   }
 
   /**
    * Returns the first date that is currently shown by the calendar.
    */
-  public abstract Date getFirstVisibleDate();
+  public abstract Date getFirstDate();
 
   /**
    * Returns the last date that is currently shown by the calendar.
    */
-  public abstract Date getLastVisibleDate();
+  public abstract Date getLastDate();
 
   /**
    * Is the cell representing the given date enabled?
@@ -69,7 +70,7 @@ public abstract class CalendarView extends DatePickerComponent {
    * @param date the date
    * @return is the date enabled
    */
-  public abstract boolean isEnabled(Date d);
+  public abstract boolean isDateEnabled(Date d);
 
   /**
    * Is the cell representing the given date visible?
@@ -77,9 +78,9 @@ public abstract class CalendarView extends DatePickerComponent {
    * @param date the date
    * @return whether the date is visible
    */
-  public boolean isVisible(Date date) {
-    Date first = getFirstVisibleDate();
-    Date last = getLastVisibleDate();
+  public boolean isDateVisible(Date date) {
+    Date first = getFirstDate();
+    Date last = getLastDate();
     return (date != null && (first.equals(date) || last.equals(date) || (first.before(date) && last.after(date))));
   }
 
@@ -92,7 +93,7 @@ public abstract class CalendarView extends DatePickerComponent {
    * @param date date that will have the supplied style added
    * @param styleName style name to remove
    */
-  public abstract void removeVisibleStyleName(Date date, String styleName);
+  public abstract void removeStyleFromDate(Date date, String styleName);
 
   /**
    * Enables or Disables a particular date. by default all valid dates are
@@ -102,7 +103,7 @@ public abstract class CalendarView extends DatePickerComponent {
    * 
    * @param enabled true for enabled, false for disabled
    */
-  public abstract void setEnabledDate(Date date, boolean enabled);
+  public abstract void setDateEnabled(Date date, boolean enabled);
 
   /**
    * Enables or disables multiple dates.
@@ -110,9 +111,9 @@ public abstract class CalendarView extends DatePickerComponent {
    * @param dates dates to [en|dis]able
    * @param enabled true to enable, false to disable
    */
-  public void setEnabledDates(Iterable<Date> dates, boolean enabled) {
+  public void setDatesEnabled(Iterable<Date> dates, boolean enabled) {
     for (Date date : dates) {
-      setEnabledDate(date, enabled);
+      setDateEnabled(date, enabled);
     }
   }
 

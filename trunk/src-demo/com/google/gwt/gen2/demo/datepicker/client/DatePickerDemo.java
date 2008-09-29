@@ -136,7 +136,6 @@ public class DatePickerDemo implements EntryPoint {
 
     DatePicker.injectDefaultCss();
     TabPanel panel = new TabPanel();
-    panel.getDeckPanel().setAnimationEnabled(true);
     master.add(panel);
     master.add(handler.getWidget());
     panel.add(new LazyPanel<Widget>() {
@@ -271,11 +270,11 @@ public class DatePickerDemo implements EntryPoint {
           }
         }));
 
-    monitorEvents.add(new SelectionHandlerCheckBox("disable selected item",
+    monitorEvents.add(new SelectionHandlerCheckBox("Disable selected item",
         picker, new SelectionHandler<Date>() {
           public void onSelection(SelectionEvent<Date> event) {
             Date d = event.getNewValue();
-            picker.setVisibleDateEnabled(d, !picker.isDateEnabled(d));
+            picker.setEnabledOnVisibleDate(d, !picker.isDateEnabled(d));
           }
         }));
 
@@ -300,15 +299,25 @@ public class DatePickerDemo implements EntryPoint {
     VerticalPanel styling = new VerticalPanel();
     panel.add(styling);
 
+    styling.add(new ShowRangeHandlerCheckBox(
+        "First and last displayed date will be underlined and bold", picker,
+        new ShowRangeHandler<Date>() {
+          public void onShowRange(ShowRangeEvent<Date> event) {
+            Date startDate = event.getStart();
+            Date endDate = event.getEnd();
+            picker.addStyleToVisibleDate(startDate, "underlined-and-bold-text");
+            picker.addStyleToVisibleDate(endDate, "underlined-and-bold-text");
+          }
+        }));
+
     styling.add(new ShowRangeHandlerCheckBox("5th of the month will be red",
         picker, new ShowRangeHandler<Date>() {
           public void onShowRange(ShowRangeEvent<Date> event) {
-            Date startDate = event.getStart();
-            Date d = new Date();
-            d.setYear(startDate.getYear());
-            d.setMonth(startDate.getMonth());
+            Date monthShown = picker.getDateShown();
+            Date d = new Date(monthShown.getTime());
             d.setDate(5);
-            picker.addVisibleDateStyle(d, "red-date");
+            Log.info("Adding a red style to the 5th day of the month");
+            picker.addStyleToVisibleDate(d, "red-date");
           }
         }));
 
@@ -327,7 +336,7 @@ public class DatePickerDemo implements EntryPoint {
               styleIndex = ++styleIndex % styles.length;
               String styling = styles[styleIndex];
               Log.info(event.getNewValue() + " has style " + styling, "styling");
-              picker.addGlobalDateStyle(event.getNewValue(), styling);
+              picker.addGlobalStyleToDate(event.getNewValue(), styling);
             }
           }
         }));

@@ -16,7 +16,7 @@
 
 package com.google.gwt.gen2.commonwidget.client.impl;
 
-import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Element; 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.KeyboardListener;
@@ -24,7 +24,6 @@ import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.widgetideas.table.client.overrides.ElementMapper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 
 /**
@@ -55,7 +54,6 @@ public abstract class CellGridImpl<ValueType> extends
       index = cellList.size();
       cellList.add(current);
 
-      valueToCell.put(value, current);
       setElement(elem);
       elementToCell.put(current);
     }
@@ -98,10 +96,6 @@ public abstract class CellGridImpl<ValueType> extends
       }
     }
 
-    protected void deregisterValue(ValueType value) {
-      valueToCell.remove(value);
-    }
-
     protected Cell nextItem() {
       if (index == getLastIndex()) {
         return cellList.get(0);
@@ -130,10 +124,6 @@ public abstract class CellGridImpl<ValueType> extends
       }
     }
 
-    protected void registerValue(ValueType value) {
-      valueToCell.put(value, this);
-    }
-
     protected abstract void updateStyle();
 
     private int getLastIndex() {
@@ -144,8 +134,6 @@ public abstract class CellGridImpl<ValueType> extends
   private Cell highlightedCell;
 
   private Cell selectedCell;
-
-  private HashMap<ValueType, Cell> valueToCell = new HashMap<ValueType, Cell>();
   private ElementMapper<Cell> elementToCell = new ElementMapper<Cell>();
   private ArrayList<Cell> cellList = new ArrayList<Cell>();
 
@@ -169,10 +157,6 @@ public abstract class CellGridImpl<ValueType> extends
 
   public Cell getCell(int i) {
     return cellList.get(i);
-  }
-
-  public Cell getCellFromValue(ValueType value) {
-    return valueToCell.get(value);
   }
 
   public Iterator getCells() {
@@ -268,10 +252,6 @@ public abstract class CellGridImpl<ValueType> extends
       selectedCell.onSelected(true);
     }
     onSelected(last, selectedCell);
-  }
-
-  public final void setSelectedValue(ValueType value) {
-    setSelected(getCellFromValue(value));
   }
 
   protected void onKeyDown(Cell lastHighlighted, Event event) {

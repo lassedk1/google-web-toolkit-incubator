@@ -16,6 +16,7 @@
 
 package com.google.gwt.gen2.datepicker.client;
 
+import com.google.gwt.gen2.commonwidget.client.impl.StandardCssImpl;
 import com.google.gwt.gen2.event.dom.client.HasKeyDownHandlers;
 import com.google.gwt.gen2.event.dom.client.KeyDownEvent;
 import com.google.gwt.gen2.event.dom.client.KeyDownHandler;
@@ -25,6 +26,7 @@ import com.google.gwt.gen2.event.logical.shared.WrongFormatEvent;
 import com.google.gwt.gen2.event.logical.shared.WrongFormatHandler;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.widgetbase.client.Gen2Composite;
+import com.google.gwt.gen2.widgetbase.client.WidgetCss;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.Command;
@@ -47,13 +49,35 @@ import java.util.Date;
 public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
     HasAnimation {
 
-  private static class Styles {
-    public static String DEFAULT = "gwt-DateBox";
+  /**
+   * Css interface for date box.
+   */
+  public static interface Css extends WidgetCss {
+    @ClassName("gwt-DateBox")
+    String dateBox();
+  }
+
+  /**
+   * Standard css processing for {@link DateBox}.
+   * 
+   */
+  private static class StandardCss extends StandardCssImpl implements Css {
+
+    static Css DEFAULT = new StandardCss("gwt-DateBox");
+
+    public StandardCss(String baseStyleName) {
+      super(baseStyleName);
+    }
+
+    public String dateBox() {
+      return getWidgetStyleName();
+    }
   }
 
   private boolean dirtyText = false;
 
   private DropDownPanel<DateBox> popup = new DropDownPanel<DateBox>();
+
   private TextBox box = new TextBox();
   private DatePicker picker;
   private DateTimeFormat formatter = DateTimeFormat.getMediumDateFormat();
@@ -63,21 +87,40 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
    * Constructor.
    */
   public DateBox() {
-    this(new DatePicker());
+    this(StandardCss.DEFAULT);
+  }
+
+  /**
+   * Constructor.
+   * 
+   * @param css the css to use
+   */
+  public DateBox(Css css) {
+    this(new DatePicker(), css);
+  }
+
+  /**
+   * Constructor.
+   * 
+   * @param picker the date picker to use
+   */
+  public DateBox(final DatePicker picker) {
+    this(picker, StandardCss.DEFAULT);
   }
 
   /**
    * Constructor.
    * 
    * @param picker the picker to drop down
+   * @parem css the css to use for this date box.
    */
-  public DateBox(final DatePicker picker) {
+  public DateBox(final DatePicker picker, Css css) {
     FlowPanel p = new FlowPanel();
     p.add(box);
     this.picker = picker;
     popup.setWidget(picker);
     initWidget(p);
-    setStyleName(Styles.DEFAULT);
+    setStyleName(css.dateBox());
     picker.addSelectionHandler(new SelectionHandler<Date>() {
       public void onSelection(SelectionEvent<Date> event) {
         setText(event.getNewValue());
@@ -117,11 +160,13 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
           case KEY_ENTER:
           case KEY_TAB:
           case KEY_ESCAPE:
-          case KEY_DOWN: {
+          case KEY_UP:
             updateDateFromTextBox();
             popup.hide();
             break;
-          }
+          case KEY_DOWN:
+            showDatePicker();
+            break;
           default:
             dirtyText = true;
         }
@@ -232,6 +277,13 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
   }
 
   /**
+   * Sets the default css for date box.
+   */
+  public void setDefaultCss(Css css) {
+    StandardCss.DEFAULT = css;
+  }
+
+  /**
    * Sets whether the date box is enabled
    */
   public void setEnabled(boolean enabled) {
@@ -325,7 +377,6 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
   }
 
   private void updateDateFromTextBox() {
-
     String text = box.getText().trim();
     if (text.equals("")) {
       return;
