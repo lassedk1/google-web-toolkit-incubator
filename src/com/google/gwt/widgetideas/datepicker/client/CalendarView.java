@@ -57,7 +57,7 @@ public abstract class CalendarView<MyDatePicker extends DatePicker>
 
   public abstract boolean isDateEnabled(Date d);
 
-  public boolean isVisible(Date date) {
+  public boolean isDateVisible(Date date) {
     Date first = getFirstVisibleDate();
     Date last = getLastVisibleDate();
     return (date != null && (first.equals(date) || last.equals(date) || (first.before(date) && last.after(date))));

@@ -9,8 +9,7 @@
   width: 7em;
 }
 
-.gwt-DatePicker-day,.gwt-DatePicker-weekdayLabel,.gwt-DatePicker-weekendLabel
-  {
+.datePickerDay,.datePickerWeekdayLabel,.datePickerWeekendLabel {
   font-family: Arial;
   font-size: 65%;
   padding: 2px;
@@ -20,7 +19,7 @@
   cursor: default;
 }
 
-.gwt-DatePicker td,.month-selector td :focus {
+.gwt-DatePicker td,.datePickerMonthSelector  td :focus {
   outline: none
 }
 
@@ -31,74 +30,79 @@
 /* 
 * Calendar styles 
 */
-.gwt-DatePicker-days {
+.datePickerDays {
   background-color: white;
   width: 100%;
 }
 
-.gwt-DatePicker-weekdayLabel {
+.datePickerWeekdayLabel {
   background: #dbe6de;
 }
 
-.gwt-DatePicker-weekendLabel {
+.datePickerWeekendLabel {
   background: #dbe7ef;
 }
 
-.gwt-DatePicker-day {
+.datePickerDay {
   padding: 1px;
   cursor: hand;
   width: 1em;
 }
 
-.gwt-DatePicker-day-filler {
+.datePickerDayIsToday {
+  border: 1px solid black;
+  padding: 0px;
+}
+
+.datePickerDayIsWeekend {
+  background: #f1f1f1;
+}
+
+.datePickerDayIsFiller {
   color: #bfbfbf;
   padding: 1px;
   cursor: hand;
 }
 
-.gwt-DatePicker-day-selected {
+.datePickerDayIsSelected {
   background: #aaccee;
 }
 
-.gwt-DatePicker-day-disabled {
+.datePickerDayIsDisabled {
   color: graytext;
 }
 
-.gwt-DatePicker-day-highlighted {
+.datePickerDayIsHighlighted {
   border: 1px solid #eeeeee;
   padding: 0px;
 }
 
-.gwt-DatePicker-day-today {
-  border: 1px solid black;
-  padding: 0px;
+.datePickerDayIsSelectedAndHighlighted {
+   background: #bbddff;
 }
 
-.gwt-DatePicker-day-weekend {
-  background: #f1f1f1;
-}
 
 /* 
 * Month selector styles 
 */
-.gwt-DatePicker-monthSelector {
+.datePickerMonthSelector {
   background: #dbe6de;
   width: 100%;
   text-align: center;
 }
 
-.gwt-DatePicker-month {
+.datePickerMonth {
   text-align: center;
-  vertical-align:center;
+  vertical-align: center;
   white-space: nowrap;
   font-weight: bold;
   font-size: 70%;
 }
 
-.gwt-DatePicker-previousButton {
-   
+.datePickerPreviousButton {
+  
 }
 
-.gwt-DatePicker-nextButton {
- 
+.datePickerNextButton {
+  
 }

@@ -280,7 +280,7 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
    * @return is the date currently shown
    */
   public boolean isDateVisible(Date date) {
-    return calendar.isVisible(date);
+    return calendar.isDateVisible(date);
   }
 
   public final void removeChangeHandler(ChangeHandler<Date> handler) {

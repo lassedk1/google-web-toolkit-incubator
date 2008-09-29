@@ -45,9 +45,9 @@ class DefaultCalendarView extends CalendarView {
 
       DateCell(Element td, boolean isWeekend) {
         super(td, new Date());
-        cellStyle = css().day();
+        cellStyle = css().datePickerDay();
         if (isWeekend) {
-          cellStyle += " " + css().dayIsWeekend();
+          cellStyle += " " + css().datePickerDayIsWeekend();
         }
       }
 
@@ -66,6 +66,7 @@ class DefaultCalendarView extends CalendarView {
       @Override
       public void onHighlighted(boolean highlighted) {
         setHighlightedDate(getValue());
+        updateStyle();
       }
 
       @Override
@@ -76,7 +77,7 @@ class DefaultCalendarView extends CalendarView {
             getDatePicker().showDate(getValue());
           }
         }
-        super.onSelected(selected);
+        updateStyle();
       }
 
       @Override
@@ -92,11 +93,12 @@ class DefaultCalendarView extends CalendarView {
         setText(value);
         dateStyle = cellStyle;
         if (isFiller()) {
-          dateStyle += " " + css().dayIsFiller();
-        }
-        String extraStyle = getDatePicker().getGlobalDateStyle(current);
-        if (extraStyle != null) {
-          dateStyle += " " + extraStyle;
+          dateStyle += " " + css().datePickerDayIsFiller();
+        } else {
+          String extraStyle = getDatePicker().getGlobalStyleOfDate(current);
+          if (extraStyle != null) {
+            dateStyle += " " + extraStyle;
+          }
         }
         // We want to certify that all date styles have " " before and after
         // them for ease of adding to and replacing them.
@@ -107,17 +109,16 @@ class DefaultCalendarView extends CalendarView {
       @Override
       public void updateStyle() {
         String accum = dateStyle;
-        if (isSelected()) {
-          accum += " " + css().dayIsSelected();
-        }
+
         if (isHighlighted()) {
-          accum += " " + css().dayIsHighlighted();
-        }
-        if (isHighlighted() && isSelected()) {
-          accum += " " + css().dayIsSelectedAndHighlighted();
+          accum += " " + css().datePickerDayIsHighlighted();
+
+          if (isHighlighted() && isSelected()) {
+            accum += " " + css().datePickerDayIsSelectedAndHighlighted();
+          }
         }
         if (!isEnabled()) {
-          accum += " " + css().dayIsDisabled();
+          accum += " " + css().datePickerDayIsDisabled();
         }
         setStyleName(accum);
       }
@@ -149,22 +150,25 @@ class DefaultCalendarView extends CalendarView {
   }
 
   @Override
-  public void addVisibleDateStyle(Date date, String styleName) {
+  public void addStyleToDate(Date date, String styleName) {
+    assert isDateVisible(date) : "You tried to add style " + styleName + " to "
+        + date + ". The calendar is currently showing " + getFirstDate()
+        + " to " + getLastDate();
     getCell(date).addStyleName(styleName);
   }
 
   @Override
-  public Date getFirstVisibleDate() {
+  public Date getFirstDate() {
     return firstDisplayed;
   }
 
   @Override
-  public Date getLastVisibleDate() {
+  public Date getLastDate() {
     return lastDisplayed;
   }
 
   @Override
-  public boolean isEnabled(Date d) {
+  public boolean isDateEnabled(Date d) {
     return getCell(d).isEnabled();
   }
 
@@ -189,12 +193,12 @@ class DefaultCalendarView extends CalendarView {
   }
 
   @Override
-  public void removeVisibleStyleName(Date date, String styleName) {
+  public void removeStyleFromDate(Date date, String styleName) {
     getCell(date).removeStyleName(styleName);
   }
 
   @Override
-  public void setEnabledDate(Date date, boolean enabled) {
+  public void setDateEnabled(Date date, boolean enabled) {
     getCell(date).setEnabled(enabled);
   }
 
@@ -213,14 +217,14 @@ class DefaultCalendarView extends CalendarView {
       grid.setText(0, i, getModel().formatDayOfWeek(dayIdx));
 
       if (getModel().isWeekend(dayIdx)) {
-        formatter.setStyleName(0, i, css().weekendLabel());
+        formatter.setStyleName(0, i, css().datePickerWeekendLabel());
         if (weekendStartColumn == -1) {
           weekendStartColumn = i;
         } else {
           weekendEndColumn = i;
         }
       } else {
-        formatter.setStyleName(0, i, css().weekdayLabel());
+        formatter.setStyleName(0, i, css().datePickerWeekdayLabel());
       }
     }
 
@@ -234,11 +238,12 @@ class DefaultCalendarView extends CalendarView {
       }
     }
     initWidget(grid);
-    grid.setStyleName(css().days());
+    grid.setStyleName(css().datePickerDays());
   }
 
   private DateCell getCell(Date d) {
     int index = CalendarModel.diffDays(firstDisplayed, d);
+    assert (index >= 0);
 
     DateCell cell = (DateCell) grid.getCell(index);
     if (cell.getValue().getDate() != d.getDate()) {
