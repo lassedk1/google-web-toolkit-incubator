@@ -17,7 +17,6 @@
 package com.google.gwt.gen2.commonwidget.client.impl;
 
 import com.google.gwt.gen2.widgetbase.client.WidgetCss;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * An impl class that provides basic functionally to support the standard
@@ -26,33 +25,56 @@ import com.google.gwt.user.client.ui.Widget;
  * Applications that care about Css size and performance should use css
  * resources.
  * 
- * @param <WidgetType> the type of widget
  */
-public class StandardCssImpl<WidgetType extends Widget> implements WidgetCss {
+public class StandardCssImpl implements WidgetCss {
   private String baseName;
+  private String widgetName;
 
   /**
    * Constructor.
    */
   public StandardCssImpl(String baseStyleName) {
-    this.baseName = baseStyleName;
+    setBaseStyleName(baseStyleName);
   }
 
   /**
-   * Gets the style name. Conforming to Constant/CssResource pattern of omitting
-   * the "get".
+   * Gets the style name.
    * 
    * @return the style name.
    */
-  public String baseName() {
+  public String getBaseStyleName() {
     return baseName;
+  }
+
+  // Bogus impl of css resources getName.
+  public String getName() {
+    return null;
+  }
+
+  // Bogus impl of css resources getText.
+  public String getText() {
+    return null;
+  }
+
+  public String getWidgetStyleName() {
+    return widgetName;
   }
 
   /**
    * Sets the base name.
    */
   protected void setBaseStyleName(String style) {
-    baseName = style;
+    if (style == null || style.length() == 0) {
+      assert (false) : "Should not have a null style name";
+    }
+    widgetName = style;
+    int find = Math.max(0, style.lastIndexOf("-"));
+    if (find == style.length() - 1) {
+      baseName = "";
+    } else {
+      String lowerCaseFirstLetter = style.substring(find + 1, find + 2).toLowerCase();
+      baseName = lowerCaseFirstLetter + style.substring(find + 2);
+    }
   }
 
   /**
@@ -62,16 +84,7 @@ public class StandardCssImpl<WidgetType extends Widget> implements WidgetCss {
    * @return style name
    */
   protected String wrap(String styleName) {
-    return baseName + "-" + styleName;
+    return baseName + styleName;
   }
 
-  /**
-   * Creates the given dependent style name.
-   * 
-   * @param dependent dependent style name
-   * @return style name
-   */
-  protected String wrap(String base, String dependent) {
-    return baseName + "-" + base + "-" + dependent;
-  }
 }
