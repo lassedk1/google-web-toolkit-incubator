@@ -91,7 +91,9 @@ class JsHandlerRegistry extends JavaScriptObject {
 
     // Removing a handler is unusual, so smaller code is preferable then
     // handling both flat and dangling list of pointers.
-    unflatten(base);
+    if (isFlattened(base)) {
+      unflatten(base);
+    }
     boolean result = removeHelper(base, handler);
     assert result : handler + " did not exist";
   }

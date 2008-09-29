@@ -30,13 +30,17 @@ public class JSHanderRegistryTest extends Gen2TestBase {
   // Most testing is done using server side logging, this is just a liveness
   // check.
 
+  boolean mouseDown1 = false;
+  boolean mouseDown2 = false;
   MouseDownHandler mouseDownHandler = new MouseDownHandler() {
     public void onMouseDown(MouseDownEvent event) {
+      mouseDown1 = true;
     }
   };
 
   MouseDownHandler mouseDownHandler2 = new MouseDownHandler() {
     public void onMouseDown(MouseDownEvent event) {
+      mouseDown2 = true;
     }
   };
 
@@ -71,10 +75,36 @@ public class JSHanderRegistryTest extends Gen2TestBase {
   public void testRemove() {
     JsHandlerRegistry registry = JsHandlerRegistry.create();
     registry.addHandler(MouseDownEvent.KEY, mouseDownHandler);
+    registry.addHandler(MouseDownEvent.KEY, mouseDownHandler2);
+
+    assertEquals(2, registry.getHandlerCount(MouseDownEvent.KEY));
+    registry.removeHandler(MouseDownEvent.KEY, mouseDownHandler2);
     assertEquals(1, registry.getHandlerCount(MouseDownEvent.KEY));
-    registry.removeHandler(MouseDownEvent.KEY, mouseDownHandler);
-    assertEquals(0, registry.getHandlerCount(MouseDownEvent.KEY));
-    // Nothing should happen now.
+
+    // Check for correct firing.
+    mouseDown1 = false;
+    mouseDown2 = false;
     registry.fireEvent(new MouseDownEvent(null));
+    assertTrue(mouseDown1);
+    assertFalse(mouseDown2);
+
+    registry.removeHandler(MouseDownEvent.KEY, mouseDownHandler);
+
+    // Nothing should happen now.
+    mouseDown1 = false;
+    mouseDown2 = false;
+    registry.fireEvent(new MouseDownEvent(null));
+    assertFalse(mouseDown1);
+    assertFalse(mouseDown2);
+
+    registry.addHandler(MouseDownEvent.KEY, mouseDownHandler2);
+    assertEquals(1, registry.getHandlerCount(MouseDownEvent.KEY));
+
+    // Two should fire
+    mouseDown1 = false;
+    mouseDown2 = false;
+    registry.fireEvent(new MouseDownEvent(null));
+    assertFalse(mouseDown1);
+    assertTrue(mouseDown2);
   }
 }
