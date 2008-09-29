@@ -17,16 +17,12 @@
 package com.google.gwt.gen2.demo.dropdownlistbox.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.commonwidget.client.Decorator;
 import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
 import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
 import com.google.gwt.gen2.selection.client.DropDownListBox;
 import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
-import com.google.gwt.libideas.client.StyleInjector;
 import com.google.gwt.libideas.logging.shared.Log;
-import com.google.gwt.libideas.resources.client.CssResource;
-import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -47,82 +43,6 @@ import com.google.gwt.user.client.ui.Widget;
  * with.
  */
 public class DropDownListBoxDemo implements EntryPoint {
-  /**
-   * TODO(ECC) for some reason we can't just inherit DropDownListBox.css class
-   * name annotations and must override them again below. Will coordinate with
-   * BobV to get this fixed...
-   * 
-   */
-  public static interface BundledCss extends CssResource, DropDownListBox.Css {
-    @ClassName("gwt-DropDownListBox")
-    String baseName();
-
-    /**
-     * Disabled item.
-     */
-    @ClassName("gwt-DropDownListBox-disabledItem")
-    String disabledItem();
-
-    /**
-     * Highlighted item.
-     */
-    @ClassName("gwt-DropDownListBox-highlightedItem")
-    String highlightedItem();
-
-    /**
-     * Inner div of a list separator.
-     */
-    @ClassName("gwt-DropDownListBox-innerSeparator")
-    String innerSeparator();
-
-    /**
-     * List item.
-     */
-    @ClassName("gwt-DropDownListBox-item")
-    String item();
-
-    /**
-     * List box wrapper.
-     */
-    @ClassName("gwt-DropDownListBox-listBox")
-    String listBox();
-
-    /**
-     * Outer div of a list separator.
-     */
-    @ClassName("gwt-DropDownListBox-outerSeparator")
-    String outerSeparator();
-
-    /**
-     * Selected and disabled item.
-     */
-    @ClassName("gwt-DropDownListBox-selectedAndDisabledItem")
-    String selectedAndDisabledItem();
-
-    /**
-     * Selected and highlighted item.
-     */
-    @ClassName("gwt-DropDownListBox-selectedAndHighlightedItem")
-    String selectedAndHighlightedItem();
-
-    /**
-     * Selected item.
-     */
-    @ClassName("gwt-DropDownListBox-selectedItem")
-    String selectedItem();
-  }
-
-  /**
-   * CSS resource for {@link WrappedDropDownListBox}.
-   * 
-   */
-  public static interface Resources extends ImmutableResourceBundle {
-    /**
-     * @return
-     */
-    @Resource("com/google/gwt/gen2/widgetbase/public/DropDownListBox.css")
-    BundledCss dropDownListBoxCss();
-  }
 
   /**
    * A custom list box wrapped with one level of divs.
@@ -277,10 +197,7 @@ public class DropDownListBoxDemo implements EntryPoint {
     // By default, all widgets use non-css resources, here we override that if
     // we are not suppressing them altogether.
     if (Gen2CssInjector.isInjectionEnabled()) {
-      BundledCss css = ((Resources) GWT.create(Resources.class)).dropDownListBoxCss();
-      StyleInjector.injectStylesheet(css.getText());
-      DropDownListBox.DEFAULT_CSS = css;
-      Gen2CssInjector.addToggleButtonDefault();
+      DropDownListBox.injectDefaultCss();
     } else {
       Log.info("Using debug css");
     }
