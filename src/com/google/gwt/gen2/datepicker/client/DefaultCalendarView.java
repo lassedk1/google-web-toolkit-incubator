@@ -24,12 +24,12 @@ import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.CellFormatter
 import java.util.Date;
 
 /**
- * Simple calendar view. Not part of the public API as we wish to evolve it
- * freely over time. Please copy though, as we like it getting used.
+ * Simple calendar view. Not extensible as we wish to evolve it freely over
+ * time. Please copy though, as we like it getting used.
  */
 
 @SuppressWarnings(/* Date manipulation required */{"deprecation"})
-class DefaultCalendarView extends CalendarView {
+public final class DefaultCalendarView extends CalendarView {
 
   /**
    * Cell grid.
@@ -174,18 +174,18 @@ class DefaultCalendarView extends CalendarView {
 
   @Override
   public void refresh() {
-    firstDisplayed = getModel().getFirstDayOfCurrentFirstWeek();
+    firstDisplayed = getModel().getCurrentFirstDayOfFirstWeek();
 
     if (firstDisplayed.getDate() == 1) {
       // show one empty week if date is Monday is the first in month.
-      CalendarModel.shiftDays(firstDisplayed, -7);
+      CalendarUtil.addDaysToDate(firstDisplayed, -7);
     }
 
     lastDisplayed.setTime(firstDisplayed.getTime());
 
     for (int i = 0; i < grid.getNumCells(); i++) {
       if (i != 0) {
-        CalendarModel.shiftDays(lastDisplayed, 1);
+        CalendarUtil.addDaysToDate(lastDisplayed, 1);
       }
       DateCell cell = (DateCell) grid.getCell(i);
       cell.update(lastDisplayed);
@@ -211,12 +211,12 @@ class DefaultCalendarView extends CalendarView {
 
     // Set up the day labels.
     for (int i = 0; i < CalendarModel.DAYS_IN_WEEK; i++) {
-      int shift = CalendarModel.getLocaleStartingDayOfWeek();
+      int shift = CalendarUtil.getStartingDayOfWeek();
       int dayIdx = i + shift < CalendarModel.DAYS_IN_WEEK ? i + shift : i
           + shift - CalendarModel.DAYS_IN_WEEK;
       grid.setText(0, i, getModel().formatDayOfWeek(dayIdx));
 
-      if (getModel().isWeekend(dayIdx)) {
+      if (CalendarUtil.isWeekend(dayIdx)) {
         formatter.setStyleName(0, i, css().datePickerWeekendLabel());
         if (weekendStartColumn == -1) {
           weekendStartColumn = i;
@@ -242,7 +242,7 @@ class DefaultCalendarView extends CalendarView {
   }
 
   private DateCell getCell(Date d) {
-    int index = CalendarModel.diffDays(firstDisplayed, d);
+    int index = CalendarUtil.getDaysBetween(firstDisplayed, d);
     assert (index >= 0);
 
     DateCell cell = (DateCell) grid.getCell(index);

@@ -19,13 +19,15 @@ import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
  * Handler interface for {@link WrongFormatEvent} events.
+ * 
+ * @param <Value> the value with the wrong format
  */
-public interface WrongFormatHandler extends EventHandler {
+public interface WrongFormatHandler<Value> extends EventHandler {
 
   /**
    * Called when WrongFormatEvent is fired.
    * 
    * @param event the {@link WrongFormatEvent} that was fired
    */
-  void onWrongFormat(WrongFormatEvent event);
+  void onWrongFormat(WrongFormatEvent<Value> event);
 }

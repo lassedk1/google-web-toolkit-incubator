@@ -53,6 +53,11 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
    * Css interface for date box.
    */
   public static interface Css extends WidgetCss {
+    /**
+     * Main style name.
+     * 
+     * @return 'gwt-DateBox'
+     */
     @ClassName("gwt-DateBox")
     String dateBox();
   }
@@ -62,7 +67,6 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
    * 
    */
   private static class StandardCss extends StandardCssImpl implements Css {
-
     static Css DEFAULT = new StandardCss("gwt-DateBox");
 
     public StandardCss(String baseStyleName) {
@@ -74,13 +78,12 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
     }
   }
 
+  private static final DateTimeFormat DEFAULT_FORMATTER = DateTimeFormat.getMediumDateFormat();
   private boolean dirtyText = false;
-
   private DropDownPanel<DateBox> popup = new DropDownPanel<DateBox>();
-
   private TextBox box = new TextBox();
   private DatePicker picker;
-  private DateTimeFormat formatter = DateTimeFormat.getMediumDateFormat();
+  private DateTimeFormat dateFormatter;
   private boolean allowDPShow = true;
 
   /**
@@ -112,10 +115,23 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
    * Constructor.
    * 
    * @param picker the picker to drop down
-   * @parem css the css to use for this date box.
+   * @param css the css to use for this date box.
    */
   public DateBox(final DatePicker picker, Css css) {
+    this(picker, css, DEFAULT_FORMATTER);
+  }
+
+  /**
+   * Constructor.
+   * 
+   * @param picker the picker to drop down
+   * @param css the css to use for this date box.
+   * @param formatter date time formatter to use for parsing the dates in this
+   *          date box
+   */
+  public DateBox(final DatePicker picker, Css css, DateTimeFormat formatter) {
     FlowPanel p = new FlowPanel();
+    this.dateFormatter = formatter;
     p.add(box);
     this.picker = picker;
     popup.setWidget(picker);
@@ -128,13 +144,12 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
         preventDatePickerPopup();
         box.setFocus(true);
       }
-
     });
 
     box.addFocusListener(new FocusListener() {
       public void onFocus(Widget sender) {
         if (allowDPShow) {
-          showDatePicker();
+          showCurrentDate();
         }
       }
 
@@ -148,7 +163,7 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
 
     box.addClickListener(new ClickListener() {
       public void onClick(Widget sender) {
-        showDatePicker();
+        showCurrentDate();
       }
     });
 
@@ -165,7 +180,7 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
             popup.hide();
             break;
           case KEY_DOWN:
-            showDatePicker();
+            showCurrentDate();
             break;
           default:
             dirtyText = true;
@@ -176,6 +191,11 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
       }
 
       public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+      }
+    });
+    setWrongFormatHandler(new WrongFormatHandler<String>() {
+      public void onWrongFormat(WrongFormatEvent<String> event) {
+        Log.warning("DateBox cannot parse: " + event.getValue());
       }
     });
   }
@@ -194,16 +214,12 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
 
   /**
    * Gets the current cursor position in the date box.
+   * 
+   * @return the cursor position
+   * 
    */
   public int getCursorPos() {
     return box.getCursorPos();
-  }
-
-  /**
-   * Gets the current date formatter.
-   */
-  public DateTimeFormat getDateFormatter() {
-    return formatter;
   }
 
   /**
@@ -226,6 +242,8 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
 
   /**
    * Get current text in text box.
+   * 
+   * @return the text in the date box
    */
   public String getText() {
     return box.getText();
@@ -263,12 +281,12 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
    * @param format format.
    */
   public void setDateFormat(DateTimeFormat format) {
-    if (format != formatter) {
-      formatter = format;
+    if (format != dateFormatter) {
+      dateFormatter = format;
       String cur = box.getText();
       if (cur != null && cur.length() != 0) {
         try {
-          box.setText(formatter.format(picker.getSelectedDate()));
+          box.setText(dateFormatter.format(picker.getSelectedDate()));
         } catch (IllegalArgumentException e) {
           box.setText("");
         }
@@ -277,14 +295,19 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
   }
 
   /**
-   * Sets the default css for date box.
+   * Sets the default css for {@link DateBox}.
+   * 
+   * @param css the css to use as the default
+   * 
    */
   public void setDefaultCss(Css css) {
     StandardCss.DEFAULT = css;
   }
 
   /**
-   * Sets whether the date box is enabled
+   * Sets whether the date box is enabled.
+   * 
+   * @param enabled is the box enabled
    */
   public void setEnabled(boolean enabled) {
     box.setEnabled(enabled);
@@ -313,24 +336,15 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
   }
 
   /**
-   * Show the given date in the date picker.
-   * 
-   * @param date picker
+   * Parses the current date box's value and shows that date.
    */
-  public void showDate(Date date) {
-    picker.setSelectedDate(date, false);
-    picker.showDate(date);
-    setText(date);
-    dirtyText = false;
-  }
-
-  public void showDatePicker() {
+  public void showCurrentDate() {
     Date current = null;
 
     String value = box.getText().trim();
     if (!value.equals("")) {
       try {
-        current = formatter.parse(value);
+        current = dateFormatter.parse(value);
       } catch (IllegalArgumentException e) {
         Log.info("cannot parse as date: " + value);
       }
@@ -344,12 +358,15 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
   }
 
   /**
-   * Default way to handle format errors.
+   * Show the given date.
    * 
-   * @param text text
+   * @param date picker
    */
-  protected void handleIllegalInput(String text) {
-    Log.info("Format error: " + text);
+  public void showDate(Date date) {
+    picker.setSelectedDate(date, false);
+    picker.showDate(date);
+    setText(date);
+    dirtyText = false;
   }
 
   /**
@@ -358,7 +375,7 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
    * 
    * @param handler the wrong format handler
    */
-  protected void setWrongFormatHandler(WrongFormatHandler handler) {
+  protected void setWrongFormatHandler(WrongFormatHandler<String> handler) {
     getHandlerManager().clearHandlers(WrongFormatEvent.KEY);
   }
 
@@ -372,7 +389,7 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
   }
 
   private void setText(Date value) {
-    box.setText(formatter.format(value));
+    box.setText(dateFormatter.format(value));
     dirtyText = false;
   }
 
@@ -382,10 +399,10 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
       return;
     }
     try {
-      Date d = formatter.parse(text);
+      Date d = dateFormatter.parse(text);
       showDate(d);
     } catch (IllegalArgumentException exception) {
-      handleIllegalInput(text);
+      fireEvent(new WrongFormatEvent<String>(text));
     }
     dirtyText = false;
   }
