@@ -16,196 +16,53 @@
 
 package com.google.gwt.gen2.datepicker.client;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.i18n.client.constants.DateTimeConstants;
 
 import java.util.Date;
 
 /**
- * Model used to get calendar information.
+ * Model used to get calendar information for {@link DatePicker} and its
+ * subclasses.
  */
-@SuppressWarnings( {"deprecation"})
+@SuppressWarnings(/* Required to use Date API in gwt */{"deprecation"})
 public class CalendarModel {
 
+  /**
+   * The number of weeks normally displayed in a month.
+   */
   public static final int WEEKS_IN_MONTH = 6;
+
+  /**
+   * Number of days normally displayed in a week.
+   */
   public static final int DAYS_IN_WEEK = 7;
 
-  private static final DateTimeConstants intlConstants = (DateTimeConstants) GWT.create(DateTimeConstants.class);
-
-  /**
-   * dayOfWeekNames is kept as strings because used only once for initial
-   * drawing.
-   */
   private static final String[] dayOfWeekNames = new String[7];
+
   private static final DateTimeFormat dayOfMonthFormatter = DateTimeFormat.getFormat("d");
-  private static final DateTimeFormat yearFormatter = DateTimeFormat.getFormat("yyyy");
+
   private static final DateTimeFormat dayOfWeekFormatter = DateTimeFormat.getFormat("ccccc");
+
   private static final DateTimeFormat monthAndYearFormatter = DateTimeFormat.getFormat("MMM yyyy");
-  private static final DateTimeFormat dateFormatter = DateTimeFormat.getShortDateFormat();
 
-  /**
-   * Is the year before the month?
-   * 
-   * @return is the year before the month
-   */
-  public static boolean computeYearBeforeMonth() {
-    // Finding whether year is before month
-    String[] dateFormats = intlConstants.dateFormats();
-    String dateLongFormat = dateFormats[3];
+  private static String[] dayOfMonthNames = new String[32];
 
-    int yIndex = dateLongFormat.indexOf("y");
-    int mIndex = dateLongFormat.indexOf("M");
-
-    return (yIndex < mIndex);
-  }
-
-  /**
-   * Copies the given date.
-   * 
-   * @param date the date
-   * @return the copy
-   */
-  public static Date copy(Date date) {
-    if (date == null) {
-      return null;
-    }
-    Date newDate = new Date();
-    newDate.setTime(date.getTime());
-    return newDate;
-  }
-
-  /**
-   * Returns the number of days between the two dates. Time is ignored.
-   * 
-   * @param start starting date
-   * @param finish ending date
-   * @return the different
-   */
-  public static int diffDays(Date start, Date finish) {
-    if (hasTime(start)) {
-      start = copy(start);
-      resetTime(start);
-    }
-
-    if (hasTime(finish)) {
-      finish = copy(finish);
-      resetTime(finish);
-    }
-
-    long aTime = start.getTime();
-    long bTime = finish.getTime();
-
-    long adjust = 60 * 60 * 1000;
-    adjust = (bTime > aTime) ? adjust : -adjust;
-
-    return (int) ((bTime - aTime + adjust) / (24 * 60 * 60 * 1000));
-  }
-
-  /**
-   * Returns the day of the week on which week starts as per the locale. The
-   * range between 0 for Sunday and 6 for Saturday.
-   * 
-   * @return the day of the week on which week starts as per the locale.
-   */
-  public static int getLocaleStartingDayOfWeek() {
-    return Integer.parseInt(intlConstants.firstDayOfTheWeek()) - 1;
-  }
-
-  /**
-   * Shift the date by the given number of days.
-   * 
-   * @param date the date
-   * @param days number of days
-   */
-  public static void shiftDays(Date date, int days) {
-    date.setDate(date.getDate() + days);
-  }
-
-  /**
-   * Shift the date by the given number of months.
-   * 
-   * @param date the date
-   * @param months number of months
-   */
-  public static void shiftMonths(Date date, int months) {
-    if (months != 0) {
-      int month = date.getMonth();
-      int year = date.getYear();
-
-      int resultMonthCount = year * 12 + month + months;
-      int resultYear = resultMonthCount / 12;
-      int resultMonth = resultMonthCount - resultYear * 12;
-
-      date.setMonth(resultMonth);
-      date.setYear(resultYear);
-    }
-  }
-
-  /**
-   * Return the Date object with time set to 00:00:00. Keeping a fixed the time
-   * of day intended to make it easier to find day differences of dates that are
-   * initiated to different times of the day.
-   * 
-   * @return new Date object
-   */
-  private static Date createDateWithoutTime() {
-    Date date = new Date();
-    resetTime(date);
-    return date;
-  }
-
-  /**
-   * Return the Date object with date set to 1 and time set to 00:00:00.
-   * 
-   * @return new Date object
-   */
-  private static Date createFirstDayOfMonth() {
-    Date date = createDateWithoutTime();
-    date.setDate(1);
-    return date;
-  }
-
-  private static boolean hasTime(Date start) {
-    return start.getHours() != 0 || start.getMinutes() != 0
-        || start.getSeconds() != 0;
-  }
-
-  /**
-   * Resets the date to have no time modifiers.
-   * 
-   * @param date the date
-   */
-  private static void resetTime(Date date) {
-    long msec = date.getTime();
-    msec = (msec / 1000) * 1000;
-    date.setTime(msec);
-
-    date.setHours(0);
-    date.setMinutes(0);
-    date.setSeconds(0);
-  }
-
-  private final Date curMonthAndYear = createFirstDayOfMonth();
-
-  private int firstDayOfWeekend;
-
-  private int lastDayOfWeekend;
-
-  private String[] dayOfMonthNames = new String[32];
-
-  private int numDaysInMonth;
+  private final Date currentMonth;
 
   /**
    * Constructor.
    */
   public CalendarModel() {
+    currentMonth = new Date();
+
+    CalendarUtil.setToFirstDayOfMonth(currentMonth);
+
     // Finding day of week names
     Date date = new Date();
     for (int i = 1; i <= 7; i++) {
       date.setDate(i);
       int dayOfWeek = date.getDay();
-      dayOfWeekNames[dayOfWeek] = dayOfWeekFormatter.format(date);
+      dayOfWeekNames[dayOfWeek] = getDayOfWeekFormatter().format(date);
     }
 
     // Finding day of month names
@@ -213,70 +70,21 @@ public class CalendarModel {
 
     for (int i = 1; i < 32; ++i) {
       date.setDate(i);
-      dayOfMonthNames[i] = dayOfMonthFormatter.format(date);
-    }
-
-    // Finding the start and end of weekend
-    firstDayOfWeekend = Integer.parseInt(intlConstants.weekendRange()[0]) - 1;
-    lastDayOfWeekend = Integer.parseInt(intlConstants.weekendRange()[1]) - 1;
-  }
-
-  /**
-   * Create a date in the current month at the given day.
-   * 
-   * @param dayOfMonth the day in the month
-   * @return the new date
-   */
-  public Date createDate(int dayOfMonth) {
-    Date d = new Date(curMonthAndYear.getTime());
-    d.setDate(dayOfMonth);
-    return d;
-  }
-
-  /**
-   * Create a unique string key for the given date.
-   * 
-   * @param date the date
-   * @return the key
-   */
-  public String createKeyFromDate(Date date) {
-    return date.getYear() + "/" + date.getMonth() + "/" + date.getDate();
-  }
-
-  /**
-   * Format the date using this model's formatter.
-   * 
-   * @param date date
-   * @return string
-   */
-  public String format(Date date) {
-    if (date == null) {
-      return "";
-    } else {
-      return dateFormatter.format(date);
+      dayOfMonthNames[i] = getDayOfMonthFormatter().format(date);
     }
   }
 
   /**
-   * Formats the month in year.
+   * Formats the current specified month. For example "Sep".
    * 
-   * @return the formatted month in year
+   * @return the formatted month
    */
   public String formatCurrentMonth() {
-    return monthAndYearFormatter.format(curMonthAndYear);
+    return getMonthAndYearFormatter().format(currentMonth);
   }
 
   /**
-   * Formats the year.
-   * 
-   * @return the formatted year
-   */
-  public String formatCurrentYear() {
-    return yearFormatter.format(curMonthAndYear);
-  }
-
-  /**
-   * Format the date's day of month.
+   * Formats a date's day of month. For example "1".
    * 
    * @param date the date
    * @return the formated day of month
@@ -286,19 +94,9 @@ public class CalendarModel {
   }
 
   /**
-   * Formats the date's day of month.
+   * Format a day in the week. So, for example "Monday".
    * 
-   * @param dayOfMonth day of month
-   * @return the formatted day of month
-   */
-  public String formatDayOfMonth(int dayOfMonth) {
-    return dayOfMonthNames[dayOfMonth];
-  }
-
-  /**
-   * Format the day in the week.
-   * 
-   * @param dayInWeek the day in week
+   * @param dayInWeek the day in week to format
    * @return the formatted day in week
    */
   public String formatDayOfWeek(int dayInWeek) {
@@ -306,158 +104,98 @@ public class CalendarModel {
   }
 
   /**
-   * Get the current month.
-   * 
-   * @return the current month
-   */
-  public int getCurrentMonth() {
-    return curMonthAndYear.getMonth();
-  }
-
-  /**
-   * Gets the current month and year.
-   * 
-   * @return the month and year
-   */
-  public Date getCurrentMonthAndYear() {
-    return curMonthAndYear;
-  }
-
-  /**
-   * Returns size of the current month.
-   * 
-   * @return number of days in the current month
-   */
-  public int getCurrentNumberOfDaysInMonth() {
-    return numDaysInMonth;
-  }
-
-  /**
-   * Gets the current year.
-   * 
-   * @return the current year
-   */
-  public int getCurrentYear() {
-    return curMonthAndYear.getYear();
-  }
-
-  /**
-   * Gets the first day of the first week in the current month and year.
+   * Gets the first day of the first week in the currently specified month.
    * 
    * @return the first day
    */
-  public Date getFirstDayOfCurrentFirstWeek() {
-    int wkDayOfMonth1st = curMonthAndYear.getDay();
-    if (wkDayOfMonth1st == getLocaleStartingDayOfWeek()) {
+  public Date getCurrentFirstDayOfFirstWeek() {
+    int wkDayOfMonth1st = currentMonth.getDay();
+    int start = CalendarUtil.getStartingDayOfWeek();
+    if (wkDayOfMonth1st == start) {
       // always return a copy to allow SimpleCalendarView to adjust first
       // display date
-      return new Date(curMonthAndYear.getTime());
+      return new Date(currentMonth.getTime());
     } else {
-      Date d = new Date(curMonthAndYear.getTime());
-      int offset = wkDayOfMonth1st - getLocaleStartingDayOfWeek() > 0
-          ? wkDayOfMonth1st - getLocaleStartingDayOfWeek() : DAYS_IN_WEEK
-              - (getLocaleStartingDayOfWeek() - wkDayOfMonth1st);
-      shiftDays(d, -offset);
+      Date d = new Date(currentMonth.getTime());
+      int offset = wkDayOfMonth1st - start > 0 ? wkDayOfMonth1st - start
+          : DAYS_IN_WEEK - (start - wkDayOfMonth1st);
+      CalendarUtil.addDaysToDate(d, -offset);
       return d;
     }
   }
 
   /**
-   * Is the date in the current month.
+   * Gets the date representation of the currently specified month. Used to
+   * access both the month and year information.
    * 
-   * @param date date
+   * @return the month and year
+   */
+  public Date getCurrentMonth() {
+    return currentMonth;
+  }
+
+  /**
+   * Is a date in the currently specified month?
+   * 
+   * @param date the date
    * @return date
    */
   public boolean isInCurrentMonth(Date date) {
-    return curMonthAndYear.getMonth() == date.getMonth();
+    return currentMonth.getMonth() == date.getMonth();
   }
 
   /**
-   * Is the day of the week a weekend?
+   * Sets the currently specified date.
    * 
-   * @param dayOfWeek day of week
-   * @return is the day of week a weekend?
+   * @param currentDate the currently specified date
    */
-  public boolean isWeekend(int dayOfWeek) {
-    return dayOfWeek == firstDayOfWeekend || dayOfWeek == lastDayOfWeekend;
+  public void setCurrentMonth(Date currentDate) {
+    this.currentMonth.setYear(currentDate.getYear());
+    this.currentMonth.setMonth(currentDate.getMonth());
   }
 
   /**
-   * Default formatter for date parsing.
-   * 
-   * @param text date to parse
-   * @return resulting Date object
-   */
-  public Date parseDate(String text) {
-    return dateFormatter.parse(text);
-  }
-
-  /**
-   * Sets the current month and year
-   * 
-   * @param currentMonthAndYear the current month and year
-   */
-  public void setCurrentMonthAndYear(Date currentMonthAndYear) {
-    this.curMonthAndYear.setYear(currentMonthAndYear.getYear());
-    this.curMonthAndYear.setMonth(currentMonthAndYear.getMonth());
-    refresh();
-  }
-
-  /**
-   * Shifts the current month by the given number of months. The day of the
-   * month will be pinned to the original value as far as possible.
+   * Shifts the currently specified date by the given number of months. The day
+   * of the month will be pinned to the original value as far as possible.
    * 
    * @param deltaMonths - number of months to be added to the current date
    */
   public void shiftCurrentMonth(int deltaMonths) {
-    shiftMonths(curMonthAndYear, deltaMonths);
+    CalendarUtil.addMonthsToDate(currentMonth, deltaMonths);
     refresh();
   }
 
   /**
-   * Private method getNumberOfDaysInMonth() gets number of days in the month
-   * indicated.
+   * Gets the date of month formatter.
    * 
-   * @param deltaMonth - the position of the month with respect to current month
-   * 
-   * @return number of days in the month
+   * @return the day of month formatter
    */
-
-  private int computeDaysInMonth(int deltaMonth) {
-    int month = curMonthAndYear.getMonth();
-    int year = curMonthAndYear.getYear();
-
-    Date a = createDate(1);
-    Date b = createDate(1);
-
-    int resultMonthCount = year * 12 + month + deltaMonth;
-
-    int aYear = resultMonthCount / 12;
-    int aMonth = resultMonthCount - aYear * 12;
-
-    resultMonthCount++;
-
-    int bYear = resultMonthCount / 12;
-    int bMonth = resultMonthCount - bYear * 12;
-
-    a.setMonth(aMonth);
-    a.setYear(aYear);
-
-    b.setMonth(bMonth);
-    b.setYear(bYear);
-
-    int diff = diffDays(a, b);
-
-    return (diff >= 0) ? diff : -diff;
+  protected DateTimeFormat getDayOfMonthFormatter() {
+    return dayOfMonthFormatter;
   }
 
-  private void refresh() {
-    int weekStart = getLocaleStartingDayOfWeek();
-    int dayOfWeek = curMonthAndYear.getDay();
-    int date = curMonthAndYear.getDate();
-    // offset from Sunday == 0; +70 to make number +ve
-    int offset = (dayOfWeek - date + 1 - weekStart + 70) % 7;
-    numDaysInMonth = computeDaysInMonth(0);
+  /**
+   * Gets the day of week formatter.
+   * 
+   * @return the day of week formatter
+   */
+  protected DateTimeFormat getDayOfWeekFormatter() {
+    return dayOfWeekFormatter;
+  }
+
+  /**
+   * Gets the month and year formatter.
+   * 
+   * @return the month and year formatter
+   */
+  protected DateTimeFormat getMonthAndYearFormatter() {
+    return monthAndYearFormatter;
+  }
+
+  /**
+   * Refresh the current model as needed.
+   */
+  protected void refresh() {
   }
 
 }

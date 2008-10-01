@@ -31,12 +31,15 @@ import java.util.Date;
  * as we like it getting used.
  */
 
-class DefaultMonthSelector extends MonthSelector {
+public final class DefaultMonthSelector extends MonthSelector {
 
   private PushButton backwards;
   private PushButton forwards;
   private Grid grid;
 
+  /**
+   * Constructor.
+   */
   public DefaultMonthSelector() {
   }
 

@@ -27,7 +27,7 @@ abstract class DatePickerComponent extends Composite {
 
   protected void addMonths(int numMonths) {
     getModel().shiftCurrentMonth(numMonths);
-    getDatePicker().refresh();
+    getDatePicker().refreshAll();
   }
 
   protected DatePicker.Css css() {
@@ -40,9 +40,18 @@ abstract class DatePickerComponent extends Composite {
 
   /**
    * Refresh the component. Usually called because the model's current date has
-   * changed.
+   * changed. In general, only should be called by {@link DatePicker}. Use
+   * refreshAll() if you need to refresh all components.
    */
   protected abstract void refresh();
+
+  /**
+   * Refreshes the {@link DatePicker}, {@link CalendarView}, and
+   * {@link CalendarModel}.
+   */
+  protected void refreshAll() {
+    getDatePicker().refreshAll();
+  }
 
   /**
    * Set up the component.

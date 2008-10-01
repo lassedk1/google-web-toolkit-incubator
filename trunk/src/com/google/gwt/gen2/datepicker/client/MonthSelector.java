@@ -25,6 +25,9 @@ public abstract class MonthSelector extends DatePickerComponent {
 
   /**
    * Sets the date range that this month selector is allowed to chose from.
+   * 
+   * @param from from date
+   * @param to date
    */
   public abstract void setAllowableDateRange(Date from, Date to);
 

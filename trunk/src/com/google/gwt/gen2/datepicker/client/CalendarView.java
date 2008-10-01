@@ -45,7 +45,7 @@ public abstract class CalendarView extends DatePickerComponent {
    * Adds a style to the cell of the supplied dates. This is only set until the
    * next time the {@link CalendarView} is refreshed.
    * 
-   * @param date date that will have the supplied style added
+   * @param dates dates that will have the supplied style added
    * @param styleName style name to add
    */
   public void addStyleToDates(Iterable<Date> dates, String styleName) {
@@ -56,11 +56,15 @@ public abstract class CalendarView extends DatePickerComponent {
 
   /**
    * Returns the first date that is currently shown by the calendar.
+   * 
+   * @return the first date.
    */
   public abstract Date getFirstDate();
 
   /**
    * Returns the last date that is currently shown by the calendar.
+   * 
+   * @return the last date.
    */
   public abstract Date getLastDate();
 
@@ -70,7 +74,7 @@ public abstract class CalendarView extends DatePickerComponent {
    * @param date the date
    * @return is the date enabled
    */
-  public abstract boolean isDateEnabled(Date d);
+  public abstract boolean isDateEnabled(Date date);
 
   /**
    * Is the cell representing the given date visible?
@@ -113,12 +117,16 @@ public abstract class CalendarView extends DatePickerComponent {
    */
   public void setDatesEnabled(Iterable<Date> dates, boolean enabled) {
     for (Date date : dates) {
+      assert isDateVisible(date) : date
+          + " cannot be enabled or disabled as it is not visible";
       setDateEnabled(date, enabled);
     }
   }
 
   /**
    * Allows the calendar view to update the date picker's highlighted date.
+   * 
+   * @param date the highlighted date
    */
   protected final void setHighlightedDate(Date date) {
     getDatePicker().setHighlightedDate(date);
