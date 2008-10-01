@@ -274,12 +274,9 @@ public class DatePickerDemo implements EntryPoint {
         picker, new SelectionHandler<Date>() {
           public void onSelection(SelectionEvent<Date> event) {
             Date d = event.getNewValue();
-            picker.setEnabledOnVisibleDate(d, !picker.isDateEnabled(d));
+            picker.setEnabledOnVisibleDate(d, !picker.isVisibleDateEnabled(d));
           }
         }));
-
-    // Add alerts on bad user input
-
     return panel;
   };
 
