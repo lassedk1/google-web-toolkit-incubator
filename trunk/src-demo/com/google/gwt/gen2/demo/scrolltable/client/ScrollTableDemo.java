@@ -21,12 +21,16 @@ import com.google.gwt.gen2.demo.scrolltable.shared.StudentGenerator;
 import com.google.gwt.gen2.table.client.FixedWidthFlexTable;
 import com.google.gwt.gen2.table.client.FixedWidthGrid;
 import com.google.gwt.gen2.table.client.ScrollTable;
+import com.google.gwt.gen2.table.client.SelectionGrid.SelectionPolicy;
 import com.google.gwt.gen2.table.client.overrides.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -103,7 +107,7 @@ public class ScrollTableDemo implements EntryPoint {
 
     // Set the data in the new row
     Student student = STUDENT_DATA.generateStudent();
-    dataTable.setWidget(beforeRow, 0, new CheckBox(student.getFirstName()));
+    dataTable.setText(beforeRow, 0, student.getFirstName());
     dataTable.setText(beforeRow, 1, student.getLastName());
     dataTable.setText(beforeRow, 2, student.getAge() + "");
     dataTable.setText(beforeRow, 3, student.isMale() ? "male" : "female");
@@ -150,8 +154,9 @@ public class ScrollTableDemo implements EntryPoint {
    */
   protected void createFooterTable() {
     footerTable = new FixedWidthFlexTable();
+    footerTable.setHTML(0, 0, "&nbsp;");
     for (int i = 0; i < 12; i++) {
-      footerTable.setText(0, i, "Col " + i);
+      footerTable.setText(0, i + 1, "Col " + i);
     }
   }
 
@@ -164,24 +169,40 @@ public class ScrollTableDemo implements EntryPoint {
     // Level 1 headers
     FlexCellFormatter headerFormatter = headerTable.getFlexCellFormatter();
     headerTable.setHTML(0, 0, "User Information");
-    headerFormatter.setColSpan(0, 0, 12);
+    headerFormatter.setColSpan(0, 0, 13);
+
+    // Create the select all checkbox
+    final CheckBox selectAll = new CheckBox();
+    selectAll.addClickListener(new ClickListener() {
+      public void onClick(Widget sender) {
+        if (selectAll.isChecked()) {
+          dataTable.selectRows();
+        } else {
+          dataTable.deselectRows();
+        }
+      }
+    });
 
     // Level 2 headers
-    headerTable.setHTML(1, 0, "First and Last Name");
-    headerFormatter.setColSpan(1, 0, 2);
+    headerTable.setWidget(1, 0, selectAll);
     headerFormatter.setRowSpan(1, 0, 2);
-    headerTable.setHTML(1, 1, "General Info");
-    headerFormatter.setColSpan(1, 1, 3);
-    headerTable.setHTML(1, 2, "Favorite Color");
-    headerFormatter.setColSpan(1, 2, 1);
-    headerFormatter.setRowSpan(1, 2, 2);
-    headerTable.setHTML(1, 3, "Preferred Sport");
+    headerFormatter.setHorizontalAlignment(1, 0,
+        HasHorizontalAlignment.ALIGN_CENTER);
+    headerTable.setHTML(1, 1, "First and Last Name");
+    headerFormatter.setColSpan(1, 1, 2);
+    headerFormatter.setRowSpan(1, 1, 2);
+    headerTable.setHTML(1, 2, "General Info");
+    headerFormatter.setColSpan(1, 2, 3);
+    headerTable.setHTML(1, 3, "Favorite Color");
     headerFormatter.setColSpan(1, 3, 1);
     headerFormatter.setRowSpan(1, 3, 2);
-    headerTable.setHTML(1, 4, "School Info");
-    headerFormatter.setColSpan(1, 4, 3);
-    headerTable.setHTML(1, 5, "Login Info");
-    headerFormatter.setColSpan(1, 5, 2);
+    headerTable.setHTML(1, 4, "Preferred Sport");
+    headerFormatter.setColSpan(1, 4, 1);
+    headerFormatter.setRowSpan(1, 4, 2);
+    headerTable.setHTML(1, 5, "School Info");
+    headerFormatter.setColSpan(1, 5, 3);
+    headerTable.setHTML(1, 6, "Login Info");
+    headerFormatter.setColSpan(1, 6, 2);
 
     // Level 3 headers
     headerTable.setHTML(2, 0, "Age");
@@ -202,6 +223,7 @@ public class ScrollTableDemo implements EntryPoint {
     createHeaderTable();
     createFooterTable();
     dataTable = new FixedWidthGrid();
+    dataTable.setSelectionPolicy(SelectionPolicy.CHECKBOX);
 
     // Add the scroll table to the page
     scrollTable = new ScrollTable(dataTable, headerTable);
@@ -221,6 +243,7 @@ public class ScrollTableDemo implements EntryPoint {
     scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
 
     // Set column widths
+    scrollTable.setColumnWidth(0, 100);
     scrollTable.setColumnWidth(1, 100);
     scrollTable.setColumnWidth(2, 35);
     scrollTable.setColumnWidth(3, 45);

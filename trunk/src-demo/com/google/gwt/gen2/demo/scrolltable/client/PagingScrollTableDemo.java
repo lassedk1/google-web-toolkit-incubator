@@ -27,6 +27,7 @@ import com.google.gwt.gen2.table.client.PagingScrollTable;
 import com.google.gwt.gen2.table.client.RadioCellEditor;
 import com.google.gwt.gen2.table.client.TableDefinition;
 import com.google.gwt.gen2.table.client.TextCellEditor;
+import com.google.gwt.gen2.table.client.SelectionGrid.SelectionPolicy;
 import com.google.gwt.gen2.table.client.TableDefinition.HTMLCellView;
 import com.google.gwt.gen2.table.client.TableDefinition.TableCellView;
 import com.google.gwt.user.client.Window;
@@ -145,6 +146,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     createHeaderTable();
     createFooterTable();
     dataTable = new FixedWidthGrid();
+    dataTable.setSelectionPolicy(SelectionPolicy.CHECKBOX);
 
     // Setup the controller
     tableModel = new DataSourceTableModel();

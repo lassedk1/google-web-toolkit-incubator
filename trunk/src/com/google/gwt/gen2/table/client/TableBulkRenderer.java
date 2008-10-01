@@ -96,7 +96,7 @@ public abstract class TableBulkRenderer<RowType> {
     private VerticalAlignmentConstant curCellVerticalAlign = null;
 
     /**
-     * The {@link Widget  Widgets} that need to be added to the table after it
+     * The {@link Widget Widgets} that need to be added to the table after it
      * has finished loading.
      */
     private List<DelayedWidget> delayedWidgets = new ArrayList<DelayedWidget>();
@@ -113,8 +113,7 @@ public abstract class TableBulkRenderer<RowType> {
     private RenderingOptions options;
 
     /**
-     * Construct a new {@link BulkCellView} with the specified
-     * {@link StringBuffer}.
+     * Construct a new {@link BulkCellView}.
      * 
      * @param options the {@link RenderingOptions} to apply to the table
      */
@@ -165,6 +164,10 @@ public abstract class TableBulkRenderer<RowType> {
       int row = getRowIndex();
       int cell = getCellIndex();
       delayedWidgets.add(new DelayedWidget(row, cell, widget));
+    }
+
+    protected StringBuffer getStringBuffer() {
+      return buffer;
     }
 
     @Override
@@ -445,6 +448,16 @@ public abstract class TableBulkRenderer<RowType> {
   }
 
   /**
+   * Create a {@link HTMLCellView} that can be used to render the table.
+   * 
+   * @param options the {@link RenderingOptions}
+   * @return the cell view
+   */
+  protected HTMLCellView<RowType> createCellView(final RenderingOptions options) {
+    return new BulkCellView(options);
+  }
+
+  /**
    * Creates the rendering options associated with this renderer.
    * 
    * @return the rendering options
@@ -470,7 +483,7 @@ public abstract class TableBulkRenderer<RowType> {
    */
   protected void renderRows(final Iterator<RowType> rows,
       final RenderingOptions options) {
-    getTableDefinition().renderRows(rows, new BulkCellView(options));
+    getTableDefinition().renderRows(rows, createCellView(options));
   }
 
   /**

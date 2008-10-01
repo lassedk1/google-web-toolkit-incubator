@@ -17,7 +17,9 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.table.client.overrides.FlexTable;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 
 import java.util.ArrayList;
@@ -60,6 +62,33 @@ public class FixedWidthFlexTable extends FlexTable {
     public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
       DOM.setStyleAttribute(grid.getGhostCellElement(column), "width", width
           + "px");
+    }
+  }
+
+  /**
+   * Firefox version of the implementation refreshes the table display so the
+   * new column size takes effect. Without the display refresh, the column width
+   * doesn't update in the browser.
+   */
+  @SuppressWarnings("unused")
+  private static class FixedWidthFlexTableImplFirefox extends
+      FixedWidthFlexTableImpl {
+    private boolean pendingUpdate = false;
+
+    @Override
+    public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
+      super.setColumnWidth(grid, column, width);
+      if (!pendingUpdate) {
+        pendingUpdate = true;
+        final Element tableElem = grid.getElement();
+        tableElem.getStyle().setProperty("width", "1px");
+        DeferredCommand.addCommand(new Command() {
+          public void execute() {
+            tableElem.getStyle().setProperty("width", "0px");
+            pendingUpdate = false;
+          }
+        });
+      }
     }
   }
 

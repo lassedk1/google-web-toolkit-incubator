@@ -354,6 +354,7 @@ public class PagingScrollTableTest extends ScrollTableTest {
   public void testRowValues() {
     // Initialize the grid
     PagingScrollTable<List<Object>> table = getPagingScrollTable();
+    table.getDataTable().resize(10, 10);
 
     // Test manually setting values
     List<Object> value1 = new ArrayList<Object>();

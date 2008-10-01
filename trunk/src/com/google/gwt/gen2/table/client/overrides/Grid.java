@@ -24,28 +24,6 @@ import com.google.gwt.user.client.Element;
  * TODO: Incorporate changes into actual class.
  */
 public class Grid extends HTMLTable {
-
-  /**
-   * Native method to add rows into a table with a given number of columns.
-   * 
-   * @param table the table element
-   * @param rows number of rows to add
-   * @param columns the number of columns per row
-   */
-  private static native void addRows(Element table, int rows, int columns) /*-{
-      var td = $doc.createElement("td");
-      td.innerHTML = "&nbsp;";
-      var row = $doc.createElement("tr");
-      for(var cellNum = 0; cellNum < columns; cellNum++) {
-        var cell = td.cloneNode(true);
-        row.appendChild(cell);
-      }
-      table.appendChild(row);
-      for(var rowNum = 1; rowNum < rows; rowNum++) {  
-        table.appendChild(row.cloneNode(true));
-      }
-    }-*/;
-
   /**
    * Number of columns in the current grid.
    */
@@ -103,6 +81,28 @@ public class Grid extends HTMLTable {
   @Override
   public int getRowCount() {
     return numRows;
+  }
+
+  /**
+   * Inserts a new row into the table. If you want to add multiple rows at once,
+   * use {@link #resize(int, int)} or {@link #resizeRows(int)} as they are more
+   * efficient.
+   * 
+   * @param beforeRow the index before which the new row will be inserted
+   * @return the index of the newly-created row
+   * @throws IndexOutOfBoundsException
+   */
+  @Override
+  public int insertRow(int beforeRow) {
+    int index = super.insertRow(beforeRow);
+    numRows++;
+    return index;
+  }
+
+  @Override
+  public void removeRow(int row) {
+    super.removeRow(row);
+    numRows--;
   }
 
   /**
@@ -165,7 +165,11 @@ public class Grid extends HTMLTable {
           + rows);
     }
     if (numRows < rows) {
-      addRows(getBodyElement(), rows - numRows, numColumns);
+      Element tr = createRow();
+      getBodyElement().appendChild(tr);
+      for (int i = numRows + 1; i < rows; i++) {
+        getBodyElement().appendChild(tr.cloneNode(true));
+      }
       numRows = rows;
     } else {
       while (numRows > rows) {
@@ -188,14 +192,13 @@ public class Grid extends HTMLTable {
     return td;
   }
 
-  /**
-   * @see com.google.gwt.gen2.table.client.overrides.HTMLTable
-   */
   @Override
-  protected int insertRow(int beforeRow) {
-    int index = super.insertRow(beforeRow);
-    numRows++;
-    return index;
+  protected Element createRow() {
+    Element tr = super.createRow();
+    for (int i = 0; i < numColumns; i++) {
+      tr.appendChild(createCell());
+    }   
+    return tr;
   }
 
   /**
@@ -266,14 +269,5 @@ public class Grid extends HTMLTable {
       throw new IndexOutOfBoundsException("Row index: " + row + ", Row size: "
           + numRows);
     }
-  }
-  
-  /**
-   * @see com.google.gwt.gen2.table.client.overrides.HTMLTable
-   */
-  @Override
-  protected void removeRow(int row) {
-    super.removeRow(row);
-    numRows--;
   }
 }

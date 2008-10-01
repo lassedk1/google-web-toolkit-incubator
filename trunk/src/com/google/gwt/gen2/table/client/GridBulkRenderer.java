@@ -39,6 +39,11 @@ public class GridBulkRenderer<RowType> extends TableBulkRenderer<RowType> {
       throw new UnsupportedOperationException(
           "Must use a FixedWidthGridBulkLoader to bulk load a fixed grid");
     }
+    if (grid instanceof SelectionGrid
+        && (!(this instanceof SelectionGridBulkRenderer))) {
+      throw new UnsupportedOperationException(
+          "Must use a SelectionGridBulkLoader to bulk load a selection grid");
+    }
   }
 
   @Override
