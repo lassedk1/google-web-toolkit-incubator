@@ -43,4 +43,10 @@
     <when-type-is class="com.google.gwt.gen2.table.client.FixedWidthFlexTable.FixedWidthFlexTableImpl"/>
     <when-property-is name="user.agent" value="opera"/>
   </replace-with>
+
+  <!-- Firefox needs to refresh the grid or it won't resize -->
+  <replace-with class="com.google.gwt.gen2.table.client.FixedWidthFlexTable.FixedWidthFlexTableImplFirefox">
+    <when-type-is class="com.google.gwt.gen2.table.client.FixedWidthFlexTable.FixedWidthFlexTableImpl"/>
+    <when-property-is name="user.agent" value="gecko1_8"/>
+  </replace-with>
 </module>

@@ -28,7 +28,7 @@ import java.util.Iterator;
  * @param <RowType> the data type of the row values
  */
 public class FixedWidthGridBulkRenderer<RowType> extends
-    GridBulkRenderer<RowType> {
+    SelectionGridBulkRenderer<RowType> {
   private int numColumns;
 
   /**

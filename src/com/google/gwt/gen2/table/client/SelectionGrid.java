@@ -15,6 +15,7 @@
  */
 package com.google.gwt.gen2.table.client;
 
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.table.client.overrides.Grid;
 import com.google.gwt.gen2.table.client.overrides.OverrideDOM;
@@ -68,6 +69,9 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
   public class SelectionGridCellFormatter extends CellFormatter {
     @Override
     protected Element getRawElement(int row, int column) {
+      if (selectionPolicy.hasInputColumn()) {
+        column += 1;
+      }
       return super.getRawElement(row, column);
     }
   }
@@ -89,11 +93,40 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
    * <li>DISABLED - selection is disabled</li>
    * <li>ONE_ROW - one row can be selected at a time</li>
    * <li>MULTI_ROW - multiple rows can be selected at a time</li>
+   * <li>CHECKBOX - multiple rows can be selected using checkboxes</li>
+   * <li>RADIO - one row can be selected using radio buttons</li>
    * </ul>
    */
   public static enum SelectionPolicy {
-    DISABLED, ONE_ROW, MULTI_ROW
+    DISABLED(null), ONE_ROW(null), MULTI_ROW(null), CHECKBOX(
+        "<input type='checkbox'/>"), RADIO(
+        "<input name='%NAME%' type='radio'/>");
+
+    private String inputHtml;
+
+    private SelectionPolicy(String inputHtml) {
+      this.inputHtml = inputHtml;
+    }
+
+    /**
+     * @return true if the policy requires a selection column
+     */
+    protected boolean hasInputColumn() {
+      return inputHtml != null;
+    }
+
+    /**
+     * @return the HTML string used for this policy
+     */
+    private String getInputHtml() {
+      return inputHtml;
+    }
   }
+
+  /**
+   * Unique IDs assigned to the grids.
+   */
+  private static int uniqueID = 0;
 
   /**
    * The cell element currently being highlight.
@@ -116,6 +149,11 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
   private int highlightedRowIndex = -1;
 
   /**
+   * Unique ID of this grid.
+   */
+  private int id;
+
+  /**
    * The index of the row that the user selected last.
    */
   private int lastSelectedRowIndex = -1;
@@ -132,15 +170,17 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
   private SelectionPolicy selectionPolicy = SelectionPolicy.MULTI_ROW;
 
   /**
-   * Constructor.
+   * Construct a new {@link SelectionGrid}.
    */
   public SelectionGrid() {
     super();
+    id = uniqueID++;
     setCellFormatter(new SelectionGridCellFormatter());
     setRowFormatter(new SelectionGridRowFormatter());
 
     // Sink highlight and selection events
-    sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEOUT | Event.ONMOUSEDOWN);
+    sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEOUT | Event.ONMOUSEDOWN
+        | Event.ONCLICK);
   }
 
   /**
@@ -231,6 +271,12 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
     return selectionPolicy;
   }
 
+  @Override
+  public int insertRow(int beforeRow) {
+    deselectRows();
+    return super.insertRow(beforeRow);
+  }
+
   /**
    * @param row the row index
    * @return true if the row is selected, false if not
@@ -281,7 +327,7 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
         break;
 
       // Select a row on click
-      case Event.ONMOUSEDOWN:
+      case Event.ONMOUSEDOWN: {
         // Get the target row
         targetCell = getEventTargetCell(event);
         if (targetCell == null) {
@@ -298,18 +344,43 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
 
           // Prevent default text selection
           if (ctrlKey || shiftKey) {
-            DOM.eventPreventDefault(event);
+            event.preventDefault();
           }
 
           // Select the rows
           selectRow(targetRowIndex, ctrlKey, shiftKey);
-        } else if (selectionPolicy == SelectionPolicy.ONE_ROW) {
+        } else if (selectionPolicy == SelectionPolicy.ONE_ROW
+            || (selectionPolicy == SelectionPolicy.RADIO && targetCell == targetRow.getFirstChild())) {
           selectRow(-1, targetRow, true, true);
           lastSelectedRowIndex = targetRowIndex;
-          break;
         }
+      }
+        break;
+
+      // Prevent native inputs from being checked
+      case Event.ONCLICK: {
+        // Get the target row
+        targetCell = getEventTargetCell(event);
+        if (targetCell == null) {
+          return;
+        }
+        targetRow = DOM.getParent(targetCell);
+        int targetRowIndex = getRowIndex(targetRow);
+
+        // Select the row
+        if (selectionPolicy == SelectionPolicy.CHECKBOX
+            && targetCell == targetRow.getFirstChild()) {
+          selectRow(targetRowIndex, true, DOM.eventGetShiftKey(event));
+        }
+      }
         break;
     }
+  }
+
+  @Override
+  public void removeRow(int row) {
+    deselectRows();
+    super.removeRow(row);
   }
 
   /**
@@ -345,6 +416,7 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
       deselectRows(false);
     }
 
+    boolean isSelected = selectedRows.containsKey(new Integer(row));
     if (shiftKey && (lastSelectedRowIndex > -1)) {
       // Shift+select rows
       SelectionGridRowFormatter formatter = getSelectionGridRowFormatter();
@@ -352,12 +424,17 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
       int lastRow = Math.max(row, lastSelectedRowIndex);
       lastRow = Math.min(lastRow, getRowCount() - 1);
       for (int curRow = firstRow; curRow <= lastRow; curRow++) {
-        selectRow(curRow, formatter.getRawElement(curRow), false, false);
+        if (isSelected) {
+          deselectRow(curRow, false);
+        } else {
+          selectRow(curRow, formatter.getRawElement(curRow), false, false);
+        }
       }
 
       // Fire Event
+      lastSelectedRowIndex = row;
       fireRowSelectionEvent(oldRowList);
-    } else if (selectedRows.containsKey(new Integer(row))) {
+    } else if (isSelected) {
       // Ctrl+unselect a selected row
       deselectRow(row, false);
       lastSelectedRowIndex = row;
@@ -372,16 +449,74 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
   }
 
   /**
+   * Select all rows in the table.
+   */
+  public void selectRows() {
+    // Get the currently selected rows
+    Set<Row> oldRowSet = getSelectedRowsSet();
+
+    // Select all rows
+    RowFormatter rowFormatter = getRowFormatter();
+    int rowCount = getRowCount();
+    for (int i = 0; i < rowCount; i++) {
+      selectRow(i, rowFormatter.getElement(i), false, false);
+    }
+
+    // Trigger the event
+    fireRowSelectionEvent(oldRowSet);
+  }
+
+  /**
    * Set the selection policy, which determines if the user can select zero,
    * one, or multiple rows.
    * 
    * @param selectionPolicy the selection policy
    */
   public void setSelectionPolicy(SelectionPolicy selectionPolicy) {
-    if (this.selectionPolicy != selectionPolicy) {
-      deselectRows();
-      this.selectionPolicy = selectionPolicy;
+    if (this.selectionPolicy == selectionPolicy) {
+      return;
     }
+    deselectRows();
+
+    // Update the input column
+    if (selectionPolicy.hasInputColumn()) {
+      if (this.selectionPolicy.hasInputColumn()) {
+        // Update the existing input column
+        String inputHtml = getInputHtml(selectionPolicy);
+        for (int i = 0; i < numRows; i++) {
+          Element tr = getRowFormatter().getElement(i);
+          tr.getFirstChildElement().setInnerHTML(inputHtml);
+        }
+      } else {
+        // Add an input column to every row
+        String inputHtml = getInputHtml(selectionPolicy);
+        Element td = createCell();
+        td.setInnerHTML(inputHtml);
+        for (int i = 0; i < numRows; i++) {
+          Element tr = getRowFormatter().getElement(i);
+          tr.insertBefore(td.cloneNode(true), tr.getFirstChildElement());
+        }
+      }
+    } else if (this.selectionPolicy.hasInputColumn()) {
+      // Remove the input column from every row
+      for (int i = 0; i < numRows; i++) {
+        Element tr = getRowFormatter().getElement(i);
+        tr.removeChild(tr.getFirstChildElement());
+      }
+    }
+    this.selectionPolicy = selectionPolicy;
+  }
+
+  @Override
+  protected Element createRow() {
+    Element tr = super.createRow();
+    if (selectionPolicy.hasInputColumn()) {
+      Element td = createCell();
+      td.setPropertyString("align", "center");
+      td.setInnerHTML(getInputHtml(selectionPolicy));
+      DOM.insertChild(tr, td, 0);
+    }
+    return tr;
   }
 
   /**
@@ -402,6 +537,10 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
 
       // Deselect the row
       setStyleName(rowElem, "selected", false);
+      if (selectionPolicy.hasInputColumn()) {
+        setInputSelected(getSelectionPolicy(),
+            (Element) rowElem.getFirstChildElement(), false);
+      }
 
       // Fire Event
       if (fireEvent) {
@@ -423,8 +562,13 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
     }
 
     // Deselect all rows
+    boolean hasInputColumn = selectionPolicy.hasInputColumn();
     for (Element rowElem : selectedRows.values()) {
       setStyleName(rowElem, "selected", false);
+      if (hasInputColumn) {
+        setInputSelected(getSelectionPolicy(),
+            (Element) rowElem.getFirstChildElement(), false);
+      }
     }
 
     // Clear out the rows
@@ -440,14 +584,46 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
    * Fire a {@link RowSelectionEvent}. This method will automatically add the
    * currently selected rows.
    * 
-   * @param oldRowList the set of previously selected rows
+   * @param oldRowSet the set of previously selected rows
    */
-  protected void fireRowSelectionEvent(Set<Row> oldRowList) {
+  protected void fireRowSelectionEvent(Set<Row> oldRowSet) {
     Set<Row> newRowList = getSelectedRowsSet();
-    if (newRowList.equals(oldRowList)) {
+    if (newRowList.equals(oldRowSet)) {
       return;
     }
-    fireEvent(new RowSelectionEvent(oldRowList, newRowList));
+    fireEvent(new RowSelectionEvent(oldRowSet, newRowList));
+  }
+
+  @Override
+  protected int getCellIndex(Element rowElem, Element cellElem) {
+    int index = super.getCellIndex(rowElem, cellElem);
+    if (selectionPolicy.hasInputColumn()) {
+      index--;
+    }
+    return index;
+  }
+
+  @Override
+  protected int getDOMCellCount(int row) {
+    int count = super.getDOMCellCount(row);
+    if (getSelectionPolicy().hasInputColumn()) {
+      count--;
+    }
+    return count;
+  }
+
+  /**
+   * Get the html used to create the native input selection element.
+   * 
+   * @param selectionPolicy the associated {@link SelectionPolicy}
+   * @return the html representation of the input element
+   */
+  protected String getInputHtml(SelectionPolicy selectionPolicy) {
+    String inputHtml = selectionPolicy.getInputHtml();
+    if (inputHtml != null) {
+      inputHtml = inputHtml.replace("%NAME%", "__gwtSelectionGrid" + id);
+    }
+    return inputHtml;
   }
 
   /**
@@ -522,18 +698,6 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
     }
   }
 
-  @Override
-  protected int insertRow(int beforeRow) {
-    deselectRows();
-    return super.insertRow(beforeRow);
-  }
-
-  @Override
-  protected void removeRow(int row) {
-    deselectRows();
-    super.removeRow(row);
-  }
-
   /**
    * Select a row in the data table.
    * 
@@ -569,10 +733,27 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
     // Select the new row
     selectedRows.put(rowI, rowElem);
     setStyleName(rowElem, "selected", true);
+    if (selectionPolicy.hasInputColumn()) {
+      setInputSelected(getSelectionPolicy(),
+          (Element) rowElem.getFirstChildElement(), true);
+    }
 
     // Fire grid listeners
     if (fireEvent) {
       fireRowSelectionEvent(oldRowSet);
     }
+  }
+
+  /**
+   * Select the native input element in the given cell. This method should
+   * correspond with the HTML returned from {@link #getInputHtml}.
+   * 
+   * @param selectionPolicy the associated {@link SelectionPolicy}
+   * @param td the cell containing the element
+   * @param selected true to select, false to deselect
+   */
+  protected void setInputSelected(SelectionPolicy selectionPolicy, Element td,
+      boolean selected) {
+    ((InputElement) td.getFirstChild()).setChecked(selected);
   }
 }
