@@ -60,6 +60,10 @@ public class DemoTabHighlighting extends DemoTab implements ClickListener {
         dataTable.setSelectionPolicy(SelectionGrid.SelectionPolicy.MULTI_ROW);
       } else if (selection.equals("Single Row")) {
         dataTable.setSelectionPolicy(SelectionGrid.SelectionPolicy.ONE_ROW);
+      } else if (selection.equals("Checkboxes")) {
+        dataTable.setSelectionPolicy(SelectionGrid.SelectionPolicy.CHECKBOX);
+      } else if (selection.equals("Radio Buttons")) {
+        dataTable.setSelectionPolicy(SelectionGrid.SelectionPolicy.RADIO);
       } else {
         dataTable.setSelectionPolicy(SelectionGrid.SelectionPolicy.DISABLED);
       }
@@ -76,6 +80,8 @@ public class DemoTabHighlighting extends DemoTab implements ClickListener {
     // Toggle selection
     selectionPolicyBox.addItem("Multi Row");
     selectionPolicyBox.addItem("Single Row");
+    selectionPolicyBox.addItem("Checkboxes");
+    selectionPolicyBox.addItem("Radio Buttons");
     selectionPolicyBox.addItem("Disabled");
     grid.setWidget(0, 0, selectionPolicyButton);
     grid.setWidget(0, 1, selectionPolicyBox);

@@ -597,7 +597,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
     }
 
     protected native Element getRow(Element elem, int row) /*-{
-     return elem.rows[row];
+     return elem.rows[row] || null;
      }-*/;
 
     /**
@@ -1042,9 +1042,11 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
           }
           Element tr = DOM.getParent(td);
           int row = getRowIndex(tr);
-          int column = DOM.getChildIndex(tr, td);
-          // Fire the event.
-          tableListeners.fireCellClicked(this, row, column);
+          int column = getCellIndex(tr, td);
+          if (column >= 0) {
+            // Fire the event.
+            tableListeners.fireCellClicked(this, row, column);
+          }
         }
         break;
       }
@@ -1274,6 +1276,16 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
   }
 
   /**
+   * Creates a new row. Override this method if the row should have initial
+   * contents.
+   * 
+   * @return the newly created TD
+   */
+  protected Element createRow() {
+    return DOM.createTR();
+  }
+
+  /**
    * Gets the table's TBODY element.
    * 
    * @return the TBODY element
@@ -1282,6 +1294,15 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
     return bodyElem;
   }
 
+  /**
+   * @param rowElem the row element
+   * @param cellElem the cell element
+   * @return the index of a cell in the row
+   */
+  protected int getCellIndex(Element rowElem, Element cellElem) {
+    return DOM.getChildIndex(rowElem, cellElem);
+  }
+  
   /**
    * Directly ask the underlying DOM what the cell count on the given row is.
    * 
@@ -1376,8 +1397,9 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
     if (beforeRow != getRowCount()) {
       checkRowBounds(beforeRow);
     }
-    Element tr = DOM.createTR();
-    DOM.insertChild(bodyElem, tr, beforeRow);
+    Element tr = createRow();
+    Element beforeRowElem = rowFormatter.getRawElement(beforeRow);
+    bodyElem.insertBefore(tr, beforeRowElem);
     return beforeRow;
   }
 

@@ -316,9 +316,9 @@ public class SelectionGridTest extends WidgetTestBase {
     testGrid.selectRow(4, false, true);
     assertSelected(testGrid, new int[] {2, 3, 4});
     testGrid.selectRow(6, false, true);
-    assertSelected(testGrid, new int[] {2, 3, 4, 5, 6});
+    assertSelected(testGrid, new int[] {4, 5, 6});
     testGrid.selectRow(0, false, true);
-    assertSelected(testGrid, new int[] {0, 1, 2});
+    assertSelected(testGrid, new int[] {0, 1, 2, 3, 4, 5, 6});
 
     // Select rows using ctrl + shift
     testGrid.deselectRows();

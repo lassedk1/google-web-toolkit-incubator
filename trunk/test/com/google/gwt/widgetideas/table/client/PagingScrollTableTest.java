@@ -193,6 +193,7 @@ public class PagingScrollTableTest extends ScrollTableTest {
 
     // Get data without renderer
     table.setPageSize(5);
+    table.gotoFirstPage();
     table.renderCell(0, 0, "0:0");
     assertNull(table.getCellRenderer());
     assertEquals("0:0", grid.getHTML(0, 0));
@@ -390,6 +391,7 @@ public class PagingScrollTableTest extends ScrollTableTest {
   public void testRowValues() {
     // Initialize the grid
     PagingScrollTable<Object> table = getPagingScrollTable();
+    table.getDataTable().resize(10, 10);
 
     // Test manually setting values
     String value1 = "value1";

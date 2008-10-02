@@ -44,4 +44,10 @@
     <when-type-is class="com.google.gwt.widgetideas.table.client.FixedWidthGrid.FixedWidthGridImpl"/>
     <when-property-is name="user.agent" value="opera"/>
   </replace-with>
+
+  <!-- Firefox needs to refresh the grid or it won't resize -->
+  <replace-with class="com.google.gwt.widgetideas.table.client.FixedWidthGrid.FixedWidthGridImplFirefox">
+    <when-type-is class="com.google.gwt.widgetideas.table.client.FixedWidthGrid.FixedWidthGridImpl"/>
+    <when-property-is name="user.agent" value="gecko1_8"/>
+  </replace-with>
 </module>

@@ -51,6 +51,21 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
   private static final String DESC_RESIZE = "Manually set the absolute size of a column.";
 
   /**
+   * The padding box.
+   */
+  private TextBox cellPaddingBox = new TextBox();
+
+  /**
+   * The button used to set the padding.
+   */
+  private Button cellPaddingButton = new Button("Set Cell Padding", this);
+
+  /**
+   * The button used to set the spacing.
+   */
+  private Button cellSpacingButton = new Button("Set Cell Spacing", this);
+  
+  /**
    * The column index box.
    */
   private TextBox columnIndexBox = new TextBox();
@@ -134,6 +149,12 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
         } else if (selection.equals("Multi Cell")) {
           scrollTable.setColumnResizePolicy(ColumnResizePolicy.MULTI_CELL);
         }
+      } else if (sender == cellPaddingButton) {
+        int padding = Integer.parseInt(cellPaddingBox.getText());
+        scrollTable.setCellPadding(padding);
+      } else if (sender == cellSpacingButton) {
+        int spacing = Integer.parseInt(cellPaddingBox.getText());
+        scrollTable.setCellSpacing(spacing);
       }
     } catch (IndexOutOfBoundsException e) {
       Window.alert("The column index you entered is out of bounds.");
@@ -144,7 +165,7 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
 
   @Override
   protected Widget onInitialize() {
-    grid = new Grid(4, 4);
+    grid = new Grid(5, 4);
     grid.setCellSpacing(0);
     grid.setBorderWidth(1);
 
@@ -185,6 +206,13 @@ public class DemoTabColumnWidth extends DemoTab implements ClickListener {
     grid.setWidget(3, 1, columnResizePolicyButton);
     grid.setWidget(3, 2, columnResizePolicyBox);
     grid.setHTML(3, 3, DESC_COL_RESIZE);
+
+    // Padding and spacing options
+    cellPaddingBox.setText("3");
+    grid.setHTML(4, 0, "<B>Padding / Spacing</B>");
+    grid.setWidget(4, 1, cellPaddingBox);
+    grid.setWidget(4, 2, cellPaddingButton);
+    grid.setWidget(4, 3, cellSpacingButton);
 
     return grid;
   }

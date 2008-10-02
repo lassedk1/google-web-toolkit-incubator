@@ -483,6 +483,26 @@ public class FixedWidthFlexTable extends FlexTable {
     }
   }
 
+  @Override
+  public void setCellPadding(int padding) {
+    super.setCellPadding(padding);
+
+    // Reset the width of all columns
+    for (Map.Entry<Integer, Integer> entry : colWidths.entrySet()) {
+      setColumnWidth(entry.getKey(), entry.getValue());
+    }
+  }
+
+  @Override
+  public void setCellSpacing(int spacing) {
+    super.setCellSpacing(spacing);
+
+    // Reset the width of all columns
+    for (Map.Entry<Integer, Integer> entry : colWidths.entrySet()) {
+      setColumnWidth(entry.getKey(), entry.getValue());
+    }
+  }
+
   /**
    * Set the width of a column.
    * 
@@ -497,7 +517,7 @@ public class FixedWidthFlexTable extends FlexTable {
           "Cannot access a column with a negative index: " + column);
     }
 
-    // Set the width
+    // Add the width to the map
     width = Math.max(1, width);
     colWidths.put(new Integer(column), new Integer(width));
 
@@ -507,7 +527,7 @@ public class FixedWidthFlexTable extends FlexTable {
       return;
     }
 
-    // Update the total width
+    // Set the actual column width
     impl.setColumnWidth(this, column, width);
   }
 

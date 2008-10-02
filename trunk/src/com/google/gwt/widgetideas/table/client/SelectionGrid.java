@@ -15,6 +15,7 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
@@ -29,12 +30,9 @@ import java.util.Set;
  * A variation of the {@link Grid} that supports row or cell hovering and row
  * selection.
  * 
- * <h3>CSS Style Rules</h3>
- * <ul class="css">
- * <li> tr.selected { applied to selected rows } </li>
- * <li> tr.hovering { applied to row currently being hovered } </li>
- * <li> td.hovering { applied to cell currently being hovered } </li>
- * </ul>
+ * <h3>CSS Style Rules</h3> <ul class="css"> <li>tr.selected { applied to
+ * selected rows }</li> <li>tr.hovering { applied to row currently being hovered
+ * }</li> <li>td.hovering { applied to cell currently being hovered }</li> </ul>
  */
 public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   /**
@@ -43,6 +41,9 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   public class SelectionGridCellFormatter extends CellFormatter {
     @Override
     protected Element getRawElement(int row, int column) {
+      if (selectionPolicy.hasInputColumn()) {
+        column += 1;
+      }
       return super.getRawElement(row, column);
     }
   }
@@ -64,11 +65,40 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    * <li>DISABLED - selection is disabled</li>
    * <li>ONE_ROW - one row can be selected at a time</li>
    * <li>MULTI_ROW - multiple rows can be selected at a time</li>
+   * <li>CHECKBOX - multiple rows can be selected using checkboxes</li>
+   * <li>RADIO - one row can be selected using radio buttons</li>
    * </ul>
    */
   public static enum SelectionPolicy {
-    DISABLED, ONE_ROW, MULTI_ROW
+    DISABLED(null), ONE_ROW(null), MULTI_ROW(null), CHECKBOX(
+        "<input type='checkbox'/>"), RADIO(
+        "<input name='%NAME%' type='radio'/>");
+
+    private String inputHtml;
+
+    private SelectionPolicy(String inputHtml) {
+      this.inputHtml = inputHtml;
+    }
+
+    /**
+     * @return true if the policy requires a selection column
+     */
+    protected boolean hasInputColumn() {
+      return inputHtml != null;
+    }
+
+    /**
+     * @return the HTML string used for this policy
+     */
+    private String getInputHtml() {
+      return inputHtml;
+    }
   }
+
+  /**
+   * Unique IDs assigned to the grids.
+   */
+  private static int uniqueID = 0;
 
   /**
    * The cell element currently being hovered.
@@ -89,6 +119,11 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    * The index of the row currently being hovered.
    */
   private int hoveringRowIndex = -1;
+
+  /**
+   * Unique ID of this grid.
+   */
+  private int id;
 
   /**
    * The index of the row that the user selected last.
@@ -112,15 +147,17 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   private TableSelectionListenerCollection tableSelectionListeners = null;
 
   /**
-   * Constructor.
+   * Construct a new {@link SelectionGrid}.
    */
   public SelectionGrid() {
     super();
+    id = uniqueID++;
     setCellFormatter(new SelectionGridCellFormatter());
     setRowFormatter(new SelectionGridRowFormatter());
 
     // Sink hover and selection events
-    sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEOUT | Event.ONMOUSEDOWN);
+    sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEOUT | Event.ONMOUSEDOWN
+        | Event.ONCLICK);
   }
 
   /**
@@ -157,6 +194,10 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
     Element rowElem = selectedRows.remove(new Integer(row));
     if (rowElem != null) {
       setStyleName(rowElem, "selected", false);
+      if (selectionPolicy.hasInputColumn()) {
+        setInputSelected(getSelectionPolicy(),
+            (Element) rowElem.getFirstChildElement(), false);
+      }
       if (tableSelectionListeners != null) {
         tableSelectionListeners.fireRowDeselected(this, row);
       }
@@ -168,17 +209,23 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    */
   public void deselectRows() {
     // Deselect all rows
+    boolean hasInputColumn = selectionPolicy.hasInputColumn();
     for (Map.Entry<Integer, Element> entry : selectedRows.entrySet()) {
-      setStyleName(entry.getValue(), "selected", false);
+      Element rowElem = entry.getValue();
+      setStyleName(rowElem, "selected", false);
+      if (hasInputColumn) {
+        setInputSelected(getSelectionPolicy(),
+            (Element) rowElem.getFirstChildElement(), false);
+      }
     }
+
+    // Clear out the rows
+    selectedRows.clear();
 
     // Fire grid listeners
     if (tableSelectionListeners != null) {
       tableSelectionListeners.fireAllRowsDeselected(this);
     }
-
-    // Clear out the rows
-    selectedRows.clear();
   }
 
   /**
@@ -217,6 +264,12 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
     return selectionPolicy;
   }
 
+  @Override
+  public int insertRow(int beforeRow) {
+    deselectRows();
+    return super.insertRow(beforeRow);
+  }
+
   /**
    * @param row the row index
    * @return true if the row is selected, false if not
@@ -225,9 +278,6 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
     return selectedRows.containsKey(new Integer(row));
   }
 
-  /**
-   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
-   */
   @Override
   public void onBrowserEvent(Event event) {
     super.onBrowserEvent(event);
@@ -237,7 +287,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
     switch (DOM.eventGetType(event)) {
       // Hover the cell on mouse over
       case Event.ONMOUSEOVER:
-        Element cellElem = getEventTargetCell(event); 
+        Element cellElem = getEventTargetCell(event);
         if (cellElem != null) {
           hoverCell(cellElem);
         }
@@ -270,7 +320,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
         break;
 
       // Select a row on click
-      case Event.ONMOUSEDOWN:
+      case Event.ONMOUSEDOWN: {
         // Get the target row
         targetCell = getEventTargetCell(event);
         if (targetCell == null) {
@@ -287,18 +337,42 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
 
           // Prevent default text selection
           if (ctrlKey || shiftKey) {
-            DOM.eventPreventDefault(event);
+            event.preventDefault();
           }
 
           // Select the rows
           selectRow(targetRowIndex, ctrlKey, shiftKey);
-        } else if (selectionPolicy == SelectionPolicy.ONE_ROW) {
+        } else if (selectionPolicy == SelectionPolicy.ONE_ROW
+            || (selectionPolicy == SelectionPolicy.RADIO && targetCell == targetRow.getFirstChild())) {
           selectRow(-1, targetRow, true, true);
           lastSelectedRowIndex = targetRowIndex;
-          break;
         }
+      }
         break;
+
+      // Prevent native inputs from being checked
+      case Event.ONCLICK: {
+        // Get the target row
+        targetCell = getEventTargetCell(event);
+        if (targetCell == null) {
+          return;
+        }
+        targetRow = DOM.getParent(targetCell);
+        int targetRowIndex = getRowIndex(targetRow);
+
+        // Select the row
+        if (selectionPolicy == SelectionPolicy.CHECKBOX
+            && targetCell == targetRow.getFirstChild()) {
+          selectRow(targetRowIndex, true, DOM.eventGetShiftKey(event));
+        }
+      }
     }
+  }
+
+  @Override
+  public void removeRow(int row) {
+    deselectRows();
+    super.removeRow(row);
   }
 
   /**
@@ -342,6 +416,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
       deselectRows();
     }
 
+    boolean isSelected = selectedRows.containsKey(new Integer(row));
     if (shiftKey && (lastSelectedRowIndex > -1)) {
       // Shift+select rows
       SelectionGridRowFormatter formatter = getSelectionGridRowFormatter();
@@ -349,15 +424,20 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
       int lastRow = Math.max(row, lastSelectedRowIndex);
       lastRow = Math.min(lastRow, getRowCount() - 1);
       for (int curRow = firstRow; curRow <= lastRow; curRow++) {
-        selectRow(curRow, formatter.getRawElement(curRow), false, false);
+        if (isSelected) {
+          deselectRow(curRow);
+        } else {
+          selectRow(curRow, formatter.getRawElement(curRow), false, false);
+        }
       }
 
       // Fire grid listeners
+      lastSelectedRowIndex = row;
       if (tableSelectionListeners != null) {
         tableSelectionListeners.fireRowsSelected(this, firstRow, lastRow
             - firstRow + 1);
       }
-    } else if (selectedRows.containsKey(new Integer(row))) {
+    } else if (isSelected) {
       // Ctrl+unselect a selected row
       deselectRow(row);
       lastSelectedRowIndex = row;
@@ -376,10 +456,82 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    * @param selectionPolicy the selection policy
    */
   public void setSelectionPolicy(SelectionPolicy selectionPolicy) {
-    if (this.selectionPolicy != selectionPolicy) {
-      deselectRows();
-      this.selectionPolicy = selectionPolicy;
+    if (this.selectionPolicy == selectionPolicy) {
+      return;
     }
+    deselectRows();
+
+    // Update the input column
+    if (selectionPolicy.hasInputColumn()) {
+      if (this.selectionPolicy.hasInputColumn()) {
+        // Update the existing input column
+        String inputHtml = getInputHtml(selectionPolicy);
+        for (int i = 0; i < numRows; i++) {
+          Element tr = getRowFormatter().getElement(i);
+          tr.getFirstChildElement().setInnerHTML(inputHtml);
+        }
+      } else {
+        // Add an input column to every row
+        String inputHtml = getInputHtml(selectionPolicy);
+        Element td = createCell();
+        td.setInnerHTML(inputHtml);
+        for (int i = 0; i < numRows; i++) {
+          Element tr = getRowFormatter().getElement(i);
+          tr.insertBefore(td.cloneNode(true), tr.getFirstChildElement());
+        }
+      }
+    } else if (this.selectionPolicy.hasInputColumn()) {
+      // Remove the input column from every row
+      for (int i = 0; i < numRows; i++) {
+        Element tr = getRowFormatter().getElement(i);
+        tr.removeChild(tr.getFirstChildElement());
+      }
+    }
+    this.selectionPolicy = selectionPolicy;
+  }
+
+  @Override
+  protected Element createRow() {
+    Element tr = super.createRow();
+    if (selectionPolicy.hasInputColumn()) {
+      Element td = createCell();
+      td.setPropertyString("align", "center");
+      td.setInnerHTML(getInputHtml(selectionPolicy));
+      DOM.insertChild(tr, td, 0);
+    }
+    return tr;
+  }
+
+  @Override
+  protected int getCellIndex(Element rowElem, Element cellElem) {
+    int index = super.getCellIndex(rowElem, cellElem);
+    if (selectionPolicy.hasInputColumn()) {
+      index--;
+    }
+    return index;
+  }
+
+  @Override
+  protected int getDOMCellCount(int row) {
+    int count = super.getDOMCellCount(row);
+    if (getSelectionPolicy().hasInputColumn()) {
+      count--;
+    }
+    return count;
+  }
+
+  /**
+   * Get the html used to create the native input selection element.
+   * 
+   * @param selectionPolicy the associated {@link SelectionPolicy}
+   * @return the html representation of the input element
+   */
+  protected String getInputHtml(SelectionPolicy selectionPolicy) {
+    String inputHtml = selectionPolicy.getInputHtml();
+    if (inputHtml != null) {
+      inputHtml = inputHtml.replace("%NAME%", "__gwtSelectionGrid" + id);
+    }
+    return inputHtml;
   }
 
   /**
@@ -452,24 +604,6 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   }
 
   /**
-   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
-   */
-  @Override
-  protected int insertRow(int beforeRow) {
-    deselectRows();
-    return super.insertRow(beforeRow);
-  }
-
-  /**
-   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
-   */
-  @Override
-  protected void removeRow(int row) {
-    super.removeRow(row);
-    deselectRows();
-  }
-
-  /**
    * Select a row in the data table.
    * 
    * @param row the row index, or -1 if unknown
@@ -498,10 +632,27 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
     // Select the new row
     selectedRows.put(rowI, rowElem);
     setStyleName(rowElem, "selected", true);
+    if (selectionPolicy.hasInputColumn()) {
+      setInputSelected(getSelectionPolicy(),
+          (Element) rowElem.getFirstChildElement(), true);
+    }
 
     // Fire grid listeners
     if (fireEvent && tableSelectionListeners != null) {
       tableSelectionListeners.fireRowsSelected(this, row, 1);
     }
+  }
+
+  /**
+   * Select the native input element in the given cell. This method should
+   * correspond with the HTML returned from {@link #getInputHtml}.
+   * 
+   * @param selectionPolicy the associated {@link SelectionPolicy}
+   * @param td the cell containing the element
+   * @param selected true to select, false to deselect
+   */
+  protected void setInputSelected(SelectionPolicy selectionPolicy, Element td,
+      boolean selected) {
+    ((InputElement) td.getFirstChild()).setChecked(selected);
   }
 }

@@ -268,6 +268,32 @@ public class FixedWidthGrid extends SortableGrid {
     updateGhostRow();
   }
 
+  @Override
+  public void setCellPadding(int padding) {
+    super.setCellPadding(padding);
+
+    // Reset the width of all columns
+    for (Map.Entry<Integer, Integer> entry : colWidths.entrySet()) {
+      setColumnWidth(entry.getKey(), entry.getValue());
+    }
+    if (getSelectionPolicy().hasInputColumn()) {
+      impl.setColumnWidth(this, -1, getInputColumnWidth());
+    }
+  }
+
+  @Override
+  public void setCellSpacing(int spacing) {
+    super.setCellSpacing(spacing);
+
+    // Reset the width of all columns
+    for (Map.Entry<Integer, Integer> entry : colWidths.entrySet()) {
+      setColumnWidth(entry.getKey(), entry.getValue());
+    }
+    if (getSelectionPolicy().hasInputColumn()) {
+      impl.setColumnWidth(this, -1, getInputColumnWidth());
+    }
+  }
+
   /**
    * Set the width of a column.
    * 
@@ -282,8 +308,8 @@ public class FixedWidthGrid extends SortableGrid {
           "Cannot access a column with a negative index: " + column);
     }
 
+    // Add the width to the map
     width = Math.max(MIN_COLUMN_WIDTH, width);
-
     colWidths.put(new Integer(column), new Integer(width));
 
     // Update the cell width if possible

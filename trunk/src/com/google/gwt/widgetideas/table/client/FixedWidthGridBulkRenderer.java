@@ -25,7 +25,7 @@ import java.util.Iterator;
 /**
  * Helper class to bulk load {@link FixedWidthGrid} tables.
  */
-public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
+public class FixedWidthGridBulkRenderer extends SelectionGridBulkRenderer {
 
   /**
    * Chaining callback for fixed width grid.
@@ -89,7 +89,7 @@ public class FixedWidthGridBulkRenderer extends GridBulkRenderer {
    * @param styleName the style name
    */
   public void setStyleNameByColumn(int column, String styleName) {
- 
+
     colStarts[column] = "<td class='" + styleName + "'><span>";
   }
 

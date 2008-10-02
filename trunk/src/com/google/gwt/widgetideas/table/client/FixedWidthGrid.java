@@ -16,10 +16,11 @@
 package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 import com.google.gwt.widgetideas.table.client.overrides.OverrideDOM;
 
 import java.util.HashMap;
@@ -74,32 +75,6 @@ public class FixedWidthGrid extends SortableGrid {
    */
   private static class FixedWidthGridImpl {
     /**
-     * Native method to add rows into a table with a given number of columns.
-     * 
-     * @param table the table element
-     * @param rows number of rows to add
-     * @param columns the number of columns per row
-     */
-    public native void addRows(Element table, int rows, int columns) /*-{
-     var span = $doc.createElement("span");
-     span.style["padding"] = "0px";
-     span.innerHTML = "&nbsp;";
-     var td = $doc.createElement("td");
-     td.style["overflow"] = "hidden";
-     td.appendChild(span);
-
-     var row = $doc.createElement("tr");
-     for(var cellNum = 0; cellNum < columns; cellNum++) {
-     var cell = td.cloneNode(true);
-     row.appendChild(cell);
-     }
-     table.appendChild(row);
-     for(var rowNum = 1; rowNum < rows; rowNum++) {  
-     table.appendChild(row.cloneNode(true));
-     }
-     }-*/;
-
-    /**
      * Create the ghost row.
      * 
      * @return the ghost row element
@@ -124,6 +99,32 @@ public class FixedWidthGrid extends SortableGrid {
     public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
       DOM.setStyleAttribute(grid.getGhostCellElement(column), "width", width
           + "px");
+    }
+  }
+
+  /**
+   * Firefox version of the implementation refreshes the table display so the
+   * new column size takes effect. Without the display refresh, the column width
+   * doesn't update in the browser.
+   */
+  @SuppressWarnings("unused")
+  private static class FixedWidthGridImplFirefox extends FixedWidthGridImpl {
+    private boolean pendingUpdate = false;
+
+    @Override
+    public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
+      super.setColumnWidth(grid, column, width);
+      if (!pendingUpdate) {
+        pendingUpdate = true;
+        final Element tableElem = grid.getElement();
+        tableElem.getStyle().setProperty("width", "1px");
+        DeferredCommand.addCommand(new Command() {
+          public void execute() {
+            tableElem.getStyle().setProperty("width", "0px");
+            pendingUpdate = false;
+          }
+        });
+      }
     }
   }
 
@@ -262,66 +263,35 @@ public class FixedWidthGrid extends SortableGrid {
     }
   }
 
-  /**
-   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
-   */
-  @Override
-  public int insertRow(int beforeRow) {
-    // Deselect all rows
-    deselectRows();
-
-    // Specifically allow the row count as an insert position.
-    if (beforeRow != getRowCount()) {
-      checkRowBounds(beforeRow);
-    }
-    Element tr = DOM.createTR();
-    DOM.insertChild(getBodyElement(), tr, beforeRow + 1);
-    numRows++;
-
-    // Add cells to the row
-    for (int column = 0; column < numColumns; column++) {
-      insertCell(beforeRow, column);
-    }
-    return beforeRow;
-  }
-
-  /**
-   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
-   */
-  @Override
-  public void removeRow(int row) {
-    super.removeRow(row);
-  }
-
-  /**
-   * @see com.google.gwt.widgetideas.table.client.overrides.Grid
-   */
   @Override
   public void resizeColumns(int columns) {
     super.resizeColumns(columns);
     updateGhostRow();
   }
 
-  /**
-   * @see com.google.gwt.widgetideas.table.client.overrides.Grid
-   */
   @Override
-  public void resizeRows(int rows) {
-    if (numRows == rows) {
-      return;
+  public void setCellPadding(int padding) {
+    super.setCellPadding(padding);
+
+    // Reset the width of all columns
+    for (Map.Entry<Integer, Integer> entry : colWidths.entrySet()) {
+      setColumnWidth(entry.getKey(), entry.getValue());
     }
-    if (rows < 0) {
-      throw new IndexOutOfBoundsException("Cannot set number of rows to "
-          + rows);
+    if (getSelectionPolicy().hasInputColumn()) {
+      impl.setColumnWidth(this, -1, getInputColumnWidth());
     }
-    if (numRows < rows) {
-      impl.addRows(getBodyElement(), rows - numRows, numColumns);
-      numRows = rows;
-    } else {
-      while (numRows > rows) {
-        // Fewer rows. Remove extraneous ones.
-        removeRow(numRows - 1);
-      }
+  }
+
+  @Override
+  public void setCellSpacing(int spacing) {
+    super.setCellSpacing(spacing);
+
+    // Reset the width of all columns
+    for (Map.Entry<Integer, Integer> entry : colWidths.entrySet()) {
+      setColumnWidth(entry.getKey(), entry.getValue());
+    }
+    if (getSelectionPolicy().hasInputColumn()) {
+      impl.setColumnWidth(this, -1, getInputColumnWidth());
     }
   }
 
@@ -339,8 +309,8 @@ public class FixedWidthGrid extends SortableGrid {
           "Cannot access a column with a negative index: " + column);
     }
 
+    // Add the width to the map
     width = Math.max(MIN_COLUMN_WIDTH, width);
-
     colWidths.put(new Integer(column), new Integer(width));
 
     // Update the cell width if possible
@@ -352,27 +322,33 @@ public class FixedWidthGrid extends SortableGrid {
     impl.setColumnWidth(this, column, width);
   }
 
-  /**
-   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
-   */
+  @Override
+  public void setSelectionPolicy(SelectionPolicy selectionPolicy) {
+    // Update the input column in the ghost row
+    if (selectionPolicy.hasInputColumn()
+        && !getSelectionPolicy().hasInputColumn()) {
+      // Add ghost input column
+      Element tr = getGhostRow();
+      Element td = createGhostCell();
+      tr.insertBefore(td, tr.getFirstChildElement());
+      super.setSelectionPolicy(selectionPolicy);
+      impl.setColumnWidth(this, -1, getInputColumnWidth());
+    } else if (!selectionPolicy.hasInputColumn()
+        && getSelectionPolicy().hasInputColumn()) {
+      // Remove ghost input column
+      Element tr = getGhostRow();
+      tr.removeChild(tr.getFirstChildElement());
+      super.setSelectionPolicy(selectionPolicy);
+    } else {
+      super.setSelectionPolicy(selectionPolicy);
+    }
+  }
+
   @Override
   protected int getDOMCellCount(int row) {
     return super.getDOMCellCount(row + 1);
   }
 
-  /**
-   * Gets the new ghost element directly from the table.
-   * 
-   * @param table the table
-   * @return the new ghost row
-   */
-  protected native Element getDOMGhostRow(HTMLTable table) /*-{
-   return table.@com.google.gwt.widgetideas.table.client.overrides.HTMLTable::getBodyElement()(table).rows[0];
-   }-*/;
-
-  /**
-   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
-   */
   @Override
   protected int getDOMRowCount() {
     return super.getDOMRowCount() - 1;
@@ -415,36 +391,30 @@ public class FixedWidthGrid extends SortableGrid {
   }
 
   /**
-   * @see SelectionGrid
+   * Get the width of the input column used in the current
+   * {@link SelectionGrid.SelectionPolicy}.
+   * 
+   * @return the width of the input element
    */
+  protected int getInputColumnWidth() {
+    if (getSelectionPolicy().hasInputColumn()) {
+      return 30;
+    } else {
+      return 0;
+    }
+  }
+
   @Override
   protected int getRowIndex(Element rowElem) {
-    return OverrideDOM.getRowIndex(rowElem) - 1;
+    return super.getRowIndex(rowElem) - 1;
   }
 
-  /**
-   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
-   */
-  @Override
-  protected Element insertCell(int row, int column) {
-    Element tr = getRowFormatter().getElement(row);
-    Element td = createCell();
-    DOM.insertChild(tr, td, column);
-    return td;
-  }
-
-  /**
-   * @see com.google.gwt.widgetideas.table.client.overrides.Grid
-   */
   @Override
   protected void prepareCell(int row, int column) {
     prepareColumn(column);
     super.prepareCell(row, column);
   }
 
-  /**
-   * @see com.google.gwt.widgetideas.table.client.overrides.Grid
-   */
   @Override
   protected void prepareColumn(int column) {
     // Ensure that the indices are not negative.
@@ -459,9 +429,6 @@ public class FixedWidthGrid extends SortableGrid {
     }
   }
 
-  /**
-   * @see com.google.gwt.widgetideas.table.client.overrides.Grid
-   */
   @Override
   protected void prepareRow(int row) {
     // Ensure that the indices are not negative.
@@ -494,14 +461,7 @@ public class FixedWidthGrid extends SortableGrid {
     if (numColumns > numGhosts) {
       // Add ghosts as needed
       for (int i = numGhosts; i < numColumns; i++) {
-        Element td = OverrideDOM.createTD();
-        DOM.setStyleAttribute(td, "height", "0px");
-        DOM.setStyleAttribute(td, "overflow", "hidden");
-        DOM.setStyleAttribute(td, "paddingTop", "0px");
-        DOM.setStyleAttribute(td, "paddingBottom", "0px");
-        DOM.setStyleAttribute(td, "borderTop", "0px");
-        DOM.setStyleAttribute(td, "borderBottom", "0px");
-        DOM.setStyleAttribute(td, "margin", "0px");
+        Element td = createGhostCell();
         DOM.appendChild(ghostRow, td);
         setColumnWidth(i, getColumnWidth(i));
       }
@@ -514,9 +474,6 @@ public class FixedWidthGrid extends SortableGrid {
     }
   }
 
-  /**
-   * @see SortableGrid#applySort(Element[])
-   */
   @Override
   void applySort(Element[] trElems) {
     // Move the rows to their new positions
@@ -531,12 +488,30 @@ public class FixedWidthGrid extends SortableGrid {
   }
 
   /**
+   * @return a cell to use in the ghost row
+   */
+  private Element createGhostCell() {
+    Element td = OverrideDOM.createTD();
+    td.getStyle().setPropertyPx("height", 0);
+    td.getStyle().setProperty("overflow", "hidden");
+    td.getStyle().setPropertyPx("paddingTop", 0);
+    td.getStyle().setPropertyPx("paddingBottom", 0);
+    td.getStyle().setPropertyPx("borderTop", 0);
+    td.getStyle().setPropertyPx("borderBottom", 0);
+    td.getStyle().setPropertyPx("margin", 0);
+    return td;
+  }
+
+  /**
    * Returns a cell in the ghost row.
    * 
    * @param column the cell's column
    * @return the ghost cell
    */
   private Element getGhostCellElement(int column) {
+    if (getSelectionPolicy().hasInputColumn()) {
+      column++;
+    }
     return DOM.getChild(ghostRow, column);
   }
 }
