@@ -270,6 +270,26 @@ public abstract class TableBulkRenderer {
   }
 
   /**
+   * Render a single row.
+   * 
+   * @param rowIndex the row index
+   * @param row the iterator of rows
+   * @param buffer the string buffer to append to
+   * @param options options
+   */
+  protected void renderRow(int rowIndex, Iterator<Object> row,
+      StringBuffer buffer, final RenderingOptions options) {
+    buffer.append("<tr>");
+    for (int cellIndex = 0; row.hasNext(); ++cellIndex) {
+      buffer.append(options.getStartCell(cellIndex));
+      Object next = row.next();
+      getCellRenderer().renderCell(rowIndex, cellIndex, next, buffer);
+      buffer.append(options.getEndCell(cellIndex));
+    }
+    buffer.append("</tr>");
+  }
+
+  /**
    * Work horse protected rendering method.
    * 
    * @param rows Iterator of row iterators
@@ -309,15 +329,7 @@ public abstract class TableBulkRenderer {
               return true;
             }
           }
-          temp.append("<tr>");
-          Iterator<Object> row = rows.next();
-          for (int cellIndex = 0; row.hasNext(); ++cellIndex) {
-            temp.append(options.getStartCell(cellIndex));
-            Object next = row.next();
-            getCellRenderer().renderCell(rowIndex, cellIndex, next, temp);
-            temp.append(options.getEndCell(cellIndex));
-          }
-          temp.append("</tr>");
+          renderRow(rowIndex, rows.next(), temp, options);
         }
         temp.append("</tbody> </table>");
         renderRows(temp.toString());
@@ -354,8 +366,8 @@ public abstract class TableBulkRenderer {
       }
     };
 
-    tableModel.requestRows(new Request(options.startRow,
-        options.numRows), requestCallback);
+    tableModel.requestRows(new Request(options.startRow, options.numRows),
+        requestCallback);
   }
 
   private void renderRows(String rawHTMLTable) {

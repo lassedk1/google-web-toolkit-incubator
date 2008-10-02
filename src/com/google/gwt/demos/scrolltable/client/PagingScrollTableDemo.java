@@ -16,7 +16,9 @@
 package com.google.gwt.demos.scrolltable.client;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
@@ -35,6 +37,7 @@ import com.google.gwt.widgetideas.table.client.ScrollTable;
 import com.google.gwt.widgetideas.table.client.TableBulkRenderer;
 import com.google.gwt.widgetideas.table.client.TextCellEditor;
 import com.google.gwt.widgetideas.table.client.PagingScrollTable.CellRenderer;
+import com.google.gwt.widgetideas.table.client.SelectionGrid.SelectionPolicy;
 import com.google.gwt.widgetideas.table.client.overrides.FlexTable.FlexCellFormatter;
 
 import java.io.Serializable;
@@ -153,6 +156,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // Setup the view
     dataTable = new FixedWidthGrid();
+    dataTable.setSelectionPolicy(SelectionPolicy.CHECKBOX);
 
     // Create the scroll table
     scrollTable = new PagingScrollTable<Serializable>(cachedTableModel,
@@ -171,8 +175,9 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     getPagingScrollTable().setBulkRenderer(bulkRenderer);
 
     // Add some data to the footer table
+    footerTable.setHTML(0, 0, "&nbsp;");
     for (int i = 0; i < 12; i++) {
-      footerTable.setText(0, i, "Col " + i);
+      footerTable.setText(0, i + 1, "Col " + i);
     }
     scrollTable.setFooterTable(footerTable);
 
@@ -239,24 +244,30 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     // Level 1 headers
     FlexCellFormatter headerFormatter = headerTable.getFlexCellFormatter();
     headerTable.setHTML(0, 0, "User Information");
-    headerFormatter.setColSpan(0, 0, 12);
+    headerFormatter.setColSpan(0, 0, 13);
 
     // Level 2 headers
-    headerTable.setHTML(1, 0, "First and Last Name");
-    headerFormatter.setColSpan(1, 0, 2);
+    CheckBox disabled = new CheckBox();
+    disabled.setEnabled(false);
+    headerTable.setWidget(1, 0, disabled);
     headerFormatter.setRowSpan(1, 0, 2);
-    headerTable.setHTML(1, 1, "General Info");
-    headerFormatter.setColSpan(1, 1, 3);
-    headerTable.setHTML(1, 2, "Favorite Color");
-    headerFormatter.setColSpan(1, 2, 1);
-    headerFormatter.setRowSpan(1, 2, 2);
-    headerTable.setHTML(1, 3, "Preferred Sport");
+    headerFormatter.setHorizontalAlignment(1, 0,
+        HasHorizontalAlignment.ALIGN_CENTER);
+    headerTable.setHTML(1, 1, "First and Last Name");
+    headerFormatter.setColSpan(1, 1, 2);
+    headerFormatter.setRowSpan(1, 1, 2);
+    headerTable.setHTML(1, 2, "General Info");
+    headerFormatter.setColSpan(1, 2, 3);
+    headerTable.setHTML(1, 3, "Favorite Color");
     headerFormatter.setColSpan(1, 3, 1);
     headerFormatter.setRowSpan(1, 3, 2);
-    headerTable.setHTML(1, 4, "School Info");
-    headerFormatter.setColSpan(1, 4, 3);
-    headerTable.setHTML(1, 5, "Login Info");
-    headerFormatter.setColSpan(1, 5, 2);
+    headerTable.setHTML(1, 4, "Preferred Sport");
+    headerFormatter.setColSpan(1, 4, 1);
+    headerFormatter.setRowSpan(1, 4, 2);
+    headerTable.setHTML(1, 5, "School Info");
+    headerFormatter.setColSpan(1, 5, 3);
+    headerTable.setHTML(1, 6, "Login Info");
+    headerFormatter.setColSpan(1, 6, 2);
 
     // Level 3 headers
     headerTable.setHTML(2, 0, "Age");

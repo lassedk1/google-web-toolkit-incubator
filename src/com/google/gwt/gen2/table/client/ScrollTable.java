@@ -1088,6 +1088,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     if (footerTable != null) {
       footerTable.setCellPadding(padding);
     }
+    redraw();
   }
 
   /**
@@ -1101,6 +1102,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     if (footerTable != null) {
       footerTable.setCellSpacing(spacing);
     }
+    redraw();
   }
 
   /**

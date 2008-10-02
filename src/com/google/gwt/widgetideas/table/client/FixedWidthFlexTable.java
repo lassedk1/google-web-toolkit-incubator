@@ -16,7 +16,9 @@
 package com.google.gwt.widgetideas.table.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.widgetideas.table.client.overrides.FlexTable;
 
@@ -60,6 +62,33 @@ public class FixedWidthFlexTable extends FlexTable {
     public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
       DOM.setStyleAttribute(grid.getGhostCellElement(column), "width", width
           + "px");
+    }
+  }
+
+  /**
+   * Firefox version of the implementation refreshes the table display so the
+   * new column size takes effect. Without the display refresh, the column width
+   * doesn't update in the browser.
+   */
+  @SuppressWarnings("unused")
+  private static class FixedWidthFlexTableImplFirefox extends
+      FixedWidthFlexTableImpl {
+    private boolean pendingUpdate = false;
+
+    @Override
+    public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
+      super.setColumnWidth(grid, column, width);
+      if (!pendingUpdate) {
+        pendingUpdate = true;
+        final Element tableElem = grid.getElement();
+        tableElem.getStyle().setProperty("width", "1px");
+        DeferredCommand.addCommand(new Command() {
+          public void execute() {
+            tableElem.getStyle().setProperty("width", "0px");
+            pendingUpdate = false;
+          }
+        });
+      }
     }
   }
 
@@ -454,6 +483,26 @@ public class FixedWidthFlexTable extends FlexTable {
     }
   }
 
+  @Override
+  public void setCellPadding(int padding) {
+    super.setCellPadding(padding);
+
+    // Reset the width of all columns
+    for (Map.Entry<Integer, Integer> entry : colWidths.entrySet()) {
+      setColumnWidth(entry.getKey(), entry.getValue());
+    }
+  }
+
+  @Override
+  public void setCellSpacing(int spacing) {
+    super.setCellSpacing(spacing);
+
+    // Reset the width of all columns
+    for (Map.Entry<Integer, Integer> entry : colWidths.entrySet()) {
+      setColumnWidth(entry.getKey(), entry.getValue());
+    }
+  }
+
   /**
    * Set the width of a column.
    * 
@@ -491,18 +540,12 @@ public class FixedWidthFlexTable extends FlexTable {
     super.addCells(row + 1, num);
   }
 
-  /**
-   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
-   */
   @Override
   protected int getDOMCellCount(int row) {
     // Account for ghost row
     return super.getDOMCellCount(row + 1);
   }
 
-  /**
-   * @see com.google.gwt.widgetideas.table.client.overrides.HTMLTable
-   */
   @Override
   protected int getDOMRowCount() {
     // Account for ghost row
@@ -518,9 +561,6 @@ public class FixedWidthFlexTable extends FlexTable {
     return super.getDOMCellCount(0);
   }
 
-  /**
-   * @see com.google.gwt.widgetideas.table.client.overrides.FlexTable
-   */
   @Override
   protected void prepareCell(int row, int column) {
     int curNumCells = 0;

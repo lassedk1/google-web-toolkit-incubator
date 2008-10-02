@@ -18,11 +18,13 @@ package com.google.gwt.demos.scrolltable.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.widgetideas.table.client.FixedWidthFlexTable;
 import com.google.gwt.widgetideas.table.client.FixedWidthGrid;
 import com.google.gwt.widgetideas.table.client.ScrollTable;
+import com.google.gwt.widgetideas.table.client.SelectionGrid.SelectionPolicy;
 import com.google.gwt.widgetideas.table.client.overrides.FlexTable.FlexCellFormatter;
 
 /**
@@ -33,9 +35,9 @@ public class ScrollTableDemo implements EntryPoint {
    * The data portion of the {@link ScrollTable}.
    */
   protected static FixedWidthGrid dataTable = null;
-  
+
   /**
-   * The footer portion of the  {@link ScrollTable} .
+   * The footer portion of the {@link ScrollTable} .
    */
   protected static FixedWidthFlexTable footerTable = null;
 
@@ -43,12 +45,12 @@ public class ScrollTableDemo implements EntryPoint {
    * The header portion of the {@link ScrollTable}.
    */
   protected static FixedWidthFlexTable headerTable = null;
-  
+
   /**
    * The scroll table.
    */
   protected static ScrollTable scrollTable = null;
-  
+
   /**
    * Get the data table.
    * 
@@ -57,10 +59,11 @@ public class ScrollTableDemo implements EntryPoint {
   public static FixedWidthGrid getDataTable() {
     if (dataTable == null) {
       dataTable = new FixedWidthGrid();
+      dataTable.setSelectionPolicy(SelectionPolicy.CHECKBOX);
     }
     return dataTable;
   }
-  
+
   /**
    * Get the footer table.
    * 
@@ -93,7 +96,7 @@ public class ScrollTableDemo implements EntryPoint {
   public static ScrollTable getScrollTable() {
     return scrollTable;
   }
-  
+
   /**
    * Add a row of data cells each consisting of a string that describes the
    * row:column coordinates of the new cell. The number of columns in the new
@@ -109,9 +112,7 @@ public class ScrollTableDemo implements EntryPoint {
     int numColumns = dataTable.getColumnCount();
     for (int column = 0; column < numColumns; column++) {
       String label = beforeRow + ":" + column;
-      if (column == 0) {
-        dataTable.setWidget(beforeRow, column, new CheckBox(label));
-      } else if (column == 2) {
+      if (column == 2) {
         int rand = (int) (Math.random() * 100000);
         dataTable.setHTML(beforeRow, column, rand + "");
       } else {
@@ -128,28 +129,29 @@ public class ScrollTableDemo implements EntryPoint {
     getHeaderTable();
     getFooterTable();
     getDataTable();
-    
+
     // Add the scroll table to the page
     scrollTable = new ScrollTable(dataTable, headerTable);
     scrollTable.setFooterTable(footerTable);
 
     // Setup the header
     setupScrollTable();
-    
+
     // Add some data the data table
     dataTable.resize(0, 13);
     for (int i = 0; i < 15; i++) {
       insertDataRow(i);
     }
-    
+
     // Add some data to the footer table
+    footerTable.setHTML(0, 0, "&nbsp;");
     for (int i = 0; i < 13; i++) {
-      footerTable.setText(0, i, "Col " + i);
+      footerTable.setText(0, i + 1, "Col " + i);
     }
 
     // Redraw the scroll table
     scrollTable.redraw();
-    
+
     // Add the components to the page
     RootPanel.get().add(scrollTable);
     RootPanel.get().add(new HTML("<BR>"));
@@ -192,24 +194,30 @@ public class ScrollTableDemo implements EntryPoint {
     // Level 1 headers
     FlexCellFormatter headerFormatter = headerTable.getFlexCellFormatter();
     headerTable.setHTML(0, 0, "Info Table");
-    headerFormatter.setColSpan(0, 0, 13);
+    headerFormatter.setColSpan(0, 0, 14);
 
     // Level 2 headers
-    headerTable.setHTML(1, 0, "Group Header 0<BR>Multiline");
-    headerFormatter.setColSpan(1, 0, 2);
+    CheckBox disabled = new CheckBox();
+    disabled.setEnabled(false);
+    headerTable.setWidget(1, 0, disabled);
     headerFormatter.setRowSpan(1, 0, 2);
-    headerTable.setHTML(1, 1, "Group Header 1");
-    headerFormatter.setColSpan(1, 1, 3);
-    headerTable.setHTML(1, 2, "Group Header 2");
-    headerFormatter.setColSpan(1, 2, 1);
-    headerFormatter.setRowSpan(1, 2, 2);
-    headerTable.setHTML(1, 3, "Group Header 3");
+    headerFormatter.setHorizontalAlignment(1, 0,
+        HasHorizontalAlignment.ALIGN_CENTER);
+    headerTable.setHTML(1, 1, "Group Header 0<BR>Multiline");
+    headerFormatter.setColSpan(1, 1, 2);
+    headerFormatter.setRowSpan(1, 1, 2);
+    headerTable.setHTML(1, 2, "Group Header 1");
+    headerFormatter.setColSpan(1, 2, 3);
+    headerTable.setHTML(1, 3, "Group Header 2");
     headerFormatter.setColSpan(1, 3, 1);
     headerFormatter.setRowSpan(1, 3, 2);
-    headerTable.setHTML(1, 4, "Group Header 4");
-    headerFormatter.setColSpan(1, 4, 3);
-    headerTable.setHTML(1, 5, "Group Header 5");
+    headerTable.setHTML(1, 4, "Group Header 3");
+    headerFormatter.setColSpan(1, 4, 1);
+    headerFormatter.setRowSpan(1, 4, 2);
+    headerTable.setHTML(1, 5, "Group Header 4");
     headerFormatter.setColSpan(1, 5, 3);
+    headerTable.setHTML(1, 6, "Group Header 5");
+    headerFormatter.setColSpan(1, 6, 3);
 
     // Level 3 headers
     for (int cell = 0; cell < 9; cell++) {
