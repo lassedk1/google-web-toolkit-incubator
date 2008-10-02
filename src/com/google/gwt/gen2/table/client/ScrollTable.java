@@ -231,7 +231,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       if (cell != curCell) {
         // Clear the old cell
         if (curCell != null) {
-          DOM.setStyleAttribute(curCell, "cursor", "default");
+          DOM.setStyleAttribute(curCell, "cursor", "");
         }
 
         // Set the new cell
