@@ -28,6 +28,9 @@ import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ImageBundle;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.ScrollListener;
+import com.google.gwt.user.client.ui.ScrollListenerCollection;
+import com.google.gwt.user.client.ui.SourcesScrollEvents;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.ResizableWidget;
 import com.google.gwt.widgetideas.client.ResizableWidgetCollection;
@@ -75,7 +78,8 @@ import java.util.Set;
  * 
  * </ul>
  */
-public class ScrollTable extends ComplexPanel implements ResizableWidget {
+public class ScrollTable extends ComplexPanel implements ResizableWidget,
+    SourcesScrollEvents {
   /**
    * A helper class that handles some of the mouse events associated with
    * resizing columns.
@@ -619,6 +623,11 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   };
 
   /**
+   * The scroll listeners attached to this widget.
+   */
+  private ScrollListenerCollection scrollListeners = null;
+
+  /**
    * The scrolling policy.
    */
   private ScrollPolicy scrollPolicy = ScrollPolicy.BOTH;
@@ -772,6 +781,13 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     } catch (UnsupportedOperationException e) {
       // Ignore, this may not be implemented
     }
+  }
+
+  public void addScrollListener(ScrollListener listener) {
+    if (scrollListeners == null) {
+      scrollListeners = new ScrollListenerCollection();
+    }
+    scrollListeners.add(listener);
   }
 
   /**
@@ -957,6 +973,10 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
       case Event.ONSCROLL:
         // Reposition the tables on scroll
         scrollTables(false);
+        if (dataWrapper.isOrHasChild(target) && scrollListeners != null) {
+          scrollListeners.fireScroll(this, dataWrapper.getScrollLeft(),
+              dataWrapper.getScrollTop());
+        }
         break;
 
       case Event.ONMOUSEDOWN:
@@ -1072,6 +1092,12 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
   public boolean remove(Widget child) {
     throw new UnsupportedOperationException(
         "This panel does not support remove()");
+  }
+
+  public void removeScrollListener(ScrollListener listener) {
+    if (scrollListeners != null) {
+      scrollListeners.remove(listener);
+    }
   }
 
   /**
