@@ -16,6 +16,10 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.gen2.event.dom.client.HasScrollHandlers;
+import com.google.gwt.gen2.event.dom.client.ScrollEvent;
+import com.google.gwt.gen2.event.dom.client.ScrollHandler;
+import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
 import com.google.gwt.gen2.table.client.overrides.ComplexPanel;
 import com.google.gwt.gen2.table.client.overrides.OverrideDOM;
@@ -77,7 +81,8 @@ import java.util.Set;
  * 
  * </ul>
  */
-public class ScrollTable extends ComplexPanel implements ResizableWidget {
+public class ScrollTable extends ComplexPanel implements ResizableWidget,
+    HasScrollHandlers {
   /**
    * A helper class that handles some of the mouse events associated with
    * resizing columns.
@@ -777,6 +782,10 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     }
   }
 
+  public HandlerRegistration addScrollHandler(ScrollHandler handler) {
+    return addHandler(ScrollEvent.KEY, handler);
+  }
+
   /**
    * Adjust all column widths so they take up the maximum amount of space
    * without needing a horizontal scroll bar. The distribution will be
@@ -949,17 +958,16 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget {
     return sortingEnabled;
   }
 
-  /**
-   * @see Widget
-   */
   @Override
   public void onBrowserEvent(Event event) {
-    super.onBrowserEvent(event);
     Element target = DOM.eventGetTarget(event);
     switch (DOM.eventGetType(event)) {
       case Event.ONSCROLL:
         // Reposition the tables on scroll
         scrollTables(false);
+        if (dataWrapper.isOrHasChild(target)) {
+          fireEvent(new ScrollEvent(event));
+        }
         break;
 
       case Event.ONMOUSEDOWN:
