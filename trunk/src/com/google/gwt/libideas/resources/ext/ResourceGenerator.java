@@ -31,18 +31,20 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
  * following order by the resource generation system:
  * <ol>
  * <li>{@link #init(TreeLogger, ResourceContext)}</li>
- * <li>{@link #prepare(TreeLogger, JMethod)} once for each method</li>
- * <li>{@link #createFields(TreeLogger, Fields)}</li>
- * <li>{@link #createAssignment(TreeLogger, JMethod)} once for each method</li>
- * <li>{@link #finish(TreeLogger)}</li>
+ * <li>{@link #prepare(TreeLogger, ResourceContext, JMethod)} once for each
+ * method</li>
+ * <li>{@link #createFields(TreeLogger, ResourceContext, ResourceBundleFields)}</li>
+ * <li>{@link #createAssignment(TreeLogger, ResourceContext, JMethod)} once for
+ * each method</li>
+ * <li>{@link #finish(TreeLogger, ResourceContext)}</li>
  * </ol>
  * <p>
- * The methods {@link #prepare(TreeLogger, JMethod)} and
- * {@link #createAssignment(TreeLogger, JMethod)} will be called only with those
- * methods whose ResourcePrototype-derived type specifies the particular type of
- * ResourceGenerator as the implementor. The relative order in which
- * ResourceGenerators are invoked and the specific order in which the bundle's
- * methods are presented is undefined.
+ * The methods {@link #prepare(TreeLogger, ResourceContext, JMethod)} and
+ * {@link #createAssignment(TreeLogger, ResourceContext, JMethod)} will be
+ * called only with those methods whose ResourcePrototype-derived type specifies
+ * the particular type of ResourceGenerator as the implementor. The relative
+ * order in which ResourceGenerators are invoked and the specific order in which
+ * the bundle's methods are presented is undefined.
  * <p>
  * Direct access to the contents of the generated bundle implementation is
  * intentionally limited to prevent unrelated ResourceGenerators from
@@ -62,8 +64,8 @@ public interface ResourceGenerator {
    * new MySampleResource() { public Foo getFoo() { ... } }
    * </pre>
    */
-  String createAssignment(TreeLogger logger, JMethod method)
-      throws UnableToCompleteException;
+  String createAssignment(TreeLogger logger, ResourceContext context,
+      JMethod method) throws UnableToCompleteException;
 
   /**
    * The ResourceGenerator can create fields within the implementation of the
@@ -75,14 +77,15 @@ public interface ResourceGenerator {
    * method as operation on this object is not defined after the implementation
    * of this method returns.
    */
-  void createFields(TreeLogger logger, Fields fields)
-      throws UnableToCompleteException;
+  void createFields(TreeLogger logger, ResourceContext context,
+      ResourceBundleFields fields) throws UnableToCompleteException;
 
   /**
    * Called at the end of the resource generation phase and can be used to
    * perform cleanup.
    */
-  void finish(TreeLogger logger) throws UnableToCompleteException;
+  void finish(TreeLogger logger, ResourceContext context)
+      throws UnableToCompleteException;
 
   /**
    * Initialize the ResourceGenerator with the generation context that will
@@ -97,6 +100,6 @@ public interface ResourceGenerator {
    * This allows cross-resource state to be accumulated, such as for data
    * aggregation.
    */
-  void prepare(TreeLogger logger, JMethod method)
+  void prepare(TreeLogger logger, ResourceContext context, JMethod method)
       throws UnableToCompleteException;
 }

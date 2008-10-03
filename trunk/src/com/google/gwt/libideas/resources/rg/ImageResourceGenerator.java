@@ -23,7 +23,7 @@ import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
 import com.google.gwt.libideas.resources.client.impl.ImageResourcePrototype;
-import com.google.gwt.libideas.resources.ext.Fields;
+import com.google.gwt.libideas.resources.ext.ResourceBundleFields;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
@@ -40,15 +40,14 @@ import java.util.Map;
  * ImmutableResourceBundle.
  */
 public final class ImageResourceGenerator extends AbstractResourceGenerator {
-  private ResourceContext context;
   private Map<RepeatStyle, ImageBundleBuilder> builders;
   private Map<String, String> externalLocationExpressions;
   private Map<String, ImageRect> externalImageRects;
   private Map<RepeatStyle, String> imageResourceBundleUrlIdents;
 
   @Override
-  public String createAssignment(TreeLogger logger, JMethod method)
-      throws UnableToCompleteException {
+  public String createAssignment(TreeLogger logger, ResourceContext context,
+      JMethod method) throws UnableToCompleteException {
     String name = method.getName();
 
     SourceWriter sw = new StringSourceWriter();
@@ -82,8 +81,8 @@ public final class ImageResourceGenerator extends AbstractResourceGenerator {
   }
 
   @Override
-  public void createFields(TreeLogger logger, Fields fields)
-      throws UnableToCompleteException {
+  public void createFields(TreeLogger logger, ResourceContext context,
+      ResourceBundleFields fields) throws UnableToCompleteException {
     for (Map.Entry<RepeatStyle, ImageBundleBuilder> entry : builders.entrySet()) {
       RepeatStyle repeatStyle = entry.getKey();
       ImageBundleBuilder builder = entry.getValue();
@@ -126,7 +125,6 @@ public final class ImageResourceGenerator extends AbstractResourceGenerator {
 
   @Override
   public void init(TreeLogger logger, ResourceContext context) {
-    this.context = context;
     builders = new HashMap<RepeatStyle, ImageBundleBuilder>();
     externalLocationExpressions = new HashMap<String, String>();
     externalImageRects = new HashMap<String, ImageRect>();
@@ -134,7 +132,7 @@ public final class ImageResourceGenerator extends AbstractResourceGenerator {
   }
 
   @Override
-  public void prepare(TreeLogger logger, JMethod method)
+  public void prepare(TreeLogger logger, ResourceContext context, JMethod method)
       throws UnableToCompleteException {
     URL[] resources = ResourceGeneratorUtil.findResources(logger, context,
         method);
@@ -159,7 +157,7 @@ public final class ImageResourceGenerator extends AbstractResourceGenerator {
       }
     } catch (UnsuitableForStripException e) {
       // Add the image to the output as a separate resource
-      String urlExpression = context.addToOutput(resource, false);
+      String urlExpression = context.deploy(resource, false);
       externalLocationExpressions.put(name, urlExpression);
       externalImageRects.put(name, e.getImageRect());
     }

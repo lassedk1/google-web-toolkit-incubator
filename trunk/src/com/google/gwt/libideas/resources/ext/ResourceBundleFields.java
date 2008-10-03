@@ -31,7 +31,7 @@ import com.google.gwt.core.ext.typeinfo.JType;
  * Multiple invocations of the {@link #define} method with the same inputs will
  * result in different identifiers being produced.
  */
-public interface Fields {
+public interface ResourceBundleFields {
   /**
    * Adds a field to the bundle. Equivalent to
    * <code>defineField(type, name, null, true, false)</code>.

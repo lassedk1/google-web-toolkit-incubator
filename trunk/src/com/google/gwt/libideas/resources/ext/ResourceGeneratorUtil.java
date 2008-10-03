@@ -30,7 +30,9 @@ import java.net.URL;
  * Utility methods for building ResourceGenerators.
  */
 public final class ResourceGeneratorUtil {
+  @Deprecated
   public static final String METADATA_TAG = "gwt.resource";
+  @Deprecated
   public static final String TRANSFORMER_TAG = "gwt.transformer";
 
   /**
@@ -268,8 +270,9 @@ public final class ResourceGeneratorUtil {
       // Convert language_country_variant to independent pieces
       String[] localeSegments = locale.split("_");
       int lastDot = resourceName.lastIndexOf(".");
-      String prefix = resourceName.substring(0, lastDot);
-      String extension = resourceName.substring(lastDot);
+      String prefix = lastDot == -1 ? resourceName : resourceName.substring(0,
+          lastDot);
+      String extension = lastDot == -1 ? "" : resourceName.substring(lastDot);
 
       for (int i = localeSegments.length - 1; i >= -1; i--) {
         String localeInsert = "";

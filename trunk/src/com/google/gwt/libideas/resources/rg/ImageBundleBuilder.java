@@ -460,7 +460,7 @@ class ImageBundleBuilder {
       throw new UnableToCompleteException();
     }
 
-    String bundleFileName = context.addToOutput(
+    String bundleFileName = context.deploy(
         context.getResourceBundleType().getQualifiedSourceName() + ".cache."
             + BUNDLE_FILE_TYPE, BUNDLE_MIME_TYPE, imageBytes, false);
 

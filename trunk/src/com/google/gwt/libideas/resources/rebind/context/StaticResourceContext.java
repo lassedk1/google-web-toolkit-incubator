@@ -41,7 +41,7 @@ class StaticResourceContext extends AbstractResourceContext {
     super(logger, context, resourceBundleType, simpleSourceName, sw);
   }
 
-  public String addToOutput(String suggestedFileName, String mimeType,
+  public String deploy(String suggestedFileName, String mimeType,
       byte[] data, boolean xhrCompatible) throws UnableToCompleteException {
     TreeLogger logger = getLogger();
     GeneratorContext context = getGeneratorContext();
@@ -104,12 +104,12 @@ class StaticResourceContext extends AbstractResourceContext {
     return "GWT.getModuleBaseURL() + \"" + outputName + "\"";
   }
 
-  public String addToOutput(URL resource, boolean xhrCompatible)
+  public String deploy(URL resource, boolean xhrCompatible)
       throws UnableToCompleteException {
     String fileName = ResourceGeneratorUtil.baseName(resource);
     byte[] bytes = Util.readURLAsBytes(resource);
     try {
-      return addToOutput(fileName, resource.openConnection().getContentType(),
+      return deploy(fileName, resource.openConnection().getContentType(),
           bytes, xhrCompatible);
     } catch (IOException e) {
       getLogger().log(TreeLogger.ERROR,

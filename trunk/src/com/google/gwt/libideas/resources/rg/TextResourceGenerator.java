@@ -33,17 +33,15 @@ import java.net.URL;
  */
 public final class TextResourceGenerator extends AbstractResourceGenerator {
 
-  private ResourceContext context;
-
   @Override
-  public String createAssignment(TreeLogger logger, JMethod method)
-      throws UnableToCompleteException {
+  public String createAssignment(TreeLogger logger, ResourceContext context,
+      JMethod method) throws UnableToCompleteException {
     URL[] resources = ResourceGeneratorUtil.findResources(logger, context,
         method);
 
     if (resources.length != 1) {
-      logger.log(TreeLogger.ERROR, "Exactly one "
-          + ResourceGeneratorUtil.METADATA_TAG + " must be specified", null);
+      logger.log(TreeLogger.ERROR, "Exactly one resource must be specified",
+          null);
       throw new UnableToCompleteException();
     }
 
@@ -79,12 +77,7 @@ public final class TextResourceGenerator extends AbstractResourceGenerator {
 
     sw.outdent();
     sw.println("}");
-    
-    return sw.toString();
-  }
 
-  @Override
-  public void init(TreeLogger logger, ResourceContext context) {
-    this.context = context;
+    return sw.toString();
   }
 }

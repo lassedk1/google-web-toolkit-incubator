@@ -623,7 +623,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   }
 
   private String classPrefix;
-  private ResourceContext context;
   private JClassType cssResourceType;
   private JClassType elementType;
   private boolean enableMerge;
@@ -633,8 +632,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   private Map<JMethod, URL> urlMap;
 
   @Override
-  public String createAssignment(TreeLogger logger, JMethod method)
-      throws UnableToCompleteException {
+  public String createAssignment(TreeLogger logger, ResourceContext context,
+      JMethod method) throws UnableToCompleteException {
 
     URL resource = urlMap.get(method);
     SourceWriter sw = new StringSourceWriter();
@@ -676,8 +675,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     sw.println("public String getText() {");
     sw.indent();
 
-    String cssExpression = makeExpression(logger, cssResourceSubtype, resource,
-        replacements);
+    String cssExpression = makeExpression(logger, context, cssResourceSubtype,
+        resource, replacements);
     sw.println("return " + cssExpression + ";");
     sw.outdent();
     sw.println("}");
@@ -697,8 +696,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   @Override
   public void init(TreeLogger logger, ResourceContext context)
       throws UnableToCompleteException {
-    this.context = context;
-
     try {
       PropertyOracle propertyOracle = context.getGeneratorContext().getPropertyOracle();
       String style = propertyOracle.getPropertyValue(logger,
@@ -742,15 +739,15 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   }
 
   @Override
-  public void prepare(TreeLogger logger, JMethod method)
+  public void prepare(TreeLogger logger, ResourceContext context, JMethod method)
       throws UnableToCompleteException {
 
     URL[] resources = ResourceGeneratorUtil.findResources(logger, context,
         method);
 
     if (resources.length != 1) {
-      logger.log(TreeLogger.ERROR, "Exactly one "
-          + ResourceGeneratorUtil.METADATA_TAG + " must be specified", null);
+      logger.log(TreeLogger.ERROR, "Exactly one resource must be specified",
+          null);
       throw new UnableToCompleteException();
     }
 
@@ -905,8 +902,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
    * Create a Java expression that evaluates to the string representation of the
    * stylesheet resource.
    */
-  private String makeExpression(TreeLogger logger, JClassType cssResourceType,
-      URL css, Map<String, String> classReplacements)
+  private String makeExpression(TreeLogger logger, ResourceContext context,
+      JClassType cssResourceType, URL css, Map<String, String> classReplacements)
       throws UnableToCompleteException {
 
     try {
@@ -937,7 +934,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         (new MergeRulesByContentVisitor()).accept(sheet);
       }
 
-      return makeExpression(logger, sheet);
+      return makeExpression(logger, context, cssResourceType, sheet);
 
     } catch (CssCompilerException e) {
       // Take this as a sign that one of the visitors was unhappy, but only
@@ -953,7 +950,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
    * given node.
    */
   private <T extends CssNode & HasNodes> String makeExpression(
-      TreeLogger logger, T node) throws UnableToCompleteException {
+      TreeLogger logger, ResourceContext context, JClassType cssResourceType,
+      T node) throws UnableToCompleteException {
     // Generate the CSS template
     DefaultTextOutput out = new DefaultTextOutput(!prettyOutput);
     CssGenerationVisitor v = new CssGenerationVisitor(out);
@@ -978,16 +976,16 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
           CssIf asIf = (CssIf) x;
 
           // Generate the sub-expressions
-          String expression = makeExpression(loopLogger,
-              new CollapsedNode(asIf));
+          String expression = makeExpression(loopLogger, context,
+              cssResourceType, new CollapsedNode(asIf));
 
           String elseExpression;
           if (asIf.getElseNodes().isEmpty()) {
             // We'll treat an empty else block as an empty string
             elseExpression = "\"\"";
           } else {
-            elseExpression = makeExpression(loopLogger, new CollapsedNode(
-                asIf.getElseNodes()));
+            elseExpression = makeExpression(loopLogger, context,
+                cssResourceType, new CollapsedNode(asIf.getElseNodes()));
           }
 
           // ((expr) ? "CSS" : "elseCSS") +
@@ -997,7 +995,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         } else if (x instanceof CssProperty) {
           CssProperty property = (CssProperty) x;
 
-          validateValue(loopLogger, property.getValues());
+          validateValue(loopLogger, context.getResourceBundleType(),
+              property.getValues());
 
           // (expr) +
           b.append("(" + property.getValues().getExpression() + ") + ");
@@ -1023,8 +1022,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   /**
    * This function validates any context-sensitive Values.
    */
-  private void validateValue(TreeLogger logger, Value value)
-      throws UnableToCompleteException {
+  private void validateValue(TreeLogger logger, JClassType resourceBundleType,
+      Value value) throws UnableToCompleteException {
     if (value instanceof DotPathValue) {
       DotPathValue dot = (DotPathValue) value;
       String[] elements = dot.getPath().split("\\.");
@@ -1033,7 +1032,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         throw new UnableToCompleteException();
       }
 
-      JType currentType = context.getResourceBundleType();
+      JType currentType = resourceBundleType;
       for (Iterator<String> i = Arrays.asList(elements).iterator(); i.hasNext();) {
         String pathElement = i.next();
 

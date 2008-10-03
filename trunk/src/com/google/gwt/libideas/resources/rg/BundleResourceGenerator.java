@@ -27,22 +27,14 @@ import com.google.gwt.libideas.resources.ext.ResourceContext;
  */
 public class BundleResourceGenerator extends AbstractResourceGenerator {
 
-  ResourceContext context;
-
   @Override
-  public String createAssignment(TreeLogger logger, JMethod method)
-      throws UnableToCompleteException {
+  public String createAssignment(TreeLogger logger, ResourceContext context,
+      JMethod method) throws UnableToCompleteException {
     JClassType gwtType = context.getGeneratorContext().getTypeOracle().findType(
         GWT.class.getName());
     assert gwtType != null;
 
     return gwtType.getQualifiedSourceName() + ".create("
         + method.getReturnType().getQualifiedSourceName() + ".class)";
-  }
-
-  @Override
-  public void init(TreeLogger logger, ResourceContext context)
-      throws UnableToCompleteException {
-    this.context = context;
   }
 }

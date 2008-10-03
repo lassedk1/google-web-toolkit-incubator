@@ -30,7 +30,7 @@ import com.google.gwt.dev.generator.NameFactory;
 import com.google.gwt.dev.util.Util;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.libideas.resources.client.ResourcePrototype;
-import com.google.gwt.libideas.resources.ext.Fields;
+import com.google.gwt.libideas.resources.ext.ResourceBundleFields;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGenerator;
 import com.google.gwt.libideas.resources.ext.ResourceGeneratorType;
@@ -54,7 +54,7 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
    * An implementation of FieldAccumulator that immediately composes its output
    * into a StringWriter.
    */
-  private static class FieldsImpl implements Fields {
+  private static class FieldsImpl implements ResourceBundleFields {
     private final NameFactory factory = new NameFactory();
     private final StringWriter buffer = new StringWriter();
     private final PrintWriter pw = new PrintWriter(buffer);
@@ -180,7 +180,7 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
 
       // Aggregates the field names of the resources for use with
       // ResourceBundle.getResources()
-      Fields fields = new FieldsImpl();
+      ResourceBundleFields fields = new FieldsImpl();
 
       // Try to provide as many errors as possible before failing.
       boolean success = true;
@@ -396,7 +396,8 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
    */
   private boolean invokeSingleGenerator(TreeLogger logger,
       ResourceContext resourceContext, ResourceGenerator rg,
-      List<JMethod> generatorMethods, SourceWriter sw, Fields fields) {
+      List<JMethod> generatorMethods, SourceWriter sw,
+      ResourceBundleFields fields) {
 
     try {
       rg.init(
@@ -414,7 +415,7 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
     for (JMethod m : generatorMethods) {
       try {
         rg.prepare(logger.branch(TreeLogger.DEBUG, "Preparing method "
-            + m.getName()), m);
+            + m.getName()), resourceContext, m);
       } catch (UnableToCompleteException e) {
         fail = true;
       }
@@ -427,7 +428,7 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
     // Write all field values
     try {
       rg.createFields(logger.branch(TreeLogger.DEBUG, "Creating fields"),
-          fields);
+          resourceContext, fields);
     } catch (UnableToCompleteException e) {
       return false;
     }
@@ -439,7 +440,7 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
 
       try {
         rhs = rg.createAssignment(logger.branch(TreeLogger.DEBUG,
-            "Creating assignment for " + m.getName()), m);
+            "Creating assignment for " + m.getName()), resourceContext, m);
       } catch (UnableToCompleteException e) {
         fail = true;
         continue;
@@ -468,7 +469,8 @@ public abstract class AbstractResourceBundleGenerator extends Generator {
 
     // Finalize the ResourceGenerator
     try {
-      rg.finish(logger.branch(TreeLogger.DEBUG, "Finishing ResourceGenerator"));
+      rg.finish(logger.branch(TreeLogger.DEBUG, "Finishing ResourceGenerator"),
+          resourceContext);
     } catch (UnableToCompleteException e) {
       return false;
     }
