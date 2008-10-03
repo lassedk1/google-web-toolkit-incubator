@@ -62,7 +62,6 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    * Selection policies.
    * 
    * <ul>
-   * <li>DISABLED - selection is disabled</li>
    * <li>ONE_ROW - one row can be selected at a time</li>
    * <li>MULTI_ROW - multiple rows can be selected at a time</li>
    * <li>CHECKBOX - multiple rows can be selected using checkboxes</li>
@@ -70,8 +69,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    * </ul>
    */
   public static enum SelectionPolicy {
-    DISABLED(null), ONE_ROW(null), MULTI_ROW(null), CHECKBOX(
-        "<input type='checkbox'/>"), RADIO(
+    ONE_ROW(null), MULTI_ROW(null), CHECKBOX("<input type='checkbox'/>"), RADIO(
         "<input name='%NAME%' type='radio'/>");
 
     private String inputHtml;
@@ -83,7 +81,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
     /**
      * @return true if the policy requires a selection column
      */
-    protected boolean hasInputColumn() {
+    public boolean hasInputColumn() {
       return inputHtml != null;
     }
 
@@ -134,6 +132,11 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    * The rows that are currently selected.
    */
   private Map<Integer, Element> selectedRows = new HashMap<Integer, Element>();
+
+  /**
+   * A boolean indicating if selection is enabled disabled.
+   */
+  private boolean selectionEnabled = true;
 
   /**
    * The selection policy determines if the user can select zero, one, or many
@@ -278,6 +281,13 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
     return selectedRows.containsKey(new Integer(row));
   }
 
+  /**
+   * @return true if selection is enabled
+   */
+  public boolean isSelectionEnabled() {
+    return selectionEnabled;
+  }
+
   @Override
   public void onBrowserEvent(Event event) {
     super.onBrowserEvent(event);
@@ -321,6 +331,11 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
 
       // Select a row on click
       case Event.ONMOUSEDOWN: {
+        // Ignore if selection is disabled
+        if (!selectionEnabled) {
+          return;
+        }
+
         // Get the target row
         targetCell = getEventTargetCell(event);
         if (targetCell == null) {
@@ -352,6 +367,11 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
 
       // Prevent native inputs from being checked
       case Event.ONCLICK: {
+        // Ignore if selection is disabled
+        if (!selectionEnabled) {
+          return;
+        }
+
         // Get the target row
         targetCell = getEventTargetCell(event);
         if (targetCell == null) {
@@ -450,6 +470,37 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   }
 
   /**
+   * Select all rows in the table.
+   */
+  public void selectRows() {
+    // Select all rows
+    RowFormatter rowFormatter = getRowFormatter();
+    int rowCount = getRowCount();
+    for (int i = 0; i < rowCount; i++) {
+      selectRow(i, rowFormatter.getElement(i), false, true);
+    }
+  }
+
+  /**
+   * Enable or disable row selection.
+   * 
+   * @param enabled true to enable, false to disable
+   */
+  public void setSelectionEnabled(boolean enabled) {
+    selectionEnabled = enabled;
+
+    // Update the input elements
+    if (selectionPolicy.hasInputColumn()) {
+      SelectionGridCellFormatter formatter = getSelectionGridCellFormatter();
+      int rowCount = getRowCount();
+      for (int i = 0; i < rowCount; i++) {
+        Element td = formatter.getRawElement(i, -1);
+        setInputEnabled(selectionPolicy, td, enabled);
+      }
+    }
+  }
+
+  /**
    * Set the selection policy, which determines if the user can select zero,
    * one, or multiple rows.
    * 
@@ -488,6 +539,9 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
       }
     }
     this.selectionPolicy = selectionPolicy;
+
+    // Update the enabled state
+    setSelectionEnabled(selectionEnabled);
   }
 
   @Override
@@ -498,6 +552,9 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
       td.setPropertyString("align", "center");
       td.setInnerHTML(getInputHtml(selectionPolicy));
       DOM.insertChild(tr, td, 0);
+      if (!selectionEnabled) {
+        setInputEnabled(selectionPolicy, td, false);
+      }
     }
     return tr;
   }
@@ -641,6 +698,27 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
     if (fireEvent && tableSelectionListeners != null) {
       tableSelectionListeners.fireRowsSelected(this, row, 1);
     }
+  }
+
+  @Override
+  protected void setBodyElement(Element element) {
+    super.setBodyElement(element);
+    if (!selectionEnabled) {
+      setSelectionEnabled(selectionEnabled);
+    }
+  }
+
+  /**
+   * Enabled or disabled the native input element in the given cell. This method
+   * should correspond with the HTML returned from {@link #getInputHtml}.
+   * 
+   * @param selectionPolicy the associated {@link SelectionPolicy}
+   * @param td the cell containing the element
+   * @param enabled true to enable, false to disable
+   */
+  protected void setInputEnabled(SelectionPolicy selectionPolicy, Element td,
+      boolean enabled) {
+    ((InputElement) td.getFirstChild()).setDisabled(!enabled);
   }
 
   /**

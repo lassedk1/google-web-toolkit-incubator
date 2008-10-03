@@ -36,6 +36,11 @@ public class DemoTabHighlighting extends DemoTab implements ClickListener {
       + "and use the shift button to select multiple rows in a range.";
 
   /**
+   * The grid used for layout.
+   */
+  private Grid grid;
+
+  /**
    * The drop box of selection options.
    */
   private ListBox selectionPolicyBox = new ListBox();
@@ -45,6 +50,11 @@ public class DemoTabHighlighting extends DemoTab implements ClickListener {
    */
   private Button selectionPolicyButton = new Button("Set Selection Policy",
       this);
+
+  /**
+   * The button used to set the selection policy.
+   */
+  private Button selectionToggleButton = new Button("Toggle Selection", this);
 
   /**
    * Handle click events from the buttons in this panel.
@@ -64,15 +74,21 @@ public class DemoTabHighlighting extends DemoTab implements ClickListener {
         dataTable.setSelectionPolicy(SelectionGrid.SelectionPolicy.CHECKBOX);
       } else if (selection.equals("Radio Buttons")) {
         dataTable.setSelectionPolicy(SelectionGrid.SelectionPolicy.RADIO);
+      }
+    } else if (sender == selectionToggleButton) {
+      boolean enabled = dataTable.isSelectionEnabled();
+      dataTable.setSelectionEnabled(!enabled);
+      if (enabled) {
+        grid.setHTML(1, 1, "disabled");
       } else {
-        dataTable.setSelectionPolicy(SelectionGrid.SelectionPolicy.DISABLED);
+        grid.setHTML(1, 1, "enabled");
       }
     }
   }
 
   @Override
   protected Widget onInitialize() {
-    Grid grid = new Grid(1, 3);
+    grid = new Grid(2, 3);
     grid.setBorderWidth(2);
     grid.setCellPadding(3);
     grid.setCellSpacing(0);
@@ -82,10 +98,13 @@ public class DemoTabHighlighting extends DemoTab implements ClickListener {
     selectionPolicyBox.addItem("Single Row");
     selectionPolicyBox.addItem("Checkboxes");
     selectionPolicyBox.addItem("Radio Buttons");
-    selectionPolicyBox.addItem("Disabled");
     grid.setWidget(0, 0, selectionPolicyButton);
     grid.setWidget(0, 1, selectionPolicyBox);
     grid.setHTML(0, 2, DESC_SELECTION);
+
+    // Toggle selection
+    grid.setWidget(1, 0, selectionToggleButton);
+    grid.setHTML(1, 1, "enabled");
 
     return grid;
   }

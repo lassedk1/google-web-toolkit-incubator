@@ -17,10 +17,12 @@ package com.google.gwt.demos.scrolltable.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.table.client.FixedWidthFlexTable;
 import com.google.gwt.widgetideas.table.client.FixedWidthGrid;
 import com.google.gwt.widgetideas.table.client.ScrollTable;
@@ -196,10 +198,20 @@ public class ScrollTableDemo implements EntryPoint {
     headerTable.setHTML(0, 0, "Info Table");
     headerFormatter.setColSpan(0, 0, 14);
 
+    // Create the select all checkbox
+    final CheckBox selectAll = new CheckBox();
+    selectAll.addClickListener(new ClickListener() {
+      public void onClick(Widget sender) {
+        if (selectAll.isChecked()) {
+          dataTable.selectRows();
+        } else {
+          dataTable.deselectRows();
+        }
+      }
+    });
+
     // Level 2 headers
-    CheckBox disabled = new CheckBox();
-    disabled.setEnabled(false);
-    headerTable.setWidget(1, 0, disabled);
+    headerTable.setWidget(1, 0, selectAll);
     headerFormatter.setRowSpan(1, 0, 2);
     headerFormatter.setHorizontalAlignment(1, 0,
         HasHorizontalAlignment.ALIGN_CENTER);

@@ -16,6 +16,7 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.base.client.Gen2TestBase;
+import com.google.gwt.gen2.table.client.SelectionGrid.SelectionPolicy;
 import com.google.gwt.gen2.table.client.overrides.HTMLTable.CellFormatter;
 import com.google.gwt.gen2.table.client.overrides.HTMLTable.RowFormatter;
 import com.google.gwt.gen2.table.event.client.CellHighlightEvent;
@@ -29,6 +30,8 @@ import com.google.gwt.gen2.table.event.client.RowSelectionHandler;
 import com.google.gwt.gen2.table.event.client.RowUnhighlightEvent;
 import com.google.gwt.gen2.table.event.client.RowUnhighlightHandler;
 import com.google.gwt.gen2.table.event.client.RowHighlightEvent.Row;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 
 import java.util.Set;
 
@@ -235,12 +238,18 @@ public class SelectionGridTest extends Gen2TestBase {
     SelectionGrid testGrid = getSelectionGrid();
 
     // Selection policy
-    testGrid.setSelectionPolicy(SelectionGrid.SelectionPolicy.DISABLED);
-    assertEquals(SelectionGrid.SelectionPolicy.DISABLED,
+    testGrid.setSelectionPolicy(SelectionGrid.SelectionPolicy.CHECKBOX);
+    assertEquals(SelectionGrid.SelectionPolicy.CHECKBOX,
         testGrid.getSelectionPolicy());
     testGrid.setSelectionPolicy(SelectionGrid.SelectionPolicy.ONE_ROW);
     assertEquals(SelectionGrid.SelectionPolicy.ONE_ROW,
         testGrid.getSelectionPolicy());
+
+    // Selection enabled
+    testGrid.setSelectionEnabled(false);
+    assertFalse(testGrid.isSelectionEnabled());
+    testGrid.setSelectionEnabled(true);
+    assertTrue(testGrid.isSelectionEnabled());
   }
 
   /**
@@ -308,6 +317,39 @@ public class SelectionGridTest extends Gen2TestBase {
   }
 
   /**
+   * Test that selection with a checkbox column works correctly.
+   */
+  public void testCheckboxSelection() {
+    // Initialize the grid
+    SelectionGrid testGrid = getSelectionGrid();
+    testGrid.resize(3, 4);
+    RowFormatter rowFormatter = testGrid.getRowFormatter();
+    CellFormatter cellFormatter = testGrid.getCellFormatter();
+
+    // Verify the column count before setting the checkbox policy
+    assertEquals(4, testGrid.getColumnCount());
+    for (int i = 0; i < 3; i++) {
+      Element tr = rowFormatter.getElement(i);
+      assertEquals(4, tr.getChildNodes().getLength());
+    }
+
+    // Verify the column count after setting the checkbox policy
+    testGrid.setSelectionPolicy(SelectionPolicy.CHECKBOX);
+    assertEquals(4, testGrid.getColumnCount());
+    for (int i = 0; i < 3; i++) {
+      Element tr = rowFormatter.getElement(i);
+      assertEquals(5, tr.getChildNodes().getLength());
+    }
+
+    // Set html and verify
+    testGrid.setText(0, 0, "test");
+    assertEquals("test", testGrid.getText(0, 0));
+    assertEquals("test", cellFormatter.getElement(0, 0).getInnerText());
+    assertEquals("test",
+        DOM.getChild(rowFormatter.getElement(0), 1).getInnerText());
+  }
+
+  /**
    * Test that highlighting a cell correctly sets the style.
    */
   public void testHighlight() {
@@ -315,27 +357,27 @@ public class SelectionGridTest extends Gen2TestBase {
     SelectionGrid testGrid = getSelectionGrid();
     RowFormatter rowFormatter = testGrid.getRowFormatter();
     CellFormatter cellFormatter = testGrid.getCellFormatter();
-  
+
     // Highlight a cell
     assertEquals(rowFormatter.getStyleName(1), "");
     assertEquals(cellFormatter.getStyleName(1, 1), "");
     testGrid.highlightCell(cellFormatter.getElement(1, 1));
     assertEquals(rowFormatter.getStyleName(1), "highlighted");
     assertEquals(cellFormatter.getStyleName(1, 1), "highlighted");
-  
+
     // Highlight a cell in the same row
     testGrid.highlightCell(cellFormatter.getElement(1, 3));
     assertEquals(rowFormatter.getStyleName(1), "highlighted");
     assertEquals(cellFormatter.getStyleName(1, 1), "");
     assertEquals(cellFormatter.getStyleName(1, 3), "highlighted");
-  
+
     // Highlight a cell in a different row
     testGrid.highlightCell(cellFormatter.getElement(2, 4));
     assertEquals(rowFormatter.getStyleName(1), "");
     assertEquals(cellFormatter.getStyleName(1, 3), "");
     assertEquals(rowFormatter.getStyleName(2), "highlighted");
     assertEquals(cellFormatter.getStyleName(2, 4), "highlighted");
-  
+
     // Unhighlight the cell
     testGrid.highlightCell(null);
     assertEquals(rowFormatter.getStyleName(2), "");
