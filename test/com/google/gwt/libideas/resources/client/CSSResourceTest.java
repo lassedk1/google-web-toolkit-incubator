@@ -23,11 +23,9 @@ import com.google.gwt.libideas.client.LibTestBase;
  */
 public class CSSResourceTest extends LibTestBase {
 
-  interface MyCssResource extends CssResource {
+  interface MyCssResource extends CssResource, MyNonCssResource {
     @ClassName("replacement-not-java-ident")
     String nameOverride();
-
-    String replacement();
   }
 
   interface MyCssResourceA extends MyCssResource {
@@ -50,6 +48,12 @@ public class CSSResourceTest extends LibTestBase {
     String multiClassA();
 
     String multiClassB();
+  }
+
+  interface MyNonCssResource {
+    String nameOverride();
+
+    String replacement();
   }
 
   interface Resources extends ImmutableResourceBundle {

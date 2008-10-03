@@ -624,6 +624,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
   private String classPrefix;
   private ResourceContext context;
+  private JClassType cssResourceType;
   private JClassType elementType;
   private boolean enableMerge;
   private boolean prettyOutput;
@@ -651,6 +652,10 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     Map<String, String> replacements = computeReplacementsForType(cssResourceSubtype);
     assert replacements != null;
 
+    /*
+     * getOverridableMethods is used to handle CssResources extending
+     * non-CssResource types. See the discussion in computeReplacementsForType.
+     */
     for (JMethod toImplement : cssResourceSubtype.getOverridableMethods()) {
       String name = toImplement.getName();
       if ("getName".equals(name) || "getText".equals(name)) {
@@ -720,6 +725,10 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
     // Find all of the types that we care about in the type system
     TypeOracle typeOracle = context.getGeneratorContext().getTypeOracle();
+
+    cssResourceType = typeOracle.findType(CssResource.class.getName());
+    assert cssResourceType != null;
+
     elementType = typeOracle.findType(Element.class.getName());
     assert elementType != null;
 
@@ -773,7 +782,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       Map<String, String> replacements = new HashMap<String, String>();
       replacementsByType.put(type, replacements);
 
-      for (JMethod method : type.getMethods()) {
+      for (JMethod method : type.getOverridableMethods()) {
         String name = method.getName();
         if ("getName".equals(name) || "getText".equals(name)) {
           continue;
@@ -817,10 +826,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
    * added to the TypeOracle.
    */
   private SortedSet<JClassType> computeOperableTypes(TreeLogger logger) {
-    TypeOracle oracle = context.getGeneratorContext().getTypeOracle();
-    JClassType cssResourceType = oracle.findType(CssResource.class.getName());
-    assert cssResourceType != null;
-
     logger = logger.branch(TreeLogger.DEBUG,
         "Finding operable CssResource subtypes");
 
@@ -848,7 +853,14 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
    */
   private Map<String, String> computeReplacementsForType(JClassType type) {
     Map<String, String> toReturn = new HashMap<String, String>();
-    if (type == null) {
+
+    /*
+     * We check to see if the type is derived from CssResource so that we can
+     * handle the case of a CssResource type being derived from a
+     * non-CssResource base type. This basically collapses the non-CssResource
+     * base types into their least-derived CssResource subtypes.
+     */
+    if (type == null || !derivedFromCssResource(type)) {
       return toReturn;
     }
 
@@ -863,6 +875,30 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     }
 
     return toReturn;
+  }
+
+  /**
+   * Determine if a type is derived from CssResource.
+   */
+  private boolean derivedFromCssResource(JClassType type) {
+    List<JClassType> superInterfaces = Arrays.asList(type.getImplementedInterfaces());
+    if (superInterfaces.contains(cssResourceType)) {
+      return true;
+    }
+
+    JClassType superClass = type.getSuperclass();
+    if (superClass != null) {
+      if (derivedFromCssResource(superClass)) {
+        return true;
+      }
+    }
+
+    for (JClassType superInterface : superInterfaces) {
+      if (derivedFromCssResource(superInterface)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
