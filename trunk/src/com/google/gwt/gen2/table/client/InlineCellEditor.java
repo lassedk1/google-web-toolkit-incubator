@@ -16,7 +16,7 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.gen2.table.client.overrides.HTMLTable;
+import com.google.gwt.gen2.table.override.client.HTMLTable;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;

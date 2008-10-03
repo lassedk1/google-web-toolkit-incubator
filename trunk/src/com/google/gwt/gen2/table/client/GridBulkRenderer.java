@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.overrides.Grid;
+import com.google.gwt.gen2.table.override.client.Grid;
 
 /**
  * Allows bulk rendering of {@link Grid}s.
@@ -56,10 +56,10 @@ public class GridBulkRenderer<RowType> extends TableBulkRenderer<RowType> {
    * Short term hack to set protected row and columns.
    */
   native void setGridDimensions(Grid table) /*-{
-    var numRows =  table.@com.google.gwt.gen2.table.client.overrides.HTMLTable::getDOMRowCount()();
-    table.@com.google.gwt.gen2.table.client.overrides.Grid::numRows = numRows;
-    table.@com.google.gwt.gen2.table.client.overrides.Grid::numColumns =
-      table.@com.google.gwt.gen2.table.client.overrides.HTMLTable::getDOMCellCount(I)(numRows - 1);
+    var numRows =  table.@com.google.gwt.gen2.table.override.client.HTMLTable::getDOMRowCount()();
+    table.@com.google.gwt.gen2.table.override.client.Grid::numRows = numRows;
+    table.@com.google.gwt.gen2.table.override.client.Grid::numColumns =
+      table.@com.google.gwt.gen2.table.override.client.HTMLTable::getDOMCellCount(I)(numRows - 1);
   }-*/;
 
 }

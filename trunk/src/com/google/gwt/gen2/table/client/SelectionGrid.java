@@ -17,8 +17,6 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
-import com.google.gwt.gen2.table.client.overrides.Grid;
-import com.google.gwt.gen2.table.client.overrides.OverrideDOM;
 import com.google.gwt.gen2.table.event.client.CellHighlightEvent;
 import com.google.gwt.gen2.table.event.client.CellHighlightHandler;
 import com.google.gwt.gen2.table.event.client.CellUnhighlightEvent;
@@ -35,6 +33,8 @@ import com.google.gwt.gen2.table.event.client.RowSelectionHandler;
 import com.google.gwt.gen2.table.event.client.RowUnhighlightEvent;
 import com.google.gwt.gen2.table.event.client.RowUnhighlightHandler;
 import com.google.gwt.gen2.table.event.client.RowHighlightEvent.Row;
+import com.google.gwt.gen2.table.override.client.Grid;
+import com.google.gwt.gen2.table.override.client.OverrideDOM;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
@@ -247,7 +247,7 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
 
   /**
    * Explicitly gets the {@link SelectionGridCellFormatter}. The results of
-   * {@link com.google.gwt.gen2.table.client.overrides.HTMLTable#getCellFormatter()}
+   * {@link com.google.gwt.gen2.table.override.client.HTMLTable#getCellFormatter()}
    * may also be downcast to a {@link SelectionGridCellFormatter}.
    * 
    * @return the FlexTable's cell formatter
@@ -258,7 +258,7 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
 
   /**
    * Explicitly gets the {@link SelectionGridRowFormatter}. The results of
-   * {@link com.google.gwt.gen2.table.client.overrides.HTMLTable#getRowFormatter()}
+   * {@link com.google.gwt.gen2.table.override.client.HTMLTable#getRowFormatter()}
    * may also be downcast to a {@link SelectionGridRowFormatter}.
    * 
    * @return the FlexTable's cell formatter

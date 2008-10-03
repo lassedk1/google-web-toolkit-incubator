@@ -15,9 +15,9 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.overrides.HTMLTable;
-import com.google.gwt.gen2.table.client.overrides.HTMLTable.CellFormatter;
-import com.google.gwt.gen2.table.client.overrides.HTMLTable.RowFormatter;
+import com.google.gwt.gen2.table.override.client.HTMLTable;
+import com.google.gwt.gen2.table.override.client.HTMLTable.CellFormatter;
+import com.google.gwt.gen2.table.override.client.HTMLTable.RowFormatter;
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;

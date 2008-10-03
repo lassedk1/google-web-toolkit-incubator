@@ -19,7 +19,7 @@
 <module>
   <inherits name="com.google.gwt.core.Core"/>
   <inherits name="com.google.gwt.user.UserAgent"/>
-  <inherits name='com.google.gwt.gen2.table.OverrideDOM'/>
+  <inherits name='com.google.gwt.gen2.table.override.Override'/>
 
   <!-- Fall through to this rule -->
   <replace-with class="com.google.gwt.gen2.table.client.FixedWidthGrid.FixedWidthGridImpl">

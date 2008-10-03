@@ -16,7 +16,7 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.base.client.Gen2TestBase;
-import com.google.gwt.gen2.table.client.overrides.FlexTable.FlexCellFormatter;
+import com.google.gwt.gen2.table.override.client.FlexTable.FlexCellFormatter;
 
 /**
  * Tests methods used for all {@link FixedWidthFlexTable} class.
