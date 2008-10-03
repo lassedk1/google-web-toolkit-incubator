@@ -15,8 +15,8 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.AbstractCellEditor.Callback;
-import com.google.gwt.gen2.table.client.AbstractCellEditor.CellEditInfo;
+import com.google.gwt.gen2.table.client.CellEditor.Callback;
+import com.google.gwt.gen2.table.client.CellEditor.CellEditInfo;
 import com.google.gwt.gen2.table.client.TableDefinition.HTMLCellView;
 import com.google.gwt.gen2.table.client.TableDefinition.TableCellView;
 import com.google.gwt.user.client.ui.Widget;
@@ -31,7 +31,7 @@ public abstract class ColumnDefinition<RowType, ColType> {
   /**
    * The cell editor used to edit the contents of this column.
    */
-  private AbstractCellEditor<ColType> cellEditor = null;
+  private CellEditor<ColType> cellEditor = null;
 
   /**
    * A boolean indicating whether or not this column is visible.
@@ -69,12 +69,12 @@ public abstract class ColumnDefinition<RowType, ColType> {
   }
 
   /**
-   * Get the {@link AbstractCellEditor} that should be used to edit the contents
+   * Get the {@link CellEditor} that should be used to edit the contents
    * of cells in this column.
    * 
-   * @return the associated {@link AbstractCellEditor}
+   * @return the associated {@link CellEditor}
    */
-  public AbstractCellEditor<ColType> getCellEditor() {
+  public CellEditor<ColType> getCellEditor() {
     return cellEditor;
   }
 
@@ -136,12 +136,12 @@ public abstract class ColumnDefinition<RowType, ColType> {
   }
 
   /**
-   * Set the {@link AbstractCellEditor} that should be used to edit cells in
+   * Set the {@link CellEditor} that should be used to edit cells in
    * this column.
    * 
-   * @param cellEditor the {@link AbstractCellEditor} to use for this column
+   * @param cellEditor the {@link CellEditor} to use for this column
    */
-  public void setCellEditor(AbstractCellEditor<ColType> cellEditor) {
+  public void setCellEditor(CellEditor<ColType> cellEditor) {
     this.cellEditor = cellEditor;
   }
 

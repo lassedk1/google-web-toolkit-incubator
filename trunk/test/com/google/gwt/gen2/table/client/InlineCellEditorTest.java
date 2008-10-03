@@ -16,7 +16,7 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.base.client.Gen2TestBase;
-import com.google.gwt.gen2.table.client.AbstractCellEditor.CellEditInfo;
+import com.google.gwt.gen2.table.client.CellEditor.CellEditInfo;
 import com.google.gwt.gen2.table.override.client.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
@@ -28,7 +28,7 @@ public class InlineCellEditorTest extends Gen2TestBase {
   /**
    * A callback used for testing.
    */
-  public static class TestCallback<ColType> implements AbstractCellEditor.Callback<ColType> {
+  public static class TestCallback<ColType> implements CellEditor.Callback<ColType> {
     /**
      * Has cancel been called.
      */

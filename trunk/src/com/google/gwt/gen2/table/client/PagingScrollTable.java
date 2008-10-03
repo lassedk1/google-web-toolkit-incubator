@@ -17,7 +17,7 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
-import com.google.gwt.gen2.table.client.AbstractCellEditor.CellEditInfo;
+import com.google.gwt.gen2.table.client.CellEditor.CellEditInfo;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorter;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorterCallback;
 import com.google.gwt.gen2.table.client.TableDefinition.TableCellView;
@@ -134,7 +134,7 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
   /**
    * The callback used with cell editors.
    */
-  private AbstractCellEditor.Callback cellEditorCallback = null;
+  private CellEditor.Callback cellEditorCallback = null;
 
   /**
    * The wrapper around the empty table widget.
@@ -581,9 +581,9 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
   /**
    * @return the cell editor callback
    */
-  protected AbstractCellEditor.Callback getCellEditorCallback() {
+  protected CellEditor.Callback getCellEditorCallback() {
     if (cellEditorCallback == null) {
-      cellEditorCallback = new AbstractCellEditor.Callback() {
+      cellEditorCallback = new CellEditor.Callback() {
         public void onCancel(CellEditInfo cellEditInfo) {
         }
 

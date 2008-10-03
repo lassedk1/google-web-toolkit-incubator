@@ -22,10 +22,10 @@ import com.google.gwt.gen2.table.override.client.HTMLTable;
  * 
  * @param <ColType> the data type of the column
  */
-public interface AbstractCellEditor<ColType> {
+public interface CellEditor<ColType> {
   /**
-   * Callback for {@link AbstractCellEditor}. The callback will be used when
-   * the user finishes editing the cell.
+   * Callback for {@link CellEditor}. The callback will be used when the user
+   * finishes editing the cell.
    * 
    * @param <ColType> the data type of the column
    */

@@ -42,7 +42,7 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
  * @param <ColType> the data type of the column
  */
 public abstract class InlineCellEditor<ColType> extends PopupPanel implements
-    AbstractCellEditor<ColType> {
+    CellEditor<ColType> {
   /**
    * An {@link ImageBundle} that provides images for {@link InlineCellEditor}.
    */
@@ -109,12 +109,12 @@ public abstract class InlineCellEditor<ColType> extends PopupPanel implements
   };
 
   /**
-   * The current {@link AbstractCellEditor.Callback}.
+   * The current {@link CellEditor.Callback}.
    */
   private Callback<ColType> curCallback = null;
 
   /**
-   * The current {@link AbstractCellEditor.CellEditInfo}.
+   * The current {@link CellEditor.CellEditInfo}.
    */
   private CellEditInfo curCellEditInfo = null;
 
