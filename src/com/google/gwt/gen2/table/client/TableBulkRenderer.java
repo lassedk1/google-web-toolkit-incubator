@@ -20,7 +20,7 @@ import com.google.gwt.core.client.Duration;
 import com.google.gwt.gen2.table.client.TableDefinition.HTMLCellView;
 import com.google.gwt.gen2.table.client.TableModelHelper.Request;
 import com.google.gwt.gen2.table.client.TableModelHelper.Response;
-import com.google.gwt.gen2.table.client.overrides.HTMLTable;
+import com.google.gwt.gen2.table.override.client.HTMLTable;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
@@ -534,6 +534,6 @@ public abstract class TableBulkRenderer<RowType> {
    * Short term hack to get protected setBodyElement.
    */
   private native void setBodyElement(HTMLTable table, Element newBody) /*-{
-    table.@com.google.gwt.gen2.table.client.overrides.HTMLTable::setBodyElement(Lcom/google/gwt/user/client/Element;)(newBody);
+    table.@com.google.gwt.gen2.table.override.client.HTMLTable::setBodyElement(Lcom/google/gwt/user/client/Element;)(newBody);
   }-*/;
 }

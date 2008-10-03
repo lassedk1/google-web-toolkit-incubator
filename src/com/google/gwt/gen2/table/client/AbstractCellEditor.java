@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.overrides.HTMLTable;
+import com.google.gwt.gen2.table.override.client.HTMLTable;
 
 /**
  * Cell editors provide a mechanism to edit cells.

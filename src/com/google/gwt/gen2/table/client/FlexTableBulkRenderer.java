@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.overrides.FlexTable;
+import com.google.gwt.gen2.table.override.client.FlexTable;
 
 /**
  * A helper class to enable bulk loading of {@link FlexTable}. Once we have 1.5

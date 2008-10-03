@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.gen2.table.client.overrides;
+package com.google.gwt.gen2.table.override.client;
 
 import com.google.gwt.gen2.widgetbase.client.Gen2Widget;
 import com.google.gwt.user.client.DOM;

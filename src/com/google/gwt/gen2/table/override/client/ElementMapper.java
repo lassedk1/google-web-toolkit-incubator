@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.gwt.gen2.table.client.overrides;
+package com.google.gwt.gen2.table.override.client;
 
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.UIObject;

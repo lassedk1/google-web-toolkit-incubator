@@ -17,8 +17,6 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.base.client.Gen2TestBase;
 import com.google.gwt.gen2.table.client.SelectionGrid.SelectionPolicy;
-import com.google.gwt.gen2.table.client.overrides.HTMLTable.CellFormatter;
-import com.google.gwt.gen2.table.client.overrides.HTMLTable.RowFormatter;
 import com.google.gwt.gen2.table.event.client.CellHighlightEvent;
 import com.google.gwt.gen2.table.event.client.CellHighlightHandler;
 import com.google.gwt.gen2.table.event.client.CellUnhighlightEvent;
@@ -30,6 +28,8 @@ import com.google.gwt.gen2.table.event.client.RowSelectionHandler;
 import com.google.gwt.gen2.table.event.client.RowUnhighlightEvent;
 import com.google.gwt.gen2.table.event.client.RowUnhighlightHandler;
 import com.google.gwt.gen2.table.event.client.RowHighlightEvent.Row;
+import com.google.gwt.gen2.table.override.client.HTMLTable.CellFormatter;
+import com.google.gwt.gen2.table.override.client.HTMLTable.RowFormatter;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 
@@ -189,7 +189,7 @@ public class SelectionGridTest extends Gen2TestBase {
   }
 
   /**
-   * TODO (jlabanca): Check for bug in TreeSet, order is not correct
+   * TODO (jlabanca): Check for bug in TreeSet, order is not correct.
    */
   public void disabledTestSelectionHandlers() {
     // Initialize the grid

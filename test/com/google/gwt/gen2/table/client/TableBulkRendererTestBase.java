@@ -16,8 +16,8 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.base.client.Gen2TestBase;
-import com.google.gwt.gen2.table.client.overrides.HTMLTable;
-import com.google.gwt.gen2.table.client.overrides.HTMLTable.RowFormatter;
+import com.google.gwt.gen2.table.override.client.HTMLTable;
+import com.google.gwt.gen2.table.override.client.HTMLTable.RowFormatter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;

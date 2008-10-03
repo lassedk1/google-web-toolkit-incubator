@@ -18,10 +18,10 @@ package com.google.gwt.gen2.table.client;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortInfo;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
-import com.google.gwt.gen2.table.client.overrides.OverrideDOM;
 import com.google.gwt.gen2.table.event.client.ColumnSortEvent;
 import com.google.gwt.gen2.table.event.client.ColumnSortHandler;
 import com.google.gwt.gen2.table.event.client.HasColumnSortHandlers;
+import com.google.gwt.gen2.table.override.client.OverrideDOM;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 

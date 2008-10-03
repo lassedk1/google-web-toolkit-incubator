@@ -17,7 +17,7 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.table.client.SelectionGrid.SelectionPolicy;
 import com.google.gwt.gen2.table.client.TableDefinition.HTMLCellView;
-import com.google.gwt.gen2.table.client.overrides.Grid;
+import com.google.gwt.gen2.table.override.client.Grid;
 
 import java.util.List;
 
