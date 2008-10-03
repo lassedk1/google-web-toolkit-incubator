@@ -12,7 +12,7 @@ A gen2 widget is the new, and improved, way of writing gwt widgets.  There are t
 == Styles ==
 Each widget needs an inner Css interface, assume the name of your widget is MyGen2Widget
 {{{
-  public static Css interface extends Widget Css
+  public static interface Css extends WidgetCss
 }}}
 
 This is where you'll define any style you want to inject into your widget.
@@ -47,11 +47,12 @@ clickListeners.add(handler);
 You can now use the new specialized events and do something like this:
 
 {{{
-public class MyGen2Widget implements ClickEvent.Source {
+public class MyGen2Widget implements HasClickHandlers {
 
-    public HandlerRegistration addClickHandler(ClickHandler handler) {
-       return super.addHandler(ClickEvent.KEY, handler);
-    }
+  @Override
+  public HandlerRegistration addClickHandler(ClickHandler handler) {
+    return super.addHandler(ClickEvent.KEY, handler);
+  }
 }
 
 }}}
