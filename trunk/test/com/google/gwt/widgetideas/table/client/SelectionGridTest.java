@@ -15,7 +15,10 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.widgetideas.client.WidgetTestBase;
+import com.google.gwt.widgetideas.table.client.SelectionGrid.SelectionPolicy;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.CellFormatter;
 import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.RowFormatter;
 
@@ -120,7 +123,7 @@ public class SelectionGridTest extends WidgetTestBase {
       hoveringRow = -1;
     }
   }
- 
+
   /**
    * Get the selection grid.
    * 
@@ -138,12 +141,18 @@ public class SelectionGridTest extends WidgetTestBase {
     SelectionGrid testGrid = getSelectionGrid();
 
     // Selection policy
-    testGrid.setSelectionPolicy(SelectionGrid.SelectionPolicy.DISABLED);
-    assertEquals(SelectionGrid.SelectionPolicy.DISABLED,
+    testGrid.setSelectionPolicy(SelectionGrid.SelectionPolicy.CHECKBOX);
+    assertEquals(SelectionGrid.SelectionPolicy.CHECKBOX,
         testGrid.getSelectionPolicy());
     testGrid.setSelectionPolicy(SelectionGrid.SelectionPolicy.ONE_ROW);
     assertEquals(SelectionGrid.SelectionPolicy.ONE_ROW,
         testGrid.getSelectionPolicy());
+
+    // Selection enabled
+    testGrid.setSelectionEnabled(false);
+    assertFalse(testGrid.isSelectionEnabled());
+    testGrid.setSelectionEnabled(true);
+    assertTrue(testGrid.isSelectionEnabled());
   }
 
   /**
@@ -204,6 +213,39 @@ public class SelectionGridTest extends WidgetTestBase {
     } catch (IndexOutOfBoundsException e) {
       assertTrue(true);
     }
+  }
+
+  /**
+   * Test that selection with a checkbox column works correctly.
+   */
+  public void testCheckboxSelection() {
+    // Initialize the grid
+    SelectionGrid testGrid = getSelectionGrid();
+    testGrid.resize(3, 4);
+    RowFormatter rowFormatter = testGrid.getRowFormatter();
+    CellFormatter cellFormatter = testGrid.getCellFormatter();
+
+    // Verify the column count before setting the checkbox policy
+    assertEquals(4, testGrid.getColumnCount());
+    for (int i = 0; i < 3; i++) {
+      Element tr = rowFormatter.getElement(i);
+      assertEquals(4, tr.getChildNodes().getLength());
+    }
+
+    // Verify the column count after setting the checkbox policy
+    testGrid.setSelectionPolicy(SelectionPolicy.CHECKBOX);
+    assertEquals(4, testGrid.getColumnCount());
+    for (int i = 0; i < 3; i++) {
+      Element tr = rowFormatter.getElement(i);
+      assertEquals(5, tr.getChildNodes().getLength());
+    }
+
+    // Set html and verify
+    testGrid.setText(0, 0, "test");
+    assertEquals("test", testGrid.getText(0, 0));
+    assertEquals("test", cellFormatter.getElement(0, 0).getInnerText());
+    assertEquals("test",
+        DOM.getChild(rowFormatter.getElement(0), 1).getInnerText());
   }
 
   /**

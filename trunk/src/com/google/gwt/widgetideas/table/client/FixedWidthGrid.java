@@ -397,11 +397,7 @@ public class FixedWidthGrid extends SortableGrid {
    * @return the width of the input element
    */
   protected int getInputColumnWidth() {
-    if (getSelectionPolicy().hasInputColumn()) {
-      return 30;
-    } else {
-      return 0;
-    }
+    return 30;
   }
 
   @Override
