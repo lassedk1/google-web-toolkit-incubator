@@ -86,7 +86,7 @@ public class ColumnDefinitionTest extends Gen2TestBase {
     // setCellEditor
     {
       ColumnDefinition<Object, Object> colDef = new CustomColumnDefinition<Object, Object>();
-      AbstractCellEditor<Object> cellEditor = new AbstractCellEditor<Object>() {
+      CellEditor<Object> cellEditor = new CellEditor<Object>() {
         public void editCell(CellEditInfo cellEditInfo, Object cellValue, Callback<Object> callback) {
         }
       };
