@@ -25,7 +25,7 @@ import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.dev.util.Util;
 import com.google.gwt.libideas.resources.client.TextResource;
 import com.google.gwt.libideas.resources.client.impl.ExternalTextResourcePrototype;
-import com.google.gwt.libideas.resources.ext.Fields;
+import com.google.gwt.libideas.resources.ext.ResourceBundleFields;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
@@ -40,7 +40,6 @@ import java.util.Map;
  */
 public final class ExternalTextResourceGenerator extends
     AbstractResourceGenerator {
-  private ResourceContext context;
   private StringBuffer data;
   private boolean first;
   private String urlExpression;
@@ -53,7 +52,7 @@ public final class ExternalTextResourceGenerator extends
   private String externalTextCacheIdent;
 
   @Override
-  public String createAssignment(TreeLogger logger, JMethod method)
+  public String createAssignment(TreeLogger logger, ResourceContext context, JMethod method)
       throws UnableToCompleteException {
     String name = method.getName();
 
@@ -71,11 +70,11 @@ public final class ExternalTextResourceGenerator extends
   }
 
   @Override
-  public void createFields(TreeLogger logger, Fields fields)
+  public void createFields(TreeLogger logger, ResourceContext context, ResourceBundleFields fields)
       throws UnableToCompleteException {
     data.append(']');
 
-    urlExpression = context.addToOutput(
+    urlExpression = context.deploy(
         context.getResourceBundleType().getQualifiedSourceName().replace('.',
             '_')
             + "_jsonbundle.txt", "text/plain", data.toString().getBytes(), true);
@@ -99,7 +98,6 @@ public final class ExternalTextResourceGenerator extends
   @Override
   public void init(TreeLogger logger, ResourceContext context)
       throws UnableToCompleteException {
-    this.context = context;
     data = new StringBuffer("[\n");
     first = true;
     urlExpression = null;
@@ -109,7 +107,7 @@ public final class ExternalTextResourceGenerator extends
   }
 
   @Override
-  public void prepare(TreeLogger logger, JMethod method)
+  public void prepare(TreeLogger logger, ResourceContext context, JMethod method)
       throws UnableToCompleteException {
 
     URL[] urls = ResourceGeneratorUtil.findResources(logger, context, method);

@@ -24,14 +24,16 @@ import java.net.URL;
 /**
  * Context object for ResourceGenerators. An instance of this type will be
  * provided by the resource generation framework to implementations of
- * ResourceGenerator via {@link ResourceGenerator#init}.
+ * ResourceGenerator via {@link ResourceGenerator#init}. Because this interface
+ * is not intended to be implemented by end-users, the API provided by this
+ * interface may be extended in the future.
  * <p>
- * Depending on the optimizations made by the implementation of the
- * ResourceContext, the resultant URL may or may not be compatible with standard
+ * Depending on the optimizations made by the implementation of {@link #deploy},
+ * the resulting URL may or may not be compatible with standard
  * {@link com.google.gwt.http.client.RequestBuilder} / XMLHttpRequest security
  * semantics. If the resource is intended to be used with XHR, the
  * <code>xhrCompatible</code> paramater should be set to <code>true</code> when
- * invoking {@link #addToOutput(URL, boolean)}.
+ * invoking {@link #deploy}.
  * </p>
  */
 public interface ResourceContext {
@@ -51,7 +53,7 @@ public interface ResourceContext {
    * @return a Java expression which will evaluate to the location of the
    *         provided resource at runtime.
    */
-  String addToOutput(String suggestedFileName, String mimeType, byte[] data,
+  String deploy(String suggestedFileName, String mimeType, byte[] data,
       boolean xhrCompatible) throws UnableToCompleteException;
 
   /**
@@ -66,7 +68,7 @@ public interface ResourceContext {
    * @return a Java expression which will evaluate to the location of the
    *         provided resource at runtime.
    */
-  String addToOutput(URL resource, boolean xhrCompatible)
+  String deploy(URL resource, boolean xhrCompatible)
       throws UnableToCompleteException;
 
   /**

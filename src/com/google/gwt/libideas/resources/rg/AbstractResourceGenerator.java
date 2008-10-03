@@ -18,9 +18,10 @@ package com.google.gwt.libideas.resources.rg;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
-import com.google.gwt.libideas.resources.ext.Fields;
+import com.google.gwt.libideas.resources.ext.ResourceBundleFields;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGenerator;
+import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 
 /**
  * A base class providing common methods for ResourceGenerator implementations.
@@ -28,29 +29,34 @@ import com.google.gwt.libideas.resources.ext.ResourceGenerator;
  * @see ResourceGeneratorUtil
  */
 public abstract class AbstractResourceGenerator implements ResourceGenerator {
-  public abstract String createAssignment(TreeLogger logger, JMethod method)
-      throws UnableToCompleteException;
+  public abstract String createAssignment(TreeLogger logger,
+      ResourceContext context, JMethod method) throws UnableToCompleteException;
 
   /**
    * A no-op implementation.
    */
-  public void createFields(TreeLogger logger, Fields fields)
+  public void createFields(TreeLogger logger, ResourceContext context,
+      ResourceBundleFields fields) throws UnableToCompleteException {
+  }
+
+  /**
+   * A no-op implementation.
+   */
+  public void finish(TreeLogger logger, ResourceContext context)
       throws UnableToCompleteException {
   }
 
   /**
    * A no-op implementation.
    */
-  public void finish(TreeLogger logger) throws UnableToCompleteException {
+  public void init(TreeLogger logger, ResourceContext context)
+      throws UnableToCompleteException {
   }
-
-  public abstract void init(TreeLogger logger, ResourceContext context)
-      throws UnableToCompleteException;
 
   /**
    * A no-op implementation.
    */
-  public void prepare(TreeLogger logger, JMethod method)
+  public void prepare(TreeLogger logger, ResourceContext context, JMethod method)
       throws UnableToCompleteException {
   }
 }

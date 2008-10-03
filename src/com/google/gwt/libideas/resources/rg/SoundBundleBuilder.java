@@ -196,7 +196,7 @@ class SoundBundleBuilder {
     }
 
     // Write the completed sound bundle into the output
-    return context.addToOutput(
+    return context.deploy(
         context.getResourceBundleType().getQualifiedSourceName()
             + ".SoundBundle.swf", "application/x-shockwave-flash",
         out.toByteArray(), true);

@@ -37,7 +37,7 @@ class InlineResourceContext extends StaticResourceContext {
   }
 
   @Override
-  public String addToOutput(String suggestedFileName, String mimeType,
+  public String deploy(String suggestedFileName, String mimeType,
       byte[] data, boolean xhrCompatible) throws UnableToCompleteException {
     TreeLogger logger = getLogger();
 
@@ -51,7 +51,7 @@ class InlineResourceContext extends StaticResourceContext {
 
       return "\"data:" + mimeType + ";base64," + base64Contents + "\"";
     } else {
-      return super.addToOutput(suggestedFileName, mimeType, data, true);
+      return super.deploy(suggestedFileName, mimeType, data, true);
     }
   }
 

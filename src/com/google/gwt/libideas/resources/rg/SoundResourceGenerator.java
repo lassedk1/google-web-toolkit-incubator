@@ -23,7 +23,7 @@ import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.libideas.resources.client.impl.SoundResourcePrototype;
-import com.google.gwt.libideas.resources.ext.Fields;
+import com.google.gwt.libideas.resources.ext.ResourceBundleFields;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
@@ -36,18 +36,16 @@ import java.net.URL;
  * Creates implementations of SoundResources.
  */
 public class SoundResourceGenerator extends AbstractResourceGenerator {
-  private ResourceContext context;
   private SoundBundleBuilder builder;
   private boolean soundEnabled;
-
   private String flashElementIdent;
 
   /**
    * Create instances of {@link SoundResourcePrototype}.
    */
   @Override
-  public String createAssignment(TreeLogger logger, JMethod method)
-      throws UnableToCompleteException {
+  public String createAssignment(TreeLogger logger, ResourceContext context,
+      JMethod method) throws UnableToCompleteException {
     SourceWriter sw = new StringSourceWriter();
 
     sw.print("new ");
@@ -70,8 +68,8 @@ public class SoundResourceGenerator extends AbstractResourceGenerator {
    * Save the plugins's Element in a class field.
    */
   @Override
-  public void createFields(TreeLogger logger, Fields fields)
-      throws UnableToCompleteException {
+  public void createFields(TreeLogger logger, ResourceContext context,
+      ResourceBundleFields fields) throws UnableToCompleteException {
 
     String urlExpression;
     if (soundEnabled) {
@@ -92,7 +90,6 @@ public class SoundResourceGenerator extends AbstractResourceGenerator {
   @Override
   public void init(TreeLogger logger, ResourceContext context)
       throws UnableToCompleteException {
-    this.context = context;
     builder = new SoundBundleBuilder();
 
     // Determine if sound is enabled in the build context
@@ -110,7 +107,7 @@ public class SoundResourceGenerator extends AbstractResourceGenerator {
    * Get the resource attached to a method and assimilate it.
    */
   @Override
-  public void prepare(TreeLogger logger, JMethod method)
+  public void prepare(TreeLogger logger, ResourceContext context, JMethod method)
       throws UnableToCompleteException {
     if (!soundEnabled) {
       return;
