@@ -403,7 +403,7 @@ public class PagingScrollTable<R> extends ScrollTable implements
     if (currentPage != oldPage || forced) {
       // Deselect rows when switching pages
       FixedWidthGrid dataTable = getDataTable();
-      dataTable.deselectRows();
+      dataTable.deselectAllRows();
 
       // Fire listeners
       if (rowPagingListeners != null) {
@@ -716,6 +716,7 @@ public class PagingScrollTable<R> extends ScrollTable implements
    */
   protected void setData(int firstRow, Iterator<Iterator<Object>> rows,
       List<R> rowValues) {
+    getDataTable().deselectAllRows();
     this.rowValues = rowValues;
     if (rows != null && rows.hasNext()) {
       setEmptyTableWidgetVisible(false);

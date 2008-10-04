@@ -214,7 +214,7 @@ public class SelectionGridTest extends Gen2TestBase {
     rsh.assertNewRows(new int[] {2, 4});
 
     // Deselect all rows
-    testGrid.deselectRows();
+    testGrid.deselectAllRows();
     rsh.assertDeselectedRows(new int[] {2, 4});
     rsh.assertSelectedRows(new int[] {});
     rsh.assertOldRows(new int[] {2, 4});
@@ -260,7 +260,7 @@ public class SelectionGridTest extends Gen2TestBase {
     SelectionGrid testGrid = getSelectionGrid();
 
     // Selection with deselect
-    testGrid.deselectRows();
+    testGrid.deselectAllRows();
     testGrid.selectRow(3, true);
     assertTrue(testGrid.isRowSelected(3));
     assertSelected(testGrid, new int[] {3});
@@ -272,7 +272,7 @@ public class SelectionGridTest extends Gen2TestBase {
     assertSelected(testGrid, new int[] {7});
 
     // Selection without deselect
-    testGrid.deselectRows();
+    testGrid.deselectAllRows();
     testGrid.selectRow(3, false);
     assertSelected(testGrid, new int[] {3});
     testGrid.selectRow(5, false);
@@ -281,24 +281,24 @@ public class SelectionGridTest extends Gen2TestBase {
     assertSelected(testGrid, new int[] {3, 5, 7});
 
     // Deselection
-    testGrid.deselectRows();
+    testGrid.deselectAllRows();
     testGrid.selectRow(3, false);
     assertTrue(testGrid.isRowSelected(3));
     testGrid.deselectRow(3);
     assertFalse(testGrid.isRowSelected(3));
 
     // Select all rows
-    testGrid.selectRows();
+    testGrid.selectAllRows();
     assertEquals(testGrid.getRowCount(), testGrid.getSelectedRows().size());
 
     // Deselection of all rows
-    testGrid.deselectRows();
+    testGrid.deselectAllRows();
     assertEquals(0, testGrid.getSelectedRows().size());
     testGrid.selectRow(3, false);
     testGrid.selectRow(4, false);
     testGrid.selectRow(5, false);
     assertEquals(3, testGrid.getSelectedRows().size());
-    testGrid.deselectRows();
+    testGrid.deselectAllRows();
     assertEquals(0, testGrid.getSelectedRows().size());
 
     // Selection Out of bounds
@@ -438,7 +438,7 @@ public class SelectionGridTest extends Gen2TestBase {
     SelectionGrid testGrid = getSelectionGrid();
 
     // Select rows using ctrl
-    testGrid.deselectRows();
+    testGrid.deselectAllRows();
     testGrid.selectRow(4, false, false);
     testGrid.selectRow(8, true, false);
     assertSelected(testGrid, new int[] {4, 8});
@@ -448,7 +448,7 @@ public class SelectionGridTest extends Gen2TestBase {
     assertSelected(testGrid, new int[] {4, 8});
 
     // Select rows using shift
-    testGrid.deselectRows();
+    testGrid.deselectAllRows();
     testGrid.selectRow(2, false, false);
     testGrid.selectRow(4, false, true);
     assertSelected(testGrid, new int[] {2, 3, 4});
@@ -458,7 +458,7 @@ public class SelectionGridTest extends Gen2TestBase {
     assertSelected(testGrid, new int[] {0, 1, 2, 3, 4, 5, 6});
 
     // Select rows using ctrl + shift
-    testGrid.deselectRows();
+    testGrid.deselectAllRows();
     testGrid.selectRow(2, false, false);
     testGrid.selectRow(4, false, true);
     assertSelected(testGrid, new int[] {2, 3, 4});

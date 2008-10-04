@@ -21,6 +21,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.widgetideas.table.client.overrides.Grid;
 import com.google.gwt.widgetideas.table.client.overrides.OverrideDOM;
+import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.RowFormatter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -188,6 +189,30 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   }
 
   /**
+   * Deselect all selected rows in the data table.
+   */
+  public void deselectAllRows() {
+    // Deselect all rows
+    boolean hasInputColumn = selectionPolicy.hasInputColumn();
+    for (Map.Entry<Integer, Element> entry : selectedRows.entrySet()) {
+      Element rowElem = entry.getValue();
+      setStyleName(rowElem, "selected", false);
+      if (hasInputColumn) {
+        setInputSelected(getSelectionPolicy(),
+            (Element) rowElem.getFirstChildElement(), false);
+      }
+    }
+  
+    // Clear out the rows
+    selectedRows.clear();
+  
+    // Fire grid listeners
+    if (tableSelectionListeners != null) {
+      tableSelectionListeners.fireAllRowsDeselected(this);
+    }
+  }
+
+  /**
    * Deselect a row in the grid. This method is safe to call even if the row is
    * not selected, or doesn't exist (out of bounds).
    * 
@@ -204,30 +229,6 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
       if (tableSelectionListeners != null) {
         tableSelectionListeners.fireRowDeselected(this, row);
       }
-    }
-  }
-
-  /**
-   * Deselect all selected rows in the data table.
-   */
-  public void deselectRows() {
-    // Deselect all rows
-    boolean hasInputColumn = selectionPolicy.hasInputColumn();
-    for (Map.Entry<Integer, Element> entry : selectedRows.entrySet()) {
-      Element rowElem = entry.getValue();
-      setStyleName(rowElem, "selected", false);
-      if (hasInputColumn) {
-        setInputSelected(getSelectionPolicy(),
-            (Element) rowElem.getFirstChildElement(), false);
-      }
-    }
-
-    // Clear out the rows
-    selectedRows.clear();
-
-    // Fire grid listeners
-    if (tableSelectionListeners != null) {
-      tableSelectionListeners.fireAllRowsDeselected(this);
     }
   }
 
@@ -269,7 +270,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
 
   @Override
   public int insertRow(int beforeRow) {
-    deselectRows();
+    deselectAllRows();
     return super.insertRow(beforeRow);
   }
 
@@ -391,7 +392,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
 
   @Override
   public void removeRow(int row) {
-    deselectRows();
+    deselectAllRows();
     super.removeRow(row);
   }
 
@@ -403,6 +404,18 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   public void removeTableSelectionListener(TableSelectionListener listener) {
     if (tableSelectionListeners != null) {
       tableSelectionListeners.remove(listener);
+    }
+  }
+
+  /**
+   * Select all rows in the table.
+   */
+  public void selectAllRows() {
+    // Select all rows
+    RowFormatter rowFormatter = getRowFormatter();
+    int rowCount = getRowCount();
+    for (int i = 0; i < rowCount; i++) {
+      selectRow(i, rowFormatter.getElement(i), false, true);
     }
   }
 
@@ -433,7 +446,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
 
     // Deselect all rows
     if (!ctrlKey) {
-      deselectRows();
+      deselectAllRows();
     }
 
     boolean isSelected = selectedRows.containsKey(new Integer(row));
@@ -470,18 +483,6 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
   }
 
   /**
-   * Select all rows in the table.
-   */
-  public void selectRows() {
-    // Select all rows
-    RowFormatter rowFormatter = getRowFormatter();
-    int rowCount = getRowCount();
-    for (int i = 0; i < rowCount; i++) {
-      selectRow(i, rowFormatter.getElement(i), false, true);
-    }
-  }
-
-  /**
    * Enable or disable row selection.
    * 
    * @param enabled true to enable, false to disable
@@ -510,7 +511,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
     if (this.selectionPolicy == selectionPolicy) {
       return;
     }
-    deselectRows();
+    deselectAllRows();
 
     // Update the input column
     if (selectionPolicy.hasInputColumn()) {
@@ -683,7 +684,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
 
     // Deselect current rows
     if (unselectAll) {
-      deselectRows();
+      deselectAllRows();
     }
 
     // Select the new row
