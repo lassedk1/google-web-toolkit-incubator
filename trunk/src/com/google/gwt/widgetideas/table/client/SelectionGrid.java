@@ -202,10 +202,10 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
             (Element) rowElem.getFirstChildElement(), false);
       }
     }
-  
+
     // Clear out the rows
     selectedRows.clear();
-  
+
     // Fire grid listeners
     if (tableSelectionListeners != null) {
       tableSelectionListeners.fireAllRowsDeselected(this);
@@ -415,7 +415,9 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
     RowFormatter rowFormatter = getRowFormatter();
     int rowCount = getRowCount();
     for (int i = 0; i < rowCount; i++) {
-      selectRow(i, rowFormatter.getElement(i), false, true);
+      if (!selectedRows.containsKey(i)) {
+        selectRow(i, rowFormatter.getElement(i), false, true);
+      }
     }
   }
 

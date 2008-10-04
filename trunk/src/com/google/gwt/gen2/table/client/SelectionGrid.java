@@ -410,14 +410,16 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
   public void selectAllRows() {
     // Get the currently selected rows
     Set<Row> oldRowSet = getSelectedRowsSet();
-  
+
     // Select all rows
     RowFormatter rowFormatter = getRowFormatter();
     int rowCount = getRowCount();
     for (int i = 0; i < rowCount; i++) {
-      selectRow(i, rowFormatter.getElement(i), false, false);
+      if (!selectedRows.containsKey(i)) {
+        selectRow(i, rowFormatter.getElement(i), false, false);
+      }
     }
-  
+
     // Trigger the event
     fireRowSelectionEvent(oldRowSet);
   }
