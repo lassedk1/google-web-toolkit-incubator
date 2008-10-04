@@ -35,6 +35,7 @@ import com.google.gwt.gen2.table.event.client.RowUnhighlightHandler;
 import com.google.gwt.gen2.table.event.client.TableEvent.Row;
 import com.google.gwt.gen2.table.override.client.Grid;
 import com.google.gwt.gen2.table.override.client.OverrideDOM;
+import com.google.gwt.gen2.table.override.client.HTMLTable.RowFormatter;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
@@ -222,6 +223,13 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
   }
 
   /**
+   * Deselect all selected rows in the data table.
+   */
+  public void deselectAllRows() {
+    deselectRows(true);
+  }
+
+  /**
    * Deselect a row in the grid. This method is safe to call even if the row is
    * not selected, or doesn't exist (out of bounds).
    * 
@@ -229,13 +237,6 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
    */
   public void deselectRow(int row) {
     deselectRow(row, true);
-  }
-
-  /**
-   * Deselect all selected rows in the data table.
-   */
-  public void deselectRows() {
-    deselectRows(true);
   }
 
   /**
@@ -276,7 +277,7 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
 
   @Override
   public int insertRow(int beforeRow) {
-    deselectRows();
+    deselectAllRows();
     return super.insertRow(beforeRow);
   }
 
@@ -399,8 +400,26 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
 
   @Override
   public void removeRow(int row) {
-    deselectRows();
+    deselectAllRows();
     super.removeRow(row);
+  }
+
+  /**
+   * Select all rows in the table.
+   */
+  public void selectAllRows() {
+    // Get the currently selected rows
+    Set<Row> oldRowSet = getSelectedRowsSet();
+  
+    // Select all rows
+    RowFormatter rowFormatter = getRowFormatter();
+    int rowCount = getRowCount();
+    for (int i = 0; i < rowCount; i++) {
+      selectRow(i, rowFormatter.getElement(i), false, false);
+    }
+  
+    // Trigger the event
+    fireRowSelectionEvent(oldRowSet);
   }
 
   /**
@@ -469,24 +488,6 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
   }
 
   /**
-   * Select all rows in the table.
-   */
-  public void selectRows() {
-    // Get the currently selected rows
-    Set<Row> oldRowSet = getSelectedRowsSet();
-
-    // Select all rows
-    RowFormatter rowFormatter = getRowFormatter();
-    int rowCount = getRowCount();
-    for (int i = 0; i < rowCount; i++) {
-      selectRow(i, rowFormatter.getElement(i), false, false);
-    }
-
-    // Trigger the event
-    fireRowSelectionEvent(oldRowSet);
-  }
-
-  /**
    * Enable or disable row selection.
    * 
    * @param enabled true to enable, false to disable
@@ -515,7 +516,7 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
     if (this.selectionPolicy == selectionPolicy) {
       return;
     }
-    deselectRows();
+    deselectAllRows();
 
     // Update the input column
     if (selectionPolicy.hasInputColumn()) {

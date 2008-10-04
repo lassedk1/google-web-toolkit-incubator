@@ -252,9 +252,9 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     selectAll.addClickListener(new ClickListener() {
       public void onClick(Widget sender) {
         if (selectAll.isChecked()) {
-          dataTable.selectRows();
+          dataTable.selectAllRows();
         } else {
-          dataTable.deselectRows();
+          dataTable.deselectAllRows();
         }
       }
     });

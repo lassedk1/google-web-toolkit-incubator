@@ -91,7 +91,7 @@ public class FixedWidthGridTest extends SortableGridTest {
     FixedWidthGrid testGrid = getFixedWidthGrid();
 
     // Row removal with selection
-    testGrid.deselectRows();
+    testGrid.deselectAllRows();
     testGrid.selectRow(2, false);
     testGrid.selectRow(4, false);
     testGrid.selectRow(6, false);
@@ -100,7 +100,7 @@ public class FixedWidthGridTest extends SortableGridTest {
     assertEquals(0, testGrid.getSelectedRows().size());
 
     // Row insertion with selection
-    testGrid.deselectRows();
+    testGrid.deselectAllRows();
     testGrid.selectRow(2, false);
     testGrid.selectRow(4, false);
     testGrid.selectRow(6, false);
