@@ -22,7 +22,7 @@ import com.google.gwt.gen2.table.client.TableDefinition.TableCellView;
 /**
  * Tests for {@link ColumnDefinition}.
  */
-public class ColumnDefinitionTest extends Gen2TestBase {
+public class AbstractColumnDefinitionTest extends Gen2TestBase {
   /**
    * A custom {@link ColumnDefinition} used for testing.
    * 
@@ -30,7 +30,7 @@ public class ColumnDefinitionTest extends Gen2TestBase {
    * @param <ColType> the data type of the column
    */
   public static class CustomColumnDefinition<RowType, ColType> extends
-      ColumnDefinition<RowType, ColType> {
+      AbstractColumnDefinition<RowType, ColType> {
     /**
      * The last row value that was rendered.
      */
@@ -52,13 +52,13 @@ public class ColumnDefinitionTest extends Gen2TestBase {
     }
 
     @Override
-    public void renderCellValue(RowType rowValue, ColType cellValue, HTMLCellView<RowType> view) {
+    public void renderRowValue(RowType rowValue, HTMLCellView<RowType> view) {
       lastRowValue = rowValue;
       view.addHTML("cell " + view.getRowIndex() + ":" + view.getCellIndex());
     }
 
     @Override
-    public void renderCellValue(RowType rowValue, ColType cellValue, TableCellView<RowType> view) {
+    public void renderRowValue(RowType rowValue, TableCellView<RowType> view) {
       lastRowValue = rowValue;
       view.setHTML("cell " + view.getRowIndex() + ":" + view.getCellIndex());
     }
@@ -73,21 +73,12 @@ public class ColumnDefinitionTest extends Gen2TestBase {
    * Test the accessors.
    */
   public void testAccessors() {
-    // setVisible
-    {
-      ColumnDefinition<Object, Object> colDef = new CustomColumnDefinition<Object, Object>();
-      assertTrue(colDef.isVisible());
-      colDef.setVisible(false);
-      assertFalse(colDef.isVisible());
-      colDef.setVisible(true);
-      assertTrue(colDef.isVisible());
-    }
-
     // setCellEditor
     {
-      ColumnDefinition<Object, Object> colDef = new CustomColumnDefinition<Object, Object>();
+      AbstractColumnDefinition<Object, Object> colDef = new CustomColumnDefinition<Object, Object>();
       CellEditor<Object> cellEditor = new CellEditor<Object>() {
-        public void editCell(CellEditInfo cellEditInfo, Object cellValue, Callback<Object> callback) {
+        public void editCell(CellEditInfo cellEditInfo, Object cellValue,
+            Callback<Object> callback) {
         }
       };
       assertNull(colDef.getCellEditor());

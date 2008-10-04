@@ -17,8 +17,9 @@ package com.google.gwt.gen2.demo.scrolltable.client;
 
 import com.google.gwt.gen2.demo.scrolltable.shared.Student;
 import com.google.gwt.gen2.demo.scrolltable.shared.StudentGenerator;
+import com.google.gwt.gen2.table.client.AbstractColumnDefinition;
 import com.google.gwt.gen2.table.client.CachedTableModel;
-import com.google.gwt.gen2.table.client.ColumnDefinition;
+import com.google.gwt.gen2.table.client.DefaultTableDefinition;
 import com.google.gwt.gen2.table.client.FixedWidthGrid;
 import com.google.gwt.gen2.table.client.FixedWidthGridBulkRenderer;
 import com.google.gwt.gen2.table.client.ListCellEditor;
@@ -42,32 +43,30 @@ import com.google.gwt.user.client.ui.TabPanel;
  */
 public class PagingScrollTableDemo extends ScrollTableDemo {
   /**
-   * A {@link ColumnDefinition} applied to {@link Student} row values.
+   * An {@link AbstractColumnDefinition} applied to {@link Student} row values.
    * 
    * @param <ColType> the data type of the column
    */
   private abstract static class StudentColumnDefinition<ColType> extends
-      ColumnDefinition<Student, ColType> {
+      AbstractColumnDefinition<Student, ColType> {
   }
 
   /**
-   * A {@link ColumnDefinition} applied to Integer columns in {@link Student}
-   * row values.
+   * An {@link AbstractColumnDefinition} applied to Integer columns in
+   * {@link Student} row values.
    */
   private abstract static class IntegerColumnDefinition extends
       StudentColumnDefinition<Integer> {
     @Override
-    public void renderCellValue(Student rowValue, Integer cellValue,
-        HTMLCellView<Student> view) {
+    public void renderRowValue(Student rowValue, HTMLCellView<Student> view) {
       view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-      super.renderCellValue(rowValue, cellValue, view);
+      super.renderRowValue(rowValue, view);
     }
 
     @Override
-    public void renderCellValue(Student rowValue, Integer cellValue,
-        TableCellView<Student> view) {
+    public void renderRowValue(Student rowValue, TableCellView<Student> view) {
       view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-      super.renderCellValue(rowValue, cellValue, view);
+      super.renderRowValue(rowValue, view);
     }
   }
 
@@ -176,10 +175,10 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   }
 
   /**
-   * @return the {@link TableDefinition} with all {@link ColumnDefinition}.
+   * @return the {@link TableDefinition} with all ColumnDefinitions defined.
    */
   private TableDefinition<Student> createTableCellRenderer() {
-    TableDefinition<Student> tcr = new TableDefinition<Student>();
+    DefaultTableDefinition<Student> tcr = new DefaultTableDefinition<Student>();
     // First name
     tcr.addColumnDefinition(new StudentColumnDefinition<String>() {
       @Override
@@ -229,9 +228,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         }
 
         @Override
-        public void renderCellValue(Student rowValue, Boolean cellValue,
-            HTMLCellView<Student> view) {
-          if (cellValue) {
+        public void renderRowValue(Student rowValue, HTMLCellView<Student> view) {
+          if (rowValue.isMale()) {
             view.addHTML("male");
           } else {
             view.addHTML("female");
@@ -239,9 +237,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         }
 
         @Override
-        public void renderCellValue(Student rowValue, Boolean cellValue,
-            TableCellView<Student> view) {
-          if (cellValue) {
+        public void renderRowValue(Student rowValue, TableCellView<Student> view) {
+          if (rowValue.isMale()) {
             view.setHTML("male");
           } else {
             view.setHTML("female");
@@ -297,17 +294,17 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         }
 
         @Override
-        public void renderCellValue(Student rowValue, String cellValue,
-            HTMLCellView<Student> view) {
-          view.setStyleAttribute("color", cellValue);
-          view.addHTML(cellValue);
+        public void renderRowValue(Student rowValue, HTMLCellView<Student> view) {
+          String color = rowValue.getFavoriteColor();
+          view.setStyleAttribute("color", color);
+          view.addHTML(color);
         }
 
         @Override
-        public void renderCellValue(Student rowValue, String cellValue,
-            TableCellView<Student> view) {
-          view.setStyleAttribute("color", cellValue);
-          view.setHTML(cellValue);
+        public void renderRowValue(Student rowValue, TableCellView<Student> view) {
+          String color = rowValue.getFavoriteColor();
+          view.setStyleAttribute("color", color);
+          view.setHTML(color);
         }
 
         @Override
@@ -414,31 +411,31 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       }
 
       @Override
-      public void renderCellValue(Student rowValue, Double cellValue,
-          HTMLCellView<Student> view) {
+      public void renderRowValue(Student rowValue, HTMLCellView<Student> view) {
         view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        if (cellValue < 2) {
+        double gpa = rowValue.getGpa();
+        if (gpa < 2) {
           view.setStyleName("badGPA");
-        } else if (cellValue < 3) {
+        } else if (gpa < 3) {
           view.setStyleName("goodGPA");
         } else {
           view.setStyleName("greatGPA");
         }
-        view.addHTML(gpaToString(cellValue));
+        view.addHTML(gpaToString(gpa));
       }
 
       @Override
-      public void renderCellValue(Student rowValue, Double cellValue,
-          TableCellView<Student> view) {
+      public void renderRowValue(Student rowValue, TableCellView<Student> view) {
         view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        if (cellValue < 2) {
+        double gpa = rowValue.getGpa();
+        if (gpa < 2) {
           view.setStyleName("badGPA");
-        } else if (cellValue < 3) {
+        } else if (gpa < 3) {
           view.setStyleName("goodGPA");
         } else {
           view.setStyleName("greatGPA");
         }
-        view.setHTML(gpaToString(cellValue));
+        view.setHTML(gpaToString(gpa));
       }
 
       @Override

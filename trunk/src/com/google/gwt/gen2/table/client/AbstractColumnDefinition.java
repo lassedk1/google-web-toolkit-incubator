@@ -27,16 +27,12 @@ import com.google.gwt.user.client.ui.Widget;
  * @param <RowType> the type of the row value
  * @param <ColType> the data type of the column
  */
-public abstract class ColumnDefinition<RowType, ColType> {
+public abstract class AbstractColumnDefinition<RowType, ColType> implements
+    ColumnDefinition<RowType, ColType> {
   /**
    * The cell editor used to edit the contents of this column.
    */
   private CellEditor<ColType> cellEditor = null;
-
-  /**
-   * A boolean indicating whether or not this column is visible.
-   */
-  private boolean visible = true;
 
   /**
    * Edit a cell using the cell editor, if one exists.
@@ -69,8 +65,8 @@ public abstract class ColumnDefinition<RowType, ColType> {
   }
 
   /**
-   * Get the {@link CellEditor} that should be used to edit the contents
-   * of cells in this column.
+   * Get the {@link CellEditor} that should be used to edit the contents of
+   * cells in this column.
    * 
    * @return the associated {@link CellEditor}
    */
@@ -84,27 +80,20 @@ public abstract class ColumnDefinition<RowType, ColType> {
   public abstract ColType getCellValue(RowType rowValue);
 
   /**
-   * @return true if this column is visible, false if hidden
-   */
-  public boolean isVisible() {
-    return visible;
-  }
-
-  /**
-   * Render the cell as an html string. By default this method renders
-   * {@link Widget Widgets} using {@link HTMLCellView#setWidget(Widget)}, and
-   * renders all other types using {@link HTMLCellView#addHTML(String)},
-   * passing in result cellValue.toString().
+   * Render the cell as an html string. HTML string should be appended to the
+   * view by calling view.addHTML(String).
    * 
    * @param rowValue the object associated with the row
-   * @param cellValue the object associated with the cell
    * @param view the view to append the string to
    */
-  public void renderCellValue(RowType rowValue, ColType cellValue,
-      HTMLCellView<RowType> view) {
+  public void renderRowValue(RowType rowValue, HTMLCellView<RowType> view) {
+    // Get the cell value
+    ColType cellValue = getCellValue(rowValue);
     if (cellValue == null) {
       return;
     }
+
+    // Set the value in the view
     if (cellValue instanceof Widget) {
       view.setWidget((Widget) cellValue);
     } else {
@@ -114,20 +103,19 @@ public abstract class ColumnDefinition<RowType, ColType> {
 
   /**
    * Render the cell as a {@link com.google.gwt.user.client.ui.Widget} or set
-   * the contents of the cell. By default this method renders
-   * {@link Widget Widgets} using {@link TableCellView#setWidget(Widget)}, and
-   * renders all other types using {@link TableCellView#setHTML(String)},
-   * passing in result cellValue.toString().
+   * the contents of the cell.
    * 
    * @param rowValue the object associated with the row
-   * @param cellValue the object associated with the cell
    * @param view the view used to set the cell contents
    */
-  public void renderCellValue(RowType rowValue, ColType cellValue,
-      TableCellView<RowType> view) {
+  public void renderRowValue(RowType rowValue, TableCellView<RowType> view) {
+    // Get the cell value
+    ColType cellValue = getCellValue(rowValue);
     if (cellValue == null) {
       return;
     }
+
+    // Set the value in the view
     if (cellValue instanceof Widget) {
       view.setWidget((Widget) cellValue);
     } else {
@@ -136,8 +124,8 @@ public abstract class ColumnDefinition<RowType, ColType> {
   }
 
   /**
-   * Set the {@link CellEditor} that should be used to edit cells in
-   * this column.
+   * Set the {@link CellEditor} that should be used to edit cells in this
+   * column.
    * 
    * @param cellEditor the {@link CellEditor} to use for this column
    */
@@ -152,35 +140,4 @@ public abstract class ColumnDefinition<RowType, ColType> {
    * @param cellValue the new value of the cell
    */
   public abstract void setCellValue(RowType rowValue, ColType cellValue);
-
-  /**
-   * Set whether or not this column is visible.
-   * 
-   * @param visible true to make column visible, false to make invisible
-   */
-  public void setVisible(boolean visible) {
-    this.visible = visible;
-  }
-
-  /**
-   * Render the cell as an html string. HTML string should be appended to the
-   * view by calling view.addHTML(String).
-   * 
-   * @param rowValue the object associated with the row
-   * @param view the view to append the string to
-   */
-  protected void renderRowValue(RowType rowValue, HTMLCellView<RowType> view) {
-    renderCellValue(rowValue, getCellValue(rowValue), view);
-  }
-
-  /**
-   * Render the cell as a {@link com.google.gwt.user.client.ui.Widget} or set
-   * the contents of the cell.
-   * 
-   * @param rowValue the object associated with the row
-   * @param view the view used to set the cell contents
-   */
-  protected void renderRowValue(RowType rowValue, TableCellView<RowType> view) {
-    renderCellValue(rowValue, getCellValue(rowValue), view);
-  }
 }
