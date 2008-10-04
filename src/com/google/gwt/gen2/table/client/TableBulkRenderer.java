@@ -192,10 +192,11 @@ public abstract class TableBulkRenderer<RowType> {
     }
 
     @Override
-    protected void renderRowsImpl(final Iterator<RowType> rowValues,
+    protected void renderRowsImpl(int startRowIndex,
+        final Iterator<RowType> rowValues,
         final List<ColumnDefinition<RowType, ?>> visibleColumns) {
       // Reset the row index
-      setRowIndex(0);
+      setRowIndex(startRowIndex);
       final int myStamp = ++requestStamp;
 
       // Use an incremental command to render rows in increments
@@ -483,7 +484,7 @@ public abstract class TableBulkRenderer<RowType> {
    */
   protected void renderRows(final Iterator<RowType> rows,
       final RenderingOptions options) {
-    getTableDefinition().renderRows(rows, createCellView(options));
+    getTableDefinition().renderRows(0, rows, createCellView(options));
   }
 
   /**

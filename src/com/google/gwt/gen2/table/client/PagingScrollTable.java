@@ -702,7 +702,7 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
       getDataTable().resize(rowCount, colCount);
 
       // Render the rows
-      tableDefinition.renderRows(rowValues.iterator(), tableCellView);
+      tableDefinition.renderRows(0, rowValues.iterator(), tableCellView);
     } else {
       setEmptyTableWidgetVisible(true);
     }
@@ -717,7 +717,27 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
    * @param rowIndex the index of the row
    */
   private void refreshRow(int rowIndex) {
-    tableDefinition.renderRow(rowIndex, getRowValue(rowIndex), tableCellView);
+    final RowType rowValue = getRowValue(rowIndex);
+    Iterator<RowType> singleIterator = new Iterator<RowType>() {
+      private boolean nextCalled = false;
+      
+      public boolean hasNext() {
+        return !nextCalled;
+      }
+
+      public RowType next() {
+        if (!hasNext()) {
+          throw new NoSuchElementException();
+        }
+        nextCalled = true;
+        return rowValue;
+      }
+
+      public void remove() {
+        throw new UnsupportedOperationException();
+      }
+    };
+    tableDefinition.renderRows(rowIndex, singleIterator, tableCellView);
   }
 
   /**

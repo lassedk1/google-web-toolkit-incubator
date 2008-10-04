@@ -16,7 +16,7 @@
 
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.ColumnDefinitionTest.CustomColumnDefinition;
+import com.google.gwt.gen2.table.client.AbstractColumnDefinitionTest.CustomColumnDefinition;
 import com.google.gwt.gen2.table.override.client.Grid;
 
 /**
@@ -26,13 +26,15 @@ import com.google.gwt.gen2.table.override.client.Grid;
 public class GridBulkRendererTest extends TableBulkRendererTestBase {
 
   @Override
-  protected <RowType> TableRendererPair<RowType> createTableAndRenderer(int numColumns) {
+  protected <RowType> TableRendererPair<RowType> createTableAndRenderer(
+      int numColumns) {
     Grid table = new Grid();
-    TableDefinition<RowType> tcr = new TableDefinition<RowType>();
+    DefaultTableDefinition<RowType> tcr = new DefaultTableDefinition<RowType>();
     for (int i = 0; i < numColumns; i++) {
       tcr.addColumnDefinition(new CustomColumnDefinition<RowType, Object>());
     }
-    GridBulkRenderer<RowType> renderer = new GridBulkRenderer<RowType>(table, tcr);
+    GridBulkRenderer<RowType> renderer = new GridBulkRenderer<RowType>(table,
+        tcr);
     return new TableRendererPair<RowType>(table, renderer);
   }
 }

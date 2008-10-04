@@ -27,7 +27,7 @@ import com.google.gwt.gen2.table.event.client.RowSelectionEvent;
 import com.google.gwt.gen2.table.event.client.RowSelectionHandler;
 import com.google.gwt.gen2.table.event.client.RowUnhighlightEvent;
 import com.google.gwt.gen2.table.event.client.RowUnhighlightHandler;
-import com.google.gwt.gen2.table.event.client.RowHighlightEvent.Row;
+import com.google.gwt.gen2.table.event.client.TableEvent.Row;
 import com.google.gwt.gen2.table.override.client.HTMLTable.CellFormatter;
 import com.google.gwt.gen2.table.override.client.HTMLTable.RowFormatter;
 import com.google.gwt.user.client.DOM;

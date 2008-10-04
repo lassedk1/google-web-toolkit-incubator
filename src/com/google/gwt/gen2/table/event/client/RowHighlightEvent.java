@@ -17,11 +17,12 @@
 package com.google.gwt.gen2.table.event.client;
 
 import com.google.gwt.gen2.event.logical.shared.HighlightEvent;
+import com.google.gwt.gen2.table.event.client.TableEvent.Row;
 
 /**
  * Logical event fired when a row is highlighted.
  */
-public class RowHighlightEvent extends HighlightEvent<RowHighlightEvent.Row> {
+public class RowHighlightEvent extends HighlightEvent<Row> {
   /**
    * Event Key for {@link RowHighlightEvent}.
    */
@@ -31,45 +32,6 @@ public class RowHighlightEvent extends HighlightEvent<RowHighlightEvent.Row> {
       handler.onRowHighlight(event);
     }
   };
-
-  /**
-   * Information about the row that is being highlighted.
-   */
-  public static class Row implements Comparable<Row> {
-    private int rowIndex;
-
-    /**
-     * Construct a new Row.
-     * 
-     * @param rowIndex the index of the highlighted row
-     */
-    public Row(int rowIndex) {
-      this.rowIndex = rowIndex;
-    }
-
-    public int compareTo(Row o) {
-      if (o == null) {
-        return 1;
-      } else {
-        return rowIndex - o.getRowIndex();
-      }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (o instanceof Row) {
-        return compareTo((Row) o) == 0;
-      }
-      return false;
-    }
-
-    /**
-     * @return the row index
-     */
-    public int getRowIndex() {
-      return rowIndex;
-    }
-  }
 
   /**
    * Construct a new {@link RowHighlightEvent}.

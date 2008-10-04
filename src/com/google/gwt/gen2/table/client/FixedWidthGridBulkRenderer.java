@@ -41,7 +41,7 @@ public class FixedWidthGridBulkRenderer<RowType> extends
   public FixedWidthGridBulkRenderer(FixedWidthGrid table,
       TableDefinition<RowType> renderer) {
     super(table, renderer);
-    this.numColumns = renderer.getColumnDefinitionCount();
+    this.numColumns = renderer.getVisibleColumnDefinitions().size();
     table.resizeColumns(numColumns);
   }
 

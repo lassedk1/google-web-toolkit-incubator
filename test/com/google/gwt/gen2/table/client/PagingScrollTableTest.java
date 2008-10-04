@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.ColumnDefinitionTest.CustomColumnDefinition;
+import com.google.gwt.gen2.table.client.AbstractColumnDefinitionTest.CustomColumnDefinition;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorter;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorterCallback;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
@@ -59,7 +59,8 @@ public class PagingScrollTableTest extends ScrollTableTest {
   /**
    * A custom handler used for testing.
    */
-  protected static class TestPageCountChangeHandler implements PageCountChangeHandler {
+  protected static class TestPageCountChangeHandler implements
+      PageCountChangeHandler {
     private PageCountChangeEvent lastEvent = null;
 
     public void assertNewPageCount(int expected) {
@@ -173,7 +174,7 @@ public class PagingScrollTableTest extends ScrollTableTest {
     FixedWidthGridBulkRenderer<List<Object>> bulkRenderer = new FixedWidthGridBulkRenderer<List<Object>>(
         grid, table.getTableDefinition());
     table.setBulkRenderer(bulkRenderer);
-    
+
     // Empty table widget
     {
       Widget emptyTableWidget = new HTML("Empty");
@@ -394,21 +395,23 @@ public class PagingScrollTableTest extends ScrollTableTest {
    * 
    * @return the scroll table
    */
-  protected PagingScrollTable<List<Object>> getPagingScrollTable(FixedWidthFlexTable headerTable,
-      FixedWidthGrid dataTable, FixedWidthFlexTable footerTable) {
+  protected PagingScrollTable<List<Object>> getPagingScrollTable(
+      FixedWidthFlexTable headerTable, FixedWidthGrid dataTable,
+      FixedWidthFlexTable footerTable) {
     // Create a table cell renderer
     List<ColumnDefinition<List<Object>, ?>> colDefs = new ArrayList<ColumnDefinition<List<Object>, ?>>();
     for (int i = 0; i < 10; i++) {
       colDefs.add(new CustomColumnDefinition<List<Object>, Object>());
     }
-    TableDefinition<List<Object>> tcr = new TableDefinition<List<Object>>(colDefs);
+    DefaultTableDefinition<List<Object>> tcr = new DefaultTableDefinition<List<Object>>(
+        colDefs);
 
     // Create the table model
     TableModel<List<Object>> tableModel = createTableModel();
 
     // Create the table
-    PagingScrollTable<List<Object>> scrollTable = new PagingScrollTable<List<Object>>(tableModel,
-        dataTable, headerTable, tcr);
+    PagingScrollTable<List<Object>> scrollTable = new PagingScrollTable<List<Object>>(
+        tableModel, dataTable, headerTable, tcr);
     scrollTable.setFooterTable(footerTable);
     return scrollTable;
   }
@@ -418,8 +421,8 @@ public class PagingScrollTableTest extends ScrollTableTest {
    *      FixedWidthFlexTable)
    */
   @Override
-  protected ScrollTable getScrollTable(FixedWidthFlexTable headerTable, FixedWidthGrid dataTable,
-      FixedWidthFlexTable footerTable) {
+  protected ScrollTable getScrollTable(FixedWidthFlexTable headerTable,
+      FixedWidthGrid dataTable, FixedWidthFlexTable footerTable) {
     return getPagingScrollTable(headerTable, dataTable, footerTable);
   }
 

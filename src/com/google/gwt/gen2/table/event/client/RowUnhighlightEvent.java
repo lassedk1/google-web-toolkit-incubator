@@ -17,7 +17,7 @@
 package com.google.gwt.gen2.table.event.client;
 
 import com.google.gwt.gen2.event.logical.shared.HighlightEvent;
-import com.google.gwt.gen2.table.event.client.RowHighlightEvent.Row;
+import com.google.gwt.gen2.table.event.client.TableEvent.Row;
 
 /**
  * Logical event fired when a row is unhighlighted.

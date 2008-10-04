@@ -24,7 +24,7 @@ import java.util.List;
  * @param <ColType> the data type of the column
  */
 public class ListColumnDefinition<ColType> extends
-    ColumnDefinition<List<ColType>, ColType> {
+    AbstractColumnDefinition<List<ColType>, ColType> {
   /**
    * The index of this column in the list.
    */

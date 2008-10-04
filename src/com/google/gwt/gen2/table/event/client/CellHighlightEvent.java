@@ -17,11 +17,12 @@
 package com.google.gwt.gen2.table.event.client;
 
 import com.google.gwt.gen2.event.logical.shared.HighlightEvent;
+import com.google.gwt.gen2.table.event.client.TableEvent.Cell;
 
 /**
  * Logical event fired when a cell is highlighted.
  */
-public class CellHighlightEvent extends HighlightEvent<CellHighlightEvent.Cell> {
+public class CellHighlightEvent extends HighlightEvent<Cell> {
   /**
    * Event Key for {@link CellHighlightEvent}.
    */
@@ -31,39 +32,6 @@ public class CellHighlightEvent extends HighlightEvent<CellHighlightEvent.Cell> 
       handler.onCellHighlight(event);
     }
   };
-
-  /**
-   * Information about the cell that is being highlighted.
-   */
-  public static class Cell {
-    private int cellIndex;
-    private int rowIndex;
-
-    /**
-     * Construct a new Cell.
-     * 
-     * @param rowIndex the index of the highlighted row
-     * @param cellIndex the index of the highlighted cell
-     */
-    public Cell(int rowIndex, int cellIndex) {
-      this.cellIndex = cellIndex;
-      this.rowIndex = rowIndex;
-    }
-
-    /**
-     * @return the cell index
-     */
-    public int getCellIndex() {
-      return cellIndex;
-    }
-
-    /**
-     * @return the row index
-     */
-    public int getRowIndex() {
-      return rowIndex;
-    }
-  }
 
   /**
    * Construct a new {@link CellHighlightEvent}.

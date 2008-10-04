@@ -16,7 +16,7 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.base.client.Gen2TestBase;
-import com.google.gwt.gen2.table.client.ColumnDefinitionTest.CustomColumnDefinition;
+import com.google.gwt.gen2.table.client.AbstractColumnDefinitionTest.CustomColumnDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,14 +24,14 @@ import java.util.List;
 /**
  * Tests for {@link TableDefinition}.
  */
-public class TableDefinitionTest extends Gen2TestBase {
+public class DefaultTableDefinitionTest extends Gen2TestBase {
   /**
    * Test addition and removal of {@link ColumnDefinition}.
    */
   public void testColumnDefinitionAddition() {
     // Add column definition
     {
-      TableDefinition<Object> tcr = new TableDefinition<Object>();
+      DefaultTableDefinition<Object> tcr = new DefaultTableDefinition<Object>();
       assertEquals(tcr.getColumnDefinitionCount(), 0);
 
       ColumnDefinition<Object, Object> colDef0 = new CustomColumnDefinition<Object, Object>();
@@ -47,7 +47,7 @@ public class TableDefinitionTest extends Gen2TestBase {
 
     // Insert column definition
     {
-      TableDefinition<Object> tcr = new TableDefinition<Object>();
+      DefaultTableDefinition<Object> tcr = new DefaultTableDefinition<Object>();
       assertEquals(tcr.getColumnDefinitionCount(), 0);
 
       ColumnDefinition<Object, Object> colDef0 = new CustomColumnDefinition<Object, Object>();
@@ -68,7 +68,7 @@ public class TableDefinitionTest extends Gen2TestBase {
 
     // Remove column definition
     {
-      TableDefinition<Object> tcr = new TableDefinition<Object>();
+      DefaultTableDefinition<Object> tcr = new DefaultTableDefinition<Object>();
       ColumnDefinition<Object, Object> colDef0 = new CustomColumnDefinition<Object, Object>();
       ColumnDefinition<Object, Object> colDef1 = new CustomColumnDefinition<Object, Object>();
       ColumnDefinition<Object, Object> colDef2 = new CustomColumnDefinition<Object, Object>();
@@ -95,18 +95,23 @@ public class TableDefinitionTest extends Gen2TestBase {
    * Test setting and retrieving {@link ColumnDefinition ColumnDefinitions}.
    */
   public void testColumnDefinitionsInConstructor() {
-    // Create some column definitions. Every other one is hidden.
+    // Create some column definitions
     List<ColumnDefinition<Object, ?>> colDefs = new ArrayList<ColumnDefinition<Object, ?>>();
     for (int i = 0; i < 10; i++) {
-      ColumnDefinition<Object, Object> colDef = new CustomColumnDefinition<Object, Object>();
-      if (i % 2 == 1) {
-        colDef.setVisible(false);
-      }
+      AbstractColumnDefinition<Object, Object> colDef = new CustomColumnDefinition<Object, Object>();
       colDefs.add(colDef);
     }
 
     // Create a TableDefinition to test
-    TableDefinition<Object> tcr = new TableDefinition<Object>(colDefs);
+    DefaultTableDefinition<Object> tcr = new DefaultTableDefinition<Object>(
+        colDefs);
+
+    // Hide every other column definition
+    for (int i = 0; i < 10; i++) {
+      if (i % 2 == 1) {
+        tcr.setColumnVisible(tcr.getColumnDefinition(i), false);
+      }
+    }
 
     // Verify the column definitions
     assertEquals(colDefs.size(), tcr.getColumnDefinitionCount());

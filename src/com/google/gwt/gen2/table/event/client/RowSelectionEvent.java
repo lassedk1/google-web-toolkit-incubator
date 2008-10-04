@@ -17,7 +17,7 @@
 package com.google.gwt.gen2.table.event.client;
 
 import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
-import com.google.gwt.gen2.table.event.client.RowHighlightEvent.Row;
+import com.google.gwt.gen2.table.event.client.TableEvent.Row;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -98,7 +98,7 @@ public class PreloadedTable extends FlexTable {
   private void ensureLoaded() {
     if (!isFilledIn) {
       isFilledIn = true;
-      TableDefinition<List<Object>> tableDef = new TableDefinition<List<Object>>();
+      DefaultTableDefinition<List<Object>> tableDef = new DefaultTableDefinition<List<Object>>();
       for (int i = 0; i < maxColumn; i++) {
         tableDef.addColumnDefinition(new ListColumnDefinition<Object>(i));
       }
