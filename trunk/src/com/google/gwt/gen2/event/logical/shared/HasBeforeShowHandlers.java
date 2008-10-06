@@ -22,7 +22,7 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasBeforeShowHandlers {
   /**
-   * Adds a {@link HasBeforeShowEvent} handler.
+   * Adds a {@link HasBeforeShowHandler} handler.
    * 
    * @param handler the handler
    */

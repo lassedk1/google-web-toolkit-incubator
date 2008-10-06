@@ -29,7 +29,7 @@ import java.util.EventListener;
  * be removed in GWT 2.0.
  * 
  * @param <ListenerType> listener type
- * @deprecatedGD
+ * @deprecated
  */
 public abstract class AbstractListenerWrapper<ListenerType extends EventListener>
     implements EventHandler {

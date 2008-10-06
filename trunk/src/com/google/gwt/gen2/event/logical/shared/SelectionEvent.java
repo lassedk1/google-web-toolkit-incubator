@@ -53,20 +53,27 @@ public class SelectionEvent<Value> extends AbstractEvent {
 
   /**
    * Returns the new value.
+   * 
+   * @return the new value
    */
   public Value getNewValue() {
+    assertLive();
     return newValue;
   }
 
   /**
    * Returns the old value.
+   * 
+   * @return the old value
    */
   public Value getOldValue() {
+    assertLive();
     return oldValue;
   }
 
   @Override
   public String toDebugString() {
+    assertLive();
     return super.toDebugString() + " old = " + oldValue + " new =" + newValue;
   }
 

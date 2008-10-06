@@ -36,6 +36,7 @@ abstract class ValueEvent<Value> extends AbstractEvent {
    * @return the value
    */
   public Value getValue() {
+    assertLive();
     return value;
   }
 }
