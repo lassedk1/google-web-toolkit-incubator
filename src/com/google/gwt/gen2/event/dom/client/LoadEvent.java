@@ -23,30 +23,30 @@ import com.google.gwt.user.client.Event;
 public class LoadEvent extends DomEvent {
 
   /**
-   * Event Key for Load.
-   */
-  public static final Key<LoadEvent, LoadHandler> KEY = new Key<LoadEvent, LoadHandler>(
+    Event Key for Load.
+  */
+  public static final Key<LoadEvent, LoadHandler> KEY = new Key<LoadEvent,LoadHandler>(
       Event.ONLOAD) {
-    @Override
-    protected void fire(LoadHandler handler, LoadEvent event) {
-      handler.onLoad(event);
-    }
+     @Override
+     public void fire(LoadHandler handler, LoadEvent event) {
+       handler.onLoad(event);
+     }
 
-    @Override
-    public LoadEvent wrap(Event nativeEvent) {
-      return new LoadEvent(nativeEvent);
-    }
-  };
+     @Override     
+    LoadEvent wrap(Event nativeEvent) {
+       return new LoadEvent(nativeEvent);
+     }
+   };
 
   /**
    * Constructs a LoadEvent event.
    * 
    * @param nativeEvent the native event object wrapped by this event
    */
-  public LoadEvent(Event e) {
-    super(e);
+  public LoadEvent(Event nativeEvent) {
+    super(nativeEvent);
   }
-
+  
   @Override
   protected Key getKey() {
     return KEY;

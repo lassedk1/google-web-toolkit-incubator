@@ -22,9 +22,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasChangeHandlers {
   /**
-   * Adds a {@link HasChangeEvent} handler.
+   * Adds a {@link ChangeEvent} handler.
    * 
-   * @param handler the handler
+   * @param handler the change handler
+   * @return {@link HandlerRegistration} used to remove this handler
    */
   HandlerRegistration addChangeHandler(ChangeHandler handler);
 }

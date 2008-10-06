@@ -23,30 +23,30 @@ import com.google.gwt.user.client.Event;
 public class MouseDownEvent extends MouseEvent {
 
   /**
-   * Event Key for MouseDown.
-   */
-  public static final Key<MouseDownEvent, MouseDownHandler> KEY = new Key<MouseDownEvent, MouseDownHandler>(
+    Event Key for MouseDown.
+  */
+  public static final Key<MouseDownEvent, MouseDownHandler> KEY = new Key<MouseDownEvent,MouseDownHandler>(
       Event.ONMOUSEDOWN) {
-    @Override
-    protected void fire(MouseDownHandler handler, MouseDownEvent event) {
-      handler.onMouseDown(event);
-    }
+     @Override
+     public void fire(MouseDownHandler handler, MouseDownEvent event) {
+       handler.onMouseDown(event);
+     }
 
-    @Override
-    public MouseDownEvent wrap(Event nativeEvent) {
-      return new MouseDownEvent(nativeEvent);
-    }
-  };
+     @Override     
+    MouseDownEvent wrap(Event nativeEvent) {
+       return new MouseDownEvent(nativeEvent);
+     }
+   };
 
   /**
    * Constructs a MouseDownEvent event.
    * 
    * @param nativeEvent the native event object wrapped by this event
    */
-  public MouseDownEvent(Event e) {
-    super(e);
+  public MouseDownEvent(Event nativeEvent) {
+    super(nativeEvent);
   }
-
+  
   @Override
   protected Key getKey() {
     return KEY;

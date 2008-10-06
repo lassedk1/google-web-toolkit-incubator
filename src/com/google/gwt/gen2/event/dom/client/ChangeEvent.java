@@ -23,30 +23,30 @@ import com.google.gwt.user.client.Event;
 public class ChangeEvent extends DomEvent {
 
   /**
-   * Event Key for Change.
-   */
-  public static final Key<ChangeEvent, ChangeHandler> KEY = new Key<ChangeEvent, ChangeHandler>(
+    Event Key for Change.
+  */
+  public static final Key<ChangeEvent, ChangeHandler> KEY = new Key<ChangeEvent,ChangeHandler>(
       Event.ONCHANGE) {
-    @Override
-    protected void fire(ChangeHandler handler, ChangeEvent event) {
-      handler.onChange(event);
-    }
+     @Override
+     public void fire(ChangeHandler handler, ChangeEvent event) {
+       handler.onChange(event);
+     }
 
-    @Override
-    public ChangeEvent wrap(Event nativeEvent) {
-      return new ChangeEvent(nativeEvent);
-    }
-  };
+     @Override     
+    ChangeEvent wrap(Event nativeEvent) {
+       return new ChangeEvent(nativeEvent);
+     }
+   };
 
   /**
    * Constructs a ChangeEvent event.
    * 
    * @param nativeEvent the native event object wrapped by this event
    */
-  public ChangeEvent(Event e) {
-    super(e);
+  public ChangeEvent(Event nativeEvent) {
+    super(nativeEvent);
   }
-
+  
   @Override
   protected Key getKey() {
     return KEY;

@@ -22,9 +22,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasErrorHandlers {
   /**
-   * Adds a {@link HasErrorEvent} handler.
+   * Adds a {@link ErrorEvent} handler.
    * 
-   * @param handler the handler
+   * @param handler the error handler
+   * @return {@link HandlerRegistration} used to remove this handler
    */
   HandlerRegistration addErrorHandler(ErrorHandler handler);
 }

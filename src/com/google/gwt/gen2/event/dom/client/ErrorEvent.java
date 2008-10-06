@@ -23,30 +23,30 @@ import com.google.gwt.user.client.Event;
 public class ErrorEvent extends DomEvent {
 
   /**
-   * Event Key for Error.
-   */
-  public static final Key<ErrorEvent, ErrorHandler> KEY = new Key<ErrorEvent, ErrorHandler>(
+    Event Key for Error.
+  */
+  public static final Key<ErrorEvent, ErrorHandler> KEY = new Key<ErrorEvent,ErrorHandler>(
       Event.ONERROR) {
-    @Override
-    protected void fire(ErrorHandler handler, ErrorEvent event) {
-      handler.onError(event);
-    }
+     @Override
+     public void fire(ErrorHandler handler, ErrorEvent event) {
+       handler.onError(event);
+     }
 
-    @Override
-    public ErrorEvent wrap(Event nativeEvent) {
-      return new ErrorEvent(nativeEvent);
-    }
-  };
+     @Override     
+    ErrorEvent wrap(Event nativeEvent) {
+       return new ErrorEvent(nativeEvent);
+     }
+   };
 
   /**
    * Constructs a ErrorEvent event.
    * 
    * @param nativeEvent the native event object wrapped by this event
    */
-  public ErrorEvent(Event e) {
-    super(e);
+  public ErrorEvent(Event nativeEvent) {
+    super(nativeEvent);
   }
-
+  
   @Override
   protected Key getKey() {
     return KEY;

@@ -23,30 +23,30 @@ import com.google.gwt.user.client.Event;
 public class KeyUpEvent extends KeyboardEvent {
 
   /**
-   * Event Key for KeyUp.
-   */
-  public static final Key<KeyUpEvent, KeyUpHandler> KEY = new Key<KeyUpEvent, KeyUpHandler>(
+    Event Key for KeyUp.
+  */
+  public static final Key<KeyUpEvent, KeyUpHandler> KEY = new Key<KeyUpEvent,KeyUpHandler>(
       Event.ONKEYUP) {
-    @Override
-    protected void fire(KeyUpHandler handler, KeyUpEvent event) {
-      handler.onKeyUp(event);
-    }
+     @Override
+     public void fire(KeyUpHandler handler, KeyUpEvent event) {
+       handler.onKeyUp(event);
+     }
 
-    @Override
-    public KeyUpEvent wrap(Event nativeEvent) {
-      return new KeyUpEvent(nativeEvent);
-    }
-  };
+     @Override     
+    KeyUpEvent wrap(Event nativeEvent) {
+       return new KeyUpEvent(nativeEvent);
+     }
+   };
 
   /**
    * Constructs a KeyUpEvent event.
    * 
    * @param nativeEvent the native event object wrapped by this event
    */
-  public KeyUpEvent(Event e) {
-    super(e);
+  public KeyUpEvent(Event nativeEvent) {
+    super(nativeEvent);
   }
-
+  
   @Override
   protected Key getKey() {
     return KEY;

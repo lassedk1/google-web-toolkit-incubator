@@ -22,9 +22,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasKeyUpHandlers {
   /**
-   * Adds a {@link HasKeyUpEvent} handler.
+   * Adds a {@link KeyUpEvent} handler.
    * 
-   * @param handler the handler
+   * @param handler the key up handler
+   * @return {@link HandlerRegistration} used to remove this handler
    */
   HandlerRegistration addKeyUpHandler(KeyUpHandler handler);
 }

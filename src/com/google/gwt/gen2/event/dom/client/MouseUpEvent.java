@@ -23,30 +23,30 @@ import com.google.gwt.user.client.Event;
 public class MouseUpEvent extends MouseEvent {
 
   /**
-   * Event Key for MouseUp.
-   */
-  public static final Key<MouseUpEvent, MouseUpHandler> KEY = new Key<MouseUpEvent, MouseUpHandler>(
+    Event Key for MouseUp.
+  */
+  public static final Key<MouseUpEvent, MouseUpHandler> KEY = new Key<MouseUpEvent,MouseUpHandler>(
       Event.ONMOUSEUP) {
-    @Override
-    protected void fire(MouseUpHandler handler, MouseUpEvent event) {
-      handler.onMouseUp(event);
-    }
+     @Override
+     public void fire(MouseUpHandler handler, MouseUpEvent event) {
+       handler.onMouseUp(event);
+     }
 
-    @Override
-    public MouseUpEvent wrap(Event nativeEvent) {
-      return new MouseUpEvent(nativeEvent);
-    }
-  };
+     @Override     
+    MouseUpEvent wrap(Event nativeEvent) {
+       return new MouseUpEvent(nativeEvent);
+     }
+   };
 
   /**
    * Constructs a MouseUpEvent event.
    * 
    * @param nativeEvent the native event object wrapped by this event
    */
-  public MouseUpEvent(Event e) {
-    super(e);
+  public MouseUpEvent(Event nativeEvent) {
+    super(nativeEvent);
   }
-
+  
   @Override
   protected Key getKey() {
     return KEY;

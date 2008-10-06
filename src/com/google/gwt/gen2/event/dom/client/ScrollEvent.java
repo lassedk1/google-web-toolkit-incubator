@@ -23,30 +23,30 @@ import com.google.gwt.user.client.Event;
 public class ScrollEvent extends DomEvent {
 
   /**
-   * Event Key for Scroll.
-   */
-  public static final Key<ScrollEvent, ScrollHandler> KEY = new Key<ScrollEvent, ScrollHandler>(
+    Event Key for Scroll.
+  */
+  public static final Key<ScrollEvent, ScrollHandler> KEY = new Key<ScrollEvent,ScrollHandler>(
       Event.ONSCROLL) {
-    @Override
-    protected void fire(ScrollHandler handler, ScrollEvent event) {
-      handler.onScroll(event);
-    }
+     @Override
+     public void fire(ScrollHandler handler, ScrollEvent event) {
+       handler.onScroll(event);
+     }
 
-    @Override
-    public ScrollEvent wrap(Event nativeEvent) {
-      return new ScrollEvent(nativeEvent);
-    }
-  };
+     @Override     
+    ScrollEvent wrap(Event nativeEvent) {
+       return new ScrollEvent(nativeEvent);
+     }
+   };
 
   /**
    * Constructs a ScrollEvent event.
    * 
    * @param nativeEvent the native event object wrapped by this event
    */
-  public ScrollEvent(Event e) {
-    super(e);
+  public ScrollEvent(Event nativeEvent) {
+    super(nativeEvent);
   }
-
+  
   @Override
   protected Key getKey() {
     return KEY;

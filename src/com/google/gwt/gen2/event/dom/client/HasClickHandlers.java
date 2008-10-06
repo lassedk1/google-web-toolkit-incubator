@@ -22,9 +22,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasClickHandlers {
   /**
-   * Adds a {@link HasClickEvent} handler.
+   * Adds a {@link ClickEvent} handler.
    * 
-   * @param handler the handler
+   * @param handler the click handler
+   * @return {@link HandlerRegistration} used to remove this handler
    */
   HandlerRegistration addClickHandler(ClickHandler handler);
 }

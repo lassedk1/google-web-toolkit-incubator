@@ -21,30 +21,95 @@ import com.google.gwt.user.client.ui.KeyboardListener;
 
 /**
  * Base class for Keyboard events.
- * 
  */
 public abstract class KeyboardEvent extends DomEvent {
-
+  /**
+   * Alt key code.
+   */
   public static final int KEY_ALT = 18;
+  /**
+   * Backspace key code.
+   */
   public static final int KEY_BACKSPACE = 8;
+  /**
+   * Control key code.
+   */
   public static final int KEY_CTRL = 17;
+  /**
+   * Delete key code.
+   */
   public static final int KEY_DELETE = 46;
+  /**
+   * Down arrow code.
+   */
   public static final int KEY_DOWN = 40;
+  /**
+   * End key code.
+   */
   public static final int KEY_END = 35;
+  /**
+   * Enter key code.
+   */
   public static final int KEY_ENTER = 13;
+  /**
+   * Escape key code.
+   */
   public static final int KEY_ESCAPE = 27;
+
+  /**
+   * Home key code.
+   */
   public static final int KEY_HOME = 36;
+  /**
+   * Left key code.
+   */
   public static final int KEY_LEFT = 37;
+
+  /**
+   * Page down key code.
+   */
   public static final int KEY_PAGEDOWN = 34;
+
+  /**
+   * Page up key code.
+   */
   public static final int KEY_PAGEUP = 33;
+  /**
+   * Right arrow key code.
+   */
   public static final int KEY_RIGHT = 39;
+  /**
+   * Shift key code.
+   */
   public static final int KEY_SHIFT = 16;
+  /**
+   * Tab key code.
+   */
   public static final int KEY_TAB = 9;
+
+  /**
+   * Up Arrow key code.
+   */
   public static final int KEY_UP = 38;
 
+  /**
+   * Alt modifier.
+   */
   public static final int MODIFIER_ALT = 4;
+
+  /**
+   * Control modifier.
+   */
   public static final int MODIFIER_CTRL = 2;
+
+  /**
+   * Meta modifier.
+   */
   public static final int MODIFIER_META = 8;
+
+  /**
+   * Shift modifier.
+   */
   public static final int MODIFIER_SHIFT = 1;
 
   // I'm hoping these can eventually go away as safari fixes its bugs.
@@ -56,8 +121,13 @@ public abstract class KeyboardEvent extends DomEvent {
 
   private static final int OTHER_KEY_RIGHT = 63235;
 
-  protected KeyboardEvent(Event e) {
-    super(e);
+  /**
+   * Constructor.
+   * 
+   * @param nativeEvent the wrapped native event
+   */
+  protected KeyboardEvent(Event nativeEvent) {
+    super(nativeEvent);
   }
 
   /**
@@ -93,7 +163,7 @@ public abstract class KeyboardEvent extends DomEvent {
   }
 
   /**
-   * Is <code>alt</code> key down.
+   * Is the <code>alt</code> key down.
    * 
    * @return whether the alt key is down
    */
@@ -103,6 +173,9 @@ public abstract class KeyboardEvent extends DomEvent {
 
   /**
    * Does the key code represent an arrow key?
+   * 
+   * @param code the key code
+   * @return if it is an arrow key code
    */
   public boolean isArrowKeyCode(int code) {
     switch (code) {
@@ -130,7 +203,7 @@ public abstract class KeyboardEvent extends DomEvent {
   }
 
   /**
-   * Is <code>control</code> key down.
+   * Is the <code>control</code> key down.
    * 
    * @return whether the control key is down
    */
@@ -139,14 +212,18 @@ public abstract class KeyboardEvent extends DomEvent {
   }
 
   /**
-   * Is this a key right?
+   * Is this a key down?
+   * 
+   * @return whether this is a down arrow key event
    */
   public boolean isDownKeyCode() {
     return getKeyCode() == KEY_DOWN || getKeyCode() == OTHER_KEY_DOWN;
   }
 
   /**
-   * Is this a key right?
+   * Is this a key left?
+   * 
+   * @return whether this is a left arrow key event
    */
   public boolean isLeftKeyCode() {
     return getKeyCode() == KEY_LEFT || getKeyCode() == OTHER_KEY_LEFT;
@@ -154,13 +231,15 @@ public abstract class KeyboardEvent extends DomEvent {
 
   /**
    * Is this a key right?
+   * 
+   * @return whether this is a right arrow key event
    */
   public boolean isRightKeyCode() {
     return getKeyCode() == KEY_RIGHT || getKeyCode() == OTHER_KEY_RIGHT;
   }
 
   /**
-   * Is <code>shift</code> key down.
+   * Is the <code>shift</code> key down.
    * 
    * @return whether the shift key is down
    */
@@ -170,6 +249,8 @@ public abstract class KeyboardEvent extends DomEvent {
 
   /**
    * Is this a key up?
+   * 
+   * @return whether this is a up arrow key event
    */
   public boolean isUpKeyCode() {
     return getKeyCode() == KEY_UP || getKeyCode() == OTHER_KEY_UP;

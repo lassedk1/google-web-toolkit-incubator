@@ -22,9 +22,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasScrollHandlers {
   /**
-   * Adds a {@link HasScrollEvent} handler.
+   * Adds a {@link ScrollEvent} handler.
    * 
-   * @param handler the handler
+   * @param handler the scroll handler
+   * @return {@link HandlerRegistration} used to remove this handler
    */
   HandlerRegistration addScrollHandler(ScrollHandler handler);
 }

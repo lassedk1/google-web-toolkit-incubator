@@ -23,30 +23,30 @@ import com.google.gwt.user.client.Event;
 public class MouseMoveEvent extends MouseEvent {
 
   /**
-   * Event Key for MouseMove.
-   */
-  public static final Key<MouseMoveEvent, MouseMoveHandler> KEY = new Key<MouseMoveEvent, MouseMoveHandler>(
+    Event Key for MouseMove.
+  */
+  public static final Key<MouseMoveEvent, MouseMoveHandler> KEY = new Key<MouseMoveEvent,MouseMoveHandler>(
       Event.ONMOUSEMOVE) {
-    @Override
-    protected void fire(MouseMoveHandler handler, MouseMoveEvent event) {
-      handler.onMouseMove(event);
-    }
+     @Override
+     public void fire(MouseMoveHandler handler, MouseMoveEvent event) {
+       handler.onMouseMove(event);
+     }
 
-    @Override
-    public MouseMoveEvent wrap(Event nativeEvent) {
-      return new MouseMoveEvent(nativeEvent);
-    }
-  };
+     @Override     
+    MouseMoveEvent wrap(Event nativeEvent) {
+       return new MouseMoveEvent(nativeEvent);
+     }
+   };
 
   /**
    * Constructs a MouseMoveEvent event.
    * 
    * @param nativeEvent the native event object wrapped by this event
    */
-  public MouseMoveEvent(Event e) {
-    super(e);
+  public MouseMoveEvent(Event nativeEvent) {
+    super(nativeEvent);
   }
-
+  
   @Override
   protected Key getKey() {
     return KEY;

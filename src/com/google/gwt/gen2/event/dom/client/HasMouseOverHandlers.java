@@ -22,9 +22,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasMouseOverHandlers {
   /**
-   * Adds a {@link HasMouseOverEvent} handler.
+   * Adds a {@link MouseOverEvent} handler.
    * 
-   * @param handler the handler
+   * @param handler the mouse over handler
+   * @return {@link HandlerRegistration} used to remove this handler
    */
   HandlerRegistration addMouseOverHandler(MouseOverHandler handler);
 }

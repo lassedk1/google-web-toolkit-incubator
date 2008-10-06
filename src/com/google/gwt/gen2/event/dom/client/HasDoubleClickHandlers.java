@@ -22,9 +22,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasDoubleClickHandlers {
   /**
-   * Adds a {@link HasDoubleClickEvent} handler.
+   * Adds a {@link DoubleClickEvent} handler.
    * 
-   * @param handler the handler
+   * @param handler the double click handler
+   * @return {@link HandlerRegistration} used to remove this handler
    */
   HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler);
 }

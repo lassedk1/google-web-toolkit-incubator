@@ -22,9 +22,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasMouseDownHandlers {
   /**
-   * Adds a {@link HasMouseDownEvent} handler.
+   * Adds a {@link MouseDownEvent} handler.
    * 
-   * @param handler the handler
+   * @param handler the mouse down handler
+   * @return {@link HandlerRegistration} used to remove this handler
    */
   HandlerRegistration addMouseDownHandler(MouseDownHandler handler);
 }

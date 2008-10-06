@@ -23,30 +23,30 @@ import com.google.gwt.user.client.Event;
 public class LoseCaptureEvent extends DomEvent {
 
   /**
-   * Event Key for LoseCapture.
-   */
-  public static final Key<LoseCaptureEvent, LoseCaptureHandler> KEY = new Key<LoseCaptureEvent, LoseCaptureHandler>(
+    Event Key for LoseCapture.
+  */
+  public static final Key<LoseCaptureEvent, LoseCaptureHandler> KEY = new Key<LoseCaptureEvent,LoseCaptureHandler>(
       Event.ONLOSECAPTURE) {
-    @Override
-    protected void fire(LoseCaptureHandler handler, LoseCaptureEvent event) {
-      handler.onLoseCapture(event);
-    }
+     @Override
+     public void fire(LoseCaptureHandler handler, LoseCaptureEvent event) {
+       handler.onLoseCapture(event);
+     }
 
-    @Override
-    public LoseCaptureEvent wrap(Event nativeEvent) {
-      return new LoseCaptureEvent(nativeEvent);
-    }
-  };
+     @Override     
+    LoseCaptureEvent wrap(Event nativeEvent) {
+       return new LoseCaptureEvent(nativeEvent);
+     }
+   };
 
   /**
    * Constructs a LoseCaptureEvent event.
    * 
    * @param nativeEvent the native event object wrapped by this event
    */
-  public LoseCaptureEvent(Event e) {
-    super(e);
+  public LoseCaptureEvent(Event nativeEvent) {
+    super(nativeEvent);
   }
-
+  
   @Override
   protected Key getKey() {
     return KEY;
