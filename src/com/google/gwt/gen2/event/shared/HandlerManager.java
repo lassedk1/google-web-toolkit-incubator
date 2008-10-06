@@ -25,8 +25,7 @@ import com.google.gwt.gen2.event.shared.AbstractEvent.Key;
 public class HandlerManager {
   static int EXPECTED_HANDLERS = 5;
 
-  // TODO(ECC) once fully vetted, we should use java mode for hosted mode.
-  private static final boolean useJs = GWT.isClient();
+  private static final boolean useJs = GWT.isScript();
   private static int index = -EXPECTED_HANDLERS;
 
   static int createKeyIndex() {
@@ -40,6 +39,11 @@ public class HandlerManager {
   private final JavaHandlerRegistry javaRegistry;
   private final Object source;
 
+  /**
+   * Creates a handler manager with the given source
+   * 
+   * @param source the event source
+   */
   public HandlerManager(Object source) {
     if (useJs) {
       javaScriptRegistry = JsHandlerRegistry.create();
@@ -89,11 +93,19 @@ public class HandlerManager {
    * @param event the event
    */
   public void fireEvent(AbstractEvent event) {
+    Object oldSource = event.getSource();
     event.setSource(source);
     if (useJs) {
       javaScriptRegistry.fireEvent(event);
     } else {
       javaRegistry.fireEvent(event);
+    }
+    if (oldSource == null) {
+      // This was my event, so I should kill it now that I'm done.
+      event.onRelease();
+    } else {
+      // Restoring the source for the next set
+      event.setSource(oldSource);
     }
   }
 
