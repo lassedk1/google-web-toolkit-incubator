@@ -31,6 +31,7 @@ import com.google.gwt.libideas.client.StyleInjector;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HasAnimation;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.ToggleButton;
 
@@ -41,7 +42,7 @@ import com.google.gwt.user.client.ui.ToggleButton;
  * @param <ValueType> the type of values stored in the list box.
  */
 public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
-    implements HasAnimation, HasBeforeShowHandlers {
+    implements HasAnimation, HasBeforeShowHandlers, HasValue<ValueType> {
 
   /**
    * Css interface for drop down list box.
@@ -225,7 +226,7 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
   /**
    * Gets the selected value.
    */
-  public ValueType getSelectedValue() {
+  public ValueType getValue() {
     return super.getLastSelectedValue();
   }
 
@@ -264,6 +265,10 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
   public void setStylePrimaryName(String styleName) {
     setCss(new StandardCss(styleName));
     super.setStylePrimaryName(styleName);
+  }
+
+  public void setValue(ValueType value) {
+    setSelectedValue(value);
   }
 
   /**

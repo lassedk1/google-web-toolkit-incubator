@@ -208,7 +208,7 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
    * Clears the current selection.
    */
   public void clear() {
-    picker.setSelectedDate(null, false);
+    picker.setValue(null, false);
     box.setText("");
   }
 
@@ -286,7 +286,7 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
       String cur = box.getText();
       if (cur != null && cur.length() != 0) {
         try {
-          box.setText(dateFormatter.format(picker.getSelectedDate()));
+          box.setText(dateFormatter.format(picker.getValue()));
         } catch (IllegalArgumentException e) {
           box.setText("");
         }
@@ -363,7 +363,7 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
    * @param date picker
    */
   public void showDate(Date date) {
-    picker.setSelectedDate(date, false);
+    picker.setValue(date, false);
     picker.showDate(date);
     setText(date);
     dirtyText = false;

@@ -113,7 +113,7 @@ public class DropDownListBoxDemo implements EntryPoint {
           nextAction = "click to choose Abby";
           break;
         case 0:
-          customBox.setSelectedValue("Abigail Crutcher");
+          customBox.setValue("Abigail Crutcher");
           customBox.showItems();
           lastAction = "current value is Abby. ";
           check("Abigail Crutcher", currentValue,
@@ -121,14 +121,14 @@ public class DropDownListBoxDemo implements EntryPoint {
           nextAction = "click to choose Henry";
           break;
         case 1:
-          customBox.setSelectedValue("Henry Crutcher");
+          customBox.setValue("Henry Crutcher");
           lastAction = "Henry should be selected<br/> Popup should be closed";
           nextAction = "Manual: choose Katie";
           break;
         case 2:
           if (!"Kaitlyn Crutcher".equals(currentValue)) {
             Window.alert("Uh oh, Katie was not chosen. Instead we have:"
-                + customBox.getSelectedValue());
+                + customBox.getValue());
             katieWasChosen = false;
             lastAction = "Katie was not succesfully chosen";
           } else {
