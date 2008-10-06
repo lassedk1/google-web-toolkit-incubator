@@ -72,7 +72,7 @@ public final class DefaultCalendarView extends CalendarView {
       @Override
       public void onSelected(boolean selected) {
         if (selected) {
-          getDatePicker().setSelectedDate(getValue());
+          getDatePicker().setValue(getValue());
           if (isFiller()) {
             getDatePicker().showDate(getValue());
           }

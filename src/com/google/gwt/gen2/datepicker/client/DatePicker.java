@@ -33,6 +33,7 @@ import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
 import com.google.gwt.gen2.widgetbase.client.WidgetCss;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Date;
@@ -45,7 +46,7 @@ import java.util.Map;
  */
 public class DatePicker extends Gen2Composite implements
     HasSelectionHandlers<Date>, HasHighlightHandlers<Date>,
-    HasShowRangeHandlers<Date> {
+    HasShowRangeHandlers<Date>, HasValue<Date> {
   /**
    * Css interface for DatePicker.
    */
@@ -477,11 +478,11 @@ public class DatePicker extends Gen2Composite implements
   }
 
   /**
-   * Gets the selected date,if any.
+   * Gets the selected date, if any.
    * 
    * @return the selected date
    */
-  public final Date getSelectedDate() {
+  public final Date getValue() {
     return selectedDate;
   }
 
@@ -538,7 +539,7 @@ public class DatePicker extends Gen2Composite implements
    * Selects the current highlighted date.
    */
   public final void selectHighlightedDate() {
-    setSelectedDate(getHighlightedDate());
+    setValue(getHighlightedDate());
   }
 
   /**
@@ -584,8 +585,8 @@ public class DatePicker extends Gen2Composite implements
    * 
    * @param date the new selected date
    */
-  public final void setSelectedDate(Date date) {
-    setSelectedDate(date, true);
+  public final void setValue(Date date) {
+    setValue(date, true);
   }
 
   /**
@@ -594,7 +595,7 @@ public class DatePicker extends Gen2Composite implements
    * @param newSelected the new selected date
    * @param fireEvents should events be fired.
    */
-  public final void setSelectedDate(Date newSelected, boolean fireEvents) {
+  public final void setValue(Date newSelected, boolean fireEvents) {
     Date oldSelected = selectedDate;
 
     if (oldSelected != null) {

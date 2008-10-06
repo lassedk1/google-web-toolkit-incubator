@@ -285,7 +285,7 @@ public class DatePickerDemo implements EntryPoint {
     Date d = new Date();
     d.setMonth(2);
     d.setDate(1);
-    picker.setSelectedDate(d);
+    picker.setValue(d);
     return picker;
   };
 
