@@ -38,6 +38,9 @@ public class ShowRangeEvent<Value> extends AbstractEvent {
 
   /**
    * Constructs a ShowRangeEvent event.
+   * 
+   * @param start start of range
+   * @param end end of range
    */
   public ShowRangeEvent(Value start, Value end) {
     this.start = start;
@@ -50,6 +53,7 @@ public class ShowRangeEvent<Value> extends AbstractEvent {
    * @return range end
    */
   public Value getEnd() {
+    assertLive();
     return end;
   }
 
@@ -59,6 +63,7 @@ public class ShowRangeEvent<Value> extends AbstractEvent {
    * @return range start
    */
   public Value getStart() {
+    assertLive();
     return start;
   }
 

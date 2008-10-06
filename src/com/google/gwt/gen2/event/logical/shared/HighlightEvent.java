@@ -33,6 +33,8 @@ public class HighlightEvent<Value> extends ValueEvent<Value> {
 
   /**
    * Constructs a HighlightEvent event.
+   * 
+   * @param value value highlighted
    */
   public HighlightEvent(Value value) {
     super(value);
