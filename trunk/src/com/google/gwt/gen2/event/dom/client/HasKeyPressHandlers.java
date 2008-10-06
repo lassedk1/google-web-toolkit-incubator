@@ -22,9 +22,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasKeyPressHandlers {
   /**
-   * Adds a {@link HasKeyPressEvent} handler.
+   * Adds a {@link KeyPressEvent} handler.
    * 
-   * @param handler the handler
+   * @param handler the key press handler
+   * @return {@link HandlerRegistration} used to remove this handler
    */
   HandlerRegistration addKeyPressHandler(KeyPressHandler handler);
 }

@@ -22,9 +22,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasMouseUpHandlers {
   /**
-   * Adds a {@link HasMouseUpEvent} handler.
+   * Adds a {@link MouseUpEvent} handler.
    * 
-   * @param handler the handler
+   * @param handler the mouse up handler
+   * @return {@link HandlerRegistration} used to remove this handler
    */
   HandlerRegistration addMouseUpHandler(MouseUpHandler handler);
 }

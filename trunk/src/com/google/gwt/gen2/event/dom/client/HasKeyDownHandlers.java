@@ -22,9 +22,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasKeyDownHandlers {
   /**
-   * Adds a {@link HasKeyDownEvent} handler.
+   * Adds a {@link KeyDownEvent} handler.
    * 
-   * @param handler the handler
+   * @param handler the key down handler
+   * @return {@link HandlerRegistration} used to remove this handler
    */
   HandlerRegistration addKeyDownHandler(KeyDownHandler handler);
 }

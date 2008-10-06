@@ -23,30 +23,30 @@ import com.google.gwt.user.client.Event;
 public class ClickEvent extends DomEvent {
 
   /**
-   * Event Key for Click.
-   */
-  public static final Key<ClickEvent, ClickHandler> KEY = new Key<ClickEvent, ClickHandler>(
+    Event Key for Click.
+  */
+  public static final Key<ClickEvent, ClickHandler> KEY = new Key<ClickEvent,ClickHandler>(
       Event.ONCLICK) {
-    @Override
-    protected void fire(ClickHandler handler, ClickEvent event) {
-      handler.onClick(event);
-    }
+     @Override
+     public void fire(ClickHandler handler, ClickEvent event) {
+       handler.onClick(event);
+     }
 
-    @Override
-    public ClickEvent wrap(Event nativeEvent) {
-      return new ClickEvent(nativeEvent);
-    }
-  };
+     @Override     
+    ClickEvent wrap(Event nativeEvent) {
+       return new ClickEvent(nativeEvent);
+     }
+   };
 
   /**
    * Constructs a ClickEvent event.
    * 
    * @param nativeEvent the native event object wrapped by this event
    */
-  public ClickEvent(Event e) {
-    super(e);
+  public ClickEvent(Event nativeEvent) {
+    super(nativeEvent);
   }
-
+  
   @Override
   protected Key getKey() {
     return KEY;

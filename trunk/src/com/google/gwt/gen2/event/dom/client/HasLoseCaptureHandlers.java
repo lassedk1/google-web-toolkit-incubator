@@ -22,9 +22,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasLoseCaptureHandlers {
   /**
-   * Adds a {@link HasLoseCaptureEvent} handler.
+   * Adds a {@link LoseCaptureEvent} handler.
    * 
-   * @param handler the handler
+   * @param handler the lose capture handler
+   * @return {@link HandlerRegistration} used to remove this handler
    */
   HandlerRegistration addLoseCaptureHandler(LoseCaptureHandler handler);
 }

@@ -29,8 +29,25 @@ public abstract class MouseEvent<T extends EventHandler> extends DomEvent {
    * The native Dom button codes.
    */
   public enum Button {
-    LEFT, MIDDLE, RIGHT;
+    /**
+     * Left button.
+     */
+    LEFT,
+    /**
+     * Middle button.
+     */
+    MIDDLE,
+    /**
+     * Right button.
+     */
+    RIGHT;
 
+    /**
+     * Gets the button codes.
+     * 
+     * @param buttonCode the button code
+     * @return which button
+     */
     public static Button valueOf(int buttonCode) {
       switch (buttonCode) {
         case Event.BUTTON_LEFT:
@@ -45,10 +62,15 @@ public abstract class MouseEvent<T extends EventHandler> extends DomEvent {
     }
   }
 
-  protected MouseEvent(Event e) {
+  MouseEvent(Event e) {
     super(e);
   }
 
+  /**
+   * Gets the button value.
+   * 
+   * @return gets the button value.
+   */
   public Button getButton() {
     return Button.valueOf(getNativeEvent().getButton());
   }

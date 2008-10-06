@@ -12,20 +12,17 @@
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- */package com.google.gwt.gen2.event.dom.client;
+ */
 
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
+package com.google.gwt.gen2.event.dom.client;
 
 /**
- * A widget that implements this interface is a public source of
- * {@link MouseOutEvent} events.
+ * Convenience interface used for widgets that wish to implement all keyboard
+ * handlers. Note, as new mouse handlers are added to GWT, this interface will
+ * be expanded, so only implement this interface if you wish to have your widget
+ * break when a new keyboard event type is introduced.
+ * 
  */
-public interface HasMouseOutHandlers {
-  /**
-   * Adds a {@link MouseOutEvent} handler.
-   * 
-   * @param handler the mouse out handler
-   * @return {@link HandlerRegistration} used to remove this handler
-   */
-  HandlerRegistration addMouseOutHandler(MouseOutHandler handler);
+public interface HasKeyboardHandlers extends HasKeyUpHandlers,
+    HasKeyDownHandlers, HasKeyPressHandlers {
 }

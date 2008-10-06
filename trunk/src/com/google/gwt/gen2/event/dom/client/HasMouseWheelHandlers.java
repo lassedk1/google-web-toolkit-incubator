@@ -22,9 +22,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasMouseWheelHandlers {
   /**
-   * Adds a {@link HasMouseWheelEvent} handler.
+   * Adds a {@link MouseWheelEvent} handler.
    * 
-   * @param handler the handler
+   * @param handler the mouse wheel handler
+   * @return {@link HandlerRegistration} used to remove this handler
    */
   HandlerRegistration addMouseWheelHandler(MouseWheelHandler handler);
 }

@@ -22,9 +22,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasFocusHandlers {
   /**
-   * Adds a {@link HasFocusEvent} handler.
+   * Adds a {@link FocusEvent} handler.
    * 
-   * @param handler the handler
+   * @param handler the focus handler
+   * @return {@link HandlerRegistration} used to remove this handler
    */
   HandlerRegistration addFocusHandler(FocusHandler handler);
 }

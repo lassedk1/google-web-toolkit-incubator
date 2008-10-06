@@ -23,30 +23,30 @@ import com.google.gwt.user.client.Event;
 public class BlurEvent extends DomEvent {
 
   /**
-   * Event Key for Blur.
-   */
-  public static final Key<BlurEvent, BlurHandler> KEY = new Key<BlurEvent, BlurHandler>(
+    Event Key for Blur.
+  */
+  public static final Key<BlurEvent, BlurHandler> KEY = new Key<BlurEvent,BlurHandler>(
       Event.ONBLUR) {
-    @Override
-    protected void fire(BlurHandler handler, BlurEvent event) {
-      handler.onBlur(event);
-    }
+     @Override
+     public void fire(BlurHandler handler, BlurEvent event) {
+       handler.onBlur(event);
+     }
 
-    @Override
-    public BlurEvent wrap(Event nativeEvent) {
-      return new BlurEvent(nativeEvent);
-    }
-  };
+     @Override     
+    BlurEvent wrap(Event nativeEvent) {
+       return new BlurEvent(nativeEvent);
+     }
+   };
 
   /**
    * Constructs a BlurEvent event.
    * 
    * @param nativeEvent the native event object wrapped by this event
    */
-  public BlurEvent(Event e) {
-    super(e);
+  public BlurEvent(Event nativeEvent) {
+    super(nativeEvent);
   }
-
+  
   @Override
   protected Key getKey() {
     return KEY;

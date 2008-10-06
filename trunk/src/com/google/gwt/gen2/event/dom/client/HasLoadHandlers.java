@@ -22,9 +22,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasLoadHandlers {
   /**
-   * Adds a {@link HasLoadEvent} handler.
+   * Adds a {@link LoadEvent} handler.
    * 
-   * @param handler the handler
+   * @param handler the load handler
+   * @return {@link HandlerRegistration} used to remove this handler
    */
   HandlerRegistration addLoadHandler(LoadHandler handler);
 }
