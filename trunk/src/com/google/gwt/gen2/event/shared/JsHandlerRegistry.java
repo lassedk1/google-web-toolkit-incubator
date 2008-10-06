@@ -23,11 +23,11 @@ import com.google.gwt.gen2.event.shared.AbstractEvent.Key;
  * Default JavaScript handler registry. This is in the shared package so we
  * don't have to make it public, should never be called outside of GWT.
  * 
- * The {@link JsHandlerRegistry} makes use of the fact that in the large
- * majority of cases, only one or two handlers are added for each event type.
- * Therefore, rather than storing handlers in a list of lists, we store then in
- * a single flattened array with an escape clause to handler the rare case where
- * we have more handlers then expected.
+ * It makes use of the fact that in the large majority of cases, only one or two
+ * handlers are added for each event type. Therefore, rather than storing
+ * handlers in a list of lists, we store then in a single flattened array with
+ * an escape clause to handler the rare case where we have more handlers then
+ * expected.
  */
 class JsHandlerRegistry extends JavaScriptObject {
 
@@ -104,11 +104,7 @@ class JsHandlerRegistry extends JavaScriptObject {
   }-*/;
 
   private native EventHandler getHandler(int base, int index, boolean flattened) /*-{
-    if(flattened) {
-      return this[base + 2 + index];
-    } else {
-     return this[base + 1][index];
-    }
+    return flattened? this[base + 2 + index]: this[base + 1][index];
   }-*/;
 
   private native boolean isFlattened(int base) /*-{
