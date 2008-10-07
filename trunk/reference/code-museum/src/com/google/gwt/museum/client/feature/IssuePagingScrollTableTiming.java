@@ -71,23 +71,15 @@ public class IssuePagingScrollTableTiming extends AbstractIssueOverride {
     t.addRowPagingListener(new RowPagingListener() {
 
       public void onNumPagesChanges(int numPages) {
-        // TODO Auto-generated method stub
-
       }
 
       public void onPageChanged(int page) {
-        // TODO Auto-generated method stub
-
       }
 
       public void onPageLoaded(int page) {
-        TimingLog.logTiming("Finished page load of " + page);
-
       }
 
       public void onPagingFailure(Throwable caught) {
-        // TODO Auto-generated method stub
-
       }
 
     });

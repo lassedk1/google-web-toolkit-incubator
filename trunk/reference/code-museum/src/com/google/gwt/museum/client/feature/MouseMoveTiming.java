@@ -85,13 +85,12 @@ public class MouseMoveTiming extends AbstractIssueOverride {
 
   @Override
   public String getInstructions() {
-    return "instructions";
+    return "move over both widgets";
   }
 
   @Override
   public String getSummary() {
-    // TODO Auto-generated method stub
-    return null;
+    return "mouse move timing";
   }
 
   @Override

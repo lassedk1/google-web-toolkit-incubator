@@ -19,6 +19,10 @@ package com.google.gwt.museum.client.common;
 import com.google.gwt.libideas.logging.client.SimpleLogHandler;
 import com.google.gwt.libideas.logging.shared.Log;
 
+/**
+ * Abstract issue for incubator.
+ * 
+ */
 public abstract class AbstractIssueOverride extends AbstractIssue {
   static {
     try {

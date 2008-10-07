@@ -18,6 +18,10 @@ package com.google.gwt.museum.client.common;
 
 import com.google.gwt.i18n.client.NumberFormat;
 
+/**
+ * Money table model.
+ * 
+ */
 public class MoneyTableModel extends SampleTableModel {
   NumberFormat format = NumberFormat.getCurrencyFormat();
 
