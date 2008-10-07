@@ -70,7 +70,7 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
     static Css DEFAULT = new StandardCss("gwt-DateBox");
 
     public StandardCss(String baseStyleName) {
-      super(baseStyleName);
+      super(baseStyleName, "dateBox");
     }
 
     public String dateBox() {

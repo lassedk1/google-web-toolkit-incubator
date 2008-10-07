@@ -105,8 +105,8 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
     /**
      * Constructor.
      */
-    public StandardCss(String baseStyleName) {
-      super(baseStyleName);
+    public StandardCss(String styleName, String baseStyleName) {
+      super(styleName, baseStyleName);
     }
 
     public String customListBoxDisabledItem() {

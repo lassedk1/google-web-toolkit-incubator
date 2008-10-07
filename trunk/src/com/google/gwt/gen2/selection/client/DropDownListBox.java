@@ -59,13 +59,10 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
   static class StandardCss extends CustomListBox.StandardCss implements Css {
 
     /**
-     * CSS resource for {@link WrappedDropDownListBox}.
-     * 
+     * CSS resource.
      */
     public static interface Resources extends ImmutableResourceBundle {
-      /**
-       * @return
-       */
+
       @Resource("com/google/gwt/gen2/widgetbase/public/DropDownListBox.css")
       DropDownListBox.Css dropDownListBoxCss();
     }
@@ -90,8 +87,8 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
       }
     }
 
-    public StandardCss(String baseStyleName) {
-      super(baseStyleName);
+    public StandardCss(String styleName) {
+      super(styleName, "customListBox");
     }
 
     public String dropDownListBox() {
@@ -118,12 +115,14 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
   }
 
   /**
-   * Creates a {@link Css} instance with the given base name.
+   * Creates a {@link Css} instance with the given style name. Note, only the
+   * primary style name changes.
    * 
-   * @param baseName base style name.
+   * @param styleName style name for the widget
+   * @return the standard css
    */
-  public static Css createCss(String baseName) {
-    return new StandardCss(baseName);
+  public static Css createCss(String styleName) {
+    return new StandardCss(styleName);
   }
 
   /**
@@ -257,13 +256,13 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
 
   @Override
   public void setStyleName(String styleName) {
-    setCss(new StandardCss(styleName));
+    setCss(createCss(styleName));
     super.setStyleName(styleName);
   }
 
   @Override
   public void setStylePrimaryName(String styleName) {
-    setCss(new StandardCss(styleName));
+    setCss(createCss(styleName));
     super.setStylePrimaryName(styleName);
   }
 

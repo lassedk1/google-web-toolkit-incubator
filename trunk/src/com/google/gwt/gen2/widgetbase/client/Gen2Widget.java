@@ -17,6 +17,7 @@
 package com.google.gwt.gen2.widgetbase.client;
 
 import com.google.gwt.gen2.event.dom.client.DomEvent;
+import com.google.gwt.gen2.event.logical.shared.HasHandlerManager;
 import com.google.gwt.gen2.event.shared.AbstractEvent;
 import com.google.gwt.gen2.event.shared.EventHandler;
 import com.google.gwt.gen2.event.shared.HandlerManager;
@@ -29,13 +30,27 @@ import com.google.gwt.user.client.ui.Widget;
  * {@link Gen2Widget} will include all the extra handler and styling support
  * needed by gen2 widgets.
  */
-public abstract class Gen2Widget extends Widget {
+public abstract class Gen2Widget extends Widget implements HasHandlerManager {
 
-  private HandlerManager handlers;
+  private HandlerManager handlerManager;
+
+  /**
+   * Returns this widget's {@link HandlerManager} used for event management.
+   * 
+   * @return the handler manager
+   */
+  public final HandlerManager getHandlerManager() {
+    if (handlerManager == null) {
+      handlerManager = createHandlerManager();
+    }
+    return handlerManager;
+  }
 
   @Override
   public void onBrowserEvent(Event nativeEvent) {
-    DomEvent.fireNativeEvent(nativeEvent, getHandlerManager());
+    if (handlerManager != null) {
+      DomEvent.fireNativeEvent(nativeEvent, handlerManager);
+    }
   }
 
   @Override
@@ -58,26 +73,27 @@ public abstract class Gen2Widget extends Widget {
   /**
    * Adds this handler to the widget.
    * 
+   * @param <HandlerType> the type of handler to add
    * @param key the event key
    * @param handler the handler
+   * @return {@link HandlerRegistration} used to remove the handler
    */
   protected <HandlerType extends EventHandler> HandlerRegistration addHandler(
       AbstractEvent.Key<?, HandlerType> key, final HandlerType handler) {
-    if (handlers == null) {
-      handlers = createHandlerManager();
-    }
-    return handlers.addHandler(key, handler);
+    return getHandlerManager().addHandler(key, handler);
   }
 
   /**
    * Adds a native event handler to the widget and sinks the corresponding
    * native event.
    * 
+   * @param <HandlerType> the type of handler to add
    * @param key the event key
    * @param handler the handler
+   * @return {@link HandlerRegistration} used to remove the handler
    */
-  protected <T extends EventHandler> HandlerRegistration addHandlerAndSink(
-      DomEvent.Key<?, T> key, final T handler) {
+  protected <HandlerType extends EventHandler> HandlerRegistration addHandlerAndSink(
+      DomEvent.Key<?, HandlerType> key, final HandlerType handler) {
     sinkEvents(key.getNativeEventType());
     return addHandler(key, handler);
   }
@@ -85,6 +101,8 @@ public abstract class Gen2Widget extends Widget {
   /**
    * Creates the {@link HandlerManager} used by this widget for event
    * management.
+   * 
+   * @return the handler manager
    * 
    */
   protected HandlerManager createHandlerManager() {
@@ -97,23 +115,19 @@ public abstract class Gen2Widget extends Widget {
    * @param event the event
    */
   protected void fireEvent(AbstractEvent event) {
-    if (handlers != null) {
-      handlers.fireEvent(event);
+    if (handlerManager != null) {
+      handlerManager.fireEvent(event);
     }
   }
 
   /**
-   * Returns this widget's {@link HandlerManager} used for event management.
-   */
-  protected final HandlerManager getHandlerManager() {
-    return handlers;
-  }
-
-  /**
    * Is the event handled by one or more handlers?
+   * 
+   * @param key event type key
+   * @return does this event type have a current handler
    */
   protected final boolean isEventHandled(AbstractEvent.Key key) {
-    return handlers == null ? false : handlers.isEventHandled(key);
+    return handlerManager == null ? false : handlerManager.isEventHandled(key);
   }
 
   /**
@@ -122,15 +136,17 @@ public abstract class Gen2Widget extends Widget {
    * instead. This method is provided primary to support the deprecated
    * listeners api.
    * 
+   * @param <HandlerType> handler type
+   * 
    * @param key the event key
    * @param handler the handler
    */
-  protected <T extends EventHandler> void removeHandler(
-      AbstractEvent.Key<?, T> key, final T handler) {
-    if (handlers == null) {
-      handlers = new HandlerManager(this);
+  protected <HandlerType extends EventHandler> void removeHandler(
+      AbstractEvent.Key<?, HandlerType> key, final HandlerType handler) {
+    if (handlerManager == null) {
+      handlerManager = new HandlerManager(this);
     }
-    handlers.removeHandler(key, handler);
+    handlerManager.removeHandler(key, handler);
   }
 
 }

@@ -32,9 +32,12 @@ public class StandardCssImpl implements WidgetCss {
 
   /**
    * Constructor.
+   * 
+   * @param baseStyleName2
    */
-  public StandardCssImpl(String baseStyleName) {
-    setBaseStyleName(baseStyleName);
+  public StandardCssImpl(String widgetName, String baseName) {
+    this.widgetName = widgetName;
+    this.baseName = baseName;
   }
 
   /**
@@ -61,23 +64,6 @@ public class StandardCssImpl implements WidgetCss {
   }
 
   /**
-   * Sets the base name.
-   */
-  protected void setBaseStyleName(String style) {
-    if (style == null || style.length() == 0) {
-      assert (false) : "Should not have a null style name";
-    }
-    widgetName = style;
-    int find = Math.max(0, style.lastIndexOf("-"));
-    if (find == style.length() - 1) {
-      baseName = "";
-    } else {
-      String lowerCaseFirstLetter = style.substring(find + 1, find + 2).toLowerCase();
-      baseName = lowerCaseFirstLetter + style.substring(find + 2);
-    }
-  }
-
-  /**
    * Prepends the base name to the given style.
    * 
    * @param style style name
@@ -86,5 +72,4 @@ public class StandardCssImpl implements WidgetCss {
   protected String wrap(String styleName) {
     return baseName + styleName;
   }
-
 }
