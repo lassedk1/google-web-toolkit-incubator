@@ -16,6 +16,8 @@
 
 package com.google.gwt.gen2.event.dom.client;
 
+import com.google.gwt.gen2.event.logical.shared.HasHandlerManager;
+
 /**
  * Convenience interface used for widgets that wish to implement all keyboard
  * handlers. Note, as new mouse handlers are added to GWT, this interface will
@@ -25,4 +27,24 @@ package com.google.gwt.gen2.event.dom.client;
  */
 public interface HasKeyboardHandlers extends HasKeyUpHandlers,
     HasKeyDownHandlers, HasKeyPressHandlers {
+
+  /**
+   * Adaptor used to create and add all the keyboard events at once.
+   * 
+   * @param <EventSourceType> the event source
+   */
+  public abstract static class Adaptor<EventSourceType extends HasHandlerManager & HasKeyDownHandlers & HasKeyUpHandlers & HasKeyPressHandlers>
+      implements KeyDownHandler, KeyUpHandler, KeyPressHandler {
+    /**
+     * Adds all the keyboard handler defined in this adaptor to the given event
+     * source.
+     * 
+     * @param source
+     */
+    public Adaptor(EventSourceType source) {
+      source.addKeyDownHandler(this);
+      source.addKeyPressHandler(this);
+      source.addKeyUpHandler(this);
+    }
+  }
 }
