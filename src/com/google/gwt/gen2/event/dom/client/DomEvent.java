@@ -147,30 +147,50 @@ public abstract class DomEvent extends AbstractEvent {
     }
   }
 
-  private static native String getType(int type) /*-{
+  private static String getType(int type) {
     switch (type) {
-      case 0x01000: return "blur";
-      case 0x00400: return "change";
-      case 0x00001: return "click";
-      case 0x00002: return "dblclick";
-      case 0x00800: return "focus";
-      case 0x00080: return "keydown";
-      case 0x00100: return "keypress";
-      case 0x00200: return "keyup";
-      case 0x08000: return "load";
-      case 0x02000: return "losecapture";
-      case 0x00004: return "mousedown";
-      case 0x00040: return "mousemove";
-      case 0x00020: return "mouseout";
-      case 0x00010: return "mouseover";
-      case 0x00008: return "mouseup";
-      case 0x04000: return "scroll";
-      case 0x10000: return "error";
-      case 0x20000: return "mousewheel";
-      case 0x20000: return "DOMMouseScroll";
-      case 0x40000: return "contextmenu";
+      case 0x01000:
+        return "blur";
+      case 0x00400:
+        return "change";
+      case 0x00001:
+        return "click";
+      case 0x00002:
+        return "dblclick";
+      case 0x00800:
+        return "focus";
+      case 0x00080:
+        return "keydown";
+      case 0x00100:
+        return "keypress";
+      case 0x00200:
+        return "keyup";
+      case 0x08000:
+        return "load";
+      case 0x02000:
+        return "losecapture";
+      case 0x00004:
+        return "mousedown";
+      case 0x00040:
+        return "mousemove";
+      case 0x00020:
+        return "mouseout";
+      case 0x00010:
+        return "mouseover";
+      case 0x00008:
+        return "mouseup";
+      case 0x04000:
+        return "scroll";
+      case 0x10000:
+        return "error";
+      case 0x20000:
+        return "mousewheel";
+      case 0x40000:
+        return "contextmenu";
+      default:
+        return null;
     }
-  }-*/;
+  }
 
   private Event nativeEvent;
 
