@@ -37,6 +37,10 @@ import com.google.gwt.widgetideas.client.FastTreeItem;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Fast tree visuals.
+ * 
+ */
 public class FastTreeVisuals extends AbstractIssueOverride {
 
   @Override
@@ -51,6 +55,21 @@ public class FastTreeVisuals extends AbstractIssueOverride {
     p.add(widgetTreeInScroll(), "Widget tree in scroll");
     p.add(zoomingTree(), "zooming tree");
     return p;
+  }
+
+  @Override
+  public String getInstructions() {
+    return "visual test of basic tree features";
+  }
+
+  @Override
+  public String getSummary() {
+    return "FastTree test";
+  }
+
+  @Override
+  public boolean hasCSS() {
+    return false;
   }
 
   public void report(String s) {
@@ -233,21 +252,6 @@ public class FastTreeVisuals extends AbstractIssueOverride {
     scroller.setWidth("100px");
     p.add(scroller);
     return p;
-  }
-
-  @Override
-  public String getInstructions() {
-    return "visual test of basic tree features";
-  }
-
-  @Override
-  public String getSummary() {
-    return "FastTree test";
-  }
-
-  @Override
-  public boolean hasCSS() {
-    return false;
   }
 
 }
