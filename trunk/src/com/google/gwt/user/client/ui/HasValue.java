@@ -18,6 +18,8 @@ package com.google.gwt.user.client.ui;
 /**
  * An object that implements this interface contains a value of type T, which
  * can be set and retrieved using these methods.
+ * 
+ * @param <T> the type of value.
  */
 public interface HasValue<T> {
 
@@ -33,5 +35,5 @@ public interface HasValue<T> {
    * 
    * @param text the object's new value
    */
-  void setValue(T value);
+  void setValue(T text);
 }
