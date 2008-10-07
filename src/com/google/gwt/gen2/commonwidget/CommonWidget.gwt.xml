@@ -1,4 +1,5 @@
 <module>
 	<inherits name='com.google.gwt.gen2.widgetbase.WidgetBase' />
+	<inherits name='com.google.gwt.widgetideas.BasicTable' />
 	<source path="client" />
 </module>
