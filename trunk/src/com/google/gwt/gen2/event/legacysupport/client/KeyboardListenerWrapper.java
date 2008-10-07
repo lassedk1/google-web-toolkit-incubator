@@ -45,7 +45,8 @@ public class KeyboardListenerWrapper extends
   }
 
   public void onKeyPress(KeyPressEvent event) {
-    listener.onKeyPress(source(event), (char) event.getKeyCode(),
+    listener.onKeyPress(source(event),
+        (char) event.getNativeEvent().getKeyCode(),
         event.getKeyboardModifiers());
   }
 
