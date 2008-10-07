@@ -21,12 +21,12 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.libideas.resources.ext.ResourceBundleFields;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGenerator;
-import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
+ 
 
 /**
  * A base class providing common methods for ResourceGenerator implementations.
  * 
- * @see ResourceGeneratorUtil
+ * @see com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil
  */
 public abstract class AbstractResourceGenerator implements ResourceGenerator {
   public abstract String createAssignment(TreeLogger logger,

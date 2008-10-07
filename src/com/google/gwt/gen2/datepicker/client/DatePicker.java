@@ -585,6 +585,19 @@ public class DatePicker extends Gen2Composite implements
   }
 
   /**
+   * Sets the date picker style name. Note, this does not change the base name
+   * used for auxiliary styles. So, for instance, setStyleName("myDatePicker")
+   * would replace the default "gwt-DatePicker", but would not effect
+   * "datePickerMonthSelector".
+   * 
+   */
+  @Override
+  public void setStyleName(String styleName) {
+    css = createCss(styleName);
+    super.setStyleName(styleName);
+  }
+
+  /**
    * Sets the selected date.
    * 
    * @param date the new selected date
@@ -614,19 +627,6 @@ public class DatePicker extends Gen2Composite implements
     if (fireEvents && isEventHandled(SelectionEvent.KEY)) {
       fireEvent(new SelectionEvent<Date>(oldSelected, newSelected));
     }
-  }
-
-  /**
-   * Sets the date picker style name. Note, this does not change the base name
-   * used for auxiliary styles. So, for instance, setStyleName("myDatePicker")
-   * would replace the default "gwt-DatePicker", but would not effect
-   * "datePickerMonthSelector".
-   * 
-   */
-  @Override
-  public void setStyleName(String styleName) {
-    css = createCss(styleName);
-    super.setStyleName(styleName);
   }
 
   /**
