@@ -16,7 +16,6 @@
 package com.google.gwt.gen2.event.dom.client;
 
 import com.google.gwt.gen2.base.client.Gen2TestBase;
-import com.google.gwt.gen2.event.shared.AbstractEvent;
 import com.google.gwt.gen2.event.shared.HandlerManager;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 
@@ -133,7 +132,7 @@ public class GWTEventsTest extends Gen2TestBase {
         "onDoubleClick");
   }
 
-  private void checkFire(AbstractEvent event, HandlerRegistration registration,
+  private void checkFire(DomEvent event, HandlerRegistration registration,
       Flag flag, String eventName) {
 
     flag.flag = false;
@@ -142,6 +141,7 @@ public class GWTEventsTest extends Gen2TestBase {
 
     flag.flag = false;
     registration.removeHandler();
+    event.reset(null);
     manager.fireEvent(event);
     assertTrue(eventName + " fired when it shouldn't have.", !flag.flag);
   }
