@@ -20,9 +20,14 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.gen2.commonwidget.client.SimpleWidget;
 import com.google.gwt.gen2.event.dom.client.ClickEvent;
 import com.google.gwt.gen2.event.dom.client.ClickHandler;
+import com.google.gwt.gen2.event.dom.client.MouseDownEvent;
+import com.google.gwt.gen2.event.dom.client.MouseDownHandler;
 import com.google.gwt.gen2.event.dom.client.MouseMoveEvent;
 import com.google.gwt.gen2.event.dom.client.MouseMoveHandler;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.gen2.event.dom.client.MouseUpEvent;
+import com.google.gwt.gen2.event.dom.client.MouseUpHandler;
+import com.google.gwt.libideas.logging.client.SimpleLogHandler;
+import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
@@ -34,8 +39,13 @@ public class SimpleWidgetDemo implements EntryPoint {
    * This is the entry point method.
    */
   public void onModuleLoad() {
+    // Set up log handler.
+    SimpleLogHandler handler = new SimpleLogHandler(false);
+    Log.addLogHandler(handler);
+    RootPanel.get().add(handler.getWidget(), 300, 0);
 
-    SimpleWidget clickable = new SimpleWidget("<div>clickMe</div>");
+    // Set up clickable widget.
+    SimpleWidget clickable = new SimpleWidget("<h1>clickMe</h1>");
     RootPanel.get().add(clickable);
     clickable.addClickHandler(new ClickHandler() {
 
@@ -45,7 +55,8 @@ public class SimpleWidgetDemo implements EntryPoint {
 
     });
 
-    SimpleWidget mouseMove = new SimpleWidget("<h1>mouseMove</h1>");
+    // Set up mouse move widget.
+    SimpleWidget mouseMove = new SimpleWidget("<h2>mouseMove</h2>");
     RootPanel.get().add(mouseMove);
     mouseMove.addMouseMoveHandler(new MouseMoveHandler() {
 
@@ -53,9 +64,29 @@ public class SimpleWidgetDemo implements EntryPoint {
         report("moved over mouseMove");
       }
     });
+
+    // Set up mouse down and up handler, here some syntactic sugar would be nice
+    // to have.
+
+    SimpleWidget mouseDownAndUp = new SimpleWidget(
+        "<h3>mouse down and up events</h3>");
+    RootPanel.get().add(mouseDownAndUp);
+
+    class MyHandler implements MouseDownHandler, MouseUpHandler {
+      public void onMouseDown(MouseDownEvent event) {
+        report("on mouse down");
+      }
+
+      public void onMouseUp(MouseUpEvent event) {
+        report("on mouse up");
+      }
+    }
+    MyHandler myHandler = new MyHandler();
+    mouseDownAndUp.addMouseDownHandler(myHandler);
+    mouseDownAndUp.addMouseUpHandler(myHandler);
   }
 
   private void report(String string) {
-    RootPanel.get().add(new Label(string));
+    Log.info(string);
   }
 }
