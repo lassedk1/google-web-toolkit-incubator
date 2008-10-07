@@ -96,7 +96,6 @@ public class ClickTiming extends AbstractIssueOverride {
 
   @Override
   public Widget createIssue() {
-
     t.setBorderWidth(1);
     t.setText(0, 0, "Mouse Handler Info");
     t.setText(0, 1, "Mouse Listener Info");
@@ -108,13 +107,12 @@ public class ClickTiming extends AbstractIssueOverride {
 
   @Override
   public String getInstructions() {
-    return "instructions";
+    return "click on the buttons";
   }
 
   @Override
   public String getSummary() {
-    // TODO Auto-generated method stub
-    return null;
+    return "psudo click listener";
   }
 
   @Override
