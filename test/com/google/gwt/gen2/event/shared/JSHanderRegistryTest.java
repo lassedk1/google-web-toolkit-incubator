@@ -60,7 +60,7 @@ public class JSHanderRegistryTest extends HandlerTestBase {
     reset();
     registry.fireEvent(new MouseDownEvent(null));
     assertFired(mouse1);
-    assertFired(mouse2);
+    assertNotFired(mouse2);
 
     registry.removeHandler(MouseDownEvent.KEY, mouse1);
 
