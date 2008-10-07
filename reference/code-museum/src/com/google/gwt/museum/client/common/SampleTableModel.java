@@ -19,27 +19,27 @@ package com.google.gwt.museum.client.common;
 import com.google.gwt.widgetideas.table.client.ClientTableModel;
 
 /**
- * G
- * @author ecc
- *
+ * 
+ * 
  */
 public class SampleTableModel extends ClientTableModel<Object> {
   public int numRows = 100;
   public int numColumns = 15;
 
-  public void setNumRows(int numRows){
-    this.numRows = numRows;
-  }
-  public void setNumColumns(int numColumns){
-    this.numColumns = numColumns;
-  }
-  
   @Override
   public Object getCell(int rowNum, int cellNum) {
     if (rowNum >= numRows | cellNum >= numColumns) {
       return null;
     }
     return "cell " + rowNum + ", " + cellNum;
+  }
+
+  public void setNumColumns(int numColumns) {
+    this.numColumns = numColumns;
+  }
+
+  public void setNumRows(int numRows) {
+    this.numRows = numRows;
   }
 
   @Override
