@@ -66,10 +66,10 @@ public class SimpleWidget extends Gen2Widget implements HasMouseHandlers,
   /**
    * Create the css for this widget with the given base name.
    */
-  public static Css createCss(final String baseName) {
+  public static Css createCss(final String styleName) {
     class Standard extends StandardCssImpl implements Css {
       Standard() {
-        super(baseName);
+        super(styleName, "simpleWidget");
       }
 
       public String simpleWidget() {
@@ -85,7 +85,9 @@ public class SimpleWidget extends Gen2Widget implements HasMouseHandlers,
     }
     translater.setInnerHTML(html);
     assert (translater.getChildNodes().getLength() == 1);
-    return translater.getFirstChildElement();
+    Element e = translater.getFirstChildElement();
+    translater.removeChild(e);
+    return e;
   }
 
   private static Css ensureDefaultCss() {

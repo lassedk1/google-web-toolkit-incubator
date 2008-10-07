@@ -186,8 +186,8 @@ public class DatePicker extends Gen2Composite implements
       }
     }
 
-    public StandardCss(String baseStyleName) {
-      super(baseStyleName);
+    public StandardCss(String widgetName, String baseStyleName) {
+      super(widgetName, baseStyleName);
     }
 
     public String datePicker() {
@@ -302,13 +302,17 @@ public class DatePicker extends Gen2Composite implements
   }
 
   /**
-   * Creates a {@link Css} instance with the given style name.
+   * 
+   * Creates a {@link Css} instance with the given style name. Note, this does
+   * not change the base name used for auxiliary styles. So, for instance,
+   * create("myDatePicker") would replace the default "gwt-DatePicker" with
+   * "myDatePicker" but would not effect the style "datePickerMonthSelector".
    * 
    * @param styleName widget's style name.
-   * @return the css
+   * @return the created css
    */
   public static Css createCss(String styleName) {
-    return new StandardCss(styleName);
+    return new StandardCss(styleName, "datePicker");
   }
 
   /**
@@ -613,11 +617,11 @@ public class DatePicker extends Gen2Composite implements
   }
 
   /**
-   * Sets the date picker style name and all related style names.
-   * <p>
-   * So for style name "gwt-Foo", the widget's name would be "gwt-Foo" and the
-   * month selector's name would be "fooMonthSelector". For style name "Bar",
-   * the month selector would be "barMonthSelector".
+   * Sets the date picker style name. Note, this does not change the base name
+   * used for auxiliary styles. So, for instance, setStyleName("myDatePicker")
+   * would replace the default "gwt-DatePicker", but would not effect
+   * "datePickerMonthSelector".
+   * 
    */
   @Override
   public void setStyleName(String styleName) {
