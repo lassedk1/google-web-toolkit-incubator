@@ -1360,7 +1360,8 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
   protected Element insertCell(int row, int column) {
     Element tr = rowFormatter.getElement(row);
     Element td = createCell();
-    DOM.insertChild(tr, td, column);
+    Element beforeTd = cellFormatter.getRawElement(row, column);
+    tr.insertBefore(td, beforeTd);
     return td;
   }
 
@@ -1374,9 +1375,10 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
    */
   protected void insertCells(int row, int column, int count) {
     Element tr = rowFormatter.getRawElement(row);
+    Element beforeTd = cellFormatter.getRawElement(row, column);
     for (int i = column; i < column + count; i++) {
       Element td = createCell();
-      DOM.insertChild(tr, td, i);
+      tr.insertBefore(td, beforeTd);
     }
   }
 
