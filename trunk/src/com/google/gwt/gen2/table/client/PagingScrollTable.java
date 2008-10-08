@@ -273,6 +273,7 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
     super(dataTable, headerTable, images);
     this.tableModel = tableModel;
     insert(emptyTableWidgetWrapper, getElement(), 2, true);
+    setEmptyTableWidgetVisible(false);
     setTableDefinition(tableDefinition);
     oldPageCount = getPageCount();
 
