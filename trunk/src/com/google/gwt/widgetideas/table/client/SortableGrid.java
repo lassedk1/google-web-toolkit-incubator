@@ -15,6 +15,7 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
+import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorterCallback;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortInfo;
@@ -137,6 +138,18 @@ public class SortableGrid extends SelectionGrid {
    */
   public class ColumnSorterCallback {
     /**
+     * An array of the tr elements that should be reselected.
+     */
+    private Element[] selectedRows;
+
+    /**
+     * Construct a new {@link ColumnSorterCallback}.
+     */
+    ColumnSorterCallback(Element[] selectedRows) {
+      this.selectedRows = selectedRows;
+    }
+
+    /**
      * Set the order of all rows after a column sort request.
      * 
      * This method takes an array of the row indexes in this Grid, ordered
@@ -180,6 +193,11 @@ public class SortableGrid extends SelectionGrid {
      */
     public void onSortingComplete() {
       fireColumnSorted();
+
+      // Reselect things that need reselecting
+      for (int i = 0; i < selectedRows.length; i++) {
+        selectRow(getRowIndex(selectedRows[i]), false);
+      }
     }
   }
 
@@ -362,8 +380,11 @@ public class SortableGrid extends SelectionGrid {
     columnSortList.add(new ColumnSortInfo(column, ascending));
 
     // Use the onSort method to actually sort the column
+    Element[] selectedRows = getSelectedRowsMap().values().toArray(
+        new Element[0]);
+    deselectAllRows();
     getColumnSorter(true).onSortColumn(this, columnSortList,
-        new ColumnSorterCallback());
+        new ColumnSorterCallback(selectedRows));
   }
 
   /**

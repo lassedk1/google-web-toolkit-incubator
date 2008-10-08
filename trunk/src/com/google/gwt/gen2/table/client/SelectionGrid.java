@@ -226,7 +226,7 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
    * Deselect all selected rows in the data table.
    */
   public void deselectAllRows() {
-    deselectRows(true);
+    deselectAllRows(true);
   }
 
   /**
@@ -454,7 +454,7 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
 
     // Deselect all rows
     if (!ctrlKey) {
-      deselectRows(false);
+      deselectAllRows(false);
     }
 
     boolean isSelected = selectedRows.containsKey(new Integer(row));
@@ -568,6 +568,37 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
   }
 
   /**
+   * Deselect all selected rows in the data table.
+   * 
+   * @param fireEvent true to fire events
+   */
+  protected void deselectAllRows(boolean fireEvent) {
+    // Get the old list of selected rows
+    Set<Row> oldRows = null;
+    if (fireEvent) {
+      oldRows = getSelectedRowsSet();
+    }
+  
+    // Deselect all rows
+    boolean hasInputColumn = selectionPolicy.hasInputColumn();
+    for (Element rowElem : selectedRows.values()) {
+      setStyleName(rowElem, "selected", false);
+      if (hasInputColumn) {
+        setInputSelected(getSelectionPolicy(),
+            (Element) rowElem.getFirstChildElement(), false);
+      }
+    }
+  
+    // Clear out the rows
+    selectedRows.clear();
+  
+    // Fire event
+    if (fireEvent) {
+      fireRowSelectionEvent(oldRows);
+    }
+  }
+
+  /**
    * Deselect a row in the grid. This method is safe to call even if the row is
    * not selected, or doesn't exist (out of bounds).
    * 
@@ -594,37 +625,6 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
       if (fireEvent) {
         fireRowSelectionEvent(oldRows);
       }
-    }
-  }
-
-  /**
-   * Deselect all selected rows in the data table.
-   * 
-   * @param fireEvent true to fire events
-   */
-  protected void deselectRows(boolean fireEvent) {
-    // Get the old list of selected rows
-    Set<Row> oldRows = null;
-    if (fireEvent) {
-      oldRows = getSelectedRowsSet();
-    }
-
-    // Deselect all rows
-    boolean hasInputColumn = selectionPolicy.hasInputColumn();
-    for (Element rowElem : selectedRows.values()) {
-      setStyleName(rowElem, "selected", false);
-      if (hasInputColumn) {
-        setInputSelected(getSelectionPolicy(),
-            (Element) rowElem.getFirstChildElement(), false);
-      }
-    }
-
-    // Clear out the rows
-    selectedRows.clear();
-
-    // Fire event
-    if (fireEvent) {
-      fireRowSelectionEvent(oldRows);
     }
   }
 
@@ -775,7 +775,7 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
 
     // Deselect current rows
     if (unselectAll) {
-      deselectRows(false);
+      deselectAllRows(false);
     }
 
     // Select the new row

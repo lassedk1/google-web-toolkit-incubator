@@ -28,10 +28,11 @@ import com.google.gwt.user.client.Element;
 import java.util.Map;
 
 /**
- * A variation of the {@link com.google.gwt.gen2.table.client.overrides.Grid}
+ * A variation of the {@link com.google.gwt.gen2.table.override.client.Grid}
  * that supports sorting and row movement.
  */
-public class SortableGrid extends SelectionGrid implements HasColumnSortHandlers {
+public class SortableGrid extends SelectionGrid implements
+    HasColumnSortHandlers {
   /**
    * The column sorter defines an algorithm to sort columns.
    */
@@ -43,8 +44,8 @@ public class SortableGrid extends SelectionGrid implements HasColumnSortHandlers
      * @param sortList the list of columns to sort by
      * @param callback the callback object when sorting is complete
      */
-    public abstract void onSortColumn(SortableGrid grid, ColumnSortList sortList,
-        ColumnSorterCallback callback);
+    public abstract void onSortColumn(SortableGrid grid,
+        ColumnSortList sortList, ColumnSorterCallback callback);
   }
 
   /**
@@ -139,6 +140,18 @@ public class SortableGrid extends SelectionGrid implements HasColumnSortHandlers
    */
   public class ColumnSorterCallback {
     /**
+     * An array of the tr elements that should be reselected.
+     */
+    private Element[] selectedRows;
+
+    /**
+     * Construct a new {@link ColumnSorterCallback}.
+     */
+    ColumnSorterCallback(Element[] selectedRows) {
+      this.selectedRows = selectedRows;
+    }
+
+    /**
      * Set the order of all rows after a column sort request.
      * 
      * This method takes an array of the row indexes in this Grid, ordered
@@ -182,6 +195,11 @@ public class SortableGrid extends SelectionGrid implements HasColumnSortHandlers
      */
     public void onSortingComplete() {
       fireColumnSorted();
+
+      // Reselect things that need reselecting
+      for (int i = 0; i < selectedRows.length; i++) {
+        selectRow(getRowIndex(selectedRows[i]), false);
+      }
     }
   }
 
@@ -293,7 +311,8 @@ public class SortableGrid extends SelectionGrid implements HasColumnSortHandlers
    * @param columnSortList the new {@link ColumnSortList}
    * @param fireEvents true to trigger the onSort event
    */
-  public void setColumnSortList(ColumnSortList columnSortList, boolean fireEvents) {
+  public void setColumnSortList(ColumnSortList columnSortList,
+      boolean fireEvents) {
     assert columnSortList != null : "columnSortList cannot be null";
     this.columnSortList = columnSortList;
     if (fireEvents) {
@@ -326,17 +345,22 @@ public class SortableGrid extends SelectionGrid implements HasColumnSortHandlers
   public void sortColumn(int column, boolean ascending) {
     // Verify the column bounds
     if (column < 0) {
-      throw new IndexOutOfBoundsException("Cannot access a column with a negative index: " + column);
+      throw new IndexOutOfBoundsException(
+          "Cannot access a column with a negative index: " + column);
     } else if (column >= numColumns) {
-      throw new IndexOutOfBoundsException("Column index: " + column + ", Column size: "
-          + numColumns);
+      throw new IndexOutOfBoundsException("Column index: " + column
+          + ", Column size: " + numColumns);
     }
 
     // Add the sorting to the list of sorted columns
     columnSortList.add(new ColumnSortInfo(column, ascending));
 
     // Use the onSort method to actually sort the column
-    getColumnSorter(true).onSortColumn(this, columnSortList, new ColumnSorterCallback());
+    Element[] selectedRows = getSelectedRowsMap().values().toArray(
+        new Element[0]);
+    deselectAllRows();
+    getColumnSorter(true).onSortColumn(this, columnSortList,
+        new ColumnSorterCallback(selectedRows));
   }
 
   /**
