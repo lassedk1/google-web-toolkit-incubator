@@ -713,6 +713,20 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
   }
 
   /**
+   * Set whether or not the empty table widget is visible.
+   * 
+   * @param visible true to show the empty table widget
+   */
+  protected void setEmptyTableWidgetVisible(boolean visible) {
+    emptyTableWidgetWrapper.setVisible(visible);
+    if (visible) {
+      getDataWrapper().getStyle().setProperty("display", "none");
+    } else {
+      getDataWrapper().getStyle().setProperty("display", "");
+    }
+  }
+
+  /**
    * Refresh a single row in the table.
    * 
    * @param rowIndex the index of the row
@@ -739,19 +753,5 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
       }
     };
     tableDefinition.renderRows(rowIndex, singleIterator, tableCellView);
-  }
-
-  /**
-   * Set whether or not the empty table widget is visible.
-   * 
-   * @param visible true to show the empty table widget
-   */
-  private void setEmptyTableWidgetVisible(boolean visible) {
-    emptyTableWidgetWrapper.setVisible(visible);
-    if (visible) {
-      getDataWrapper().getStyle().setProperty("display", "none");
-    } else {
-      getDataWrapper().getStyle().setProperty("display", "");
-    }
   }
 }

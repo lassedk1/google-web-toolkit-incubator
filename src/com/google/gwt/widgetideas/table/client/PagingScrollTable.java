@@ -764,7 +764,7 @@ public class PagingScrollTable<R> extends ScrollTable implements
    * 
    * @param visible true to show the empty table widget
    */
-  private void setEmptyTableWidgetVisible(boolean visible) {
+  protected void setEmptyTableWidgetVisible(boolean visible) {
     emptyTableWidgetWrapper.setVisible(visible);
     if (visible) {
       getDataWrapper().getStyle().setProperty("display", "none");
