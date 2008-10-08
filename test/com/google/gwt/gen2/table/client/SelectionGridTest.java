@@ -44,28 +44,30 @@ public class SelectionGridTest extends Gen2TestBase {
    */
   protected static class TestCellHighlightHandler implements
       CellHighlightHandler {
-    private CellHighlightEvent lastEvent = null;
+    private int lastCellIndex = -1;
+    private int lastRowIndex = -1;
 
     public void assertCellIndex(int cellIndex) {
-      assertNotNull(lastEvent);
-      assertEquals(cellIndex, lastEvent.getValue().getCellIndex());
+      assertEquals(cellIndex, lastCellIndex);
     }
 
     public void assertNotFired() {
-      assertNull(lastEvent);
+      assertEquals(-1, lastCellIndex);
+      assertEquals(-1, lastRowIndex);
     }
 
     public void assertRowIndex(int rowIndex) {
-      assertNotNull(lastEvent);
-      assertEquals(rowIndex, lastEvent.getValue().getRowIndex());
+      assertEquals(rowIndex, lastRowIndex);
     }
 
     public void onCellHighlight(CellHighlightEvent event) {
-      lastEvent = event;
+      lastCellIndex = event.getValue().getCellIndex();
+      lastRowIndex = event.getValue().getRowIndex();
     }
 
     public void reset() {
-      lastEvent = null;
+      lastCellIndex = -1;
+      lastRowIndex = -1;
     }
   }
 
@@ -74,28 +76,30 @@ public class SelectionGridTest extends Gen2TestBase {
    */
   protected static class TestCellUnhighlightHandler implements
       CellUnhighlightHandler {
-    private CellUnhighlightEvent lastEvent = null;
+    private int lastCellIndex = -1;
+    private int lastRowIndex = -1;
 
     public void assertCellIndex(int cellIndex) {
-      assertNotNull(lastEvent);
-      assertEquals(cellIndex, lastEvent.getValue().getCellIndex());
+      assertEquals(cellIndex, lastCellIndex);
     }
 
     public void assertNotFired() {
-      assertNull(lastEvent);
+      assertEquals(-1, lastCellIndex);
+      assertEquals(-1, lastRowIndex);
     }
 
     public void assertRowIndex(int rowIndex) {
-      assertNotNull(lastEvent);
-      assertEquals(rowIndex, lastEvent.getValue().getRowIndex());
+      assertEquals(rowIndex, lastRowIndex);
     }
 
     public void onCellUnhighlight(CellUnhighlightEvent event) {
-      lastEvent = event;
+      lastCellIndex = event.getValue().getCellIndex();
+      lastRowIndex = event.getValue().getRowIndex();
     }
 
     public void reset() {
-      lastEvent = null;
+      lastCellIndex = -1;
+      lastRowIndex = -1;
     }
   }
 
@@ -103,23 +107,22 @@ public class SelectionGridTest extends Gen2TestBase {
    * A custom handler used for testing.
    */
   protected static class TestRowHighlightHandler implements RowHighlightHandler {
-    private RowHighlightEvent lastEvent = null;
+    private int lastRowIndex = -1;
 
     public void assertNotFired() {
-      assertNull(lastEvent);
+      assertEquals(-1, lastRowIndex);
     }
 
     public void assertRowIndex(int rowIndex) {
-      assertNotNull(lastEvent);
-      assertEquals(rowIndex, lastEvent.getValue().getRowIndex());
+      assertEquals(rowIndex, lastRowIndex);
     }
 
     public void onRowHighlight(RowHighlightEvent event) {
-      lastEvent = event;
+      lastRowIndex = event.getValue().getRowIndex();
     }
 
     public void reset() {
-      lastEvent = null;
+      lastRowIndex = -1;
     }
   }
 
@@ -128,23 +131,23 @@ public class SelectionGridTest extends Gen2TestBase {
    */
   protected static class TestRowUnhighlightHandler implements
       RowUnhighlightHandler {
-    private RowUnhighlightEvent lastEvent = null;
+    private int lastRowIndex = -1;
 
     public void assertNotFired() {
-      assertNull(lastEvent);
+      assertEquals(-1, lastRowIndex);
     }
 
     public void assertRowIndex(int rowIndex) {
-      assertNotNull(lastEvent);
-      assertEquals(rowIndex, lastEvent.getValue().getRowIndex());
+      assertEquals(rowIndex, lastRowIndex);
     }
 
     public void onRowUnhighlight(RowUnhighlightEvent event) {
-      lastEvent = event;
+
+      lastRowIndex = event.getValue().getRowIndex();
     }
 
     public void reset() {
-      lastEvent = null;
+      lastRowIndex = -1;
     }
   }
 
@@ -152,30 +155,32 @@ public class SelectionGridTest extends Gen2TestBase {
    * A custom handler used for testing.
    */
   protected static class TestRowSelectionHandler implements RowSelectionHandler {
-    private RowSelectionEvent lastEvent = null;
+    private Set<Row> deselectedRows = null;
+    private Set<Row> selectedRows = null;
+    private Set<Row> newRows = null;
+    private Set<Row> oldRows = null;
 
     public void assertDeselectedRows(int[] expected) {
-      assertSets(expected, lastEvent.getDeselectedRows());
+      assertSets(expected, deselectedRows);
     }
 
     public void assertNewRows(int[] expected) {
-      assertSets(expected, lastEvent.getNewValue());
+      assertSets(expected, newRows);
     }
 
     public void assertOldRows(int[] expected) {
-      assertSets(expected, lastEvent.getOldValue());
+      assertSets(expected, oldRows);
     }
 
     public void assertSelectedRows(int[] expected) {
-      assertSets(expected, lastEvent.getSelectedRows());
-    }
-
-    public RowSelectionEvent getEvent() {
-      return lastEvent;
+      assertSets(expected, selectedRows);
     }
 
     public void onRowSelection(RowSelectionEvent event) {
-      lastEvent = event;
+      deselectedRows = event.getDeselectedRows();
+      selectedRows = event.getSelectedRows();
+      newRows = event.getNewValue();
+      oldRows = event.getOldValue();
     }
 
     private void assertSets(int[] expected, Set<Row> actual) {
