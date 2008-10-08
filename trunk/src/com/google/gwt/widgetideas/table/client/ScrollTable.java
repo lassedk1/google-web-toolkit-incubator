@@ -1293,22 +1293,27 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget,
     this.sortingEnabled = sortingEnabled;
 
     // Remove the sorted indicator image
-    Element parent = DOM.getParent(sortedColumnWrapper);
-    if (parent != null) {
-      DOM.removeChild(parent, sortedColumnWrapper);
-    }
+    applySortedColumnIndicator(null, true);
   }
 
   /**
    * Apply the sorted column indicator to a specific table cell in the header
    * table.
    * 
-   * @param tdElem the cell in the header table
+   * @param tdElem the cell in the header table, or null to remove it
    * @param ascending true to apply the ascending indicator, false for
    *          descending
    */
   protected void applySortedColumnIndicator(Element tdElem, boolean ascending) {
-    assert tdElem != null : "tdElem cannot be null";
+    // Remove the sort indicator
+    if (tdElem == null) {
+      Element parent = DOM.getParent(sortedColumnWrapper);
+      if (parent != null) {
+        parent.removeChild(sortedColumnWrapper);
+      }
+      return;
+    }
+
     tdElem.appendChild(sortedColumnWrapper);
     if (ascending) {
       images.scrollTableAscending().applyTo(sortedColumnIndicator);
