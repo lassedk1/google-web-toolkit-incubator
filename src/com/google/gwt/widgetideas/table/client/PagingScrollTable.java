@@ -226,6 +226,7 @@ public class PagingScrollTable<R> extends ScrollTable implements
     super(dataTable, headerTable, images);
     this.tableModel = tableModel;
     insert(emptyTableWidgetWrapper, getElement(), 2, true);
+    setEmptyTableWidgetVisible(false);
     oldPageCount = getNumPages();
 
     // Listen to table model events
