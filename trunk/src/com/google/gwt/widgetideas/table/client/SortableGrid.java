@@ -15,7 +15,6 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
-import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorterCallback;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortInfo;
