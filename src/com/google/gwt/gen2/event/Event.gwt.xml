@@ -4,6 +4,5 @@
     <source path="shared"/>
     <source path="virtual/shared"/>
     <source path="logical/shared"/>
-    <source path="dom/client"/>
-    <source path="legacysupport/client"/>
+    <source path="dom/client"/> 
 </module>

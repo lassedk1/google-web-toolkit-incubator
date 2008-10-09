@@ -23,7 +23,7 @@ import com.google.gwt.gen2.event.shared.EventHandler;
 public interface BeforeShowHandler extends EventHandler {
 
   /**
-   * Called when BeforeShowEvent is fired.
+   * Called when {@link BeforeShowEvent} is fired.
    * 
    * @param event the {@link BeforeShowEvent} that was fired
    */

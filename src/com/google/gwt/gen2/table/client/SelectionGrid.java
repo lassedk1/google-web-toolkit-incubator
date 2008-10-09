@@ -201,25 +201,25 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
 
   public HandlerRegistration addCellHighlightHandler(
       CellHighlightHandler handler) {
-    return addHandler(CellHighlightEvent.KEY, handler);
+    return addHandler(CellHighlightEvent.TYPE, handler);
   }
 
   public HandlerRegistration addCellUnhighlightHandler(
       CellUnhighlightHandler handler) {
-    return addHandler(CellUnhighlightEvent.KEY, handler);
+    return addHandler(CellUnhighlightEvent.TYPE, handler);
   }
 
   public HandlerRegistration addRowHighlightHandler(RowHighlightHandler handler) {
-    return addHandler(RowHighlightEvent.KEY, handler);
+    return addHandler(RowHighlightEvent.TYPE, handler);
   }
 
   public HandlerRegistration addRowSelectionHandler(RowSelectionHandler handler) {
-    return addHandler(RowSelectionEvent.KEY, handler);
+    return addHandler(RowSelectionEvent.TYPE, handler);
   }
 
   public HandlerRegistration addRowUnhighlightHandler(
       RowUnhighlightHandler handler) {
-    return addHandler(RowUnhighlightEvent.KEY, handler);
+    return addHandler(RowUnhighlightEvent.TYPE, handler);
   }
 
   /**

@@ -23,9 +23,9 @@ import com.google.gwt.user.client.Event;
 public class BlurEvent extends DomEvent {
 
   /**
-    Event Key for Blur.
+    Event type for blur events. Represents the meta-data associated with this event.
   */
-  public static final Key<BlurEvent, BlurHandler> KEY = new Key<BlurEvent,BlurHandler>(
+  public static final Type<BlurEvent, BlurHandler> TYPE = new Type<BlurEvent,BlurHandler>(
       Event.ONBLUR) {
      @Override
      public void fire(BlurHandler handler, BlurEvent event) {
@@ -39,16 +39,17 @@ public class BlurEvent extends DomEvent {
    };
 
   /**
-   * Constructs a BlurEvent event.
+   * Constructor.
    * 
-   * @param nativeEvent the native event object wrapped by this event
+   * @param nativeEvent the native event object
    */
   public BlurEvent(Event nativeEvent) {
     super(nativeEvent);
   }
   
-  @Override
-  protected Key getKey() {
-    return KEY;
+ @Override
+  protected Type getType() {
+    return TYPE;
   }
+
 }

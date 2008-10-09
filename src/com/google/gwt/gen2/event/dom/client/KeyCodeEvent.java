@@ -20,9 +20,9 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.KeyboardListener;
 
 /**
- * Key up and key down are both events based upon the given key code.
+ * Key up and key down are both events based upon a given key code.
  */
-public abstract class KeyCodeEvent extends KeyboardEvent {
+public abstract class KeyCodeEvent extends KeyEvent {
 
   /**
    * Alt key code.
@@ -115,22 +115,13 @@ public abstract class KeyCodeEvent extends KeyboardEvent {
   }
 
   /**
-   * Is the key code alpha-numeric (i.e. A-z or 0-9).
+   * Is the key code alpha-numeric (i.e. A-z or 0-9)?
    * 
    * @return is the key code alpha numeric.
    */
   public boolean isAlphaNumeric() {
     int keycode = getKeyCode();
     return (48 <= keycode && keycode <= 57) || (65 <= keycode && keycode <= 90);
-  }
-
-  /**
-   * Is the <code>alt</code> key down.
-   * 
-   * @return whether the alt key is down
-   */
-  public boolean isAltKeyDown() {
-    return getNativeEvent().getAltKey();
   }
 
   /**

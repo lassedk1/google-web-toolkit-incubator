@@ -22,9 +22,9 @@ package com.google.gwt.gen2.event.logical.shared;
  */
 public class UnhighlightEvent<Value> extends ValueEvent<Value> {
   /**
-   * Event Key for {@link UnhighlightEvent}.
+   * Event type for {@link UnhighlightEvent}.
    */
-  public static final Key<UnhighlightEvent, UnhighlightHandler> KEY = new Key<UnhighlightEvent, UnhighlightHandler>() {
+  public static final Type<UnhighlightEvent, UnhighlightHandler> TYPE = new Type<UnhighlightEvent, UnhighlightHandler>() {
     @Override
     protected void fire(UnhighlightHandler handler, UnhighlightEvent event) {
       handler.onUnhighlight(event);
@@ -33,13 +33,15 @@ public class UnhighlightEvent<Value> extends ValueEvent<Value> {
 
   /**
    * Constructs a {@link UnhighlightEvent}.
+   * 
+   * @param value value
    */
   public UnhighlightEvent(Value value) {
     super(value);
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

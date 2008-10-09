@@ -23,9 +23,9 @@ import com.google.gwt.user.client.Event;
 public class MouseOverEvent extends MouseEvent {
 
   /**
-    Event Key for MouseOver.
+    Event type for mouse over events. Represents the meta-data associated with this event.
   */
-  public static final Key<MouseOverEvent, MouseOverHandler> KEY = new Key<MouseOverEvent,MouseOverHandler>(
+  public static final Type<MouseOverEvent, MouseOverHandler> TYPE = new Type<MouseOverEvent,MouseOverHandler>(
       Event.ONMOUSEOVER) {
      @Override
      public void fire(MouseOverHandler handler, MouseOverEvent event) {
@@ -39,16 +39,17 @@ public class MouseOverEvent extends MouseEvent {
    };
 
   /**
-   * Constructs a MouseOverEvent event.
+   * Constructor.
    * 
-   * @param nativeEvent the native event object wrapped by this event
+   * @param nativeEvent the native event object
    */
   public MouseOverEvent(Event nativeEvent) {
     super(nativeEvent);
   }
   
-  @Override
-  protected Key getKey() {
-    return KEY;
+ @Override
+  protected Type getType() {
+    return TYPE;
   }
+
 }

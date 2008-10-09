@@ -23,9 +23,9 @@ import com.google.gwt.user.client.Event;
 public class ClickEvent extends DomEvent {
 
   /**
-    Event Key for Click.
+    Event type for click events. Represents the meta-data associated with this event.
   */
-  public static final Key<ClickEvent, ClickHandler> KEY = new Key<ClickEvent,ClickHandler>(
+  public static final Type<ClickEvent, ClickHandler> TYPE = new Type<ClickEvent,ClickHandler>(
       Event.ONCLICK) {
      @Override
      public void fire(ClickHandler handler, ClickEvent event) {
@@ -39,16 +39,17 @@ public class ClickEvent extends DomEvent {
    };
 
   /**
-   * Constructs a ClickEvent event.
+   * Constructor.
    * 
-   * @param nativeEvent the native event object wrapped by this event
+   * @param nativeEvent the native event object
    */
   public ClickEvent(Event nativeEvent) {
     super(nativeEvent);
   }
   
-  @Override
-  protected Key getKey() {
-    return KEY;
+ @Override
+  protected Type getType() {
+    return TYPE;
   }
+
 }

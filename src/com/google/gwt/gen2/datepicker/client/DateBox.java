@@ -201,7 +201,7 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
   }
 
   public HandlerRegistration addKeyDownHandler(KeyDownHandler handler) {
-    return addHandler(KeyDownEvent.KEY, handler);
+    return addHandler(KeyDownEvent.TYPE, handler);
   }
 
   /**
@@ -376,7 +376,7 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
    * @param handler the wrong format handler
    */
   protected void setWrongFormatHandler(WrongFormatHandler<String> handler) {
-    getHandlerManager().clearHandlers(WrongFormatEvent.KEY);
+    getHandlerManager().clearHandlers(WrongFormatEvent.TYPE);
   }
 
   private void preventDatePickerPopup() {

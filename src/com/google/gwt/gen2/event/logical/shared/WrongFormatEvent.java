@@ -16,16 +16,16 @@
 package com.google.gwt.gen2.event.logical.shared;
 
 /**
- * Represents a wrong format event.
+ * Fired when an event source receives a value in the wrong format.
  * 
  * @param <Value> the type of value with the wrong format
  */
 public class WrongFormatEvent<Value> extends ValueEvent<Value> {
 
   /**
-   * Event Key for WrongFormat.
+   * Event type for {@link WrongFormatEvent}.
    */
-  public static final Key<WrongFormatEvent, WrongFormatHandler> KEY = new Key<WrongFormatEvent, WrongFormatHandler>() {
+  public static final Type<WrongFormatEvent, WrongFormatHandler> TYPE = new Type<WrongFormatEvent, WrongFormatHandler>() {
     @Override
     protected void fire(WrongFormatHandler handler, WrongFormatEvent event) {
       handler.onWrongFormat(event);
@@ -42,7 +42,7 @@ public class WrongFormatEvent<Value> extends ValueEvent<Value> {
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

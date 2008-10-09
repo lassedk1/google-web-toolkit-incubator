@@ -25,7 +25,7 @@ public class PageChangeEvent extends AbstractEvent {
   /**
    * Event Key for {@link PageChangeEvent}.
    */
-  public static final Key<PageChangeEvent, PageChangeHandler> KEY = new Key<PageChangeEvent, PageChangeHandler>() {
+  public static final Type<PageChangeEvent, PageChangeHandler> TYPE = new Type<PageChangeEvent, PageChangeHandler>() {
     @Override
     protected void fire(PageChangeHandler handler, PageChangeEvent event) {
       handler.onPageChange(event);
@@ -68,7 +68,7 @@ public class PageChangeEvent extends AbstractEvent {
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

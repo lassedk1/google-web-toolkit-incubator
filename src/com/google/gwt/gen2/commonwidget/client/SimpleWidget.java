@@ -20,8 +20,8 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.gen2.commonwidget.client.impl.StandardCssImpl;
 import com.google.gwt.gen2.event.dom.client.ClickEvent;
 import com.google.gwt.gen2.event.dom.client.ClickHandler;
+import com.google.gwt.gen2.event.dom.client.HasAllMouseHandlers;
 import com.google.gwt.gen2.event.dom.client.HasClickHandlers;
-import com.google.gwt.gen2.event.dom.client.HasMouseHandlers;
 import com.google.gwt.gen2.event.dom.client.MouseDownEvent;
 import com.google.gwt.gen2.event.dom.client.MouseDownHandler;
 import com.google.gwt.gen2.event.dom.client.MouseMoveEvent;
@@ -43,7 +43,7 @@ import com.google.gwt.user.client.DOM;
  * Simple widget which wraps a single element and adds mouse and click events to
  * it.
  */
-public class SimpleWidget extends Gen2Widget implements HasMouseHandlers,
+public class SimpleWidget extends Gen2Widget implements HasAllMouseHandlers,
     HasClickHandlers {
 
   /**
@@ -127,30 +127,30 @@ public class SimpleWidget extends Gen2Widget implements HasMouseHandlers,
   }
 
   public HandlerRegistration addClickHandler(ClickHandler handler) {
-    return addHandlerAndSink(ClickEvent.KEY, handler);
+    return addDomHandler(ClickEvent.TYPE, handler);
   }
 
   public HandlerRegistration addMouseDownHandler(MouseDownHandler handler) {
-    return addHandlerAndSink(MouseDownEvent.KEY, handler);
+    return addDomHandler(MouseDownEvent.TYPE, handler);
   }
 
   public HandlerRegistration addMouseMoveHandler(MouseMoveHandler handler) {
-    return addHandlerAndSink(MouseMoveEvent.KEY, handler);
+    return addDomHandler(MouseMoveEvent.TYPE, handler);
   }
 
   public HandlerRegistration addMouseOutHandler(MouseOutHandler handler) {
-    return addHandlerAndSink(MouseOutEvent.KEY, handler);
+    return addDomHandler(MouseOutEvent.TYPE, handler);
   }
 
   public HandlerRegistration addMouseOverHandler(MouseOverHandler handler) {
-    return addHandlerAndSink(MouseOverEvent.KEY, handler);
+    return addDomHandler(MouseOverEvent.TYPE, handler);
   }
 
   public HandlerRegistration addMouseUpHandler(MouseUpHandler handler) {
-    return addHandlerAndSink(MouseUpEvent.KEY, handler);
+    return addDomHandler(MouseUpEvent.TYPE, handler);
   }
 
   public HandlerRegistration addMouseWheelHandler(MouseWheelHandler handler) {
-    return addHandlerAndSink(MouseWheelEvent.KEY, handler);
+    return addDomHandler(MouseWheelEvent.TYPE, handler);
   }
 }

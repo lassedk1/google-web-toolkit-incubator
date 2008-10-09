@@ -24,9 +24,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasShowRangeHandlers<Value> {
   /**
-   * Adds a {@link HasShowRangeEvent} handler.
+   * Adds a {@link ShowRangeEvent} handler.
    * 
    * @param handler the handler
+   * @return the handler registration
    */
   HandlerRegistration addShowRangeHandler(ShowRangeHandler<Value> handler);
 }

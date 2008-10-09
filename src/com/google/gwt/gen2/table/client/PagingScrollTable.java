@@ -331,21 +331,21 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
   }
 
   public HandlerRegistration addPageChangeHandler(PageChangeHandler handler) {
-    return addHandler(PageChangeEvent.KEY, handler);
+    return addHandler(PageChangeEvent.TYPE, handler);
   }
 
   public HandlerRegistration addPageCountChangeHandler(
       PageCountChangeHandler handler) {
-    return addHandler(PageCountChangeEvent.KEY, handler);
+    return addHandler(PageCountChangeEvent.TYPE, handler);
   }
 
   public HandlerRegistration addPageLoadHandler(PageLoadHandler handler) {
-    return addHandler(PageLoadEvent.KEY, handler);
+    return addHandler(PageLoadEvent.TYPE, handler);
   }
 
   public HandlerRegistration addPagingFailureHandler(
       PagingFailureHandler handler) {
-    return addHandler(PagingFailureEvent.KEY, handler);
+    return addHandler(PagingFailureEvent.TYPE, handler);
   }
 
   /**

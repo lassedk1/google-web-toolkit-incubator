@@ -59,6 +59,11 @@ public abstract class Gen2PanelComposite<PanelType extends Widget & HasWidgets>
     return getWidget().remove(w);
   }
 
+  /**
+   * Adopts the given widget. Does not physically attach it.
+   * 
+   * @param widget the widget
+   */
   protected final void adopt(Widget widget) {
     WidgetAdaptorImpl.setParent(widget, this);
   }

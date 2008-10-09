@@ -19,16 +19,16 @@ package com.google.gwt.gen2.event.logical.shared;
 import com.google.gwt.gen2.event.shared.AbstractEvent;
 
 /**
- * Logical event fired after the widget has selected a value.
+ * Fired after an event source has selected a new value.
  * 
  * @param <Value> the type of value the widget has selected
  */
 public class SelectionEvent<Value> extends AbstractEvent {
 
   /**
-   * The event key.
+   * The event type.
    */
-  public static final Key<SelectionEvent, SelectionHandler> KEY = new Key<SelectionEvent, SelectionHandler>() {
+  public static final Type<SelectionEvent, SelectionHandler> TYPE = new Type<SelectionEvent, SelectionHandler>() {
 
     @Override
     protected void fire(SelectionHandler handler, SelectionEvent event) {
@@ -78,7 +78,7 @@ public class SelectionEvent<Value> extends AbstractEvent {
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

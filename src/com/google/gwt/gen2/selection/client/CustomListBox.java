@@ -296,7 +296,7 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
 
   public final HandlerRegistration addSelectionHandler(
       SelectionHandler<ValueType> handler) {
-    return super.addHandler(SelectionEvent.KEY, handler);
+    return super.addHandler(SelectionEvent.TYPE, handler);
   }
 
   /**

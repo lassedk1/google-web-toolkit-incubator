@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.event.shared;
 
-import com.google.gwt.gen2.event.shared.AbstractEvent.Key;
+import com.google.gwt.gen2.event.shared.AbstractEvent.Type;
 
 /**
  * HandlerRegistration instances are returned by
@@ -25,21 +25,27 @@ import com.google.gwt.gen2.event.shared.AbstractEvent.Key;
 public class HandlerRegistration {
 
   private HandlerManager manager;
-
   private EventHandler handler;
+  private Type type;
 
-  private Key key;
-
-  HandlerRegistration(HandlerManager target, Key key, EventHandler handler) {
-    this.manager = target;
+  /**
+   * Creates a new handler registration.
+   * 
+   * @param manager the handler manager
+   * @param type the event type
+   * @param handler the handler
+   */
+  protected HandlerRegistration(HandlerManager manager, Type type,
+      EventHandler handler) {
+    this.manager = manager;
     this.handler = handler;
-    this.key = key;
+    this.type = type;
   }
 
   /**
    * Removes the given handler from its manager.
    */
   public void removeHandler() {
-    manager.removeHandler(key, handler);
+    manager.removeHandler(type, handler);
   }
 }

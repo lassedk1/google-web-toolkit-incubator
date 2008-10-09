@@ -27,6 +27,7 @@ public interface HasUnhighlightHandlers<Value> {
    * Adds a {@link UnhighlightHandler}.
    * 
    * @param handler the handler
+   * @return the handler registration
    */
   HandlerRegistration addUnhighlightHandler(UnhighlightHandler<Value> handler);
 }

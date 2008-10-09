@@ -15,32 +15,31 @@
  */
 package com.google.gwt.gen2.event.logical.shared;
 
-import com.google.gwt.gen2.event.shared.AbstractEvent; 
-
+import com.google.gwt.gen2.event.shared.AbstractEvent;
 
 /**
- * Represents a hide event.
+ * Fired after an event source has hidden its contents.
  */
 public class HideEvent extends AbstractEvent {
 
   /**
-    Event Key for Hide.
-  */
-  public static final Key<HideEvent, HideHandler> KEY = new Key<HideEvent,HideHandler>() {
-     @Override
-     protected void fire(HideHandler handler, HideEvent event) {
-       handler.onHide(event);
-     }
-   };
+   * Event Key for {@link HideEvent}.
+   */
+  public static final Type<HideEvent, HideHandler> TYPE = new Type<HideEvent, HideHandler>() {
+    @Override
+    protected void fire(HideHandler handler, HideEvent event) {
+      handler.onHide(event);
+    }
+  };
 
   /**
    * Constructs a HideEvent event.
    */
   public HideEvent() {
-   }
-  
+  }
+
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

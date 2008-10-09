@@ -14,16 +14,19 @@
  * the License.
  */
 
-package com.google.gwt.gen2.event.dom.client;
+package com.google.gwt.gen2.event.shared;
 
 /**
- * Convenience interface used for widgets that wish to implement all mouse
- * handlers. Note, as new mouse handlers are added to GWT, this interface will
- * be expanded, so only implement this interface if you wish to have your widget
- * break when a new mouse event type is introduced.
+ * 
+ * Characteristic interface indicating that the given widget fires events via a
+ * {@link HandlerManager}.
  * 
  */
-public interface HasMouseHandlers extends HasMouseOutHandlers,
-    HasMouseOverHandlers, HasMouseUpHandlers, HasMouseDownHandlers,
-    HasMouseMoveHandlers, HasMouseWheelHandlers {
+public interface HasHandlerManager {
+  /**
+   * Gets this widget's handler manager.
+   * 
+   * @return the manager
+   */
+  HandlerManager getHandlerManager();
 }

@@ -17,11 +17,11 @@
 package com.google.gwt.gen2.widgetbase.client;
 
 import com.google.gwt.gen2.event.dom.client.DomEvent;
-import com.google.gwt.gen2.event.logical.shared.HasHandlerManager;
 import com.google.gwt.gen2.event.shared.AbstractEvent;
 import com.google.gwt.gen2.event.shared.EventHandler;
 import com.google.gwt.gen2.event.shared.HandlerManager;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
+import com.google.gwt.gen2.event.shared.HasHandlerManager;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -71,31 +71,32 @@ public abstract class Gen2Widget extends Widget implements HasHandlerManager {
   }
 
   /**
-   * Adds this handler to the widget.
+   * Adds a native event handler to the widget and sinks the corresponding
+   * native event. If you do not wish to sink the native event, use the
+   * addHandler method instead.
    * 
    * @param <HandlerType> the type of handler to add
    * @param key the event key
+   * @param handler the handler
+   * @return {@link HandlerRegistration} used to remove the handler
+   */
+  protected <HandlerType extends EventHandler> HandlerRegistration addDomHandler(
+      DomEvent.Type<?, HandlerType> key, final HandlerType handler) {
+    sinkEvents(key.getNativeEventType());
+    return addHandler(key, handler);
+  }
+
+  /**
+   * Adds a handler.
+   * 
+   * @param <HandlerType> the type of handler to add
+   * @param type the event type
    * @param handler the handler
    * @return {@link HandlerRegistration} used to remove the handler
    */
   protected <HandlerType extends EventHandler> HandlerRegistration addHandler(
-      AbstractEvent.Key<?, HandlerType> key, final HandlerType handler) {
-    return getHandlerManager().addHandler(key, handler);
-  }
-
-  /**
-   * Adds a native event handler to the widget and sinks the corresponding
-   * native event.
-   * 
-   * @param <HandlerType> the type of handler to add
-   * @param key the event key
-   * @param handler the handler
-   * @return {@link HandlerRegistration} used to remove the handler
-   */
-  protected <HandlerType extends EventHandler> HandlerRegistration addHandlerAndSink(
-      DomEvent.Key<?, HandlerType> key, final HandlerType handler) {
-    sinkEvents(key.getNativeEventType());
-    return addHandler(key, handler);
+      AbstractEvent.Type<?, HandlerType> type, final HandlerType handler) {
+    return getHandlerManager().addHandler(type, handler);
   }
 
   /**
@@ -123,30 +124,28 @@ public abstract class Gen2Widget extends Widget implements HasHandlerManager {
   /**
    * Is the event handled by one or more handlers?
    * 
-   * @param key event type key
+   * @param type event type
    * @return does this event type have a current handler
    */
-  protected final boolean isEventHandled(AbstractEvent.Key key) {
-    return handlerManager == null ? false : handlerManager.isEventHandled(key);
+  protected final boolean isEventHandled(AbstractEvent.Type type) {
+    return handlerManager == null ? false : handlerManager.isEventHandled(type);
   }
 
   /**
-   * Removes the given handler from the specified event key. Normally,
+   * Removes the given handler from the specified event type. Normally,
    * applications should call {@link HandlerRegistration#removeHandler()}
-   * instead. This method is provided primary to support the deprecated
-   * listeners api.
+   * instead.
    * 
    * @param <HandlerType> handler type
    * 
-   * @param key the event key
+   * @param type the event type
    * @param handler the handler
    */
   protected <HandlerType extends EventHandler> void removeHandler(
-      AbstractEvent.Key<?, HandlerType> key, final HandlerType handler) {
+      AbstractEvent.Type<?, HandlerType> type, final HandlerType handler) {
     if (handlerManager == null) {
       handlerManager = new HandlerManager(this);
     }
-    handlerManager.removeHandler(key, handler);
+    handlerManager.removeHandler(type, handler);
   }
-
 }

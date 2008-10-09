@@ -22,7 +22,7 @@ import com.google.gwt.gen2.event.shared.EventHandler;
  */
 public interface KeyDownHandler extends EventHandler {
   /**
-   * Called when KeyDownEvent is fired.
+   * Called when {@link KeyDownEvent} is fired.
    * 
    * @param event the {@link KeyDownEvent} that was fired
    */

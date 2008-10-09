@@ -29,6 +29,7 @@ public interface HasSelectionHandlers<ValueType> {
    * Adds a {@link SelectionEvent} handler.
    * 
    * @param handler the handler
+   * @return the handler registration
    */
   HandlerRegistration addSelectionHandler(SelectionHandler<ValueType> handler);
 }

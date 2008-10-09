@@ -26,7 +26,7 @@ public class CellHighlightEvent extends HighlightEvent<Cell> {
   /**
    * Event Key for {@link CellHighlightEvent}.
    */
-  public static final Key<CellHighlightEvent, CellHighlightHandler> KEY = new Key<CellHighlightEvent, CellHighlightHandler>() {
+  public static final Type<CellHighlightEvent, CellHighlightHandler> TYPE = new Type<CellHighlightEvent, CellHighlightHandler>() {
     @Override
     protected void fire(CellHighlightHandler handler, CellHighlightEvent event) {
       handler.onCellHighlight(event);
@@ -53,7 +53,7 @@ public class CellHighlightEvent extends HighlightEvent<Cell> {
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

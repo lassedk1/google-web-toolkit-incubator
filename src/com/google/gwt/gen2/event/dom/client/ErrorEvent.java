@@ -23,9 +23,9 @@ import com.google.gwt.user.client.Event;
 public class ErrorEvent extends DomEvent {
 
   /**
-    Event Key for Error.
+    Event type for error events. Represents the meta-data associated with this event.
   */
-  public static final Key<ErrorEvent, ErrorHandler> KEY = new Key<ErrorEvent,ErrorHandler>(
+  public static final Type<ErrorEvent, ErrorHandler> TYPE = new Type<ErrorEvent,ErrorHandler>(
       Event.ONERROR) {
      @Override
      public void fire(ErrorHandler handler, ErrorEvent event) {
@@ -39,16 +39,17 @@ public class ErrorEvent extends DomEvent {
    };
 
   /**
-   * Constructs a ErrorEvent event.
+   * Constructor.
    * 
-   * @param nativeEvent the native event object wrapped by this event
+   * @param nativeEvent the native event object
    */
   public ErrorEvent(Event nativeEvent) {
     super(nativeEvent);
   }
   
-  @Override
-  protected Key getKey() {
-    return KEY;
+ @Override
+  protected Type getType() {
+    return TYPE;
   }
+
 }

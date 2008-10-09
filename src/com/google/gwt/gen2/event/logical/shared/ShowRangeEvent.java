@@ -18,16 +18,16 @@ package com.google.gwt.gen2.event.logical.shared;
 import com.google.gwt.gen2.event.shared.AbstractEvent;
 
 /**
- * Represents a show range event.
+ * Fired after an event source shows a range of values.
  * 
  * @param <Value> the type of value shown in the range
  */
 public class ShowRangeEvent<Value> extends AbstractEvent {
 
   /**
-   * Event Key for ShowRange.
+   * Event type for {@link ShowRangeEvent}.
    */
-  public static final Key<ShowRangeEvent, ShowRangeHandler> KEY = new Key<ShowRangeEvent, ShowRangeHandler>() {
+  public static final Type<ShowRangeEvent, ShowRangeHandler> TYPE = new Type<ShowRangeEvent, ShowRangeHandler>() {
     @Override
     protected void fire(ShowRangeHandler handler, ShowRangeEvent event) {
       handler.onShowRange(event);
@@ -68,7 +68,7 @@ public class ShowRangeEvent<Value> extends AbstractEvent {
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

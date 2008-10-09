@@ -396,15 +396,15 @@ public class DatePicker extends Gen2Composite implements
   }
 
   public HandlerRegistration addHighlightHandler(HighlightHandler<Date> handler) {
-    return addHandler(HighlightEvent.KEY, handler);
+    return addHandler(HighlightEvent.TYPE, handler);
   }
 
   public HandlerRegistration addSelectionHandler(SelectionHandler<Date> handler) {
-    return addHandler(SelectionEvent.KEY, handler);
+    return addHandler(SelectionEvent.TYPE, handler);
   }
 
   public HandlerRegistration addShowRangeHandler(ShowRangeHandler<Date> handler) {
-    return addHandler(ShowRangeEvent.KEY, handler);
+    return addHandler(ShowRangeEvent.TYPE, handler);
   }
 
   /**
@@ -624,7 +624,7 @@ public class DatePicker extends Gen2Composite implements
       addGlobalStyleToDate(selectedDate, css().datePickerDayIsSelected());
     }
 
-    if (fireEvents && isEventHandled(SelectionEvent.KEY)) {
+    if (fireEvents && isEventHandled(SelectionEvent.TYPE)) {
       fireEvent(new SelectionEvent<Date>(oldSelected, newSelected));
     }
   }
@@ -685,7 +685,7 @@ public class DatePicker extends Gen2Composite implements
     highlightedDate = null;
     calendar.refresh();
     monthSelector.refresh();
-    if (isEventHandled(ShowRangeEvent.KEY)) {
+    if (isEventHandled(ShowRangeEvent.TYPE)) {
       fireEvent(new ShowRangeEvent<Date>(getCalendarView().getFirstDate(),
           getCalendarView().getLastDate()));
     }
@@ -698,7 +698,7 @@ public class DatePicker extends Gen2Composite implements
    */
   void setHighlightedDate(Date highlightedDate) {
     this.highlightedDate = highlightedDate;
-    if (isEventHandled(HighlightEvent.KEY)) {
+    if (isEventHandled(HighlightEvent.TYPE)) {
       fireEvent(new HighlightEvent<Date>(highlightedDate));
     }
   }

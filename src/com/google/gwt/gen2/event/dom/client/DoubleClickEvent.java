@@ -23,9 +23,9 @@ import com.google.gwt.user.client.Event;
 public class DoubleClickEvent extends DomEvent {
 
   /**
-    Event Key for DoubleClick.
+    Event type for double click events. Represents the meta-data associated with this event.
   */
-  public static final Key<DoubleClickEvent, DoubleClickHandler> KEY = new Key<DoubleClickEvent,DoubleClickHandler>(
+  public static final Type<DoubleClickEvent, DoubleClickHandler> TYPE = new Type<DoubleClickEvent,DoubleClickHandler>(
       Event.ONDBLCLICK) {
      @Override
      public void fire(DoubleClickHandler handler, DoubleClickEvent event) {
@@ -39,16 +39,17 @@ public class DoubleClickEvent extends DomEvent {
    };
 
   /**
-   * Constructs a DoubleClickEvent event.
+   * Constructor.
    * 
-   * @param nativeEvent the native event object wrapped by this event
+   * @param nativeEvent the native event object
    */
   public DoubleClickEvent(Event nativeEvent) {
     super(nativeEvent);
   }
   
-  @Override
-  protected Key getKey() {
-    return KEY;
+ @Override
+  protected Type getType() {
+    return TYPE;
   }
+
 }

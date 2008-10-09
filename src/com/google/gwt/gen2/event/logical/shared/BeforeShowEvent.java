@@ -15,32 +15,31 @@
  */
 package com.google.gwt.gen2.event.logical.shared;
 
-import com.google.gwt.gen2.event.shared.AbstractEvent; 
-
+import com.google.gwt.gen2.event.shared.AbstractEvent;
 
 /**
- * Represents a before show event.
+ * Fired directly before an event source's contents are shown.
  */
 public class BeforeShowEvent extends AbstractEvent {
 
   /**
-    Event Key for BeforeShow.
-  */
-  public static final Key<BeforeShowEvent, BeforeShowHandler> KEY = new Key<BeforeShowEvent,BeforeShowHandler>() {
-     @Override
-     protected void fire(BeforeShowHandler handler, BeforeShowEvent event) {
-       handler.onBeforeShow(event);
-     }
-   };
+   * Event type for {@link BeforeShowEvent}.
+   */
+  public static final Type<BeforeShowEvent, BeforeShowHandler> TYPE = new Type<BeforeShowEvent, BeforeShowHandler>() {
+    @Override
+    protected void fire(BeforeShowHandler handler, BeforeShowEvent event) {
+      handler.onBeforeShow(event);
+    }
+  };
 
   /**
-   * Constructs a BeforeShowEvent event.
+   * Constructor.
    */
   public BeforeShowEvent() {
-   }
-  
+  }
+
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

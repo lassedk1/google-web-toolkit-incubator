@@ -16,13 +16,14 @@
 package com.google.gwt.gen2.event.shared;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.gen2.event.shared.AbstractEvent.Key;
+import com.google.gwt.gen2.event.shared.AbstractEvent.Type;
 
 /**
- * Manager responsible for adding handlers to events and firing those handlers
- * on the given events.
+ * Manager responsible for adding handlers to event sources and firing those
+ * handlers on passed in events.
  */
 public class HandlerManager {
+  // Used to optimize the JavaScript handler container structure.
   static int EXPECTED_HANDLERS = 5;
 
   private static final boolean useJs = GWT.isScript();
@@ -35,12 +36,15 @@ public class HandlerManager {
     return index;
   }
 
+  // Only one of JsHandlerRegistry and JavaHandlerRegistry are live at once.
   private final JsHandlerRegistry javaScriptRegistry;
   private final JavaHandlerRegistry javaRegistry;
+
+  // 
   private final Object source;
 
   /**
-   * Creates a handler manager with the given source
+   * Creates a handler manager with the given source.
    * 
    * @param source the event source
    */
@@ -56,39 +60,39 @@ public class HandlerManager {
   }
 
   /**
-   * Adds a handler to this registry.
+   * Adds a handle.
    * 
-   * @param <T> The type of handler.
-   * @param key the event key associated with this handler
+   * @param <HandlerType> The type of handler.
+   * @param type the event type associated with this handler
    * @param handler the handler
    * @return the handler registration, can be stored in order to remove the
-   *         handler later.
+   *         handler later
    */
-  public <T extends EventHandler> HandlerRegistration addHandler(
-      AbstractEvent.Key<?, T> key, final T handler) {
+  public <HandlerType extends EventHandler> HandlerRegistration addHandler(
+      AbstractEvent.Type<?, HandlerType> type, final HandlerType handler) {
     if (useJs) {
-      javaScriptRegistry.addHandler(key, handler);
+      javaScriptRegistry.addHandler(type, handler);
     } else {
-      javaRegistry.addHandler(key, handler);
+      javaRegistry.addHandler(type, handler);
     }
-    return new HandlerRegistration(this, key, handler);
+    return new HandlerRegistration(this, type, handler);
   }
 
   /**
-   * Clears all the handlers associated with the given key.
+   * Clears all the handlers associated with the given type.
    * 
-   * @param key the key
+   * @param type the type
    */
-  public void clearHandlers(Key<?, ?> key) {
+  public void clearHandlers(Type<?, ?> type) {
     if (useJs) {
-      javaScriptRegistry.clearHandlers(key);
+      javaScriptRegistry.clearHandlers(type);
     } else {
-      javaRegistry.clearHandlers(key);
+      javaRegistry.clearHandlers(type);
     }
   }
 
   /**
-   * Fires the given event to the handlers listening to the event's key.
+   * Fires the given event to the handlers listening to the event's type.
    * 
    * @param event the event
    */
@@ -104,49 +108,68 @@ public class HandlerManager {
       // This was my event, so I should kill it now that I'm done.
       event.onRelease();
     } else {
-      // Restoring the source for the next set
+      // Restoring the source for the next handler to use.
       event.setSource(oldSource);
     }
   }
 
   /**
-   * Gets the number of handlers listening to the event key.
+   * Gets the handler at the given index.
    * 
-   * @param key the event key
-   * @return the number of registered handlers
+   * @param <HandlerType> the event handler type
+   * @param index the index
+   * @param type the handler's event type
+   * @return the given handler
    */
-  public int getHandlerCount(Key key) {
+  public <HandlerType extends EventHandler> HandlerType getHandler(
+      AbstractEvent.Type<?, HandlerType> type, int index) {
     if (useJs) {
-      return javaScriptRegistry.getHandlerCount(key);
+      return (HandlerType) javaScriptRegistry.getHandler(type, index);
     } else {
-      return javaRegistry.getHandlerCount(key);
+      return (HandlerType) javaRegistry.getHandler(type, index);
     }
   }
 
   /**
-   * Are there handlers in this manager listening to the given event key?
+   * Gets the number of handlers listening to the event type.
    * 
-   * @param key the event key
-   * @return are handlers listening
+   * @param type the event type
+   * @return the number of registered handlers
    */
-  public boolean isEventHandled(Key key) {
-    return getHandlerCount(key) > 0;
+  public int getHandlerCount(Type type) {
+    if (useJs) {
+      return javaScriptRegistry.getHandlerCount(type);
+    } else {
+      return javaRegistry.getHandlerCount(type);
+    }
   }
 
   /**
-   * Removes the given handler from the specified event key. Normally,
+   * Are there handlers in this manager listening to the given event type?
+   * 
+   * @param type the event type
+   * @return are handlers listening on the given event type
+   */
+  public boolean isEventHandled(Type type) {
+    return getHandlerCount(type) > 0;
+  }
+
+  /**
+   * Removes the given handler from the specified event type. Normally,
    * applications should call {@link HandlerRegistration#removeHandler()}
    * instead. This method is provided primary to support deprecated APIS.
    * 
-   * @param key the event key
+   * @param <HandlerType> handler type
+   * 
+   * @param type the event type
    * @param handler the handler
    */
-  public <T extends EventHandler> void removeHandler(
-      AbstractEvent.Key<?, T> key, final T handler) {
+  public <HandlerType extends EventHandler> void removeHandler(
+      AbstractEvent.Type<?, HandlerType> type, final HandlerType handler) {
     if (useJs) {
-      javaScriptRegistry.removeHandler(key, handler);
+      javaScriptRegistry.removeHandler(type, handler);
     } else {
-      javaRegistry.removeHandler(key, handler);
+      javaRegistry.removeHandler(type, handler);
     }
   }
 }

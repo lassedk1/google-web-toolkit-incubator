@@ -17,16 +17,17 @@
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 
 /**
- * A widget that implements this interface is a public source of
+ * An event source that implements this interface is a public source of
  * {@link HighlightEvent} events.
  * 
  * @param <Value> The value associated with the highlight event
  */
 public interface HasHighlightHandlers<Value> {
   /**
-   * Adds a {@link HasHighlightEvent} handler.
+   * Adds a {@link HighlightEvent} handler.
    * 
    * @param handler the handler
+   * @return the handler registration
    */
   HandlerRegistration addHighlightHandler(HighlightHandler<Value> handler);
 }

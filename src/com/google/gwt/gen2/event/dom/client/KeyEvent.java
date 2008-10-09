@@ -19,12 +19,11 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 
 /**
- * Base class for Keyboard events. The native keyboard events are somewhat a
- * mess (http://www.quirksmode.org/js/keys.html), we do some trivial
- * normalization here, but do not attempt any complex patching, so user be
- * warned.
+ * Base class for Key events. The native keyboard events are somewhat a mess
+ * (http://www.quirksmode.org/js/keys.html), we do some trivial normalization
+ * here, but do not attempt any complex patching, so user be warned.
  */
-public abstract class KeyboardEvent extends DomEvent {
+public abstract class KeyEvent extends DomEvent {
 
   /**
    * Alt modifier.
@@ -48,21 +47,30 @@ public abstract class KeyboardEvent extends DomEvent {
    * 
    * @param nativeEvent the wrapped native event
    */
-  protected KeyboardEvent(Event nativeEvent) {
+  protected KeyEvent(Event nativeEvent) {
     super(nativeEvent);
   }
 
   /**
-   * Gets the keyboard modifiers associated with this event.
+   * Gets the key modifiers associated with this event.
    * 
    * @return the modifiers as defined in {@link KeyCodeEvent}.
    */
-  public int getKeyboardModifiers() {
+  public int getKeyModifiers() {
     Event event = getNativeEvent();
     return (DOM.eventGetShiftKey(event) ? MODIFIER_SHIFT : 0)
         | (DOM.eventGetMetaKey(event) ? MODIFIER_META : 0)
         | (DOM.eventGetCtrlKey(event) ? MODIFIER_CTRL : 0)
         | (DOM.eventGetAltKey(event) ? MODIFIER_ALT : 0);
+  }
+
+  /**
+   * Is the <code>alt</code> key down?
+   * 
+   * @return whether the alt key is down
+   */
+  public boolean isAltKeyDown() {
+    return getNativeEvent().getAltKey();
   }
 
   /**
@@ -75,7 +83,7 @@ public abstract class KeyboardEvent extends DomEvent {
   }
 
   /**
-   * Is the <code>control</code> key down.
+   * Is the <code>control</code> key down?
    * 
    * @return whether the control key is down
    */
@@ -84,7 +92,7 @@ public abstract class KeyboardEvent extends DomEvent {
   }
 
   /**
-   * Is the <code>shift</code> key down.
+   * Is the <code>shift</code> key down?
    * 
    * @return whether the shift key is down
    */

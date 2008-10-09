@@ -23,9 +23,9 @@ import com.google.gwt.user.client.Event;
 public class MouseDownEvent extends MouseEvent {
 
   /**
-    Event Key for MouseDown.
+    Event type for mouse down events. Represents the meta-data associated with this event.
   */
-  public static final Key<MouseDownEvent, MouseDownHandler> KEY = new Key<MouseDownEvent,MouseDownHandler>(
+  public static final Type<MouseDownEvent, MouseDownHandler> TYPE = new Type<MouseDownEvent,MouseDownHandler>(
       Event.ONMOUSEDOWN) {
      @Override
      public void fire(MouseDownHandler handler, MouseDownEvent event) {
@@ -39,16 +39,17 @@ public class MouseDownEvent extends MouseEvent {
    };
 
   /**
-   * Constructs a MouseDownEvent event.
+   * Constructor.
    * 
-   * @param nativeEvent the native event object wrapped by this event
+   * @param nativeEvent the native event object
    */
   public MouseDownEvent(Event nativeEvent) {
     super(nativeEvent);
   }
   
-  @Override
-  protected Key getKey() {
-    return KEY;
+ @Override
+  protected Type getType() {
+    return TYPE;
   }
+
 }

@@ -58,15 +58,15 @@ public class KeyboardHandlerVisuals extends AbstractIssueOverride {
     }
 
     public HandlerRegistration addKeyDownHandler(KeyDownHandler handler) {
-      return addHandlerAndSink(KeyDownEvent.KEY, handler);
+      return addHandlerAndSink(KeyDownEvent.TYPE, handler);
     }
 
     public HandlerRegistration addKeyPressHandler(KeyPressHandler handler) {
-      return addHandlerAndSink(KeyPressEvent.KEY, handler);
+      return addHandlerAndSink(KeyPressEvent.TYPE, handler);
     }
 
     public HandlerRegistration addKeyUpHandler(KeyUpHandler handler) {
-      return addHandlerAndSink(KeyUpEvent.KEY, handler);
+      return addHandlerAndSink(KeyUpEvent.TYPE, handler);
     }
   }
 
