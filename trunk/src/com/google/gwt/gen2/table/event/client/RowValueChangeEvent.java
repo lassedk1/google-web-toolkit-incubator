@@ -27,7 +27,7 @@ public class RowValueChangeEvent<RowType> extends AbstractEvent {
   /**
    * Event Key for {@link RowValueChangeEvent}.
    */
-  public static final Key<RowValueChangeEvent, RowValueChangeHandler> KEY = new Key<RowValueChangeEvent, RowValueChangeHandler>() {
+  public static final Type<RowValueChangeEvent, RowValueChangeHandler> TYPE = new Type<RowValueChangeEvent, RowValueChangeHandler>() {
     @Override
     protected void fire(RowValueChangeHandler handler, RowValueChangeEvent event) {
       handler.onRowValueChange(event);
@@ -70,7 +70,7 @@ public class RowValueChangeEvent<RowType> extends AbstractEvent {
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

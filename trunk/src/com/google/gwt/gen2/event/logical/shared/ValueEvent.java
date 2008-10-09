@@ -19,9 +19,9 @@ package com.google.gwt.gen2.event.logical.shared;
 import com.google.gwt.gen2.event.shared.AbstractEvent;
 
 /**
- * Value based event.
+ * Value based event. Not part of the public API.
  * 
- * @param <Value>
+ * @param <Value> value type
  */
 abstract class ValueEvent<Value> extends AbstractEvent {
   private Value value;

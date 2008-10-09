@@ -16,7 +16,7 @@
 
 package com.google.gwt.gen2.event.shared;
 
-import com.google.gwt.gen2.event.shared.AbstractEvent.Key;
+import com.google.gwt.gen2.event.shared.AbstractEvent.Type;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,9 +25,9 @@ import java.util.HashMap;
  * The default Handler manager's handler registry.
  */
 class JavaHandlerRegistry extends
-    HashMap<AbstractEvent.Key, ArrayList<EventHandler>> {
+    HashMap<AbstractEvent.Type, ArrayList<EventHandler>> {
 
-  public void addHandler(AbstractEvent.Key eventKey, EventHandler handler) {
+  public void addHandler(AbstractEvent.Type eventKey, EventHandler handler) {
     ArrayList<EventHandler> l = super.get(eventKey);
     if (l == null) {
       l = new ArrayList<EventHandler>();
@@ -36,26 +36,26 @@ class JavaHandlerRegistry extends
     l.add(handler);
   }
 
-  public void clearHandlers(Key<?, ?> key) {
-    super.remove(key);
+  public void clearHandlers(Type<?, ?> type) {
+    super.remove(type);
   }
 
   public void fireEvent(AbstractEvent event) {
-    Key key = event.getKey();
-    int count = getHandlerCount(key);
+    Type type = event.getType();
+    int count = getHandlerCount(type);
     for (int i = 0; i < count; i++) {
-      EventHandler handler = getHandler(key, i);
-      key.fire(handler, event);
+      EventHandler handler = getHandler(type, i);
+      type.fire(handler, event);
     }
   }
 
-  public EventHandler getHandler(AbstractEvent.Key eventKey, int index) {
+  public EventHandler getHandler(AbstractEvent.Type eventKey, int index) {
     assert (index < getHandlerCount(eventKey));
     ArrayList<EventHandler> l = super.get(eventKey);
     return l.get(index);
   }
 
-  public int getHandlerCount(AbstractEvent.Key eventKey) {
+  public int getHandlerCount(AbstractEvent.Type eventKey) {
     ArrayList<EventHandler> l = super.get(eventKey);
     if (l == null) {
       return 0;
@@ -64,7 +64,7 @@ class JavaHandlerRegistry extends
     }
   }
 
-  public void removeHandler(AbstractEvent.Key eventKey, EventHandler handler) {
+  public void removeHandler(AbstractEvent.Type eventKey, EventHandler handler) {
     ArrayList<EventHandler> l = super.get(eventKey);
     if (l != null) {
       l.remove(handler);

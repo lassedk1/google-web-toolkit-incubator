@@ -16,7 +16,8 @@
 package com.google.gwt.gen2.event.shared;
 
 /**
- * Marker interface for EventHandlers.
+ * Marker interface for event handlers. All GWT event handlers should extend
+ * {@link EventHandler}.
  */
 public interface EventHandler {
 

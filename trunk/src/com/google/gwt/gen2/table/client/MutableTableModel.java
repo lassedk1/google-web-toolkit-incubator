@@ -35,15 +35,15 @@ import com.google.gwt.gen2.table.event.client.RowValueChangeHandler;
 public abstract class MutableTableModel<RowType> extends TableModel<RowType> implements
     HasRowInsertionHandlers, HasRowRemovalHandlers, HasRowValueChangeHandlers<RowType> {
   public HandlerRegistration addRowInsertionHandler(RowInsertionHandler handler) {
-    return addHandler(RowInsertionEvent.KEY, handler);
+    return addHandler(RowInsertionEvent.TYPE, handler);
   }
 
   public HandlerRegistration addRowRemovalHandler(RowRemovalHandler handler) {
-    return addHandler(RowRemovalEvent.KEY, handler);
+    return addHandler(RowRemovalEvent.TYPE, handler);
   }
 
   public HandlerRegistration addRowValueChangeHandler(RowValueChangeHandler<RowType> handler) {
-    return addHandler(RowValueChangeEvent.KEY, handler);
+    return addHandler(RowValueChangeEvent.TYPE, handler);
   }
 
   /**

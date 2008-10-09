@@ -26,7 +26,7 @@ public class ColumnSortEvent extends AbstractEvent {
   /**
    * Event Key for {@link ColumnSortEvent}.
    */
-  public static final Key<ColumnSortEvent, ColumnSortHandler> KEY = new Key<ColumnSortEvent, ColumnSortHandler>() {
+  public static final Type<ColumnSortEvent, ColumnSortHandler> TYPE = new Type<ColumnSortEvent, ColumnSortHandler>() {
     @Override
     protected void fire(ColumnSortHandler handler, ColumnSortEvent event) {
       handler.onColumnSorted(event);
@@ -55,7 +55,7 @@ public class ColumnSortEvent extends AbstractEvent {
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

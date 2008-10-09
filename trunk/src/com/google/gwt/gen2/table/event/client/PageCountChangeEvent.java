@@ -25,7 +25,7 @@ public class PageCountChangeEvent extends AbstractEvent {
   /**
    * Event Key for {@link PageCountChangeEvent}.
    */
-  public static final Key<PageCountChangeEvent, PageCountChangeHandler> KEY = new Key<PageCountChangeEvent, PageCountChangeHandler>() {
+  public static final Type<PageCountChangeEvent, PageCountChangeHandler> TYPE = new Type<PageCountChangeEvent, PageCountChangeHandler>() {
     @Override
     protected void fire(PageCountChangeHandler handler, PageCountChangeEvent event) {
       handler.onPageCountChange(event);
@@ -68,7 +68,7 @@ public class PageCountChangeEvent extends AbstractEvent {
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

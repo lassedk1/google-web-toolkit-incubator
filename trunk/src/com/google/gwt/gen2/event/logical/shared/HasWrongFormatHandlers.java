@@ -22,9 +22,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  */
 public interface HasWrongFormatHandlers {
   /**
-   * Adds a {@link HasWrongFormatEvent} handler.
+   * Adds a {@link WrongFormatEvent} handler.
    * 
    * @param handler the handler
+   * @return the handler registration
    */
   HandlerRegistration addWrongFormatHandler(WrongFormatHandler handler);
 }

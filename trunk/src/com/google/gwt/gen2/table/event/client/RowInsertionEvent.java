@@ -25,7 +25,7 @@ public class RowInsertionEvent extends AbstractEvent {
   /**
    * Event Key for {@link RowInsertionEvent}.
    */
-  public static final Key<RowInsertionEvent, RowInsertionHandler> KEY = new Key<RowInsertionEvent, RowInsertionHandler>() {
+  public static final Type<RowInsertionEvent, RowInsertionHandler> TYPE = new Type<RowInsertionEvent, RowInsertionHandler>() {
     @Override
     protected void fire(RowInsertionHandler handler, RowInsertionEvent event) {
       handler.onRowInsertion(event);
@@ -54,7 +54,7 @@ public class RowInsertionEvent extends AbstractEvent {
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

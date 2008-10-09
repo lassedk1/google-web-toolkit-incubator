@@ -20,25 +20,20 @@ import com.google.gwt.gen2.event.shared.HandlerAdaptor;
 import com.google.gwt.gen2.event.shared.HasHandlerManager;
 
 /**
- * This is a convenience interface that includes all mouse handlers defined by
- * the core GWT system.
- * 
- * <br/> WARNING, PLEASE READ: As this interface is intended for developers who
- * wish to handle all mouse events in GWT, new mouse event handlers will be
- * added to it. Therefore, updates can cause breaking API changes.
+ * Convenience interface used to implement all key handlers at once. In the
+ * unlikely event that more key handler subtypes are added to GWT, this
+ * interface will be expanded, so only implement this interface if you wish to
+ * have your widget break if a new key event type is introduced.
  * 
  */
-public interface HasAllMouseHandlers extends HasMouseDownHandlers,
-    HasMouseUpHandlers, HasMouseOutHandlers, HasMouseOverHandlers,
-    HasMouseMoveHandlers, HasMouseWheelHandlers {
+public interface HasAllKeyHandlers extends HasKeyUpHandlers,
+    HasKeyDownHandlers, HasKeyPressHandlers {
 
   /**
    * Adaptor used to create and add all the Keyboard events at once.
-   * 
    */
   public abstract static class Adaptor extends HandlerAdaptor implements
-      HasMouseDownHandlers, HasMouseUpHandlers, HasMouseOutHandlers,
-      HasMouseOverHandlers, HasMouseMoveHandlers, HasMouseWheelHandlers {
+      KeyDownHandler, KeyUpHandler, KeyPressHandler {
 
     /**
      * Convenience method to add all key handlers at once.
@@ -48,22 +43,17 @@ public interface HasAllMouseHandlers extends HasMouseDownHandlers,
      * @param source event source
      * @param handlers handlers to add
      */
-    public static <EventSourceType extends HasHandlerManager & HasAllMouseHandlers, EventHandler extends MouseDownHandler & MouseUpHandler & MouseOutHandler & MouseOverHandler & MouseMoveHandler & MouseWheelHandler> void addHandlers(
+    public static <EventSourceType extends HasHandlerManager & HasAllKeyHandlers, EventHandler extends KeyDownHandler & KeyUpHandler & KeyPressHandler> void addHandlers(
         EventSourceType source, EventHandler handlers) {
-      source.addMouseDownHandler(handlers);
-      source.addMouseUpHandler(handlers);
-      source.addMouseOutHandler(handlers);
-      source.addMouseOverHandler(handlers);
-      source.addMouseMoveHandler(handlers);
-      source.addMouseWheelHandler(handlers);
+      source.addKeyDownHandler(handlers);
+      source.addKeyPressHandler(handlers);
+      source.addKeyUpHandler(handlers);
     }
 
     /**
-     * Creates an adaptor to implement all the {@link HasAllKeyHandlers} handler
-     * types.
+     * Constructor.
      */
     public Adaptor() {
     }
   }
-
 }

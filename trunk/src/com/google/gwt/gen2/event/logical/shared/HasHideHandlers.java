@@ -17,14 +17,15 @@
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 
 /**
- * A widget that implements this interface is a public source of
+ * An event source that implements this interface is a public source of
  * {@link HideEvent} events.
  */
 public interface HasHideHandlers {
   /**
-   * Adds a {@link HasHideEvent} handler.
+   * Adds a {@link HideEvent} handler.
    * 
    * @param handler the handler
+   * @return the handler registration
    */
   HandlerRegistration addHideHandler(HideHandler handler);
 }

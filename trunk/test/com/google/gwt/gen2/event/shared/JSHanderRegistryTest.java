@@ -27,34 +27,34 @@ public class JSHanderRegistryTest extends HandlerTestBase {
 
   public void testAccesors() {
     JsHandlerRegistry registry = JsHandlerRegistry.create();
-    registry.addHandler(MouseDownEvent.KEY, mouse1);
-    assertEquals(mouse1, registry.getHandler(MouseDownEvent.KEY, 0));
+    registry.addHandler(MouseDownEvent.TYPE, mouse1);
+    assertEquals(mouse1, registry.getHandler(MouseDownEvent.TYPE, 0));
 
-    registry.addHandler(ClickEvent.KEY, click1);
-    registry.addHandler(MouseDownEvent.KEY, mouse2);
-    assertEquals(2, registry.getHandlerCount(MouseDownEvent.KEY));
-    registry.removeHandler(MouseDownEvent.KEY, mouse1);
+    registry.addHandler(ClickEvent.TYPE, click1);
+    registry.addHandler(MouseDownEvent.TYPE, mouse2);
+    assertEquals(2, registry.getHandlerCount(MouseDownEvent.TYPE));
+    registry.removeHandler(MouseDownEvent.TYPE, mouse1);
 
-    assertEquals(1, registry.getHandlerCount(MouseDownEvent.KEY));
-    assertEquals(1, registry.getHandlerCount(ClickEvent.KEY));
-    assertEquals(mouse2, registry.getHandler(MouseDownEvent.KEY, 0));
-    assertEquals(click1, registry.getHandler(ClickEvent.KEY, 0));
+    assertEquals(1, registry.getHandlerCount(MouseDownEvent.TYPE));
+    assertEquals(1, registry.getHandlerCount(ClickEvent.TYPE));
+    assertEquals(mouse2, registry.getHandler(MouseDownEvent.TYPE, 0));
+    assertEquals(click1, registry.getHandler(ClickEvent.TYPE, 0));
   }
 
   public void testAdd() {
     JsHandlerRegistry registry = JsHandlerRegistry.create();
-    registry.addHandler(MouseDownEvent.KEY, mouse1);
-    assertEquals(1, registry.getHandlerCount(MouseDownEvent.KEY));
+    registry.addHandler(MouseDownEvent.TYPE, mouse1);
+    assertEquals(1, registry.getHandlerCount(MouseDownEvent.TYPE));
   }
 
   public void testRemove() {
     JsHandlerRegistry registry = JsHandlerRegistry.create();
-    registry.addHandler(MouseDownEvent.KEY, mouse1);
-    registry.addHandler(MouseDownEvent.KEY, mouse2);
+    registry.addHandler(MouseDownEvent.TYPE, mouse1);
+    registry.addHandler(MouseDownEvent.TYPE, mouse2);
 
-    assertEquals(2, registry.getHandlerCount(MouseDownEvent.KEY));
-    registry.removeHandler(MouseDownEvent.KEY, mouse2);
-    assertEquals(1, registry.getHandlerCount(MouseDownEvent.KEY));
+    assertEquals(2, registry.getHandlerCount(MouseDownEvent.TYPE));
+    registry.removeHandler(MouseDownEvent.TYPE, mouse2);
+    assertEquals(1, registry.getHandlerCount(MouseDownEvent.TYPE));
 
     // Check for correct firing.
     reset();
@@ -62,7 +62,7 @@ public class JSHanderRegistryTest extends HandlerTestBase {
     assertFired(mouse1);
     assertNotFired(mouse2);
 
-    registry.removeHandler(MouseDownEvent.KEY, mouse1);
+    registry.removeHandler(MouseDownEvent.TYPE, mouse1);
 
     // Nothing should happen now.
     reset();
@@ -70,8 +70,8 @@ public class JSHanderRegistryTest extends HandlerTestBase {
     assertNotFired(mouse1);
     assertNotFired(mouse2);
 
-    registry.addHandler(MouseDownEvent.KEY, mouse2);
-    assertEquals(1, registry.getHandlerCount(MouseDownEvent.KEY));
+    registry.addHandler(MouseDownEvent.TYPE, mouse2);
+    assertEquals(1, registry.getHandlerCount(MouseDownEvent.TYPE));
 
     // Two should fire
     reset();

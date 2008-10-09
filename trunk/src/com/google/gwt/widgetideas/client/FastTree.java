@@ -54,8 +54,7 @@ import java.util.NoSuchElementException;
  * <li>.gwt-FastTree { the tree itself }</li>
  * <li>.gwt-FastTree .gwt-FastTreeItem { a tree item }</li>
  * <li>.gwt-FastTree .selection-bar {the selection bar used to highlight the
- * selected tree item}</li>
- * </ul>
+ * selected tree item}</li> </ul>
  */
 public class FastTree extends Panel implements HasWidgets, HasFocus,
     HasFastTreeItems {
@@ -119,13 +118,13 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       StyleInjector.injectStylesheet(instance.css().getText(), instance);
     }
   }
-  
+
   private static boolean hasModifiers(Event event) {
     boolean alt = event.getAltKey();
     boolean ctrl = event.getCtrlKey();
     boolean meta = event.getMetaKey();
-    boolean shift = event.getShiftKey(); 
-    
+    boolean shift = event.getShiftKey();
+
     return alt || ctrl || meta || shift;
   }
 
@@ -133,7 +132,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   /**
    * Map of TreeItem.widget -> TreeItem.
    */
-  private final Map<Widget,FastTreeItem> childWidgets = new HashMap<Widget, FastTreeItem>();
+  private final Map<Widget, FastTreeItem> childWidgets = new HashMap<Widget, FastTreeItem>();
   private FastTreeItem curSelection;
   private final Element focusable;
   private FocusListenerCollection focusListeners;
@@ -361,12 +360,12 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         break;
       }
 
-      case Event.ONMOUSEUP: { 
+      case Event.ONMOUSEUP: {
         boolean left = event.getButton() == Event.BUTTON_LEFT;
 
         if (lostMouseDown) {
           // artificial mouse down due to IE bug where mouse downs are lost.
-          
+
           if (left && !hasModifiers(event)) {
             elementClicked(root, event);
           }
@@ -444,7 +443,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         if (hasModifiers(event)) {
           break;
         }
-        
+
         // Trying to avoid duplicate key downs and fire navigation despite
         // missing key downs.
         if (eventType != Event.ONKEYUP) {
@@ -736,7 +735,8 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   /**
    * Collects parents going up the element tree, terminated at the tree root.
    */
-  private void collectElementChain(ArrayList<Element> chain, Element hRoot, Element hElem) {
+  private void collectElementChain(ArrayList<Element> chain, Element hRoot,
+      Element hElem) {
     if ((hElem == null) || hElem.equals(hRoot)) {
       return;
     }
@@ -762,7 +762,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   /*-{
     element.onselectstart = function() {
       return false;
-    };  
+    };
   }-*/;
 
   private boolean elementClicked(FastTreeItem root, Event event) {
@@ -916,8 +916,8 @@ class WidgetIterators {
    * @param contained the array of widgets
    * @return the iterator
    */
-  static final Iterator<Widget> createWidgetIterator(final HasWidgets container,
-      final Widget[] contained) {
+  static final Iterator<Widget> createWidgetIterator(
+      final HasWidgets container, final Widget[] contained) {
     return new Iterator<Widget>() {
       int index = -1, last = -1;
       boolean widgetsWasCopied = false;
@@ -974,7 +974,7 @@ class WidgetIterators {
     }
     return clone;
   }
-  
+
   private WidgetIterators() {
     // Not instantiable.
   }

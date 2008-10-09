@@ -17,17 +17,18 @@
 package com.google.gwt.gen2.event.shared;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.gen2.event.shared.AbstractEvent.Key;
+import com.google.gwt.gen2.event.shared.AbstractEvent.Type;
 
 /**
  * Default JavaScript handler registry. This is in the shared package so we
- * don't have to make it public, should never be called outside of GWT.
+ * don't have to make it public, should never be called outside of a GWT runtime
+ * environment.
  * 
- * It makes use of the fact that in the large majority of cases, only one or two
- * handlers are added for each event type. Therefore, rather than storing
- * handlers in a list of lists, we store then in a single flattened array with
- * an escape clause to handler the rare case where we have more handlers then
- * expected.
+ * Th JsHandlerRegistry makes use of the fact that in the large majority of
+ * cases, only one or two handlers are added for each event type. Therefore,
+ * rather than storing handlers in a list of lists, we store then in a single
+ * flattened array with an escape clause to handle the rare case where we have
+ * more handlers then expected.
  */
 class JsHandlerRegistry extends JavaScriptObject {
 
@@ -41,11 +42,14 @@ class JsHandlerRegistry extends JavaScriptObject {
   protected JsHandlerRegistry() {
   }
 
-  public final void addHandler(AbstractEvent.Key eventKey, EventHandler handler) {
+  public final void addHandler(AbstractEvent.Type eventKey, EventHandler handler) {
+    // The base is the equivalent to a c pointer into the flattened handler data
+    // structure.
     int base = eventKey.hashCode();
     int count = getCount(base);
 
-    // Switch from flattened list of handlers to list of list of handlers.
+    // If we already have the maximum number of handlers we can store in the
+    // flattened data structure, store the handlers in an external list instead.
     if (count == HandlerManager.EXPECTED_HANDLERS && isFlattened(base)) {
       unflatten(base);
     }
@@ -53,26 +57,33 @@ class JsHandlerRegistry extends JavaScriptObject {
     setCount(base, count + 1);
   }
 
-  public final void clearHandlers(Key<?, ?> key) {
-    int base = key.hashCode();
+  public final void clearHandlers(Type<?, ?> type) {
+    int base = type.hashCode();
+    // Clearing handlers is relatively unusual, so the cost of unflattening the
+    // handler list is justified by the smaller code.
     unflatten(base);
+
+    // Replace the list of handlers.
     setHandlerList(base + 1, JavaScriptObject.createArray());
     setCount(base, 0);
   }
 
   public final void fireEvent(AbstractEvent event) {
-    Key key = event.getKey();
-    int base = key.hashCode();
+    Type type = event.getType();
+    int base = type.hashCode();
     int count = getCount(base);
     boolean isFlattened = isFlattened(base);
 
     for (int i = 0; i < count; i++) {
+      // Gets the given handler to fire.
       EventHandler handler = getHandler(base, i, isFlattened);
-      key.fire(handler, event);
+
+      // Fires the handler.
+      type.fire(handler, event);
     }
   }
 
-  public final EventHandler getHandler(AbstractEvent.Key eventKey, int index) {
+  public final EventHandler getHandler(AbstractEvent.Type eventKey, int index) {
     int base = eventKey.hashCode();
     int count = getCount(base);
     if (index >= count) {
@@ -81,11 +92,11 @@ class JsHandlerRegistry extends JavaScriptObject {
     return getHandler(base, index, isFlattened(base));
   }
 
-  public final int getHandlerCount(AbstractEvent.Key eventKey) {
+  public final int getHandlerCount(AbstractEvent.Type eventKey) {
     return getCount(eventKey.hashCode());
   }
 
-  public final void removeHandler(AbstractEvent.Key eventKey,
+  public final void removeHandler(AbstractEvent.Type eventKey,
       EventHandler handler) {
     int base = eventKey.hashCode();
 
@@ -95,6 +106,8 @@ class JsHandlerRegistry extends JavaScriptObject {
       unflatten(base);
     }
     boolean result = removeHelper(base, handler);
+    // Hiding this behind an assertion as we'd rather not force the compiler to
+    // have to include all handler.toString() instances.
     assert result : handler + " did not exist";
   }
 

@@ -34,23 +34,22 @@ import java.util.HashMap;
 public abstract class DomEvent extends AbstractEvent {
 
   /**
-   * Key class used by BrowserEvent subclasses. Includes extra method to return
-   * event bits for sinkEvents().
+   * Type class used by BrowserEvent subclasses.
    * 
-   * @param <EventType> event type of this key
-   * @param <HandlerType> handler type of this key
+   * @param <EventType> event type
+   * @param <HandlerType> handler type
    */
-  public abstract static class Key<EventType extends DomEvent, HandlerType extends EventHandler>
-      extends AbstractEvent.Key<EventType, HandlerType> {
-    int nativeEventType;
+  public abstract static class Type<EventType extends DomEvent, HandlerType extends EventHandler>
+      extends AbstractEvent.Type<EventType, HandlerType> {
+    private int nativeEventType;
     DomEvent cached;
 
     /**
-     * Creates a {@link Key}. Each event should have a singleton key.
+     * Constructor.
      * 
      * @param nativeEventType the native event type
      */
-    public Key(int nativeEventType) {
+    public Type(int nativeEventType) {
       // All clinit activity should take place here for DomEvent.
       if (registered == null) {
         registered = new WrappedKeyMap();
@@ -60,7 +59,8 @@ public abstract class DomEvent extends AbstractEvent {
     }
 
     /**
-     * Gets the native {@link Event} integer corresponding to this key.
+     * Gets the native {@link Event} type integer corresponding to the native
+     * event.
      * 
      * @return the native event type
      */
@@ -69,9 +69,9 @@ public abstract class DomEvent extends AbstractEvent {
     }
 
     /**
-     * Wraps the native event in the key's event type.
+     * Wraps the native event.
      * 
-     * @param nativeEvent
+     * @param nativeEvent the native event
      * @return the wrapped native event
      */
     abstract EventType wrap(Event nativeEvent);
@@ -87,37 +87,37 @@ public abstract class DomEvent extends AbstractEvent {
       protected KeyMap() {
       }
 
-      public final native DomEvent.Key get(String nativeEventType) /*-{
+      public final native DomEvent.Type get(String nativeEventType) /*-{
         return this[nativeEventType];
       }-*/;
 
-      public final native void put(String nativeEventType, DomEvent.Key key) /*-{
+      public final native void put(String nativeEventType, DomEvent.Type key) /*-{
         this[nativeEventType] = key;
       }-*/;
     }
 
     private KeyMap map;
 
-    private HashMap<String, DomEvent.Key> javaMap;
+    private HashMap<String, DomEvent.Type> javaMap;
 
     WrappedKeyMap() {
-      if (GWT.isClient()) {
+      if (GWT.isScript()) {
         map = KeyMap.create();
       } else {
-        javaMap = new HashMap<String, DomEvent.Key>();
+        javaMap = new HashMap<String, DomEvent.Type>();
       }
     }
 
-    public final DomEvent.Key get(String nativeEventType) {
-      if (GWT.isClient()) {
+    public final DomEvent.Type get(String nativeEventType) {
+      if (GWT.isScript()) {
         return map.get(nativeEventType);
       } else {
         return javaMap.get(nativeEventType);
       }
     }
 
-    public final void put(String nativeEventType, DomEvent.Key key) {
-      if (GWT.isClient()) {
+    public final void put(String nativeEventType, DomEvent.Type key) {
+      if (GWT.isScript()) {
         map.put(nativeEventType, key);
       } else {
         javaMap.put(nativeEventType, key);
@@ -128,6 +128,34 @@ public abstract class DomEvent extends AbstractEvent {
   private static WrappedKeyMap registered;
 
   /**
+   * Fires the given native event on the manager with a null underlying native
+   * event.
+   * 
+   * <p>
+   * This method is used in the rare case that GWT widgets have to fire native
+   * events but do not have access to the corresponding native event. It allows
+   * the compiler to avoid instantiating event types that are never handlers.
+   * </p>
+   * 
+   * @param eventType the GWT event type representing the type of the native
+   *          event.
+   * @param manager the event manager
+   */
+  public static void fireNativeEvent(int eventType, HandlerManager manager) {
+    if (registered != null) {
+      DomEvent.Type typeKey = registered.get(getType(eventType));
+      if (typeKey != null && manager.isEventHandled(typeKey)) {
+        if (typeKey.cached == null || typeKey.cached.isLive()) {
+          typeKey.cached = typeKey.wrap(null);
+        } else {
+          typeKey.cached.reset(null);
+        }
+        manager.fireEvent(typeKey.cached);
+      }
+    }
+  }
+
+  /**
    * Fires the given native event on the manager.
    * 
    * @param nativeEvent the native event
@@ -135,7 +163,7 @@ public abstract class DomEvent extends AbstractEvent {
    */
   public static void fireNativeEvent(Event nativeEvent, HandlerManager manager) {
     if (registered != null) {
-      DomEvent.Key typeKey = registered.get(nativeEvent.getType());
+      DomEvent.Type typeKey = registered.get(nativeEvent.getType());
       if (typeKey != null && manager.isEventHandled(typeKey)) {
         if (typeKey.cached == null || typeKey.cached.isLive()) {
           typeKey.cached = typeKey.wrap(nativeEvent);
@@ -195,7 +223,7 @@ public abstract class DomEvent extends AbstractEvent {
   private Event nativeEvent;
 
   /**
-   * Creates a new dom event based on the given native event.
+   * Constructor.
    * 
    * @param nativeEvent the native event
    */
@@ -231,11 +259,11 @@ public abstract class DomEvent extends AbstractEvent {
 
   @Override
   public String toString() {
-    return getType(getKey().getNativeEventType()) + " event";
+    return getType(getType().getNativeEventType()) + " event";
   }
 
   @Override
-  protected abstract DomEvent.Key getKey();
+  protected abstract DomEvent.Type getType();
 
   void reset(Event event) {
     super.revive();

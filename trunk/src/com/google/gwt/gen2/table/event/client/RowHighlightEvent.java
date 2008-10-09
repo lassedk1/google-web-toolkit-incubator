@@ -26,7 +26,7 @@ public class RowHighlightEvent extends HighlightEvent<Row> {
   /**
    * Event Key for {@link RowHighlightEvent}.
    */
-  public static final Key<RowHighlightEvent, RowHighlightHandler> KEY = new Key<RowHighlightEvent, RowHighlightHandler>() {
+  public static final Type<RowHighlightEvent, RowHighlightHandler> TYPE = new Type<RowHighlightEvent, RowHighlightHandler>() {
     @Override
     protected void fire(RowHighlightHandler handler, RowHighlightEvent event) {
       handler.onRowHighlight(event);
@@ -52,7 +52,7 @@ public class RowHighlightEvent extends HighlightEvent<Row> {
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

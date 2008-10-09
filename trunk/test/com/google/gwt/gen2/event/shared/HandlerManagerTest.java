@@ -33,28 +33,28 @@ public class HandlerManagerTest extends HandlerTestBase {
   }
 
   private void addHandlers(HandlerManager manager) {
-    manager.addHandler(MouseDownEvent.KEY, mouse1);
-    manager.addHandler(MouseDownEvent.KEY, mouse2);
-    manager.addHandler(MouseDownEvent.KEY, adaptor1);
+    manager.addHandler(MouseDownEvent.TYPE, mouse1);
+    manager.addHandler(MouseDownEvent.TYPE, mouse2);
+    manager.addHandler(MouseDownEvent.TYPE, adaptor1);
     manager.fireEvent(new MouseDownEvent(null));
-    assertEquals(3, manager.getHandlerCount(MouseDownEvent.KEY));
+    assertEquals(3, manager.getHandlerCount(MouseDownEvent.TYPE));
     assertFired(mouse1, mouse2, adaptor1);
-    manager.addHandler(MouseDownEvent.KEY, mouse3);
-    assertEquals(4, manager.getHandlerCount(MouseDownEvent.KEY));
+    manager.addHandler(MouseDownEvent.TYPE, mouse3);
+    assertEquals(4, manager.getHandlerCount(MouseDownEvent.TYPE));
 
-    manager.addHandler(MouseDownEvent.KEY, mouse1);
-    manager.addHandler(MouseDownEvent.KEY, mouse2);
-    manager.addHandler(MouseDownEvent.KEY, adaptor1);
+    manager.addHandler(MouseDownEvent.TYPE, mouse1);
+    manager.addHandler(MouseDownEvent.TYPE, mouse2);
+    manager.addHandler(MouseDownEvent.TYPE, adaptor1);
 
     // You can indeed add handlers twice, they will only be removed one at a
     // time though.
-    assertEquals(7, manager.getHandlerCount(MouseDownEvent.KEY));
-    manager.addHandler(ClickEvent.KEY, adaptor1);
-    manager.addHandler(ClickEvent.KEY, click1);
-    manager.addHandler(ClickEvent.KEY, click2);
+    assertEquals(7, manager.getHandlerCount(MouseDownEvent.TYPE));
+    manager.addHandler(ClickEvent.TYPE, adaptor1);
+    manager.addHandler(ClickEvent.TYPE, click1);
+    manager.addHandler(ClickEvent.TYPE, click2);
 
-    assertEquals(7, manager.getHandlerCount(MouseDownEvent.KEY));
-    assertEquals(3, manager.getHandlerCount(ClickEvent.KEY));
+    assertEquals(7, manager.getHandlerCount(MouseDownEvent.TYPE));
+    assertEquals(3, manager.getHandlerCount(ClickEvent.TYPE));
 
     reset();
     manager.fireEvent(new MouseDownEvent(null));
@@ -66,13 +66,13 @@ public class HandlerManagerTest extends HandlerTestBase {
     HandlerManager manager = new HandlerManager("bogus source");
     addHandlers(manager);
     // Gets rid of first instance.
-    manager.removeHandler(MouseDownEvent.KEY, adaptor1);
+    manager.removeHandler(MouseDownEvent.TYPE, adaptor1);
     manager.fireEvent(new MouseDownEvent(null));
     assertFired(mouse1, mouse2, mouse3, adaptor1);
     assertNotFired(click1, click2);
 
     // Gets rid of second instance.
-    manager.removeHandler(MouseDownEvent.KEY, adaptor1);
+    manager.removeHandler(MouseDownEvent.TYPE, adaptor1);
     reset();
     manager.fireEvent(new MouseDownEvent(null));
     assertFired(mouse1, mouse2, mouse3);
@@ -91,25 +91,25 @@ public class HandlerManagerTest extends HandlerTestBase {
 
     final HandlerManager manager2 = new HandlerManager("source2");
 
-    manager.addHandler(MouseDownEvent.KEY, mouse1);
+    manager.addHandler(MouseDownEvent.TYPE, mouse1);
 
-    manager.addHandler(MouseDownEvent.KEY, new MouseDownHandler() {
+    manager.addHandler(MouseDownEvent.TYPE, new MouseDownHandler() {
 
       public void onMouseDown(MouseDownEvent event) {
         manager2.fireEvent(event);
       }
 
     });
-    manager.addHandler(MouseDownEvent.KEY, mouse3);
-    manager2.addHandler(MouseDownEvent.KEY, adaptor1);
-    manager2.addHandler(MouseDownEvent.KEY, new MouseDownHandler() {
+    manager.addHandler(MouseDownEvent.TYPE, mouse3);
+    manager2.addHandler(MouseDownEvent.TYPE, adaptor1);
+    manager2.addHandler(MouseDownEvent.TYPE, new MouseDownHandler() {
 
       public void onMouseDown(MouseDownEvent event) {
         assertEquals("source2", event.getSource());
       }
 
     });
-    manager.addHandler(MouseDownEvent.KEY, new MouseDownHandler() {
+    manager.addHandler(MouseDownEvent.TYPE, new MouseDownHandler() {
 
       public void onMouseDown(MouseDownEvent event) {
         assertEquals("source1", event.getSource());

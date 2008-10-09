@@ -783,7 +783,7 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget,
   }
 
   public HandlerRegistration addScrollHandler(ScrollHandler handler) {
-    return addHandler(ScrollEvent.KEY, handler);
+    return addHandler(ScrollEvent.TYPE, handler);
   }
 
   /**

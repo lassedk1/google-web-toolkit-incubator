@@ -25,7 +25,7 @@ public class PagingFailureEvent extends AbstractEvent {
   /**
    * Event Key for {@link PagingFailureEvent}.
    */
-  public static final Key<PagingFailureEvent, PagingFailureHandler> KEY = new Key<PagingFailureEvent, PagingFailureHandler>() {
+  public static final Type<PagingFailureEvent, PagingFailureHandler> TYPE = new Type<PagingFailureEvent, PagingFailureHandler>() {
     @Override
     protected void fire(PagingFailureHandler handler, PagingFailureEvent event) {
       handler.onPagingFailure(event);
@@ -54,7 +54,7 @@ public class PagingFailureEvent extends AbstractEvent {
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

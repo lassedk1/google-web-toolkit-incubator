@@ -25,7 +25,7 @@ public class RowCountChangeEvent extends AbstractEvent {
   /**
    * Event Key for {@link RowCountChangeEvent}.
    */
-  public static final Key<RowCountChangeEvent, RowCountChangeHandler> KEY = new Key<RowCountChangeEvent, RowCountChangeHandler>() {
+  public static final Type<RowCountChangeEvent, RowCountChangeHandler> TYPE = new Type<RowCountChangeEvent, RowCountChangeHandler>() {
     @Override
     protected void fire(RowCountChangeHandler handler, RowCountChangeEvent event) {
       handler.onRowCountChange(event);
@@ -68,7 +68,7 @@ public class RowCountChangeEvent extends AbstractEvent {
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

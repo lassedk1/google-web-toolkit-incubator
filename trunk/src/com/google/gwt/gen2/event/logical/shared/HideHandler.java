@@ -23,7 +23,7 @@ import com.google.gwt.gen2.event.shared.EventHandler;
 public interface HideHandler extends EventHandler {
 
   /**
-   * Called when HideEvent is fired.
+   * Called when a {@link HideEvent} is fired.
    * 
    * @param event the {@link HideEvent} that was fired
    */

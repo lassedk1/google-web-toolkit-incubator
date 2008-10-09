@@ -29,7 +29,7 @@ public class RowSelectionEvent extends SelectionEvent<Set<Row>> {
   /**
    * Event Key for {@link RowSelectionEvent}.
    */
-  public static final Key<RowSelectionEvent, RowSelectionHandler> KEY = new Key<RowSelectionEvent, RowSelectionHandler>() {
+  public static final Type<RowSelectionEvent, RowSelectionHandler> TYPE = new Type<RowSelectionEvent, RowSelectionHandler>() {
     @Override
     protected void fire(RowSelectionHandler handler, RowSelectionEvent event) {
       handler.onRowSelection(event);
@@ -77,7 +77,7 @@ public class RowSelectionEvent extends SelectionEvent<Set<Row>> {
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

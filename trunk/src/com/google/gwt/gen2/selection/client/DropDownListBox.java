@@ -211,7 +211,7 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
   }
 
   public HandlerRegistration addBeforeShowHandler(BeforeShowHandler handler) {
-    return addHandler(BeforeShowEvent.KEY, handler);
+    return addHandler(BeforeShowEvent.TYPE, handler);
   }
 
   /**

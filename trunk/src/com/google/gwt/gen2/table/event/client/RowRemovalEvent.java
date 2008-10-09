@@ -25,7 +25,7 @@ public class RowRemovalEvent extends AbstractEvent {
   /**
    * Event Key for {@link RowRemovalEvent}.
    */
-  public static final Key<RowRemovalEvent, RowRemovalHandler> KEY = new Key<RowRemovalEvent, RowRemovalHandler>() {
+  public static final Type<RowRemovalEvent, RowRemovalHandler> TYPE = new Type<RowRemovalEvent, RowRemovalHandler>() {
     @Override
     protected void fire(RowRemovalHandler handler, RowRemovalEvent event) {
       handler.onRowRemoval(event);
@@ -54,7 +54,7 @@ public class RowRemovalEvent extends AbstractEvent {
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

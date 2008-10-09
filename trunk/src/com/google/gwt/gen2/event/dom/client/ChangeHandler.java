@@ -18,12 +18,12 @@ package com.google.gwt.gen2.event.dom.client;
 import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
- * Handler interface for {@link ChangeEvent} events.
+ * Handler for {@link ChangeEvent} events.
  */
 public interface ChangeHandler extends EventHandler {
 
   /**
-   * Called when ChangeEvent is fired.
+   * Called when a change event is fired.
    * 
    * @param event the {@link ChangeEvent} that was fired
    */

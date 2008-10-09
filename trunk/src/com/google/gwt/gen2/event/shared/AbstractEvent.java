@@ -23,22 +23,24 @@ package com.google.gwt.gen2.event.shared;
  */
 public abstract class AbstractEvent {
   /**
-   * Key class used to register events with HandlerManager.
+   * Type class used to register events with the {@link HandlerManager}.
    * <p>
-   * Key is parameterized by the event handler type in order to make the
-   * addHandler method type safe.
+   * Type is parameterized by the event and handler type in order to make the
+   * addHandler method type safe and to avoid type-casts when implementing
+   * {@link AbstractEvent.Type#fire(EventHandler, AbstractEvent)}.
+   * </p>
    * 
    * @param <EventType> event type
    * @param <HandlerType> handler type
    */
-  public abstract static class Key<EventType extends AbstractEvent, HandlerType extends EventHandler> {
+  public abstract static class Type<EventType extends AbstractEvent, HandlerType extends EventHandler> {
 
     private int index;
 
     /**
-     * Constructs a new event key.
+     * Constructor.
      */
-    public Key() {
+    public Type() {
       index = HandlerManager.createKeyIndex();
     }
 
@@ -51,8 +53,8 @@ public abstract class AbstractEvent {
     /**
      * Fires the given handler on the supplied event.
      * 
-     * @param handler
-     * @param event
+     * @param handler the handler to fire
+     * @param event the event
      */
     protected abstract void fire(HandlerType handler, EventType event);
   }
@@ -91,26 +93,32 @@ public abstract class AbstractEvent {
     return name + ": source = " + source;
   }
 
+  /**
+   * The toString() for abstract event is overridden to avoid accidently
+   * including class literals in the the compiled output. Use
+   * {@link AbstractEvent} #toDebugString to get more information about the
+   * event.
+   */
   @Override
   public String toString() {
-    return "event type";
+    return "An event type";
   }
 
   /**
-   * Asserts that the event attributes still should be accessed. All events are
-   * considered to be "dead" after their original event handler finishing
-   * activating them.
+   * Asserts that the event still should be accessed. All events are considered
+   * to be "dead" after their original handler manager finishes firing them. An
+   * event can be revived by calling {@link AbstractEvent#revive()}.
    */
   protected void assertLive() {
-    assert (!dead) : "This event has already finished being processed by its original event manager, so you can no longer access it";
+    assert (!dead) : "This event has already finished being processed by its original handler manager, so you can no longer access it";
   }
 
   /**
-   * Returns the Key used to register this event.
+   * Returns the type used to register this event.
    * 
-   * @return th key
+   * @return the type
    */
-  protected abstract Key getKey();
+  protected abstract Type getType();
 
   /**
    * Is the event current live?
@@ -122,11 +130,10 @@ public abstract class AbstractEvent {
   }
 
   /**
-   * Set this event to live. Used when reycling event instances.
+   * Revives the event. Used when recycling event instances.
    */
   protected void revive() {
     dead = false;
-    source = null;
   }
 
   /**
@@ -134,6 +141,7 @@ public abstract class AbstractEvent {
    */
   void onRelease() {
     dead = true;
+    source = null;
   }
 
   /**

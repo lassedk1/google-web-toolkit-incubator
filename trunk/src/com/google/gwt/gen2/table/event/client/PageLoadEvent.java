@@ -25,7 +25,7 @@ public class PageLoadEvent extends AbstractEvent {
   /**
    * Event Key for {@link PageLoadEvent}.
    */
-  public static final Key<PageLoadEvent, PageLoadHandler> KEY = new Key<PageLoadEvent, PageLoadHandler>() {
+  public static final Type<PageLoadEvent, PageLoadHandler> TYPE = new Type<PageLoadEvent, PageLoadHandler>() {
     @Override
     protected void fire(PageLoadHandler handler, PageLoadEvent event) {
       handler.onPageLoad(event);
@@ -54,7 +54,7 @@ public class PageLoadEvent extends AbstractEvent {
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

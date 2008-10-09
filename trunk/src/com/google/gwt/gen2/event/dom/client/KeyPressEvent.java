@@ -20,33 +20,33 @@ import com.google.gwt.user.client.Event;
 /**
  * Represents a native key press event.
  */
-public class KeyPressEvent extends KeyboardEvent {
+public class KeyPressEvent extends KeyEvent {
 
   /**
-   * Event Key for KeyPress.
-   */
-  public static final Key<KeyPressEvent, KeyPressHandler> KEY = new Key<KeyPressEvent, KeyPressHandler>(
+    Event type for key press events. Represents the meta-data associated with this event.
+  */
+  public static final Type<KeyPressEvent, KeyPressHandler> TYPE = new Type<KeyPressEvent,KeyPressHandler>(
       Event.ONKEYPRESS) {
-    @Override
-    public void fire(KeyPressHandler handler, KeyPressEvent event) {
-      handler.onKeyPress(event);
-    }
+     @Override
+     public void fire(KeyPressHandler handler, KeyPressEvent event) {
+       handler.onKeyPress(event);
+     }
 
-    @Override
+     @Override     
     KeyPressEvent wrap(Event nativeEvent) {
-      return new KeyPressEvent(nativeEvent);
-    }
-  };
+       return new KeyPressEvent(nativeEvent);
+     }
+   };
 
   /**
-   * Constructs a KeyPressEvent event.
+   * Constructor.
    * 
-   * @param nativeEvent the native event object wrapped by this event
+   * @param nativeEvent the native event object
    */
   public KeyPressEvent(Event nativeEvent) {
     super(nativeEvent);
   }
-
+  
   /**
    * Gets the char code for this event.
    * 
@@ -55,13 +55,14 @@ public class KeyPressEvent extends KeyboardEvent {
   public char getCharCode() {
     return getCharCode(getNativeEvent());
   }
-
+   
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
-
+  
   private native char getCharCode(Event e)/*-{
-        return e.charCode || e.keyCode;
-    }-*/;
+    return e.charCode || e.keyCode;
+  }-*/;
+
 }

@@ -78,7 +78,7 @@ public abstract class TableModel<RowType> implements HasRowCountChangeHandlers {
 
   public HandlerRegistration addRowCountChangeHandler(
       RowCountChangeHandler handler) {
-    return addHandler(RowCountChangeEvent.KEY, handler);
+    return addHandler(RowCountChangeEvent.TYPE, handler);
   }
 
   /**
@@ -120,7 +120,7 @@ public abstract class TableModel<RowType> implements HasRowCountChangeHandlers {
    * @param handler the handler
    */
   protected <HandlerType extends EventHandler> HandlerRegistration addHandler(
-      AbstractEvent.Key<?, HandlerType> key, final HandlerType handler) {
+      AbstractEvent.Type<?, HandlerType> key, final HandlerType handler) {
     return handlers.addHandler(key, handler);
   }
 
@@ -143,7 +143,7 @@ public abstract class TableModel<RowType> implements HasRowCountChangeHandlers {
   /**
    * Is the event handled by one or more handlers?
    */
-  protected final boolean isEventHandled(AbstractEvent.Key key) {
+  protected final boolean isEventHandled(AbstractEvent.Type key) {
     return handlers.isEventHandled(key);
   }
 
@@ -157,7 +157,7 @@ public abstract class TableModel<RowType> implements HasRowCountChangeHandlers {
    * @param handler the handler
    */
   protected <T extends EventHandler> void removeHandler(
-      AbstractEvent.Key<?, T> key, final T handler) {
+      AbstractEvent.Type<?, T> key, final T handler) {
     handlers.removeHandler(key, handler);
   }
 }

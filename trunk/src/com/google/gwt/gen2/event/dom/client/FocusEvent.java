@@ -23,9 +23,9 @@ import com.google.gwt.user.client.Event;
 public class FocusEvent extends DomEvent {
 
   /**
-    Event Key for Focus.
+    Event type for focus events. Represents the meta-data associated with this event.
   */
-  public static final Key<FocusEvent, FocusHandler> KEY = new Key<FocusEvent,FocusHandler>(
+  public static final Type<FocusEvent, FocusHandler> TYPE = new Type<FocusEvent,FocusHandler>(
       Event.ONFOCUS) {
      @Override
      public void fire(FocusHandler handler, FocusEvent event) {
@@ -39,16 +39,17 @@ public class FocusEvent extends DomEvent {
    };
 
   /**
-   * Constructs a FocusEvent event.
+   * Constructor.
    * 
-   * @param nativeEvent the native event object wrapped by this event
+   * @param nativeEvent the native event object
    */
   public FocusEvent(Event nativeEvent) {
     super(nativeEvent);
   }
   
-  @Override
-  protected Key getKey() {
-    return KEY;
+ @Override
+  protected Type getType() {
+    return TYPE;
   }
+
 }

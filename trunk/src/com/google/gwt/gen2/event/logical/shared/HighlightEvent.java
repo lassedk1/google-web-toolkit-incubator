@@ -16,15 +16,15 @@
 package com.google.gwt.gen2.event.logical.shared;
 
 /**
- * Represents a highlight event.
+ * Fired when an event source changes its highlighted value.
  * 
- * @param <Value> the value of the element highlighted
+ * @param <Value> the value highlighted
  */
 public class HighlightEvent<Value> extends ValueEvent<Value> {
   /**
-   * Event Key for Highlight.
+   * Event type.
    */
-  public static final Key<HighlightEvent, HighlightHandler> KEY = new Key<HighlightEvent, HighlightHandler>() {
+  public static final Type<HighlightEvent, HighlightHandler> TYPE = new Type<HighlightEvent, HighlightHandler>() {
     @Override
     protected void fire(HighlightHandler handler, HighlightEvent event) {
       handler.onHighlight(event);
@@ -32,7 +32,7 @@ public class HighlightEvent<Value> extends ValueEvent<Value> {
   };
 
   /**
-   * Constructs a HighlightEvent event.
+   * Constructor.
    * 
    * @param value value highlighted
    */
@@ -41,7 +41,7 @@ public class HighlightEvent<Value> extends ValueEvent<Value> {
   }
 
   @Override
-  protected Key getKey() {
-    return KEY;
+  protected Type getType() {
+    return TYPE;
   }
 }

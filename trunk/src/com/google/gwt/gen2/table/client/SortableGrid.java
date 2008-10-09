@@ -233,7 +233,7 @@ public class SortableGrid extends SelectionGrid implements
   }
 
   public HandlerRegistration addColumnSortHandler(ColumnSortHandler handler) {
-    return addHandler(ColumnSortEvent.KEY, handler);
+    return addHandler(ColumnSortEvent.TYPE, handler);
   }
 
   /**
