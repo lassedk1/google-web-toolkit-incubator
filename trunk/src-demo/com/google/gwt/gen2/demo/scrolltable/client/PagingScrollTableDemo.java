@@ -155,11 +155,11 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     cachedTableModel.setRowCount(1000);
 
     // Create a TableCellRenderer
-    TableDefinition<Student> tcr = createTableCellRenderer();
+    TableDefinition<Student> tableDef = createTableCellRenderer();
 
     // Create the scroll table
     scrollTable = new PagingScrollTable<Student>(cachedTableModel, dataTable,
-        headerTable, tcr);
+        headerTable, tableDef);
     getPagingScrollTable().setPageSize(50);
     getPagingScrollTable().setEmptyTableWidget(
         new HTML("There is no data to display"));
@@ -167,7 +167,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // Setup the bulk renderer
     FixedWidthGridBulkRenderer<Student> bulkRenderer = new FixedWidthGridBulkRenderer<Student>(
-        dataTable, tcr);
+        dataTable, getPagingScrollTable());
     getPagingScrollTable().setBulkRenderer(bulkRenderer);
 
     // Setup the scroll table

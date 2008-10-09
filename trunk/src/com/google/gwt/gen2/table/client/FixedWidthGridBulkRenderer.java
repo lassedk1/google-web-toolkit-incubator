@@ -35,14 +35,26 @@ public class FixedWidthGridBulkRenderer<RowType> extends
    * Constructor. Takes in the number of columns in the table to allow efficient
    * creation of the header row.
    * 
-   * @param table table to be bulk rendered
-   * @param renderer the renderer that should be used during bulk rendering
+   * @param grid {@link FixedWidthGrid} to be be bulk rendered
+   * @param tableDef the table definition that should be used during rendering
    */
-  public FixedWidthGridBulkRenderer(FixedWidthGrid table,
-      TableDefinition<RowType> renderer) {
-    super(table, renderer);
-    this.numColumns = renderer.getVisibleColumnDefinitions().size();
-    table.resizeColumns(numColumns);
+  public FixedWidthGridBulkRenderer(FixedWidthGrid grid,
+      TableDefinition<RowType> tableDef) {
+    super(grid, tableDef);
+    init(grid, tableDef);
+  }
+
+  /**
+   * Constructor. Takes in the number of columns in the table to allow efficient
+   * creation of the header row.
+   * 
+   * @param grid {@link FixedWidthGrid} to be be bulk rendered
+   * @param sourceTableDef the external source of the table definition
+   */
+  public FixedWidthGridBulkRenderer(FixedWidthGrid grid,
+      HasTableDefinition<RowType> sourceTableDef) {
+    super(grid, sourceTableDef);
+    init(grid, sourceTableDef.getTableDefinition());
   }
 
   /**
@@ -77,5 +89,10 @@ public class FixedWidthGridBulkRenderer<RowType> extends
     // Update the ghost row variable
     Element newGhostRow = getBulkLoadedGhostRow(getTable());
     ((FixedWidthGrid) getTable()).setGhostRow(newGhostRow);
+  }
+
+  private void init(FixedWidthGrid grid, TableDefinition<RowType> tableDef) {
+    numColumns = tableDef.getVisibleColumnDefinitions().size();
+    grid.resizeColumns(numColumns);
   }
 }

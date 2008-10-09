@@ -17,7 +17,6 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.table.client.SelectionGrid.SelectionPolicy;
 import com.google.gwt.gen2.table.client.TableDefinition.HTMLCellView;
-import com.google.gwt.gen2.table.override.client.Grid;
 
 import java.util.List;
 
@@ -70,11 +69,23 @@ public class SelectionGridBulkRenderer<RowType> extends
   /**
    * Construct a new {@link SelectionGridBulkRenderer}.
    * 
-   * @param grid {@link Grid} to be be bulk rendered
-   * @param renderer the renderer that should be used during bulk rendering
+   * @param grid {@link SelectionGrid} to be be bulk rendered
+   * @param tableDef the table definition that should be used during rendering
    */
-  public SelectionGridBulkRenderer(Grid grid, TableDefinition<RowType> renderer) {
-    super(grid, renderer);
+  public SelectionGridBulkRenderer(SelectionGrid grid,
+      TableDefinition<RowType> tableDef) {
+    super(grid, tableDef);
+  }
+
+  /**
+   * Construct a new {@link SelectionGridBulkRenderer}.
+   * 
+   * @param grid {@link SelectionGrid} to be be bulk rendered
+   * @param sourceTableDef the external source of the table definition
+   */
+  public SelectionGridBulkRenderer(SelectionGrid grid,
+      HasTableDefinition<RowType> sourceTableDef) {
+    super(grid, sourceTableDef);
   }
 
   @Override

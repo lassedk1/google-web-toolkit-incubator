@@ -17,7 +17,6 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.table.override.client.OverrideDOM;
-import com.google.gwt.gen2.table.override.client.HTMLTable.ColumnFormatter;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
@@ -28,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A variation of the {@link com.google.gwt.gen2.table.client.overrides.Grid}
+ * A variation of the {@link com.google.gwt.gen2.table.override.client.Grid}
  * that resizes columns using a fixed table width.
  */
 public class FixedWidthGrid extends SortableGrid {
@@ -402,7 +401,11 @@ public class FixedWidthGrid extends SortableGrid {
 
   @Override
   protected int getRowIndex(Element rowElem) {
-    return super.getRowIndex(rowElem) - 1;
+    int rowIndex = super.getRowIndex(rowElem);
+    if (rowIndex < 0) {
+      return rowIndex;
+    }
+    return rowIndex - 1;
   }
 
   /**

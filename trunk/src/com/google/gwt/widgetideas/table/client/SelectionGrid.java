@@ -21,7 +21,6 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.widgetideas.table.client.overrides.Grid;
 import com.google.gwt.widgetideas.table.client.overrides.OverrideDOM;
-import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.RowFormatter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -608,7 +607,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
    */
   protected void hoverCell(Element cellElem) {
     // Ignore if the cell is already being hovered
-    if (DOM.compare(cellElem, hoveringCellElem)) {
+    if (cellElem == hoveringCellElem) {
       return;
     }
 
@@ -629,7 +628,7 @@ public class SelectionGrid extends Grid implements SourceTableSelectionEvents {
       hoveringCellIndex = -1;
 
       // Unhover the current row if it changed
-      if (!DOM.compare(rowElem, hoveringRowElem)) {
+      if (rowElem != hoveringRowElem) {
         setStyleName(hoveringRowElem, "hovering", false);
         if (tableSelectionListeners != null) {
           tableSelectionListeners.fireRowUnhover(this, hoveringRowIndex);
