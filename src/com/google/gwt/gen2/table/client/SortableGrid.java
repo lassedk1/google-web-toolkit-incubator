@@ -45,7 +45,7 @@ public class SortableGrid extends SelectionGrid implements
      * @param callback the callback object when sorting is complete
      */
     public abstract void onSortColumn(SortableGrid grid,
-        ColumnSortList sortList, ColumnSorterCallback callback);
+        ColumnSortList sortList, SortableGrid.ColumnSorterCallback callback);
   }
 
   /**
@@ -55,7 +55,7 @@ public class SortableGrid extends SelectionGrid implements
   private static class DefaultColumnSorter extends ColumnSorter {
     @Override
     public void onSortColumn(SortableGrid grid, ColumnSortList sortList,
-        ColumnSorterCallback callback) {
+        SortableGrid.ColumnSorterCallback callback) {
       // Get the primary column and sort order
       int column = sortList.getPrimaryColumn();
       boolean ascending = sortList.isPrimaryAscending();
@@ -233,7 +233,7 @@ public class SortableGrid extends SelectionGrid implements
   }
 
   public HandlerRegistration addColumnSortHandler(ColumnSortHandler handler) {
-    return addHandler(ColumnSortEvent.KEY, handler);
+    return addHandler(ColumnSortEvent.TYPE, handler);
   }
 
   /**
@@ -360,7 +360,7 @@ public class SortableGrid extends SelectionGrid implements
         new Element[0]);
     deselectAllRows();
     getColumnSorter(true).onSortColumn(this, columnSortList,
-        new ColumnSorterCallback(selectedRows));
+        new SortableGrid.ColumnSorterCallback(selectedRows));
   }
 
   /**
