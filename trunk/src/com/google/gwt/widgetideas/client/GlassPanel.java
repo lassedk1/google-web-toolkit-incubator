@@ -16,19 +16,23 @@
 package com.google.gwt.widgetideas.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventPreview;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowResizeListener;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.impl.GlassPanelImpl;
 
 /**
@@ -50,7 +54,40 @@ import com.google.gwt.widgetideas.client.impl.GlassPanelImpl;
  * {@example com.google.gwt.examples.GlassPanelExample}
  * </p>
  */
-public class GlassPanel extends FocusPanel implements EventPreview {
+public class GlassPanel extends Composite implements EventPreview {
+  /**
+   * A FocusPanel which automatically focuses itself when
+   * attached (in order to blur any currently focused widget)
+   * and then removes itself.
+   */
+  private static class FocusPanelImpl extends FocusPanel {
+    public FocusPanelImpl() {
+      addFocusListener(new FocusListener() {
+
+        public void onFocus(Widget sender) {
+          FocusPanelImpl.this.removeFromParent();
+        }
+
+        public void onLostFocus(Widget sender) {
+        }
+      });
+    }
+
+    @Override
+    protected void onLoad() {
+      super.onLoad();
+      /**
+       * Removed DeferredCommand if/when GWT issue 1849 is implemented
+       * http://code.google.com/p/google-web-toolkit/issues/detail?id=1849
+       */
+      DeferredCommand.addCommand(new Command() {
+        public void execute() {
+          setFocus(true);
+        }
+      });
+    }
+  }
+
   private static final GlassPanelImpl impl = GWT.create(GlassPanelImpl.class);
 
   private final boolean autoHide;
@@ -73,10 +110,11 @@ public class GlassPanel extends FocusPanel implements EventPreview {
    */
   public GlassPanel(boolean autoHide) {
     this.autoHide = autoHide;
-    Element elem = getElement();
-    DOM.setStyleAttribute(elem, "backgroundColor", "#000");
-    DOM.setStyleAttribute(elem, "filter", "alpha(opacity=50)");
-    DOM.setStyleAttribute(elem, "opacity", "0.5");
+    initWidget(new SimplePanel());
+    Style style = getElement().getStyle();
+    style.setProperty("backgroundColor", "#000");
+    style.setProperty("filter", "alpha(opacity=50)");
+    style.setProperty("opacity", "0.5");
     setStyleName("gwt-GlassPanel");
   }
 
@@ -124,15 +162,8 @@ public class GlassPanel extends FocusPanel implements EventPreview {
     if (autoHide) {
       DOM.addEventPreview(this);
     }
-    /**
-     * Removed DeferredCommand if/when GWT issue 1849 is implemented
-     * http://code.google.com/p/google-web-toolkit/issues/detail?id=1849
-     */
-    DeferredCommand.addCommand(new Command() {
-      public void execute() {
-        setFocus(true);
-      }
-    });
+
+    RootPanel.get().add(new FocusPanelImpl(), Window.getScrollLeft(), Window.getScrollTop());
   }
 
   @Override
