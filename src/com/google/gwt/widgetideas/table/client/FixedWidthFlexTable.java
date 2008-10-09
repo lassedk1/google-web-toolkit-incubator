@@ -562,6 +562,15 @@ public class FixedWidthFlexTable extends FlexTable {
   }
 
   @Override
+  protected int getRowIndex(Element rowElem) {
+    int rowIndex = super.getRowIndex(rowElem);
+    if (rowIndex < 0) {
+      return rowIndex;
+    }
+    return rowIndex - 1;
+  }
+
+  @Override
   protected void prepareCell(int row, int column) {
     int curNumCells = 0;
     if (getRowCount() > row) {

@@ -35,7 +35,6 @@ import com.google.gwt.gen2.table.event.client.RowUnhighlightHandler;
 import com.google.gwt.gen2.table.event.client.TableEvent.Row;
 import com.google.gwt.gen2.table.override.client.Grid;
 import com.google.gwt.gen2.table.override.client.OverrideDOM;
-import com.google.gwt.gen2.table.override.client.HTMLTable.RowFormatter;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
@@ -578,7 +577,7 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
     if (fireEvent) {
       oldRows = getSelectedRowsSet();
     }
-  
+
     // Deselect all rows
     boolean hasInputColumn = selectionPolicy.hasInputColumn();
     for (Element rowElem : selectedRows.values()) {
@@ -588,10 +587,10 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
             (Element) rowElem.getFirstChildElement(), false);
       }
     }
-  
+
     // Clear out the rows
     selectedRows.clear();
-  
+
     // Fire event
     if (fireEvent) {
       fireRowSelectionEvent(oldRows);
@@ -718,7 +717,7 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
       highlightedCellIndex = -1;
 
       // Unhighlight the current row if it changed
-      if (!DOM.compare(rowElem, highlightedRowElem)) {
+      if (rowElem != highlightedRowElem) {
         setStyleName(highlightedRowElem, "highlighted", false);
         fireEvent(new RowUnhighlightEvent(highlightedRowIndex));
         highlightedRowElem = null;

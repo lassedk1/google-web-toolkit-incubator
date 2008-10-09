@@ -37,6 +37,17 @@ public interface TableDefinition<RowType> {
   public abstract static class AbstractCellView<RowType> {
     private int cellIndex = 0;
     private int rowIndex = 0;
+    private HasTableDefinition<RowType> source = null;
+
+    /**
+     * Construct a new {@link TableDefinition.AbstractCellView}.
+     * 
+     * @param sourceTableDef the {@link HasTableDefinition} that defined the
+     *          cell view
+     */
+    public AbstractCellView(HasTableDefinition<RowType> sourceTableDef) {
+      this.source = sourceTableDef;
+    }
 
     /**
      * @return the actual cell index being rendered
@@ -50,6 +61,13 @@ public interface TableDefinition<RowType> {
      */
     public int getRowIndex() {
       return rowIndex;
+    }
+
+    /**
+     * @return the source of the {@link TableDefinition}
+     */
+    public HasTableDefinition<RowType> getSourceTableDefinition() {
+      return source;
     }
 
     /**
@@ -128,6 +146,16 @@ public interface TableDefinition<RowType> {
    */
   public abstract static class HTMLCellView<RowType> extends
       AbstractCellView<RowType> {
+    /**
+     * Construct a new {@link TableDefinition.HTMLCellView}.
+     * 
+     * @param sourceTableDef the {@link HasTableDefinition} that defined the
+     *          cell view
+     */
+    public HTMLCellView(HasTableDefinition<RowType> sourceTableDef) {
+      super(sourceTableDef);
+    }
+
     /**
      * Append a chunk of html to the html string that will be rendered. It is
      * safe to call this method multiple times when rendering a single cell.
@@ -208,6 +236,16 @@ public interface TableDefinition<RowType> {
    */
   public abstract static class TableCellView<RowType> extends
       AbstractCellView<RowType> {
+    /**
+     * Construct a new {@link TableDefinition.TableCellView}.
+     * 
+     * @param sourceTableDef the {@link HasTableDefinition} that defined the
+     *          cell view
+     */
+    public TableCellView(HasTableDefinition<RowType> sourceTableDef) {
+      super(sourceTableDef);
+    }
+
     /**
      * Sets the horizontal alignment of the specified cell.
      * 

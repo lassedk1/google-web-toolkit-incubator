@@ -17,9 +17,6 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.table.override.client.FlexTable;
-import com.google.gwt.gen2.table.override.client.FlexTable.FlexCellFormatter;
-import com.google.gwt.gen2.table.override.client.HTMLTable.ColumnFormatter;
-import com.google.gwt.gen2.table.override.client.HTMLTable.RowFormatter;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
@@ -562,6 +559,15 @@ public class FixedWidthFlexTable extends FlexTable {
    */
   protected int getGhostColumnCount() {
     return super.getDOMCellCount(0);
+  }
+
+  @Override
+  protected int getRowIndex(Element rowElem) {
+    int rowIndex = super.getRowIndex(rowElem);
+    if (rowIndex < 0) {
+      return rowIndex;
+    }
+    return rowIndex - 1;
   }
 
   @Override

@@ -31,9 +31,21 @@ public class FlexTableBulkRenderer<RowType> extends TableBulkRenderer<RowType> {
    * Construct a new {@link FlexTableBulkRenderer}.
    * 
    * @param table the table to be bulk loaded
-   * @param renderer the renderer that should be used during bulk rendering
+   * @param tableDef the table definition that should be used during rendering
    */
-  public FlexTableBulkRenderer(FlexTable table, TableDefinition<RowType> renderer) {
-    super(table, renderer);
+  public FlexTableBulkRenderer(FlexTable table,
+      TableDefinition<RowType> tableDef) {
+    super(table, tableDef);
+  }
+
+  /**
+   * Construct a new {@link FlexTableBulkRenderer}.
+   * 
+   * @param table the table to be bulk rendered
+   * @param sourceTableDef the external source of the table definition
+   */
+  public FlexTableBulkRenderer(FlexTable table,
+      HasTableDefinition<RowType> sourceTableDef) {
+    super(table, sourceTableDef);
   }
 }

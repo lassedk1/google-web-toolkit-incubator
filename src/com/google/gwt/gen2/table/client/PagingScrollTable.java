@@ -67,8 +67,8 @@ import java.util.NoSuchElementException;
  * @param <RowType> the data type of the row values
  */
 public class PagingScrollTable<RowType> extends ScrollTable implements
-    HasPageCountChangeHandlers, HasPageLoadHandlers, HasPageChangeHandlers,
-    HasPagingFailureHandlers {
+    HasTableDefinition<RowType>, HasPageCountChangeHandlers,
+    HasPageLoadHandlers, HasPageChangeHandlers, HasPagingFailureHandlers {
   /**
    * An iterator over the visible rows in an iterator over many rows.
    */
@@ -149,8 +149,8 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
   /**
    * The view of this table.
    */
-  private TableCellView<RowType> tableCellView = new TableCellView<RowType>() {
-
+  private TableCellView<RowType> tableCellView = new TableCellView<RowType>(
+      this) {
     @Override
     public void setHorizontalAlignment(HorizontalAlignmentConstant align) {
       PagingScrollTable.this.getDataTable().getCellFormatter().setHorizontalAlignment(
@@ -397,9 +397,6 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
     return rowValues.get(row);
   }
 
-  /**
-   * @return the {@link TableDefinition} used to render cells.
-   */
   public TableDefinition<RowType> getTableDefinition() {
     return tableDefinition;
   }
@@ -736,7 +733,7 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
     final RowType rowValue = getRowValue(rowIndex);
     Iterator<RowType> singleIterator = new Iterator<RowType>() {
       private boolean nextCalled = false;
-      
+
       public boolean hasNext() {
         return !nextCalled;
       }

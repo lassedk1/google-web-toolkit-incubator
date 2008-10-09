@@ -194,12 +194,15 @@ public class SortableGrid extends SelectionGrid implements
      * manually.
      */
     public void onSortingComplete() {
-      fireColumnSorted();
-
       // Reselect things that need reselecting
       for (int i = 0; i < selectedRows.length; i++) {
-        selectRow(getRowIndex(selectedRows[i]), false);
+        int rowIndex = getRowIndex(selectedRows[i]);
+        if (rowIndex >= 0) {
+          selectRow(rowIndex, false);
+        }
       }
+
+      fireColumnSorted();
     }
   }
 

@@ -41,7 +41,8 @@ import java.util.Map;
  * 
  * @param <RowType> the data type of the row values
  */
-public abstract class TableBulkRenderer<RowType> {
+public abstract class TableBulkRenderer<RowType> implements
+    HasTableDefinition<RowType> {
   /**
    * A simple class that keeps track of a widget that needs to be add to the
    * table after it finishes loading.
@@ -118,6 +119,7 @@ public abstract class TableBulkRenderer<RowType> {
      * @param options the {@link RenderingOptions} to apply to the table
      */
     public BulkCellView(RenderingOptions options) {
+      super((source == null) ? TableBulkRenderer.this : source);
       this.options = options;
       endTime = Duration.currentTimeMillis() + MAX_TIME;
 
@@ -333,6 +335,11 @@ public abstract class TableBulkRenderer<RowType> {
   private int requestStamp = 0;
 
   /**
+   * The external source of the rendering requests.
+   */
+  private HasTableDefinition<RowType> source = null;
+
+  /**
    * Table to be bulk rendered.
    */
   private final HTMLTable table;
@@ -352,14 +359,23 @@ public abstract class TableBulkRenderer<RowType> {
   public TableBulkRenderer(HTMLTable table,
       TableDefinition<RowType> tableDefinition) {
     this.table = table;
-    setTableDefinition(tableDefinition);
+    this.tableDefinition = tableDefinition;
   }
 
   /**
-   * @return the {@link TableDefinition} that defines the columns
+   * Constructor for the bulk renderer.
+   * 
+   * @param table the table to be bulk rendered
+   * @param sourceTableDef the external source of the table definition
    */
+  public TableBulkRenderer(HTMLTable table,
+      HasTableDefinition<RowType> sourceTableDef) {
+    this(table, sourceTableDef.getTableDefinition());
+    this.source = sourceTableDef;
+  }
+
   public TableDefinition<RowType> getTableDefinition() {
-    return tableDefinition;
+    return (source == null) ? tableDefinition : source.getTableDefinition();
   }
 
   /**
@@ -437,15 +453,6 @@ public abstract class TableBulkRenderer<RowType> {
   public final void renderRows(MutableTableModel<RowType> tableModel,
       RendererCallback callback) {
     renderRows(tableModel, 0, MutableTableModel.ALL_ROWS, callback);
-  }
-
-  /**
-   * Sets the {@link TableDefinition} that defines the columns.
-   * 
-   * @param tableDefinition the {@link TableDefinition} that defines the columns
-   */
-  public void setTableDefinition(TableDefinition<RowType> tableDefinition) {
-    this.tableDefinition = tableDefinition;
   }
 
   /**

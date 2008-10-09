@@ -402,7 +402,11 @@ public class FixedWidthGrid extends SortableGrid {
 
   @Override
   protected int getRowIndex(Element rowElem) {
-    return super.getRowIndex(rowElem) - 1;
+    int rowIndex = super.getRowIndex(rowElem);
+    if (rowIndex < 0) {
+      return rowIndex;
+    }
+    return rowIndex - 1;
   }
 
   @Override
