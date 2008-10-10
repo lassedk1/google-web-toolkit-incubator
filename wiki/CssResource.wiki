@@ -300,7 +300,7 @@ Promotion of rules follows the previously-established rule of not promoting a ru
   * To allow for client-side tweaking of the effective (i.e. permutation-specific) style rules, you can store the value of CssResource.getText() into a TextArea.  Wire some UI action to pass the contents of the TextArea into `StyleInjector.setContents()` to overwrite the original, injected stylesheet.
 = Implementation Details =
 == Scope ==
-Scoping of obfuscated class names is defined by CssResource interface inheritance.  Given the following:
+Scoping of obfuscated class names is defined by the return type of the CssResource accessor method in the resource bundle.  Each distinct return type will return a wholly separate collection of values for String accessor methods.
 
 {{{
 interface A extends CssResource {
@@ -308,18 +308,127 @@ interface A extends CssResource {
 }
 
 interface B extends A {
-  String local();
+  String foo();
 }
 
 interface C extends A {
   String foo();
-  String local();
+}
+
+interface D extends C {
+  // Intentionally not defining foo()
+}
+
+interface Resources {
+  A a();
+  A a2();
+  B b();
+  C c();
+  D d();
+  D d2();
+}}}
+
+It will be true that a().foo() != b().foo() != c().foo() != d().foo().  However, a().foo() == a2().foo() and d().foo() == d2().foo().
+
+== Shared scopes ==
+
+In the case of "stateful" CSS classes like `focused` or `enabled`, it is convenient to allow for certain String accessor functions to return the same value, regardless of the CssResource type returned from the accessor method.
+
+{{{
+
+@Shared
+interface FocusCss extends CssResource {
+  String focused();
+  String unfocused();
+}
+
+interface A extends FocusCss {
+  String widget();
+}
+
+interface B extends FocusCss {
+  String widget();
+}
+
+interface C extends B {
+  // Intentionally empty
+}
+
+interface Resources {
+  A a();
+  B b();
+  C c();
+  FocusCss f();
 }
 }}}
 
-It will be true that A.foo() == B.foo() == C.foo(); hower B.local() != C.local().  Behavior in the case of multiple-inheritance of the same accessor function from unrelated supertypes is undefined.
+In this example, a().focused() == b().focused() == c().focused == f().focused().  However, a().widget() != b().widget != c.widget(), as in the previous example.
 
-The short version is that if distinct CSS files need to share obfuscated class names, the CssResource subtypes to which they are attached must share a common supertype that defines accessors for those names.
+The short version is that if distinct CSS types need to share obfuscated class names, the CssResource subtypes to which they are attached must share a common supertype that defines accessors for those names and has the `@Shared` annotation.
+
+== Imported scopes ==
+
+The Java type system can be somewhat ambiguous when it comes to multiple inheritance of interfaces that define methods with identical signatures, although there exist a number of cases where it is necessary to refer to multiple, unrelated CssResource types.  Consider the case of a Tree that contains Checkboxes.
+
+{{{
+@ImportedWithPrefix("tree")
+interface TreeCss extends CssResource {
+  String widget();
+}
+
+@ImportedWithPrefix("checkbox")
+interface CbCss extends CssResource {
+  String widget();
+}
+
+interface MyCss extends CssResource {
+  String other();
+}
+
+interface Resources {
+  @Import({TreeCss.class, CbCss.class})
+  MyCss css();
+}
+}}}
+{{{
+/* Now we can write a descendant selector using the prefixes defined on the CssResource types */
+.tree-widget .checkbox-widget {
+  color: red;
+}
+
+.other {
+  something: else;
+}
+}}}
+
+Composing a "TreeCbCss" interface would be insufficient because consumers of the TreeCss interface and CbCss interface would receive the same value from the widget method.  Moreover, the use of just `.widget` in the associated CSS file would also be insufficient without the use of some kind of class selector prefix.  The prefix is defined on the CssResource type (instead of on the CssResource accessor method) In the interest of uniformity across all CSS files that import a given scope.  It is a compile-time error to import multiple classes that have the same prefix or simple name.
+
+The case of shared scopes could be handled solely with importing scopes, however this form is somewhat more verbose and relationships between unrelated scopes is less common than the use of stateful selectors.
+
+== Strict scoping ==
+
+In the normal case, any class selectors that do not match String accessor functions are left unobfuscated in the compiled output.
+
+{{{
+interface MyCssResource extends CssResource {
+  String foo();
+}
+
+interface Resources {
+  @Strict
+  @Resource("my.css")
+  MyCssResource css();
+}
+}}}
+{{{
+/* This is ok */
+.foo {}
+
+/* This would generate a compile error in @Strict mode */
+.other {}
+}}}
+
+The `@Strict` annotation can be applied to a CssResource accessor function to make it a compile-time error to have any unobfuscated class selectors in the CSS file.  This additional level of restriction is recommended for library-oriented resource bundles in order to avoid inadvertently polluting the global CSS namespace.
 
 =Important open questions=
   * Can we manipulate style rules across browsers?
