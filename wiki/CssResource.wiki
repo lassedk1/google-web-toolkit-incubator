@@ -405,6 +405,57 @@ Composing a "TreeCbCss" interface would be insufficient because consumers of the
 
 The case of shared scopes could be handled solely with importing scopes, however this form is somewhat more verbose and relationships between unrelated scopes is less common than the use of stateful selectors.
 
+=== Example: StackPanel inside a StackPanel ===
+
+This is a use-case that is currently impossible to style correctly in GWT.
+
+{{{
+// Assume this interface is provided by the UI library
+interface StackPanelCss extends CssResource {
+  String widget();
+  // and many more class names
+}
+
+// App code defines the following interfaces:
+
+@ImportedWithPrefix("inner")
+interface StackPanelInner extends StackPanelCss {
+  // Empty interface
+}
+
+interface StackPanelOuter extends StackPanelCss {
+  // Empty interface
+}
+
+interface Resources {
+  @Resource("stackPanel.css")
+  @Strict
+  StackPanelInner inner();
+
+  @Import(StackPanelInner.class)
+  @Resource("stackPanel.css", "outer.css")
+  @Strict
+  StackPanelOuter outer();
+}
+}}}
+
+The file `stackPanel.css` defines the basic structure of any given stackPanel:
+{{{
+.widget .title {}
+.widget .content {}
+/* Other stuff to make a StackPanel work */
+}}}
+
+The `outer()` method can continue to use the base `stackPanel.css` file, because the accessor methods defined in `StackPanelCss` are mapped into the default (no-prefix) namespace.  The inner StackPanel's style members are also available, but in the `inner` prefix.  Here's what `outer.css` might contain:
+{{{
+.widget {color: red;}
+
+.inner-widget {
+  color: blue;
+  font-size: smaller;
+}
+}}}
+
 == Strict scoping ==
 
 In the normal case, any class selectors that do not match String accessor functions are left unobfuscated in the compiled output.
