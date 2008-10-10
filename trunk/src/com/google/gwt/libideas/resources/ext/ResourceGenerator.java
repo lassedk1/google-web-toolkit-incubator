@@ -30,21 +30,22 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
  * The methods on an instance of ResourceGenerator will be called in the
  * following order by the resource generation system:
  * <ol>
- * <li>{@link #init(TreeLogger, ResourceContext)}</li>
- * <li>{@link #prepare(TreeLogger, ResourceContext, JMethod)} once for each
- * method</li>
- * <li>{@link #createFields(TreeLogger, ResourceContext, ResourceBundleFields)}</li>
- * <li>{@link #createAssignment(TreeLogger, ResourceContext, JMethod)} once for
- * each method</li>
- * <li>{@link #finish(TreeLogger, ResourceContext)}</li>
+ * <li>{@link #init}</li>
+ * <li>
+ * {@link #prepare} once for each method</li>
+ * <li>Based on the requirements specified by the ResourceGenerator, the
+ * framework may decide that no further action is required. If this is the case,
+ * the framework will immediately invoke {@link #finish}.</li>
+ * <li>{@link #createFields}</li>
+ * <li>{@link #createAssignment} once for each method</li>
+ * <li>{@link #finish}</li>
  * </ol>
  * <p>
- * The methods {@link #prepare(TreeLogger, ResourceContext, JMethod)} and
- * {@link #createAssignment(TreeLogger, ResourceContext, JMethod)} will be
- * called only with those methods whose ResourcePrototype-derived type specifies
- * the particular type of ResourceGenerator as the implementor. The relative
- * order in which ResourceGenerators are invoked and the specific order in which
- * the bundle's methods are presented is undefined.
+ * The methods {@link #prepare} and {@link #createAssignment} will be called
+ * only with those methods whose ResourcePrototype-derived type specifies the
+ * particular type of ResourceGenerator as the implementor. The relative order
+ * in which ResourceGenerators are invoked and the specific order in which the
+ * bundle's methods are presented is undefined.
  * <p>
  * Direct access to the contents of the generated bundle implementation is
  * intentionally limited to prevent unrelated ResourceGenerators from
@@ -100,6 +101,7 @@ public interface ResourceGenerator {
    * This allows cross-resource state to be accumulated, such as for data
    * aggregation.
    */
-  void prepare(TreeLogger logger, ResourceContext context, JMethod method)
+  void prepare(TreeLogger logger, ResourceContext context,
+      ResourceBundleRequirements requirements, JMethod method)
       throws UnableToCompleteException;
 }

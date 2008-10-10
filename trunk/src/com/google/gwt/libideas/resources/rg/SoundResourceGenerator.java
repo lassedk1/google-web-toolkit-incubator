@@ -24,6 +24,7 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.libideas.resources.client.impl.SoundResourcePrototype;
 import com.google.gwt.libideas.resources.ext.ResourceBundleFields;
+import com.google.gwt.libideas.resources.ext.ResourceBundleRequirements;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
@@ -107,7 +108,8 @@ public class SoundResourceGenerator extends AbstractResourceGenerator {
    * Get the resource attached to a method and assimilate it.
    */
   @Override
-  public void prepare(TreeLogger logger, ResourceContext context, JMethod method)
+  public void prepare(TreeLogger logger, ResourceContext context,
+      ResourceBundleRequirements requirements, JMethod method)
       throws UnableToCompleteException {
     if (!soundEnabled) {
       return;

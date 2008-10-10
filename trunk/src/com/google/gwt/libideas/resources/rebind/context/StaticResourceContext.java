@@ -23,7 +23,6 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.dev.util.Util;
 import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
-import com.google.gwt.user.rebind.SourceWriter;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -37,12 +36,12 @@ class StaticResourceContext extends AbstractResourceContext {
   static final String ENABLE_RENAMING = "ResourceBundle.enableRenaming";
 
   StaticResourceContext(TreeLogger logger, GeneratorContext context,
-      JClassType resourceBundleType, String simpleSourceName, SourceWriter sw) {
-    super(logger, context, resourceBundleType, simpleSourceName, sw);
+      JClassType resourceBundleType) {
+    super(logger, context, resourceBundleType);
   }
 
-  public String deploy(String suggestedFileName, String mimeType,
-      byte[] data, boolean xhrCompatible) throws UnableToCompleteException {
+  public String deploy(String suggestedFileName, String mimeType, byte[] data,
+      boolean xhrCompatible) throws UnableToCompleteException {
     TreeLogger logger = getLogger();
     GeneratorContext context = getGeneratorContext();
     PropertyOracle propertyOracle = context.getPropertyOracle();
