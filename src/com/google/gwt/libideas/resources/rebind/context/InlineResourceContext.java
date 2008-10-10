@@ -19,7 +19,6 @@ import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
-import com.google.gwt.user.rebind.SourceWriter;
 
 class InlineResourceContext extends StaticResourceContext {
   /**
@@ -32,13 +31,13 @@ class InlineResourceContext extends StaticResourceContext {
   private static final int MAX_INLINE_SIZE = 2 << 15;
 
   InlineResourceContext(TreeLogger logger, GeneratorContext context,
-      JClassType resourceBundleType, String simpleSourceName, SourceWriter sw) {
-    super(logger, context, resourceBundleType, simpleSourceName, sw);
+      JClassType resourceBundleType) {
+    super(logger, context, resourceBundleType);
   }
 
   @Override
-  public String deploy(String suggestedFileName, String mimeType,
-      byte[] data, boolean xhrCompatible) throws UnableToCompleteException {
+  public String deploy(String suggestedFileName, String mimeType, byte[] data,
+      boolean xhrCompatible) throws UnableToCompleteException {
     TreeLogger logger = getLogger();
 
     // data: URLs are not compatible with XHRs on FF and Safari browsers

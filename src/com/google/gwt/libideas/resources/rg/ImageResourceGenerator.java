@@ -24,6 +24,7 @@ import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
 import com.google.gwt.libideas.resources.client.impl.ImageResourcePrototype;
 import com.google.gwt.libideas.resources.ext.ResourceBundleFields;
+import com.google.gwt.libideas.resources.ext.ResourceBundleRequirements;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
@@ -132,7 +133,8 @@ public final class ImageResourceGenerator extends AbstractResourceGenerator {
   }
 
   @Override
-  public void prepare(TreeLogger logger, ResourceContext context, JMethod method)
+  public void prepare(TreeLogger logger, ResourceContext context,
+      ResourceBundleRequirements requirements, JMethod method)
       throws UnableToCompleteException {
     URL[] resources = ResourceGeneratorUtil.findResources(logger, context,
         method);

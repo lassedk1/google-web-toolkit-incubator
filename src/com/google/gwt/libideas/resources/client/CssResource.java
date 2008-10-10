@@ -93,6 +93,138 @@ public interface CssResource extends ResourcePrototype {
   }
 
   /**
+   * Specifies the string prefix to use when one CssResource is imported into
+   * the scope of another CssResource.
+   * 
+   * @see Import
+   */
+  @Documented
+  @Target(ElementType.TYPE)
+  public @interface ImportedWithPrefix {
+    String value();
+  }
+
+  /**
+   * Makes class selectors from other CssResource types available in the raw
+   * source of a CssResource. String accessor methods can be referred to using
+   * the value of the imported type's {@link ImportedWithPrefix} value.
+   * <p>
+   * This is an example of creating a descendant selector with two unrelated
+   * types:
+   * 
+   * <pre>
+   *{@literal @ImportedWithPrefix}("some-prefix")
+   * interface ToImport extends CssResource {
+   *   String widget();
+   * }
+   * 
+   *{@literal @ImportedWithPrefix}("other-import")
+   * interface OtherImport extends CssResource {
+   *   String widget();
+   * }
+   * 
+   * interface Resources extends ClientBundle {
+   *  {@literal @Import}(value = {ToImport.class, OtherImport.class})
+   *  {@literal @Source}("my.css")
+   *   CssResource usesImports();
+   * }
+   * 
+   * my.css:
+   * .some-prefix-widget .other-import-widget {...}
+   * </pre>
+   * 
+   * If the imported CssResource type is lacking an {@link ImportedWithPrefix}
+   * annotation, the simple name of the type will be used instead. In the above
+   * example, without the annotation on <code>ToImport</code>, the class
+   * selector would have been <code>.ToImport-widget</code>. Notice also that
+   * both interfaces defined a method called <code>widget()</code>, which would
+   * prevent meaningful composition of the original interfaces.
+   * <p>
+   * It is an error to import multiple classes with the same prefix into one
+   * CssResource.
+   */
+  @Documented
+  @Target(ElementType.METHOD)
+  public @interface Import {
+    Class<? extends CssResource>[] value();
+  }
+
+  /**
+   * Indicates that the String accessor methods defined in a CssResource will
+   * return the same values across all implementations of that type.
+   * <p>
+   * This is an example of "stateful" class selectors being used:
+   * 
+   * <pre>
+   *{@literal @Shared}
+   * interface FocusCss extends CssResource {
+   *   String focused();
+   *   String unfocused();
+   * }
+   * 
+   * interface PanelCss extends CssResource, FocusCss {
+   *   String widget();
+   * }
+   * 
+   * interface InputCss extends CssResource, FocusCss {
+   *   String widget();
+   * }
+   * 
+   * input.css:
+   * *.focused .widget {border: thin solid blue;}
+   * 
+   * Application.java:
+   * myPanel.add(myInputWidget);
+   * myPanel.addStyleName(instanceOfPanelCss.focused());
+   * </pre>
+   * 
+   * Because the <code>FocusCss</code> interface is tagged with {@code @Shared},
+   * the <code>focused()</code> method on the instance of <code>PanelCss</code>
+   * will match the <code>.focused</code> parent selector in
+   * <code>input.css</code>.
+   * <p>
+   * The effect of inheriting an {@code Shared} interface can be replicated by
+   * use use of the {@link Import} annotation (e.g. {@code .FocusCss-focused
+   * .widget}), however the use of state-bearing descendant selectors is common
+   * enough to warrant an easier use-case.
+   */
+  @Documented
+  @Target(ElementType.TYPE)
+  public @interface Shared {
+  }
+
+  /**
+   * The presence of this annotation on a CssResource accessor method indicates
+   * that any class selectors that do not correspond with a String accessor
+   * method in the return type should trigger a compilation error. In the normal
+   * case, any unobfuscatable class selectors will be emitted as-is. This
+   * annotation ensures that the resource does not contribute any unobfuscated
+   * class selectors into the global CSS namespace and is recommended as the
+   * default for library-provided CssResource instances.
+   * <p>
+   * Given these interfaces:
+   * 
+   * <pre>
+   * interface MyCss extends CssResource {
+   *   String someClass();
+   * }
+   * 
+   * interface MyBundle extends ClientBundle {
+   *  {@literal @Source("my.css")}
+   *  {@literal @Strict}
+   *   MyCss css();
+   * }
+   * </pre>
+   * 
+   * the source CSS will fail to compile if it does not contain exactly the one
+   * class selector defined in the MyCss type.
+   */
+  @Documented
+  @Target(ElementType.METHOD)
+  public @interface Strict {
+  }
+
+  /**
    * Provides the contents of the CssResource.
    */
   String getText();

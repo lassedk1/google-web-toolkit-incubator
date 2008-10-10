@@ -12,6 +12,7 @@
 <!-- implied. License for the specific language governing permissions and   -->
 <!-- limitations under the License.                                         -->
 
+<!-- TODO(bobv): Rename to ClientBundle; use set-configuration-property -->
 <!-- ResourceBundle supports renaming files with strong names at compile time  -->
 <module>
   <!-- Pull in the necessary base support, including user.agent detection -->

@@ -26,6 +26,7 @@ import com.google.gwt.dev.util.Util;
 import com.google.gwt.libideas.resources.client.TextResource;
 import com.google.gwt.libideas.resources.client.impl.ExternalTextResourcePrototype;
 import com.google.gwt.libideas.resources.ext.ResourceBundleFields;
+import com.google.gwt.libideas.resources.ext.ResourceBundleRequirements;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
@@ -52,8 +53,8 @@ public final class ExternalTextResourceGenerator extends
   private String externalTextCacheIdent;
 
   @Override
-  public String createAssignment(TreeLogger logger, ResourceContext context, JMethod method)
-      throws UnableToCompleteException {
+  public String createAssignment(TreeLogger logger, ResourceContext context,
+      JMethod method) throws UnableToCompleteException {
     String name = method.getName();
 
     SourceWriter sw = new StringSourceWriter();
@@ -70,8 +71,8 @@ public final class ExternalTextResourceGenerator extends
   }
 
   @Override
-  public void createFields(TreeLogger logger, ResourceContext context, ResourceBundleFields fields)
-      throws UnableToCompleteException {
+  public void createFields(TreeLogger logger, ResourceContext context,
+      ResourceBundleFields fields) throws UnableToCompleteException {
     data.append(']');
 
     urlExpression = context.deploy(
@@ -107,7 +108,8 @@ public final class ExternalTextResourceGenerator extends
   }
 
   @Override
-  public void prepare(TreeLogger logger, ResourceContext context, JMethod method)
+  public void prepare(TreeLogger logger, ResourceContext context,
+      ResourceBundleRequirements requirements, JMethod method)
       throws UnableToCompleteException {
 
     URL[] urls = ResourceGeneratorUtil.findResources(logger, context, method);

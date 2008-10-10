@@ -17,6 +17,10 @@ package com.google.gwt.libideas.resources.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.libideas.client.LibTestBase;
+import com.google.gwt.libideas.resources.client.CssResource.Import;
+import com.google.gwt.libideas.resources.client.CssResource.ImportedWithPrefix;
+import com.google.gwt.libideas.resources.client.CssResource.Shared;
+import com.google.gwt.libideas.resources.client.CssResource.Strict;
 
 /**
  * 
@@ -28,15 +32,18 @@ public class CSSResourceTest extends LibTestBase {
     String nameOverride();
   }
 
-  interface MyCssResourceA extends MyCssResource {
+  interface MyCssResourceA extends MyCssResource, SharedClasses {
     String local();
 
     // This shouldn't make a difference
     String replacement();
   }
 
-  interface MyCssResourceB extends MyCssResource {
+  @ImportedWithPrefix("gwt-MyCssResourceB")
+  interface MyCssResourceB extends MyCssResource, SharedClasses {
     String local();
+
+    String sharedOverrideClass();
   }
 
   /*
@@ -59,14 +66,37 @@ public class CSSResourceTest extends LibTestBase {
   interface Resources extends ImmutableResourceBundle {
     Resources INSTANCE = GWT.create(Resources.class);
 
+    @Resource("siblingTestA.css")
+    MyCssResourceA a();
+
+    @Resource("siblingTestB.css")
+    MyCssResourceB b();
+
     @Resource("test.css")
     MyCssResourceWithSprite css();
 
     @Resource("32x32.png")
     DataResource dataMethod();
 
+    @Resource("unrelatedDescendants.css")
+    @Import(value = {MyCssResourceA.class, MyCssResourceB.class})
+    @Strict
+    CssResource descendants();
+
     @Resource("16x16.png")
     ImageResource spriteMethod();
+  }
+
+  interface SharedBase extends CssResource {
+    String unsharedClass();
+  }
+
+  @ImportedWithPrefix("gwt-Shared")
+  @Shared
+  interface SharedClasses extends SharedBase {
+    String sharedClass();
+
+    String sharedOverrideClass();
   }
 
   interface SiblingResources extends ImmutableResourceBundle {
@@ -143,14 +173,23 @@ public class CSSResourceTest extends LibTestBase {
     Resources r1 = GWT.create(Resources.class);
     SiblingResources r2 = GWT.create(SiblingResources.class);
 
-    assertEquals(r1.css().replacement(), r2.a().replacement());
-    assertEquals(r1.css().replacement(), r2.b().replacement());
+    assertEquals(r1.a().replacement(), r2.a().replacement());
+    assertEquals(r1.b().replacement(), r2.b().replacement());
+
+    assertEquals(r1.a().sharedClass(), r2.b().sharedClass());
+    assertFalse(r1.a().sharedOverrideClass().equals(
+        r2.b().sharedOverrideClass()));
+    assertFalse(r1.a().unsharedClass().equals(r2.b().unsharedClass()));
+
+    String text = r1.descendants().getText();
+    System.out.println(text);
+    assertTrue(text.contains("." + r1.a().local() + " ." + r1.b().local()));
   }
 
   public void testSiblingCSS() {
     SiblingResources r = GWT.create(SiblingResources.class);
 
-    assertEquals(r.a().replacement(), r.b().replacement());
+    assertFalse(r.a().replacement().equals(r.b().replacement()));
     assertFalse(r.a().local().equals(r.b().local()));
 
     String a = r.a().getText();

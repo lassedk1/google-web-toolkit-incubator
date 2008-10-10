@@ -84,8 +84,12 @@ public interface ResourceContext {
    * Returns the simple source name of the implementation of the bundle being
    * generated. This can be used during code-generation to refer to the instance
    * of the bundle (e.g. via <code>SimpleSourceName.this</code>).
+   * 
+   * @throws IllegalStateException if this method is called during
+   *           {@link ResourceGenerator#init} or
+   *           {@link ResourceGenerator#prepare} methods.
    */
-  String getImplementationSimpleSourceName();
+  String getImplementationSimpleSourceName() throws IllegalStateException;
 
   /**
    * Return the interface type of the resource bundle being generated.

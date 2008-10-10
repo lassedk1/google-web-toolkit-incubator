@@ -19,9 +19,9 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.libideas.resources.ext.ResourceBundleFields;
+import com.google.gwt.libideas.resources.ext.ResourceBundleRequirements;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGenerator;
- 
 
 /**
  * A base class providing common methods for ResourceGenerator implementations.
@@ -56,7 +56,8 @@ public abstract class AbstractResourceGenerator implements ResourceGenerator {
   /**
    * A no-op implementation.
    */
-  public void prepare(TreeLogger logger, ResourceContext context, JMethod method)
+  public void prepare(TreeLogger logger, ResourceContext context,
+      ResourceBundleRequirements requirements, JMethod method)
       throws UnableToCompleteException {
   }
 }

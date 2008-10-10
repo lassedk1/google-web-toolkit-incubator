@@ -19,7 +19,6 @@ import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
-import com.google.gwt.user.rebind.SourceWriter;
 
 /**
  * Defines base methods for ResourceContext implementations.
@@ -28,17 +27,13 @@ public abstract class AbstractResourceContext implements ResourceContext {
   private final TreeLogger logger;
   private final GeneratorContext context;
   private final JClassType resourceBundleType;
-  private final String simpleSourceName;
-  private final SourceWriter sw;
+  private String simpleSourceName;
 
   protected AbstractResourceContext(TreeLogger logger,
-      GeneratorContext context, JClassType resourceBundleType,
-      String simpleSourceName, SourceWriter sw) {
+      GeneratorContext context, JClassType resourceBundleType) {
     this.logger = logger;
     this.context = context;
     this.resourceBundleType = resourceBundleType;
-    this.simpleSourceName = simpleSourceName;
-    this.sw = sw;
   }
 
   public GeneratorContext getGeneratorContext() {
@@ -46,18 +41,22 @@ public abstract class AbstractResourceContext implements ResourceContext {
   }
 
   public String getImplementationSimpleSourceName() {
+    if (simpleSourceName == null) {
+      throw new IllegalStateException(
+          "Simple source name has not yet been set.");
+    }
     return simpleSourceName;
-  }
-
-  public TreeLogger getLogger() {
-    return logger;
   }
 
   public JClassType getResourceBundleType() {
     return resourceBundleType;
   }
 
-  public SourceWriter getSourceWriter() {
-    return sw;
+  protected TreeLogger getLogger() {
+    return logger;
+  }
+
+  void setSimpleSourceName(String name) {
+    simpleSourceName = name;
   }
 }

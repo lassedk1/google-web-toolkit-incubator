@@ -31,6 +31,10 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.libideas.resources.client.CssResource;
 import com.google.gwt.libideas.resources.client.DataResource;
 import com.google.gwt.libideas.resources.client.CssResource.ClassName;
+import com.google.gwt.libideas.resources.client.CssResource.Import;
+import com.google.gwt.libideas.resources.client.CssResource.ImportedWithPrefix;
+import com.google.gwt.libideas.resources.client.CssResource.Shared;
+import com.google.gwt.libideas.resources.client.CssResource.Strict;
 import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
 import com.google.gwt.libideas.resources.css.CssGenerationVisitor;
@@ -56,6 +60,7 @@ import com.google.gwt.libideas.resources.css.ast.CssProperty.ExpressionValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.ListValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.StringValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.Value;
+import com.google.gwt.libideas.resources.ext.ResourceBundleRequirements;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
@@ -84,14 +89,25 @@ import java.util.zip.Adler32;
  */
 public class CssResourceGenerator extends AbstractResourceGenerator {
   private static class ClassRenamer extends CssVisitor {
-    private final Map<String, String> classReplacements;
+    private final Map<String, Map<JMethod, String>> classReplacementsWithPrefix;
+    private final Pattern classSelectorPattern = Pattern.compile("\\.([^ :>+#.]*)");
     private final TreeLogger logger;
-    private final Set<String> missingClasses;
+    private final Set<JMethod> missingClasses;
+    private final Set<String> replacedClasses = new HashSet<String>();
+    private final boolean strict;
+    private final Set<String> unknownClasses = new HashSet<String>();
 
-    public ClassRenamer(TreeLogger logger, Map<String, String> classReplacements) {
+    public ClassRenamer(TreeLogger logger,
+        Map<String, Map<JMethod, String>> classReplacementsWithPrefix,
+        boolean strict) {
       this.logger = logger.branch(TreeLogger.DEBUG, "Replacing CSS class names");
-      this.classReplacements = classReplacements;
-      missingClasses = new HashSet<String>(classReplacements.keySet());
+      this.classReplacementsWithPrefix = classReplacementsWithPrefix;
+      this.strict = strict;
+
+      // Require a definition for all classes in the default namespace
+      assert classReplacementsWithPrefix.containsKey("");
+      missingClasses = new HashSet<JMethod>(
+          classReplacementsWithPrefix.get("").keySet());
     }
 
     @Override
@@ -99,33 +115,76 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       String sel = x.getSelector();
 
       // TODO This would be simplified by having a class hierarchy for selectors
-      for (Map.Entry<String, String> entry : classReplacements.entrySet()) {
-        Pattern p = Pattern.compile("(.*)\\.(" + Pattern.quote(entry.getKey())
-            + ")([ :>+#.].*|$)");
-        Matcher m = p.matcher(sel);
-        if (m.find()) {
-          sel = m.group(1) + "." + entry.getValue() + m.group(3);
-          missingClasses.remove(entry.getKey());
+      for (Map.Entry<String, Map<JMethod, String>> outerEntry : classReplacementsWithPrefix.entrySet()) {
+        String prefix = outerEntry.getKey();
+        for (Map.Entry<JMethod, String> entry : outerEntry.getValue().entrySet()) {
+          String name = entry.getKey().getName();
+
+          ClassName className = entry.getKey().getAnnotation(ClassName.class);
+          if (className != null) {
+            name = className.value();
+          }
+          name = prefix + name;
+
+          Pattern p = Pattern.compile("(.*)\\.(" + Pattern.quote(name)
+              + ")([ :>+#.].*|$)");
+          Matcher m = p.matcher(sel);
+          if (m.find()) {
+            sel = m.group(1) + "." + entry.getValue() + m.group(3);
+            missingClasses.remove(entry.getKey());
+            if (strict) {
+              replacedClasses.add(entry.getValue());
+            }
+          }
         }
       }
 
       sel = sel.trim();
+
+      if (strict) {
+        Matcher m = classSelectorPattern.matcher(sel);
+        while (m.find()) {
+          String classSelector = m.group(1);
+          if (!replacedClasses.contains(classSelector)) {
+            unknownClasses.add(classSelector);
+          }
+        }
+      }
+
       x.setSelector(sel);
     }
 
     @Override
     public void endVisit(CssStylesheet x, Context ctx) {
-      if (missingClasses.isEmpty()) {
-        return;
+      boolean stop = false;
+      if (!missingClasses.isEmpty()) {
+        stop = true;
+        TreeLogger errorLogger = logger.branch(TreeLogger.INFO,
+            "The following obfuscated style classes were missing from "
+                + "the source CSS file:");
+        for (JMethod m : missingClasses) {
+          String name = m.getName();
+          ClassName className = m.getAnnotation(ClassName.class);
+          if (className != null) {
+            name = className.value();
+          }
+          errorLogger.log(TreeLogger.ERROR, name + ": Fix by adding ." + name
+              + "{}");
+        }
       }
 
-      TreeLogger errorLogger = logger.branch(TreeLogger.INFO,
-          "The following obfuscated style classes were missing from "
-              + "the source CSS file:");
-      for (String c : missingClasses) {
-        errorLogger.log(TreeLogger.ERROR, c + ": Fix by adding ." + c + "{}");
+      if (strict && !unknownClasses.isEmpty()) {
+        stop = true;
+        TreeLogger errorLogger = logger.branch(TreeLogger.ERROR,
+            "The following unobfuscated classes were present in a strict CssResource:");
+        for (String s : unknownClasses) {
+          errorLogger.log(TreeLogger.ERROR, s);
+        }
       }
-      throw new CssCompilerException("Missing a CSS replacement");
+
+      if (stop) {
+        throw new CssCompilerException("Missing a CSS replacement");
+      }
     }
   }
 
@@ -159,8 +218,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
    * Statically evaluates {@literal @if} rules.
    */
   private static class IfEvaluator extends CssModVisitor {
-    private final PropertyOracle oracle;
     private final TreeLogger logger;
+    private final PropertyOracle oracle;
 
     public IfEvaluator(TreeLogger logger, PropertyOracle oracle) {
       this.logger = logger.branch(TreeLogger.DEBUG,
@@ -174,8 +233,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         // This gets taken care of by the runtime substitution visitor
       } else {
         try {
-          String propValue = oracle.getPropertyValue(logger,
-              x.getPropertyName());
+          String propertyName = x.getPropertyName();
+          String propValue = oracle.getPropertyValue(logger, propertyName);
 
           /*
            * If the deferred binding property's value is in the list of values
@@ -329,6 +388,32 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       MergeRulesByContentVisitor v = new MergeRulesByContentVisitor();
       v.accept(nodes);
       rulesInOrder.addAll(v.rulesInOrder);
+    }
+  }
+
+  private static class RequirementsCollector extends CssVisitor {
+    private final TreeLogger logger;
+    private final ResourceBundleRequirements requirements;
+
+    public RequirementsCollector(TreeLogger logger,
+        ResourceBundleRequirements requirements) {
+      this.logger = logger.branch(TreeLogger.DEBUG,
+          "Scanning CSS for requirements");
+      this.requirements = requirements;
+    }
+
+    @Override
+    public void endVisit(CssIf x, Context ctx) {
+      String propertyName = x.getPropertyName();
+      if (propertyName != null) {
+        try {
+          requirements.addPermutationAxis(propertyName);
+        } catch (BadPropertyValueException e) {
+          logger.log(TreeLogger.ERROR, "Unknown deferred-binding property "
+              + propertyName, e);
+          throw new CssCompilerException("Unknown deferred-binding property", e);
+        }
+      }
     }
   }
 
@@ -627,29 +712,51 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   private JClassType elementType;
   private boolean enableMerge;
   private boolean prettyOutput;
-  private Map<JClassType, Map<String, String>> replacementsByType;
+  private Map<JClassType, Map<JMethod, String>> replacementsByClassAndMethod;
+  private Map<JMethod, String> replacementsForSharedMethods;
+  private Map<JMethod, CssStylesheet> stylesheetMap;
   private JClassType stringType;
-  private Map<JMethod, URL> urlMap;
 
   @Override
   public String createAssignment(TreeLogger logger, ResourceContext context,
       JMethod method) throws UnableToCompleteException {
 
-    URL resource = urlMap.get(method);
     SourceWriter sw = new StringSourceWriter();
     // Write the expression to create the subtype.
     sw.println("new " + method.getReturnType().getQualifiedSourceName()
         + "() {");
     sw.indent();
 
-    // Convenience when examining the generated code.
-    sw.println("// " + resource.toExternalForm());
-
     JClassType cssResourceSubtype = method.getReturnType().isInterface();
     assert cssResourceSubtype != null;
+    Map<String, Map<JMethod, String>> replacementsWithPrefix = new HashMap<String, Map<JMethod, String>>();
 
-    Map<String, String> replacements = computeReplacementsForType(cssResourceSubtype);
-    assert replacements != null;
+    replacementsWithPrefix.put("",
+        computeReplacementsForType(cssResourceSubtype));
+    Import imp = method.getAnnotation(Import.class);
+    if (imp != null) {
+      boolean fail = false;
+      for (Class<? extends CssResource> clazz : imp.value()) {
+        JClassType importType = context.getGeneratorContext().getTypeOracle().findType(
+            clazz.getName().replace('$', '.'));
+        String prefix = importType.getSimpleSourceName();
+        ImportedWithPrefix exp = importType.getAnnotation(ImportedWithPrefix.class);
+        if (exp != null) {
+          prefix = exp.value();
+        }
+        assert importType != null;
+
+        if (replacementsWithPrefix.put(prefix + "-",
+            computeReplacementsForType(importType)) != null) {
+          logger.log(TreeLogger.ERROR,
+              "Multiple imports that would use the prefix " + prefix);
+          fail = true;
+        }
+      }
+      if (fail) {
+        throw new UnableToCompleteException();
+      }
+    }
 
     /*
      * getOverridableMethods is used to handle CssResources extending
@@ -663,7 +770,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
       if (toImplement.getReturnType().equals(stringType)
           && toImplement.getParameters().length == 0) {
-        writeClassAssignment(sw, toImplement, replacements);
+        writeClassAssignment(sw, toImplement, replacementsWithPrefix.get(""));
 
       } else {
         logger.log(TreeLogger.ERROR, "Don't know how to implement method "
@@ -676,7 +783,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     sw.indent();
 
     String cssExpression = makeExpression(logger, context, cssResourceSubtype,
-        resource, replacements);
+        stylesheetMap.get(method), replacementsWithPrefix,
+        method.getAnnotation(Strict.class) != null);
     sw.println("return " + cssExpression + ";");
     sw.outdent();
     sw.println("}");
@@ -732,14 +840,16 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     stringType = typeOracle.findType(String.class.getName());
     assert stringType != null;
 
-    replacementsByType = new IdentityHashMap<JClassType, Map<String, String>>();
-    urlMap = new IdentityHashMap<JMethod, URL>();
+    replacementsByClassAndMethod = new IdentityHashMap<JClassType, Map<JMethod, String>>();
+    replacementsForSharedMethods = new IdentityHashMap<JMethod, String>();
+    stylesheetMap = new IdentityHashMap<JMethod, CssStylesheet>();
 
     computeObfuscatedNames(logger);
   }
 
   @Override
-  public void prepare(TreeLogger logger, ResourceContext context, JMethod method)
+  public void prepare(TreeLogger logger, ResourceContext context,
+      ResourceBundleRequirements requirements, JMethod method)
       throws UnableToCompleteException {
 
     URL[] resources = ResourceGeneratorUtil.findResources(logger, context,
@@ -751,15 +861,23 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       throw new UnableToCompleteException();
     }
 
-    URL resource = resources[0];
-    urlMap.put(method, resource);
-
     if (method.getReturnType().isInterface() == null) {
       logger.log(TreeLogger.ERROR, "Return type must be an interface");
       throw new UnableToCompleteException();
     }
+
+    // Create the AST and do a quick scan for requirements
+    URL resource = resources[0];
+    CssStylesheet sheet = GenerateCssAst.exec(logger, resource);
+    stylesheetMap.put(method, sheet);
+    (new RequirementsCollector(logger, requirements)).accept(sheet);
   }
 
+  /**
+   * Each distinct type of CssResource has a unique collection of values that it
+   * will return, excepting for those methods that are defined within an
+   * interface that is tagged with {@code @Shared}.
+   */
   private void computeObfuscatedNames(TreeLogger logger) {
     logger = logger.branch(TreeLogger.DEBUG, "Computing CSS class replacements");
 
@@ -776,8 +894,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
     int count = 0;
     for (JClassType type : cssResourceSubtypes) {
-      Map<String, String> replacements = new HashMap<String, String>();
-      replacementsByType.put(type, replacements);
+      Map<JMethod, String> replacements = new IdentityHashMap<JMethod, String>();
+      replacementsByClassAndMethod.put(type, replacements);
 
       for (JMethod method : type.getOverridableMethods()) {
         String name = method.getName();
@@ -800,7 +918,15 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
           obfuscatedClassName = classPrefix + makeIdent(count++);
         }
 
-        replacements.put(name, obfuscatedClassName);
+        replacements.put(method, obfuscatedClassName);
+
+        if (method.getEnclosingType() == type) {
+          Shared shared = type.getAnnotation(Shared.class);
+          if (shared != null) {
+            replacementsForSharedMethods.put(method, obfuscatedClassName);
+          }
+        }
+
         logger.log(TreeLogger.SPAM, "Mapped " + type.getQualifiedSourceName()
             + "." + name + " to " + obfuscatedClassName);
       }
@@ -848,8 +974,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
    * given subtype of CssResource. Mappings are inherited from the type's
    * supertypes.
    */
-  private Map<String, String> computeReplacementsForType(JClassType type) {
-    Map<String, String> toReturn = new HashMap<String, String>();
+  private Map<JMethod, String> computeReplacementsForType(JClassType type) {
+    Map<JMethod, String> toReturn = new IdentityHashMap<JMethod, String>();
 
     /*
      * We check to see if the type is derived from CssResource so that we can
@@ -861,14 +987,19 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       return toReturn;
     }
 
-    // Later putAlls replace current putalls
-    if (replacementsByType.containsKey(type)) {
-      toReturn.putAll(replacementsByType.get(type));
+    if (replacementsByClassAndMethod.containsKey(type)) {
+      toReturn.putAll(replacementsByClassAndMethod.get(type));
     }
 
-    toReturn.putAll(computeReplacementsForType(type.getSuperclass()));
-    for (JClassType superInterface : type.getImplementedInterfaces()) {
-      toReturn.putAll(computeReplacementsForType(superInterface));
+    /*
+     * Replacements for methods defined in shared types will override any
+     * locally-computed values.
+     */
+    for (JMethod method : type.getOverridableMethods()) {
+      if (replacementsForSharedMethods.containsKey(method)) {
+        assert toReturn.containsKey(method);
+        toReturn.put(method, replacementsForSharedMethods.get(method));
+      }
     }
 
     return toReturn;
@@ -896,53 +1027,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       }
     }
     return false;
-  }
-
-  /**
-   * Create a Java expression that evaluates to the string representation of the
-   * stylesheet resource.
-   */
-  private String makeExpression(TreeLogger logger, ResourceContext context,
-      JClassType cssResourceType, URL css, Map<String, String> classReplacements)
-      throws UnableToCompleteException {
-
-    try {
-      // Create the base AST
-      CssStylesheet sheet = GenerateCssAst.exec(logger, css);
-
-      // Create CSS sprites
-      (new Spriter(logger, context)).accept(sheet);
-
-      // Perform @def and @eval substitutions
-      SubstitutionCollector collector = new SubstitutionCollector();
-      collector.accept(sheet);
-
-      (new SubstitutionReplacer(logger, context, collector.substitutions)).accept(sheet);
-
-      // Evaluate @if statements based on deferred binding properties
-      (new IfEvaluator(logger,
-          context.getGeneratorContext().getPropertyOracle())).accept(sheet);
-
-      // Rename css .class selectors
-      (new ClassRenamer(logger, classReplacements)).accept(sheet);
-
-      // Combine rules with identical selectors
-      if (enableMerge) {
-        // TODO This is an off-switch while this is being developed; remove
-        (new SplitRulesVisitor()).accept(sheet);
-        (new MergeIdenticalSelectorsVisitor()).accept(sheet);
-        (new MergeRulesByContentVisitor()).accept(sheet);
-      }
-
-      return makeExpression(logger, context, cssResourceType, sheet);
-
-    } catch (CssCompilerException e) {
-      // Take this as a sign that one of the visitors was unhappy, but only
-      // log the stack trace if there's a causal (i.e. unknown) exception.
-      logger.log(TreeLogger.ERROR, "Unable to process CSS",
-          e.getCause() == null ? null : e);
-      throw new UnableToCompleteException();
-    }
   }
 
   /**
@@ -1020,6 +1104,52 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   }
 
   /**
+   * Create a Java expression that evaluates to the string representation of the
+   * stylesheet resource.
+   */
+  private String makeExpression(TreeLogger logger, ResourceContext context,
+      JClassType cssResourceType, CssStylesheet sheet,
+      Map<String, Map<JMethod, String>> classReplacementsWithPrefix,
+      boolean strict) throws UnableToCompleteException {
+
+    try {
+
+      // Create CSS sprites
+      (new Spriter(logger, context)).accept(sheet);
+
+      // Perform @def and @eval substitutions
+      SubstitutionCollector collector = new SubstitutionCollector();
+      collector.accept(sheet);
+
+      (new SubstitutionReplacer(logger, context, collector.substitutions)).accept(sheet);
+
+      // Evaluate @if statements based on deferred binding properties
+      (new IfEvaluator(logger,
+          context.getGeneratorContext().getPropertyOracle())).accept(sheet);
+
+      // Rename css .class selectors
+      (new ClassRenamer(logger, classReplacementsWithPrefix, strict)).accept(sheet);
+
+      // Combine rules with identical selectors
+      if (enableMerge) {
+        // TODO This is an off-switch while this is being developed; remove
+        (new SplitRulesVisitor()).accept(sheet);
+        (new MergeIdenticalSelectorsVisitor()).accept(sheet);
+        (new MergeRulesByContentVisitor()).accept(sheet);
+      }
+
+      return makeExpression(logger, context, cssResourceType, sheet);
+
+    } catch (CssCompilerException e) {
+      // Take this as a sign that one of the visitors was unhappy, but only
+      // log the stack trace if there's a causal (i.e. unknown) exception.
+      logger.log(TreeLogger.ERROR, "Unable to process CSS",
+          e.getCause() == null ? null : e);
+      throw new UnableToCompleteException();
+    }
+  }
+
+  /**
    * This function validates any context-sensitive Values.
    */
   private void validateValue(TreeLogger logger, JClassType resourceBundleType,
@@ -1061,15 +1191,9 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
    * Write the CssResource accessor method for simple String return values.
    */
   private void writeClassAssignment(SourceWriter sw, JMethod toImplement,
-      Map<String, String> classReplacements) {
+      Map<JMethod, String> classReplacements) {
 
-    String name = toImplement.getName();
-    ClassName nameOverride = toImplement.getAnnotation(ClassName.class);
-    if (nameOverride != null) {
-      name = nameOverride.value();
-    }
-
-    String replacement = classReplacements.get(name);
+    String replacement = classReplacements.get(toImplement);
     assert replacement != null;
 
     sw.println(toImplement.getReadableDeclaration(false, true, true, true, true)
