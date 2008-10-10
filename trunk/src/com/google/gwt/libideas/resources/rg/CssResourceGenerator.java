@@ -855,20 +855,13 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     URL[] resources = ResourceGeneratorUtil.findResources(logger, context,
         method);
 
-    if (resources.length != 1) {
-      logger.log(TreeLogger.ERROR, "Exactly one resource must be specified",
-          null);
-      throw new UnableToCompleteException();
-    }
-
     if (method.getReturnType().isInterface() == null) {
       logger.log(TreeLogger.ERROR, "Return type must be an interface");
       throw new UnableToCompleteException();
     }
 
     // Create the AST and do a quick scan for requirements
-    URL resource = resources[0];
-    CssStylesheet sheet = GenerateCssAst.exec(logger, resource);
+    CssStylesheet sheet = GenerateCssAst.exec(logger, resources);
     stylesheetMap.put(method, sheet);
     (new RequirementsCollector(logger, requirements)).accept(sheet);
   }
