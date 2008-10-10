@@ -38,7 +38,7 @@ import com.google.gwt.widgetideas.client.overrides.WidgetIterators;
 import java.util.Iterator;
 
 /**
- * {@link CollapsiblePanel} makes its contained contents collapsible. By
+ * {@link CollapsiblePanel} makes its contained contents able to collapse. By
  * default, the contents are fully expanded. When collapsed, the contents of the
  * panel will be displayed only when the user mouse hovers over the hover bar,
  * otherwise is will stay collapsed to the left. A change event is fired
@@ -470,6 +470,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    * Display this panel in its collapsed state.
    */
   protected void becomeCollapsed() {
+    cancelAllTimers();
     int hoverBarWidth = hoverBar.getOffsetWidth();
     int aboutHalf = (hoverBarWidth / 2) + 1;
     int newWidth = width + aboutHalf;
@@ -487,8 +488,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    * Display this panel in its expanded state.
    */
   protected void becomeExpanded() {
-    delayedHide.cancel();
-    delayedShow.cancel();
+    cancelAllTimers();
     // The master width needs to be readjusted back to it's original size.
     if (isAttached()) {
       refreshWidth();
@@ -498,9 +498,8 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   }
 
   protected void hide() {
+    cancelAllTimers();
     setState(State.HIDING);
-    overlayTimer.cancel();
-    hidingTimer.cancel();
     startFrom = currentOffshift;
     hidingTimer.run(timeToSlide);
   }
@@ -522,9 +521,8 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   }
 
   protected void show() {
+    cancelAllTimers();
     setState(State.SHOWING);
-    overlayTimer.cancel();
-    hidingTimer.cancel();
     startFrom = currentOffshift;
     overlayTimer.run(this.getTimeToSlide());
   }
@@ -533,12 +531,11 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     return state;
   }
 
-  void setState(State state) {
-    if (isAnimationEnabled()) {
-      State.checkTo(this.state, state);
-    }
-
-    this.state = state;
+  private void cancelAllTimers() {
+    delayedHide.cancel();
+    delayedShow.cancel();
+    overlayTimer.cancel();
+    hidingTimer.cancel();
   }
 
   /**
@@ -560,7 +557,6 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   }
 
   private void refreshWidth() {
-
     // Now include borders into master.
     width = container.getOffsetWidth();
     if (width == 0) {
@@ -583,5 +579,13 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
       becomeExpanded();
     }
     changeListeners.fireChange(this);
+  }
+
+  private void setState(State state) {
+    if (isAnimationEnabled()) {
+      State.checkTo(this.state, state);
+    }
+
+    this.state = state;
   }
 }
