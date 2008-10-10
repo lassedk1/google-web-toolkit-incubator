@@ -27,6 +27,11 @@ import com.google.gwt.libideas.resources.client.CssResource.Strict;
  */
 public class CSSResourceTest extends LibTestBase {
 
+  interface ConcatenatedResources extends ImmutableResourceBundle {
+    @Resource(value = {"concatenatedA.css", "concatenatedB.css"})
+    CssResource css();
+  }
+
   interface MyCssResource extends CssResource, MyNonCssResource {
     @ClassName("replacement-not-java-ident")
     String nameOverride();
@@ -167,6 +172,13 @@ public class CSSResourceTest extends LibTestBase {
     assertTrue(text.indexOf("may-not-combine") < text.indexOf("prevent:true"));
     assertTrue(text.indexOf("prevent:true") < text.indexOf("prevent-merge:true"));
     assertTrue(text.indexOf("prevent:true") < text.indexOf("may-not-combine2"));
+  }
+
+  public void testConcatenatedResource() {
+    ConcatenatedResources r = GWT.create(ConcatenatedResources.class);
+    String text = r.css().getText();
+    assertTrue(text.contains(".partA"));
+    assertTrue(text.contains(".partB"));
   }
 
   public void testMultipleBundles() {

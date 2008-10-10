@@ -331,8 +331,8 @@ public class GenerateCssAst {
     }
 
     /**
-     * The else nodes are processed as though they were written as
-     * {@code @elif true} rules.
+     * The else nodes are processed as though they were written as {@code @elif
+     * true} rules.
      */
     void parseElse(String atRule) throws CSSException {
       // The last CssIf in the if/else chain
@@ -844,26 +844,27 @@ public class GenerateCssAst {
   /**
    * Create a CssStylesheet from the contents of a URL.
    */
-  public static CssStylesheet exec(TreeLogger logger, URL stylesheet)
+  public static CssStylesheet exec(TreeLogger logger, URL[] stylesheets)
       throws UnableToCompleteException {
-    logger = logger.branch(TreeLogger.DEBUG, "Parsing CSS stylesheet "
-        + stylesheet.toExternalForm());
     Parser p = new Parser();
     Errors errors = new Errors(logger);
     GenerationHandler g = new GenerationHandler(errors);
     p.setDocumentHandler(g);
     p.setErrorHandler(errors);
 
-    try {
-      p.parseStyleSheet(stylesheet.toURI().toString());
-    } catch (CSSException e) {
-      logger.log(TreeLogger.ERROR, "Unable to parse CSS", e);
-      throw new UnableToCompleteException();
-    } catch (IOException e) {
-      logger.log(TreeLogger.ERROR, "Unable to parse CSS", e);
-      throw new UnableToCompleteException();
-    } catch (URISyntaxException e) {
-      logger.log(TreeLogger.ERROR, "Unable to parse CSS", e);
+    for (URL stylesheet : stylesheets) {
+      TreeLogger branchLogger = logger.branch(TreeLogger.DEBUG,
+          "Parsing CSS stylesheet " + stylesheet.toExternalForm());
+      try {
+        p.parseStyleSheet(stylesheet.toURI().toString());
+        continue;
+      } catch (CSSException e) {
+        branchLogger.log(TreeLogger.ERROR, "Unable to parse CSS", e);
+      } catch (IOException e) {
+        branchLogger.log(TreeLogger.ERROR, "Unable to parse CSS", e);
+      } catch (URISyntaxException e) {
+        branchLogger.log(TreeLogger.ERROR, "Unable to parse CSS", e);
+      }
       throw new UnableToCompleteException();
     }
 
