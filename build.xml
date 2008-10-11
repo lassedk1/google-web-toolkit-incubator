@@ -24,10 +24,10 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
   <property name="project.build.properties" value="${project.root}/build.properties" />
 
   <property file="${project.build.properties}" />
- 
+
   <!-- Also check for global-incubator.properties in the directory above -->
   <property file="${project.root}/../global-incubator.properties" />
-  
+
   <property environment="env" />
 
   <!--
@@ -351,5 +351,29 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
     <fail message="Remote web mode tests failed, log should be in '${project.test.results}\remoteweb\' directory"
           if="junit.failure" />
 
+  </target>
+
+  <target name="gwtc">
+    <gwtc src="${gwtc.src.dir}" out="${gwtc.out.dir}" moduleFile="${gwtc.module.file}" />
+  </target>
+
+  <target name="build.demos" depends="compile">
+    <taskdef name="gwtc" classname="com.google.ant.GwtCompilerTask">
+      <classpath>
+        <path path="${project.bin}" />
+        <pathelement location="${gwt.user.jar}" />
+        <pathelement location="${gwt.dev.jar}" />
+      </classpath>
+    </taskdef>
+
+    <foreach target="gwtc" param="gwtc.module.file">
+      <param name="gwtc.src.dir" value="src-demo" />
+      <param name="gwtc.out.dir" value="demo" />
+      <path>
+        <fileset dir="src-demo">
+          <include name="**/*.gwt.xml" />
+        </fileset>
+      </path>
+    </foreach>
   </target>
 </project>
