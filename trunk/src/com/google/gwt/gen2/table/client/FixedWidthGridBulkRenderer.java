@@ -77,7 +77,6 @@ public class FixedWidthGridBulkRenderer<RowType> extends
       throw new IllegalStateException(
           "Bulk Rendered FixedWidthGrids must call resizeColumns() before being loaded");
     }
-    table.updateGhostRow();
     options.headerRow = DOM.toString(table.getGhostRow());
     super.renderRows(iterator, options);
   }
@@ -86,9 +85,11 @@ public class FixedWidthGridBulkRenderer<RowType> extends
   protected void renderRows(String rawHTMLTable) {
     super.renderRows(rawHTMLTable);
 
-    // Update the ghost row variable
+    // Update the ghost row variable after the num columns has been set
     Element newGhostRow = getBulkLoadedGhostRow(getTable());
-    ((FixedWidthGrid) getTable()).setGhostRow(newGhostRow);
+    FixedWidthGrid grid = (FixedWidthGrid) getTable();
+    grid.setGhostRow(newGhostRow);
+    grid.updateGhostRow();
   }
 
   private void init(FixedWidthGrid grid, TableDefinition<RowType> tableDef) {

@@ -45,7 +45,9 @@ public class FixedWidthGridBulkRenderer extends SelectionGridBulkRenderer {
       Element newGhostRow = getBulkLoadedGhostRow(getTable());
 
       // Set the ghost row to point at correct location
-      ((FixedWidthGrid) getTable()).setGhostRow(newGhostRow);
+      FixedWidthGrid grid = (FixedWidthGrid) getTable();
+      grid.setGhostRow(newGhostRow);
+      grid.updateGhostRow();
       if (userCallback != null) {
         userCallback.onRendered();
       }
@@ -125,7 +127,6 @@ public class FixedWidthGridBulkRenderer extends SelectionGridBulkRenderer {
       throw new IllegalStateException(
           "Bulk Rendered FixedWidthGrids must call resizeColumns() before being loaded");
     }
-    table.updateGhostRow();
     options.headerRow = DOM.toString(table.getGhostRow());
     super.renderRows(iterator, options);
   }
