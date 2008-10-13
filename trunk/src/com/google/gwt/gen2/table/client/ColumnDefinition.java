@@ -15,11 +15,6 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.CellEditor.Callback;
-import com.google.gwt.gen2.table.client.CellEditor.CellEditInfo;
-import com.google.gwt.gen2.table.client.TableDefinition.HTMLCellView;
-import com.google.gwt.gen2.table.client.TableDefinition.TableCellView;
-
 /**
  * A definition of a column in a table.
  * 
@@ -28,15 +23,19 @@ import com.google.gwt.gen2.table.client.TableDefinition.TableCellView;
  */
 public interface ColumnDefinition<RowType, ColType> {
   /**
-   * Edit a cell.
+   * Get the {@link CellEditor} that should be used to edit the contents of
+   * cells in this column.
    * 
-   * @param cellEditInfo information about the source of the edit request
-   * @param rowValue the value associated with the row being edited
-   * @param callback callback used when editing is complete
-   * @return true if a cell editor is associated with this column definition
+   * @return the associated {@link CellEditor}
    */
-  boolean editCell(CellEditInfo cellEditInfo, final RowType rowValue,
-      final Callback<ColType> callback);
+  CellEditor<ColType> getCellEditor();
+
+  /**
+   * Get the cell renderer associated with the column.
+   * 
+   * @return the associated {@link CellRenderer}, or null if one does not exist
+   */
+  CellRenderer<RowType, ColType> getCellRenderer();
 
   /**
    * Get the cell value associated with the row value.
@@ -45,23 +44,6 @@ public interface ColumnDefinition<RowType, ColType> {
    * @return the cell value for the given row value
    */
   ColType getCellValue(RowType rowValue);
-
-  /**
-   * Render the cell as an html string.
-   * 
-   * @param rowValue the object associated with the row
-   * @param view the view to append the string to
-   */
-  void renderRowValue(RowType rowValue, HTMLCellView<RowType> view);
-
-  /**
-   * Render the cell as a {@link com.google.gwt.user.client.ui.Widget} or set
-   * the contents of the cell.
-   * 
-   * @param rowValue the object associated with the row
-   * @param view the view used to set the cell contents
-   */
-  void renderRowValue(RowType rowValue, TableCellView<RowType> view);
 
   /**
    * Set the value of this column in the row value.

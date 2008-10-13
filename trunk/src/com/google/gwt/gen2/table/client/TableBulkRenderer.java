@@ -180,7 +180,7 @@ public abstract class TableBulkRenderer<RowType> implements
       curCellHorizontalAlign = null;
       curCellVerticalAlign = null;
       curCellStyles.clear();
-      super.renderCellImpl(rowValue, columnDef);
+      renderCell(rowValue, columnDef, this);
       maybeAddOpenTag();
       buffer.append("</td>");
     }
@@ -481,6 +481,34 @@ public abstract class TableBulkRenderer<RowType> implements
    */
   protected HTMLTable getTable() {
     return table;
+  }
+
+  /**
+   * Render the cell as a {@link com.google.gwt.user.client.ui.Widget} or set
+   * the contents of the cell.
+   * 
+   * @param rowValue the object associated with the row
+   * @param columnDef the associated column definition
+   * @param view the view used to set the cell contents
+   */
+  protected void renderCell(RowType rowValue, ColumnDefinition columnDef,
+      HTMLCellView<RowType> view) {
+    // Try using the associated cell renderer
+    CellRenderer<RowType, ?> cellRenderer = columnDef.getCellRenderer();
+    if (cellRenderer != null) {
+      cellRenderer.renderRowValue(rowValue, columnDef, view);
+      return;
+    }
+
+    // Get the cell value
+    Object cellValue = columnDef.getCellValue(rowValue);
+    if (cellValue == null) {
+      // Do nothing
+    } else if (cellValue instanceof Widget) {
+      view.setWidget((Widget) cellValue);
+    } else {
+      view.addHTML(cellValue.toString());
+    }
   }
 
   /**

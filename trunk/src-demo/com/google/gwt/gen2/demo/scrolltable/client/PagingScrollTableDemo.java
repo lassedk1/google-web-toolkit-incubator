@@ -19,6 +19,8 @@ import com.google.gwt.gen2.demo.scrolltable.shared.Student;
 import com.google.gwt.gen2.demo.scrolltable.shared.StudentGenerator;
 import com.google.gwt.gen2.table.client.AbstractColumnDefinition;
 import com.google.gwt.gen2.table.client.CachedTableModel;
+import com.google.gwt.gen2.table.client.CellRenderer;
+import com.google.gwt.gen2.table.client.ColumnDefinition;
 import com.google.gwt.gen2.table.client.DefaultTableDefinition;
 import com.google.gwt.gen2.table.client.FixedWidthGrid;
 import com.google.gwt.gen2.table.client.FixedWidthGridBulkRenderer;
@@ -49,25 +51,6 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
    */
   private abstract static class StudentColumnDefinition<ColType> extends
       AbstractColumnDefinition<Student, ColType> {
-  }
-
-  /**
-   * An {@link AbstractColumnDefinition} applied to Integer columns in
-   * {@link Student} row values.
-   */
-  private abstract static class IntegerColumnDefinition extends
-      StudentColumnDefinition<Integer> {
-    @Override
-    public void renderRowValue(Student rowValue, HTMLCellView<Student> view) {
-      view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-      super.renderRowValue(rowValue, view);
-    }
-
-    @Override
-    public void renderRowValue(Student rowValue, TableCellView<Student> view) {
-      view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-      super.renderRowValue(rowValue, view);
-    }
   }
 
   /**
@@ -155,20 +138,21 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     cachedTableModel.setRowCount(1000);
 
     // Create a TableCellRenderer
-    TableDefinition<Student> tableDef = createTableCellRenderer();
+    TableDefinition<Student> tableDef = createTableDefinition();
 
     // Create the scroll table
     scrollTable = new PagingScrollTable<Student>(cachedTableModel, dataTable,
         headerTable, tableDef);
-    getPagingScrollTable().setPageSize(50);
-    getPagingScrollTable().setEmptyTableWidget(
-        new HTML("There is no data to display"));
+    PagingScrollTable<Student> pagingScrollTable = getPagingScrollTable();
+    pagingScrollTable.setPageSize(50);
+    pagingScrollTable.setEmptyTableWidget(new HTML(
+        "There is no data to display"));
     scrollTable.setFooterTable(getFooterTable());
 
     // Setup the bulk renderer
     FixedWidthGridBulkRenderer<Student> bulkRenderer = new FixedWidthGridBulkRenderer<Student>(
         dataTable, getPagingScrollTable());
-    getPagingScrollTable().setBulkRenderer(bulkRenderer);
+    pagingScrollTable.setBulkRenderer(bulkRenderer);
 
     // Setup the scroll table
     setupScrollTable();
@@ -177,8 +161,27 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   /**
    * @return the {@link TableDefinition} with all ColumnDefinitions defined.
    */
-  private TableDefinition<Student> createTableCellRenderer() {
+  private TableDefinition<Student> createTableDefinition() {
+    // Define some cell renderers
+    CellRenderer<Student, Integer> intCellRenderer = new CellRenderer<Student, Integer>() {
+      public void renderRowValue(Student rowValue,
+          ColumnDefinition<Student, Integer> columnDef,
+          HTMLCellView<Student> view) {
+        view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+        view.addHTML(columnDef.getCellValue(rowValue).toString());
+      }
+
+      public void renderRowValue(Student rowValue,
+          ColumnDefinition<Student, Integer> columnDef,
+          TableCellView<Student> view) {
+        view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+        view.setHTML(columnDef.getCellValue(rowValue).toString());
+      }
+    };
+
+    // Create the table definition
     DefaultTableDefinition<Student> tcr = new DefaultTableDefinition<Student>();
+
     // First name
     tcr.addColumnDefinition(new StudentColumnDefinition<String>() {
       @Override
@@ -190,7 +193,6 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       public void setCellValue(Student rowValue, String cellValue) {
         rowValue.setFirstName(cellValue);
       }
-
     });
 
     // Last name
@@ -207,17 +209,21 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     });
 
     // Age
-    tcr.addColumnDefinition(new IntegerColumnDefinition() {
-      @Override
-      public Integer getCellValue(Student rowValue) {
-        return rowValue.getAge();
-      }
+    {
+      StudentColumnDefinition<Integer> columnDef = new StudentColumnDefinition<Integer>() {
+        @Override
+        public Integer getCellValue(Student rowValue) {
+          return rowValue.getAge();
+        }
 
-      @Override
-      public void setCellValue(Student rowValue, Integer cellValue) {
-        rowValue.setAge(cellValue);
-      }
-    });
+        @Override
+        public void setCellValue(Student rowValue, Integer cellValue) {
+          rowValue.setAge(cellValue);
+        }
+      };
+      columnDef.setCellRenderer(intCellRenderer);
+      tcr.addColumnDefinition(columnDef);
+    }
 
     // Gender
     {
@@ -228,7 +234,14 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         }
 
         @Override
-        public void renderRowValue(Student rowValue, HTMLCellView<Student> view) {
+        public void setCellValue(Student rowValue, Boolean cellValue) {
+          rowValue.setMale(cellValue);
+        }
+      };
+      columnDef.setCellRenderer(new CellRenderer<Student, Boolean>() {
+        public void renderRowValue(Student rowValue,
+            ColumnDefinition<Student, Boolean> columnDef,
+            HTMLCellView<Student> view) {
           if (rowValue.isMale()) {
             view.addHTML("male");
           } else {
@@ -236,20 +249,16 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
           }
         }
 
-        @Override
-        public void renderRowValue(Student rowValue, TableCellView<Student> view) {
+        public void renderRowValue(Student rowValue,
+            ColumnDefinition<Student, Boolean> columnDef,
+            TableCellView<Student> view) {
           if (rowValue.isMale()) {
             view.setHTML("male");
           } else {
             view.setHTML("female");
           }
         }
-
-        @Override
-        public void setCellValue(Student rowValue, Boolean cellValue) {
-          rowValue.setMale(cellValue);
-        }
-      };
+      });
       tcr.addColumnDefinition(columnDef);
 
       // Setup the cellEditor
@@ -294,24 +303,27 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         }
 
         @Override
-        public void renderRowValue(Student rowValue, HTMLCellView<Student> view) {
+        public void setCellValue(Student rowValue, String cellValue) {
+          rowValue.setFavoriteColor(cellValue);
+        }
+      };
+      columnDef.setCellRenderer(new CellRenderer<Student, String>() {
+        public void renderRowValue(Student rowValue,
+            ColumnDefinition<Student, String> columnDef,
+            HTMLCellView<Student> view) {
           String color = rowValue.getFavoriteColor();
           view.setStyleAttribute("color", color);
           view.addHTML(color);
         }
 
-        @Override
-        public void renderRowValue(Student rowValue, TableCellView<Student> view) {
+        public void renderRowValue(Student rowValue,
+            ColumnDefinition<Student, String> columnDef,
+            TableCellView<Student> view) {
           String color = rowValue.getFavoriteColor();
           view.setStyleAttribute("color", color);
           view.setHTML(color);
         }
-
-        @Override
-        public void setCellValue(Student rowValue, String cellValue) {
-          rowValue.setFavoriteColor(cellValue);
-        }
-      };
+      });
       tcr.addColumnDefinition(columnDef);
 
       // Setup the cell editor
@@ -353,7 +365,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // College
     {
-      StudentColumnDefinition<String> colDef = new StudentColumnDefinition<String>() {
+      StudentColumnDefinition<String> columnDef = new StudentColumnDefinition<String>() {
         @Override
         public String getCellValue(Student rowValue) {
           return rowValue.getCollege();
@@ -364,7 +376,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
           rowValue.setCollege(cellValue);
         }
       };
-      tcr.addColumnDefinition(colDef);
+      tcr.addColumnDefinition(columnDef);
 
       // Setup the cell editor
       TextCellEditor cellEditor = new TextCellEditor() {
@@ -387,103 +399,122 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
           return -10;
         }
       };
-      colDef.setCellEditor(cellEditor);
+      columnDef.setCellEditor(cellEditor);
     }
 
     // Graduation year
-    tcr.addColumnDefinition(new IntegerColumnDefinition() {
-      @Override
-      public Integer getCellValue(Student rowValue) {
-        return rowValue.getGraduationYear();
-      }
+    {
+      StudentColumnDefinition<Integer> columnDef = new StudentColumnDefinition<Integer>() {
+        @Override
+        public Integer getCellValue(Student rowValue) {
+          return rowValue.getGraduationYear();
+        }
 
-      @Override
-      public void setCellValue(Student rowValue, Integer cellValue) {
-        rowValue.setGraduationYear(cellValue);
-      }
-    });
+        @Override
+        public void setCellValue(Student rowValue, Integer cellValue) {
+          rowValue.setGraduationYear(cellValue);
+        }
+      };
+      columnDef.setCellRenderer(intCellRenderer);
+      tcr.addColumnDefinition(columnDef);
+    }
 
     // GPA
-    tcr.addColumnDefinition(new StudentColumnDefinition<Double>() {
-      @Override
-      public Double getCellValue(Student rowValue) {
-        return rowValue.getGpa();
-      }
-
-      @Override
-      public void renderRowValue(Student rowValue, HTMLCellView<Student> view) {
-        view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        double gpa = rowValue.getGpa();
-        if (gpa < 2) {
-          view.setStyleName("badGPA");
-        } else if (gpa < 3) {
-          view.setStyleName("goodGPA");
-        } else {
-          view.setStyleName("greatGPA");
+    {
+      StudentColumnDefinition<Double> columnDef = new StudentColumnDefinition<Double>() {
+        @Override
+        public Double getCellValue(Student rowValue) {
+          return rowValue.getGpa();
         }
-        view.addHTML(gpaToString(gpa));
-      }
 
-      @Override
-      public void renderRowValue(Student rowValue, TableCellView<Student> view) {
-        view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        double gpa = rowValue.getGpa();
-        if (gpa < 2) {
-          view.setStyleName("badGPA");
-        } else if (gpa < 3) {
-          view.setStyleName("goodGPA");
-        } else {
-          view.setStyleName("greatGPA");
+        @Override
+        public void setCellValue(Student rowValue, Double cellValue) {
+          rowValue.setGpa(cellValue);
         }
-        view.setHTML(gpaToString(gpa));
-      }
-
-      @Override
-      public void setCellValue(Student rowValue, Double cellValue) {
-        rowValue.setGpa(cellValue);
-      }
-
-      /**
-       * Convert a double to human readable format with a max of 2 significant
-       * digits.
-       * 
-       * @param gpa the GPA as a double
-       * @return a more readable format of the GPA
-       */
-      private String gpaToString(Double gpa) {
-        String gpaString = gpa.toString();
-        if (gpaString.length() > 4) {
-          gpaString = gpaString.substring(0, 4);
+      };
+      columnDef.setCellRenderer(new CellRenderer<Student, Double>() {
+        public void renderRowValue(Student rowValue,
+            ColumnDefinition<Student, Double> columnDef,
+            HTMLCellView<Student> view) {
+          view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+          double gpa = rowValue.getGpa();
+          if (gpa < 2) {
+            view.setStyleName("badGPA");
+          } else if (gpa < 3) {
+            view.setStyleName("goodGPA");
+          } else {
+            view.setStyleName("greatGPA");
+          }
+          view.addHTML(gpaToString(gpa));
         }
-        return gpaString;
-      }
-    });
+
+        public void renderRowValue(Student rowValue,
+            ColumnDefinition<Student, Double> columnDef,
+            TableCellView<Student> view) {
+          view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+          double gpa = rowValue.getGpa();
+          if (gpa < 2) {
+            view.setStyleName("badGPA");
+          } else if (gpa < 3) {
+            view.setStyleName("goodGPA");
+          } else {
+            view.setStyleName("greatGPA");
+          }
+          view.setHTML(gpaToString(gpa));
+        }
+
+        /**
+         * Convert a double to human readable format with a max of 2 significant
+         * digits.
+         * 
+         * @param gpa the GPA as a double
+         * @return a more readable format of the GPA
+         */
+        private String gpaToString(Double gpa) {
+          String gpaString = gpa.toString();
+          if (gpaString.length() > 4) {
+            gpaString = gpaString.substring(0, 4);
+          }
+          return gpaString;
+        }
+      });
+      tcr.addColumnDefinition(columnDef);
+    }
 
     // ID
-    tcr.addColumnDefinition(new IntegerColumnDefinition() {
-      @Override
-      public Integer getCellValue(Student rowValue) {
-        return rowValue.getId();
-      }
+    {
+      StudentColumnDefinition<Integer> columnDef = new StudentColumnDefinition<Integer>() {
+        @Override
+        public Integer getCellValue(Student rowValue) {
+          return rowValue.getId();
+        }
 
-      @Override
-      public void setCellValue(Student rowValue, Integer cellValue) {
-        rowValue.setId(cellValue);
-      }
-    });
+        @Override
+        public void setCellValue(Student rowValue, Integer cellValue) {
+          rowValue.setId(cellValue);
+        }
+      };
+      columnDef.setCellRenderer(intCellRenderer);
+      tcr.addColumnDefinition(columnDef);
+    }
 
     // Pin
-    tcr.addColumnDefinition(new IntegerColumnDefinition() {
-      @Override
-      public Integer getCellValue(Student rowValue) {
-        return rowValue.getPin();
-      }
+    {
+      StudentColumnDefinition<Integer> columnDef = new StudentColumnDefinition<Integer>() {
+        @Override
+        public Integer getCellValue(Student rowValue) {
+          return rowValue.getPin();
+        }
 
-      @Override
-      public void setCellValue(Student rowValue, Integer cellValue) {
-        rowValue.setPin(cellValue);
-      }
-    });
+        @Override
+        public void setCellValue(Student rowValue, Integer cellValue) {
+          rowValue.setPin(cellValue);
+        }
+      };
+      columnDef.setCellRenderer(intCellRenderer);
+      tcr.addColumnDefinition(columnDef);
+    }
+
     return tcr;
   }
 

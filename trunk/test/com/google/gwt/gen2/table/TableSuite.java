@@ -26,6 +26,7 @@ import com.google.gwt.gen2.table.client.GridBulkRendererTest;
 import com.google.gwt.gen2.table.client.GridTest;
 import com.google.gwt.gen2.table.client.InlineCellEditorTest;
 import com.google.gwt.gen2.table.client.ListCellEditorTest;
+import com.google.gwt.gen2.table.client.ListColumnDefinitionTest;
 import com.google.gwt.gen2.table.client.ListTableModelTest;
 import com.google.gwt.gen2.table.client.MutableTableModelTest;
 import com.google.gwt.gen2.table.client.PagingScrollTableTest;
@@ -46,7 +47,8 @@ import junit.framework.TestSuite;
 
 public class TableSuite {
   public static Test suite() {
-    TestSuite suite = new TestSuite("Test for com.google.gwt.widgetideas.table.client");
+    TestSuite suite = new TestSuite(
+        "Test for com.google.gwt.widgetideas.table.client");
     // $JUnit-BEGIN$
 
     // TableModel tests
@@ -72,6 +74,7 @@ public class TableSuite {
     // ScrollTable tests
     suite.addTestSuite(ScrollTableTest.class);
     suite.addTestSuite(AbstractColumnDefinitionTest.class);
+    suite.addTestSuite(ListColumnDefinitionTest.class);
     suite.addTestSuite(DefaultTableDefinitionTest.class);
     suite.addTestSuite(PagingScrollTableTest.class);
 
