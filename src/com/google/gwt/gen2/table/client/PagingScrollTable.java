@@ -192,6 +192,12 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
       PagingScrollTable.this.getDataTable().setWidget(getRowIndex(),
           getCellIndex(), widget);
     }
+
+    @Override
+    protected void renderCellImpl(RowType rowValue,
+        ColumnDefinition<RowType, ?> columnDef) {
+      renderCell(rowValue, columnDef, this);
+    }
   };
 
   /**
@@ -304,7 +310,7 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
     if (tableModel instanceof HasRowValueChangeHandlers) {
       ((HasRowValueChangeHandlers<RowType>) tableModel).addRowValueChangeHandler(new RowValueChangeHandler<RowType>() {
         public void onRowValueChange(RowValueChangeEvent<RowType> event) {
-          setRowValue(event.getRowIndex(), event.getRowValue());
+          setRowValue(event.getRowIndex() - getFirstRow(), event.getRowValue());
         }
       });
     }
@@ -570,27 +576,33 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
    * specified, this method has no effect.
    */
   protected void editCell(int row, int column) {
-    ColumnDefinition<RowType, ?> colDef = tableDefinition.getVisibleColumnDefinitions().get(
+    // Get the cell editor
+    final ColumnDefinition colDef = tableDefinition.getVisibleColumnDefinitions().get(
         column);
-    CellEditInfo editInfo = new CellEditInfo(getDataTable(), row, column);
-    colDef.editCell(editInfo, getRowValue(row), getCellEditorCallback());
-  }
-
-  /**
-   * @return the cell editor callback
-   */
-  protected CellEditor.Callback getCellEditorCallback() {
-    if (cellEditorCallback == null) {
-      cellEditorCallback = new CellEditor.Callback() {
-        public void onCancel(CellEditInfo cellEditInfo) {
-        }
-
-        public void onComplete(CellEditInfo cellEditInfo, Object cellValue) {
-          refreshRow(cellEditInfo.getRowIndex());
-        }
-      };
+    CellEditor cellEditor = colDef.getCellEditor();
+    if (cellEditor == null) {
+      return;
     }
-    return cellEditorCallback;
+
+    // Forward the request to the cell editor
+    final RowType rowValue = getRowValue(row);
+    CellEditInfo editInfo = new CellEditInfo(getDataTable(), row, column);
+    cellEditor.editCell(editInfo, colDef.getCellValue(rowValue),
+        new CellEditor.Callback() {
+          public void onCancel(CellEditInfo cellEditInfo) {
+          }
+
+          public void onComplete(CellEditInfo cellEditInfo, Object cellValue) {
+            colDef.setCellValue(rowValue, cellValue);
+            if (tableModel instanceof MutableTableModel) {
+              int row = getFirstRow() + cellEditInfo.getRowIndex();
+              ((MutableTableModel<RowType>) tableModel).setRowValue(row,
+                  rowValue);
+            } else {
+              refreshRow(cellEditInfo.getRowIndex());
+            }
+          }
+        });
   }
 
   /**
@@ -661,6 +673,34 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
         getDataTable().removeRow(0);
       }
       getDataTable().insertRow(pageSize - 1);
+    }
+  }
+
+  /**
+   * Render the cell as a {@link com.google.gwt.user.client.ui.Widget} or set
+   * the contents of the cell.
+   * 
+   * @param rowValue the object associated with the row
+   * @param columnDef the associated column definition
+   * @param view the view used to set the cell contents
+   */
+  protected void renderCell(RowType rowValue,
+      ColumnDefinition<RowType, ?> columnDef, TableCellView<RowType> view) {
+    // Try using the associated cell renderer
+    CellRenderer cellRenderer = columnDef.getCellRenderer();
+    if (cellRenderer != null) {
+      cellRenderer.renderRowValue(rowValue, columnDef, view);
+      return;
+    }
+
+    // Get the cell value
+    Object cellValue = columnDef.getCellValue(rowValue);
+    if (cellValue == null) {
+      view.setText("");
+    } else if (cellValue instanceof Widget) {
+      view.setWidget((Widget) cellValue);
+    } else {
+      view.setHTML(cellValue.toString());
     }
   }
 

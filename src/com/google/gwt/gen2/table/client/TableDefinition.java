@@ -213,12 +213,6 @@ public interface TableDefinition<RowType> {
      * @param widget the widget to set
      */
     public abstract void setWidget(Widget widget);
-
-    @Override
-    protected void renderCellImpl(RowType rowValue,
-        ColumnDefinition<RowType, ?> columnDef) {
-      columnDef.renderRowValue(rowValue, this);
-    }
   }
 
   /**
@@ -300,12 +294,6 @@ public interface TableDefinition<RowType> {
      * @param widget the widget to set
      */
     public abstract void setWidget(Widget widget);
-
-    @Override
-    protected void renderCellImpl(RowType rowValue,
-        ColumnDefinition<RowType, ?> columnDef) {
-      columnDef.renderRowValue(rowValue, this);
-    }
   }
 
   /**

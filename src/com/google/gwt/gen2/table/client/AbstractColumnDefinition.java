@@ -15,12 +15,6 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.CellEditor.Callback;
-import com.google.gwt.gen2.table.client.CellEditor.CellEditInfo;
-import com.google.gwt.gen2.table.client.TableDefinition.HTMLCellView;
-import com.google.gwt.gen2.table.client.TableDefinition.TableCellView;
-import com.google.gwt.user.client.ui.Widget;
-
 /**
  * A definition of a column in a table.
  * 
@@ -35,34 +29,9 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
   private CellEditor<ColType> cellEditor = null;
 
   /**
-   * Edit a cell using the cell editor, if one exists.
-   * 
-   * @param cellEditInfo information about the source of the edit request
-   * @param rowValue the value associated with the row being edited
-   * @param callback callback used when editing is complete
-   * @return true if a cell editor is associated with this column definition
+   * The renderer used to render the contents of this column.
    */
-  public boolean editCell(CellEditInfo cellEditInfo, final RowType rowValue,
-      final Callback<ColType> callback) {
-    // Return if no cell editor
-    if (cellEditor == null) {
-      return false;
-    }
-
-    // Forward the request to the cell editor
-    Callback<ColType> chainCallback = new Callback<ColType>() {
-      public void onCancel(CellEditInfo cellEditInfo) {
-        callback.onCancel(cellEditInfo);
-      }
-
-      public void onComplete(CellEditInfo cellEditInfo, ColType cellValue) {
-        setCellValue(rowValue, cellValue);
-        callback.onComplete(cellEditInfo, cellValue);
-      }
-    };
-    cellEditor.editCell(cellEditInfo, getCellValue(rowValue), chainCallback);
-    return true;
-  }
+  private CellRenderer<RowType, ColType> cellRenderer = null;
 
   /**
    * Get the {@link CellEditor} that should be used to edit the contents of
@@ -75,53 +44,18 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
   }
 
   /**
+   * Get the cell renderer associated with the column.
+   * 
+   * @return the associated {@link CellRenderer}, or null if one does not exist
+   */
+  public CellRenderer<RowType, ColType> getCellRenderer() {
+    return cellRenderer;
+  }
+
+  /**
    * @return the cell value for the given row value
    */
   public abstract ColType getCellValue(RowType rowValue);
-
-  /**
-   * Render the cell as an html string. HTML string should be appended to the
-   * view by calling view.addHTML(String).
-   * 
-   * @param rowValue the object associated with the row
-   * @param view the view to append the string to
-   */
-  public void renderRowValue(RowType rowValue, HTMLCellView<RowType> view) {
-    // Get the cell value
-    ColType cellValue = getCellValue(rowValue);
-    if (cellValue == null) {
-      return;
-    }
-
-    // Set the value in the view
-    if (cellValue instanceof Widget) {
-      view.setWidget((Widget) cellValue);
-    } else {
-      view.addHTML(cellValue.toString());
-    }
-  }
-
-  /**
-   * Render the cell as a {@link com.google.gwt.user.client.ui.Widget} or set
-   * the contents of the cell.
-   * 
-   * @param rowValue the object associated with the row
-   * @param view the view used to set the cell contents
-   */
-  public void renderRowValue(RowType rowValue, TableCellView<RowType> view) {
-    // Get the cell value
-    ColType cellValue = getCellValue(rowValue);
-    if (cellValue == null) {
-      return;
-    }
-
-    // Set the value in the view
-    if (cellValue instanceof Widget) {
-      view.setWidget((Widget) cellValue);
-    } else {
-      view.setHTML(cellValue.toString());
-    }
-  }
 
   /**
    * Set the {@link CellEditor} that should be used to edit cells in this
@@ -131,6 +65,16 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
    */
   public void setCellEditor(CellEditor<ColType> cellEditor) {
     this.cellEditor = cellEditor;
+  }
+
+  /**
+   * Set the {@link CellRenderer} that should be used to render cells in this
+   * column.
+   * 
+   * @param cellRenderer the {@link CellRenderer} to use for this column
+   */
+  public void setCellRenderer(CellRenderer<RowType, ColType> cellRenderer) {
+    this.cellRenderer = cellRenderer;
   }
 
   /**

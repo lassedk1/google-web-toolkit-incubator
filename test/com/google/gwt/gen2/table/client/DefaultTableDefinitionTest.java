@@ -128,4 +128,48 @@ public class DefaultTableDefinitionTest extends Gen2TestBase {
       }
     }
   }
+
+  /**
+   * Test hiding and showing columns.
+   */
+  public void testHiddenColumns() {
+    DefaultTableDefinition<Object> tcr = new DefaultTableDefinition<Object>();
+    ColumnDefinition<Object, Object> colDef0 = new CustomColumnDefinition<Object, Object>();
+    ColumnDefinition<Object, Object> colDef1 = new CustomColumnDefinition<Object, Object>();
+    ColumnDefinition<Object, Object> colDef2 = new CustomColumnDefinition<Object, Object>();
+    tcr.addColumnDefinition(colDef0);
+    tcr.addColumnDefinition(colDef1);
+    tcr.addColumnDefinition(colDef2);
+
+    // All columns visible
+    assertEquals(3, tcr.getColumnDefinitionCount());
+    assertEquals(3, tcr.getVisibleColumnDefinitions().size());
+    assertTrue(tcr.isColumnVisible(colDef0));
+    assertTrue(tcr.isColumnVisible(colDef1));
+    assertTrue(tcr.isColumnVisible(colDef2));
+
+    // Hide one column
+    tcr.setColumnVisible(colDef1, false);
+    assertEquals(3, tcr.getColumnDefinitionCount());
+    assertEquals(2, tcr.getVisibleColumnDefinitions().size());
+    assertTrue(tcr.isColumnVisible(colDef0));
+    assertFalse(tcr.isColumnVisible(colDef1));
+    assertTrue(tcr.isColumnVisible(colDef2));
+
+    // Hide one more column
+    tcr.setColumnVisible(colDef2, false);
+    assertEquals(3, tcr.getColumnDefinitionCount());
+    assertEquals(1, tcr.getVisibleColumnDefinitions().size());
+    assertTrue(tcr.isColumnVisible(colDef0));
+    assertFalse(tcr.isColumnVisible(colDef1));
+    assertFalse(tcr.isColumnVisible(colDef2));
+
+    // Show a hidden column
+    tcr.setColumnVisible(colDef2, true);
+    assertEquals(3, tcr.getColumnDefinitionCount());
+    assertEquals(2, tcr.getVisibleColumnDefinitions().size());
+    assertTrue(tcr.isColumnVisible(colDef0));
+    assertFalse(tcr.isColumnVisible(colDef1));
+    assertTrue(tcr.isColumnVisible(colDef2));
+  }
 }
