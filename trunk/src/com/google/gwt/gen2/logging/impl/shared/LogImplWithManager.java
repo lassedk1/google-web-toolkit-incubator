@@ -26,7 +26,7 @@ import java.util.Iterator;
 
 /**
  * A {@link LogImpl} implementation that delegates all the methods to the
- * underlying log manager
+ * underlying log manager.
  */
 public class LogImplWithManager extends LogImpl {
 
@@ -35,14 +35,14 @@ public class LogImplWithManager extends LogImpl {
     static {
       // Triggers Level clinit in order to call logimpl.init.
       if (Level.ALL == null) {
-        // Do nothing, this is true the first time through
+        // Do nothing, this call is to simply trigger logging initialization.
       }
     }
   }
 
   protected static void addDefaultLogHandler() {
     LogHandler handler = GWT.create(DefaultClientLogHandler.class);
-    assert handler != null : "The default log handler must be initialized.";
+    assert handler != null : "The default log handler must be initialized if the log impl requests one.";
     Log.addLogHandler(handler);
   }
 

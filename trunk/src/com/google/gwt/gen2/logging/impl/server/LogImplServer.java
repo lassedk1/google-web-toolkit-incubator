@@ -21,7 +21,7 @@ import com.google.gwt.gen2.logging.server.ext.ServerLoggingConfiguration;
 import com.google.gwt.gen2.logging.shared.Log;
 
 /**
- * Default logging system used for java logging.
+ * Default logging impl for the java server side.
  */
 public class LogImplServer extends LogImplWithManager {
   public static ServerLoggingConfiguration config = new ServerLoggingConfiguration();
@@ -29,7 +29,7 @@ public class LogImplServer extends LogImplWithManager {
   @Override
   public void init() {
     initializeLevels();
-    Log.addLogHandler(config.getDefaultLogHandler());
+    Log.addLogHandler(config.createDefaultLogHandler());
   }
 
 }

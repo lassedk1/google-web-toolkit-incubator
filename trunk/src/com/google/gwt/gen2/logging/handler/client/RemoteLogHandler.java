@@ -27,9 +27,11 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 /**
  * Handler to publish messages over RPC.
- * 
  */
 public final class RemoteLogHandler implements LogHandler {
+  /**
+   * Default callback for remote log handler.
+   */
   class DefaultCallback implements AsyncCallback {
 
     public void onFailure(Throwable caught) {
@@ -45,7 +47,8 @@ public final class RemoteLogHandler implements LogHandler {
   }
 
   /**
-   * Logging service definition.
+   * Logging service definition. Note, this interface may have more methods
+   * added to it over time.
    */
   public static interface Service extends RemoteService {
     /**
@@ -61,7 +64,8 @@ public final class RemoteLogHandler implements LogHandler {
   }
 
   /**
-   * Remote Service Async for remote logging.
+   * Logging service Async for remote logging. Note, this interface may have
+   * more methods added to it over time.
    */
   public static interface ServiceAsync {
     /**
@@ -108,7 +112,6 @@ public final class RemoteLogHandler implements LogHandler {
     if (event.getCategory() == CATEGORY) {
       return;
     }
-    System.err.println("publishing remotely");
     service.publish(event.getMessage(), event.getLevel(), event.getCategory(),
         event.getThrown(), callback);
   }

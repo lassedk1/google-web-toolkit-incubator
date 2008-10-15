@@ -102,8 +102,6 @@ class LogManager {
       event.setTime(new Date());
       event.setMessage(msg);
       for (int i = 0; i < handlers.size(); i++) {
-        // We reset the message each time because each log handler can have its
-        // own message formatter which modifies the given message.
         LogHandler handler = handlers.get(i);
         handler.onLog(event);
       }
