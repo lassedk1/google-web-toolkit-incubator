@@ -16,12 +16,12 @@
 
 package com.google.gwt.gen2.commonwidget.client.impl;
 
-import com.google.gwt.dom.client.Element; 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.gen2.table.override.client.ElementMapper;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.UIObject;
-import com.google.gwt.widgetideas.table.client.overrides.ElementMapper;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,7 +34,7 @@ import java.util.Iterator;
  */
 @SuppressWarnings("unchecked")
 public abstract class CellGridImpl<ValueType> extends
-    com.google.gwt.widgetideas.table.client.overrides.Grid {
+    com.google.gwt.gen2.table.override.client.Grid {
 
   /**
    * Cell type.
@@ -180,7 +180,7 @@ public abstract class CellGridImpl<ValueType> extends
   }
 
   public ValueType getValue(Cell cell) {
-    // ValueType == Object, so cast should be removed in real code.
+    // ValueType == Object, so cast should be removed in manager code.
     return (ValueType) (cell == null ? null : cell.getValue());
   }
 
