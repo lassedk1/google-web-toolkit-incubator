@@ -62,7 +62,6 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
      * CSS resource.
      */
     public static interface Resources extends ImmutableResourceBundle {
-
       @Resource("com/google/gwt/gen2/widgetbase/public/DropDownListBox.css")
       DropDownListBox.Css dropDownListBoxCss();
     }
@@ -81,7 +80,8 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
 
     static void injectCss() {
       if (Gen2CssInjector.isInjectionEnabled()) {
-        DropDownListBox.Css css = ((Resources) GWT.create(Resources.class)).dropDownListBoxCss();
+        Resources resources = GWT.create(Resources.class);
+        DropDownListBox.Css css = resources.dropDownListBoxCss();
         StyleInjector.injectStylesheet(css.getText());
         DEFAULT_CSS = css;
       }
