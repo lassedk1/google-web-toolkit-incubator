@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -91,6 +91,9 @@ public class GlassPanel extends Composite implements EventPreview {
   private static final GlassPanelImpl impl = GWT.create(GlassPanelImpl.class);
 
   private final boolean autoHide;
+  
+  private final SimplePanel mySimplePanel;
+
   private WindowResizeListener resizeListener;
 
   private final Timer timer = new Timer() {
@@ -110,7 +113,8 @@ public class GlassPanel extends Composite implements EventPreview {
    */
   public GlassPanel(boolean autoHide) {
     this.autoHide = autoHide;
-    initWidget(new SimplePanel());
+    mySimplePanel = new SimplePanel();
+    initWidget(mySimplePanel);
     Style style = getElement().getStyle();
     style.setProperty("backgroundColor", "#000");
     style.setProperty("filter", "alpha(opacity=50)");
@@ -135,6 +139,11 @@ public class GlassPanel extends Composite implements EventPreview {
       }
     }
     return true;
+  }
+
+  @Override
+  public void setWidget(Widget widget) {
+    mySimplePanel.setWidget(widget);
   }
 
   @Override
@@ -165,7 +174,7 @@ public class GlassPanel extends Composite implements EventPreview {
 
     RootPanel.get().add(new FocusPanelImpl(), Window.getScrollLeft(), Window.getScrollTop());
   }
-
+  
   @Override
   protected void onDetach() {
     super.onDetach();
