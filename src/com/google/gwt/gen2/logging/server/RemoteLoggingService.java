@@ -23,7 +23,6 @@ import com.google.gwt.gen2.logging.handler.client.RemoteLogHandler;
 
 /**
  * Remote logging implementation.
- * 
  */
 public class RemoteLoggingService extends RemoteServiceServlet implements
     RemoteLogHandler.Service {

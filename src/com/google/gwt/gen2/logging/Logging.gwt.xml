@@ -89,12 +89,4 @@
 			<when-property-is name="user.agent" value="gecko" />
 		</any>
 	</replace-with>
-
-	<!-- 
-	Bindings for GwtLogUtil -->
-	<replace-with class=  "com.google.gwt.gen2.logging.shared.GwtLogUtil.ImplIE6">
-		<when-type-is class="com.google.gwt.gen2.logging.shared.GwtLogUtil.Impl" />
-		<when-property-is name="user.agent" value="ie6" />
-	</replace-with>
-
 </module>

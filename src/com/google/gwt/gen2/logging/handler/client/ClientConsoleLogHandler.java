@@ -26,16 +26,20 @@ import com.google.gwt.gen2.logging.shared.SmartLogHandler;
 
 /**
  * Client console logger. Chooses the best default client available depending
- * upon the applications mode.
+ * upon the current browser.
  * <dl>
- * <dt>Hosted mode</dt><dd>hosted mode logger</dd>
- * <dt>Internet Exploerer</dt><dd>Popup window</dd>
- * <dt>Firefox</dt><dd>FireBug log. 
- *   If you do not have firebug and you developing for firefox,
- *   you should get it <a href="https://addons.mozilla.org/en-US/firefox/addon/1843"> 
- *   here </a>.</dd>
- * <dt>Safari/Chrome</dt><dd>built in console</dd>
- * <dt>Opera</dt><dd>window.opera.postError</dd>
+ * <dt>Hosted mode</dt>
+ * <dd>hosted mode logger</dd>
+ * <dt>Internet Explorer</dt>
+ * <dd>Popup window</dd>
+ * <dt>Firefox</dt>
+ * <dd>FireBug log. If you do not have firebug and you developing for firefox,
+ * you should get it <a
+ * href="https://addons.mozilla.org/en-US/firefox/addon/1843"> here </a>.</dd>
+ * <dt>Safari/Chrome</dt>
+ * <dd>built in console</dd>
+ * <dt>Opera</dt>
+ * <dd>window.opera.postError</dd>
  * </dl>
  */
 public class ClientConsoleLogHandler extends SmartLogHandler implements
@@ -46,6 +50,8 @@ public class ClientConsoleLogHandler extends SmartLogHandler implements
    */
   public static class Hosted implements LogHandler {
     public void onLog(LogEvent event) {
+      // Does not use default text formatter because thrown is dealt with by the
+      // hosted logger.
       String formatted = event.getLevel().toString();
       if (event.getCategory() != null) {
         formatted += "-" + event.getCategory();
@@ -55,7 +61,9 @@ public class ClientConsoleLogHandler extends SmartLogHandler implements
   }
 
   /**
-   * Standard console.
+   * Standard console, used by Safari and Chrome. Also is used by FireFox is
+   * firebug is not detected. Because all firefox's support console, can get set
+   * to the null logger in unusual cases.
    */
   static class Console implements Impl {
     public void init(ClientConsoleLogHandler handler) {
@@ -76,6 +84,7 @@ public class ClientConsoleLogHandler extends SmartLogHandler implements
       return $wnd.console != null && typeof($wnd.console.log) == 'function';
     }-*/;
   }
+
   /**
    * Firebug console.
    */
@@ -137,6 +146,9 @@ public class ClientConsoleLogHandler extends SmartLogHandler implements
     }
   }
 
+  /**
+   * Opera implementation using <code>postError</code>.
+   */
   static class Opera implements Impl {
     public void init(ClientConsoleLogHandler handler) {
     }
@@ -151,8 +163,8 @@ public class ClientConsoleLogHandler extends SmartLogHandler implements
   }
 
   /**
-   * Popup Console, using s separate popup window. Note, tested only for IE6 and
-   * IE7.
+   * Popup Console, using s separate popup window. Note, tested only for
+   * Internet Explorer.
    */
   static class Popup implements Impl {
     private static int CLEAR_AFTER = 200;
@@ -169,6 +181,8 @@ public class ClientConsoleLogHandler extends SmartLogHandler implements
         window.clear();
         counter = 0;
       }
+      // Formatting as text so all console log handler outputs are as close as
+      // practical.
       window.addHtml(LogFormatter.TEXT.format(event));
     }
   }
@@ -188,7 +202,6 @@ public class ClientConsoleLogHandler extends SmartLogHandler implements
       setLogHandler(impl);
       // Gives the impl the chance to replace itself.
       impl.init(this);
-
     } else {
       setLogHandler(new Hosted());
     }

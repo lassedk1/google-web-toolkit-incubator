@@ -22,10 +22,10 @@ import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 
 /**
- * Publishes log messages into a tree grouped by category.
+ * Publishes log messages grouped by category using a gwt {@link Tree} widget.
  */
 public class GroupedLogHandler extends ScrollableLogHandler<Tree> {
-  private TreeItem collated;
+  private TreeItem groupedByCatagory;
   private TreeItem topLevel;
 
   /**
@@ -41,7 +41,7 @@ public class GroupedLogHandler extends ScrollableLogHandler<Tree> {
     if (category == null) {
       parent = topLevel;
     } else {
-      parent = collated;
+      parent = groupedByCatagory;
       String[] args = LogHandlerUtil.splitCategory(category);
 
       for (int i = 0; i < args.length; i++) {
@@ -58,8 +58,8 @@ public class GroupedLogHandler extends ScrollableLogHandler<Tree> {
   @Override
   protected Tree createContents() {
     Tree tree = new Tree();
-    collated = tree.addItem("collated");
-    topLevel = tree.addItem("top");
+    groupedByCatagory = tree.addItem("catagorized");
+    topLevel = tree.addItem("default");
     return tree;
   }
 

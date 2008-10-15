@@ -19,7 +19,7 @@ package com.google.gwt.gen2.logging.impl.shared;
 import com.google.gwt.gen2.logging.impl.server.ServerBindingsImpl;
 
 /**
- * Shared code needs to call into server-side code when in java server mode.We
+ * Shared code needs to call into server-side code when in java server mode. We
  * use super-source tricks here to allow this to happen.
  */
 public class ProxyServerBindingsImpl {

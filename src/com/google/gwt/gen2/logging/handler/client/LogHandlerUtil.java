@@ -28,7 +28,7 @@ import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
  */
 public class LogHandlerUtil {
   /**
-   * CSS resource.
+   * CSS resource for log handlers in handler.client.
    */
   static interface Resources extends ImmutableResourceBundle {
     @Resource("com/google/gwt/gen2/widgetbase/public/LogHandlers.css")
@@ -41,10 +41,14 @@ public class LogHandlerUtil {
    * consistently.
    * 
    * <dl>
-   * <dt>Severe</dt><dd>logSEVERE</dd>
-   * <dt>Config</dt><dd>logCONFIG</dd>
-   * <dt>Fine</dt><dd>logFINE</dd>
-   * <dt>. . .</dt><dd></dd>
+   * <dt>Severe</dt>
+   * <dd>logSEVERE</dd>
+   * <dt>Config</dt>
+   * <dd>logCONFIG</dd>
+   * <dt>Fine</dt>
+   * <dd>logFINE</dd>
+   * <dt>. . .</dt>
+   * <dd></dd>
    * </dl>
    * 
    * 
@@ -59,7 +63,7 @@ public class LogHandlerUtil {
   }
 
   /**
-   * Injects the default css used for web log handlers.
+   * Injects the default css used for the log handlers defined in this package.
    */
   public static void injectDefaultCss() {
     if (Gen2CssInjector.isInjectionEnabled()) {

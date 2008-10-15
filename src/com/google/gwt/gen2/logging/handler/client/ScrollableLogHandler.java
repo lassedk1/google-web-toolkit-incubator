@@ -39,7 +39,7 @@ abstract class ScrollableLogHandler<ContentType extends Widget & HasWidgets>
   /**
    * Constructor.
    * 
-   * @param styleName styleName
+   * @param styleName the style name of this scrollable log handler
    */
   protected ScrollableLogHandler(String styleName) {
     VerticalPanel panel = new VerticalPanel();
@@ -57,7 +57,7 @@ abstract class ScrollableLogHandler<ContentType extends Widget & HasWidgets>
   }
 
   /**
-   * Clears this logger.
+   * Clears all messages.
    */
   public void clear() {
     scroller.remove(contents);

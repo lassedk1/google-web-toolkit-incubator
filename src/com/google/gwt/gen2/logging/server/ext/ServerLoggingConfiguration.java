@@ -34,11 +34,11 @@ public class ServerLoggingConfiguration {
   }
 
   /**
-   * Gets the default log handler to use when logging to the server.
+   * Creates the default log handler to use when logging to the server.
    * 
    * @return the default log handler
    */
-  public LogHandler getDefaultLogHandler() {
+  public LogHandler createDefaultLogHandler() {
     return new JavaLoggingHandler();
   }
 }

@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Shows a widget log handler in a popup.
+ * Shows a widget log handler in a {@link PopupPanel}.
  * 
  * @param <WidgetLogHandler> the widget log handler
  */
@@ -32,7 +32,8 @@ public class PopupLogHandler<WidgetLogHandler extends Widget & LogHandler>
   private boolean autoShow;
 
   /**
-   * Constructor.
+   * Constructor. If autoShow is true, the popup is shown whenever a new message
+   * is added and hidden whenever the popup loses focus.
    * 
    * @param autoShow show popup when messages are logged
    * @param widget the underlying widget log handler

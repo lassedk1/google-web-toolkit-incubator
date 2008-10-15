@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * A simple log handler to display log messages.
+ * A simple widget log handler to display log messages.
  */
 public class SimpleLogHandler extends ScrollableLogHandler<VerticalPanel> {
   private LogFormatter formatter;
@@ -48,7 +48,6 @@ public class SimpleLogHandler extends ScrollableLogHandler<VerticalPanel> {
 
   public void onLog(LogEvent event) {
     Label message;
-
     if (formatter.isHtml()) {
       message = new HTML(formatter.format(event));
     } else {

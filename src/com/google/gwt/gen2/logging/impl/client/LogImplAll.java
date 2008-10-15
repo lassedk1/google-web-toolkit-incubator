@@ -35,7 +35,7 @@ public class LogImplAll extends LogImplWithManager {
         Log.setDefaultLevel(l);
       } catch (IllegalArgumentException argument) {
         Window.alert(param
-            + " is an illegal arguement for debugLevel. We are ignoring it, use 'SEVERE', 'WARNING', 'CONFIG', 'FINE',etc instead.");
+            + " is an illegal arguement for debugLevel. We are ignoring it, use 'SEVERE', 'WARNING', 'CONFIG', 'FINE',etc. instead.");
       }
     }
   }

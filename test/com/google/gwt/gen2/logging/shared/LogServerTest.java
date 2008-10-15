@@ -122,8 +122,7 @@ public class LogServerTest extends TestCase {
     };
     Log.severe("handler should be removed");
     assertEquals("log", getLastMessage(handler));
-    
-    
+
     Log.addLogHandler(smart);
     Log.warning("log me");
     smart.setLevel(Level.OFF);
