@@ -17,9 +17,9 @@ package com.google.gwt.gen2.datepicker.client;
 
 import com.google.gwt.gen2.commonwidget.client.impl.CellGridImpl;
 import com.google.gwt.gen2.datepicker.client.DefaultCalendarView.CellGrid.DateCell;
+import com.google.gwt.gen2.table.override.client.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.widgetideas.table.client.overrides.HTMLTable.CellFormatter;
 
 import java.util.Date;
 
