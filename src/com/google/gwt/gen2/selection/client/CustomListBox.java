@@ -215,8 +215,9 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
       if (newItem != null && (newItem.summary != null)) {
         currentSummary = newItem.summary;
       }
-      fireEvent(new SelectionEvent<ValueType>(getValue(oldItem),
-          getValue(newItem)));
+
+      CustomListBox.this.fireEvent(new SelectionEvent<ValueType>(
+          getValue(oldItem), getValue(newItem)));
     }
 
     private Element addHtml(String html) {
