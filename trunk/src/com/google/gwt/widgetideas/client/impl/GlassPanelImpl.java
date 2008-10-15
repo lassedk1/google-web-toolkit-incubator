@@ -42,7 +42,7 @@ public abstract class GlassPanelImpl {
   public abstract void matchDocumentSize(GlassPanel glassPanel,
       boolean dueToResize);
 
-  public final void matchParentSize(GlassPanel glassPanel, AbsolutePanel parent) {
+  public void matchParentSize(GlassPanel glassPanel, AbsolutePanel parent) {
     DOM.setStyleAttribute(glassPanel.getElement(), "bottom", "0px");
     DOM.setStyleAttribute(glassPanel.getElement(), "right", "0px");
   }
