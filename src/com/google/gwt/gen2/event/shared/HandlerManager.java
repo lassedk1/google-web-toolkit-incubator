@@ -106,7 +106,7 @@ public class HandlerManager {
     }
     if (oldSource == null) {
       // This was my event, so I should kill it now that I'm done.
-      event.onRelease();
+      event.kill();
     } else {
       // Restoring the source for the next handler to use.
       event.setSource(oldSource);
@@ -142,6 +142,15 @@ public class HandlerManager {
     } else {
       return javaRegistry.getHandlerCount(type);
     }
+  }
+
+  /**
+   * Gets the source for events fired from this manager.
+   * 
+   * @return the source
+   */
+  public Object getSource() {
+    return source;
   }
 
   /**
