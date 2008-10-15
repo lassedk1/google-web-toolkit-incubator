@@ -15,7 +15,9 @@
  */
 package com.google.gwt.widgetideas.client.impl;
 
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.widgetideas.client.GlassPanel;
 
@@ -26,6 +28,7 @@ public class GlassPanelImplIE6 extends GlassPanelImpl {
   private int lastDocumentClientWidth = -1;
   private int lastDocumentClientHeight = -1;
 
+  @Override
   public void matchDocumentSize(GlassPanel glassPanel, boolean dueToResize) {
     int clientWidth = Window.getClientWidth();
     int clientHeight = Window.getClientHeight();
@@ -47,5 +50,13 @@ public class GlassPanelImplIE6 extends GlassPanelImpl {
       lastDocumentClientWidth = clientWidth;
       lastDocumentClientHeight = clientHeight;
     }
+  }
+
+  @Override
+  public final void matchParentSize(GlassPanel glassPanel, AbsolutePanel parent) {
+    // IE Quirks mode fails with 'right: 0px; bottom: 0px;'
+    // Instead use 'width: 100%; height: 100%;'
+    DOM.setStyleAttribute(glassPanel.getElement(), "width", "100%");
+    DOM.setStyleAttribute(glassPanel.getElement(), "height", "100%");
   }
 }
