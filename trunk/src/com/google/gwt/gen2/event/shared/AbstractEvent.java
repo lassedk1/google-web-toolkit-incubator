@@ -137,9 +137,9 @@ public abstract class AbstractEvent {
   }
 
   /**
-   * Called after the event manager has finished processing the event.
+   * Kills the event. Used when recycling event instances.
    */
-  void onRelease() {
+  final void kill() {
     dead = true;
     source = null;
   }
