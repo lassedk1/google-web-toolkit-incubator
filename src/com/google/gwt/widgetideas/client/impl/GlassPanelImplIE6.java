@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,7 +15,6 @@
  */
 package com.google.gwt.widgetideas.client.impl;
 
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -53,10 +52,12 @@ public class GlassPanelImplIE6 extends GlassPanelImpl {
   }
 
   @Override
-  public final void matchParentSize(GlassPanel glassPanel, AbsolutePanel parent) {
-    // IE Quirks mode fails with 'right: 0px; bottom: 0px;'
-    // Instead use 'width: 100%; height: 100%;'
-    DOM.setStyleAttribute(glassPanel.getElement(), "width", "100%");
-    DOM.setStyleAttribute(glassPanel.getElement(), "height", "100%");
+  public final void matchParentSize(final GlassPanel glassPanel, final AbsolutePanel parent) {
+    if (isCSS1Compat()) {
+      super.matchParentSize(glassPanel, parent);
+    } else {
+      // less than perfect due to parent borders, but works around other buggy size issues
+      glassPanel.setPixelSize(parent.getOffsetWidth(), parent.getOffsetHeight());
+    }
   }
 }
