@@ -130,6 +130,16 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   }
 
   @Override
+  protected FixedWidthFlexTable createFooterTable() {
+    return new FixedWidthFlexTable();
+  }
+
+  @Override
+  protected FixedWidthFlexTable createHeaderTable() {
+    return new FixedWidthFlexTable();
+  }
+
+  @Override
   protected ScrollTable createScrollTable(FixedWidthFlexTable headerTable,
       FixedWidthGrid dataTable, FixedWidthFlexTable footerTable) {
     // Setup the controller
