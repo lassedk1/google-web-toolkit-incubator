@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -42,6 +42,19 @@ public class GlassPanelImplSafari extends GlassPanelImplStandard {
     elem.style.height = (height + marginTop) + "px";
   }-*/;
 
+  // TODO remove once GWT issue 1981 is fixed
+  // http://code.google.com/p/google-web-toolkit/issues/detail?id=1981
+  @Override
+  public native boolean isCSS1Compat()
+  /*-{
+    // Safari does not implement $doc.compatMode.
+    // Use a CSS test to determine rendering mode.
+    var elem = $doc.createElement('div');
+    elem.style.cssText = "width:0px;width:1";
+    return parseInt(elem.style.width) != 1;
+  }-*/;
+
+  @Override
   public void matchDocumentSize(GlassPanel glassPanel, boolean dueToResize) {
     implMatchDocumentSize(glassPanel.getElement());
   }

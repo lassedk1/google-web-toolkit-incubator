@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,7 +15,6 @@
  */
 package com.google.gwt.widgetideas.client.impl;
 
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.widgetideas.client.GlassPanel;
 
@@ -39,11 +38,17 @@ public abstract class GlassPanelImpl {
     return @com.google.gwt.user.client.impl.DocumentRootImpl::documentRoot.scrollWidth;
   }-*/;
 
-  public abstract void matchDocumentSize(GlassPanel glassPanel,
-      boolean dueToResize);
+  // TODO remove once GWT issue 1981 is fixed
+  // http://code.google.com/p/google-web-toolkit/issues/detail?id=1981
+  public native boolean isCSS1Compat()
+  /*-{
+    return $doc.compatMode == 'CSS1Compat';
+  }-*/;
+
+  public abstract void matchDocumentSize(GlassPanel glassPanel, boolean dueToResize);
 
   public void matchParentSize(GlassPanel glassPanel, AbsolutePanel parent) {
-    DOM.setStyleAttribute(glassPanel.getElement(), "bottom", "0px");
-    DOM.setStyleAttribute(glassPanel.getElement(), "right", "0px");
+    glassPanel.getElement().getStyle().setProperty("bottom", "0px");
+    glassPanel.getElement().getStyle().setProperty("right", "0px");
   }
 }
