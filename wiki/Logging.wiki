@@ -112,8 +112,10 @@ No logging support
 = Gen2 Proposed modifications =
 
 == `LogEvent` ==
-A  `LogEvent` is created once the Log class determines that a `LogHandler` is able to recieve a logging message.
+A  `LogEvent` is created once the Log class determines that it should broadcast its messages to the registered `LogHandler`instances. 
+
 == `LogHandler` ==
-`LogHandler` would now be an interface with a single method `onLog(LogEvent)`. an `AbstactLogHandler` class would be introduced that contains most of the current base functionality needed by a log handler. 
+`LogHandler` is now an interface with a single method `onLog(LogEvent)`. The`SmartLogHandler` decorator class has been introduced to contain the current "smart" log handler functionality. In specific, the `SmartLogHandler` allows handlers to be sensitive to levels and to lazily create the actual output log handler.
+
 == Log ==
-Log would have the ability to add log handlers by level, so if, for example, and `RPCLogHandler` was added at level `warn`, only messages at level `war`' or above would be fired to `RPCLogHandler`
+The actual Log static API is unchanged, so for most users, the rewrite does not make a significant difference. 
