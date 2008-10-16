@@ -38,7 +38,7 @@ and the [http://code.google.com/p/gwt-log/ gwt log] project by Fred Sauer. A spe
  
 =Design Decisions=
 
-==Defferred binding==
+==Deferred binding==
 The Logging api has three compiled options(logging:all/none/minimal).  The other option would be to have a set of predefined levels i.e. logging(off/fine/finer/.../severe). Both are good options, so far we believe the single switch will lead to best full experience.
 
 Advantages for multiple levels:
@@ -64,18 +64,18 @@ In some cases, it would be useful to directly access a Logger or Handler and pri
 = Design overview =
 
 
-== Log ==
+== `Log` ==
 Log is a static class. Its API is modeled on the java Logger API. Almost all user interactions should be done through this class to allow compile time removal of logging. It will also include some GWT-specific method.  For instance the methods below:
 {{{
    Log.isLoggingEnabled();
    Log.isLoggingMinimal()
 }}}
  
-== LogHandler ==
-A LogHandler is a class which actually handles the logging messages.  Its API is modeled in the java Handler class.  Its subclasses will be drawn heavily from the gwt-log subclasses of AbstractLogger.
+== `LogHandler` ==
+A `LogHandle`r is a class which actually handles the logging messages.  Its API is modeled in the java Handler class.  Its subclasses will be drawn heavily from the gwt-log subclasses of `AbstractLogge`.
 
  
-== Level ==
+== `Level` ==
 Defines the current logging Level. Based on the java logging Level class.
 
 == Categories ==
@@ -112,17 +112,17 @@ No logging support
 = Gen2 modifications =
 
 == `LogEvent` ==
-A  `LogEvent` is created once the `Log` class determines that it should broadcast its messages to the registered `LogHandler`instances. 
+A  `LogEvent` is created once the `Log` class determines that it should broadcast its messages to the registered `LogHandler` instances. 
 
 == `LogHandler` ==
 `LogHandler` is now an interface with a single method `onLog(LogEvent)`. The`SmartLogHandler` decorator class has been introduced to contain the current "smart" log handler functionality. In specific, the `SmartLogHandler` allows handlers to be sensitive to levels and to lazily create the actual output log handler.
 
 == `LogFormatter` ==
-As log handlers are no longer classes, the formatting helper methods have been abstracted out into the `LogFormatter` hierarchy. 
+As log handlers are no longer classes, the formatting helper methods have been abstracted out into the `LogFormatter` hierarchy. We provide a default text and html log formatter.
 
-== `Log handler implementations` ==
-A new default log handler `ClientConsoleLogHandler` has been written that combines the functionality of the `FireBugLogHandler`, `ConsoleLogHandler`, `WindowLogger`(from gwt-log), and the 'GWTLogHandler`.  Its basic purpose is to use the best approximation of a console as possible.  Additionally, minimal mode does not include a default web log handler.
-
+== Log handler implementations ==
+A new default log handler `ClientConsoleLogHandler` has been written that combines the functionality of the `FireBugLogHandler`, `ConsoleLogHandler`, `WindowLogger`(from gwt-log), and the `GWTLogHandler`.  Its goal is to use the best approximation of a console as possible.  
+ 
 The `DivLogHandler` and `SimpleLogHandler` have been factored into a single `SimpleLogHandler` which now can take as input a `LogFormatter`.
 
 The `TreeLogHandler` was converted to use the gwt `Tree` widget and renamed `GroupLogHandler` to avoid the confusion some people had with the hosted mode log handler.
@@ -132,10 +132,10 @@ The `PopupLogHandler` became a decorator log handler that can wrap any widget lo
 == `Log` ==
 The actual Log static API is unchanged, so for most users, the rewrite does not make a significant difference. 
 
-We now use super-source tricks so that the `Log` class can be initialized on the java server without an extra user call.
+We now use super-source tricks so that the `Log` class can be initialized on the java server without an extra user call. You can set the default user log handler using the `ServerLogConfig` class.
 
 == `Level` ==
-`Level` now is associated with a clinit in order to ensure that the first call to Level.X does not create a null.  However, when logging is off, everything should still get compiled out, including the extra clinits.
+`Level` now is associated with a `clinit` in order to ensure that the first call to Level.X does not create a null reference.  However, when logging is off, everything should still get compiled out, including the extra `clinits`.
 
 == Logging property ==
 The logging property now uses "off" rather then "none" in order to match the java logging level "Level.OFF".
