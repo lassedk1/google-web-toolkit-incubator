@@ -1,4 +1,8 @@
-/**
+body {
+  padding: 10px;
+}
+
+/*
  * ScrollTable
  */
 .gwt-ScrollTable {
@@ -88,36 +92,8 @@
   cursor: hand;
 }
 
-/**
- * TabPanel
- */
-.gwt-TabBar {
-}
-.gwt-TabBar .gwt-TabBarFirst {
-}
-.gwt-TabBar .gwt-TabBarRest {
-}
-.gwt-TabBar .gwt-TabBarItem {
-	background: #E8EEF7;
-	margin-left: 10px;
-	border: 1px solid #C3D9FF;
-	cursor: pointer; 
-}
-.gwt-TabBar .gwt-TabBarItem .gwt-Label {
-  font-size: 12px;
-  color: blue;
-  padding: 3px 7px;
-}
-.gwt-TabBar .gwt-TabBarItem-selected {
-	background: #C3D9FF;
-}
-.gwt-TabBar .gwt-TabBarItem-selected .gwt-Label {
-	color: black;
-  font-wieght: bold;
-}
-.gwt-TabPanel {
-}
-.gwt-TabPanelBottom {
-  padding: 5px;
-  border: 4px solid #C3D9FF;
+/** Applied to AbstractOptions */
+.AbstractOption-Label {
+  font-weight: bold;
+  text-align: right;
 }

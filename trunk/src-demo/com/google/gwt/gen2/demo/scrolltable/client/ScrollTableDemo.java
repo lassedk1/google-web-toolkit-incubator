@@ -16,21 +16,48 @@
 package com.google.gwt.gen2.demo.scrolltable.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.column.ColumnResizePolicyOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.column.CellPaddingAndSpacingOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.column.ResizeColumnOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.column.TableResizePolicyOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.data.InsertDataRowOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.data.SetDataTextOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.header.ColSpanOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.header.InsertHeaderRowOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.header.SetHeaderTextOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.highlight.RowSelectionPolicyOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.log.LogOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.setup.ResizeCheckingOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.setup.ScrollPolicyOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.setup.TableSizeOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.sort.ShiftRowsOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.sort.SortColumnOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.sort.SwapRowsOption;
 import com.google.gwt.gen2.demo.scrolltable.shared.Student;
 import com.google.gwt.gen2.demo.scrolltable.shared.StudentGenerator;
 import com.google.gwt.gen2.table.client.FixedWidthFlexTable;
 import com.google.gwt.gen2.table.client.FixedWidthGrid;
 import com.google.gwt.gen2.table.client.ScrollTable;
 import com.google.gwt.gen2.table.client.SelectionGrid.SelectionPolicy;
+import com.google.gwt.gen2.table.override.client.FlexTable;
 import com.google.gwt.gen2.table.override.client.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Tree;
+import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -47,50 +74,62 @@ public class ScrollTableDemo implements EntryPoint {
   };
 
   /**
-   * The data portion of the {@link ScrollTable}.
+   * The instance of this class.
    */
-  protected static FixedWidthGrid dataTable = null;
+  private static ScrollTableDemo instance = null;
 
   /**
-   * The footer portion of the {@link ScrollTable} .
+   * @return the instance of this class
    */
-  protected static FixedWidthFlexTable footerTable = null;
+  public static ScrollTableDemo get() {
+    return instance;
+  }
 
   /**
-   * The header portion of the {@link ScrollTable}.
+   * A Mapping of {@link TreeItem} in the menu to their associated options.
    */
-  protected static FixedWidthFlexTable headerTable = null;
+  private Map<TreeItem, Widget> optionMap = new HashMap<TreeItem, Widget>();
+
+  /**
+   * The panel that holds the visible option.
+   */
+  private SimplePanel optionWrapper = new SimplePanel();
+
+  /**
+   * The main layout panel.
+   */
+  private FlexTable layout = new FlexTable();
 
   /**
    * The scroll table.
    */
-  protected static ScrollTable scrollTable = null;
+  private ScrollTable scrollTable = null;
 
   /**
    * @return the data table.
    */
-  public static FixedWidthGrid getDataTable() {
-    return dataTable;
+  public FixedWidthGrid getDataTable() {
+    return getScrollTable().getDataTable();
   }
 
   /**
    * @return the footer table.
    */
-  public static FixedWidthFlexTable getFooterTable() {
-    return footerTable;
+  public FixedWidthFlexTable getFooterTable() {
+    return getScrollTable().getFooterTable();
   }
 
   /**
    * @return the header table.
    */
-  public static FixedWidthFlexTable getHeaderTable() {
-    return headerTable;
+  public FixedWidthFlexTable getHeaderTable() {
+    return getScrollTable().getHeaderTable();
   }
 
   /**
    * @return the scroll table.
    */
-  public static ScrollTable getScrollTable() {
+  public ScrollTable getScrollTable() {
     return scrollTable;
   }
 
@@ -101,8 +140,9 @@ public class ScrollTableDemo implements EntryPoint {
    * 
    * @param beforeRow the index to add the new row into
    */
-  public static void insertDataRow(int beforeRow) {
+  public void insertDataRow(int beforeRow) {
     // Insert the new row
+    FixedWidthGrid dataTable = getDataTable();
     beforeRow = dataTable.insertRow(beforeRow);
 
     // Set the data in the new row
@@ -131,40 +171,102 @@ public class ScrollTableDemo implements EntryPoint {
    * This is the entry point method.
    */
   public void onModuleLoad() {
-    // Create the tables
-    createScrollTable();
+    instance = this;
 
-    // Add some data the data table
-    dataTable.resize(0, Student.NUM_FIELDS);
-    for (int i = 0; i < 15; i++) {
-      insertDataRow(i);
+    // Add the main layout to the page
+    layout.setWidth("99%");
+    layout.setCellPadding(0);
+    layout.setCellSpacing(5);
+    FlexCellFormatter formatter = layout.getFlexCellFormatter();
+    RootPanel.get().add(layout);
+
+    // Initialize the options menu
+    {
+      // Create the options menu
+      Tree menu = new Tree();
+
+      // Attach a tree listener
+      menu.addTreeListener(new TreeListener() {
+        public void onTreeItemSelected(TreeItem item) {
+          Widget option = optionMap.get(item);
+          if (option != null) {
+            optionWrapper.setWidget(option);
+          }
+        }
+
+        public void onTreeItemStateChanged(TreeItem item) {
+        }
+      });
+
+      // Add it to the layout inside a scroll panel
+      ScrollPanel scrollPanel = new ScrollPanel(menu);
+      scrollPanel.setAlwaysShowScrollBars(true);
+      scrollPanel.setPixelSize(200, 400);
+      scrollPanel.getElement().getStyle().setProperty("border",
+          "1px solid #999");
+      layout.setWidget(0, 0, scrollPanel);
+      formatter.setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP);
+
+      // Initialize the options in the menu
+      initOptions(menu);
     }
 
-    // Redraw the scroll table
-    scrollTable.redraw();
+    // Initialize the tables
+    {
+      // Create the tables
+      FixedWidthFlexTable headerTable = createHeaderTable();
+      FixedWidthFlexTable footerTable = createFooterTable();
+      FixedWidthGrid dataTable = createDataTable();
+      scrollTable = createScrollTable(headerTable, dataTable, footerTable);
+      scrollTable.setSize("98%", "400px");
 
-    // Add the components to the page
-    RootPanel.get().add(scrollTable);
-    RootPanel.get().add(new HTML("<BR>"));
-    RootPanel.get().add(createTabPanel());
+      // Add the scroll table to the layout
+      layout.setWidget(0, 1, scrollTable);
+      formatter.setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_TOP);
+      scrollTable.redraw();
+    }
+
+    // Initialize the options area
+    {
+      optionWrapper.getElement().getStyle().setProperty("borderTop",
+          "3px solid #aaa");
+      optionWrapper.setWidget(new Label("Select an option from the menu"));
+      layout.setWidget(1, 0, optionWrapper);
+      formatter.setColSpan(1, 0, 2);
+      formatter.setHorizontalAlignment(1, 0,
+          HasHorizontalAlignment.ALIGN_CENTER);
+    }
+
+    // Do any required post processing
+    onModuleLoaded();
   }
 
   /**
-   * Setup the footer table.
+   * @return the newly created data table.
    */
-  protected void createFooterTable() {
-    footerTable = new FixedWidthFlexTable();
+  protected FixedWidthGrid createDataTable() {
+    FixedWidthGrid dataTable = new FixedWidthGrid();
+    dataTable.setSelectionPolicy(SelectionPolicy.CHECKBOX);
+    return dataTable;
+  }
+
+  /**
+   * @return the new footer table
+   */
+  protected FixedWidthFlexTable createFooterTable() {
+    FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
     footerTable.setHTML(0, 0, "&nbsp;");
     for (int i = 0; i < 12; i++) {
       footerTable.setText(0, i + 1, "Col " + i);
     }
+    return footerTable;
   }
 
   /**
-   * Setup the header table.
+   * @return the new header table
    */
-  protected void createHeaderTable() {
-    headerTable = new FixedWidthFlexTable();
+  protected FixedWidthFlexTable createHeaderTable() {
+    FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
 
     // Level 1 headers
     FlexCellFormatter headerFormatter = headerTable.getFlexCellFormatter();
@@ -176,9 +278,9 @@ public class ScrollTableDemo implements EntryPoint {
     selectAll.addClickListener(new ClickListener() {
       public void onClick(Widget sender) {
         if (selectAll.isChecked()) {
-          dataTable.selectAllRows();
+          getDataTable().selectAllRows();
         } else {
-          dataTable.deselectAllRows();
+          getDataTable().deselectAllRows();
         }
       }
     });
@@ -213,70 +315,128 @@ public class ScrollTableDemo implements EntryPoint {
     headerTable.setHTML(2, 5, "GPA");
     headerTable.setHTML(2, 6, "ID");
     headerTable.setHTML(2, 7, "Pin");
+
+    return headerTable;
   }
 
   /**
    * Setup the scroll table.
    */
-  protected void createScrollTable() {
-    // Create the inner tables
-    createHeaderTable();
-    createFooterTable();
-    dataTable = new FixedWidthGrid();
-    dataTable.setSelectionPolicy(SelectionPolicy.CHECKBOX);
-
+  protected ScrollTable createScrollTable(FixedWidthFlexTable headerTable,
+      FixedWidthGrid dataTable, FixedWidthFlexTable footerTable) {
     // Add the scroll table to the page
-    scrollTable = new ScrollTable(dataTable, headerTable);
-    scrollTable.setFooterTable(footerTable);
+    ScrollTable theScrollTable = new ScrollTable(dataTable, headerTable);
+    theScrollTable.setFooterTable(footerTable);
 
-    setupScrollTable();
-  }
-
-  /**
-   * Setup the scroll table.
-   */
-  protected void setupScrollTable() {
     // Setup the formatting
-    scrollTable.setCellPadding(3);
-    scrollTable.setCellSpacing(0);
-    scrollTable.setSize("95%", "50%");
-    scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
+    theScrollTable.setCellPadding(3);
+    theScrollTable.setCellSpacing(0);
+    theScrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
 
     // Set column widths
-    scrollTable.setColumnWidth(0, 100);
-    scrollTable.setColumnWidth(1, 100);
-    scrollTable.setColumnWidth(2, 35);
-    scrollTable.setColumnWidth(3, 45);
-    scrollTable.setColumnWidth(4, 110);
-    scrollTable.setColumnWidth(5, 80);
-    scrollTable.setColumnWidth(6, 110);
-    scrollTable.setColumnWidth(7, 180);
-    scrollTable.setColumnWidth(8, 35);
-    scrollTable.setColumnWidth(9, 35);
-    scrollTable.setColumnWidth(10, 55);
-    scrollTable.setColumnWidth(11, 45);
+    theScrollTable.setColumnWidth(0, 100);
+    theScrollTable.setColumnWidth(1, 100);
+    theScrollTable.setColumnWidth(2, 35);
+    theScrollTable.setColumnWidth(3, 45);
+    theScrollTable.setColumnWidth(4, 110);
+    theScrollTable.setColumnWidth(5, 80);
+    theScrollTable.setColumnWidth(6, 110);
+    theScrollTable.setColumnWidth(7, 180);
+    theScrollTable.setColumnWidth(8, 35);
+    theScrollTable.setColumnWidth(9, 35);
+    theScrollTable.setColumnWidth(10, 55);
+    theScrollTable.setColumnWidth(11, 45);
+
+    return theScrollTable;
   }
 
   /**
-   * Create a new tab panel with options to affect the grid.
-   * 
-   * @return the new tab panel
+   * @return the main layout panel
    */
-  private TabPanel createTabPanel() {
-    TabPanel panel = new TabPanel();
-    panel.setWidth("95%");
+  protected FlexTable getLayout() {
+    return layout;
+  }
 
-    // Add the panels
-    panel.add(new DemoTabResizing(), "Resizability");
-    panel.add(new DemoTabColumnWidth(), "Column Width");
-    panel.add(new DemoTabHighlighting(), "Highlighting");
-    panel.add(new DemoTabSorting(), "Sorting");
-    panel.add(new DemoTabHeaderManipulation(), "Header Manipulation");
-    panel.add(new DemoTabDataManipulation(), "Data Manipulation");
-    panel.add(new DemoTabPanelLog(), "Log");
-    panel.selectTab(0);
+  /**
+   * Initialize the main menu.
+   * 
+   * @param menu the main menu
+   */
+  protected void initOptions(Tree menu) {
+    // Setup
+    {
+      TreeItem root = menu.addItem("ScrollTable setup");
+      mapOption(root.addItem("Resize Checking"), new ResizeCheckingOption());
+      mapOption(root.addItem("Scroll Policy"), new ScrollPolicyOption());
+      mapOption(root.addItem("Table Size"), new TableSizeOption());
+    }
 
-    // Return the new panel
-    return panel;
+    // Column Widths
+    {
+      TreeItem root = menu.addItem("Column Width");
+      mapOption(root.addItem("Table Resize Policy"),
+          new TableResizePolicyOption());
+      mapOption(root.addItem("Column Resize Policy"),
+          new ColumnResizePolicyOption());
+      mapOption(root.addItem("Resize Column"), new ResizeColumnOption());
+      mapOption(root.addItem("Cell Padding and Spacing"),
+          new CellPaddingAndSpacingOption());
+    }
+
+    // Highlighting
+    {
+      TreeItem root = menu.addItem("Highlighting & Selection");
+      mapOption(root.addItem("Row Selection Policy"),
+          new RowSelectionPolicyOption());
+    }
+
+    // Sorting
+    {
+      TreeItem root = menu.addItem("Column Sorting");
+      mapOption(root.addItem("Shift Rows"), new ShiftRowsOption());
+      mapOption(root.addItem("Swap Rows"), new SwapRowsOption());
+      mapOption(root.addItem("Sort Column"), new SortColumnOption());
+    }
+
+    // Data Manipulation
+    {
+      TreeItem root = menu.addItem("Data Manipulation");
+      mapOption(root.addItem("Set Text"), new SetDataTextOption());
+      mapOption(root.addItem("Insert Row"), new InsertDataRowOption());
+    }
+
+    // Header Manipulation
+    {
+      TreeItem root = menu.addItem("Header Manipulation");
+      mapOption(root.addItem("Set Text"), new SetHeaderTextOption());
+      mapOption(root.addItem("Insert Row"), new InsertHeaderRowOption());
+      mapOption(root.addItem("Set Row/ColSpan"), new ColSpanOption());
+    }
+
+    // Log
+    {
+      mapOption(menu.addItem("Log"), new LogOption());
+    }
+  }
+
+  /**
+   * Map a {@link TreeItem} to an option.
+   * 
+   * @param item the {@link TreeItem}
+   * @param option the {@link Widget} to display
+   */
+  protected void mapOption(TreeItem item, AbstractOption option) {
+    optionMap.put(item, option);
+  }
+
+  /**
+   * Called when the module has finished loading.
+   */
+  protected void onModuleLoaded() {
+    // Add some data to the data table
+    getDataTable().resize(0, Student.NUM_FIELDS);
+    for (int i = 0; i < 15; i++) {
+      insertDataRow(i);
+    }
   }
 }
