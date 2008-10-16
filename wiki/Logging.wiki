@@ -109,13 +109,33 @@ Categories are hierarchical using the "." notation. For instance, the following 
 === None ===
 No logging support
 
-= Gen2 Proposed modifications =
+= Gen2 modifications =
 
 == `LogEvent` ==
-A  `LogEvent` is created once the Log class determines that it should broadcast its messages to the registered `LogHandler`instances. 
+A  `LogEvent` is created once the `Log` class determines that it should broadcast its messages to the registered `LogHandler`instances. 
 
 == `LogHandler` ==
 `LogHandler` is now an interface with a single method `onLog(LogEvent)`. The`SmartLogHandler` decorator class has been introduced to contain the current "smart" log handler functionality. In specific, the `SmartLogHandler` allows handlers to be sensitive to levels and to lazily create the actual output log handler.
 
-== Log ==
+== `LogFormatter` ==
+As log handlers are no longer classes, the formatting helper methods have been abstracted out into the `LogFormatter` hierarchy. 
+
+== `Log handler implementations` ==
+A new default log handler `ClientConsoleLogHandler` has been written that combines the functionality of the `FireBugLogHandler`, `ConsoleLogHandler`, `WindowLogger`(from gwt-log), and the 'GWTLogHandler`.  Its basic purpose is to use the best approximation of a console as possible.  Additionally, minimal mode does not include a default web log handler.
+
+The `DivLogHandler` and `SimpleLogHandler` have been factored into a single `SimpleLogHandler` which now can take as input a `LogFormatter`.
+
+The `TreeLogHandler` was converted to use the gwt `Tree` widget and renamed `GroupLogHandler` to avoid the confusion some people had with the hosted mode log handler.
+
+The `PopupLogHandler` became a decorator log handler that can wrap any widget log handler.
+
+== `Log` ==
 The actual Log static API is unchanged, so for most users, the rewrite does not make a significant difference. 
+
+We now use super-source tricks so that the `Log` class can be initialized on the java server without an extra user call.
+
+== `Level` ==
+`Level` now is associated with a clinit in order to ensure that the first call to Level.X does not create a null.  However, when logging is off, everything should still get compiled out, including the extra clinits.
+
+== Logging property ==
+The logging property now uses "off" rather then "none" in order to match the java logging level "Level.OFF".
