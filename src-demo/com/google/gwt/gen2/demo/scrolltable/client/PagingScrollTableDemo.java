@@ -15,12 +15,13 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client;
 
+import com.google.gwt.gen2.demo.scrolltable.client.StudentColumnDefinition.Group;
 import com.google.gwt.gen2.demo.scrolltable.client.option.paging.CacheSizeOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.paging.HideColumnOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.paging.ModeSelectionOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.paging.PageSizeOption;
 import com.google.gwt.gen2.demo.scrolltable.shared.Student;
 import com.google.gwt.gen2.demo.scrolltable.shared.StudentGenerator;
-import com.google.gwt.gen2.table.client.AbstractColumnDefinition;
 import com.google.gwt.gen2.table.client.CachedTableModel;
 import com.google.gwt.gen2.table.client.CellRenderer;
 import com.google.gwt.gen2.table.client.ColumnDefinition;
@@ -30,7 +31,6 @@ import com.google.gwt.gen2.table.client.FixedWidthGrid;
 import com.google.gwt.gen2.table.client.FixedWidthGridBulkRenderer;
 import com.google.gwt.gen2.table.client.ListCellEditor;
 import com.google.gwt.gen2.table.client.PagingOptions;
-import com.google.gwt.gen2.table.client.PagingScrollTable;
 import com.google.gwt.gen2.table.client.RadioCellEditor;
 import com.google.gwt.gen2.table.client.ScrollTable;
 import com.google.gwt.gen2.table.client.TableDefinition;
@@ -50,15 +50,6 @@ import com.google.gwt.user.client.ui.TreeItem;
  */
 public class PagingScrollTableDemo extends ScrollTableDemo {
   /**
-   * An {@link AbstractColumnDefinition} applied to {@link Student} row values.
-   * 
-   * @param <ColType> the data type of the column
-   */
-  private abstract static class StudentColumnDefinition<ColType> extends
-      AbstractColumnDefinition<Student, ColType> {
-  }
-
-  /**
    * The instance of this class.
    */
   private static PagingScrollTableDemo instance = null;
@@ -74,6 +65,11 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
    * The {@link CachedTableModel} around the main table model.
    */
   private CachedTableModel<Student> cachedTableModel = null;
+
+  /**
+   * The {@link StudentPagingScrollTable}.
+   */
+  private StudentPagingScrollTable pagingScrollTable = null;
 
   /**
    * The {@link DataSourceTableModel}.
@@ -93,10 +89,10 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   }
 
   /**
-   * @return the scroll table.
+   * @return the {@link StudentPagingScrollTable}
    */
-  public PagingScrollTable<Student> getPagingScrollTable() {
-    return (PagingScrollTable<Student>) getScrollTable();
+  public StudentPagingScrollTable getPagingScrollTable() {
+    return pagingScrollTable;
   }
 
   /**
@@ -147,37 +143,38 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     TableDefinition<Student> tableDef = createTableDefinition();
 
     // Create the scroll table
-    PagingScrollTable<Student> scrollTable = new PagingScrollTable<Student>(
-        cachedTableModel, dataTable, headerTable, tableDef);
-    scrollTable.setFooterTable(footerTable);
-    scrollTable.setPageSize(50);
-    scrollTable.setEmptyTableWidget(new HTML("There is no data to display"));
+    pagingScrollTable = new StudentPagingScrollTable(cachedTableModel,
+        dataTable, headerTable, tableDef);
+    pagingScrollTable.setFooterTable(footerTable);
+    pagingScrollTable.setPageSize(50);
+    pagingScrollTable.setEmptyTableWidget(new HTML(
+        "There is no data to display"));
 
     // Setup the bulk renderer
     FixedWidthGridBulkRenderer<Student> bulkRenderer = new FixedWidthGridBulkRenderer<Student>(
-        dataTable, scrollTable);
-    scrollTable.setBulkRenderer(bulkRenderer);
+        dataTable, pagingScrollTable);
+    pagingScrollTable.setBulkRenderer(bulkRenderer);
 
     // Setup the formatting
-    scrollTable.setCellPadding(3);
-    scrollTable.setCellSpacing(0);
-    scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
+    pagingScrollTable.setCellPadding(3);
+    pagingScrollTable.setCellSpacing(0);
+    pagingScrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
 
     // Set column widths
-    scrollTable.setColumnWidth(0, 100);
-    scrollTable.setColumnWidth(1, 100);
-    scrollTable.setColumnWidth(2, 35);
-    scrollTable.setColumnWidth(3, 45);
-    scrollTable.setColumnWidth(4, 110);
-    scrollTable.setColumnWidth(5, 80);
-    scrollTable.setColumnWidth(6, 110);
-    scrollTable.setColumnWidth(7, 180);
-    scrollTable.setColumnWidth(8, 35);
-    scrollTable.setColumnWidth(9, 35);
-    scrollTable.setColumnWidth(10, 55);
-    scrollTable.setColumnWidth(11, 45);
+    pagingScrollTable.setColumnWidth(0, 100);
+    pagingScrollTable.setColumnWidth(1, 100);
+    pagingScrollTable.setColumnWidth(2, 35);
+    pagingScrollTable.setColumnWidth(3, 45);
+    pagingScrollTable.setColumnWidth(4, 110);
+    pagingScrollTable.setColumnWidth(5, 80);
+    pagingScrollTable.setColumnWidth(6, 110);
+    pagingScrollTable.setColumnWidth(7, 180);
+    pagingScrollTable.setColumnWidth(8, 35);
+    pagingScrollTable.setColumnWidth(9, 35);
+    pagingScrollTable.setColumnWidth(10, 55);
+    pagingScrollTable.setColumnWidth(11, 45);
 
-    return scrollTable;
+    return pagingScrollTable;
   }
 
   @Override
@@ -189,6 +186,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       TreeItem root = menu.addItem("Paging");
       mapOption(root.addItem("Page Size"), new PageSizeOption());
       mapOption(root.addItem("Cache Size"), new CacheSizeOption());
+      mapOption(root.addItem("Hide Columns"), new HideColumnOption());
       mapOption(root.addItem("Mode Selection"), new ModeSelectionOption());
     }
   }
@@ -223,7 +221,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     tableDefinition = new DefaultTableDefinition<Student>();
 
     // First name
-    tableDefinition.addColumnDefinition(new StudentColumnDefinition<String>() {
+    tableDefinition.addColumnDefinition(new StudentColumnDefinition<String>(
+        "First Name", Group.GENERAL) {
       @Override
       public String getCellValue(Student rowValue) {
         return rowValue.getFirstName();
@@ -236,7 +235,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     });
 
     // Last name
-    tableDefinition.addColumnDefinition(new StudentColumnDefinition<String>() {
+    tableDefinition.addColumnDefinition(new StudentColumnDefinition<String>(
+        "Last Name", Group.GENERAL) {
       @Override
       public String getCellValue(Student rowValue) {
         return rowValue.getLastName();
@@ -250,7 +250,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // Age
     {
-      StudentColumnDefinition<Integer> columnDef = new StudentColumnDefinition<Integer>() {
+      StudentColumnDefinition<Integer> columnDef = new StudentColumnDefinition<Integer>(
+          "Age", Group.GENERAL) {
         @Override
         public Integer getCellValue(Student rowValue) {
           return rowValue.getAge();
@@ -267,7 +268,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // Gender
     {
-      StudentColumnDefinition<Boolean> columnDef = new StudentColumnDefinition<Boolean>() {
+      StudentColumnDefinition<Boolean> columnDef = new StudentColumnDefinition<Boolean>(
+          "Gender", Group.GENERAL) {
         @Override
         public Boolean getCellValue(Student rowValue) {
           return rowValue.isMale();
@@ -312,7 +314,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // Race
     {
-      StudentColumnDefinition<String> columnDef = new StudentColumnDefinition<String>() {
+      StudentColumnDefinition<String> columnDef = new StudentColumnDefinition<String>(
+          "Race", Group.GENERAL) {
         @Override
         public String getCellValue(Student rowValue) {
           return rowValue.getRace();
@@ -336,7 +339,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // Favorite color
     {
-      StudentColumnDefinition<String> columnDef = new StudentColumnDefinition<String>() {
+      StudentColumnDefinition<String> columnDef = new StudentColumnDefinition<String>(
+          "Favorite Color", Group.PREFERENCES) {
         @Override
         public String getCellValue(Student rowValue) {
           return rowValue.getFavoriteColor();
@@ -380,7 +384,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // Favorite Sport
     {
-      StudentColumnDefinition<String> columnDef = new StudentColumnDefinition<String>() {
+      StudentColumnDefinition<String> columnDef = new StudentColumnDefinition<String>(
+          "Preferred Sport", Group.PREFERENCES) {
         @Override
         public String getCellValue(Student rowValue) {
           return rowValue.getFavoriteSport();
@@ -405,7 +410,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // College
     {
-      StudentColumnDefinition<String> columnDef = new StudentColumnDefinition<String>() {
+      StudentColumnDefinition<String> columnDef = new StudentColumnDefinition<String>(
+          "College", Group.SCHOOL) {
         @Override
         public String getCellValue(Student rowValue) {
           return rowValue.getCollege();
@@ -444,7 +450,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // Graduation year
     {
-      StudentColumnDefinition<Integer> columnDef = new StudentColumnDefinition<Integer>() {
+      StudentColumnDefinition<Integer> columnDef = new StudentColumnDefinition<Integer>(
+          "Year", Group.SCHOOL) {
         @Override
         public Integer getCellValue(Student rowValue) {
           return rowValue.getGraduationYear();
@@ -461,7 +468,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // GPA
     {
-      StudentColumnDefinition<Double> columnDef = new StudentColumnDefinition<Double>() {
+      StudentColumnDefinition<Double> columnDef = new StudentColumnDefinition<Double>(
+          "GPA", Group.SCHOOL) {
         @Override
         public Double getCellValue(Student rowValue) {
           return rowValue.getGpa();
@@ -523,7 +531,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // ID
     {
-      StudentColumnDefinition<Integer> columnDef = new StudentColumnDefinition<Integer>() {
+      StudentColumnDefinition<Integer> columnDef = new StudentColumnDefinition<Integer>(
+          "ID", Group.LOGIN) {
         @Override
         public Integer getCellValue(Student rowValue) {
           return rowValue.getId();
@@ -540,7 +549,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // Pin
     {
-      StudentColumnDefinition<Integer> columnDef = new StudentColumnDefinition<Integer>() {
+      StudentColumnDefinition<Integer> columnDef = new StudentColumnDefinition<Integer>(
+          "Pin", Group.LOGIN) {
         @Override
         public Integer getCellValue(Student rowValue) {
           return rowValue.getPin();

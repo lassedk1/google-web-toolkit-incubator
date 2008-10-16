@@ -206,6 +206,11 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
   private int currentPage = -1;
 
   /**
+   * The last request that was sent to the {@link TableModel}.
+   */
+  private Request lastRequest = null;
+
+  /**
    * The old page count, used to detect when the number of pages changes.
    */
   private int oldPageCount;
@@ -225,7 +230,9 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
     }
 
     public void onRowsReady(Request request, Response<RowType> response) {
-      setData(request.getStartRow(), response.getRowValues());
+      if (lastRequest == request) {
+        setData(request.getStartRow(), response.getRowValues());
+      }
     }
   };
 
@@ -245,6 +252,7 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
    */
   private RendererCallback tableRendererCallback = new RendererCallback() {
     public void onRendered() {
+      maybeFillWidth();
       fireEvent(new PageLoadEvent(currentPage));
     }
   };
@@ -472,9 +480,9 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
       }
 
       // Request the new data from the table model
-      Request request = new Request(currentPage * pageSize, pageSize,
+      lastRequest = new Request(currentPage * pageSize, pageSize,
           dataTable.getColumnSortList());
-      tableModel.requestRows(request, pagingCallback);
+      tableModel.requestRows(lastRequest, pagingCallback);
     }
   }
 
