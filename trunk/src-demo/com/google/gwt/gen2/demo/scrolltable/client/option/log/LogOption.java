@@ -15,7 +15,10 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client.option.log;
 
+import com.google.gwt.core.client.Duration;
+import com.google.gwt.gen2.demo.scrolltable.client.PagingScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
+import com.google.gwt.gen2.demo.scrolltable.client.StudentPagingScrollTable;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.table.client.FixedWidthGrid;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
@@ -25,6 +28,10 @@ import com.google.gwt.gen2.table.event.client.CellUnhighlightEvent;
 import com.google.gwt.gen2.table.event.client.CellUnhighlightHandler;
 import com.google.gwt.gen2.table.event.client.ColumnSortEvent;
 import com.google.gwt.gen2.table.event.client.ColumnSortHandler;
+import com.google.gwt.gen2.table.event.client.PageChangeEvent;
+import com.google.gwt.gen2.table.event.client.PageChangeHandler;
+import com.google.gwt.gen2.table.event.client.PageLoadEvent;
+import com.google.gwt.gen2.table.event.client.PageLoadHandler;
 import com.google.gwt.gen2.table.event.client.RowHighlightEvent;
 import com.google.gwt.gen2.table.event.client.RowHighlightHandler;
 import com.google.gwt.gen2.table.event.client.RowSelectionEvent;
@@ -64,6 +71,11 @@ public class LogOption extends AbstractOption {
    * The line count in the log.
    */
   private int lineCount = 0;
+
+  /**
+   * The duration of a page load.
+   */
+  private Duration pageLoadDuration = null;
 
   @Override
   protected String getDescription() {
@@ -181,6 +193,26 @@ public class LogOption extends AbstractOption {
         addLogEntry(current, "green");
       }
     });
+
+    // Paging specific options
+    StudentPagingScrollTable pagingScrollTable = PagingScrollTableDemo.get().getPagingScrollTable();
+    if (pagingScrollTable != null) {
+      pagingScrollTable.addPageChangeHandler(new PageChangeHandler() {
+        public void onPageChange(PageChangeEvent event) {
+          pageLoadDuration = new Duration();
+        }
+      });
+
+      pagingScrollTable.addPageLoadHandler(new PageLoadHandler() {
+        public void onPageLoad(PageLoadEvent event) {
+          // Convert to 1 based index
+          int page = event.getPage() + 1;
+          int duration = pageLoadDuration.elapsedMillis();
+          String text = "Page " + page + " loaded in " + duration + "ms";
+          addLogEntry(text, "black");
+        }
+      });
+    }
 
     return layout;
   }

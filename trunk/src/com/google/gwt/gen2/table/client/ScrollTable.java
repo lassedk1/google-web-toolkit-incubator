@@ -600,6 +600,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget,
 
   /**
    * The minimum allowed width of the data table.
+   * 
+   * TODO (jlabanca): Replace this with minimum column widths
    */
   private int minWidth = -1;
 
@@ -933,6 +935,8 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget,
   /**
    * @param column the column index
    * @return true if the column is sortable, false if it is not sortable
+   * 
+   * TODO(jlabanca): Add to ColumnDefinition and override in PagingScrollTable
    */
   public boolean isColumnSortable(int column) {
     Boolean sortable = unsortableColumns.get(new Integer(column));
@@ -1336,6 +1340,16 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget,
   }
 
   /**
+   * Extend the columns to exactly fill the available space, if the current
+   * {@link ResizePolicy} requires it.
+   */
+  protected void maybeFillWidth() {
+    if (resizePolicy == ResizePolicy.FILL_WIDTH) {
+      fillWidth();
+    }
+  }
+
+  /**
    * Resize the widget and redistribute space as needed.
    */
   @Override
@@ -1493,16 +1507,6 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget,
       return 1;
     }
     return 0;
-  }
-
-  /**
-   * Extend the columns to exactly fill the available space, if the current
-   * {@link ResizePolicy} requires it.
-   */
-  private void maybeFillWidth() {
-    if (resizePolicy == ResizePolicy.FILL_WIDTH) {
-      fillWidth();
-    }
   }
 
   /**
