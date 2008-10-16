@@ -130,5 +130,20 @@ public class StudentPagingScrollTable extends PagingScrollTable<Student> {
         lastGroup = group;
       }
     }
+
+    // Also update the footer table
+    {
+      FixedWidthFlexTable footerTable = getFooterTable();
+      rowCount = footerTable.getRowCount();
+      for (int i = 0; i < rowCount; i++) {
+        footerTable.removeRow(0);
+      }
+      if (offset > 0) {
+        footerTable.setHTML(0, 0, "&nbsp;");
+      }
+      for (int i = 0; i < numColumns; i++) {
+        footerTable.setText(0, i + offset, "Col " + i);
+      }
+    }
   }
 }
