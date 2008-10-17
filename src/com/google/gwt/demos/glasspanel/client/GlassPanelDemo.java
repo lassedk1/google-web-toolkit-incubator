@@ -93,7 +93,7 @@ public class GlassPanelDemo implements EntryPoint {
     redAbsolutePanel.add(new HTML("This red GlassPanel was created<br>"
         + "with <code>autoHide</code> set to <code>false</code>."));
 
-    greenAbsolutePanel = RootPanel.get("cell2");
+    greenAbsolutePanel = RootPanel.get("xyz");
     workaroundIssue1813(greenAbsolutePanel.getElement());
     greenAbsolutePanel.add(new HTML("Click or press <code>ESC</code> once<br>"
         + "to remove the gray GlassPanel.<br><br>"
@@ -160,7 +160,7 @@ public class GlassPanelDemo implements EntryPoint {
 
     FlexTable buttonTable = new FlexTable();
     buttonTable.addStyleName("buttons");
-    RootPanel.get().add(buttonTable, 0, 0);
+    RootPanel.get().add(buttonTable, 100, 50);
     buttonTable.setWidget(0, 0, buttonBodyDefault);
     buttonTable.setWidget(0, 1, buttonBodyLarge);
 
