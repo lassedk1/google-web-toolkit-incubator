@@ -91,7 +91,7 @@ public class GlassPanel extends Composite implements EventPreview {
   private static final GlassPanelImpl impl = GWT.create(GlassPanelImpl.class);
 
   private final boolean autoHide;
-  
+
   private final SimplePanel mySimplePanel;
 
   private WindowResizeListener resizeListener;
@@ -174,7 +174,7 @@ public class GlassPanel extends Composite implements EventPreview {
 
     RootPanel.get().add(new FocusPanelImpl(), Window.getScrollLeft(), Window.getScrollTop());
   }
-  
+
   @Override
   protected void onDetach() {
     super.onDetach();
@@ -185,6 +185,26 @@ public class GlassPanel extends Composite implements EventPreview {
     }
     if (autoHide) {
       DOM.removeEventPreview(this);
+    }
+  }
+
+  @Override
+  protected void onLoad() {
+    super.onLoad();
+    if (!GWT.isScript()) {
+      // In Webkit quirks mode table cells refuse to take on
+      // 'display: block', using 'display: table-cell' instead.
+      if (!impl.isCSS1Compat()) {
+        String nodeName = getParent().getElement().getNodeName();
+        if (nodeName.matches("^(TD|TH)$")) {
+          String msg = "SORRY: GlassPanel cannot properly cover a " + nodeName
+              + " element in quirks mode due to CSS restrictions in certain browsers."
+              + " Please consider using standards mode or try using a different type of element.";
+          GWT.log(msg, new UnsupportedOperationException());
+          Window.alert(msg);
+          assert false : msg;
+        }
+      }
     }
   }
 }
