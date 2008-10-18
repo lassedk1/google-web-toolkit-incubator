@@ -44,6 +44,9 @@ public class Spinner {
     @Resource("arrowDownPressed.png")
     AbstractImagePrototype arrowDownPressed();
 
+    @Resource("arrowDownDisabled.png")
+    AbstractImagePrototype arrowDownDisabled();
+
     @Resource("arrowUp.png")
     AbstractImagePrototype arrowUp();
 
@@ -52,6 +55,9 @@ public class Spinner {
 
     @Resource("arrowUpPressed.png")
     AbstractImagePrototype arrowUpPressed();
+
+    @Resource("arrowUpDisabled.png")
+    AbstractImagePrototype arrowUpDisabled();
   }
 
   private static final int INITIAL_SPEED = 7;
@@ -65,6 +71,7 @@ public class Spinner {
   private long value, min, max;
   private boolean increment;
   private boolean constrained;
+  private boolean enabled = true;
 
   private final Timer timer = new Timer() {
     private int counter = 0;
@@ -95,35 +102,43 @@ public class Spinner {
 
   private MouseListener mouseListener = new MouseListener() {
     public void onMouseDown(Widget sender, int x, int y) {
-      if (sender == incrementArrow) {
-        images.arrowUpPressed().applyTo((Image) sender);
-        increment = true;
-        increase();
-      } else {
-        images.arrowDownPressed().applyTo((Image) sender);
-        increment = false;
-        decrease();
+      if (enabled) {
+        if (sender == incrementArrow) {
+          images.arrowUpPressed().applyTo((Image) sender);
+          increment = true;
+          increase();
+        } else {
+          images.arrowDownPressed().applyTo((Image) sender);
+          increment = false;
+          decrease();
+        }
+        timer.scheduleRepeating(30);
       }
-      timer.scheduleRepeating(30);
     }
 
     public void onMouseEnter(Widget sender) {
-      if (sender == incrementArrow) {
-        images.arrowUpHover().applyTo((Image) sender);
-      } else {
-        images.arrowDownHover().applyTo((Image) sender);
+      if (enabled) {
+        if (sender == incrementArrow) {
+          images.arrowUpHover().applyTo((Image) sender);
+        } else {
+          images.arrowDownHover().applyTo((Image) sender);
+        }
       }
     }
 
     public void onMouseLeave(Widget sender) {
-      cancelTimer(sender);
+      if (enabled) {
+        cancelTimer(sender);
+      }
     }
 
     public void onMouseMove(Widget sender, int x, int y) {
     }
 
     public void onMouseUp(Widget sender, int x, int y) {
-      cancelTimer(sender);
+      if (enabled) {
+        cancelTimer(sender);
+      }
     }
   };
 
@@ -267,10 +282,36 @@ public class Spinner {
   }
 
   /**
+   * @return Gets whether this widget is enabled
+   */
+  public boolean isEnabled() {
+    return enabled;
+  }
+
+  /**
    * @param listener the listener to remove
    */
   public void removeSpinnerListener(SpinnerListener listener) {
     spinnerListeners.remove(listener);
+  }
+
+  /**
+   * Sets whether this widget is enabled.
+   * 
+   * @param enabled true to enable the widget, false to disable it
+   */
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+    if  ( enabled ) {
+      images.arrowUp().applyTo(incrementArrow);
+      images.arrowDown().applyTo(decrementArrow);
+    } else {
+      images.arrowUpDisabled().applyTo(incrementArrow);
+      images.arrowDownDisabled().applyTo(decrementArrow);
+    }
+    if (!enabled) {
+      timer.cancel();
+    }
   }
 
   /**

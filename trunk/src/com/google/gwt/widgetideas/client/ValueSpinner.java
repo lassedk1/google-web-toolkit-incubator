@@ -25,14 +25,13 @@ import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.widgetideas.client.Spinner.SpinnerResources;
 
 /**
- * A {@link ValueSpinner} is a combination of a {@link TextBox} and a {@link Spinner} to allow spinning
- * <h3>CSS Style Rules</h3>
- * <ul class='css'>
- * <li>.gwt-ValueSpinner { primary style } </li>
- * <li>.gwt-ValueSpinner .textBox { the textbox } </li>
- * <li>.gwt-ValueSpinner .arrows { the spinner arrows } </li>
+ * A {@link ValueSpinner} is a combination of a {@link TextBox} and a
+ * {@link Spinner} to allow spinning <h3>CSS Style Rules</h3> <ul class='css'>
+ * <li>.gwt-ValueSpinner { primary style }</li> <li>.gwt-ValueSpinner .textBox {
+ * the textbox }</li> <li>.gwt-ValueSpinner .arrows { the spinner arrows }</li>
  * </ul>
  */
 public class ValueSpinner extends HorizontalPanel {
@@ -87,7 +86,7 @@ public class ValueSpinner extends HorizontalPanel {
         }
         spinner.setValue(newValue, true);
       } catch (Exception e) {
-//        valueBox.cancelKey();
+        // valueBox.cancelKey();
       }
     }
 
@@ -100,6 +99,16 @@ public class ValueSpinner extends HorizontalPanel {
    */
   public ValueSpinner(long value) {
     this(value, 0, 0, 1, 99, false);
+  }
+
+  /**
+   * @param value initial value
+   * @param resources the styles and images used by this widget
+   * @param images the images used by the spinner
+   */
+  public ValueSpinner(long value, ValueSpinnerResources styles,
+      SpinnerResources images) {
+    this(value, 0, 0, 1, 99, false, styles, images);
   }
 
   /**
@@ -128,12 +137,12 @@ public class ValueSpinner extends HorizontalPanel {
    * @param max max value
    * @param minStep min value for stepping
    * @param maxStep max value for stepping
-   * @param constrained if set to false min and max value will not have any effect
+   * @param constrained if set to false min and max value will not have any
+   *          effect
    */
   public ValueSpinner(long value, int min, int max, int minStep, int maxStep,
       boolean constrained) {
-    this(value, min, max, minStep, maxStep, constrained,
-        (ValueSpinnerResources) GWT.create(ValueSpinnerResources.class));
+    this(value, min, max, minStep, maxStep, constrained, null);
   }
 
   /**
@@ -142,20 +151,46 @@ public class ValueSpinner extends HorizontalPanel {
    * @param max max value
    * @param minStep min value for stepping
    * @param maxStep max value for stepping
-   * @param constrained if set to false min and max value will not have any effect
-   * @param resources the styles and images used by this widget 
+   * @param constrained if set to false min and max value will not have any
+   *          effect
+   * @param resources the styles and images used by this widget
    */
   public ValueSpinner(long value, int min, int max, int minStep, int maxStep,
       boolean constrained, ValueSpinnerResources resources) {
+    this(value, min, max, minStep, maxStep, constrained, resources, null);
+  }
+
+  /**
+   * @param value initial value
+   * @param min min value
+   * @param max max value
+   * @param minStep min value for stepping
+   * @param maxStep max value for stepping
+   * @param constrained if set to false min and max value will not have any
+   *          effect
+   * @param resources the styles and images used by this widget
+   * @param images the images used by the spinner
+   */
+  public ValueSpinner(long value, int min, int max, int minStep, int maxStep,
+      boolean constrained, ValueSpinnerResources resources,
+      SpinnerResources images) {
     super();
+    if (resources == null) {
+      resources = (ValueSpinnerResources) GWT.create(ValueSpinnerResources.class);
+    }
     StyleInjector.injectStylesheet(resources.css().getText(), resources);
     setStylePrimaryName(STYLENAME_DEFAULT);
-    spinner = new Spinner(spinnerListener, value, min, max, minStep, maxStep,
-        constrained);
+    if (images == null) {
+      spinner = new Spinner(spinnerListener, value, min, max, minStep, maxStep,
+          constrained);
+    } else {
+      spinner = new Spinner(spinnerListener, value, min, max, minStep, maxStep,
+          constrained, images);
+    }
     valueBox.setStyleName("textBox");
     valueBox.addKeyboardListener(keyboardListener);
-    add(valueBox);
     setVerticalAlignment(ALIGN_MIDDLE);
+    add(valueBox);
     VerticalPanel arrowsPanel = new VerticalPanel();
     arrowsPanel.setStylePrimaryName("arrows");
     arrowsPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
@@ -183,6 +218,24 @@ public class ValueSpinner extends HorizontalPanel {
    */
   public TextBox getTextBox() {
     return valueBox;
+  }
+  
+  /**
+   * Gets whether this widget is enabled.
+   * 
+   */
+  public boolean isEnabled() {
+    return spinner.isEnabled();
+  }
+  
+  /**
+   * Sets whether this widget is enabled.
+   * 
+   * @param enabled true to enable the widget, false to disable it
+   */
+  public void setEnabled(boolean enabled) {
+    spinner.setEnabled(enabled);
+    valueBox.setEnabled(enabled);
   }
 
   /**
