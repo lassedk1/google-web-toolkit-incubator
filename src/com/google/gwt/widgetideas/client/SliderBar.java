@@ -39,8 +39,7 @@ import java.util.List;
  * <h3>Keyboard Events</h3>
  * <p>
  * SliderBar listens for the following key events. Holding down a key will
- * repeat the action until the key is released.
- * <ul class='css'>
+ * repeat the action until the key is released. <ul class='css'>
  * <li>left arrow - shift left one step</li>
  * <li>right arrow - shift right one step</li>
  * <li>ctrl+left arrow - jump left 10% of the distance</li>
@@ -51,22 +50,16 @@ import java.util.List;
  * </ul>
  * </p>
  * 
- * <h3>CSS Style Rules</h3>
- * <ul class='css'>
- * <li>.gwt-SliderBar-shell { primary style } </li>
- * <li>.gwt-SliderBar-shell-focused { primary style when focused } </li>
+ * <h3>CSS Style Rules</h3> <ul class='css'> <li>.gwt-SliderBar-shell { primary
+ * style }</li> <li>.gwt-SliderBar-shell-focused { primary style when focused }</li>
  * <li>.gwt-SliderBar-shell gwt-SliderBar-line { the line that the knob moves
- * along } </li>
- * <li>.gwt-SliderBar-shell gwt-SliderBar-line-sliding { the line that the knob
- * moves along when sliding } </li>
- * <li>.gwt-SliderBar-shell .gwt-SliderBar-knob { the sliding knob } </li>
- * <li>.gwt-SliderBar-shell .gwt-SliderBar-knob-sliding { the sliding knob when
- * sliding } </li>
- * <li>.gwt-SliderBar-shell .gwt-SliderBar-tick { the ticks along the line }
- * </li>
+ * along }</li> <li>.gwt-SliderBar-shell gwt-SliderBar-line-sliding { the line
+ * that the knob moves along when sliding }</li> <li>.gwt-SliderBar-shell
+ * .gwt-SliderBar-knob { the sliding knob }</li> <li>.gwt-SliderBar-shell
+ * .gwt-SliderBar-knob-sliding { the sliding knob when sliding }</li> <li>
+ * .gwt-SliderBar-shell .gwt-SliderBar-tick { the ticks along the line }</li>
  * <li>.gwt-SliderBar-shell .gwt-SliderBar-label { the text labels along the
- * line } </li>
- * </ul>
+ * line }</li> </ul>
  */
 public class SliderBar extends FocusPanel implements ResizableWidget,
     SourcesChangeEvents {
@@ -164,6 +157,13 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
     AbstractImagePrototype slider();
 
     /**
+     * An image used for the sliding knob.
+     * 
+     * @return a prototype of this image
+     */
+    AbstractImagePrototype sliderDisabled();
+
+    /**
      * An image used for the sliding knob while sliding.
      * 
      * @return a prototype of this image
@@ -242,6 +242,11 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
    * to mouse events.
    */
   private boolean slidingMouse = false;
+
+  /**
+   * A bit indicating whether or not the slider is enabled
+   */
+  private boolean enabled = true;
 
   /**
    * The images used with the sliding bar.
@@ -408,6 +413,13 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
   }
 
   /**
+   * @return Gets whether this widget is enabled
+   */
+  public boolean isEnabled() {
+    return enabled;
+  }
+  
+  /**
    * Listen for events that will move the knob.
    * 
    * @param event the event that occurred
@@ -415,107 +427,109 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
   @Override
   public void onBrowserEvent(Event event) {
     super.onBrowserEvent(event);
-    switch (DOM.eventGetType(event)) {
-      // Unhighlight and cancel keyboard events
-      case Event.ONBLUR:
-        keyTimer.cancel();
-        if (slidingMouse) {
-          DOM.releaseCapture(getElement());
-          slidingMouse = false;
-          slideKnob(event);
-          stopSliding(true, true);
-        } else if (slidingKeyboard) {
-          slidingKeyboard = false;
-          stopSliding(true, true);
-        }
-        unhighlight();
-        break;
-
-      // Highlight on focus
-      case Event.ONFOCUS:
-        highlight();
-        break;
-
-      // Mousewheel events
-      case Event.ONMOUSEWHEEL:
-        int velocityY = DOM.eventGetMouseWheelVelocityY(event);
-        DOM.eventPreventDefault(event);
-        if (velocityY > 0) {
-          shiftRight(1);
-        } else {
-          shiftLeft(1);
-        }
-        break;
-
-      // Shift left or right on key press
-      case Event.ONKEYDOWN:
-        if (!slidingKeyboard) {
-          int multiplier = 1;
-          if (DOM.eventGetCtrlKey(event)) {
-            multiplier = (int) (getTotalRange() / stepSize / 10);
+    if (enabled) {
+      switch (DOM.eventGetType(event)) {
+        // Unhighlight and cancel keyboard events
+        case Event.ONBLUR:
+          keyTimer.cancel();
+          if (slidingMouse) {
+            DOM.releaseCapture(getElement());
+            slidingMouse = false;
+            slideKnob(event);
+            stopSliding(true, true);
+          } else if (slidingKeyboard) {
+            slidingKeyboard = false;
+            stopSliding(true, true);
           }
+          unhighlight();
+          break;
 
-          switch (DOM.eventGetKeyCode(event)) {
-            case KeyboardListener.KEY_HOME:
-              DOM.eventPreventDefault(event);
-              setCurrentValue(minValue);
-              break;
-            case KeyboardListener.KEY_END:
-              DOM.eventPreventDefault(event);
-              setCurrentValue(maxValue);
-              break;
-            case KeyboardListener.KEY_LEFT:
-              DOM.eventPreventDefault(event);
-              slidingKeyboard = true;
-              startSliding(false, true);
-              shiftLeft(multiplier);
-              keyTimer.schedule(400, false, multiplier);
-              break;
-            case KeyboardListener.KEY_RIGHT:
-              DOM.eventPreventDefault(event);
-              slidingKeyboard = true;
-              startSliding(false, true);
-              shiftRight(multiplier);
-              keyTimer.schedule(400, true, multiplier);
-              break;
-            case 32:
-              DOM.eventPreventDefault(event);
-              setCurrentValue(minValue + getTotalRange() / 2);
-              break;
+        // Highlight on focus
+        case Event.ONFOCUS:
+          highlight();
+          break;
+
+        // Mousewheel events
+        case Event.ONMOUSEWHEEL:
+          int velocityY = DOM.eventGetMouseWheelVelocityY(event);
+          DOM.eventPreventDefault(event);
+          if (velocityY > 0) {
+            shiftRight(1);
+          } else {
+            shiftLeft(1);
           }
-        }
-        break;
-      // Stop shifting on key up
-      case Event.ONKEYUP:
-        keyTimer.cancel();
-        if (slidingKeyboard) {
-          slidingKeyboard = false;
-          stopSliding(true, true);
-        }
-        break;
+          break;
 
-      // Mouse Events
-      case Event.ONMOUSEDOWN:
-        setFocus(true);
-        slidingMouse = true;
-        DOM.setCapture(getElement());
-        startSliding(true, true);
-        DOM.eventPreventDefault(event);
-        slideKnob(event);
-        break;
-      case Event.ONMOUSEUP:
-        if (slidingMouse) {
-          DOM.releaseCapture(getElement());
-          slidingMouse = false;
+        // Shift left or right on key press
+        case Event.ONKEYDOWN:
+          if (!slidingKeyboard) {
+            int multiplier = 1;
+            if (DOM.eventGetCtrlKey(event)) {
+              multiplier = (int) (getTotalRange() / stepSize / 10);
+            }
+
+            switch (DOM.eventGetKeyCode(event)) {
+              case KeyboardListener.KEY_HOME:
+                DOM.eventPreventDefault(event);
+                setCurrentValue(minValue);
+                break;
+              case KeyboardListener.KEY_END:
+                DOM.eventPreventDefault(event);
+                setCurrentValue(maxValue);
+                break;
+              case KeyboardListener.KEY_LEFT:
+                DOM.eventPreventDefault(event);
+                slidingKeyboard = true;
+                startSliding(false, true);
+                shiftLeft(multiplier);
+                keyTimer.schedule(400, false, multiplier);
+                break;
+              case KeyboardListener.KEY_RIGHT:
+                DOM.eventPreventDefault(event);
+                slidingKeyboard = true;
+                startSliding(false, true);
+                shiftRight(multiplier);
+                keyTimer.schedule(400, true, multiplier);
+                break;
+              case 32:
+                DOM.eventPreventDefault(event);
+                setCurrentValue(minValue + getTotalRange() / 2);
+                break;
+            }
+          }
+          break;
+        // Stop shifting on key up
+        case Event.ONKEYUP:
+          keyTimer.cancel();
+          if (slidingKeyboard) {
+            slidingKeyboard = false;
+            stopSliding(true, true);
+          }
+          break;
+
+        // Mouse Events
+        case Event.ONMOUSEDOWN:
+          setFocus(true);
+          slidingMouse = true;
+          DOM.setCapture(getElement());
+          startSliding(true, true);
+          DOM.eventPreventDefault(event);
           slideKnob(event);
-          stopSliding(true, true);
-        }
-        break;
-      case Event.ONMOUSEMOVE:
-        if (slidingMouse) {
-          slideKnob(event);
-        }
-        break;
+          break;
+        case Event.ONMOUSEUP:
+          if (slidingMouse) {
+            DOM.releaseCapture(getElement());
+            slidingMouse = false;
+            slideKnob(event);
+            stopSliding(true, true);
+          }
+          break;
+        case Event.ONMOUSEMOVE:
+          if (slidingMouse) {
+            slideKnob(event);
+          }
+          break;
+      }
     }
   }
 
@@ -594,6 +608,22 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
     if (fireEvent && (changeListeners != null)) {
       changeListeners.fireChange(this);
     }
+  }
+
+  /**
+   * Sets whether this widget is enabled.
+   * @param enabled true to enable the widget, false to disable it
+   */
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+    if ( enabled ) {
+      images.slider().applyTo(knobImage);
+      DOM.setElementProperty(lineElement, "className", "gwt-SliderBar-line");
+    } else {
+      images.sliderDisabled().applyTo(knobImage);
+      DOM.setElementProperty(lineElement, "className", "gwt-SliderBar-line gwt-SliderBar-line-disabled");
+    }
+    redraw();
   }
 
   /**
@@ -782,7 +812,11 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
           label = DOM.createDiv();
           DOM.setStyleAttribute(label, "position", "absolute");
           DOM.setStyleAttribute(label, "display", "none");
-          DOM.setElementProperty(label, "className", "gwt-SliderBar-label");
+          if ( enabled ) {
+            DOM.setElementProperty(label, "className", "gwt-SliderBar-label");
+          } else {
+            DOM.setElementProperty(label, "className", "gwt-SliderBar-label-disabled");
+          }
           DOM.appendChild(getElement(), label);
           labelElements.add(label);
         }
@@ -839,11 +873,14 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
           tick = DOM.createDiv();
           DOM.setStyleAttribute(tick, "position", "absolute");
           DOM.setStyleAttribute(tick, "display", "none");
-          DOM.setElementProperty(tick, "className", "gwt-SliderBar-tick");
           DOM.appendChild(getElement(), tick);
           tickElements.add(tick);
         }
-
+        if ( enabled ) {
+          DOM.setElementProperty(tick, "className", "gwt-SliderBar-tick");
+        } else {
+          DOM.setElementProperty(tick, "className", "gwt-SliderBar-tick gwt-SliderBar-tick-disabled");
+        }
         // Position the tick and make it visible
         DOM.setStyleAttribute(tick, "visibility", "hidden");
         DOM.setStyleAttribute(tick, "display", "");
