@@ -89,4 +89,20 @@ public class DateTimePicker extends Composite {
   public TimePicker getTimePicker() {
     return timePicker;
   }
+
+  /**
+   * @return Gets whether this widget is enabled
+   */
+  public boolean isEnabled() {
+    return timePicker.isEnabled();
+  }
+  
+  /**
+   * Sets whether this widget is enabled.
+   * 
+   * @param enabled true to enable the widget, false to disable it
+   */
+  public void setEnabled(boolean enabled) {
+    timePicker.setEnabled(enabled);
+  }
 }

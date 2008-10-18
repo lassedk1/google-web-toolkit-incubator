@@ -40,6 +40,9 @@ public class VolumeSlider extends Composite {
     @Resource("arrowLeftPressed.png")
     AbstractImagePrototype arrowDownPressed();
 
+    @Resource("arrowLeftDisabled.png")
+    AbstractImagePrototype arrowDownDisabled();
+
     @Resource("arrowRight.png")
     AbstractImagePrototype arrowUp();
 
@@ -48,6 +51,9 @@ public class VolumeSlider extends Composite {
 
     @Resource("arrowRightPressed.png")
     AbstractImagePrototype arrowUpPressed();
+
+    @Resource("arrowRightDisabled.png")
+    AbstractImagePrototype arrowUpDisabled();
   }
 
   private Spinner spinner;
@@ -107,5 +113,21 @@ public class VolumeSlider extends Composite {
    */
   public Spinner getSpinner() {
     return spinner;
+  }
+
+  /**
+   * @return Gets whether this widget is enabled
+   */
+  public boolean isEnabled() {
+    return spinner.isEnabled();
+  }
+
+  /**
+   * Sets whether this widget is enabled.
+   * 
+   * @param enabled true to enable the widget, false to disable it
+   */
+  public void setEnabled(boolean enabled) {
+    spinner.setEnabled(enabled);
   }
 }

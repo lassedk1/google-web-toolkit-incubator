@@ -20,6 +20,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.widgetideas.client.SpinnerListener;
 import com.google.gwt.widgetideas.client.ValueSpinner;
+import com.google.gwt.widgetideas.client.Spinner.SpinnerResources;
+import com.google.gwt.widgetideas.client.ValueSpinner.ValueSpinnerResources;
 import com.google.gwt.widgetideas.client.event.ChangeEvent;
 import com.google.gwt.widgetideas.client.event.ChangeHandler;
 import com.google.gwt.widgetideas.client.event.FiresChangeEvents;
@@ -35,8 +37,8 @@ public class TimePicker extends Composite implements FiresChangeEvents<Date> {
   private class TimeSpinner extends ValueSpinner {
     private DateTimeFormat dateTimeFormat;
 
-    public TimeSpinner(Date date, DateTimeFormat dateTimeFormat, int step) {
-      super(date.getTime());
+    public TimeSpinner(Date date, DateTimeFormat dateTimeFormat, int step, ValueSpinnerResources styles, SpinnerResources images) {
+      super(date.getTime(), styles, images);
       this.dateTimeFormat = dateTimeFormat;
       getSpinner().setMinStep(step);
       getSpinner().setMaxStep(step);
@@ -68,6 +70,7 @@ public class TimePicker extends Composite implements FiresChangeEvents<Date> {
   private List<TimeSpinner> timeSpinners = new ArrayList<TimeSpinner>();
   private List<ChangeHandler<Date>> changeHandlers;
   private long dateInMillis;
+  private boolean enabled = true;
 
   private SpinnerListener listener = new SpinnerListener() {
     public void onSpinning(long value) {
@@ -96,7 +99,6 @@ public class TimePicker extends Composite implements FiresChangeEvents<Date> {
         ? DateTimeFormat.getFormat("HH") : DateTimeFormat.getFormat("hh"),
         DateTimeFormat.getFormat("mm"), DateTimeFormat.getFormat("ss"));
   }
-
   /**
    * @param date the date providing the initial time to display
    * @param amPmFormat the format to display AM/PM. Can be null to hide AM/PM
@@ -111,30 +113,51 @@ public class TimePicker extends Composite implements FiresChangeEvents<Date> {
   public TimePicker(Date date, DateTimeFormat amPmFormat,
       DateTimeFormat hoursFormat, DateTimeFormat minutesFormat,
       DateTimeFormat secondsFormat) {
+      this(date, amPmFormat, hoursFormat, minutesFormat, secondsFormat, null, null);
+  }
+  
+    
+  /**
+   * @param date the date providing the initial time to display
+   * @param amPmFormat the format to display AM/PM. Can be null to hide AM/PM
+   *          field
+   * @param hoursFormat the format to display the hours. Can be null to hide
+   *          hours field
+   * @param minutesFormat the format to display the minutes. Can be null to hide
+   *          minutes field
+   * @param secondsFormat the format to display the seconds. Can be null to
+   *          seconds field
+   * @param styles styles to be used by this TimePicker instance          
+   * @param images images to be used by all nested Spinner widgets          
+   *          
+   */
+  public TimePicker(Date date, DateTimeFormat amPmFormat,
+      DateTimeFormat hoursFormat, DateTimeFormat minutesFormat,
+      DateTimeFormat secondsFormat, ValueSpinnerResources styles, SpinnerResources images) {
     this.dateInMillis = date.getTime();
     HorizontalPanel horizontalPanel = new HorizontalPanel();
     horizontalPanel.setStylePrimaryName("gwt-TimePicker");
     if (amPmFormat != null) {
       TimeSpinner amPmSpinner = new TimeSpinner(date, amPmFormat,
-          HALF_DAY_IN_MS);
+          HALF_DAY_IN_MS, styles, images);
       timeSpinners.add(amPmSpinner);
       horizontalPanel.add(amPmSpinner);
     }
     if (hoursFormat != null) {
       TimeSpinner hoursSpinner = new TimeSpinner(date, hoursFormat,
-          HOUR_IN_MILLIS);
+          HOUR_IN_MILLIS, styles, images);
       timeSpinners.add(hoursSpinner);
       horizontalPanel.add(hoursSpinner);
     }
     if (minutesFormat != null) {
       TimeSpinner minutesSpinner = new TimeSpinner(date, minutesFormat,
-          MINUTE_IN_MILLIS);
+          MINUTE_IN_MILLIS, styles, images);
       timeSpinners.add(minutesSpinner);
       horizontalPanel.add(minutesSpinner);
     }
     if (secondsFormat != null) {
       TimeSpinner secondsSpinner = new TimeSpinner(date, secondsFormat,
-          SECOND_IN_MILLIS);
+          SECOND_IN_MILLIS, styles, images);
       timeSpinners.add(secondsSpinner);
       horizontalPanel.add(secondsSpinner);
     }
@@ -169,6 +192,13 @@ public class TimePicker extends Composite implements FiresChangeEvents<Date> {
     return new Date(dateInMillis);
   }
 
+  /**
+   * @return Gets whether this widget is enabled
+   */
+  public boolean isEnabled() {
+    return enabled;
+  }
+
   /*
    * (non-Javadoc)
    * 
@@ -200,6 +230,18 @@ public class TimePicker extends Composite implements FiresChangeEvents<Date> {
     dateInMillis = date.getTime();
     for (TimeSpinner spinner : timeSpinners) {
       spinner.getSpinner().setValue(dateInMillis, true);
+    }
+  }
+
+  /**
+   * Sets whether this widget is enabled.
+   * 
+   * @param enabled true to enable the widget, false to disable it
+   */
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+    for (TimeSpinner spinner : timeSpinners) {
+      spinner.setEnabled(enabled);
     }
   }
 }
