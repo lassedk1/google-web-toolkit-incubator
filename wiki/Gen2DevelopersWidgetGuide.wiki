@@ -51,7 +51,7 @@ public class MyGen2Widget implements HasClickHandlers {
 
   @Override
   public HandlerRegistration addClickHandler(ClickHandler handler) {
-    return super.addHandler(ClickEvent.KEY, handler);
+    return super.addHandler(ClickEvent.TYPE, handler);
   }
 }
 
@@ -61,7 +61,7 @@ You need to still handle onBrowseEvent by switching on the event type, but inste
 registered you can simply call:
 
 {{{
-super.fireEvent(ClickEvent.KEY, new ClickEvent(nativeEvent));
+super.fireEvent(ClickEvent.TYPE, new ClickEvent(nativeEvent));
 }}}
 
 = Template Methods =
