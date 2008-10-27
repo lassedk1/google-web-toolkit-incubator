@@ -64,12 +64,19 @@ public abstract class TableBulkRenderer<RowType> implements
 
   /**
    * A customized {@link HTMLCellView} used by the {@link TableBulkRenderer}.
+   * 
+   * @param <RowType> the data type of the row values
    */
-  protected class BulkCellView extends HTMLCellView<RowType> {
+  protected static class BulkCellView<RowType> extends HTMLCellView<RowType> {
     /**
      * A {@link StringBuffer} used to assemble the HTML of the table.
      */
     private StringBuffer buffer;
+
+    /**
+     * The bulk renderer doing the rendering.
+     */
+    private TableBulkRenderer<RowType> bulkRenderer = null;
 
     /**
      * The horizontal alignment to apply to the current cell.
@@ -114,12 +121,15 @@ public abstract class TableBulkRenderer<RowType> implements
     private RenderingOptions options;
 
     /**
-     * Construct a new {@link BulkCellView}.
+     * Construct a new {@link TableBulkRenderer.BulkCellView}.
      * 
      * @param options the {@link RenderingOptions} to apply to the table
+     * @param bulkRenderer the renderer
      */
-    public BulkCellView(RenderingOptions options) {
-      super((source == null) ? TableBulkRenderer.this : source);
+    public BulkCellView(TableBulkRenderer<RowType> bulkRenderer,
+        RenderingOptions options) {
+      super((bulkRenderer.source == null) ? bulkRenderer : bulkRenderer.source);
+      this.bulkRenderer = bulkRenderer;
       this.options = options;
       endTime = Duration.currentTimeMillis() + MAX_TIME;
 
@@ -180,7 +190,7 @@ public abstract class TableBulkRenderer<RowType> implements
       curCellHorizontalAlign = null;
       curCellVerticalAlign = null;
       curCellStyles.clear();
-      renderCell(rowValue, columnDef, this);
+      bulkRenderer.renderCell(rowValue, columnDef, this);
       maybeAddOpenTag();
       buffer.append("</td>");
     }
@@ -199,13 +209,13 @@ public abstract class TableBulkRenderer<RowType> implements
         final List<ColumnDefinition<RowType, ?>> visibleColumns) {
       // Reset the row index
       setRowIndex(startRowIndex);
-      final int myStamp = ++requestStamp;
+      final int myStamp = ++bulkRenderer.requestStamp;
 
       // Use an incremental command to render rows in increments
       class RenderTableCommand implements IncrementalCommand {
         public boolean execute() {
           // Poor man's cancel() event.
-          if (myStamp != requestStamp) {
+          if (myStamp != bulkRenderer.requestStamp) {
             return false;
           }
           int checkRow = ROWS_PER_TIME_CHECK;
@@ -235,11 +245,11 @@ public abstract class TableBulkRenderer<RowType> implements
 
           // Finish rendering the table
           buffer.append("</tbody></table>");
-          renderRows(buffer.toString());
+          bulkRenderer.renderRows(buffer.toString());
 
           // Add widgets into the table
           for (DelayedWidget dw : delayedWidgets) {
-            table.setWidget(dw.rowIndex, dw.cellIndex, dw.widget);
+            bulkRenderer.table.setWidget(dw.rowIndex, dw.cellIndex, dw.widget);
           }
 
           // Trigger the callback
@@ -298,7 +308,7 @@ public abstract class TableBulkRenderer<RowType> implements
   /**
    * Convenience class used to specify rendering options for the table.
    */
-  protected class RenderingOptions {
+  protected static class RenderingOptions {
     public int startRow = 0;
     public int numRows = MutableTableModel.ALL_ROWS;
     public boolean syncCall = false;
@@ -462,7 +472,7 @@ public abstract class TableBulkRenderer<RowType> implements
    * @return the cell view
    */
   protected HTMLCellView<RowType> createCellView(final RenderingOptions options) {
-    return new BulkCellView(options);
+    return new BulkCellView<RowType>(this, options);
   }
 
   /**

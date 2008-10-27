@@ -30,16 +30,28 @@ public class SelectionGridBulkRenderer<RowType> extends
   /**
    * A customized {@link SelectionGridBulkRenderer.BulkCellView} used by the
    * {@link SelectionGridBulkRenderer}.
+   * 
+   * @param <RowType> the data type of the row values
    */
-  protected class SelectionBulkCellView extends BulkCellView {
+  protected static class SelectionBulkCellView<RowType> extends
+      BulkCellView<RowType> {
     /**
-     * Construct a new {@link SelectionBulkCellView}.
+     * The bulk renderer doing the rendering.
+     */
+    private SelectionGridBulkRenderer<RowType> bulkRenderer = null;
+
+    /**
+     * Construct a new {@link SelectionGridBulkRenderer.SelectionBulkCellView}.
      * 
      * @param options the {@link TableBulkRenderer.RenderingOptions} to apply to
      *          the table
+     * @param bulkRenderer the renderer
      */
-    public SelectionBulkCellView(RenderingOptions options) {
-      super(options);
+    public SelectionBulkCellView(
+        SelectionGridBulkRenderer<RowType> bulkRenderer,
+        RenderingOptions options) {
+      super(bulkRenderer, options);
+      this.bulkRenderer = bulkRenderer;
     }
 
     @Override
@@ -49,10 +61,10 @@ public class SelectionGridBulkRenderer<RowType> extends
       buffer.append("<tr>");
 
       // Add the input column
-      SelectionPolicy selectionPolicy = ((SelectionGrid) getTable()).getSelectionPolicy();
+      SelectionPolicy selectionPolicy = ((SelectionGrid) bulkRenderer.getTable()).getSelectionPolicy();
       if (selectionPolicy.hasInputColumn()) {
         buffer.append("<td align='CENTER'>");
-        buffer.append(((SelectionGrid) getTable()).getInputHtml(selectionPolicy));
+        buffer.append(((SelectionGrid) bulkRenderer.getTable()).getInputHtml(selectionPolicy));
         buffer.append("</td>");
       }
 
@@ -90,7 +102,7 @@ public class SelectionGridBulkRenderer<RowType> extends
 
   @Override
   protected HTMLCellView<RowType> createCellView(final RenderingOptions options) {
-    return new SelectionBulkCellView(options);
+    return new SelectionBulkCellView<RowType>(this, options);
   }
 
 }

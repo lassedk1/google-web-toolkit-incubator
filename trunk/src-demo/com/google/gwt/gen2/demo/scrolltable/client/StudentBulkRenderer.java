@@ -32,21 +32,29 @@ public class StudentBulkRenderer extends FixedWidthGridBulkRenderer<Student> {
   /**
    * A customized cell view used by the {@link StudentBulkRenderer}.
    */
-  protected class StudentBulkCellView extends SelectionBulkCellView {
+  protected static class StudentBulkCellView extends
+      SelectionBulkCellView<Student> {
     /**
      * A boolean used to toggle alternate rows.
      * 
      * TODO (jlabanca): move up to TableBulkRenderer
      */
-   private boolean altRow = false;
+    private boolean altRow = false;
+
+    /**
+     * The bulk renderer doing the rendering.
+     */
+    private StudentBulkRenderer bulkRenderer = null;
 
     /**
      * Construct a new {@link StudentBulkCellView}.
      * 
      * @param options the RenderingOptions to apply to the table
      */
-    public StudentBulkCellView(RenderingOptions options) {
-      super(options);
+    public StudentBulkCellView(StudentBulkRenderer bulkRenderer,
+        RenderingOptions options) {
+      super(bulkRenderer, options);
+      this.bulkRenderer = bulkRenderer;
     }
 
     @Override
@@ -61,10 +69,11 @@ public class StudentBulkRenderer extends FixedWidthGridBulkRenderer<Student> {
       altRow = !altRow;
 
       // Add the input column
-      SelectionPolicy selectionPolicy = ((SelectionGrid) getTable()).getSelectionPolicy();
+      SelectionPolicy selectionPolicy = ((SelectionGrid) bulkRenderer.getTable()).getSelectionPolicy();
       if (selectionPolicy.hasInputColumn()) {
         buffer.append("<td align='CENTER'>");
-        buffer.append(getInputHtml((SelectionGrid) getTable(), selectionPolicy));
+        buffer.append(bulkRenderer.getInputHtml(
+            (SelectionGrid) bulkRenderer.getTable(), selectionPolicy));
         buffer.append("</td>");
       }
 
@@ -89,7 +98,7 @@ public class StudentBulkRenderer extends FixedWidthGridBulkRenderer<Student> {
 
   @Override
   protected HTMLCellView<Student> createCellView(final RenderingOptions options) {
-    return new StudentBulkCellView(options);
+    return new StudentBulkCellView(this, options);
   }
 
   private native String getInputHtml(SelectionGrid table,
