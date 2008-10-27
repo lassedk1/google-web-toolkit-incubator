@@ -22,13 +22,13 @@ import com.google.gwt.gen2.demo.scrolltable.client.option.paging.ModeSelectionOp
 import com.google.gwt.gen2.demo.scrolltable.client.option.paging.PageSizeOption;
 import com.google.gwt.gen2.demo.scrolltable.shared.Student;
 import com.google.gwt.gen2.demo.scrolltable.shared.StudentGenerator;
+import com.google.gwt.gen2.table.client.AbstractScrollTable;
 import com.google.gwt.gen2.table.client.CachedTableModel;
 import com.google.gwt.gen2.table.client.CellRenderer;
 import com.google.gwt.gen2.table.client.ColumnDefinition;
 import com.google.gwt.gen2.table.client.DefaultTableDefinition;
 import com.google.gwt.gen2.table.client.FixedWidthFlexTable;
 import com.google.gwt.gen2.table.client.FixedWidthGrid;
-import com.google.gwt.gen2.table.client.FixedWidthGridBulkRenderer;
 import com.google.gwt.gen2.table.client.ListCellEditor;
 import com.google.gwt.gen2.table.client.PagingOptions;
 import com.google.gwt.gen2.table.client.RadioCellEditor;
@@ -140,8 +140,9 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   }
 
   @Override
-  protected ScrollTable createScrollTable(FixedWidthFlexTable headerTable,
-      FixedWidthGrid dataTable, FixedWidthFlexTable footerTable) {
+  protected AbstractScrollTable createScrollTable(
+      FixedWidthFlexTable headerTable, FixedWidthGrid dataTable,
+      FixedWidthFlexTable footerTable) {
     // Setup the controller
     tableModel = new DataSourceTableModel();
     cachedTableModel = new CachedTableModel<Student>(tableModel);
@@ -161,28 +162,14 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         "There is no data to display"));
 
     // Setup the bulk renderer
-    FixedWidthGridBulkRenderer<Student> bulkRenderer = new FixedWidthGridBulkRenderer<Student>(
-        dataTable, pagingScrollTable);
+    StudentBulkRenderer bulkRenderer = new StudentBulkRenderer(
+        pagingScrollTable);
     pagingScrollTable.setBulkRenderer(bulkRenderer);
 
     // Setup the formatting
     pagingScrollTable.setCellPadding(3);
     pagingScrollTable.setCellSpacing(0);
     pagingScrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
-
-    // Set column widths
-    pagingScrollTable.setColumnWidth(0, 100);
-    pagingScrollTable.setColumnWidth(1, 100);
-    pagingScrollTable.setColumnWidth(2, 35);
-    pagingScrollTable.setColumnWidth(3, 45);
-    pagingScrollTable.setColumnWidth(4, 110);
-    pagingScrollTable.setColumnWidth(5, 80);
-    pagingScrollTable.setColumnWidth(6, 110);
-    pagingScrollTable.setColumnWidth(7, 180);
-    pagingScrollTable.setColumnWidth(8, 35);
-    pagingScrollTable.setColumnWidth(9, 35);
-    pagingScrollTable.setColumnWidth(10, 55);
-    pagingScrollTable.setColumnWidth(11, 45);
 
     return pagingScrollTable;
   }
@@ -231,32 +218,44 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     tableDefinition = new DefaultTableDefinition<Student>();
 
     // First name
-    tableDefinition.addColumnDefinition(new StudentColumnDefinition<String>(
-        "First Name", Group.GENERAL) {
-      @Override
-      public String getCellValue(Student rowValue) {
-        return rowValue.getFirstName();
-      }
+    {
+      StudentColumnDefinition<String> columnDef = new StudentColumnDefinition<String>(
+          "First Name", Group.GENERAL) {
+        @Override
+        public String getCellValue(Student rowValue) {
+          return rowValue.getFirstName();
+        }
 
-      @Override
-      public void setCellValue(Student rowValue, String cellValue) {
-        rowValue.setFirstName(cellValue);
-      }
-    });
+        @Override
+        public void setCellValue(Student rowValue, String cellValue) {
+          rowValue.setFirstName(cellValue);
+        }
+      };
+      columnDef.setMinimumColumnWidth(50);
+      columnDef.setPreferredColumnWidth(100);
+      columnDef.setColumnSortable(true);
+      tableDefinition.addColumnDefinition(columnDef);
+    }
 
     // Last name
-    tableDefinition.addColumnDefinition(new StudentColumnDefinition<String>(
-        "Last Name", Group.GENERAL) {
-      @Override
-      public String getCellValue(Student rowValue) {
-        return rowValue.getLastName();
-      }
+    {
+      StudentColumnDefinition<String> columnDef = new StudentColumnDefinition<String>(
+          "Last Name", Group.GENERAL) {
+        @Override
+        public String getCellValue(Student rowValue) {
+          return rowValue.getLastName();
+        }
 
-      @Override
-      public void setCellValue(Student rowValue, String cellValue) {
-        rowValue.setLastName(cellValue);
-      }
-    });
+        @Override
+        public void setCellValue(Student rowValue, String cellValue) {
+          rowValue.setLastName(cellValue);
+        }
+      };
+      columnDef.setMinimumColumnWidth(50);
+      columnDef.setPreferredColumnWidth(100);
+      columnDef.setColumnSortable(true);
+      tableDefinition.addColumnDefinition(columnDef);
+    }
 
     // Age
     {
@@ -273,6 +272,10 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         }
       };
       columnDef.setCellRenderer(intCellRenderer);
+      columnDef.setMinimumColumnWidth(35);
+      columnDef.setPreferredColumnWidth(35);
+      columnDef.setMaximumColumnWidth(35);
+      columnDef.setColumnSortable(true);
       tableDefinition.addColumnDefinition(columnDef);
     }
 
@@ -311,6 +314,10 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
           }
         }
       });
+      columnDef.setMinimumColumnWidth(45);
+      columnDef.setPreferredColumnWidth(45);
+      columnDef.setMaximumColumnWidth(45);
+      columnDef.setColumnSortable(true);
       tableDefinition.addColumnDefinition(columnDef);
 
       // Setup the cellEditor
@@ -336,6 +343,10 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
           rowValue.setRace(cellValue);
         }
       };
+      columnDef.setMinimumColumnWidth(45);
+      columnDef.setPreferredColumnWidth(45);
+      columnDef.setMaximumColumnWidth(45);
+      columnDef.setColumnSortable(true);
       tableDefinition.addColumnDefinition(columnDef);
 
       // Setup the cell editor
@@ -378,6 +389,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
           view.setHTML(color);
         }
       });
+      columnDef.setPreferredColumnWidth(80);
+      columnDef.setColumnSortable(true);
       tableDefinition.addColumnDefinition(columnDef);
 
       // Setup the cell editor
@@ -406,6 +419,9 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
           rowValue.setFavoriteSport(cellValue);
         }
       };
+      columnDef.setMinimumColumnWidth(40);
+      columnDef.setPreferredColumnWidth(110);
+      columnDef.setColumnSortable(true);
       tableDefinition.addColumnDefinition(columnDef);
 
       // Setup the cell editor
@@ -432,6 +448,10 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
           rowValue.setCollege(cellValue);
         }
       };
+      columnDef.setMinimumColumnWidth(50);
+      columnDef.setPreferredColumnWidth(180);
+      columnDef.setMaximumColumnWidth(250);
+      columnDef.setColumnSortable(true);
       tableDefinition.addColumnDefinition(columnDef);
 
       // Setup the cell editor
@@ -473,6 +493,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         }
       };
       columnDef.setCellRenderer(intCellRenderer);
+      columnDef.setPreferredColumnWidth(25);
+      columnDef.setColumnSortable(true);
       tableDefinition.addColumnDefinition(columnDef);
     }
 
@@ -536,6 +558,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
           return gpaString;
         }
       });
+      columnDef.setPreferredColumnWidth(35);
+      columnDef.setColumnSortable(true);
       tableDefinition.addColumnDefinition(columnDef);
     }
 
@@ -554,6 +578,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         }
       };
       columnDef.setCellRenderer(intCellRenderer);
+      columnDef.setPreferredColumnWidth(55);
       tableDefinition.addColumnDefinition(columnDef);
     }
 
@@ -572,6 +597,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         }
       };
       columnDef.setCellRenderer(intCellRenderer);
+      columnDef.setPreferredColumnWidth(45);
       tableDefinition.addColumnDefinition(columnDef);
     }
 

@@ -15,117 +15,80 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.base.client.Gen2TestBase;
-import com.google.gwt.gen2.table.client.ScrollTable.ScrollPolicy;
-
 /**
  * Tests methods in the {@link ScrollTable} class.
  */
-public class ScrollTableTest extends Gen2TestBase {
+public class ScrollTableTest extends AbstractScrollTableTest {
 
   /**
    * Test accessors and modifiers.
    */
-  public void testAccessors() {
+  public void testColumnWidth() {
     // Initialize the table
     FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
     FixedWidthGrid dataTable = new FixedWidthGrid();
     FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
     ScrollTable table = getScrollTable(headerTable, dataTable, footerTable);
 
-    // Accessible tables
-    assertEquals(headerTable, table.getHeaderTable());
-    assertEquals(dataTable, table.getDataTable());
-    assertEquals(footerTable, table.getFooterTable());
-    table.setFooterTable(null);
-    assertEquals(null, table.getFooterTable());
-    table.setFooterTable(footerTable);
-    assertEquals(footerTable, table.getFooterTable());
+    // maximum width
+    {
+      table.setMaximumColumnWidth(0, 100);
+      assertEquals(100, table.getMaximumColumnWidth(0));
+    }
 
-    // Cell spacing
-    table.setCellSpacing(2);
-    assertEquals(table.getCellSpacing(), 2);
-    assertEquals(dataTable.getCellSpacing(), 2);
-    assertEquals(headerTable.getCellSpacing(), 2);
+    // minimum width
+    {
+      table.setMinimumColumnWidth(0, 50);
+      assertEquals(50, table.getMinimumColumnWidth(0));
+    }
 
-    // Cell padding
-    table.setCellPadding(3);
-    assertEquals(table.getCellPadding(), 3);
-    assertEquals(dataTable.getCellPadding(), 3);
-    assertEquals(headerTable.getCellPadding(), 3);
-
-    // Resize policy
-    table.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
-    assertEquals(ScrollTable.ResizePolicy.FILL_WIDTH, table.getResizePolicy());
-    table.setResizePolicy(ScrollTable.ResizePolicy.FIXED_WIDTH);
-    assertEquals(ScrollTable.ResizePolicy.FIXED_WIDTH, table.getResizePolicy());
-
-    // Column resize policy
-    table.setColumnResizePolicy(ScrollTable.ColumnResizePolicy.SINGLE_CELL);
-    assertEquals(ScrollTable.ColumnResizePolicy.SINGLE_CELL, table.getColumnResizePolicy());
-    table.setColumnResizePolicy(ScrollTable.ColumnResizePolicy.MULTI_CELL);
-    assertEquals(ScrollTable.ColumnResizePolicy.MULTI_CELL, table.getColumnResizePolicy());
-
-    // Min width
-    assertEquals(-1, table.getMinWidth());
-    table.setMinWidth(100);
-    assertEquals(100, table.getMinWidth());
-
-    // Scrolling enabled
-    table.setScrollPolicy(ScrollPolicy.HORIZONTAL);
-    assertEquals(ScrollPolicy.HORIZONTAL, table.getScrollPolicy());
-    table.setScrollPolicy(ScrollPolicy.BOTH);
-    assertEquals(ScrollPolicy.BOTH, table.getScrollPolicy());
-
-    // Sorting enabled
-    table.setSortingEnabled(true);
-    assertTrue(table.isSortingEnabled());
-    table.setSortingEnabled(false);
-    assertFalse(table.isSortingEnabled());
-
-    // Default Column width
-    int defaultWidth = FixedWidthGrid.DEFAULT_COLUMN_WIDTH;
-    assertEquals(defaultWidth, table.getColumnWidth(2));
-    assertEquals(defaultWidth, headerTable.getColumnWidth(2));
-    assertEquals(defaultWidth, dataTable.getColumnWidth(2));
-    assertEquals(defaultWidth, footerTable.getColumnWidth(2));
-
-    // Set column width
-    table.setResizePolicy(ScrollTable.ResizePolicy.UNCONSTRAINED);
-    table.setColumnWidth(2, 100);
-    table.setColumnWidth(3, 20);
-    assertEquals(100, table.getColumnWidth(2));
-    assertEquals(100, headerTable.getColumnWidth(2));
-    assertEquals(100, dataTable.getColumnWidth(2));
-    assertEquals(100, footerTable.getColumnWidth(2));
-    assertEquals(20, table.getColumnWidth(3));
-    assertEquals(20, headerTable.getColumnWidth(3));
-    assertEquals(20, dataTable.getColumnWidth(3));
-    assertEquals(20, footerTable.getColumnWidth(3));
-
-    // Set guaranteed column width
-    assertFalse(table.isColumnWidthGuaranteed(2));
-    table.setGuaranteedColumnWidth(2, 100);
-    assertTrue(table.isColumnWidthGuaranteed(2));
-    table.setColumnWidth(2, 100);
-    assertFalse(table.isColumnWidthGuaranteed(2));
-
-    // Remove widget not supported
-    try {
-      table.remove(dataTable);
-      fail("Remove is not a supported operation");
-    } catch (UnsupportedOperationException e) {
-      assertTrue(true);
+    // preferred width
+    {
+      table.setPreferredColumnWidth(0, 75);
+      assertEquals(75, table.getPreferredColumnWidth(0));
     }
   }
 
-  /**
-   * Get the scroll table.
-   * 
-   * @return the scroll table
-   */
-  protected ScrollTable getScrollTable(FixedWidthFlexTable headerTable, FixedWidthGrid dataTable,
-      FixedWidthFlexTable footerTable) {
+  public void testSorting() {
+    // Initialize the table
+    FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
+    FixedWidthGrid dataTable = new FixedWidthGrid();
+    FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
+    ScrollTable table = getScrollTable(headerTable, dataTable, footerTable);
+
+    // Enable sorting
+    {
+      table.setSortingEnabled(false);
+      assertFalse(table.isSortingEnabled());
+      table.setSortingEnabled(true);
+      assertTrue(table.isSortingEnabled());
+    }
+
+    // Column Sorting
+    {
+      // Default enabled
+      table.setSortingEnabled(true);
+      assertTrue(table.isColumnSortable(0));
+
+      // Default disabled
+      table.setSortingEnabled(false);
+      assertFalse(table.isColumnSortable(0));
+
+      // Set to unsortable
+      table.setSortingEnabled(true);
+      table.setColumnSortable(0, false);
+      assertFalse(table.isColumnSortable(0));
+
+      // Set to sortable
+      table.setSortingEnabled(false);
+      table.setColumnSortable(0, true);
+      assertFalse(table.isColumnSortable(0));
+    }
+  }
+
+  @Override
+  protected ScrollTable getScrollTable(FixedWidthFlexTable headerTable,
+      FixedWidthGrid dataTable, FixedWidthFlexTable footerTable) {
     ScrollTable scrollTable = new ScrollTable(dataTable, headerTable);
     scrollTable.setFooterTable(footerTable);
     return scrollTable;

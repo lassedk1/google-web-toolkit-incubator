@@ -130,5 +130,25 @@ public class AbstractColumnDefinitionTest extends Gen2TestBase {
       colDef.setCellRenderer(cellRenderer);
       assertEquals(cellRenderer, colDef.getCellRenderer());
     }
+
+    // sortable
+    {
+      AbstractColumnDefinition<Object, Object> colDef = new CustomColumnDefinition<Object, Object>();
+      colDef.setColumnSortable(true);
+      assertTrue(colDef.isColumnSortable());
+      colDef.setColumnSortable(false);
+      assertFalse(colDef.isColumnSortable());
+    }
+
+    // column width
+    {
+      AbstractColumnDefinition<Object, Object> colDef = new CustomColumnDefinition<Object, Object>();
+      colDef.setMaximumColumnWidth(100);
+      assertEquals(100, colDef.getMaximumColumnWidth());
+      colDef.setMinimumColumnWidth(50);
+      assertEquals(50, colDef.getMinimumColumnWidth());
+      colDef.setPreferredColumnWidth(75);
+      assertEquals(75, colDef.getPreferredColumnWidth());
+    }
   }
 }

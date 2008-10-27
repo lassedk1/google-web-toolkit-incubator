@@ -18,6 +18,7 @@ package com.google.gwt.gen2.demo.scrolltable.client.option.column;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.CustomForm;
+import com.google.gwt.gen2.table.client.AbstractScrollTable;
 import com.google.gwt.gen2.table.client.ScrollTable;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -58,9 +59,9 @@ public class TableResizePolicyOption extends AbstractOption {
 
     // Add button to change status
     {
-      Button button = new Button("Set Scroll Policy", new ClickListener() {
+      Button button = new Button("Set Resize Policy", new ClickListener() {
         public void onClick(Widget sender) {
-          ScrollTable scrollTable = ScrollTableDemo.get().getScrollTable();
+          AbstractScrollTable scrollTable = ScrollTableDemo.get().getScrollTable();
           switch (policyBox.getSelectedIndex()) {
             case 0:
               scrollTable.setResizePolicy(ScrollTable.ResizePolicy.UNCONSTRAINED);

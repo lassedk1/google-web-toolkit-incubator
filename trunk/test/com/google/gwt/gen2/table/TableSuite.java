@@ -16,9 +16,11 @@
 
 package com.google.gwt.gen2.table;
 
+import com.google.gwt.gen2.table.client.AbstractColumnDefinitionTest;
 import com.google.gwt.gen2.table.client.CachedTableModelTest;
 import com.google.gwt.gen2.table.client.ClientTableModelTest;
-import com.google.gwt.gen2.table.client.AbstractColumnDefinitionTest;
+import com.google.gwt.gen2.table.client.ColumnResizerTest;
+import com.google.gwt.gen2.table.client.DefaultTableDefinitionTest;
 import com.google.gwt.gen2.table.client.FixedWidthFlexTableTest;
 import com.google.gwt.gen2.table.client.FixedWidthGridTest;
 import com.google.gwt.gen2.table.client.FlexTableBulkRendererTest;
@@ -34,7 +36,6 @@ import com.google.gwt.gen2.table.client.RadioCellEditorTest;
 import com.google.gwt.gen2.table.client.ScrollTableTest;
 import com.google.gwt.gen2.table.client.SelectionGridTest;
 import com.google.gwt.gen2.table.client.SortableGridTest;
-import com.google.gwt.gen2.table.client.DefaultTableDefinitionTest;
 import com.google.gwt.gen2.table.client.TableModelTest;
 import com.google.gwt.gen2.table.client.TextCellEditorTest;
 
@@ -72,6 +73,7 @@ public class TableSuite {
     suite.addTestSuite(RadioCellEditorTest.class);
 
     // ScrollTable tests
+    suite.addTestSuite(ColumnResizerTest.class);
     suite.addTestSuite(ScrollTableTest.class);
     suite.addTestSuite(AbstractColumnDefinitionTest.class);
     suite.addTestSuite(ListColumnDefinitionTest.class);
