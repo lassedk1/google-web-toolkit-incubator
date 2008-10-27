@@ -681,6 +681,15 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   }
 
   /**
+   * Get the list of row values associated with the table.
+   * 
+   * @return the list of row value
+   */
+  protected List<RowType> getRowValues() {
+    return rowValues;
+  }
+
+  /**
    * Insert a row into the table relative to the total number of rows.
    * 
    * @param beforeRow the row index
