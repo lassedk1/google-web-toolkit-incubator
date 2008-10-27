@@ -15,6 +15,7 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client.option.sort;
 
+import com.google.gwt.gen2.demo.scrolltable.client.PagingScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.CustomForm;
@@ -54,15 +55,15 @@ public class SortColumnOption extends AbstractOption {
     // Add the current status
     statusLabel = new Label();
     form.addLabeledWidget("Current Status:", statusLabel);
-    refreshStatus();
+    refreshStatus(null);
 
     // Add button to change status
-    {
+    if (PagingScrollTableDemo.get() == null) {
       Button button = new Button("Toggle Sorting", new ClickListener() {
         public void onClick(Widget sender) {
-          ScrollTable scrollTable = ScrollTableDemo.get().getScrollTable();
+          ScrollTable scrollTable = (ScrollTable) ScrollTableDemo.get().getScrollTable();
           scrollTable.setSortingEnabled(!scrollTable.isSortingEnabled());
-          refreshStatus();
+          refreshStatus(scrollTable);
         }
       });
       form.addButton(button);
@@ -93,13 +94,13 @@ public class SortColumnOption extends AbstractOption {
     }
 
     // Add a button to make column sortable
-    {
+    if (PagingScrollTableDemo.get() == null) {
       Button button = new Button("Make Sortable", new ClickListener() {
         public void onClick(Widget sender) {
           try {
             int column = Integer.parseInt(columnBox.getText());
-            ScrollTableDemo.get().getScrollTable().setColumnSortable(column,
-                true);
+            ScrollTable scrollTable = (ScrollTable) ScrollTableDemo.get().getScrollTable();
+            scrollTable.setColumnSortable(column, true);
           } catch (NumberFormatException e) {
             Window.alert("Please enter valid integers for the row and column.");
           }
@@ -109,13 +110,13 @@ public class SortColumnOption extends AbstractOption {
     }
 
     // Add a button to make column unsortable
-    {
+    if (PagingScrollTableDemo.get() == null) {
       Button button = new Button("Make Unsortable", new ClickListener() {
         public void onClick(Widget sender) {
           try {
             int column = Integer.parseInt(columnBox.getText());
-            ScrollTableDemo.get().getScrollTable().setColumnSortable(column,
-                false);
+            ScrollTable scrollTable = (ScrollTable) ScrollTableDemo.get().getScrollTable();
+            scrollTable.setColumnSortable(column, false);
           } catch (NumberFormatException e) {
             Window.alert("Please enter valid integers for the row and column.");
           }
@@ -130,8 +131,8 @@ public class SortColumnOption extends AbstractOption {
   /**
    * Refresh the status.
    */
-  private void refreshStatus() {
-    if (ScrollTableDemo.get().getScrollTable().isSortingEnabled()) {
+  private void refreshStatus(ScrollTable scrollTable) {
+    if (scrollTable == null || scrollTable.isSortingEnabled()) {
       statusLabel.setText("enabled");
     } else {
       statusLabel.setText("disabled");

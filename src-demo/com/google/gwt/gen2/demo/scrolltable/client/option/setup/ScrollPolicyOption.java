@@ -18,6 +18,7 @@ package com.google.gwt.gen2.demo.scrolltable.client.option.setup;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.CustomForm;
+import com.google.gwt.gen2.table.client.AbstractScrollTable;
 import com.google.gwt.gen2.table.client.ScrollTable;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -58,7 +59,7 @@ public class ScrollPolicyOption extends AbstractOption {
     {
       Button button = new Button("Set Scroll Policy", new ClickListener() {
         public void onClick(Widget sender) {
-          ScrollTable scrollTable = ScrollTableDemo.get().getScrollTable();
+          AbstractScrollTable scrollTable = ScrollTableDemo.get().getScrollTable();
           switch (scrollPolicyBox.getSelectedIndex()) {
             case 0:
               scrollTable.setScrollPolicy(ScrollTable.ScrollPolicy.BOTH);

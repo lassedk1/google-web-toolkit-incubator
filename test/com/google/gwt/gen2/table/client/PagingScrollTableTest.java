@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * Tests methods in the {@link PagingScrollTable} class.
  */
-public class PagingScrollTableTest extends ScrollTableTest {
+public class PagingScrollTableTest extends AbstractScrollTableTest {
   /**
    * A custom handler used for testing.
    */
@@ -137,50 +137,6 @@ public class PagingScrollTableTest extends ScrollTableTest {
     assertEquals("8:1", grid.getText(2, 1));
     table.removeAbsoluteRow(7);
     assertEquals("9:1", grid.getText(2, 1));
-  }
-
-  /**
-   * Test accessors.
-   */
-  public void testAccessor() {
-    // Initialize the grid
-    PagingScrollTable<List<Object>> table = getPagingScrollTable();
-    TableModel<List<Object>> tableModel = table.getTableModel();
-    FixedWidthGrid grid = table.getDataTable();
-
-    // pageSize
-    table.setPageSize(5);
-    assertEquals(5, table.getPageSize());
-    table.setPageSize(0);
-    assertEquals(0, table.getPageSize());
-    table.setPageSize(-1);
-    assertEquals(0, table.getPageSize());
-
-    // numPages
-    table.setPageSize(5);
-    assertEquals(5, table.getPageCount());
-    table.setPageSize(10);
-    assertEquals(3, table.getPageCount());
-    table.setPageSize(25);
-    assertEquals(1, table.getPageCount());
-
-    // Unknown number of pages
-    tableModel.setRowCount(MutableTableModel.UNKNOWN_ROW_COUNT);
-    assertEquals(-1, table.getPageCount());
-    table.setPageSize(0);
-    assertEquals(1, table.getPageCount());
-
-    // bulk renderer
-    FixedWidthGridBulkRenderer<List<Object>> bulkRenderer = new FixedWidthGridBulkRenderer<List<Object>>(
-        grid, table.getTableDefinition());
-    table.setBulkRenderer(bulkRenderer);
-
-    // Empty table widget
-    {
-      Widget emptyTableWidget = new HTML("Empty");
-      table.setEmptyTableWidget(emptyTableWidget);
-      assertEquals(emptyTableWidget, table.getEmptyTableWidget());
-    }
   }
 
   /**
@@ -349,6 +305,47 @@ public class PagingScrollTableTest extends ScrollTableTest {
     assertEquals(0, table.getCurrentPage());
   }
 
+  public void testPagingAccessors() {
+    // Initialize the grid
+    PagingScrollTable<List<Object>> table = getPagingScrollTable();
+    TableModel<List<Object>> tableModel = table.getTableModel();
+    FixedWidthGrid grid = table.getDataTable();
+  
+    // pageSize
+    table.setPageSize(5);
+    assertEquals(5, table.getPageSize());
+    table.setPageSize(0);
+    assertEquals(0, table.getPageSize());
+    table.setPageSize(-1);
+    assertEquals(0, table.getPageSize());
+  
+    // numPages
+    table.setPageSize(5);
+    assertEquals(5, table.getPageCount());
+    table.setPageSize(10);
+    assertEquals(3, table.getPageCount());
+    table.setPageSize(25);
+    assertEquals(1, table.getPageCount());
+  
+    // Unknown number of pages
+    tableModel.setRowCount(MutableTableModel.UNKNOWN_ROW_COUNT);
+    assertEquals(-1, table.getPageCount());
+    table.setPageSize(0);
+    assertEquals(1, table.getPageCount());
+  
+    // bulk renderer
+    FixedWidthGridBulkRenderer<List<Object>> bulkRenderer = new FixedWidthGridBulkRenderer<List<Object>>(
+        grid, table.getTableDefinition());
+    table.setBulkRenderer(bulkRenderer);
+  
+    // Empty table widget
+    {
+      Widget emptyTableWidget = new HTML("Empty");
+      table.setEmptyTableWidget(emptyTableWidget);
+      assertEquals(emptyTableWidget, table.getEmptyTableWidget());
+    }
+  }
+
   /**
    * Test values associated with rows.
    */
@@ -379,23 +376,17 @@ public class PagingScrollTableTest extends ScrollTableTest {
   }
 
   /**
-   * Get the scroll table.
-   * 
-   * @return the scroll table
+   * @return a {@link PagingScrollTable}
    */
   protected PagingScrollTable<List<Object>> getPagingScrollTable() {
     FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
     FixedWidthGrid dataTable = new FixedWidthGrid();
     FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
-    return getPagingScrollTable(headerTable, dataTable, footerTable);
+    return getScrollTable(headerTable, dataTable, footerTable);
   }
 
-  /**
-   * Get the scroll table.
-   * 
-   * @return the scroll table
-   */
-  protected PagingScrollTable<List<Object>> getPagingScrollTable(
+  @Override
+  protected PagingScrollTable<List<Object>> getScrollTable(
       FixedWidthFlexTable headerTable, FixedWidthGrid dataTable,
       FixedWidthFlexTable footerTable) {
     // Create a table cell renderer
@@ -417,17 +408,7 @@ public class PagingScrollTableTest extends ScrollTableTest {
   }
 
   /**
-   * @see ScrollTableTest#getScrollTable(FixedWidthFlexTable, FixedWidthGrid,
-   *      FixedWidthFlexTable)
-   */
-  @Override
-  protected ScrollTable getScrollTable(FixedWidthFlexTable headerTable,
-      FixedWidthGrid dataTable, FixedWidthFlexTable footerTable) {
-    return getPagingScrollTable(headerTable, dataTable, footerTable);
-  }
-
-  /**
-   * Create a table model with 25 rows.
+   * @return a new table model with 25 rows
    */
   private TableModel<List<Object>> createTableModel() {
     // Create the row data

@@ -66,7 +66,7 @@ import java.util.NoSuchElementException;
  * 
  * @param <RowType> the data type of the row values
  */
-public class PagingScrollTable<RowType> extends ScrollTable implements
+public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     HasTableDefinition<RowType>, HasPageCountChangeHandlers,
     HasPageLoadHandlers, HasPageChangeHandlers, HasPagingFailureHandlers {
   /**
@@ -258,6 +258,11 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
   };
 
   /**
+   * The columns that are currently visible.
+   */
+  private List<ColumnDefinition<RowType, ?>> visibleColumns = new ArrayList<ColumnDefinition<RowType, ?>>();
+
+  /**
    * Construct a new {@link PagingScrollTable}.
    * 
    * @param tableModel the underlying table model
@@ -376,6 +381,25 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
     return emptyTableWidgetWrapper.getWidget();
   }
 
+  @Override
+  public int getMaximumColumnWidth(int column) {
+    ColumnDefinition<RowType, ?> colDef = getColumnDefinition(column);
+    if (colDef == null) {
+      return -1;
+    }
+    return colDef.getMaximumColumnWidth();
+  }
+
+  @Override
+  public int getMinimumColumnWidth(int column) {
+    ColumnDefinition<RowType, ?> colDef = getColumnDefinition(column);
+    if (colDef == null) {
+      return FixedWidthGrid.MIN_COLUMN_WIDTH;
+    }
+    return Math.max(FixedWidthGrid.MIN_COLUMN_WIDTH,
+        colDef.getMinimumColumnWidth());
+  }
+
   /**
    * @return the number of pages, or -1 if not known
    */
@@ -396,6 +420,15 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
    */
   public int getPageSize() {
     return pageSize;
+  }
+
+  @Override
+  public int getPreferredColumnWidth(int column) {
+    ColumnDefinition<RowType, ?> colDef = getColumnDefinition(column);
+    if (colDef == null) {
+      return FixedWidthGrid.DEFAULT_COLUMN_WIDTH;
+    }
+    return colDef.getPreferredColumnWidth();
   }
 
   /**
@@ -493,6 +526,11 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
     gotoPage(currentPage - 1, false);
   }
 
+  @Override
+  public boolean isColumnSortable(int column) {
+    return isSortingEnabled() && getColumnDefinition(column).isColumnSortable();
+  }
+
   /**
    * Reload the current page.
    */
@@ -585,8 +623,7 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
    */
   protected void editCell(int row, int column) {
     // Get the cell editor
-    final ColumnDefinition colDef = tableDefinition.getVisibleColumnDefinitions().get(
-        column);
+    final ColumnDefinition colDef = getColumnDefinition(column);
     CellEditor cellEditor = colDef.getCellEditor();
     if (cellEditor == null) {
       return;
@@ -611,6 +648,19 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
             }
           }
         });
+  }
+
+  /**
+   * Get the {@link ColumnDefinition} currently associated with a column.
+   * 
+   * @param colIndex the index of the column
+   * @return the {@link ColumnDefinition} associated with the column, or null
+   */
+  protected ColumnDefinition<RowType, ?> getColumnDefinition(int colIndex) {
+    if (colIndex < visibleColumns.size()) {
+      return visibleColumns.get(colIndex);
+    }
+    return null;
   }
 
   /**
@@ -738,6 +788,11 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
         rowValues.add(visibleIter.next());
       }
 
+      // Copy the visible column definitions
+      visibleColumns = new ArrayList<ColumnDefinition<RowType, ?>>(
+          tableDefinition.getVisibleColumnDefinitions());
+
+      // Render using the bulk renderer
       if (bulkRenderer != null) {
         bulkRenderer.renderRows(rowValues.iterator(), tableRendererCallback);
         return;
@@ -745,7 +800,7 @@ public class PagingScrollTable<RowType> extends ScrollTable implements
 
       // Get rid of unneeded rows and columns
       int rowCount = rowValues.size();
-      int colCount = tableDefinition.getVisibleColumnDefinitions().size();
+      int colCount = visibleColumns.size();
       getDataTable().resize(rowCount, colCount);
 
       // Render the rows

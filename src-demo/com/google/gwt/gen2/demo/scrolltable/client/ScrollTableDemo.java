@@ -17,8 +17,8 @@ package com.google.gwt.gen2.demo.scrolltable.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
-import com.google.gwt.gen2.demo.scrolltable.client.option.column.ColumnResizePolicyOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.column.CellPaddingAndSpacingOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.column.ColumnResizePolicyOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.column.ResizeColumnOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.column.TableResizePolicyOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.data.InsertDataRowOption;
@@ -36,6 +36,7 @@ import com.google.gwt.gen2.demo.scrolltable.client.option.sort.SortColumnOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.sort.SwapRowsOption;
 import com.google.gwt.gen2.demo.scrolltable.shared.Student;
 import com.google.gwt.gen2.demo.scrolltable.shared.StudentGenerator;
+import com.google.gwt.gen2.table.client.AbstractScrollTable;
 import com.google.gwt.gen2.table.client.FixedWidthFlexTable;
 import com.google.gwt.gen2.table.client.FixedWidthGrid;
 import com.google.gwt.gen2.table.client.ScrollTable;
@@ -43,6 +44,8 @@ import com.google.gwt.gen2.table.client.SelectionGrid.SelectionPolicy;
 import com.google.gwt.gen2.table.override.client.FlexTable;
 import com.google.gwt.gen2.table.override.client.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.Random;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.WindowResizeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -64,9 +67,19 @@ import java.util.Map;
  */
 public class ScrollTableDemo implements EntryPoint {
   /**
+   * The height of the main menu (and table) in pixels.
+   */
+  private static final int MENU_HEIGHT = 400;
+
+  /**
+   * The width of the main menu in pixels.
+   */
+  private static final int MENU_WIDTH = 200;
+
+  /**
    * The source of {@link Student} data.
    */
-  public static final StudentGenerator STUDENT_DATA = new StudentGenerator() {
+  private static final StudentGenerator STUDENT_DATA = new StudentGenerator() {
     @Override
     public int getRandomInt(int max) {
       return Random.nextInt(max);
@@ -103,7 +116,7 @@ public class ScrollTableDemo implements EntryPoint {
   /**
    * The scroll table.
    */
-  private ScrollTable scrollTable = null;
+  private AbstractScrollTable scrollTable = null;
 
   /**
    * @return the data table.
@@ -129,7 +142,7 @@ public class ScrollTableDemo implements EntryPoint {
   /**
    * @return the scroll table.
    */
-  public ScrollTable getScrollTable() {
+  public AbstractScrollTable getScrollTable() {
     return scrollTable;
   }
 
@@ -177,7 +190,7 @@ public class ScrollTableDemo implements EntryPoint {
     layout.setWidth("99%");
     layout.setCellPadding(0);
     layout.setCellSpacing(5);
-    FlexCellFormatter formatter = layout.getFlexCellFormatter();
+    final FlexCellFormatter formatter = layout.getFlexCellFormatter();
     RootPanel.get().add(layout);
 
     // Initialize the options menu
@@ -201,10 +214,11 @@ public class ScrollTableDemo implements EntryPoint {
       // Add it to the layout inside a scroll panel
       ScrollPanel scrollPanel = new ScrollPanel(menu);
       scrollPanel.setAlwaysShowScrollBars(true);
-      scrollPanel.setPixelSize(200, 400);
+      scrollPanel.setPixelSize(MENU_WIDTH, MENU_HEIGHT);
       scrollPanel.getElement().getStyle().setProperty("border",
           "1px solid #999");
       layout.setWidget(0, 0, scrollPanel);
+      formatter.setWidth(0, 0, MENU_WIDTH + "px");
       formatter.setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP);
 
       // Initialize the options in the menu
@@ -218,12 +232,11 @@ public class ScrollTableDemo implements EntryPoint {
       FixedWidthFlexTable footerTable = createFooterTable();
       FixedWidthGrid dataTable = createDataTable();
       scrollTable = createScrollTable(headerTable, dataTable, footerTable);
-      scrollTable.setSize("98%", "400px");
+      scrollTable.setHeight("400px");
 
       // Add the scroll table to the layout
       layout.setWidget(0, 1, scrollTable);
       formatter.setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_TOP);
-      scrollTable.redraw();
     }
 
     // Initialize the options area
@@ -235,6 +248,20 @@ public class ScrollTableDemo implements EntryPoint {
       formatter.setColSpan(1, 0, 2);
       formatter.setHorizontalAlignment(1, 0,
           HasHorizontalAlignment.ALIGN_CENTER);
+    }
+
+    // Resize the table on window resize
+    {
+      WindowResizeListener wrl = new WindowResizeListener() {
+        public void onWindowResized(int width, int height) {
+          width = (int) (width * 0.95) - MENU_WIDTH - 10;
+          scrollTable.setWidth(width + "px");
+          formatter.setWidth(0, 1, width + "px");
+          scrollTable.redraw();
+        }
+      };
+      Window.addWindowResizeListener(wrl);
+      wrl.onWindowResized(Window.getClientWidth(), Window.getClientHeight());
     }
 
     // Do any required post processing
@@ -322,8 +349,9 @@ public class ScrollTableDemo implements EntryPoint {
   /**
    * Setup the scroll table.
    */
-  protected ScrollTable createScrollTable(FixedWidthFlexTable headerTable,
-      FixedWidthGrid dataTable, FixedWidthFlexTable footerTable) {
+  protected AbstractScrollTable createScrollTable(
+      FixedWidthFlexTable headerTable, FixedWidthGrid dataTable,
+      FixedWidthFlexTable footerTable) {
     // Add the scroll table to the page
     ScrollTable theScrollTable = new ScrollTable(dataTable, headerTable);
     theScrollTable.setFooterTable(footerTable);
@@ -333,19 +361,52 @@ public class ScrollTableDemo implements EntryPoint {
     theScrollTable.setCellSpacing(0);
     theScrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
 
-    // Set column widths
-    theScrollTable.setColumnWidth(0, 100);
-    theScrollTable.setColumnWidth(1, 100);
-    theScrollTable.setColumnWidth(2, 35);
-    theScrollTable.setColumnWidth(3, 45);
-    theScrollTable.setColumnWidth(4, 110);
-    theScrollTable.setColumnWidth(5, 80);
-    theScrollTable.setColumnWidth(6, 110);
-    theScrollTable.setColumnWidth(7, 180);
-    theScrollTable.setColumnWidth(8, 35);
-    theScrollTable.setColumnWidth(9, 35);
-    theScrollTable.setColumnWidth(10, 55);
-    theScrollTable.setColumnWidth(11, 45);
+    // first name
+    theScrollTable.setMinimumColumnWidth(0, 50);
+    theScrollTable.setPreferredColumnWidth(0, 100);
+
+    // last name
+    theScrollTable.setMinimumColumnWidth(1, 50);
+    theScrollTable.setPreferredColumnWidth(1, 100);
+
+    // age
+    theScrollTable.setMinimumColumnWidth(2, 35);
+    theScrollTable.setPreferredColumnWidth(2, 35);
+    theScrollTable.setMaximumColumnWidth(2, 35);
+
+    // gender
+    theScrollTable.setMinimumColumnWidth(3, 45);
+    theScrollTable.setPreferredColumnWidth(3, 45);
+    theScrollTable.setMaximumColumnWidth(3, 45);
+
+    // race
+    theScrollTable.setMinimumColumnWidth(4, 45);
+    theScrollTable.setPreferredColumnWidth(4, 45);
+    theScrollTable.setMaximumColumnWidth(4, 45);
+
+    // color
+    theScrollTable.setPreferredColumnWidth(5, 80);
+
+    // sport
+    theScrollTable.setMinimumColumnWidth(6, 40);
+    theScrollTable.setPreferredColumnWidth(6, 110);
+
+    // college
+    theScrollTable.setMinimumColumnWidth(7, 50);
+    theScrollTable.setPreferredColumnWidth(7, 180);
+    theScrollTable.setMaximumColumnWidth(7, 250);
+
+    // year
+    theScrollTable.setPreferredColumnWidth(8, 25);
+
+    // gpa
+    theScrollTable.setPreferredColumnWidth(9, 35);
+
+    // id
+    theScrollTable.setPreferredColumnWidth(10, 55);
+
+    // pin
+    theScrollTable.setPreferredColumnWidth(11, 45);
 
     return theScrollTable;
   }
