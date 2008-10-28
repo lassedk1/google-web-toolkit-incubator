@@ -239,15 +239,15 @@ class ColumnResizer {
 
         // Compare the boundaries
         if (growing) {
-          newWidth = Math.max(newWidth, curInfo.getCurrentWidth());
           if (curInfo.hasMaximumWidth()) {
             newWidth = Math.min(newWidth, curInfo.getMaximumWidth());
           }
+          newWidth = Math.max(newWidth, curInfo.getCurrentWidth());
         } else {
-          newWidth = Math.min(newWidth, curInfo.getCurrentWidth());
           if (curInfo.hasMinimumWidth()) {
             newWidth = Math.max(newWidth, curInfo.getMinimumWidth());
           }
+          newWidth = Math.min(newWidth, curInfo.getCurrentWidth());
         }
 
         // Calculate the width required to achieve the new width
@@ -288,9 +288,9 @@ class ColumnResizer {
         // Remove the column if it has reached its maximum/minimum width
         boolean maxedOut = false;
         if (growing) {
-          maxedOut = (curInfo.getNewWidth() == curInfo.getMaximumWidth());
+          maxedOut = (curInfo.getNewWidth() >= curInfo.getMaximumWidth());
         } else {
-          maxedOut = (curInfo.getNewWidth() == curInfo.getMinimumWidth());
+          maxedOut = (curInfo.getNewWidth() <= curInfo.getMinimumWidth());
         }
         if (maxedOut) {
           columns.remove(curIndex);
