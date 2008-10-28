@@ -72,6 +72,17 @@ public class ColumnResizePolicyOption extends AbstractOption {
       form.addButton(button);
     }
 
+    // Add button to reset column widths
+    {
+      Button button = new Button("Reset Column Widths", new ClickListener() {
+        public void onClick(Widget sender) {
+          AbstractScrollTable scrollTable = ScrollTableDemo.get().getScrollTable();
+          scrollTable.resetColumnWidths();
+        }
+      });
+      form.addButton(button);
+    }
+
     return form;
   }
 

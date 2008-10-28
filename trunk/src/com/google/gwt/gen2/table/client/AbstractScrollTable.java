@@ -1038,6 +1038,27 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
+   * Reset the widths of all columns to their preferred sizes.
+   */
+  public void resetColumnWidths() {
+    // Calculate the new column widths
+    int numColumns = dataTable.getColumnCount();
+    int totalWidth = 0;
+    List<ColumnWidthInfo> colWidthInfos = getColumnWidthInfo(0, numColumns);
+    for (ColumnWidthInfo info : colWidthInfos) {
+      totalWidth += info.getCurrentWidth();
+      info.setCurrentWidth(0);
+    }
+    columnResizer.distributeWidth(colWidthInfos, totalWidth);
+
+    // Set the new column widths
+    applyNewColumnWidths(0, colWidthInfos);
+
+    // Rescroll the tables
+    scrollTables(false);
+  }
+
+  /**
    * Sets the amount of padding to be added around all cells.
    * 
    * @param padding the cell padding, in pixels
