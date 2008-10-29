@@ -1,333 +1,52 @@
-#summary A scrollable table with fixed header and footer sections and a scrollable data area that supports paging
+#summary A full featured table that supports scrolling, paging, column resizing and sorting, cell editing, and more...
 #labels Type-Widget
 
-
+*NOTE*: This documentation is not yet finished
 
 = Introduction =
-The PagingScrollTable Widget is a subclass of the ScrollTable widget.  It supports navigating between pages of data, which can be generated on the client or via an RPC call.  
 
+The gen2 PagingScrollTable supports navigating between pages of data, which can be generated on the client or via an RPC call.  It also supports column resizing within a minimum and maximum range, column sorting on the client or server side, inline cell editing, data caching, and scrolling with a fixed header and footer.  The data can be rendered very quickly as a String using a TableBulkRenderer.
 
-Example:
-[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/PagingScrollTable/index.html]
+Note: You can view documentation on the old version of the PagingScrollTable on the  PagingScrollTableOld wiki page.
 
 
+= How It Works =
 
-= Features =
+== Class Diagram ==
 
-The PagingScrollTable supports all of the features of the ScrollTable, plus the following:
+Coming soon...
 
-=== Paging ===
+== Row Values ==
 
-Allow users to page through nearly unlimited data without loading it all at once.  The paging mechanism includes a bar at the bottom where the user can go to the first, last, next, previous, or a specific page.  A loading icon appears between page loads.
+A PagingScrollTable can represent a list of any type, which we call the row value.  For example, you might define a `Student` object to use as the row value.  Each column will contain information about the row value, such as the name, age, and GPA of the `Student`.
 
-If you do not know the total number of pages, you can still use the PagingScrollTable.  The total number of pages will be hidden, but the user can keep hitting the next page button.
+== TableModel ==
 
-=== Caching ===
+The [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/TableModel.java TableModel] defines how the PagingScrollTable accesses data.  The method `requestRows(Request, Callback)` is called any time the PagingScrollTable needs more data.  From here, you can return data from a data source on the client, or you can send an RPC request for the data.
 
-Using the CachedTableModel, you can automatically prefetch rows, such as the next page.  This can increase the perceived speed considerably.
+The `Request` includes the `ColumnSortInfo` from the PagingScrollTable, allowing you to perform server side sorting.
 
-=== Inline Editing ===
+== ColumnDefinition ==
 
-Attach one of the generic cell editors, such as TextCellEditor or ListCellEditor, or create your own editor.  When users click on a cell in the data portion of the table, a popup will appear where they can edit the contents.
+The [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/ColumnDefinition.java ColumnDefinition] defines information about the columns in your table, such as the minimum/maximum/preferred column width, whether the column is sortable, and how to set and retrieve data from a row value.  For example, a `ColumnDefinition` used for the name column in a PagingScrollTable would define how to get and set the name of a Student`.  The [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/AbstractColumnDefinition.java AbstractColumnDefinition] is a basic implementation that allows you to get and set the minimum/maximum/preferred column widths.
 
-=== Server side sorting ===
+You can also attach a [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/CellRenderer.java CellRenderer] or [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/CellEditor.java CellEditor] to a ColumnDefinition to control how it will appear.  The [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/InlineCellEditor.java InlineCellEditors] (eg. [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/TextCellEditor.java TextCellEditor] are simple CellEditor implementations that popup input fields above the cell.
 
-All requests for additional data include a ColumnSortList, which allows you to send an RPC call to the server to retrieve sorted data.
+[http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/ColumnDefinition.java ColumnDefinitions] are combined into a [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/TableDefinition.java TableDefinition], which defines which columns will appear in your table via the `getVisibleColumnDefinitions()` method.  The [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/DefaultTableDefinition.java DefaultTableDefinition] implementation provides convenience methods for adding, removing, and hiding columns.
 
+== TableBulkRenderer ==
 
+The [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/TableBulkRenderer.java TableBulkRenderer] allows you to render your PagingScrollTable as an HTML string, which dramatically increases performance of large tables.  Using the CellRenderers defined in the ColumnDefinitions, you can customize the look of each column or cell based on the contents.
 
-= Table Models =
+== PagingScrollTable ==
 
-In order to use the PagingScrollTable, you need to define a TableModel (see example below).  A TableModel takes a request for data and calls a callback when the data is available.  The example below shows one way of generating random data on the client side, but you can also retrieve data using an RPC request.
+When all of the components are combined, you get a PagingScrollTable that requests data from the TableModel and renders the columns defined the TableDefinition using the TableBulkRenderer for performance.
 
-=== TableModel ===
 
-Use this TableModel is you want to support inline editing of cells or if you want to add and remove rows and keep the View and backend synced.
 
-=== ReadOnlyTableModel ===
+= Walkthrough =
 
-The ReadOnlyTableModel, as its name suggests, is used if you only want to retrieve data.
+Coming soon...
 
-=== ClientTableModel ===
 
-Use this if you want to generate data on the client side.  You only need to define one method called "getCell" that returns the value given the cell.
-
-=== ListTableModel ===
-
-Another version of the ClientTableModel, this one takes a 2D Collection of values.  You do not need to override any methods.
-
-
-
-= Setup Instructions =
-
-Add these line to your module.gwt.xml file:
-{{{
-  <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
-  <inherits name='com.google.gwt.widgetideas.ScrollTable'/>
-
-  <stylesheet src='ScrollTableDemo.css'/>
-}}}
-
-In your public directory, include the following stylesheet:
-[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/ScrollTable/ScrollTableDemo.css ScrollTableDemo.css]
-
-Create a subdirectory called "images" and add the background image:
-[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/ScrollTable/images/bg_header_gradient.gif bg_header_gradient.gif]
-
-
-
-= Sample Code =
-
-The following code shows you how to create a TableModel that can be used to retrieve data when a page is requested.  See the TableModel section for more info.
-
-{{{
-/**
- * Entry point classes define <code>onModuleLoad()</code>.
- */
-public class MyEntryPoint implements EntryPoint {
-  /**
-   * A list of first names.
-   */
-  private static final String[] FIRST_NAMES = {
-      "Joel", "John", "Kelly", "Freeland", "Bruce", "Rajeev"};
-
-  /**
-   * A list of last names.
-   */
-  private static final String[] LAST_NAMES = {
-      "Smith", "Paterson", "Haterson", "Raterson", "Johnson", "Sonson"};
-
-  /**
-   * A list of towns.
-   */
-  private static final String[] TOWNS = {
-      "Atlanta", "New York", "Dubai", "Moscow", "Venice", "Old York"};
-
-  /**
-   * Information about a student.
-   */
-  private class Student implements Serializable {
-    int age, id;
-    String firstName, lastName, hometown;
-    double gpa;
-  }
-
-  /**
-   * A custom {@link ReadOnlyTableModel} that generates random data. We are
-   * using a {@link CachedTableModel}, so a request will only arrive if the
-   * current page isn't cached.
-   */
-  private class MyTableModel extends ReadOnlyTableModel<Student> {
-    @Override
-    public void requestRows(Request request, Callback<Student> callback) {
-      // Get the data from the request
-      int startRow = request.getStartRow();
-      int numRows = request.getNumRows();
-
-      // Get the sort list. We aren't using it in the demo, but it can be used
-      // for server side sorting.
-      ColumnSortList sortList = request.getColumnSortList();
-
-      // Generate random data. You can use an RPC call instead to retrieve
-      // data from the server. Rows is a 2D collection of string to be displayed
-      // in the grid. students is collection of students objects to be
-      // associated with each row.
-      Collection<Collection<Serializable>> rows = new ArrayList<Collection<Serializable>>();
-      List<Student> students = new ArrayList<Student>();
-      for (int i = 0; i < numRows; i++) {
-        Student student = generateStudent();
-        students.add(student);
-
-        // Create a list of cell data
-        List<Serializable> cells = new ArrayList<Serializable>();
-        cells.add(student.lastName);
-        cells.add(student.firstName);
-        cells.add(student.age + "");
-        cells.add(student.hometown);
-        cells.add(student.id + "");
-        cells.add(student.gpa + "");
-        rows.add(cells);
-      }
-
-      // Create the response from the 2D collection of strings. Note that
-      // we pass the List of students as well. The PagingGrid will associate
-      // the objects in the students list with the rows.
-      Response<Student> response = new SerializableResponse<Student>(rows,
-          students);
-
-      // Make the callback
-      callback.onRowsReady(request, response);
-    }
-
-    /**
-     * @return a randomly generated student
-     */
-    private Student generateStudent() {
-      Student student = new Student();
-      student.age = 18 + Random.nextInt(4);
-      student.gpa = 1.0 + 3.0 * Random.nextDouble();
-      student.id = 100000 + Random.nextInt(899999);
-      student.lastName = LAST_NAMES[Random.nextInt(LAST_NAMES.length)];
-      student.firstName = FIRST_NAMES[Random.nextInt(FIRST_NAMES.length)];
-      student.hometown = TOWNS[Random.nextInt(TOWNS.length)];
-      return student;
-    }
-  }
-
-  /**
-   * This is the entry point method.
-   */
-  public void onModuleLoad() {
-    // Get the components of the ScrollTable
-    FixedWidthFlexTable headerTable = createHeaderTable();
-    final FixedWidthFlexTable footerTable = createFooterTable();
-    final FixedWidthGrid dataTable = createDataTable();
-
-    // Setup the table model
-    MyTableModel tableModel = new MyTableModel();
-    tableModel.setRowCount(272);
-    CachedTableModel<Student> cachedModel = new CachedTableModel<Student>(
-        tableModel);
-    cachedModel.setPostCachedRowCount(15);
-    cachedModel.setPostCachedRowCount(30);
-
-    // Combine the components into a ScrollTable
-    final PagingScrollTable<Student> scrollTable = new PagingScrollTable<Student>(
-        cachedModel, dataTable, headerTable);
-    scrollTable.setFooterTable(footerTable);
-    scrollTable.setPageSize(15);
-    scrollTable.setScrollPolicy(ScrollTable.ScrollPolicy.HORIZONTAL);
-
-    // Add a RowPagingListener to set the footer stats
-    scrollTable.addRowPagingListener(new RowPagingListener() {
-      public void onNumPagesChanges(int numPages) {
-      }
-
-      public void onPageChanged(int page) {
-      }
-
-      public void onPageLoaded(int page) {
-        int totalAge = 0;
-        double totalGPA = 0;
-        int numRows = dataTable.getRowCount();
-        for (int i = 0; i < numRows; i++) {
-          // Get the associated Student object
-          Student student = scrollTable.getRowValue(i);
-          totalAge += student.age;
-          totalGPA += student.gpa;
-        }
-        double averageAge = ((int) (100.0 * totalAge / numRows)) / 100.0;
-        double averageGPA = ((int) (100.0 * totalGPA / numRows)) / 100.0;
-        footerTable.setHTML(0, 1, averageAge + "");
-        footerTable.setHTML(0, 3, averageGPA + "");
-        footerTable.setHTML(1, 1, numRows + "");
-      }
-
-      public void onPagingFailure(Throwable caught) {
-      }
-    });
-
-    // Set some options in the scroll table
-    scrollTable.setSortingEnabled(true);
-    scrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
-    scrollTable.setWidth("80%");
-
-    // Setup some default widths
-    scrollTable.setColumnWidth(2, 50);
-    scrollTable.setColumnWidth(5, 50);
-
-    // Create some paging options
-    PagingOptions options = new PagingOptions(scrollTable);
-    
-    // Add the components to the page
-    RootPanel.get().add(scrollTable);
-    RootPanel.get().add(options);
-  }
-
-  /**
-   * Create the data table.
-   * 
-   * @return a data table
-   */
-  private FixedWidthGrid createDataTable() {
-    // Create a new table
-    FixedWidthGrid dataTable = new FixedWidthGrid();
-
-    // Set some options in the data table
-    dataTable.setSelectionPolicy(SelectionGrid.SelectionPolicy.MULTI_ROW);
-
-    // Return the data table
-    return dataTable;
-  }
-
-  /**
-   * Create the footer table.
-   * 
-   * @return a footer table
-   */
-  private FixedWidthFlexTable createFooterTable() {
-    // Create a new table
-    FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
-    FlexCellFormatter formatter = footerTable.getFlexCellFormatter();
-
-    // Level 1 headers
-    footerTable.setHTML(0, 0, "<b>Average Age:</b>");
-    formatter.setColSpan(0, 0, 2);
-    formatter.setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_RIGHT);
-    footerTable.setHTML(0, 1, "0");
-    footerTable.setHTML(0, 2, "<b>Average GPA:</b>");
-    formatter.setColSpan(0, 2, 2);
-    formatter.setHorizontalAlignment(0, 2, HasHorizontalAlignment.ALIGN_RIGHT);
-    footerTable.setHTML(0, 3, "0");
-
-    // Level 2 headers
-    footerTable.setHTML(1, 0, "<b>Number of Students:</b>");
-    formatter.setColSpan(1, 0, 5);
-    formatter.setHorizontalAlignment(1, 0, HasHorizontalAlignment.ALIGN_RIGHT);
-    footerTable.setHTML(1, 1, "0");
-
-    // Return the footer table
-    return footerTable;
-  }
-
-  /**
-   * Create the header table.
-   * 
-   * @return a header table
-   */
-  private FixedWidthFlexTable createHeaderTable() {
-    // Create a new table
-    FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
-    FlexCellFormatter formatter = headerTable.getFlexCellFormatter();
-
-    // Level 1 headers
-    headerTable.setHTML(0, 0, "<b>Student Profiles</b>");
-    formatter.setColSpan(0, 0, 6);
-    formatter.setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER);
-
-    // Level 2 headers
-    headerTable.setHTML(1, 0, "<b>General</b>");
-    formatter.setColSpan(1, 0, 4);
-    formatter.setHorizontalAlignment(1, 0, HasHorizontalAlignment.ALIGN_CENTER);
-    headerTable.setHTML(1, 1, "<b>Student ID</b>");
-    formatter.setRowSpan(1, 1, 2);
-    formatter.setHorizontalAlignment(1, 1, HasHorizontalAlignment.ALIGN_CENTER);
-    headerTable.setHTML(1, 2, "<b>GPA</b>");
-    formatter.setRowSpan(1, 2, 2);
-    formatter.setHorizontalAlignment(1, 2, HasHorizontalAlignment.ALIGN_CENTER);
-
-    // Level 3 headers
-    headerTable.setHTML(2, 0, "Last Name");
-    formatter.setHorizontalAlignment(2, 0, HasHorizontalAlignment.ALIGN_CENTER);
-    headerTable.setHTML(2, 1, "First Name");
-    formatter.setHorizontalAlignment(2, 1, HasHorizontalAlignment.ALIGN_CENTER);
-    headerTable.setHTML(2, 2, "Age");
-    formatter.setHorizontalAlignment(2, 2, HasHorizontalAlignment.ALIGN_CENTER);
-    headerTable.setHTML(2, 3, "Hometown");
-    formatter.setHorizontalAlignment(3, 3, HasHorizontalAlignment.ALIGN_CENTER);
-
-    // Return the header table
-    return headerTable;
-  }
-}
 }}}
