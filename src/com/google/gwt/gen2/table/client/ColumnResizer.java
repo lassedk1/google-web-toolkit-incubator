@@ -92,6 +92,10 @@ class ColumnResizer {
     }
 
     public int getMaximumWidth() {
+      // For calculation purposes, ensure maxWidth >= minWidth
+      if (hasMaximumWidth()) {
+        return Math.max(maxWidth, minWidth);
+      }
       return maxWidth;
     }
 
@@ -167,9 +171,16 @@ class ColumnResizer {
    * @return the width that could not be distributed
    */
   public int distributeWidth(List<ColumnWidthInfo> columns, int width) {
-    // The new width defaults to the current width
+    // The new width defaults to the current width, within min/max range
     for (ColumnWidthInfo info : columns) {
-      info.setNewWidth(info.getCurrentWidth());
+      int curWidth = info.getCurrentWidth();
+      if (info.hasMinimumWidth() && curWidth < info.getMinimumWidth()) {
+        curWidth = info.getMinimumWidth();
+      } else if (info.hasMaximumWidth() && curWidth > info.getMaximumWidth()) {
+        curWidth = info.getMaximumWidth();
+      }
+      width -= (curWidth - info.getCurrentWidth());
+      info.setNewWidth(curWidth);
     }
 
     // Do not modify widths if there is nothing to distribute
@@ -239,15 +250,15 @@ class ColumnResizer {
 
         // Compare the boundaries
         if (growing) {
+          newWidth = Math.max(newWidth, curInfo.getCurrentWidth());
           if (curInfo.hasMaximumWidth()) {
             newWidth = Math.min(newWidth, curInfo.getMaximumWidth());
           }
-          newWidth = Math.max(newWidth, curInfo.getCurrentWidth());
         } else {
+          newWidth = Math.min(newWidth, curInfo.getCurrentWidth());
           if (curInfo.hasMinimumWidth()) {
             newWidth = Math.max(newWidth, curInfo.getMinimumWidth());
           }
-          newWidth = Math.min(newWidth, curInfo.getCurrentWidth());
         }
 
         // Calculate the width required to achieve the new width
@@ -287,9 +298,9 @@ class ColumnResizer {
 
         // Remove the column if it has reached its maximum/minimum width
         boolean maxedOut = false;
-        if (growing) {
+        if (growing && curInfo.hasMaximumWidth()) {
           maxedOut = (curInfo.getNewWidth() >= curInfo.getMaximumWidth());
-        } else {
+        } else if (!growing && curInfo.hasMinimumWidth()) {
           maxedOut = (curInfo.getNewWidth() <= curInfo.getMinimumWidth());
         }
         if (maxedOut) {
