@@ -344,8 +344,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         }
       };
       columnDef.setMinimumColumnWidth(45);
-      columnDef.setPreferredColumnWidth(45);
-      columnDef.setMaximumColumnWidth(45);
+      columnDef.setPreferredColumnWidth(55);
+      columnDef.setMaximumColumnWidth(70);
       columnDef.setColumnSortable(true);
       tableDefinition.addColumnDefinition(columnDef);
 
@@ -419,7 +419,6 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
           rowValue.setFavoriteSport(cellValue);
         }
       };
-      columnDef.setMinimumColumnWidth(40);
       columnDef.setPreferredColumnWidth(110);
       columnDef.setColumnSortable(true);
       tableDefinition.addColumnDefinition(columnDef);
@@ -493,7 +492,9 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         }
       };
       columnDef.setCellRenderer(intCellRenderer);
-      columnDef.setPreferredColumnWidth(25);
+      columnDef.setPreferredColumnWidth(35);
+      columnDef.setMinimumColumnWidth(35);
+      columnDef.setMaximumColumnWidth(35);
       columnDef.setColumnSortable(true);
       tableDefinition.addColumnDefinition(columnDef);
     }
@@ -559,6 +560,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         }
       });
       columnDef.setPreferredColumnWidth(35);
+      columnDef.setMinimumColumnWidth(35);
+      columnDef.setMaximumColumnWidth(35);
       columnDef.setColumnSortable(true);
       tableDefinition.addColumnDefinition(columnDef);
     }

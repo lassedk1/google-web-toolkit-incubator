@@ -31,9 +31,10 @@ public interface ColumnDefinition<RowType, ColType> {
   CellEditor<ColType> getCellEditor();
 
   /**
-   * Get the cell renderer associated with the column.
+   * Get the cell renderer associated with the column. The return value should
+   * not be null.
    * 
-   * @return the associated {@link CellRenderer}, or null if one does not exist
+   * @return the associated {@link CellRenderer}
    */
   CellRenderer<RowType, ColType> getCellRenderer();
 
