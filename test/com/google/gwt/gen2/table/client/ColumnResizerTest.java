@@ -54,6 +54,50 @@ public class ColumnResizerTest extends Gen2TestBase {
   }
 
   /**
+   * Verify that if the current sizes are outside of the min/max range, the new
+   * sizes will be forced into the range.
+   */
+  public void testCurrentWidthOutOfRange() {
+    // Current width below minimum width
+    {
+      // Create some column info
+      List<ColumnWidthInfo> columns = new ArrayList<ColumnWidthInfo>();
+      columns.add(new ColumnWidthInfo(200, 300, 250, 0));
+      columns.add(new ColumnWidthInfo(200, 300, 50, 50));
+      columns.add(new ColumnWidthInfo(200, 300, 350, 199));
+
+      // Distribute some width
+      ColumnResizer resizer = new ColumnResizer();
+      int remaining = resizer.distributeWidth(columns, 0);
+      assertEquals(-351, remaining);
+
+      // Check outputs
+      assertEquals(200, columns.get(0).getNewWidth());
+      assertEquals(200, columns.get(1).getNewWidth());
+      assertEquals(200, columns.get(2).getNewWidth());
+    }
+
+    // Current width above maximum width
+    {
+      // Create some column info
+      List<ColumnWidthInfo> columns = new ArrayList<ColumnWidthInfo>();
+      columns.add(new ColumnWidthInfo(200, 300, 250, 350));
+      columns.add(new ColumnWidthInfo(200, 300, 50, 1000));
+      columns.add(new ColumnWidthInfo(200, 300, 350, 301));
+
+      // Distribute some width
+      ColumnResizer resizer = new ColumnResizer();
+      int remaining = resizer.distributeWidth(columns, 0);
+      assertEquals(751, remaining);
+
+      // Check outputs
+      assertEquals(300, columns.get(0).getNewWidth());
+      assertEquals(300, columns.get(1).getNewWidth());
+      assertEquals(300, columns.get(2).getNewWidth());
+    }
+  }
+
+  /**
    * Verify that we can distribute a negative width.
    */
   public void testDistributeNegativeWidth() {
@@ -183,7 +227,7 @@ public class ColumnResizerTest extends Gen2TestBase {
     columns.add(new ColumnWidthInfo(0, 100, 50, 50));
     columns.add(new ColumnWidthInfo(0, 500, 300, 200));
 
-    // Sort the column
+    // Distribute some width
     ColumnResizer resizer = new ColumnResizer();
     resizer.distributeWidth(columns, 0);
 
