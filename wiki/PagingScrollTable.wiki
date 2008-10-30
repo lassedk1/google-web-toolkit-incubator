@@ -44,6 +44,16 @@ When all of the components are combined, you get a PagingScrollTable that reques
 
 
 
+= A Note about Layout Issues =
+
+As many developers have noticed, the PagingScrollTable has a layout issue when it is relatively sized and placed inside of a TD cell (such as inside of a GWT Panel) where it will continuously expand, shrink, or otherwise behave badly.  The root cause is that the PagingScrollTable pushes out on the TD cells from the inside instead of resizing with the cells.
+
+Why haven't we fixed this issue if we know the root cause?  We're trying to find a solution that works on all browsers, but we have not found a perfect solution yet.
+
+The simple workaround is to set the width of the PagingScrollTable in pixels.  Of course that isn't ideal, but its the easiest fix for many layout bugs.  In our sample, we use a WindowResizeListener to set the size of the table relative to the client width of the Window.
+
+
+
 = Walkthrough =
 
 == Create a GWT project ==
