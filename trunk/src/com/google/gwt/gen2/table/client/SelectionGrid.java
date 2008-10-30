@@ -38,6 +38,7 @@ import com.google.gwt.gen2.table.override.client.OverrideDOM;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -314,16 +315,14 @@ public class SelectionGrid extends Grid implements HasRowHighlightHandlers,
       case Event.ONMOUSEOUT:
         Element toElem = DOM.eventGetToElement(event);
         if (highlightedRowElem != null
-            && (toElem == null || !DOM.isOrHasChild(highlightedRowElem, toElem))) {
+            && (toElem == null || !highlightedRowElem.isOrHasChild(toElem))) {
           // Check that the coordinates are not directly over the cell
-          int clientX = DOM.eventGetClientX(event);
-          int clientY = DOM.eventGetClientY(event);
-          int rowLeft = DOM.getAbsoluteLeft(highlightedRowElem);
-          int rowTop = DOM.getAbsoluteTop(highlightedRowElem);
-          int rowWidth = DOM.getElementPropertyInt(highlightedRowElem,
-              "offsetWidth");
-          int rowHeight = DOM.getElementPropertyInt(highlightedRowElem,
-              "offsetHeight");
+          int clientX = event.getClientX() + Window.getScrollLeft();
+          int clientY = event.getClientY() + Window.getScrollTop();
+          int rowLeft = highlightedRowElem.getAbsoluteLeft();
+          int rowTop = highlightedRowElem.getAbsoluteTop();
+          int rowWidth = highlightedRowElem.getOffsetWidth();
+          int rowHeight = highlightedRowElem.getOffsetHeight();
           int rowBottom = rowTop + rowHeight;
           int rowRight = rowLeft + rowWidth;
           if (clientX > rowLeft && clientX < rowRight && clientY > rowTop
