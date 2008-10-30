@@ -979,15 +979,14 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       case Event.ONMOUSEOUT:
         // Unhighlight if the mouse leaves the table
         Element toElem = DOM.eventGetToElement(event);
-        if (toElem == null || !DOM.isOrHasChild(dataWrapper, toElem)) {
+        if (toElem == null || !dataWrapper.isOrHasChild(toElem)) {
           // Check that the coordinates are not directly over the table
-          int clientX = DOM.eventGetClientX(event);
-          int clientY = DOM.eventGetClientY(event);
-          int tableLeft = DOM.getAbsoluteLeft(dataWrapper);
-          int tableTop = DOM.getAbsoluteTop(dataWrapper);
-          int tableWidth = DOM.getElementPropertyInt(dataWrapper, "offsetWidth");
-          int tableHeight = DOM.getElementPropertyInt(dataWrapper,
-              "offsetHeight");
+          int clientX = event.getClientX() + Window.getScrollLeft();
+          int clientY = event.getClientY() + Window.getScrollTop();
+          int tableLeft = dataWrapper.getAbsoluteLeft();
+          int tableTop = dataWrapper.getAbsoluteTop();
+          int tableWidth = dataWrapper.getOffsetWidth();
+          int tableHeight = dataWrapper.getOffsetHeight();
           int tableBottom = tableTop + tableHeight;
           int tableRight = tableLeft + tableWidth;
           if (clientX > tableLeft && clientX < tableRight && clientY > tableTop
