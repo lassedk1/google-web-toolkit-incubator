@@ -503,22 +503,7 @@ public abstract class TableBulkRenderer<RowType> implements
    */
   protected void renderCell(RowType rowValue, ColumnDefinition columnDef,
       HTMLCellView<RowType> view) {
-    // Try using the associated cell renderer
-    CellRenderer<RowType, ?> cellRenderer = columnDef.getCellRenderer();
-    if (cellRenderer != null) {
-      cellRenderer.renderRowValue(rowValue, columnDef, view);
-      return;
-    }
-
-    // Get the cell value
-    Object cellValue = columnDef.getCellValue(rowValue);
-    if (cellValue == null) {
-      // Do nothing
-    } else if (cellValue instanceof Widget) {
-      view.setWidget((Widget) cellValue);
-    } else {
-      view.addHTML(cellValue.toString());
-    }
+    columnDef.getCellRenderer().renderRowValue(rowValue, columnDef, view);
   }
 
   /**

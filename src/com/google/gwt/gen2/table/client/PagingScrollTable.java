@@ -751,24 +751,9 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    * @param columnDef the associated column definition
    * @param view the view used to set the cell contents
    */
-  protected void renderCell(RowType rowValue,
-      ColumnDefinition<RowType, ?> columnDef, TableCellView<RowType> view) {
-    // Try using the associated cell renderer
-    CellRenderer cellRenderer = columnDef.getCellRenderer();
-    if (cellRenderer != null) {
-      cellRenderer.renderRowValue(rowValue, columnDef, view);
-      return;
-    }
-
-    // Get the cell value
-    Object cellValue = columnDef.getCellValue(rowValue);
-    if (cellValue == null) {
-      view.setText("");
-    } else if (cellValue instanceof Widget) {
-      view.setWidget((Widget) cellValue);
-    } else {
-      view.setHTML(cellValue.toString());
-    }
+  protected void renderCell(RowType rowValue, ColumnDefinition columnDef,
+      TableCellView view) {
+    columnDef.getCellRenderer().renderRowValue(rowValue, columnDef, view);
   }
 
   /**

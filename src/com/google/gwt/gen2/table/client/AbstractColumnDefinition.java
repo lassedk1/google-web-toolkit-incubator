@@ -29,6 +29,12 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
   private static final int DEFAULT_WIDTH = 80;
 
   /**
+   * The default {@link CellRenderer} to use when the
+   * {@link AbstractColumnDefinition} does not specify one.
+   */
+  private static final CellRenderer DEFAULT_CELL_RENDERER = new DefaultCellRenderer();
+
+  /**
    * The cell editor used to edit the contents of this column.
    */
   private CellEditor<ColType> cellEditor = null;
@@ -36,7 +42,7 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
   /**
    * The renderer used to render the contents of this column.
    */
-  private CellRenderer<RowType, ColType> cellRenderer = null;
+  private CellRenderer<RowType, ColType> cellRenderer = DEFAULT_CELL_RENDERER;
 
   /**
    * A boolean indicating whether or not the column is sortable.
@@ -58,28 +64,14 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
    */
   private int preferredWidth = DEFAULT_WIDTH;
 
-  /**
-   * Get the {@link CellEditor} that should be used to edit the contents of
-   * cells in this column.
-   * 
-   * @return the associated {@link CellEditor}
-   */
   public CellEditor<ColType> getCellEditor() {
     return cellEditor;
   }
 
-  /**
-   * Get the cell renderer associated with the column.
-   * 
-   * @return the associated {@link CellRenderer}, or null if one does not exist
-   */
   public CellRenderer<RowType, ColType> getCellRenderer() {
     return cellRenderer;
   }
 
-  /**
-   * @return the cell value for the given row value
-   */
   public abstract ColType getCellValue(RowType rowValue);
 
   public int getMaximumColumnWidth() {
@@ -115,15 +107,10 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
    * @param cellRenderer the {@link CellRenderer} to use for this column
    */
   public void setCellRenderer(CellRenderer<RowType, ColType> cellRenderer) {
+    assert cellRenderer != null : "cellRenderer cannot be null";
     this.cellRenderer = cellRenderer;
   }
 
-  /**
-   * Set the value of this column in the row value.
-   * 
-   * @param rowValue the value of the row
-   * @param cellValue the new value of the cell
-   */
   public abstract void setCellValue(RowType rowValue, ColType cellValue);
 
   /**

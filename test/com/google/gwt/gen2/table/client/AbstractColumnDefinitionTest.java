@@ -125,10 +125,15 @@ public class AbstractColumnDefinitionTest extends Gen2TestBase {
             TableCellView<Object> view) {
         }
       };
-      colDef.setCellRenderer(null);
-      assertNull(colDef.getCellRenderer());
+      assertNotNull(colDef.getCellRenderer());
       colDef.setCellRenderer(cellRenderer);
       assertEquals(cellRenderer, colDef.getCellRenderer());
+      try {
+        colDef.setCellRenderer(null);
+        fail("Expected assertion error");
+      } catch (AssertionError e) {
+        // Expected
+      }
     }
 
     // sortable
