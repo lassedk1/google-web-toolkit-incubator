@@ -28,9 +28,9 @@ The `Request` includes the `ColumnSortInfo` from the PagingScrollTable, allowing
 
 == ColumnDefinition ==
 
-The [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/ColumnDefinition.java ColumnDefinition] defines information about the columns in your table, such as the minimum/maximum/preferred column width, whether the column is sortable, and how to set and retrieve data from a row value.  For example, a `ColumnDefinition` used for the name column in a PagingScrollTable would define how to get and set the name of a Student`.  The [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/AbstractColumnDefinition.java AbstractColumnDefinition] is a basic implementation that allows you to get and set the minimum/maximum/preferred column widths.
+The [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/ColumnDefinition.java ColumnDefinition] defines information about the columns in your table, such as the minimum/maximum/preferred column width, whether the column is sortable, and how to set and retrieve data from a row value.  For example, a `ColumnDefinition` used for the name column in a PagingScrollTable would define how to get and set the name of a `Student`.  The [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/AbstractColumnDefinition.java AbstractColumnDefinition] is a basic implementation that allows you to get and set the minimum/maximum/preferred column widths.
 
-You can also attach a [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/CellRenderer.java CellRenderer] or [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/CellEditor.java CellEditor] to a ColumnDefinition to control how it will appear.  The [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/InlineCellEditor.java InlineCellEditors] (eg. [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/TextCellEditor.java TextCellEditor] are simple CellEditor implementations that popup input fields above the cell.
+You can also attach a [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/CellRenderer.java CellRenderer] or [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/CellEditor.java CellEditor] to a ColumnDefinition to control how it will appear.  The [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/InlineCellEditor.java InlineCellEditors] (eg. [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/TextCellEditor.java TextCellEditor]) are simple CellEditor implementations that popup input fields above the cell.
 
 [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/ColumnDefinition.java ColumnDefinitions] are combined into a [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/TableDefinition.java TableDefinition], which defines which columns will appear in your table via the `getVisibleColumnDefinitions()` method.  The [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src/com/google/gwt/gen2/table/client/DefaultTableDefinition.java DefaultTableDefinition] implementation provides convenience methods for adding, removing, and hiding columns.
 
@@ -46,7 +46,127 @@ When all of the components are combined, you get a PagingScrollTable that reques
 
 = Walkthrough =
 
-Coming soon...
+== Create a GWT project ==
+
+This tutorial assumes that you are familiar with GWT (Google Web Toolkit).  However, if you've stumbled across this page without ever using GWT, you can find more information at the [http://code.google.com/webtoolkit/ GWT Homepage].
+
+Follow the instructions in the GWT [http://code.google.com/webtoolkit/gettingstarted.html Getting Started] guide to create a new project.  Or, you can add the PagingScrollTable to an existing project.  This tutorial will use a GWT project module:
+`com.google.gwt.walkthrough.Walkthrough`
+
+== Checkout the incubator project ==
+
+This tutorial also assumes that you are familiar with incubator and subversion (svn).  However, if you've never used incubator or svn, you can follow these steps:
+  # Create a directory called `incubator/`
+  # From within the directory, run the svn command:
+"svn checkout http://google-web-toolkit-incubator.googlecode.com/svn/trunk/ trunk"
+  # From within the trunk director, run the command "ant"
+  # Include the incubator.jar file from the `trunk/build/dist/` directory into your project
+
+If you've never used subversion, you can find a variety of free svn clients online for all operating systems at the [http://subversion.tigris.org/ subversion homepage].  TortoiseSVN is an easy to use visual client for Windows.  Most linux installations come with an svn client preinstalled.
+
+
+== Define a row value ==
+
+From within the project, define a data type to display in each row.  You can use any data type, so let's use a `Student` for this walkthrough.
+
+{{{
+/*
+ * Copyright 2008 Google Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+package com.google.gwt.walkthrough.shared;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+/**
+ * A representation of a student.
+ */
+public class Student implements IsSerializable {
+  private String firstName = null;
+  private String lastName = null;
+  private int age = 0;
+  private boolean isMale = true;
+  private int graduationYear = 0;
+  private double gpa = 0.0;
+
+  public int getAge() {
+    return age;
+  }
+
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public double getGpa() {
+    return gpa;
+  }
+
+  public int getGraduationYear() {
+    return graduationYear;
+  }
+
+  public String getLastName() {
+    return lastName;
+  }
+
+  public boolean isMale() {
+    return isMale;
+  }
+
+  public void setAge(int age) {
+    this.age = age;
+  }
+
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
+
+  public void setGpa(double gpa) {
+    this.gpa = gpa;
+  }
+
+  public void setGraduationYear(int graduationYear) {
+    this.graduationYear = graduationYear;
+  }
+
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
+
+  public void setMale(boolean isMale) {
+    this.isMale = isMale;
+  }
+}
+}}}
+
+You'll notice that the above type implements IsSerializable so we can send it over RPC and do server side sorting.  Since we want to use this data type on both the server and client side, let's create a `shared` package on the same level as the `client` package.  You're path should look like this:
+
+{{{
+com.google.gwt.walkthrough
+  public/
+  Walkthrough.gwt.xml
+  com.google.gwt.walkthrough.client
+    Walkthrough
+  com.google.gwt.walkthrough.shared
+    Student
+}}}
+
+Go ahead and add the `Student` file now.
+
+== Define the TableModel ==
+
+The `TableModel` defines the source of the data.
 
 
 }}}
