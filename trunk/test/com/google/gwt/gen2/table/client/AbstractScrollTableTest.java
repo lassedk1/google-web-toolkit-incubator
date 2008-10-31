@@ -95,6 +95,10 @@ public abstract class AbstractScrollTableTest extends Gen2TestBase {
     assertEquals(20, dataTable.getColumnWidth(3));
     assertEquals(20, footerTable.getColumnWidth(3));
 
+    // Column sortable
+    assertTrue(table.isColumnSortable(0));
+    assertTrue(table.isColumnSortable(1000));
+
     // Remove widget not supported
     try {
       table.remove(dataTable);
