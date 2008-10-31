@@ -19,8 +19,8 @@ package com.google.gwt.gen2.table.event.client;
 import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
 import com.google.gwt.gen2.table.event.client.TableEvent.Row;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Logical event fired when a cell is highlighted.
@@ -50,7 +50,7 @@ public class RowSelectionEvent extends SelectionEvent<Set<Row>> {
    * @return the newly deselected rows
    */
   public Set<Row> getDeselectedRows() {
-    Set<Row> deselected = new HashSet<Row>();
+    Set<Row> deselected = new TreeSet<Row>();
     Set<Row> oldList = getOldValue();
     Set<Row> newList = getNewValue();
     for (Row row : oldList) {
@@ -65,7 +65,7 @@ public class RowSelectionEvent extends SelectionEvent<Set<Row>> {
    * @return the newly selected rows
    */
   public Set<Row> getSelectedRows() {
-    Set<Row> selected = new HashSet<Row>();
+    Set<Row> selected = new TreeSet<Row>();
     Set<Row> oldList = getOldValue();
     Set<Row> newList = getNewValue();
     for (Row row : newList) {

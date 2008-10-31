@@ -194,39 +194,6 @@ public class SelectionGridTest extends Gen2TestBase {
   }
 
   /**
-   * TODO (jlabanca): Check for bug in TreeSet, order is not correct.
-   */
-  public void disabledTestSelectionHandlers() {
-    // Initialize the grid
-    SelectionGrid testGrid = getSelectionGrid();
-
-    // Add some handlers
-    TestRowSelectionHandler rsh = new TestRowSelectionHandler();
-    testGrid.addRowSelectionHandler(rsh);
-
-    // Select a row
-    testGrid.selectRow(4, true);
-    rsh.assertDeselectedRows(new int[] {});
-    rsh.assertSelectedRows(new int[] {4});
-    rsh.assertOldRows(new int[] {});
-    rsh.assertNewRows(new int[] {4});
-
-    // Select another row
-    testGrid.selectRow(2, false);
-    rsh.assertDeselectedRows(new int[] {});
-    rsh.assertSelectedRows(new int[] {2});
-    rsh.assertOldRows(new int[] {4});
-    rsh.assertNewRows(new int[] {2, 4});
-
-    // Deselect all rows
-    testGrid.deselectAllRows();
-    rsh.assertDeselectedRows(new int[] {2, 4});
-    rsh.assertSelectedRows(new int[] {});
-    rsh.assertOldRows(new int[] {2, 4});
-    rsh.assertNewRows(new int[] {});
-  }
-
-  /**
    * Get the selection grid.
    * 
    * @return the grid
@@ -433,6 +400,36 @@ public class SelectionGridTest extends Gen2TestBase {
     rhh.assertRowIndex(2);
     chh.assertRowIndex(2);
     chh.assertCellIndex(3);
+  }
+
+  public void testSelectionHandlers() {
+    // Initialize the grid
+    SelectionGrid testGrid = getSelectionGrid();
+
+    // Add some handlers
+    TestRowSelectionHandler rsh = new TestRowSelectionHandler();
+    testGrid.addRowSelectionHandler(rsh);
+
+    // Select a row
+    testGrid.selectRow(4, true);
+    rsh.assertDeselectedRows(new int[] {});
+    rsh.assertSelectedRows(new int[] {4});
+    rsh.assertOldRows(new int[] {});
+    rsh.assertNewRows(new int[] {4});
+
+    // Select another row
+    testGrid.selectRow(2, false);
+    rsh.assertDeselectedRows(new int[] {});
+    rsh.assertSelectedRows(new int[] {2});
+    rsh.assertOldRows(new int[] {4});
+    rsh.assertNewRows(new int[] {2, 4});
+
+    // Deselect all rows
+    testGrid.deselectAllRows();
+    rsh.assertDeselectedRows(new int[] {2, 4});
+    rsh.assertSelectedRows(new int[] {});
+    rsh.assertOldRows(new int[] {2, 4});
+    rsh.assertNewRows(new int[] {});
   }
 
   /**
