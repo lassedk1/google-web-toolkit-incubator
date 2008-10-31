@@ -291,11 +291,19 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       TableDefinition<RowType> tableDefinition, ScrollTableImages images) {
     super(dataTable, headerTable, images);
     this.tableModel = tableModel;
-    insert(emptyTableWidgetWrapper, getElement(), 2, true);
-    setEmptyTableWidgetVisible(false);
     setTableDefinition(tableDefinition);
     refreshVisibleColumnDefinitions();
     oldPageCount = getPageCount();
+
+    // Setup the empty table widget wrapper
+    emptyTableWidgetWrapper.getElement().getStyle().setProperty("width", "100%");
+    emptyTableWidgetWrapper.getElement().getStyle().setProperty("overflow",
+        "hidden");
+    emptyTableWidgetWrapper.getElement().getStyle().setPropertyPx("border", 0);
+    emptyTableWidgetWrapper.getElement().getStyle().setPropertyPx("margin", 0);
+    emptyTableWidgetWrapper.getElement().getStyle().setPropertyPx("padding", 0);
+    insert(emptyTableWidgetWrapper, getElement(), 2, true);
+    setEmptyTableWidgetVisible(false);
 
     // Listen to table model events
     tableModel.addRowCountChangeHandler(new RowCountChangeHandler() {
