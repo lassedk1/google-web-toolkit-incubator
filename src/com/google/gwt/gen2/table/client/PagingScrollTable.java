@@ -294,6 +294,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     insert(emptyTableWidgetWrapper, getElement(), 2, true);
     setEmptyTableWidgetVisible(false);
     setTableDefinition(tableDefinition);
+    refreshVisibleColumnDefinitions();
     oldPageCount = getPageCount();
 
     // Listen to table model events
@@ -528,7 +529,11 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
 
   @Override
   public boolean isColumnSortable(int column) {
-    return isSortingEnabled() && getColumnDefinition(column).isColumnSortable();
+    ColumnDefinition<RowType, ?> colDef = getColumnDefinition(column);
+    if (colDef == null) {
+      return true;
+    }
+    return isSortingEnabled() && colDef.isColumnSortable();
   }
 
   /**
@@ -624,6 +629,9 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   protected void editCell(int row, int column) {
     // Get the cell editor
     final ColumnDefinition colDef = getColumnDefinition(column);
+    if (colDef == null) {
+      return;
+    }
     CellEditor cellEditor = colDef.getCellEditor();
     if (cellEditor == null) {
       return;
@@ -723,6 +731,15 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   }
 
   /**
+   * Refresh the list of the currently visible column definitions based on the
+   * {@link TableDefinition}.
+   */
+  protected void refreshVisibleColumnDefinitions() {
+    visibleColumns = new ArrayList<ColumnDefinition<RowType, ?>>(
+        tableDefinition.getVisibleColumnDefinitions());
+  }
+
+  /**
    * Remove a row from the table relative to the total number of rows.
    * 
    * @param row the row index
@@ -783,8 +800,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       }
 
       // Copy the visible column definitions
-      visibleColumns = new ArrayList<ColumnDefinition<RowType, ?>>(
-          tableDefinition.getVisibleColumnDefinitions());
+      refreshVisibleColumnDefinitions();
 
       // Render using the bulk renderer
       if (bulkRenderer != null) {

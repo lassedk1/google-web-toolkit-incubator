@@ -45,9 +45,10 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
   private CellRenderer<RowType, ColType> cellRenderer = DEFAULT_CELL_RENDERER;
 
   /**
-   * A boolean indicating whether or not the column is sortable.
+   * A boolean indicating whether or not the column is sortable. True by default
+   * to be consistent with {@link ScrollTable}.
    */
-  private boolean isColumnSortable = false;
+  private boolean isColumnSortable = true;
 
   /**
    * The minimum width of the column.
