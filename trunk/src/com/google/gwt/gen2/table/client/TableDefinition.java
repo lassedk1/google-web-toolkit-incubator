@@ -37,7 +37,7 @@ public interface TableDefinition<RowType> {
   public abstract static class AbstractCellView<RowType> {
     private int cellIndex = 0;
     private int rowIndex = 0;
-    private HasTableDefinition<RowType> source = null;
+    private HasTableDefinition<RowType> source;
 
     /**
      * Construct a new {@link TableDefinition.AbstractCellView}.
@@ -68,176 +68,6 @@ public interface TableDefinition<RowType> {
      */
     public HasTableDefinition<RowType> getSourceTableDefinition() {
       return source;
-    }
-
-    /**
-     * Render a single cell.
-     * 
-     * @param rowValue the row value associated with the row
-     * @param columnDef the {@link ColumnDefinition} associated with the column
-     */
-    protected abstract void renderCellImpl(RowType rowValue,
-        ColumnDefinition<RowType, ?> columnDef);
-
-    /**
-     * Render all of the cells in a single row.
-     * 
-     * @param rowValue the row value associated with the row
-     * @param visibleColumns the list of visible {@link ColumnDefinition}
-     */
-    protected void renderRowImpl(RowType rowValue,
-        List<ColumnDefinition<RowType, ?>> visibleColumns) {
-      int numColumns = visibleColumns.size();
-      for (int i = 0; i < numColumns; i++) {
-        cellIndex = i;
-        renderCellImpl(rowValue, visibleColumns.get(i));
-      }
-    }
-
-    /**
-     * Render the rows in the table given the list of visible
-     * {@link ColumnDefinition ColumnDefinitions}.
-     * 
-     * @param startRowIndex the index of the first row to render
-     * @param rowValues the values associated with each row
-     * @param visibleColumns the list of visible {@link ColumnDefinition}
-     */
-    protected void renderRowsImpl(int startRowIndex,
-        Iterator<RowType> rowValues,
-        List<ColumnDefinition<RowType, ?>> visibleColumns) {
-      rowIndex = startRowIndex;
-      while (rowValues.hasNext()) {
-        renderRowImpl(rowValues.next(), visibleColumns);
-        rowIndex++;
-      }
-    }
-
-    /**
-     * Set the current cell index.
-     * 
-     * @param cellIndex the current row index
-     */
-    protected void setCellIndex(int cellIndex) {
-      this.cellIndex = cellIndex;
-    }
-
-    /**
-     * Set the current row index.
-     * 
-     * @param rowIndex the current row index
-     */
-    protected void setRowIndex(int rowIndex) {
-      this.rowIndex = rowIndex;
-    }
-  }
-
-  /**
-   * <p>
-   * The {@link TableDefinition.AbstractCellView} used by views that render the
-   * table as a single HTML string.
-   * </p>
-   * <p>
-   * Views that use this method build the table as you go, so you may not be
-   * able to call methods out of order. For example, you cannot set style
-   * attributes after you've set the html or text in the cell.
-   * </p>
-   * 
-   * @param <RowType> the type of the row values
-   */
-  public abstract static class HTMLCellView<RowType> extends
-      AbstractCellView<RowType> {
-    /**
-     * Construct a new {@link TableDefinition.HTMLCellView}.
-     * 
-     * @param sourceTableDef the {@link HasTableDefinition} that defined the
-     *          cell view
-     */
-    public HTMLCellView(HasTableDefinition<RowType> sourceTableDef) {
-      super(sourceTableDef);
-    }
-
-    /**
-     * Append a chunk of html to the html string that will be rendered. It is
-     * safe to call this method multiple times when rendering a single cell.
-     * 
-     * @param html the html chunk to append
-     */
-    public abstract void addHTML(String html);
-
-    /**
-     * Sets the horizontal alignment of the specified cell. This method cannot
-     * be called after {@link #addHTML(String)}.
-     * 
-     * @param align the cell's new horizontal alignment as specified in
-     *          {@link com.google.gwt.user.client.ui.HasHorizontalAlignment}.
-     */
-    public void setHorizontalAlignment(HorizontalAlignmentConstant align) {
-    }
-
-    /**
-     * Sets an attribute on the cell's style. This method cannot be called after
-     * {@link #addHTML(String)}.
-     * 
-     * @param attr the name of the style attribute to be set
-     * @param value the style attribute's new value
-     */
-    public void setStyleAttribute(String attr, String value) {
-    }
-
-    /**
-     * Set the style name of the cell, which can be a space delimited list of
-     * style names. This method cannot be called after {@link #addHTML(String)}.
-     */
-    public void setStyleName(String stylename) {
-    }
-
-    /**
-     * Sets the vertical alignment of the specified cell. This method cannot be
-     * called after {@link #addHTML(String)}.
-     * 
-     * @param align the cell's new vertical alignment as specified in
-     *          {@link com.google.gwt.user.client.ui.HasVerticalAlignment}.
-     */
-    public void setVerticalAlignment(VerticalAlignmentConstant align) {
-    }
-
-    /**
-     * Set the {@link Widget} in the current
-     * {@link TableDefinition.HTMLCellView}. Note that {@link Widget Widgets}
-     * set using this method will actually be added to the table after the bulk
-     * renderer has finished rendering the HTML contents of ALL cells. Widget's
-     * will not be rendered as part of the HTML String, using this method does
-     * not give the performance benefit of setting the contents as an HTML
-     * string.
-     * 
-     * @param widget the widget to set
-     */
-    public abstract void setWidget(Widget widget);
-  }
-
-  /**
-   * <p>
-   * The {@link TableDefinition.AbstractCellView} used by views that render the
-   * table using direct {@link Widget} and DOM manipulation.
-   * </p>
-   * <p>
-   * Views that use this method update the DOM as you make method calls, so it
-   * is safe to call methods in any order. For example, you cannot set the html
-   * inside of the cell, and then style the cell.
-   * </p>
-   * 
-   * @param <RowType> the type of the row values
-   */
-  public abstract static class TableCellView<RowType> extends
-      AbstractCellView<RowType> {
-    /**
-     * Construct a new {@link TableDefinition.TableCellView}.
-     * 
-     * @param sourceTableDef the {@link HasTableDefinition} that defined the
-     *          cell view
-     */
-    public TableCellView(HasTableDefinition<RowType> sourceTableDef) {
-      super(sourceTableDef);
     }
 
     /**
@@ -294,7 +124,138 @@ public interface TableDefinition<RowType> {
      * @param widget the widget to set
      */
     public abstract void setWidget(Widget widget);
+
+    /**
+     * Render a single cell.
+     * 
+     * @param rowIndex the index of the row
+     * @param cellIndex the index of the cell
+     * @param rowValue the row value associated with the row
+     * @param columnDef the {@link ColumnDefinition} associated with the column
+     */
+    protected void renderCellImpl(int rowIndex, int cellIndex,
+        RowType rowValue, ColumnDefinition<RowType, ?> columnDef) {
+      this.rowIndex = rowIndex;
+      this.cellIndex = cellIndex;
+      renderRowValue(rowValue, columnDef);
+    }
+
+    /**
+     * Render a row value into a cell.
+     * 
+     * @param rowValue the row value associated with the row
+     * @param columnDef the {@link ColumnDefinition} associated with the column
+     */
+    protected void renderRowValue(RowType rowValue, ColumnDefinition columnDef) {
+      columnDef.getCellRenderer().renderRowValue(rowValue, columnDef, this);
+    }
   }
+
+  /**
+   * A hook into where the rendered row will be displayed.
+   * 
+   * @param <RowType> the type of the row values
+   */
+  public abstract static class AbstractRowView<RowType> {
+    private int rowIndex = 0;
+    private AbstractCellView<RowType> cellView;
+
+    /**
+     * Construct a new {@link TableDefinition.AbstractRowView}.
+     * 
+     * @param cellView the view of the cell
+     */
+    public AbstractRowView(AbstractCellView<RowType> cellView) {
+      this.cellView = cellView;
+    }
+
+    /**
+     * @return the actual row index being rendered
+     */
+    public int getRowIndex() {
+      return rowIndex;
+    }
+
+    /**
+     * @return the source of the {@link TableDefinition}
+     */
+    public HasTableDefinition<RowType> getSourceTableDefinition() {
+      return cellView.getSourceTableDefinition();
+    }
+
+    /**
+     * Sets an attribute on the cell's style.
+     * 
+     * @param attr the name of the style attribute to be set
+     * @param value the style attribute's new value
+     */
+    public void setStyleAttribute(String attr, String value) {
+    }
+
+    /**
+     * Set the style name of the cell, which can be a space delimited list of
+     * style names.
+     */
+    public void setStyleName(String stylename) {
+    }
+
+    /**
+     * Render all of the cells in a single row.
+     * 
+     * @param rowIndex the index of the row
+     * @param rowValue the row value associated with the row
+     * @param rowRenderer the renderer used to render the rows
+     * @param visibleColumns the list of visible {@link ColumnDefinition}
+     */
+    protected void renderRowImpl(int rowIndex, RowType rowValue,
+        RowRenderer<RowType> rowRenderer,
+        List<ColumnDefinition<RowType, ?>> visibleColumns) {
+      this.rowIndex = rowIndex;
+      renderRowValue(rowValue, rowRenderer);
+      int numColumns = visibleColumns.size();
+      for (int i = 0; i < numColumns; i++) {
+        cellView.renderCellImpl(rowIndex, i, rowValue, visibleColumns.get(i));
+      }
+    }
+
+    /**
+     * Render the rows in the table given the list of visible
+     * {@link ColumnDefinition ColumnDefinitions}.
+     * 
+     * @param startRowIndex the index of the first row to render
+     * @param rowValues the values associated with each row
+     * @param rowRenderer the renderer used to render the rows
+     * @param visibleColumns the list of visible {@link ColumnDefinition}
+     */
+    protected void renderRowsImpl(int startRowIndex,
+        Iterator<RowType> rowValues, RowRenderer<RowType> rowRenderer,
+        List<ColumnDefinition<RowType, ?>> visibleColumns) {
+      int curRow = startRowIndex;
+      while (rowValues.hasNext()) {
+        renderRowImpl(curRow, rowValues.next(), rowRenderer, visibleColumns);
+        curRow++;
+      }
+    }
+
+    /**
+     * Render a row value into a row.
+     * 
+     * @param rowValue the row value associated with the row
+     * @param rowRenderer the renderer used to render the rows
+     */
+    protected void renderRowValue(RowType rowValue,
+        RowRenderer<RowType> rowRenderer) {
+      rowRenderer.renderRowValue(rowValue, this);
+    }
+  }
+
+  /**
+   * Get the {@link RowRenderer} used to render rows. The return value should
+   * not be null.
+   * 
+   * @return the row renderer
+   */
+  RowRenderer<RowType> getRowRenderer();
 
   /**
    * Get a list of the visible {@link ColumnDefinition ColumnDefinitions}.
@@ -308,8 +269,8 @@ public interface TableDefinition<RowType> {
    * 
    * @param startRowIndex the index of the first row to render
    * @param rowValues the values associated with the rows
-   * @param view the view used to render the cells
+   * @param view the view used to render the rows and cells
    */
   void renderRows(int startRowIndex, Iterator<RowType> rowValues,
-      AbstractCellView<RowType> view);
+      AbstractRowView<RowType> view);
 }

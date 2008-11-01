@@ -30,6 +30,12 @@ import java.util.Set;
 public class DefaultTableDefinition<RowType> implements
     TableDefinition<RowType> {
   /**
+   * The default {@link RowRenderer} to use when the
+   * {@link DefaultTableDefinition} does not specify one.
+   */
+  private static final RowRenderer DEFAULT_ROW_RENDERER = new DefaultRowRenderer();
+
+  /**
    * The ordered list of {@link ColumnDefinition ColumnDefinitions} used by this
    * renderer.
    */
@@ -39,6 +45,11 @@ public class DefaultTableDefinition<RowType> implements
    * A list of visible columns.
    */
   private Set<ColumnDefinition<RowType, ?>> hiddenColumnDefs;
+
+  /**
+   * The renderer used to render rows.
+   */
+  private RowRenderer<RowType> rowRenderer = DEFAULT_ROW_RENDERER;
 
   /**
    * Create a new {@link TableDefinition}.
@@ -97,6 +108,10 @@ public class DefaultTableDefinition<RowType> implements
     return columnDefs.size();
   }
 
+  public RowRenderer<RowType> getRowRenderer() {
+    return rowRenderer;
+  }
+
   public List<ColumnDefinition<RowType, ?>> getVisibleColumnDefinitions() {
     List<ColumnDefinition<RowType, ?>> visibleColumns = new ArrayList<ColumnDefinition<RowType, ?>>();
     for (ColumnDefinition<RowType, ?> columnDef : columnDefs) {
@@ -127,9 +142,9 @@ public class DefaultTableDefinition<RowType> implements
   }
 
   public void renderRows(int startRowIndex, Iterator<RowType> rowValues,
-      AbstractCellView<RowType> view) {
+      AbstractRowView<RowType> view) {
     List<ColumnDefinition<RowType, ?>> visibleColumns = getVisibleColumnDefinitions();
-    view.renderRowsImpl(startRowIndex, rowValues, visibleColumns);
+    view.renderRowsImpl(startRowIndex, rowValues, rowRenderer, visibleColumns);
   }
 
   /**
@@ -145,5 +160,13 @@ public class DefaultTableDefinition<RowType> implements
     } else {
       hiddenColumnDefs.add(colDef);
     }
+  }
+
+  /**
+   * Set the {@link RowRenderer} used to render rows.
+   */
+  public void setRowRenderer(RowRenderer<RowType> rowRenderer) {
+    assert rowRenderer != null : "rowRenderer cannot be null";
+    this.rowRenderer = rowRenderer;
   }
 }

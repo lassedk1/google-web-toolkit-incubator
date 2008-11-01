@@ -109,8 +109,7 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
   /**
    * Test absolute row operations.
    */
-  // TODO(jlabanca) fix test on windows web mode.
-  public void disabledTestAbsoluteRows() {
+  public void testAbsoluteRows() {
     // Initialize the grid
     PagingScrollTable<List<Object>> table = getPagingScrollTable();
     FixedWidthGrid grid = table.getDataTable();
@@ -118,25 +117,21 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
 
     // Insert absolute row
     table.gotoPage(1, true);
-    assertEquals("7:1", grid.getText(2, 1));
+    assertEquals("cell 2:1", grid.getText(2, 1));
     table.insertAbsoluteRow(10);
-    assertEquals("7:1", grid.getText(2, 1));
+    assertEquals("cell 2:1", grid.getText(2, 1));
     table.insertAbsoluteRow(1);
-    assertEquals("6:1", grid.getText(2, 1));
-    table.insertAbsoluteRow(7);
-    grid.clearCell(4, 2);
-    String clearText = grid.getText(4, 2);
-    assertEquals(clearText, grid.getText(2, 1).trim());
+    assertEquals("cell 1:1", grid.getText(2, 1));
 
     // Insert absolute row
     table.gotoPage(1, true);
-    assertEquals("7:1", grid.getText(2, 1));
+    assertEquals("cell 2:1", grid.getText(2, 1));
     table.removeAbsoluteRow(10);
-    assertEquals("7:1", grid.getText(2, 1));
+    assertEquals("cell 2:1", grid.getText(2, 1));
     table.removeAbsoluteRow(1);
-    assertEquals("8:1", grid.getText(2, 1));
+    assertEquals("cell 3:1", grid.getText(2, 1));
     table.removeAbsoluteRow(7);
-    assertEquals("9:1", grid.getText(2, 1));
+    assertEquals("cell 4:1", grid.getText(2, 1));
   }
 
   /**
@@ -310,7 +305,7 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
     PagingScrollTable<List<Object>> table = getPagingScrollTable();
     TableModel<List<Object>> tableModel = table.getTableModel();
     FixedWidthGrid grid = table.getDataTable();
-  
+
     // pageSize
     table.setPageSize(5);
     assertEquals(5, table.getPageSize());
@@ -318,7 +313,7 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
     assertEquals(0, table.getPageSize());
     table.setPageSize(-1);
     assertEquals(0, table.getPageSize());
-  
+
     // numPages
     table.setPageSize(5);
     assertEquals(5, table.getPageCount());
@@ -326,18 +321,18 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
     assertEquals(3, table.getPageCount());
     table.setPageSize(25);
     assertEquals(1, table.getPageCount());
-  
+
     // Unknown number of pages
     tableModel.setRowCount(MutableTableModel.UNKNOWN_ROW_COUNT);
     assertEquals(-1, table.getPageCount());
     table.setPageSize(0);
     assertEquals(1, table.getPageCount());
-  
+
     // bulk renderer
     FixedWidthGridBulkRenderer<List<Object>> bulkRenderer = new FixedWidthGridBulkRenderer<List<Object>>(
         grid, table.getTableDefinition());
     table.setBulkRenderer(bulkRenderer);
-  
+
     // Empty table widget
     {
       Widget emptyTableWidget = new HTML("Empty");

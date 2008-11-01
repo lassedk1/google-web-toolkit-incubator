@@ -16,8 +16,7 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.base.client.Gen2TestBase;
-import com.google.gwt.gen2.table.client.TableDefinition.HTMLCellView;
-import com.google.gwt.gen2.table.client.TableDefinition.TableCellView;
+import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
 
 /**
  * Tests for {@link AbstractColumnDefinition}.
@@ -48,14 +47,8 @@ public class AbstractColumnDefinitionTest extends Gen2TestBase {
     }
 
     public void renderRowValue(RowType rowValue,
-        ColumnDefinition<RowType, ColType> columnDef, HTMLCellView<RowType> view) {
-      lastRowValue = rowValue;
-      view.addHTML("cell " + view.getRowIndex() + ":" + view.getCellIndex());
-    }
-
-    public void renderRowValue(RowType rowValue,
         ColumnDefinition<RowType, ColType> columnDef,
-        TableCellView<RowType> view) {
+        AbstractCellView<RowType> view) {
       lastRowValue = rowValue;
       view.setHTML("cell " + view.getRowIndex() + ":" + view.getCellIndex());
     }
@@ -114,17 +107,7 @@ public class AbstractColumnDefinitionTest extends Gen2TestBase {
     // setCellRenderer
     {
       AbstractColumnDefinition<Object, Object> colDef = new CustomColumnDefinition<Object, Object>();
-      CellRenderer<Object, Object> cellRenderer = new CellRenderer<Object, Object>() {
-        public void renderRowValue(Object rowValue,
-            ColumnDefinition<Object, Object> columnDef,
-            HTMLCellView<Object> view) {
-        }
-
-        public void renderRowValue(Object rowValue,
-            ColumnDefinition<Object, Object> columnDef,
-            TableCellView<Object> view) {
-        }
-      };
+      CellRenderer<Object, Object> cellRenderer = new CustomCellRenderer<Object, Object>();
       assertNotNull(colDef.getCellRenderer());
       colDef.setCellRenderer(cellRenderer);
       assertEquals(cellRenderer, colDef.getCellRenderer());

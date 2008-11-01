@@ -15,8 +15,7 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.TableDefinition.HTMLCellView;
-import com.google.gwt.gen2.table.client.TableDefinition.TableCellView;
+import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
 
 /**
  * Cell renderers can be used to customize the display of data in a table cell.
@@ -26,24 +25,14 @@ import com.google.gwt.gen2.table.client.TableDefinition.TableCellView;
  */
 public interface CellRenderer<RowType, ColType> {
   /**
-   * Render the cell as a {@link com.google.gwt.user.client.ui.Widget} or set
-   * the contents of the cell.
+   * Render the contents of a cell as a
+   * {@link com.google.gwt.user.client.ui.Widget} or text or HTML.
    * 
    * @param rowValue the object associated with the row
    * @param columnDef the associated column definition
    * @param view the view used to set the cell contents
    */
   void renderRowValue(RowType rowValue,
-      ColumnDefinition<RowType, ColType> columnDef, HTMLCellView<RowType> view);
-
-  /**
-   * Render the cell as a {@link com.google.gwt.user.client.ui.Widget} or set
-   * the contents of the cell.
-   * 
-   * @param rowValue the object associated with the row
-   * @param columnDef the associated column definition
-   * @param view the view used to set the cell contents
-   */
-  void renderRowValue(RowType rowValue,
-      ColumnDefinition<RowType, ColType> columnDef, TableCellView<RowType> view);
+      ColumnDefinition<RowType, ColType> columnDef,
+      AbstractCellView<RowType> view);
 }
