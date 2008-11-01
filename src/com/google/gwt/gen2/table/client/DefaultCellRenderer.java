@@ -15,8 +15,7 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.TableDefinition.HTMLCellView;
-import com.google.gwt.gen2.table.client.TableDefinition.TableCellView;
+import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -29,22 +28,11 @@ import com.google.gwt.user.client.ui.Widget;
 public class DefaultCellRenderer<RowType, ColType> implements
     CellRenderer<RowType, ColType> {
   public void renderRowValue(RowType rowValue,
-      ColumnDefinition<RowType, ColType> columnDef, HTMLCellView<RowType> view) {
+      ColumnDefinition<RowType, ColType> columnDef,
+      AbstractCellView<RowType> view) {
     Object cellValue = columnDef.getCellValue(rowValue);
     if (cellValue == null) {
-      // Do nothing
-    } else if (cellValue instanceof Widget) {
-      view.setWidget((Widget) cellValue);
-    } else {
-      view.addHTML(cellValue.toString());
-    }
-  }
-
-  public void renderRowValue(RowType rowValue,
-      ColumnDefinition<RowType, ColType> columnDef, TableCellView<RowType> view) {
-    Object cellValue = columnDef.getCellValue(rowValue);
-    if (cellValue == null) {
-      view.setText("");
+      view.setHTML("");
     } else if (cellValue instanceof Widget) {
       view.setWidget((Widget) cellValue);
     } else {

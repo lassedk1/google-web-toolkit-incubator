@@ -17,7 +17,8 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.Duration;
-import com.google.gwt.gen2.table.client.TableDefinition.HTMLCellView;
+import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
+import com.google.gwt.gen2.table.client.TableDefinition.AbstractRowView;
 import com.google.gwt.gen2.table.client.TableModelHelper.Request;
 import com.google.gwt.gen2.table.client.TableModelHelper.Response;
 import com.google.gwt.gen2.table.override.client.HTMLTable;
@@ -63,25 +64,26 @@ public abstract class TableBulkRenderer<RowType> implements
   }
 
   /**
-   * A customized {@link HTMLCellView} used by the {@link TableBulkRenderer}.
+   * A custom {@link AbstractCellView} used by the {@link TableBulkRenderer}.
    * 
    * @param <RowType> the data type of the row values
    */
-  protected static class BulkCellView<RowType> extends HTMLCellView<RowType> {
+  protected static class BulkCellView<RowType> extends
+      AbstractCellView<RowType> {
     /**
      * A {@link StringBuffer} used to assemble the HTML of the table.
      */
-    private StringBuffer buffer;
-
-    /**
-     * The bulk renderer doing the rendering.
-     */
-    private TableBulkRenderer<RowType> bulkRenderer = null;
+    private StringBuffer buffer = null;
 
     /**
      * The horizontal alignment to apply to the current cell.
      */
     private HorizontalAlignmentConstant curCellHorizontalAlign = null;
+
+    /**
+     * The html string to add to the cell.
+     */
+    private String curCellHtml = null;
 
     /**
      * The style attributes to apply to the current cell.
@@ -92,11 +94,6 @@ public abstract class TableBulkRenderer<RowType> implements
      * The style name to be applied to the current cell.
      */
     private String curCellStyleName = null;
-
-    /**
-     * A boolean indicating that the current cell's tag has been added.
-     */
-    private boolean curCellTagAdded = false;
 
     /**
      * The vertical alignment to apply to the current cell.
@@ -110,64 +107,42 @@ public abstract class TableBulkRenderer<RowType> implements
     private List<DelayedWidget> delayedWidgets = new ArrayList<DelayedWidget>();
 
     /**
-     * The absolute end time of the rendering process. If the table takes longer
-     * than this to render, an error will be thrown.
-     */
-    private double endTime;
-
-    /**
-     * The {@link RenderingOptions} to apply to the table.
-     */
-    private RenderingOptions options;
-
-    /**
      * Construct a new {@link TableBulkRenderer.BulkCellView}.
      * 
-     * @param options the {@link RenderingOptions} to apply to the table
      * @param bulkRenderer the renderer
      */
-    public BulkCellView(TableBulkRenderer<RowType> bulkRenderer,
-        RenderingOptions options) {
+    public BulkCellView(TableBulkRenderer<RowType> bulkRenderer) {
       super((bulkRenderer.source == null) ? bulkRenderer : bulkRenderer.source);
-      this.bulkRenderer = bulkRenderer;
-      this.options = options;
-      endTime = Duration.currentTimeMillis() + MAX_TIME;
-
-      // Create a string buffer to assemble the table
-      buffer = new StringBuffer();
-      buffer.append("<table><tbody>");
-      if (options.headerRow != null) {
-        buffer.append(options.headerRow);
-      }
-    }
-
-    @Override
-    public void addHTML(String html) {
-      maybeAddOpenTag();
-      buffer.append(html);
     }
 
     @Override
     public void setHorizontalAlignment(HorizontalAlignmentConstant align) {
-      assert !curCellTagAdded : "You cannot call setHorizontalAlignment() after calling addHTML()";
       curCellHorizontalAlign = align;
     }
 
     @Override
+    public void setHTML(String html) {
+      curCellHtml = html;
+    }
+
+    @Override
     public void setStyleAttribute(String attr, String value) {
-      assert !curCellTagAdded : "You cannot call setStyleAttribute() after calling addHTML()";
       curCellStyles.put(attr, value);
     }
 
     @Override
     public void setStyleName(String stylename) {
-      assert !curCellTagAdded : "You cannot call setStyleName() after calling addHTML()";
       curCellStyleName = stylename;
     }
 
     @Override
+    public void setText(String text) {
+      throw new UnsupportedOperationException(
+          "setText(String) is not supported by the TableBulkRenderer.  Use setHTML(String) instead.");
+    }
+
+    @Override
     public void setVerticalAlignment(VerticalAlignmentConstant align) {
-      assert !curCellTagAdded : "You cannot call setVerticalAlignment() after calling addHTML()";
       curCellVerticalAlign = align;
     }
 
@@ -183,32 +158,152 @@ public abstract class TableBulkRenderer<RowType> implements
     }
 
     @Override
-    protected void renderCellImpl(RowType rowValue,
-        ColumnDefinition<RowType, ?> columnDef) {
-      curCellTagAdded = false;
+    protected void renderRowValue(RowType rowValue, ColumnDefinition columnDef) {
+      curCellHtml = null;
       curCellStyleName = null;
       curCellHorizontalAlign = null;
       curCellVerticalAlign = null;
       curCellStyles.clear();
-      bulkRenderer.renderCell(rowValue, columnDef, this);
-      maybeAddOpenTag();
+      super.renderRowValue(rowValue, columnDef);
+
+      // Add the open tag
+      buffer.append("<td");
+      if (curCellHorizontalAlign != null) {
+        buffer.append(" align=\"");
+        buffer.append(curCellHorizontalAlign.getTextAlignString());
+        buffer.append("\"");
+      }
+      if (curCellVerticalAlign != null) {
+        curCellStyles.put("verticalAlign",
+            curCellVerticalAlign.getVerticalAlignString());
+      }
+      if (curCellStyleName != null) {
+        buffer.append(" class=\"");
+        buffer.append(curCellStyleName);
+        buffer.append("\"");
+      }
+      if (curCellStyles.size() > 0) {
+        buffer.append(" style=\"");
+        for (Map.Entry<String, String> entry : curCellStyles.entrySet()) {
+          buffer.append(entry.getKey());
+          buffer.append(":");
+          buffer.append(entry.getValue());
+          buffer.append(";");
+        }
+        buffer.append("\"");
+      }
+      buffer.append(">");
+
+      // Add contents
+      if (curCellHtml != null) {
+        buffer.append(curCellHtml);
+      }
+
+      // Add close tag
       buffer.append("</td>");
+    }
+  }
+
+  /**
+   * A custom {@link AbstractRowView} used by the {@link PagingScrollTable}.
+   * 
+   * @param <RowType> the type of the row values
+   */
+  protected static class BulkRowView<RowType> extends AbstractRowView<RowType> {
+    /**
+     * A {@link StringBuffer} used to assemble the HTML of the table.
+     */
+    private StringBuffer buffer;
+
+    /**
+     * The bulk renderer doing the rendering.
+     */
+    private TableBulkRenderer<RowType> bulkRenderer;
+
+    /**
+     * The view of the cell.
+     */
+    private BulkCellView<RowType> cellView;
+
+    /**
+     * The style attributes to apply to the current cell.
+     */
+    private Map<String, String> curRowStyles = new HashMap<String, String>();
+
+    /**
+     * The style name to be applied to the current cell.
+     */
+    private String curRowStyleName = null;
+
+    /**
+     * The absolute end time of the rendering process. If the table takes longer
+     * than this to render, an error will be thrown.
+     */
+    private double endTime;
+
+    /**
+     * The {@link RenderingOptions} to apply to the table.
+     */
+    private RenderingOptions options;
+
+    /**
+     * The current row index.
+     */
+    private int rowIndex = 0;
+
+    /**
+     * Construct a new {@link TableBulkRenderer.BulkRowView}.
+     * 
+     * @param cellView the view of the cell
+     * @param bulkRenderer the renderer
+     * @param options the {@link RenderingOptions} to apply to the table
+     */
+    public BulkRowView(BulkCellView<RowType> cellView,
+        TableBulkRenderer<RowType> bulkRenderer, RenderingOptions options) {
+      super(cellView);
+      this.bulkRenderer = bulkRenderer;
+      this.cellView = cellView;
+      this.options = options;
+      endTime = Duration.currentTimeMillis() + MAX_TIME;
+
+      // Create a string buffer to assemble the table
+      buffer = new StringBuffer();
+      buffer.append("<table><tbody>");
+      if (options.headerRow != null) {
+        buffer.append(options.headerRow);
+      }
+      cellView.buffer = buffer;
     }
 
     @Override
-    protected void renderRowImpl(RowType rowValue,
+    public void setStyleAttribute(String attr, String value) {
+      curRowStyles.put(attr, value);
+    }
+
+    @Override
+    public void setStyleName(String stylename) {
+      curRowStyleName = stylename;
+    }
+
+    protected StringBuffer getStringBuffer() {
+      return buffer;
+    }
+
+    @Override
+    protected void renderRowImpl(int rowIndex, RowType rowValue,
+        RowRenderer<RowType> rowRenderer,
         List<ColumnDefinition<RowType, ?>> visibleColumns) {
-      buffer.append("<tr>");
-      super.renderRowImpl(rowValue, visibleColumns);
+      super.renderRowImpl(rowIndex, rowValue, rowRenderer, visibleColumns);
       buffer.append("</tr>");
     }
 
     @Override
     protected void renderRowsImpl(int startRowIndex,
         final Iterator<RowType> rowValues,
+        final RowRenderer<RowType> rowRenderer,
         final List<ColumnDefinition<RowType, ?>> visibleColumns) {
       // Reset the row index
-      setRowIndex(startRowIndex);
+      rowIndex = startRowIndex;
       final int myStamp = ++bulkRenderer.requestStamp;
 
       // Use an incremental command to render rows in increments
@@ -239,8 +334,9 @@ public abstract class TableBulkRenderer<RowType> implements
             }
 
             // Render a single row and increment the row index
-            renderRowImpl(rowValues.next(), visibleColumns);
-            setRowIndex(getRowIndex() + 1);
+            renderRowImpl(rowIndex, rowValues.next(), rowRenderer,
+                visibleColumns);
+            rowIndex++;
           }
 
           // Finish rendering the table
@@ -248,7 +344,7 @@ public abstract class TableBulkRenderer<RowType> implements
           bulkRenderer.renderRows(buffer.toString());
 
           // Add widgets into the table
-          for (DelayedWidget dw : delayedWidgets) {
+          for (DelayedWidget dw : cellView.delayedWidgets) {
             bulkRenderer.table.setWidget(dw.rowIndex, dw.cellIndex, dw.widget);
           }
 
@@ -267,41 +363,31 @@ public abstract class TableBulkRenderer<RowType> implements
       }
     }
 
-    /**
-     * Add the open tag to the current cell if it hasn't been added already.
-     * Also add all markups to the cell including the style name, alignment, and
-     * style attributes.
-     */
-    private void maybeAddOpenTag() {
-      if (!curCellTagAdded) {
-        curCellTagAdded = true;
-        buffer.append("<td");
-        if (curCellHorizontalAlign != null) {
-          buffer.append(" align=\"");
-          buffer.append(curCellHorizontalAlign.getTextAlignString());
-          buffer.append("\"");
-        }
-        if (curCellVerticalAlign != null) {
-          curCellStyles.put("verticalAlign",
-              curCellVerticalAlign.getVerticalAlignString());
-        }
-        if (curCellStyleName != null) {
-          buffer.append(" class=\"");
-          buffer.append(curCellStyleName);
-          buffer.append("\"");
-        }
-        if (curCellStyles.size() > 0) {
-          buffer.append(" style=\"");
-          for (Map.Entry<String, String> entry : curCellStyles.entrySet()) {
-            buffer.append(entry.getKey());
-            buffer.append(":");
-            buffer.append(entry.getValue());
-            buffer.append(";");
-          }
-          buffer.append("\"");
-        }
-        buffer.append(">");
+    @Override
+    protected void renderRowValue(RowType rowValue,
+        RowRenderer<RowType> rowRenderer) {
+      curRowStyleName = null;
+      curRowStyles.clear();
+      super.renderRowValue(rowValue, rowRenderer);
+
+      // Add the open tag
+      buffer.append("<tr");
+      if (curRowStyleName != null) {
+        buffer.append(" class=\"");
+        buffer.append(curRowStyleName);
+        buffer.append("\"");
       }
+      if (curRowStyles.size() > 0) {
+        buffer.append(" style=\"");
+        for (Map.Entry<String, String> entry : curRowStyles.entrySet()) {
+          buffer.append(entry.getKey());
+          buffer.append(":");
+          buffer.append(entry.getValue());
+          buffer.append(";");
+        }
+        buffer.append("\"");
+      }
+      buffer.append(">");
     }
   }
 
@@ -466,22 +552,24 @@ public abstract class TableBulkRenderer<RowType> implements
   }
 
   /**
-   * Create a {@link HTMLCellView} that can be used to render the table.
-   * 
-   * @param options the {@link RenderingOptions}
-   * @return the cell view
-   */
-  protected HTMLCellView<RowType> createCellView(final RenderingOptions options) {
-    return new BulkCellView<RowType>(this, options);
-  }
-
-  /**
    * Creates the rendering options associated with this renderer.
    * 
    * @return the rendering options
    */
   protected RenderingOptions createRenderingOptions() {
     return new RenderingOptions();
+  }
+
+  /**
+   * Create an {@link AbstractRowView} that can be used to render the table.
+   * 
+   * @param options the {@link RenderingOptions}
+   * @return the row view
+   */
+  protected AbstractRowView<RowType> createRowView(
+      final RenderingOptions options) {
+    BulkCellView<RowType> cellView = new BulkCellView<RowType>(this);
+    return new BulkRowView<RowType>(cellView, this, options);
   }
 
   /**
@@ -494,19 +582,6 @@ public abstract class TableBulkRenderer<RowType> implements
   }
 
   /**
-   * Render the cell as a {@link com.google.gwt.user.client.ui.Widget} or set
-   * the contents of the cell.
-   * 
-   * @param rowValue the object associated with the row
-   * @param columnDef the associated column definition
-   * @param view the view used to set the cell contents
-   */
-  protected void renderCell(RowType rowValue, ColumnDefinition columnDef,
-      HTMLCellView<RowType> view) {
-    columnDef.getCellRenderer().renderRowValue(rowValue, columnDef, view);
-  }
-
-  /**
    * Work horse protected rendering method.
    * 
    * @param rows Iterator of row iterators
@@ -514,7 +589,7 @@ public abstract class TableBulkRenderer<RowType> implements
    */
   protected void renderRows(final Iterator<RowType> rows,
       final RenderingOptions options) {
-    getTableDefinition().renderRows(0, rows, createCellView(options));
+    getTableDefinition().renderRows(0, rows, createRowView(options));
   }
 
   /**
@@ -554,7 +629,8 @@ public abstract class TableBulkRenderer<RowType> implements
    * @param table the table element who's body will be replaced
    * @param thatBody the table element with the donor body
    */
-  private native Element replaceBodyElement(Element table, Element thatBody) /*-{
+  private native Element replaceBodyElement(Element table, Element thatBody)
+  /*-{
     table.removeChild(table.tBodies[0]);
     var thatChild = thatBody.tBodies[0];
     table.appendChild(thatChild);
@@ -564,7 +640,8 @@ public abstract class TableBulkRenderer<RowType> implements
   /**
    * Short term hack to get protected setBodyElement.
    */
-  private native void setBodyElement(HTMLTable table, Element newBody) /*-{
+  private native void setBodyElement(HTMLTable table, Element newBody)
+  /*-{
     table.@com.google.gwt.gen2.table.override.client.HTMLTable::setBodyElement(Lcom/google/gwt/user/client/Element;)(newBody);
   }-*/;
 }

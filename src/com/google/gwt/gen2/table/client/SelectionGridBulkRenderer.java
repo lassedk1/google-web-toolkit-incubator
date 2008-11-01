@@ -16,9 +16,7 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.table.client.SelectionGrid.SelectionPolicy;
-import com.google.gwt.gen2.table.client.TableDefinition.HTMLCellView;
-
-import java.util.List;
+import com.google.gwt.gen2.table.client.TableDefinition.AbstractRowView;
 
 /**
  * Allows bulk rendering of {@link SelectionGrid}s.
@@ -35,46 +33,33 @@ public class SelectionGridBulkRenderer<RowType> extends
    */
   protected static class SelectionBulkCellView<RowType> extends
       BulkCellView<RowType> {
-    /**
-     * The bulk renderer doing the rendering.
-     */
-    private SelectionGridBulkRenderer<RowType> bulkRenderer = null;
+    private TableBulkRenderer<RowType> bulkRenderer = null;
 
     /**
      * Construct a new {@link SelectionGridBulkRenderer.SelectionBulkCellView}.
      * 
-     * @param options the {@link TableBulkRenderer.RenderingOptions} to apply to
-     *          the table
      * @param bulkRenderer the renderer
      */
-    public SelectionBulkCellView(
-        SelectionGridBulkRenderer<RowType> bulkRenderer,
-        RenderingOptions options) {
-      super(bulkRenderer, options);
+    public SelectionBulkCellView(TableBulkRenderer<RowType> bulkRenderer) {
+      super(bulkRenderer);
       this.bulkRenderer = bulkRenderer;
     }
 
     @Override
-    protected void renderRowImpl(RowType rowValue,
-        List<ColumnDefinition<RowType, ?>> visibleColumns) {
-      StringBuffer buffer = getStringBuffer();
-      buffer.append("<tr>");
-
+    protected void renderRowValue(RowType rowValue, ColumnDefinition columnDef) {
       // Add the input column
-      SelectionPolicy selectionPolicy = ((SelectionGrid) bulkRenderer.getTable()).getSelectionPolicy();
-      if (selectionPolicy.hasInputColumn()) {
-        buffer.append("<td align='CENTER'>");
-        buffer.append(((SelectionGrid) bulkRenderer.getTable()).getInputHtml(selectionPolicy));
-        buffer.append("</td>");
+      if (getCellIndex() == 0) {
+        SelectionPolicy selectionPolicy = ((SelectionGrid) bulkRenderer.getTable()).getSelectionPolicy();
+        if (selectionPolicy.hasInputColumn()) {
+          getStringBuffer().append("<td align='CENTER'>");
+          getStringBuffer().append(
+              ((SelectionGrid) bulkRenderer.getTable()).getInputHtml(selectionPolicy));
+          getStringBuffer().append("</td>");
+        }
       }
 
-      // Add the columns
-      int numColumns = visibleColumns.size();
-      for (int i = 0; i < numColumns; i++) {
-        setCellIndex(i);
-        renderCellImpl(rowValue, visibleColumns.get(i));
-      }
-      buffer.append("</tr>");
+      // Render the actual cell
+      super.renderRowValue(rowValue, columnDef);
     }
   }
 
@@ -101,8 +86,9 @@ public class SelectionGridBulkRenderer<RowType> extends
   }
 
   @Override
-  protected HTMLCellView<RowType> createCellView(final RenderingOptions options) {
-    return new SelectionBulkCellView<RowType>(this, options);
+  protected AbstractRowView<RowType> createRowView(
+      final RenderingOptions options) {
+    BulkCellView<RowType> cellView = new SelectionBulkCellView<RowType>(this);
+    return new BulkRowView<RowType>(cellView, this, options);
   }
-
 }

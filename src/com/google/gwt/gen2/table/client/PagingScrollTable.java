@@ -20,7 +20,8 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.table.client.CellEditor.CellEditInfo;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorter;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorterCallback;
-import com.google.gwt.gen2.table.client.TableDefinition.TableCellView;
+import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
+import com.google.gwt.gen2.table.client.TableDefinition.AbstractRowView;
 import com.google.gwt.gen2.table.client.TableModel.Callback;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
 import com.google.gwt.gen2.table.client.TableModelHelper.Request;
@@ -69,6 +70,87 @@ import java.util.NoSuchElementException;
 public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     HasTableDefinition<RowType>, HasPageCountChangeHandlers,
     HasPageLoadHandlers, HasPageChangeHandlers, HasPagingFailureHandlers {
+  /**
+   * A custom {@link AbstractCellView} used by the {@link PagingScrollTable}.
+   * 
+   * @param <RowType> the type of the row values
+   */
+  protected static class PagingScrollTableCellView<RowType> extends
+      AbstractCellView<RowType> {
+    private PagingScrollTable<RowType> table;
+
+    public PagingScrollTableCellView(PagingScrollTable<RowType> table) {
+      super(table);
+      this.table = table;
+    }
+
+    @Override
+    public void setHorizontalAlignment(HorizontalAlignmentConstant align) {
+      table.getDataTable().getCellFormatter().setHorizontalAlignment(
+          getRowIndex(), getCellIndex(), align);
+    }
+
+    @Override
+    public void setHTML(String html) {
+      table.getDataTable().setHTML(getRowIndex(), getCellIndex(), html);
+    }
+
+    @Override
+    public void setStyleAttribute(String attr, String value) {
+      table.getDataTable().getFixedWidthGridCellFormatter().getRawElement(
+          getRowIndex(), getCellIndex()).getStyle().setProperty(attr, value);
+    }
+
+    @Override
+    public void setStyleName(String stylename) {
+      table.getDataTable().getCellFormatter().setStyleName(getRowIndex(),
+          getCellIndex(), stylename);
+    }
+
+    @Override
+    public void setText(String text) {
+      table.getDataTable().setText(getRowIndex(), getCellIndex(), text);
+    }
+
+    @Override
+    public void setVerticalAlignment(VerticalAlignmentConstant align) {
+      table.getDataTable().getCellFormatter().setVerticalAlignment(
+          getRowIndex(), getCellIndex(), align);
+    }
+
+    @Override
+    public void setWidget(Widget widget) {
+      table.getDataTable().setWidget(getRowIndex(), getCellIndex(), widget);
+    }
+  }
+
+  /**
+   * A custom {@link AbstractRowView} used by the {@link PagingScrollTable}.
+   * 
+   * @param <RowType> the type of the row values
+   */
+  protected static class PagingScrollTableRowView<RowType> extends
+      AbstractRowView<RowType> {
+    private PagingScrollTable<RowType> table;
+
+    public PagingScrollTableRowView(PagingScrollTable<RowType> table) {
+      super(new PagingScrollTableCellView<RowType>(table));
+      this.table = table;
+    }
+
+    @Override
+    public void setStyleAttribute(String attr, String value) {
+      table.getDataTable().getFixedWidthGridRowFormatter().getRawElement(
+          getRowIndex()).getStyle().setProperty(attr, value);
+    }
+
+    @Override
+    public void setStyleName(String stylename) {
+      table.getDataTable().getRowFormatter().setStyleName(getRowIndex(),
+          stylename);
+    }
+  }
+
   /**
    * An iterator over the visible rows in an iterator over many rows.
    */
@@ -132,11 +214,6 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   private FixedWidthGridBulkRenderer<RowType> bulkRenderer = null;
 
   /**
-   * The callback used with cell editors.
-   */
-  private CellEditor.Callback cellEditorCallback = null;
-
-  /**
    * The wrapper around the empty table widget.
    */
   private SimplePanel emptyTableWidgetWrapper = new SimplePanel();
@@ -145,60 +222,6 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    * The definition of the columns in the table.
    */
   private TableDefinition<RowType> tableDefinition = null;
-
-  /**
-   * The view of this table.
-   */
-  private TableCellView<RowType> tableCellView = new TableCellView<RowType>(
-      this) {
-    @Override
-    public void setHorizontalAlignment(HorizontalAlignmentConstant align) {
-      PagingScrollTable.this.getDataTable().getCellFormatter().setHorizontalAlignment(
-          getRowIndex(), getCellIndex(), align);
-    }
-
-    @Override
-    public void setHTML(String html) {
-      PagingScrollTable.this.getDataTable().setHTML(getRowIndex(),
-          getCellIndex(), html);
-    }
-
-    @Override
-    public void setStyleAttribute(String attr, String value) {
-      PagingScrollTable.this.getDataTable().getFixedWidthGridCellFormatter().getRawElement(
-          getRowIndex(), getCellIndex()).getStyle().setProperty(attr, value);
-    }
-
-    @Override
-    public void setStyleName(String stylename) {
-      PagingScrollTable.this.getDataTable().getCellFormatter().setStyleName(
-          getRowIndex(), getCellIndex(), stylename);
-    }
-
-    @Override
-    public void setText(String text) {
-      PagingScrollTable.this.getDataTable().setText(getRowIndex(),
-          getCellIndex(), text);
-    }
-
-    @Override
-    public void setVerticalAlignment(VerticalAlignmentConstant align) {
-      PagingScrollTable.this.getDataTable().getCellFormatter().setVerticalAlignment(
-          getRowIndex(), getCellIndex(), align);
-    }
-
-    @Override
-    public void setWidget(Widget widget) {
-      PagingScrollTable.this.getDataTable().setWidget(getRowIndex(),
-          getCellIndex(), widget);
-    }
-
-    @Override
-    protected void renderCellImpl(RowType rowValue,
-        ColumnDefinition<RowType, ?> columnDef) {
-      renderCell(rowValue, columnDef, this);
-    }
-  };
 
   /**
    * The current visible page.
@@ -241,6 +264,12 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    * ties the visible content in each row to an underlying object.
    */
   private List<RowType> rowValues = null;
+
+  /**
+   * The view of this table.
+   */
+  private AbstractRowView<RowType> rowView = new PagingScrollTableRowView<RowType>(
+      this);
 
   /**
    * The underlying table model.
@@ -769,19 +798,6 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   }
 
   /**
-   * Render the cell as a {@link com.google.gwt.user.client.ui.Widget} or set
-   * the contents of the cell.
-   * 
-   * @param rowValue the object associated with the row
-   * @param columnDef the associated column definition
-   * @param view the view used to set the cell contents
-   */
-  protected void renderCell(RowType rowValue, ColumnDefinition columnDef,
-      TableCellView view) {
-    columnDef.getCellRenderer().renderRowValue(rowValue, columnDef, view);
-  }
-
-  /**
    * Set a block of data. This method is used when responding to data requests.
    * 
    * This method takes an iterator of iterators, where each iterator represents
@@ -822,7 +838,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       getDataTable().resize(rowCount, colCount);
 
       // Render the rows
-      tableDefinition.renderRows(0, rowValues.iterator(), tableCellView);
+      tableDefinition.renderRows(0, rowValues.iterator(), rowView);
     } else {
       setEmptyTableWidgetVisible(true);
     }
@@ -871,6 +887,6 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
         throw new UnsupportedOperationException();
       }
     };
-    tableDefinition.renderRows(rowIndex, singleIterator, tableCellView);
+    tableDefinition.renderRows(rowIndex, singleIterator, rowView);
   }
 }

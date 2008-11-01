@@ -26,17 +26,18 @@ import com.google.gwt.gen2.table.client.AbstractScrollTable;
 import com.google.gwt.gen2.table.client.CachedTableModel;
 import com.google.gwt.gen2.table.client.CellRenderer;
 import com.google.gwt.gen2.table.client.ColumnDefinition;
+import com.google.gwt.gen2.table.client.DefaultRowRenderer;
 import com.google.gwt.gen2.table.client.DefaultTableDefinition;
 import com.google.gwt.gen2.table.client.FixedWidthFlexTable;
 import com.google.gwt.gen2.table.client.FixedWidthGrid;
+import com.google.gwt.gen2.table.client.FixedWidthGridBulkRenderer;
 import com.google.gwt.gen2.table.client.ListCellEditor;
 import com.google.gwt.gen2.table.client.PagingOptions;
 import com.google.gwt.gen2.table.client.RadioCellEditor;
 import com.google.gwt.gen2.table.client.ScrollTable;
 import com.google.gwt.gen2.table.client.TableDefinition;
 import com.google.gwt.gen2.table.client.TextCellEditor;
-import com.google.gwt.gen2.table.client.TableDefinition.HTMLCellView;
-import com.google.gwt.gen2.table.client.TableDefinition.TableCellView;
+import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
 import com.google.gwt.gen2.table.override.client.FlexTable;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
@@ -162,8 +163,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
         "There is no data to display"));
 
     // Setup the bulk renderer
-    StudentBulkRenderer bulkRenderer = new StudentBulkRenderer(
-        pagingScrollTable);
+    FixedWidthGridBulkRenderer<Student> bulkRenderer = new FixedWidthGridBulkRenderer<Student>(
+        dataTable, pagingScrollTable);
     pagingScrollTable.setBulkRenderer(bulkRenderer);
 
     // Setup the formatting
@@ -201,14 +202,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     CellRenderer<Student, Integer> intCellRenderer = new CellRenderer<Student, Integer>() {
       public void renderRowValue(Student rowValue,
           ColumnDefinition<Student, Integer> columnDef,
-          HTMLCellView<Student> view) {
-        view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        view.addHTML(columnDef.getCellValue(rowValue).toString());
-      }
-
-      public void renderRowValue(Student rowValue,
-          ColumnDefinition<Student, Integer> columnDef,
-          TableCellView<Student> view) {
+          AbstractCellView<Student> view) {
         view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         view.setHTML(columnDef.getCellValue(rowValue).toString());
       }
@@ -216,6 +210,10 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // Create the table definition
     tableDefinition = new DefaultTableDefinition<Student>();
+
+    // Set the row renderer
+    String[] rowColors = new String[] {"#FFFFDD", "#EEEEEE"};
+    tableDefinition.setRowRenderer(new DefaultRowRenderer<Student>(rowColors));
 
     // First name
     {
@@ -296,17 +294,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       columnDef.setCellRenderer(new CellRenderer<Student, Boolean>() {
         public void renderRowValue(Student rowValue,
             ColumnDefinition<Student, Boolean> columnDef,
-            HTMLCellView<Student> view) {
-          if (rowValue.isMale()) {
-            view.addHTML("male");
-          } else {
-            view.addHTML("female");
-          }
-        }
-
-        public void renderRowValue(Student rowValue,
-            ColumnDefinition<Student, Boolean> columnDef,
-            TableCellView<Student> view) {
+            AbstractCellView<Student> view) {
           if (rowValue.isMale()) {
             view.setHTML("male");
           } else {
@@ -375,15 +363,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       columnDef.setCellRenderer(new CellRenderer<Student, String>() {
         public void renderRowValue(Student rowValue,
             ColumnDefinition<Student, String> columnDef,
-            HTMLCellView<Student> view) {
-          String color = rowValue.getFavoriteColor();
-          view.setStyleAttribute("color", color);
-          view.addHTML(color);
-        }
-
-        public void renderRowValue(Student rowValue,
-            ColumnDefinition<Student, String> columnDef,
-            TableCellView<Student> view) {
+            AbstractCellView<Student> view) {
           String color = rowValue.getFavoriteColor();
           view.setStyleAttribute("color", color);
           view.setHTML(color);
@@ -516,22 +496,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       columnDef.setCellRenderer(new CellRenderer<Student, Double>() {
         public void renderRowValue(Student rowValue,
             ColumnDefinition<Student, Double> columnDef,
-            HTMLCellView<Student> view) {
-          view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-          double gpa = rowValue.getGpa();
-          if (gpa < 2) {
-            view.setStyleName("badGPA");
-          } else if (gpa < 3) {
-            view.setStyleName("goodGPA");
-          } else {
-            view.setStyleName("greatGPA");
-          }
-          view.addHTML(gpaToString(gpa));
-        }
-
-        public void renderRowValue(Student rowValue,
-            ColumnDefinition<Student, Double> columnDef,
-            TableCellView<Student> view) {
+            AbstractCellView<Student> view) {
           view.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
           double gpa = rowValue.getGpa();
           if (gpa < 2) {
