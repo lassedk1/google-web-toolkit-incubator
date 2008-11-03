@@ -17,6 +17,7 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.base.client.Gen2TestBase;
 import com.google.gwt.gen2.table.client.AbstractScrollTable.ScrollPolicy;
+import com.google.gwt.gen2.table.client.AbstractScrollTable.SortPolicy;
 
 /**
  * Tests methods in the {@link AbstractScrollTable} class.
@@ -98,6 +99,12 @@ public abstract class AbstractScrollTableTest extends Gen2TestBase {
     // Column sortable
     assertTrue(table.isColumnSortable(0));
     assertTrue(table.isColumnSortable(1000));
+
+    // SortPolicy
+    table.setSortPolicy(SortPolicy.DISABLED);
+    assertEquals(SortPolicy.DISABLED, table.getSortPolicy());
+    table.setSortPolicy(SortPolicy.MULTI_CELL);
+    assertEquals(SortPolicy.MULTI_CELL, table.getSortPolicy());
 
     // Remove widget not supported
     try {

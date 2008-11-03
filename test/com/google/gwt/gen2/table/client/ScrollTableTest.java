@@ -15,6 +15,8 @@
  */
 package com.google.gwt.gen2.table.client;
 
+import com.google.gwt.gen2.table.client.AbstractScrollTable.SortPolicy;
+
 /**
  * Tests methods in the {@link ScrollTable} class.
  */
@@ -56,31 +58,23 @@ public class ScrollTableTest extends AbstractScrollTableTest {
     FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
     ScrollTable table = getScrollTable(headerTable, dataTable, footerTable);
 
-    // Enable sorting
-    {
-      table.setSortingEnabled(false);
-      assertFalse(table.isSortingEnabled());
-      table.setSortingEnabled(true);
-      assertTrue(table.isSortingEnabled());
-    }
-
     // Column Sorting
     {
       // Default enabled
-      table.setSortingEnabled(true);
+      table.setSortPolicy(SortPolicy.SINGLE_CELL);
       assertTrue(table.isColumnSortable(0));
 
       // Default disabled
-      table.setSortingEnabled(false);
+      table.setSortPolicy(SortPolicy.DISABLED);
       assertFalse(table.isColumnSortable(0));
 
       // Set to unsortable
-      table.setSortingEnabled(true);
+      table.setSortPolicy(SortPolicy.SINGLE_CELL);
       table.setColumnSortable(0, false);
       assertFalse(table.isColumnSortable(0));
 
       // Set to sortable
-      table.setSortingEnabled(false);
+      table.setSortPolicy(SortPolicy.DISABLED);
       table.setColumnSortable(0, true);
       assertFalse(table.isColumnSortable(0));
     }

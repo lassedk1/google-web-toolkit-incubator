@@ -19,11 +19,13 @@ import com.google.gwt.gen2.demo.scrolltable.client.PagingScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.CustomForm;
+import com.google.gwt.gen2.table.client.AbstractScrollTable;
 import com.google.gwt.gen2.table.client.ScrollTable;
+import com.google.gwt.gen2.table.client.AbstractScrollTable.SortPolicy;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -39,9 +41,9 @@ public class SortColumnOption extends AbstractOption {
       + "their own server-side method using the sorting callback function.";
 
   /**
-   * The label that displays the status.
+   * The list box used to select the sort policy.
    */
-  private Label statusLabel = null;
+  private ListBox policyBox = null;
 
   @Override
   protected String getDescription() {
@@ -52,18 +54,30 @@ public class SortColumnOption extends AbstractOption {
   protected Widget onInitialize() {
     CustomForm form = new CustomForm();
 
-    // Add the current status
-    statusLabel = new Label();
-    form.addLabeledWidget("Current Status:", statusLabel);
-    refreshStatus(null);
+    // Add the current policy
+    policyBox = new ListBox();
+    policyBox.addItem("Disabled");
+    policyBox.addItem("Single Cell");
+    policyBox.addItem("Multi Cell");
+    form.addLabeledWidget("Sort Policy:", policyBox);
+    refreshPolicy();
 
-    // Add button to change status
-    if (PagingScrollTableDemo.get() == null) {
-      Button button = new Button("Toggle Sorting", new ClickListener() {
+    // Add button to change policy
+    {
+      Button button = new Button("Set Sort Policy", new ClickListener() {
         public void onClick(Widget sender) {
-          ScrollTable scrollTable = (ScrollTable) ScrollTableDemo.get().getScrollTable();
-          scrollTable.setSortingEnabled(!scrollTable.isSortingEnabled());
-          refreshStatus(scrollTable);
+          AbstractScrollTable scrollTable = ScrollTableDemo.get().getScrollTable();
+          switch (policyBox.getSelectedIndex()) {
+            case 0:
+              scrollTable.setSortPolicy(SortPolicy.DISABLED);
+              break;
+            case 1:
+              scrollTable.setSortPolicy(SortPolicy.SINGLE_CELL);
+              break;
+            case 2:
+              scrollTable.setSortPolicy(SortPolicy.MULTI_CELL);
+              break;
+          }
         }
       });
       form.addButton(button);
@@ -129,13 +143,16 @@ public class SortColumnOption extends AbstractOption {
   }
 
   /**
-   * Refresh the status.
+   * Refresh the policy.
    */
-  private void refreshStatus(ScrollTable scrollTable) {
-    if (scrollTable == null || scrollTable.isSortingEnabled()) {
-      statusLabel.setText("enabled");
-    } else {
-      statusLabel.setText("disabled");
+  private void refreshPolicy() {
+    SortPolicy policy = ScrollTableDemo.get().getScrollTable().getSortPolicy();
+    if (policy == SortPolicy.DISABLED) {
+      policyBox.setSelectedIndex(0);
+    } else if (policy == SortPolicy.SINGLE_CELL) {
+      policyBox.setSelectedIndex(1);
+    } else if (policy == SortPolicy.MULTI_CELL) {
+      policyBox.setSelectedIndex(2);
     }
   }
 }

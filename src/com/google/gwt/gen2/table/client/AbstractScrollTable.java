@@ -521,6 +521,19 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
+   * The sorting policies related to user column sorting.
+   * 
+   * <ul>
+   * <li>DISABLED - Columns cannot be sorted by the user</li>
+   * <li>SINGLE_CELL - Only cells with a colspan of 1 can be sorted</li>
+   * <li>MULTI_CELL - All cells can be sorted by the user</li>
+   * </ul>
+   */
+  public static enum SortPolicy {
+    DISABLED, SINGLE_CELL, MULTI_CELL
+  }
+
+  /**
    * The helper class used to resize columns.
    */
   private ColumnResizer columnResizer = new ColumnResizer();
@@ -621,6 +634,11 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   private ScrollPolicy scrollPolicy = ScrollPolicy.BOTH;
 
   /**
+   * The current {@link SortPolicy}.
+   */
+  private SortPolicy sortPolicy = SortPolicy.SINGLE_CELL;
+
+  /**
    * The Image use to indicate the currently sorted column.
    */
   private Image sortedColumnIndicator = new Image();
@@ -634,11 +652,6 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * The wrapper around the image indicator.
    */
   private Element sortedColumnWrapper = null;
-
-  /**
-   * A boolean indicating whether or not sorting is enabled.
-   */
-  private boolean sortingEnabled = true;
 
   /**
    * If true, a vertical table resize is already pending.
@@ -757,9 +770,6 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
         }
       }
     });
-
-    // Enable other settings
-    setSortingEnabled(sortingEnabled);
 
     // Add to Resizable Collection
     ResizableWidgetCollection.get().add(this);
@@ -900,19 +910,19 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
+   * @return the current sort policy
+   */
+  public SortPolicy getSortPolicy() {
+    return sortPolicy;
+  }
+
+  /**
    * Returns true if the specified column is sortable.
    * 
    * @param column the column index
    * @return true if the column is sortable, false if it is not sortable
    */
   public abstract boolean isColumnSortable(int column);
-
-  /**
-   * @return true if sorting is enabled, false if disabled
-   */
-  public boolean isSortingEnabled() {
-    return sortingEnabled;
-  }
 
   @Override
   public void onBrowserEvent(Event event) {
@@ -955,6 +965,18 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
           // Get the actual column index
           Element cellElem = headerTable.getEventTargetCell(event);
           if (cellElem != null) {
+            // Sorting is disabled
+            if (sortPolicy == SortPolicy.DISABLED) {
+              return;
+            }
+
+            // Check the colSpan
+            int colSpan = cellElem.getPropertyInt("colSpan");
+            if (colSpan > 1 && getSortPolicy() != SortPolicy.MULTI_CELL) {
+              return;
+            }
+
+            // Sort the column
             int row = OverrideDOM.getRowIndex(DOM.getParent(cellElem)) - 1;
             int cell = OverrideDOM.getCellIndex(cellElem);
             int column = headerTable.getColumnIndex(row, cell)
@@ -1241,12 +1263,12 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
-   * Enable or disable column sorting via mouse clicks to the header cells.
+   * Set the {@link SortPolicy} that defines what columns users can sort.
    * 
-   * @param sortingEnabled true to enable column sorting via mouse events
+   * @param sortPolicy the {@link SortPolicy}
    */
-  public void setSortingEnabled(boolean sortingEnabled) {
-    this.sortingEnabled = sortingEnabled;
+  public void setSortPolicy(SortPolicy sortPolicy) {
+    this.sortPolicy = sortPolicy;
 
     // Remove the sorted indicator image
     applySortedColumnIndicator(null, true);
