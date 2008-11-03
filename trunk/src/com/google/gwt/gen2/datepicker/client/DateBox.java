@@ -248,6 +248,15 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
   public String getText() {
     return box.getText();
   }
+  
+  /**
+   * Get text box
+   * 
+   * @return the text box used to enter the formatted date 
+   */
+  public TextBox getTextBox() {
+    return box;
+  }
 
   /**
    * Hide the date picker.
@@ -258,6 +267,13 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
 
   public boolean isAnimationEnabled() {
     return popup.isAnimationEnabled();
+  }
+
+  /**
+   * @return true if date picker is currently visible, false if not
+   */
+  public boolean isDatePickerVisible() {
+    return popup.isVisible();
   }
 
   /**
