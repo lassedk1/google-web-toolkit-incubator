@@ -76,8 +76,8 @@ public interface TableDefinition<RowType> {
      * @param align the cell's new horizontal alignment as specified in
      *          {@link com.google.gwt.user.client.ui.HasHorizontalAlignment}.
      */
-    public void setHorizontalAlignment(HorizontalAlignmentConstant align) {
-    }
+    public abstract void setHorizontalAlignment(
+        HorizontalAlignmentConstant align);
 
     /**
      * Set the html string in the current cell.
@@ -92,15 +92,13 @@ public interface TableDefinition<RowType> {
      * @param attr the name of the style attribute to be set
      * @param value the style attribute's new value
      */
-    public void setStyleAttribute(String attr, String value) {
-    }
+    public abstract void setStyleAttribute(String attr, String value);
 
     /**
      * Set the style name of the cell, which can be a space delimited list of
      * style names.
      */
-    public void setStyleName(String stylename) {
-    }
+    public abstract void setStyleName(String stylename);
 
     /**
      * Set the text string in the current cell.
@@ -115,8 +113,7 @@ public interface TableDefinition<RowType> {
      * @param align the cell's new vertical alignment as specified in
      *          {@link com.google.gwt.user.client.ui.HasVerticalAlignment}.
      */
-    public void setVerticalAlignment(VerticalAlignmentConstant align) {
-    }
+    public abstract void setVerticalAlignment(VerticalAlignmentConstant align);
 
     /**
      * Set the {@link Widget} in the current cell.
@@ -189,15 +186,13 @@ public interface TableDefinition<RowType> {
      * @param attr the name of the style attribute to be set
      * @param value the style attribute's new value
      */
-    public void setStyleAttribute(String attr, String value) {
-    }
+    public abstract void setStyleAttribute(String attr, String value);
 
     /**
      * Set the style name of the cell, which can be a space delimited list of
      * style names.
      */
-    public void setStyleName(String stylename) {
-    }
+    public abstract void setStyleName(String stylename);
 
     /**
      * Render all of the cells in a single row.
