@@ -106,12 +106,12 @@ public class ScrollTable extends AbstractScrollTable {
 
   @Override
   public boolean isColumnSortable(int column) {
-    return (isSortingEnabled() && !unsortableColumns.contains(column));
+    return (getSortPolicy() != SortPolicy.DISABLED && !unsortableColumns.contains(column));
   }
 
   /**
    * Enable or disable sorting on a specific column. All columns are sortable by
-   * default. Use {@link #setSortingEnabled(boolean)} to disable sorting on all
+   * default. Use {@link #setSortPolicy(SortPolicy)} to disable sorting on all
    * columns.
    * 
    * @param column the index of the column

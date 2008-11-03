@@ -570,7 +570,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     if (colDef == null) {
       return true;
     }
-    return isSortingEnabled() && colDef.isColumnSortable();
+    return getSortPolicy() != SortPolicy.DISABLED && colDef.isColumnSortable();
   }
 
   /**
