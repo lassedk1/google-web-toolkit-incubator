@@ -1,0 +1,5 @@
+<module>
+	<inherits name='com.google.gwt.gen2.commonwidget.CommonWidget' />
+	
+	<source path="client" />
+</module>
