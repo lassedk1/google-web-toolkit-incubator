@@ -1,4 +1,0 @@
-com.google.gwt.libideas.logging.shared.Level, true
-com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException, true
-com.google.gwt.user.client.rpc.SerializableException, true
-java.lang.String, true
