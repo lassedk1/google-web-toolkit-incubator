@@ -339,6 +339,11 @@ public abstract class TableBulkRenderer<RowType> implements
             rowIndex++;
           }
 
+          // Add the footer row
+          if (options.footerRow != null) {
+            buffer.append(options.footerRow);
+          }
+
           // Finish rendering the table
           buffer.append("</tbody></table>");
           bulkRenderer.renderRows(buffer.toString());
@@ -399,6 +404,7 @@ public abstract class TableBulkRenderer<RowType> implements
     public int numRows = MutableTableModel.ALL_ROWS;
     public boolean syncCall = false;
     public String headerRow = null;
+    public String footerRow = null;
     public RendererCallback callback = null;
   }
 
