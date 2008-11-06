@@ -110,7 +110,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       table.getDataTable().getCellFormatter().setStyleName(getRowIndex(),
           getCellIndex(), stylename);
     }
-
+    
     @Override
     public void setText(String text) {
       table.getDataTable().setText(getRowIndex(), getCellIndex(), text);
@@ -151,6 +151,12 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     @Override
     public void setStyleName(String stylename) {
       table.getDataTable().getRowFormatter().setStyleName(getRowIndex(),
+          stylename);
+    }
+
+    @Override
+    public void removeStyleName(String stylename) {
+      table.getDataTable().getRowFormatter().removeStyleName(getRowIndex(),
           stylename);
     }
   }

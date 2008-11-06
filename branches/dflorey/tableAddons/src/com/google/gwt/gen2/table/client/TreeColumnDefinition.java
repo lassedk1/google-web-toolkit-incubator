@@ -2,7 +2,6 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.table.client.PagingScrollTreeTable.TreeTableResources;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
-import com.google.gwt.gen2.table.client.filter.ColumnTextFilter;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
@@ -29,21 +28,21 @@ public abstract class TreeColumnDefinition<RowType extends TreeTableItem, ColTyp
       treeNode.setSpacing(0);
       treeNode.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
       indent(treeNode, treeTableItem);
-      if (openNodes.contains(treeTableItem.getId())) {
-        Image image = resources.treeOpen().createImage();
+      if (getOpenNodes().contains(treeTableItem.getId())) {
+        Image image = getResources().treeOpen().createImage();
         image.addClickListener(new ClickListener() {
           public void onClick(Widget sender) {
-            openNodes.remove(treeTableItem.getId());
-            table.reloadPage();
+            getOpenNodes().remove(treeTableItem.getId());
+            getTable().reloadPage();
           }
         });
         treeNode.add(image);
       } else if (treeTableItem.hasChildren()) {
-        Image image = resources.treeClosed().createImage();
+        Image image = getResources().treeClosed().createImage();
         image.addClickListener(new ClickListener() {
           public void onClick(Widget sender) {
-            openNodes.add(treeTableItem.getId());
-            table.reloadPage();
+            getOpenNodes().add(treeTableItem.getId());
+            getTable().reloadPage();
           }
         });
         treeNode.add(image);
@@ -72,6 +71,18 @@ public abstract class TreeColumnDefinition<RowType extends TreeTableItem, ColTyp
       this.resources = resources;
     }
 
+    public PagingScrollTreeTable<RowType> getTable() {
+      return table;
+    }
+
+    public Set<String> getOpenNodes() {
+      return openNodes;
+    }
+
+    public TreeTableResources getResources() {
+      return resources;
+    }
+
     protected Widget createSpacer() {
       Widget spacer = new AbsolutePanel();
       spacer.setStylePrimaryName("spacer");
@@ -86,10 +97,9 @@ public abstract class TreeColumnDefinition<RowType extends TreeTableItem, ColTyp
     }
   }
 
-  private TreeCellRenderer cellRenderer = new TreeCellRenderer();
+  private TreeCellRenderer<RowType, ColType> cellRenderer = new TreeCellRenderer<RowType, ColType>();
 
   public TreeColumnDefinition() {
-    setColumnFilter(new ColumnTextFilter());
     setCellRenderer(cellRenderer);
   }
 

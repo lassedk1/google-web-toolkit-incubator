@@ -195,6 +195,11 @@ public interface TableDefinition<RowType> {
     public abstract void setStyleName(String stylename);
 
     /**
+     * Removes the style name of the cell
+     */
+    public abstract void removeStyleName(String stylename);
+
+    /**
      * Render all of the cells in a single row.
      * 
      * @param rowIndex the index of the row
