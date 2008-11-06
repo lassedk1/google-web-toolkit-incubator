@@ -68,6 +68,11 @@ public class ScrollTable extends AbstractScrollTable {
   private Set<Integer> unsortableColumns = new HashSet<Integer>();
 
   /**
+   * A set of columns that cannot be filtered.
+   */
+  private Set<Integer> unfilterableColumns = new HashSet<Integer>();
+
+  /**
    * Construct a new {@link ScrollTable}.
    * 
    * @param dataTable the data table
@@ -110,6 +115,13 @@ public class ScrollTable extends AbstractScrollTable {
   }
 
   /**
+   * @param column the column index
+   * @return true if the column is filterable, false if it is not filterable
+   */
+  public boolean isColumnFilterable(int column) {
+    return (unfilterableColumns != null && !unfilterableColumns.contains(column));
+  }
+  /**
    * Enable or disable sorting on a specific column. All columns are sortable by
    * default. Use {@link #setSortPolicy(SortPolicy)} to disable sorting on all
    * columns.
@@ -125,6 +137,21 @@ public class ScrollTable extends AbstractScrollTable {
     }
   }
 
+  /**
+   * Enable or disable filtering on a specific column. All columns are
+   * filterable by default. Use {@link #setFilteringEnabled(boolean)} to disable
+   * filtering on all columns.
+   * 
+   * @param column the index of the column
+   * @param filterable true to enable filtering for this column, false to disable
+   */
+  public void setColumnFilterable(int column, boolean filterable) {
+    if (filterable) {
+      unfilterableColumns.remove(column);
+    } else {
+      unfilterableColumns.add(column);
+    }
+  }
   /**
    * Set the maximum width of the column.
    * 

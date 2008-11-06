@@ -15,6 +15,8 @@
  */
 package com.google.gwt.gen2.table.client;
 
+import com.google.gwt.gen2.table.client.filter.ColumnFilter;
+
 /**
  * A definition of a column in a table.
  * 
@@ -45,10 +47,20 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
   private CellRenderer<RowType, ColType> cellRenderer = DEFAULT_CELL_RENDERER;
 
   /**
+   * The filter used to filter the contents of this column
+   */
+  private ColumnFilter columnFilter;
+  
+  /**
    * A boolean indicating whether or not the column is sortable. True by default
    * to be consistent with {@link ScrollTable}.
    */
   private boolean isColumnSortable = true;
+
+  /**
+   * A boolean indicating whether or not the column is filterable.
+   */
+  private boolean isColumnFilterable = false;
 
   /**
    * The minimum width of the column.
@@ -75,6 +87,10 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
 
   public abstract ColType getCellValue(RowType rowValue);
 
+  public ColumnFilter getColumnFilter() {
+    return columnFilter;
+  }
+   
   public int getMaximumColumnWidth() {
     return maxWidth;
   }
@@ -89,6 +105,10 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
 
   public boolean isColumnSortable() {
     return isColumnSortable;
+  }
+
+  public boolean isColumnFilterable() {
+    return isColumnFilterable;
   }
 
   /**
@@ -113,6 +133,22 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
   }
 
   public abstract void setCellValue(RowType rowValue, ColType cellValue);
+
+  /**
+   * @param columnFilter the {@link ColumnFilter} to use for this column
+   */
+  public void setColumnFilter(ColumnFilter columnFilter) {
+    this.columnFilter = columnFilter;
+  }
+  
+  /**
+   * Set whether or not this column is filterable.
+   * 
+   * @param sortable true to make filterable, false to make unfilterable
+   */
+  public void setColumnFilterable(boolean filterable) {
+    isColumnFilterable = filterable;
+  }
 
   /**
    * Set whether or not this column is sortable.
