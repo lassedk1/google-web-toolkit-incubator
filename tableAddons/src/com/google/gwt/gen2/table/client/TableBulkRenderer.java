@@ -285,6 +285,13 @@ public abstract class TableBulkRenderer<RowType> implements
       curRowStyleName = stylename;
     }
 
+    @Override
+    public void removeStyleName(String stylename) {
+      if (stylename.equals(curRowStyleName)) {
+        curRowStyleName = null;
+      }
+    }
+
     protected StringBuffer getStringBuffer() {
       return buffer;
     }
