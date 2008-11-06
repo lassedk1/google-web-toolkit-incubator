@@ -15,6 +15,8 @@
  */
 package com.google.gwt.gen2.table.client;
 
+import com.google.gwt.gen2.table.client.filter.ColumnFilter;
+
 /**
  * A definition of a column in a table.
  * 
@@ -74,6 +76,15 @@ public interface ColumnDefinition<RowType, ColType> {
    */
   int getPreferredColumnWidth();
 
+  /**
+   * Returns true if the column is filterable, false if it is not.
+   * 
+   * @return true if the column is filterable, false if it is not filterable
+   */
+  boolean isColumnFilterable();
+
+  ColumnFilter getColumnFilter();
+  
   /**
    * Returns true if the column is sortable, false if it is not.
    * 

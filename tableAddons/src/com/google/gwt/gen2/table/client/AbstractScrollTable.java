@@ -21,7 +21,10 @@ import com.google.gwt.gen2.event.dom.client.ScrollEvent;
 import com.google.gwt.gen2.event.dom.client.ScrollHandler;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.table.client.ColumnResizer.ColumnWidthInfo;
+import com.google.gwt.gen2.table.client.TableModelHelper.ColumnFilterInfo;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
+import com.google.gwt.gen2.table.client.filter.ColumnFilter;
+import com.google.gwt.gen2.table.client.filter.ColumnFilterListener;
 import com.google.gwt.gen2.table.event.client.ColumnSortEvent;
 import com.google.gwt.gen2.table.event.client.ColumnSortHandler;
 import com.google.gwt.gen2.table.override.client.ComplexPanel;
@@ -42,7 +45,9 @@ import com.google.gwt.widgetideas.client.ResizableWidget;
 import com.google.gwt.widgetideas.client.ResizableWidgetCollection;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -520,6 +525,22 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     HORIZONTAL, BOTH, DISABLED
   }
 
+  protected ColumnFilterListener columnFilterListener = new ColumnFilterListener() {
+    public void onFilterChanged(final ColumnFilterInfo info) {
+      if (timer != null) {
+        timer.cancel();
+      }
+      timer = new Timer() {
+        public void run() {
+          dataTable.filterColumn(info);
+        }
+      };
+      timer.schedule(getFilterDelay());
+    }
+  };
+
+  private Timer timer;
+
   /**
    * The sorting policies related to user column sorting.
    * 
@@ -532,6 +553,12 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   public static enum SortPolicy {
     DISABLED, SINGLE_CELL, MULTI_CELL
   }
+
+  /**
+   * Default filter delay. Starts table filtering if filters did not change for
+   * 2 seconds
+   */
+  private static final int DEFAULT_FILTER_DELAY = 2000;
 
   /**
    * The helper class used to resize columns.
@@ -629,6 +656,16 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   };
 
   /**
+   * A boolean indicating whether or not filtering is enabled.
+   */
+  private boolean filteringEnabled = true;
+
+  /**
+   * The column filter widgets
+   */
+  private Widget[] filters;
+
+  /**
    * The scrolling policy.
    */
   private ScrollPolicy scrollPolicy = ScrollPolicy.BOTH;
@@ -652,6 +689,15 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * The wrapper around the image indicator.
    */
   private Element sortedColumnWrapper = null;
+
+  /**
+   * A map of header rows that cannot be sorted.
+   * 
+   * key = the row index
+   * 
+   * value = true if the row is sortable, false of not
+   */
+  private Map<Integer, Boolean> unsortableHeaderRows = new HashMap<Integer, Boolean>();
 
   /**
    * If true, a vertical table resize is already pending.
@@ -729,6 +775,23 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     adoptTable(headerTable, headerWrapper, 1);
     adoptTable(dataTable, dataWrapper, 2);
 
+    // Create the column filters
+    int filterRow = headerTable.getRowCount();
+    int columns = headerTable.getCellCount(0);
+    filteringEnabled = false;
+    for (int i = 0; i < columns; i++) {
+      ColumnFilter filter = createColumnFilter(i);
+      if (filter != null) {
+        filter.setColumn(columns);
+        headerTable.setWidget(filterRow, i, filter.createFilterWidget());
+        filter.addColumnFilterListener(columnFilterListener);
+        filteringEnabled = true;
+      }
+    }
+    if (filteringEnabled) {
+      setHeaderRowSortable(filterRow, false);
+    }
+
     // Create the sort indicator Image
     sortedColumnWrapper = DOM.createSpan();
     DOM.setInnerHTML(sortedColumnWrapper, "&nbsp;");
@@ -771,6 +834,8 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       }
     });
 
+    // Enable other settings
+    setFilteringEnabled(filteringEnabled);
     // Add to Resizable Collection
     ResizableWidgetCollection.get().add(this);
   }
@@ -910,6 +975,14 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
+   * Returns true if the specified column is filterable.
+   * 
+   * @param column the column index
+   * @return true if the column is filterable, false if it is not filterable
+   */
+  public abstract boolean isColumnFilterable(int column);
+
+  /**
    * @return the current sort policy
    */
   public SortPolicy getSortPolicy() {
@@ -923,6 +996,26 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * @return true if the column is sortable, false if it is not sortable
    */
   public abstract boolean isColumnSortable(int column);
+
+  /**
+   * @return true if filtering is enabled, false if disabled
+   */
+  public boolean isFilteringEnabled() {
+    return filteringEnabled;
+  }
+
+  /**
+   * @param row the row index
+   * @return true if the row is sortable, false if it is not sortable
+   */
+  public boolean isHeaderRowSortable(int row) {
+    Boolean sortable = unsortableHeaderRows.get(new Integer(row));
+    if (sortable == null) {
+      return true;
+    } else {
+      return sortable.booleanValue();
+    }
+  }
 
   @Override
   public void onBrowserEvent(Event event) {
@@ -981,7 +1074,8 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
             int cell = OverrideDOM.getCellIndex(cellElem);
             int column = headerTable.getColumnIndex(row, cell)
                 - getHeaderOffset();
-            if (column >= 0 && isColumnSortable(column)) {
+            if (column >= 0 && isColumnSortable(column)
+                && isHeaderRowSortable(row)) {
               if (dataTable.getColumnCount() > column) {
                 sortedColumnTrigger = cellElem;
                 dataTable.sortColumn(column);
@@ -1171,6 +1265,21 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
+   * Enable or disable column filtering
+   * 
+   * @param filteringEnabled true to enable column filtering
+   */
+  public void setFilteringEnabled(boolean filteringEnabled) {
+    this.filteringEnabled = filteringEnabled;
+
+    // Remove the sorted indicator image
+    Element parent = DOM.getParent(sortedColumnWrapper);
+    if (parent != null) {
+      DOM.removeChild(parent, sortedColumnWrapper);
+    }
+  }
+
+  /**
    * Set the footer table that appears under the data table. If set to null, the
    * footer table will not be shown.
    * 
@@ -1208,6 +1317,18 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     // Resize the tables
     resizeTablesVertically();
+  }
+
+  /**
+   * Enable or disable sorting on a specific header row. All header rows are
+   * sortable by default. Use {@link #setSortingEnabled(boolean)} to disable
+   * sorting on all rows.
+   * 
+   * @param row the index of the row
+   * @param sortable true to enable sorting for this column, false to disable
+   */
+  public void setHeaderRowSortable(int row, boolean sortable) {
+    unsortableHeaderRows.put(new Integer(row), Boolean.valueOf(sortable));
   }
 
   /**
@@ -1302,6 +1423,14 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
+   * @param column the column to create the filter for
+   * @return a filter or null if no filtering should occur on this column
+   */
+  protected ColumnFilter createColumnFilter(int column) {
+    return null;
+  }
+
+  /**
    * Create a wrapper element that will hold a table.
    * 
    * @param cssName the style name added to the base name
@@ -1326,6 +1455,16 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    */
   protected Element getDataWrapper() {
     return dataWrapper;
+  }
+
+  /**
+   * Wait for an amount of time before filtering the tables to avoid many filter
+   * request when user is entering filter data
+   * 
+   * @return the delay before table gets filtered
+   */
+  protected int getFilterDelay() {
+    return DEFAULT_FILTER_DELAY;
   }
 
   /**

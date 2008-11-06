@@ -18,14 +18,18 @@ package com.google.gwt.gen2.table.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.table.client.CellEditor.CellEditInfo;
+import com.google.gwt.gen2.table.client.SortableGrid.ColumnFilterCallback;
+import com.google.gwt.gen2.table.client.SortableGrid.ColumnFilterer;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorter;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorterCallback;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractRowView;
 import com.google.gwt.gen2.table.client.TableModel.Callback;
+import com.google.gwt.gen2.table.client.TableModelHelper.ColumnFilterList;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
 import com.google.gwt.gen2.table.client.TableModelHelper.Request;
 import com.google.gwt.gen2.table.client.TableModelHelper.Response;
+import com.google.gwt.gen2.table.client.filter.ColumnFilter;
 import com.google.gwt.gen2.table.event.client.HasPageChangeHandlers;
 import com.google.gwt.gen2.table.event.client.HasPageCountChangeHandlers;
 import com.google.gwt.gen2.table.event.client.HasPageLoadHandlers;
@@ -324,6 +328,28 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     refreshVisibleColumnDefinitions();
     oldPageCount = getPageCount();
 
+    // Create the column filters
+    int filterRow = headerTable.getRowCount();
+    int columns = headerTable.getCellCount(0);
+    boolean filteringEnabled = false;
+    for (int i = 0; i < columns; i++) {
+        ColumnDefinition<RowType, ?> colDef = getColumnDefinition(i);
+        if (colDef != null) {
+          ColumnFilter filter = colDef.getColumnFilter();
+          if (filter != null) {
+            filter.setColumn(i);
+            headerTable.setWidget(filterRow, i, filter.createFilterWidget());
+            filter.addColumnFilterListener(columnFilterListener);
+            filteringEnabled = true;
+          }
+        }
+    }
+
+    if (filteringEnabled) {
+      setHeaderRowSortable(filterRow, false);
+    }
+    setFilteringEnabled(filteringEnabled);
+
     // Setup the empty table widget wrapper
     emptyTableWidgetWrapper.getElement().getStyle().setProperty("width", "100%");
     emptyTableWidgetWrapper.getElement().getStyle().setProperty("overflow",
@@ -384,6 +410,20 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
         }
       };
       dataTable.setColumnSorter(sorter);
+    }
+
+    // Override the column filter
+    if (dataTable.getColumnFilter() == null) {
+      ColumnFilterer filterer = new ColumnFilterer() {
+        public void onFilterColumn(SortableGrid grid,
+            ColumnFilterList filterList, ColumnFilterCallback callback) {
+          // Jump to first page and force reloading as filtering might decrease
+          // visible rows
+          gotoPage(0, true);
+          callback.onFilteringComplete();
+        }
+      };
+      dataTable.setColumnFilterer(filterer);
     }
   }
 
@@ -551,8 +591,8 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       }
 
       // Request the new data from the table model
-      lastRequest = new Request(currentPage * pageSize, pageSize,
-          dataTable.getColumnSortList());
+      lastRequest = createRequest(currentPage * pageSize, pageSize,
+          dataTable.getColumnSortList(), dataTable.getColumnFilterList());
       tableModel.requestRows(lastRequest, pagingCallback);
     }
   }
@@ -562,6 +602,12 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   public void gotoPreviousPage() {
     gotoPage(currentPage - 1, false);
+  }
+
+  @Override
+  public boolean isColumnFilterable(int column) {
+    return isFilteringEnabled() && getColumnDefinition(column) != null
+        && getColumnDefinition(column).isColumnFilterable();
   }
 
   @Override
@@ -657,6 +703,21 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   public void setTableDefinition(TableDefinition<RowType> tableDefinition) {
     assert tableDefinition != null : "tableDefinition cannot be null";
     this.tableDefinition = tableDefinition;
+  }
+
+  /**
+   * @param startRow the start row
+   * @param pageSize the page size
+   * @param columnSortList the column sort list
+   * @param columnFilterList the column filter list
+   * @return the request object
+   * 
+   *         Allow subclasses to create a specific request object
+   * 
+   */
+  protected Request createRequest(int startRow, int pageSize,
+      ColumnSortList columnSortList, ColumnFilterList columnFilterList) {
+    return new Request(startRow, pageSize, columnSortList, columnFilterList);
   }
 
   /**

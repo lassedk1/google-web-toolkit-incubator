@@ -16,8 +16,11 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
+import com.google.gwt.gen2.table.client.TableModelHelper.ColumnFilterInfo;
+import com.google.gwt.gen2.table.client.TableModelHelper.ColumnFilterList;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortInfo;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
+import com.google.gwt.gen2.table.event.client.ColumnFilterEvent;
 import com.google.gwt.gen2.table.event.client.ColumnSortEvent;
 import com.google.gwt.gen2.table.event.client.ColumnSortHandler;
 import com.google.gwt.gen2.table.event.client.HasColumnSortHandlers;
@@ -25,7 +28,9 @@ import com.google.gwt.gen2.table.override.client.OverrideDOM;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A variation of the {@link com.google.gwt.gen2.table.override.client.Grid}
@@ -46,6 +51,56 @@ public class SortableGrid extends SelectionGrid implements
      */
     public abstract void onSortColumn(SortableGrid grid,
         ColumnSortList sortList, SortableGrid.ColumnSorterCallback callback);
+  }
+
+  /**
+   * The column filter defines an algorithm to filter columns.
+   */
+  public abstract static class ColumnFilterer {
+    /**
+     * Override this method to implement a custom column sorting algorithm.
+     * 
+     * @param grid the grid that the sorting will be applied to
+     * @param filterList the list of columns to be filtered
+     * @param callback the callback object when sorting is complete
+     */
+    public abstract void onFilterColumn(SortableGrid grid,
+        ColumnFilterList filterList, ColumnFilterCallback callback);
+  }
+
+  /**
+   * The default {@link ColumnFilterer} used if no other {@link ColumnFilterer}
+   * is specified.
+   */
+  private static class DefaultColumnFilter extends ColumnFilterer {
+    @Override
+    public void onFilterColumn(SortableGrid grid, ColumnFilterList filterList,
+        ColumnFilterCallback callback) {
+      Set<Integer> filteredRows = new HashSet<Integer>();
+
+      // Apply the filter to each row
+      SelectionGridCellFormatter formatter = grid.getSelectionGridCellFormatter();
+      for (int i = 0; i < grid.getRowCount(); i++) {
+        boolean filterMatches = false;
+        for (ColumnFilterInfo columnFilterInfo : filterList) {
+          int column = columnFilterInfo.getColumn();
+          Element tdElement = formatter.getRawElement(i, column);
+          String cellContent = DOM.getInnerText(tdElement);
+          if (columnFilterInfo.isFilterMatchingCellContent(cellContent)) {
+            filterMatches = true;
+          } else {
+            filterMatches = false;
+            break;
+          }
+        }
+        if (!filterMatches) {
+          // Convert tdElems to trElems
+          filteredRows.add(i);
+        }
+      }
+      // Use the callback to complete the filtering
+      callback.onFilteringComplete(filteredRows);
+    }
   }
 
   /**
@@ -207,14 +262,52 @@ public class SortableGrid extends SelectionGrid implements
   }
 
   /**
+   * Callback that is called when the row filtering is complete.
+   */
+  public class ColumnFilterCallback {
+    /**
+     * Set the filter all rows after a column filter request
+     * 
+     * @param filteredRows the rows to be filtered
+     */
+    public void onFilteringComplete(Set<Integer> filteredRows) {
+      // Move the rows to their new positions
+      applyFilter(filteredRows);
+
+      // Fire the listeners
+      onFilteringComplete();
+    }
+
+    /**
+     * Trigger the callback, but do not change the filtering of the rows.
+     * 
+     * Use this method if your {@link ColumnFilterer} filters the columns
+     * manually.
+     */
+    public void onFilteringComplete() {
+      fireColumnFiltered();
+    }
+  }
+
+  /**
    * The class used to do column sorting.
    */
   private ColumnSorter columnSorter = null;
 
   /**
+   * The class used to do column filtering.
+   */
+  private ColumnFilterer columnFilterer = null;
+
+  /**
    * Information about the sorted columns.
    */
   private ColumnSortList columnSortList = new ColumnSortList();
+
+  /**
+   * Information about the filtered columns.
+   */
+  private ColumnFilterList columnFilterList = new ColumnFilterList();
 
   /**
    * Constructor.
@@ -237,6 +330,36 @@ public class SortableGrid extends SelectionGrid implements
 
   public HandlerRegistration addColumnSortHandler(ColumnSortHandler handler) {
     return addHandler(ColumnSortEvent.TYPE, handler);
+  }
+
+  /**
+   * Filter the grid
+   * 
+   * @param column the column to filter
+   * @param filter column filter string
+   * @throws IndexOutOfBoundsException
+   */
+  public void filterColumn(ColumnFilterInfo info) {
+    // Add the sorting to the list of sorted columns
+    columnFilterList.add(info);
+
+    // Use the onSort method to actually sort the column
+    getColumnFilter(true).onFilterColumn(this, columnFilterList,
+        new ColumnFilterCallback());
+  }
+
+  /**
+   * @return the column filter used to sort columns
+   */
+  public ColumnFilterer getColumnFilter() {
+    return getColumnFilter(false);
+  }
+
+  /**
+   * @return the {@link ColumnFilterList} of previously filtered columns
+   */
+  public ColumnFilterList getColumnFilterList() {
+    return columnFilterList;
   }
 
   /**
@@ -299,6 +422,14 @@ public class SortableGrid extends SelectionGrid implements
     this.columnSorter = sorter;
   }
 
+  /**
+   * Set the {@link ColumnFilterer}.
+   * 
+   * @param filterer the new {@link ColumnFilterer}
+   */
+  public void setColumnFilterer(ColumnFilterer filterer) {
+    this.columnFilterer = filterer;
+  }
   /**
    * Set the current {@link ColumnSortList} and fire an event.
    * 
@@ -387,6 +518,13 @@ public class SortableGrid extends SelectionGrid implements
   }
 
   /**
+   * Fire column filtered event to listeners.
+   */
+  protected void fireColumnFiltered() {
+    fireEvent(new ColumnFilterEvent(columnFilterList));
+  }
+
+  /**
    * Get the {@link ColumnSorter}. Optionally create a
    * {@link DefaultColumnSorter} if the user hasn't specified one already.
    * 
@@ -398,6 +536,20 @@ public class SortableGrid extends SelectionGrid implements
       columnSorter = new DefaultColumnSorter();
     }
     return columnSorter;
+  }
+
+  /**
+   * Get the {@link ColumnFilterer}. Optionally create a
+   * {@link DefaultColumnFilter} if the user hasn't specified one already.
+   * 
+   * @param createAsNeeded create a default filter if needed
+   * @return the column filter
+   */
+  protected ColumnFilterer getColumnFilter(boolean createAsNeeded) {
+    if ((columnFilterer == null) && createAsNeeded) {
+      columnFilterer = new DefaultColumnFilter();
+    }
+    return columnFilterer;
   }
 
   /**
@@ -451,6 +603,25 @@ public class SortableGrid extends SelectionGrid implements
     }
     if (tr2 != null) {
       selectedRows.put(new Integer(row1), tr2);
+    }
+  }
+
+  /**
+   * Hide the matching rows after a column filter request.
+   * 
+   * This method takes an array of the row elements in this Grid
+   * 
+   * @param trElems the row elements to be removed
+   */
+  void applyFilter(Set<Integer> filteredRows) {
+    SelectionGridRowFormatter formatter = getSelectionGridRowFormatter();
+    // Hide the rows not matching the filter
+    for (int i = 0; i < getRowCount(); i++) {
+      if (filteredRows.contains(i)) {
+        formatter.setVisible(i, false);
+      } else {
+        formatter.setVisible(i, true);
+      }
     }
   }
 
