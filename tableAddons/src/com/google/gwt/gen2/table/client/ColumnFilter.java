@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.gen2.table.client.filter;
+package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnFilterInfo;
 import com.google.gwt.user.client.ui.Widget;
@@ -25,6 +25,17 @@ import java.util.List;
  * A column filter responsible for filtering specific columns
  */
 public abstract class ColumnFilter {
+  /**
+   * The {@link ColumnFilterListener} interface
+   */
+  public interface ColumnFilterListener {
+    /**
+     * Invoked whenever the user changes the filter settings
+     * @param info the {@link ColumnFilterInfo} 
+     */
+    void onFilterChanged(ColumnFilterInfo info);
+  }
+  
   private int column;
 
   protected List<ColumnFilterListener> columnFilterListeners;
