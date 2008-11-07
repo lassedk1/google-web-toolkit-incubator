@@ -33,19 +33,25 @@ public abstract class TreeTableModel<R extends TreeTableItem> extends TableModel
    * Request object taking care of the tree nodes state
    */
   public static class Request extends TableModelHelper.Request implements IsSerializable {
-    private Set<String> openNodes;
+    private Set<String> invertedNodes;
+    private boolean open;
 
     public Request() {
     }
 
     public Request(int startRow, int numRows, ColumnSortList columnSortList,
-        ColumnFilterList columnFilterList, Set<String> openNodes) {
+        ColumnFilterList columnFilterList, boolean open, Set<String> invertedNodes) {
       super(startRow, numRows, columnSortList, columnFilterList);
-      this.openNodes = openNodes;
+      this.open = open;
+      this.invertedNodes = invertedNodes;
     }
 
-    public Set<String> getOpenNodes() {
-      return openNodes;
+    public Set<String> getInvertedNodes() {
+      return invertedNodes;
+    }
+
+    public boolean isOpen() {
+      return open;
     }
   }
 

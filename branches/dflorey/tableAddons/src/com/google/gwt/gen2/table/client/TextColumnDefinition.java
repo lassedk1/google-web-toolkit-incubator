@@ -16,7 +16,8 @@ public abstract class TextColumnDefinition<RowType> extends
    */
   class TextCellRenderer implements CellRenderer<RowType, String> {
     public void renderRowValue(RowType rowValue,
-        ColumnDefinition<RowType, String> columnDef, AbstractCellView<RowType> view) {
+        ColumnDefinition<RowType, String> columnDef,
+        AbstractCellView<RowType> view) {
       String cellValue = columnDef.getCellValue(rowValue);
       if (cellValue == null) {
         view.setText("");
@@ -94,9 +95,11 @@ public abstract class TextColumnDefinition<RowType> extends
     }
   }
 
-  public TextColumnDefinition(boolean editingEnabled) {
-    setColumnFilter(new ColumnTextFilter());
+  public TextColumnDefinition(boolean filterEnabled, boolean editingEnabled) {
     setCellRenderer(new TextCellRenderer());
+    if (filterEnabled) {
+      setColumnFilter(new ColumnTextFilter());
+    }
     if (editingEnabled) {
       setCellEditor(new TextCellEditor());
     }

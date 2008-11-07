@@ -15,13 +15,16 @@
  */
 package com.google.gwt.gen2.table.client.filter;
 
+import com.google.gwt.gen2.datepicker.client.DateBox;
+import com.google.gwt.gen2.event.dom.client.KeyDownEvent;
+import com.google.gwt.gen2.event.dom.client.KeyDownHandler;
+import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
+import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.client.event.ChangeEvent;
-import com.google.gwt.widgetideas.client.event.ChangeHandler;
-import com.google.gwt.widgetideas.datepicker.client.DateBox;
 
 import java.util.Date;
 
@@ -53,17 +56,19 @@ public class ColumnDateFilter extends ColumnFilter {
         secondaryDateBox.setVisible(false);
       }
       setButtonText(((PushButton) operatorButton), operator);
-      Date primaryDate = primaryDateBox.getDatePicker().getSelectedDate();
-      Date secondaryDate = secondaryDateBox.getDatePicker().getSelectedDate();
+      Date primaryDate = primaryDateBox.getDatePicker().getDateShown();
+      Date secondaryDate = secondaryDateBox.getDatePicker().getDateShown();
       fireColumnFilterChangedEvent(primaryDate, secondaryDate);
     }
   };
-
-  private ChangeHandler<Date> changeHandler = new ChangeHandler<Date>() {
-    public void onChange(ChangeEvent<Date> event) {
-      Date primaryDate = primaryDateBox.getDatePicker().getHighlightedDate();
-      Date secondaryDate = secondaryDateBox.getDatePicker().getHighlightedDate();
-      fireColumnFilterChangedEvent(primaryDate, secondaryDate);
+  private SelectionHandler<Date> selectionHandler = new SelectionHandler<Date>(){
+    public void onSelection(SelectionEvent<Date> event) {
+      fireColumnFilterChangedEvent();
+    }
+  };
+  private KeyDownHandler keyDownHandler = new KeyDownHandler() {
+    public void onKeyDown(KeyDownEvent event) {
+      fireColumnFilterChangedEvent();
     }
   };
   
@@ -100,11 +105,25 @@ public class ColumnDateFilter extends ColumnFilter {
     horizontalPanel.setCellWidth(primaryDateBox, "100%");
     secondaryDateBox.setVisible(false);
     horizontalPanel.setSpacing(2);
-    primaryDateBox.getDatePicker().addChangeHandler(changeHandler);
-    secondaryDateBox.getDatePicker().addChangeHandler(changeHandler);
+    primaryDateBox.getDatePicker().addSelectionHandler(selectionHandler);
+    secondaryDateBox.getDatePicker().addSelectionHandler(selectionHandler);
+    primaryDateBox.addKeyDownHandler(keyDownHandler);
+    secondaryDateBox.addKeyDownHandler(keyDownHandler);
     return horizontalPanel;
   }
 
+  private void fireColumnFilterChangedEvent() {
+    Date primaryDate = primaryDateBox.getDatePicker().getDateShown();
+    Date secondaryDate = secondaryDateBox.getDatePicker().getDateShown();
+    if ( primaryDateBox.getText().trim().equals("") ) {
+      primaryDate = null;
+    }
+    if ( secondaryDateBox.getText().trim().equals("") ) {
+      secondaryDate = null;
+    }
+    fireColumnFilterChangedEvent(primaryDate, secondaryDate);
+  }
+  
   private void fireColumnFilterChangedEvent(Date primaryDate, Date secondaryDate) {
     fireColumnFilterChanged(new ColumnDateFilterInfo(getColumn(), datePattern, primaryDate, secondaryDate, operator));
   }
