@@ -53,6 +53,7 @@ import com.google.gwt.gen2.table.event.client.RowRemovalEvent;
 import com.google.gwt.gen2.table.event.client.RowRemovalHandler;
 import com.google.gwt.gen2.table.event.client.RowValueChangeEvent;
 import com.google.gwt.gen2.table.event.client.RowValueChangeHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
@@ -217,6 +218,12 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       throw new UnsupportedOperationException("Remove not supported");
     }
   }
+
+  /**
+   * Default filter delay. Starts table filtering if filters did not change for
+   * 2 seconds
+   */
+  private static final int DEFAULT_FILTER_DELAY = 2000;
 
   /**
    * The bulk render used to render the contents of this table.
@@ -421,12 +428,22 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     // Override the column filter
     if (dataTable.getColumnFilter() == null) {
       ColumnFilterer filterer = new ColumnFilterer() {
+        private Timer timer;
+        
         public void onFilterColumn(SortableGrid grid,
-            ColumnFilterList filterList, ColumnFilterCallback callback) {
-          // Jump to first page and force reloading as filtering might decrease
-          // visible rows
-          gotoPage(0, true);
-          callback.onFilteringComplete();
+            ColumnFilterList filterList, final ColumnFilterCallback callback) {
+          if (timer != null) {
+            timer.cancel();
+          }
+          timer = new Timer() {
+            public void run() {
+              // Jump to first page and force reloading as filtering might decrease
+              // visible rows
+              gotoPage(0, true);
+              callback.onFilteringComplete();
+            }
+          };
+          timer.schedule(getFilterDelay());
         }
       };
       dataTable.setColumnFilterer(filterer);
@@ -463,6 +480,16 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   public Widget getEmptyTableWidget() {
     return emptyTableWidgetWrapper.getWidget();
+  }
+
+  /**
+   * Wait for an amount of time before filtering the tables to avoid many filter
+   * request when user is entering filter data
+   * 
+   * @return the delay before table gets filtered
+   */
+  protected int getFilterDelay() {
+    return DEFAULT_FILTER_DELAY;
   }
 
   @Override
@@ -701,6 +728,10 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     refreshRow(row);
   }
 
+  public void setRowView(AbstractRowView<RowType> rowView) {
+    this.rowView = rowView;
+  }
+
   /**
    * Set the {@link TableDefinition} used to define the columns.
    * 
@@ -801,6 +832,10 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     return rowValues;
   }
 
+  protected AbstractRowView<RowType> getRowView() {
+    return rowView;
+  }
+  
   /**
    * Insert a row into the table relative to the total number of rows.
    * 
@@ -905,7 +940,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       getDataTable().resize(rowCount, colCount);
 
       // Render the rows
-      tableDefinition.renderRows(0, rowValues.iterator(), rowView);
+      tableDefinition.renderRows(0, rowValues.iterator(), getRowView());
     } else {
       setEmptyTableWidgetVisible(true);
     }
@@ -954,6 +989,6 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
         throw new UnsupportedOperationException();
       }
     };
-    tableDefinition.renderRows(rowIndex, singleIterator, rowView);
+    tableDefinition.renderRows(rowIndex, singleIterator, getRowView());
   }
 }

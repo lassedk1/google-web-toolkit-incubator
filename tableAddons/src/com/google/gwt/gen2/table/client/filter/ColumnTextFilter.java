@@ -15,6 +15,7 @@
  */
 package com.google.gwt.gen2.table.client.filter;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.KeyboardListener;

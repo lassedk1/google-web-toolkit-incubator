@@ -12,10 +12,11 @@ public abstract class DateColumnDefinition<RowType> extends
     AbstractColumnDefinition<RowType, Date> {
   class DateCellRenderer implements CellRenderer<RowType, Date> {
     public void renderRowValue(RowType rowValue,
-        ColumnDefinition<RowType, Date> columnDef, AbstractCellView<RowType> view) {
+        ColumnDefinition<RowType, Date> columnDef,
+        AbstractCellView<RowType> view) {
       Date cellValue = columnDef.getCellValue(rowValue);
       if (cellValue == null) {
-        view.setText("");
+        view.setHTML("&nbsp;");
       } else {
         DateTimeFormat dateTimeFormat = DateColumnDefinition.this.dateTimeFormat;
         if (dateTimeFormat != null) {
@@ -98,9 +99,11 @@ public abstract class DateColumnDefinition<RowType> extends
   protected DateTimeFormat dateTimeFormat;
 
   public DateColumnDefinition(DateTimeFormat dateTimeFormat,
-      boolean editingEnabled) {
+      boolean filterEnabled, boolean editingEnabled) {
     this.dateTimeFormat = dateTimeFormat;
-    setColumnFilter(new ColumnDateFilter(dateTimeFormat.getPattern()));
+    if (filterEnabled) {
+      setColumnFilter(new ColumnDateFilter(dateTimeFormat.getPattern()));
+    }
     setCellRenderer(new DateCellRenderer());
     if (editingEnabled) {
       setCellEditor(new DateCellEditor());

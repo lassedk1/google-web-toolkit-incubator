@@ -29,6 +29,7 @@ import com.google.gwt.gen2.table.event.client.ColumnSortEvent;
 import com.google.gwt.gen2.table.event.client.ColumnSortHandler;
 import com.google.gwt.gen2.table.override.client.ComplexPanel;
 import com.google.gwt.gen2.table.override.client.OverrideDOM;
+import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
@@ -527,19 +528,9 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   protected ColumnFilterListener columnFilterListener = new ColumnFilterListener() {
     public void onFilterChanged(final ColumnFilterInfo info) {
-      if (timer != null) {
-        timer.cancel();
-      }
-      timer = new Timer() {
-        public void run() {
-          dataTable.filterColumn(info);
-        }
-      };
-      timer.schedule(getFilterDelay());
+      dataTable.filterColumn(info);
     }
   };
-
-  private Timer timer;
 
   /**
    * The sorting policies related to user column sorting.
@@ -553,12 +544,6 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   public static enum SortPolicy {
     DISABLED, SINGLE_CELL, MULTI_CELL
   }
-
-  /**
-   * Default filter delay. Starts table filtering if filters did not change for
-   * 2 seconds
-   */
-  private static final int DEFAULT_FILTER_DELAY = 2000;
 
   /**
    * The helper class used to resize columns.
@@ -838,6 +823,12 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     setFilteringEnabled(filteringEnabled);
     // Add to Resizable Collection
     ResizableWidgetCollection.get().add(this);
+    
+    DeferredCommand.addCommand(new Command() {
+      public void execute() {
+        scrollTables(false);
+      }
+    });
   }
 
   public HandlerRegistration addScrollHandler(ScrollHandler handler) {
@@ -867,10 +858,16 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     } else {
       clientWidth = DOM.getElementPropertyInt(dataWrapper, "clientWidth");
     }
+    Log.fine("Client width: "+clientWidth);
     if (clientWidth <= 0) {
       return;
     }
-    int diff = clientWidth - ((Widget) dataTable).getOffsetWidth();
+    int dataWidth = ((Widget) dataTable).getOffsetWidth();
+    if ( dataWidth <= 0 ) {
+      return;
+    }
+    Log.fine("Data width: "+((Widget) dataTable).getOffsetWidth());
+    int diff = clientWidth - dataWidth;
 
     // Calculate the new column widths
     int numColumns = dataTable.getColumnCount();
@@ -1455,16 +1452,6 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    */
   protected Element getDataWrapper() {
     return dataWrapper;
-  }
-
-  /**
-   * Wait for an amount of time before filtering the tables to avoid many filter
-   * request when user is entering filter data
-   * 
-   * @return the delay before table gets filtered
-   */
-  protected int getFilterDelay() {
-    return DEFAULT_FILTER_DELAY;
   }
 
   /**
