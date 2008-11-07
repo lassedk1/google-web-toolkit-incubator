@@ -29,7 +29,6 @@ import com.google.gwt.gen2.table.client.TableModelHelper.ColumnFilterList;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
 import com.google.gwt.gen2.table.client.TableModelHelper.Request;
 import com.google.gwt.gen2.table.client.TableModelHelper.Response;
-import com.google.gwt.gen2.table.client.filter.ColumnFilter;
 import com.google.gwt.gen2.table.event.client.HasPageChangeHandlers;
 import com.google.gwt.gen2.table.event.client.HasPageCountChangeHandlers;
 import com.google.gwt.gen2.table.event.client.HasPageLoadHandlers;

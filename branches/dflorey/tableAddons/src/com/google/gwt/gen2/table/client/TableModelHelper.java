@@ -298,7 +298,7 @@ public final class TableModelHelper {
   /**
    * Information about the filtering of a specific column in a table.
    */
-  public abstract static class ColumnFilterInfo implements IsSerializable {
+  public abstract static class ColumnFilterInfo<ColType> implements IsSerializable {
     /**
      * The column index.
      */
@@ -323,7 +323,7 @@ public final class TableModelHelper {
     @Override
     public boolean equals(Object obj) {
       if (obj instanceof ColumnFilterInfo) {
-        return equals((ColumnFilterInfo) obj);
+        return equals((ColumnFilterInfo<ColType>) obj);
       }
       return false;
     }
@@ -335,7 +335,7 @@ public final class TableModelHelper {
      * @param csi the other object
      * @return true if objects are the same
      */
-    public boolean equals(ColumnFilterInfo cfi) {
+    public boolean equals(ColumnFilterInfo<ColType> cfi) {
       if (cfi == null) {
         return false;
       }
@@ -356,9 +356,9 @@ public final class TableModelHelper {
     
     public abstract boolean isFilterMatchingCellContent(String cellContent);
 
-    public abstract boolean isFilterMatchingValueObject(Object object);
+    public abstract boolean isFilterMatchingValueObject(ColType object);
 
-    public abstract ColumnFilterInfo copy();
+    public abstract ColumnFilterInfo<ColType> copy();
     
     /**
      * Set the column index.
@@ -375,11 +375,11 @@ public final class TableModelHelper {
    * single column.
    */
   public static class ColumnFilterList implements IsSerializable,
-      Iterable<ColumnFilterInfo> {
+      Iterable<ColumnFilterInfo<?>> {
     /**
      * A List used to manage the insertion/removal of {@link ColumnFilterInfo}.
      */
-    private List<ColumnFilterInfo> infos = new ArrayList<ColumnFilterInfo>();
+    private List<ColumnFilterInfo<?>> infos = new ArrayList<ColumnFilterInfo<?>>();
 
     @Override
     public boolean equals(Object obj) {
@@ -423,8 +423,8 @@ public final class TableModelHelper {
       return super.hashCode();
     }
 
-    public Iterator<ColumnFilterInfo> iterator() {
-      return new ImmutableIterator<ColumnFilterInfo>(infos.iterator());
+    public Iterator<ColumnFilterInfo<?>> iterator() {
+      return new ImmutableIterator<ColumnFilterInfo<?>>(infos.iterator());
     }
 
     /**
@@ -447,10 +447,10 @@ public final class TableModelHelper {
      * @param column the column index
      * @param filter is the filter
      */
-    void add(ColumnFilterInfo info) {
+    void add(ColumnFilterInfo<?> info) {
       // Remove sort info for duplicate columns
       for (int i = 0; i < infos.size(); i++) {
-        ColumnFilterInfo curInfo = infos.get(i);
+        ColumnFilterInfo<?> curInfo = infos.get(i);
         if (curInfo.getColumn() == info.getColumn()) {
           infos.remove(i);
           i--;
@@ -466,7 +466,7 @@ public final class TableModelHelper {
      */
     ColumnFilterList copy() {
       ColumnFilterList copy = new ColumnFilterList();
-      for (ColumnFilterInfo info : this) {
+      for (ColumnFilterInfo<?> info : this) {
         copy.infos.add(info.copy());
       }
       return copy;

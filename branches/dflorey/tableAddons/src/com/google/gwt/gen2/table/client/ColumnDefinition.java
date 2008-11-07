@@ -15,7 +15,6 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.filter.ColumnFilter;
 
 /**
  * A definition of a column in a table.

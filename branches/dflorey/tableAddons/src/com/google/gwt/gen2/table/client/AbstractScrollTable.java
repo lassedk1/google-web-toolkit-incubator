@@ -20,11 +20,10 @@ import com.google.gwt.gen2.event.dom.client.HasScrollHandlers;
 import com.google.gwt.gen2.event.dom.client.ScrollEvent;
 import com.google.gwt.gen2.event.dom.client.ScrollHandler;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
+import com.google.gwt.gen2.table.client.ColumnFilter.ColumnFilterListener;
 import com.google.gwt.gen2.table.client.ColumnResizer.ColumnWidthInfo;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnFilterInfo;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
-import com.google.gwt.gen2.table.client.filter.ColumnFilter;
-import com.google.gwt.gen2.table.client.filter.ColumnFilterListener;
 import com.google.gwt.gen2.table.event.client.ColumnSortEvent;
 import com.google.gwt.gen2.table.event.client.ColumnSortHandler;
 import com.google.gwt.gen2.table.override.client.ComplexPanel;
@@ -767,7 +766,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     for (int i = 0; i < columns; i++) {
       ColumnFilter filter = createColumnFilter(i);
       if (filter != null) {
-        filter.setColumn(columns);
+        filter.setColumn(i);
         headerTable.setWidget(filterRow, i, filter.createFilterWidget());
         filter.addColumnFilterListener(columnFilterListener);
         filteringEnabled = true;
