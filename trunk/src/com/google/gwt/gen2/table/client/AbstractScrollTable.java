@@ -1395,7 +1395,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       DOM.setStyleAttribute(footerWrapper, "height", footerHeight + "px");
     }
     DOM.setStyleAttribute(dataWrapper, "height",
-        (totalHeight - headerHeight - footerHeight) + "px");
+        Math.max(totalHeight - headerHeight - footerHeight, 0) + "px");
     DOM.setStyleAttribute(dataWrapper, "overflow", "hidden");
     DOM.setStyleAttribute(dataWrapper, "overflow", "auto");
     scrollTables(true);
