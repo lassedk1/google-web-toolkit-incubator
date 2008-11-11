@@ -268,10 +268,6 @@ public abstract class TableBulkRenderer<RowType> implements
 
       // Create a string buffer to assemble the table
       buffer = new StringBuffer();
-      buffer.append("<table><tbody>");
-      if (options.headerRow != null) {
-        buffer.append(options.headerRow);
-      }
       cellView.buffer = buffer;
     }
 
@@ -302,6 +298,12 @@ public abstract class TableBulkRenderer<RowType> implements
         final Iterator<RowType> rowValues,
         final RowRenderer<RowType> rowRenderer,
         final List<ColumnDefinition<RowType, ?>> visibleColumns) {
+      // Create the table
+      buffer.append("<table><tbody>");
+      if (options.headerRow != null) {
+        buffer.append(options.headerRow);
+      }
+
       // Reset the row index
       rowIndex = startRowIndex;
       final int myStamp = ++bulkRenderer.requestStamp;

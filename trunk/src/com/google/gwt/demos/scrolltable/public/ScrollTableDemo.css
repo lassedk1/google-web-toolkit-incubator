@@ -55,7 +55,10 @@
 	color: red;
 }
 
-.gwt-PagingOptions .gwt-Image {
+.pagingOptionsFirstPage,
+.pagingOptionsLastPage,
+.pagingOptionsNextPage,
+.pagingOptionsPrevPage {
   cursor: hand;
   cursor: pointer;
 }

@@ -41,9 +41,23 @@ import com.google.gwt.user.client.ui.Widget;
  * A panel that wraps a {@link PagingScrollTable} and includes options to
  * manipulate the page.
  * 
- * <h3>CSS Style Rules</h3> <ul class="css"> <li>.gwt-PagingOptions { applied to
- * the entire widget }</li> <li>.gwt-PagingOptions .errorMessage { applied to
- * the error message }</li> </ul>
+ * <h3>CSS Style Rules</h3>
+ * 
+ * <ul class="css">
+ * 
+ * <li>.gwt-PagingOptions { applied to the entire widget }</li>
+ * 
+ * <li>.gwt-PagingOptions .errorMessage { applied to the error message }</li>
+ * 
+ * <li>.pagingOptionsFirstPage { the first page button }</li>
+ * 
+ * <li>.pagingOptionsLastPage { the last page button }</li>
+ * 
+ * <li>.pagingOptionsNextPage { the next page button }</li>
+ * 
+ * <li>.pagingOptionsPreviousPage { the previous page button }</li>
+ * 
+ * </ul>
  */
 public class PagingOptions extends Composite {
   /**
@@ -84,6 +98,7 @@ public class PagingOptions extends Composite {
    * The default style name.
    */
   public static final String DEFAULT_STYLENAME = "gwt-PagingOptions";
+  public static final String STYLENAME_PREFIX = "pagingOptions";
 
   /**
    * The label used to display errors.
@@ -248,11 +263,11 @@ public class PagingOptions extends Composite {
         if (keyCode == (char) KEY_ENTER) {
           PagingOptions.this.table.gotoPage(getPagingBoxValue(), false);
         } else if ((!Character.isDigit(keyCode)) && (keyCode != (char) KEY_TAB)
-            && (keyCode != (char) KEY_BACKSPACE) && (keyCode != (char) KEY_DELETE)
-            && (keyCode != (char) KEY_ENTER) && (keyCode != (char) KEY_HOME)
-            && (keyCode != (char) KEY_END) && (keyCode != (char) KEY_LEFT)
-            && (keyCode != (char) KEY_UP) && (keyCode != (char) KEY_RIGHT)
-            && (keyCode != (char) KEY_DOWN)) {
+            && (keyCode != (char) KEY_BACKSPACE)
+            && (keyCode != (char) KEY_DELETE) && (keyCode != (char) KEY_ENTER)
+            && (keyCode != (char) KEY_HOME) && (keyCode != (char) KEY_END)
+            && (keyCode != (char) KEY_LEFT) && (keyCode != (char) KEY_UP)
+            && (keyCode != (char) KEY_RIGHT) && (keyCode != (char) KEY_DOWN)) {
           ((TextBox) sender).cancelKey();
         }
       }
@@ -270,9 +285,13 @@ public class PagingOptions extends Composite {
   private void createPageButtons(PagingOptionsImages images) {
     // Create the images
     firstImage = images.pagingOptionsFirstPage().createImage();
+    firstImage.addStyleName(STYLENAME_PREFIX + "FirstPage");
     prevImage = images.pagingOptionsPrevPage().createImage();
+    prevImage.addStyleName(STYLENAME_PREFIX + "PreviousPage");
     nextImage = images.pagingOptionsNextPage().createImage();
+    nextImage.addStyleName(STYLENAME_PREFIX + "NextPage");
     lastImage = images.pagingOptionsLastPage().createImage();
+    lastImage.addStyleName(STYLENAME_PREFIX + "LastPage");
 
     // Create the listener
     ClickListener listener = new ClickListener() {
