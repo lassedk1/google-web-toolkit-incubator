@@ -176,6 +176,18 @@ public class Log {
   }
 
   /**
+   * Installs an uncaught exception handler that logs messages under the
+   * "uncaught" category.
+   */
+  public static final void installUncaughtExceptionHandler() {
+    GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
+      public void onUncaughtException(Throwable e) {
+        Log.severe(e.getMessage(), "uncaught", e);
+      }
+    });
+  }
+
+  /**
    * Check if a message of the given level would actually be logged by this
    * logger. This check is based on the Loggers effective level, which may be
    * inherited from its parent.
@@ -343,17 +355,5 @@ public class Log {
 
   static void registerLevel(Level level) {
     impl.registerLevel(level);
-  }
-
-  /**
-   * Installs an uncaught exception handler that logs messages under the
-   * "uncaught" category.
-   */
-  public final void installUncaughtExceptionHandler() {
-    GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
-      public void onUncaughtException(Throwable e) {
-        Log.severe(e.getMessage(), "uncaught", e);
-      }
-    });
   }
 }
