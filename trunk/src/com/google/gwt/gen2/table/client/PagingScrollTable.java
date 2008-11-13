@@ -361,7 +361,8 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     if (tableModel instanceof HasRowValueChangeHandlers) {
       ((HasRowValueChangeHandlers<RowType>) tableModel).addRowValueChangeHandler(new RowValueChangeHandler<RowType>() {
         public void onRowValueChange(RowValueChangeEvent<RowType> event) {
-          setRowValue(event.getRowIndex() - getFirstRow(), event.getRowValue());
+          setRowValue(event.getRowIndex() - getAbsoluteFirstRowIndex(),
+              event.getRowValue());
         }
       });
     }
@@ -403,6 +404,27 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   public HandlerRegistration addPagingFailureHandler(
       PagingFailureHandler handler) {
     return addHandler(PagingFailureEvent.TYPE, handler);
+  }
+
+  /**
+   * @return the absolute index of the first visible row
+   */
+  public int getAbsoluteFirstRowIndex() {
+    return currentPage * pageSize;
+  }
+
+  /**
+   * @return the absolute index of the last visible row
+   */
+  public int getAbsoluteLastRowIndex() {
+    if (tableModel.getRowCount() < 0) {
+      // Unknown row count, so just return based on current page
+      return (currentPage + 1) * pageSize - 1;
+    } else if (pageSize == 0) {
+      // Only one page, so return row count
+      return tableModel.getRowCount() - 1;
+    }
+    return Math.min(tableModel.getRowCount(), (currentPage + 1) * pageSize) - 1;
   }
 
   /**
@@ -543,7 +565,8 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
 
       // Clear out existing data if we aren't bulk rendering
       if (bulkRenderer == null) {
-        int rowCount = getLastRow() - getFirstRow() + 1;
+        int rowCount = getAbsoluteLastRowIndex() - getAbsoluteFirstRowIndex()
+            + 1;
         if (rowCount != dataTable.getRowCount()) {
           dataTable.resizeRows(rowCount);
         }
@@ -685,7 +708,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
           public void onComplete(CellEditInfo cellEditInfo, Object cellValue) {
             colDef.setCellValue(rowValue, cellValue);
             if (tableModel instanceof MutableTableModel) {
-              int row = getFirstRow() + cellEditInfo.getRowIndex();
+              int row = getAbsoluteFirstRowIndex() + cellEditInfo.getRowIndex();
               ((MutableTableModel<RowType>) tableModel).setRowValue(row,
                   rowValue);
             } else {
@@ -709,23 +732,6 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   }
 
   /**
-   * @return the index of the first visible row
-   */
-  protected int getFirstRow() {
-    return currentPage * pageSize;
-  }
-
-  /**
-   * @return the index of the last visible row
-   */
-  protected int getLastRow() {
-    if (tableModel.getRowCount() < 0) {
-      return (currentPage + 1) * pageSize - 1;
-    }
-    return Math.min(tableModel.getRowCount(), (currentPage + 1) * pageSize) - 1;
-  }
-
-  /**
    * Get the list of row values associated with the table.
    * 
    * @return the list of row value
@@ -741,9 +747,9 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   protected void insertAbsoluteRow(int beforeRow) {
     // Physically insert the row
-    int lastRow = getLastRow() + 1;
+    int lastRow = getAbsoluteLastRowIndex() + 1;
     if (beforeRow <= lastRow) {
-      int firstRow = getFirstRow();
+      int firstRow = getAbsoluteFirstRowIndex();
       if (beforeRow >= firstRow) {
         // Insert row in the middle of the page
         getDataTable().insertRow(beforeRow - firstRow);
@@ -783,9 +789,9 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   protected void removeAbsoluteRow(int row) {
     // Physically remove the row
-    int lastRow = getLastRow();
+    int lastRow = getAbsoluteLastRowIndex();
     if (row <= lastRow) {
-      int firstRow = getFirstRow();
+      int firstRow = getAbsoluteFirstRowIndex();
       if (row >= firstRow) {
         // Remove a row in the middle of the page
         getDataTable().removeRow(row - firstRow);
@@ -813,8 +819,8 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       setEmptyTableWidgetVisible(false);
 
       // Get an iterator over the visible rows
-      int firstVisibleRow = getFirstRow();
-      int lastVisibleRow = getLastRow();
+      int firstVisibleRow = getAbsoluteFirstRowIndex();
+      int lastVisibleRow = getAbsoluteLastRowIndex();
       Iterator<RowType> visibleIter = new VisibleRowsIterator(rows, firstRow,
           firstVisibleRow, lastVisibleRow);
 
