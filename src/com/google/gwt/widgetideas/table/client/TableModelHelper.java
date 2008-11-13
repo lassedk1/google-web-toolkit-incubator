@@ -33,7 +33,11 @@ import java.util.NoSuchElementException;
  * https://bugs.eclipse.org/bugs/show_bug.cgi?id=243820
  * 
  * This class should be removed once this bug is fixed.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.TableModelHelper}
  */
+@Deprecated
 public abstract class TableModelHelper implements SourceTableModelEvents {
   /**
    * A {@link TableModelHelper} request.
@@ -85,8 +89,8 @@ public abstract class TableModelHelper implements SourceTableModelEvents {
     }
 
     /**
-     * Get the ColumnSortInfo, which includes the sort indexes and
-     * ascending or descending order info.
+     * Get the ColumnSortInfo, which includes the sort indexes and ascending or
+     * descending order info.
      * 
      * @return the sort info
      */

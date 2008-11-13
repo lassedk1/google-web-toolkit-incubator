@@ -17,7 +17,11 @@ package com.google.gwt.widgetideas.table.client;
 
 /**
  * Tests methods used for all {@link FixedWidthGrid} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.FixedWidthGridTest}
  */
+@Deprecated
 public class FixedWidthGridTest extends SortableGridTest {
   /**
    * Get the grid.

@@ -21,7 +21,10 @@ import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
 
 /**
  * Test for {@link Grid}.
+ * 
+ * @deprecated Replaced by {@link com.google.gwt.gen2.table.client.GridTest}
  */
+@Deprecated
 public class GridTest extends HTMLTableTestBase {
 
   @Override

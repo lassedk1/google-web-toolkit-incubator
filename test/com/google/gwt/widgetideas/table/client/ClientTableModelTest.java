@@ -23,7 +23,11 @@ import java.util.Iterator;
 
 /**
  * Tests methods in the {@link ClientTableModel} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.TableModelTestBase}
  */
+@Deprecated
 public class ClientTableModelTest extends TableModelTestBase {
   /**
    * The number of columns in the underlying data.

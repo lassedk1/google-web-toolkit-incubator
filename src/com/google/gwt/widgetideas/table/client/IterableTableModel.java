@@ -23,7 +23,10 @@ import java.util.Iterator;
  * A class to retrieve row data to be used in a table.
  * 
  * @param <R> the data type of the row values
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.IterableTableModel}
  */
+@Deprecated
 public class IterableTableModel<R> extends ReadOnlyTableModel<R> {
   Iterable<? extends Iterable> rows;
 
@@ -52,8 +55,7 @@ public class IterableTableModel<R> extends ReadOnlyTableModel<R> {
   }
 
   @Override
-  public void requestRows(Request request,
-      TableModel.Callback<R> callback) {
+  public void requestRows(Request request, TableModel.Callback<R> callback) {
 
     callback.onRowsReady(request, new Response<R>() {
 

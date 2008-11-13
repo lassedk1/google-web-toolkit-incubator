@@ -21,7 +21,10 @@ import com.google.gwt.user.client.ui.ListBox;
  * A cell editor that lists its options in a drop down box.
  * 
  * @param <R> the type of the row value associated with the editor
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.ListCellEditor}
  */
+@Deprecated
 public class ListCellEditor<R> extends InlineCellEditor<R> {
   /**
    * The list box of options.
@@ -60,8 +63,7 @@ public class ListCellEditor<R> extends InlineCellEditor<R> {
    * @see AbstractCellEditor#editCell(CellEditInfo, Callback)
    */
   @Override
-  public void editCell(CellEditInfo<R> cellEditInfo,
-      Callback<R> callback) {
+  public void editCell(CellEditInfo<R> cellEditInfo, Callback<R> callback) {
     super.editCell(cellEditInfo, callback);
     listBox.setFocus(true);
   }

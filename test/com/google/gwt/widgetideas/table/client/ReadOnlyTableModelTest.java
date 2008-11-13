@@ -19,7 +19,11 @@ import com.google.gwt.widgetideas.table.client.TableModelHelper.Request;
 
 /**
  * Tests methods in the {@link ReadOnlyTableModel} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.TableModelTest}
  */
+@Deprecated
 public class ReadOnlyTableModelTest extends TableModelTestBase {
   /**
    * @see TableModelTestBase#getTableModel(boolean)

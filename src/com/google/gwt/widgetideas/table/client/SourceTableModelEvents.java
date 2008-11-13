@@ -17,7 +17,17 @@ package com.google.gwt.widgetideas.table.client;
 
 /**
  * An interface for {@link TableModel} that trigger events.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.event.client.HasRowCountChangeHandlers}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.HasRowInsertionHandlers}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.HasRowRemovalHandlers}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.HasRowValueChangeHandlers}
  */
+@Deprecated
 public interface SourceTableModelEvents {
   /**
    * Add a new {@link TableModelListener}.

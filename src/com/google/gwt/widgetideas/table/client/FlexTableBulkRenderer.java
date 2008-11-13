@@ -23,7 +23,11 @@ import com.google.gwt.widgetideas.table.client.overrides.FlexTable;
  * <p>
  * Important note: Must use {@link FlexTable} in overrides package NOT the
  * standard 1.4 FlexTable.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.FlexTableBulkRenderer}
  */
+@Deprecated
 public class FlexTableBulkRenderer extends TableBulkRenderer {
 
   /**
@@ -35,7 +39,7 @@ public class FlexTableBulkRenderer extends TableBulkRenderer {
   public FlexTableBulkRenderer(FlexTable table) {
     super(table);
   }
-  
+
   /**
    * Constructor.
    * 

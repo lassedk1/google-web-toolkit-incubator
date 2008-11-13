@@ -40,7 +40,10 @@ import java.util.NoSuchElementException;
  * {@link TableModel}.
  * 
  * @param <R> the data type of the row values
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.PagingScrollTable}
  */
+@Deprecated
 public class PagingScrollTable<R> extends ScrollTable implements
     SourceRowPagingEvents {
   /**

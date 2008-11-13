@@ -22,7 +22,11 @@ import java.util.Iterator;
 
 /**
  * Allows bulk rendering of {@link SelectionGrid}s.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.SelectionGridBulkRenderer}
  */
+@Deprecated
 public class SelectionGridBulkRenderer extends GridBulkRenderer {
   /**
    * Construct a new {@link SelectionGridBulkRenderer}.

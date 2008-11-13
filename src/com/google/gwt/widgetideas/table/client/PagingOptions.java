@@ -48,7 +48,11 @@ import com.google.gwt.user.client.ui.Widget;
  * <li>.pagingOptionsNextPage { the next page button }</li>
  * 
  * <li>.pagingOptionsPreviousPage { the previous page button }</li> </ul>
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.PagingOptions}
  */
+@Deprecated
 public class PagingOptions extends Composite {
   /**
    * An {@link com.google.gwt.user.client.ui.ImageBundle} that provides images

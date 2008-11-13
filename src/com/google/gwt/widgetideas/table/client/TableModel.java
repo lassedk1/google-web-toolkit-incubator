@@ -26,7 +26,10 @@ import java.util.List;
  * A class to retrieve row data to be used in a table.
  * 
  * @param <R> the data type of the row values
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.MutableTableModel}
  */
+@Deprecated
 public abstract class TableModel<R> implements SourceTableModelEvents {
   /**
    * Callback for {@link TableModel}. Every Request should be associated with a

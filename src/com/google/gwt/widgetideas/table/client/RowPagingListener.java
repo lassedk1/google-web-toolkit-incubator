@@ -17,7 +17,16 @@ package com.google.gwt.widgetideas.table.client;
 
 /**
  * Event listener interface for {@link SourceRowPagingEvents}.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.event.client.PageCountChangeHandler}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.PageChangeHandler}
+ *             , {@link com.google.gwt.gen2.table.event.client.PageLoadHandler}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.PagingFailureHandler}
  */
+@Deprecated
 public interface RowPagingListener {
   /**
    * Fired when the number of pages changes.
