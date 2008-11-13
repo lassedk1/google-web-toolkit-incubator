@@ -147,7 +147,7 @@ public class SortableGrid extends SelectionGrid implements
     /**
      * Construct a new {@link ColumnSorterCallback}.
      */
-    ColumnSorterCallback(Element[] selectedRows) {
+    protected ColumnSorterCallback(Element[] selectedRows) {
       this.selectedRows = selectedRows;
     }
 
