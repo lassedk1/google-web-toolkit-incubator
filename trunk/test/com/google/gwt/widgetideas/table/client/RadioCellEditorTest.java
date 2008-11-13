@@ -19,7 +19,11 @@ import com.google.gwt.user.client.ui.RadioButton;
 
 /**
  * Tests methods used for all {@link RadioCellEditor} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.RadioCellEditorTest}
  */
+@Deprecated
 public class RadioCellEditorTest extends InlineCellEditorTest {
   @Override
   public InlineCellEditor<Object> getCellEditor() {

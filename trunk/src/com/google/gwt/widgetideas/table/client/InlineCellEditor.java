@@ -33,14 +33,22 @@ import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
  * An abstract representation of an editor used to edit the contents of a cell.
  * 
  * <h3>CSS Style Rules</h3>
+ * 
  * <ul class="css">
- * <li> .gwt-InlineCellEditor { applied to the entire widget } </li>
- * <li> .gwt-InlineCellEditor .accept { applied to the accept image } </li>
- * <li> .gwt-InlineCellEditor .cancel { applied to the cancel image } </li>
+ * 
+ * <li>.gwt-InlineCellEditor { applied to the entire widget }</li>
+ * 
+ * <li>.gwt-InlineCellEditor .accept { applied to the accept image }</li>
+ * 
+ * <li>.gwt-InlineCellEditor .cancel { applied to the cancel image }</li>
+ * 
  * </ul>
  * 
  * @param <R> the type of the row value associated with the editor
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.InlineCellEditor}
  */
+@Deprecated
 public abstract class InlineCellEditor<R> extends PopupPanel implements
     AbstractCellEditor<R> {
   /**

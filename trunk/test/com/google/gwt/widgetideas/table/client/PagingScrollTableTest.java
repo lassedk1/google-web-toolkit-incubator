@@ -25,7 +25,11 @@ import java.util.List;
 
 /**
  * Tests methods in the {@link PagingScrollTable} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.PagingScrollTableTest}
  */
+@Deprecated
 public class PagingScrollTableTest extends ScrollTableTest {
   /**
    * A {@link RowPagingListener} used for testing.
@@ -86,7 +90,6 @@ public class PagingScrollTableTest extends ScrollTableTest {
   /**
    * Test absolute row operations.
    */
-  // TODO(jlanbanca) fix test on windows web mode.
   public void disabledTestAbsoluteRows() {
     // Initialize the grid
     PagingScrollTable<Object> table = getPagingScrollTable();

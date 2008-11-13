@@ -22,7 +22,10 @@ import java.util.List;
  * A class to retrieve row data to be used in a table.
  * 
  * @param <R> the data type of the row values
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.ListTableModel}
  */
+@Deprecated
 public class ListTableModel<R> extends ClientTableModel<R> {
   /**
    * The row data.

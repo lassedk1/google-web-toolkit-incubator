@@ -22,7 +22,10 @@ import com.google.gwt.user.client.ui.TextBoxBase;
  * A text editor used to edit a single line of text.
  * 
  * @param <R> the type of the row value associated with the editor
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.TextCellEditor}
  */
+@Deprecated
 public class TextCellEditor<R> extends InlineCellEditor<R> {
   /**
    * The text field used in this editor.

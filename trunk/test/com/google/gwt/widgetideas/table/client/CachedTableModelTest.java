@@ -25,7 +25,11 @@ import java.util.List;
 
 /**
  * Test methods for {@link CachedTableModel} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.CachedTableModelTest}
  */
+@Deprecated
 public class CachedTableModelTest extends ClientTableModelTest {
   /**
    * A callback specifically designed to test caching.

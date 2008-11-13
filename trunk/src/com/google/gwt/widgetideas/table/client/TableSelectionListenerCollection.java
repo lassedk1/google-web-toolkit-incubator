@@ -21,7 +21,10 @@ import java.util.ArrayList;
  * A helper class for implementers of the {@link SourceTableSelectionEvents}
  * interface. This subclass of {@link ArrayList} assumes that all objects added
  * to it will be of type {@link TableSelectionListener}.
+ * 
+ * @deprecated No replacement
  */
+@Deprecated
 public class TableSelectionListenerCollection extends
     ArrayList<TableSelectionListener> {
   private static final long serialVersionUID = 4417155253362518990L;

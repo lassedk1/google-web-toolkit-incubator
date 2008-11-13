@@ -29,7 +29,11 @@ import java.util.List;
 
 /**
  * Tests methods in the {@link TableModel} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.MutableTableModelTest}
  */
+@Deprecated
 public class TableModelTest extends TableModelTestBase {
   /**
    * A {@link TableModelListener} used for testing.

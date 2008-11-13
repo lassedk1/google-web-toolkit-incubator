@@ -21,8 +21,10 @@ import com.google.gwt.user.client.Element;
 /**
  * This class should replace the actual class of the same name.
  * 
- * TODO: Incorporate changes into actual class.
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.override.client.FlexTable}
  */
+@Deprecated
 public class FlexTable extends HTMLTable {
 
   /**
@@ -93,14 +95,14 @@ public class FlexTable extends HTMLTable {
    * @param num the number of cells to add
    */
   private static native void addCells(Element table, int row, int num)/*-{
-        var rowElem = table.rows[row];
-        for(var i = 0; i < num; i++){
-          var cell = $doc.createElement("td");
-          cell['colSpan'] = 1;
-          cell['rowSpan'] = 1;
-          rowElem.appendChild(cell);  
-        }
-      }-*/;
+    var rowElem = table.rows[row];
+    for(var i = 0; i < num; i++){
+      var cell = $doc.createElement("td");
+      cell['colSpan'] = 1;
+      cell['rowSpan'] = 1;
+      rowElem.appendChild(cell);  
+    }
+  }-*/;
 
   public FlexTable() {
     super();

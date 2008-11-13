@@ -34,11 +34,13 @@ import java.util.NoSuchElementException;
 /**
  * This class should replace the actual class of the same name.
  * 
- * TODO: Incorporate changes into actual class.
- * 
  * Steps to incorporate: 1. Replace "OverrideDOM." with "DOM." 2. Copy contents
  * to actual HTMLTable class
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.override.client.HTMLTable}
  */
+@Deprecated
 public abstract class HTMLTable extends Panel implements SourcesTableEvents {
   /**
    * This class contains methods used to format a table's cells.
@@ -694,7 +696,6 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
      * @return the iterator
      */
     public Iterator widgetIterator() {
-      // TODO: look at using the WidgetIterators class!
       return new Iterator() {
         int lastIndex = -1;
         int nextIndex = -1;

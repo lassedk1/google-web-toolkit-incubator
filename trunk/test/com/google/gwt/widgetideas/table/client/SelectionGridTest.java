@@ -26,7 +26,11 @@ import java.util.Set;
 
 /**
  * Tests methods used for all {@link SelectionGrid} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.SelectionGridTest}
  */
+@Deprecated
 public class SelectionGridTest extends WidgetTestBase {
   /**
    * A custom version of {@link TableSelectionListener} used for testing.

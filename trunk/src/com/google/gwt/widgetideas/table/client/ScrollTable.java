@@ -77,7 +77,10 @@ import java.util.Set;
  * <li>.gwt-ScrollTable .footerWrapper { wrapper around the footer table }</li>
  * 
  * </ul>
+ * 
+ * @deprecated Replaced by {@link com.google.gwt.gen2.table.client.ScrollTable}
  */
+@Deprecated
 public class ScrollTable extends ComplexPanel implements ResizableWidget,
     SourcesScrollEvents {
   /**

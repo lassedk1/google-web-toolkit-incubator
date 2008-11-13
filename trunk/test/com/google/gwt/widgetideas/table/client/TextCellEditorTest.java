@@ -21,7 +21,11 @@ import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * Tests methods used for all {@link TextCellEditor} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.TextCellEditorTest}
  */
+@Deprecated
 public class TextCellEditorTest extends InlineCellEditorTest {
   @Override
   public InlineCellEditor<Object> getCellEditor() {

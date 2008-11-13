@@ -26,7 +26,11 @@ import java.util.List;
  * A {@link PreloadedTable} allow users to configure a table with HTML cell data
  * before rendering the table. This can lead to faster performance for large
  * tables.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.PreloadedTable}
  */
+@Deprecated
 public class PreloadedTable extends FlexTable {
   List<List<Object>> rows = new ArrayList<List<Object>>();
   boolean isFilledIn = false;

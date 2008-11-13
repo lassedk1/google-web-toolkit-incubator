@@ -17,7 +17,11 @@ package com.google.gwt.widgetideas.table.client;
 
 /**
  * An interface for tables that can do paging.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.event.client.HasColumnSortHandlers}
  */
+@Deprecated
 public interface SourceSortableColumnsEvents {
   /**
    * Add a {@link SortableColumnsListener} listener.

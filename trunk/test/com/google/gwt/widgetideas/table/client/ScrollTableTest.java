@@ -20,7 +20,11 @@ import com.google.gwt.widgetideas.table.client.ScrollTable.ScrollPolicy;
 
 /**
  * Tests methods in the {@link ScrollTable} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.ScrollTableTest}
  */
+@Deprecated
 public class ScrollTableTest extends WidgetTestBase {
 
   /**
