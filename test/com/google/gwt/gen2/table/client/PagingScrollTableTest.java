@@ -107,6 +107,45 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
   }
 
   /**
+   * Test absolute row index operations.
+   */
+  public void testAbsoluteRowIndex() {
+    // Initialize the grid
+    PagingScrollTable<List<Object>> table = getPagingScrollTable();
+    FixedWidthGrid grid = table.getDataTable();
+    table.setPageSize(5);
+
+    // First page with plenty of rows
+    {
+      table.setPageSize(5);
+      table.gotoPage(0, true);
+      assertEquals(0, table.getAbsoluteFirstRowIndex());
+      assertEquals(4, table.getAbsoluteLastRowIndex());
+    }
+
+    // Second page with plenty of rows
+    {
+      table.gotoPage(1, true);
+      assertEquals(5, table.getAbsoluteFirstRowIndex());
+      assertEquals(9, table.getAbsoluteLastRowIndex());
+    }
+
+    // Second page with limited rows
+    {
+      table.setPageSize(15);
+      assertEquals(15, table.getAbsoluteFirstRowIndex());
+      assertEquals(24, table.getAbsoluteLastRowIndex());
+    }
+
+    // First page with no page size
+    {
+      table.setPageSize(0);
+      assertEquals(0, table.getAbsoluteFirstRowIndex());
+      assertEquals(24, table.getAbsoluteLastRowIndex());
+    }
+  }
+
+  /**
    * Test absolute row operations.
    */
   public void testAbsoluteRows() {
