@@ -306,8 +306,8 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   }
 
   /**
-   * Removes an item from the tree. Note, if you want to switch the node back to
-   * be a leaf node, must call becomeLeaf()
+   * Removes an item from the tree. Note, tree items do not automatically become
+   * a leaf node again if the last child is removed. (
    */
   public void removeItem(FastTreeItem item) {
     // Validate.
@@ -355,8 +355,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * Sets whether this item's children are displayed.
    * 
    * @param open whether the item is open
-   * @param fireEvents <code>true</code> to allow open/close events to be
-   *          fired
+   * @param fireEvents <code>true</code> to allow open/close events to be fired
    */
   public void setState(boolean open, boolean fireEvents) {
     if (open == isOpen()) {
@@ -533,8 +532,8 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   /**
    * Selects or deselects this item.
    * 
-   * @param selected <code>true</code> to select the item, <code>false</code>
-   *          to deselect it
+   * @param selected <code>true</code> to select the item, <code>false</code> to
+   *          deselect it
    */
   void setSelection(boolean selected, boolean fireEvents) {
     setStyleName(getControlElement(), STYLENAME_SELECTED, selected);
