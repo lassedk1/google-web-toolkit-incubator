@@ -17,7 +17,10 @@ package com.google.gwt.widgetideas.table.client;
 
 /**
  * A row/column pairing used for confirming values.
+ * 
+ * @deprecated No replacement
  */
+@Deprecated
 class CellPair {
   /**
    * The row index.

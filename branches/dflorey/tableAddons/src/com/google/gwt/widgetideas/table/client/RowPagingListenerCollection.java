@@ -21,10 +21,13 @@ import java.util.ArrayList;
  * A helper class for implementers of the {@link SourceRowPagingEvents}
  * interface. This subclass of {@link ArrayList} assumes that all objects added
  * to it will be of type {@link RowPagingListener}.
+ * 
+ * @deprecated No replacement
  */
+@Deprecated
 public class RowPagingListenerCollection extends ArrayList<RowPagingListener> {
   private static final long serialVersionUID = -2749626828317431636L;
-  
+
   /**
    * Fired when the number of pages changes.
    * 

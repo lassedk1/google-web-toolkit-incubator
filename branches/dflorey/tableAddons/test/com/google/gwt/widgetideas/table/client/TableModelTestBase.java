@@ -24,7 +24,11 @@ import com.google.gwt.widgetideas.table.client.TableModelHelper.Request;
 
 /**
  * Tests methods in the {@link TableModel} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.TableModelTestBase}
  */
+@Deprecated
 public abstract class TableModelTestBase extends WidgetTestBase {
   /**
    * A {@link Callback} used for testing.

@@ -25,8 +25,10 @@ import java.util.Iterator;
  * Must use the {@link Grid} in the overrides package.
  * </p>
  * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.GridBulkRenderer}
  */
-
+@Deprecated
 public class GridBulkRenderer extends TableBulkRenderer {
 
   /**
@@ -88,9 +90,7 @@ public class GridBulkRenderer extends TableBulkRenderer {
   protected void renderRows(Iterator<Iterator<Object>> iterator,
       final RenderingOptions options) {
     addChainingCallback(options);
-
-    // TODO long term we want to copy the generic algorithm and do some checks
-    // that each row is the same length.
+    
     // Render the rows.
     super.renderRows(iterator, options);
   }

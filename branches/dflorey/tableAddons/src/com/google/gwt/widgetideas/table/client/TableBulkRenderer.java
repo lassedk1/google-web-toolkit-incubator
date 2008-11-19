@@ -29,7 +29,11 @@ import java.util.Iterator;
 /**
  * Enables bulk rendering of tables. Each subclass that needs special handling
  * for bulk rendering should have its own bulk renderer.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.TableBulkRenderer}
  */
+@Deprecated
 public abstract class TableBulkRenderer {
 
   /**
@@ -106,7 +110,6 @@ public abstract class TableBulkRenderer {
    * How many rows should be processed before time is checked and the event loop
    * is potentially flushed.
    */
-  // TODO check how long time check takes to see if this guard is worth having.
   public static int ROWS_PER_TIME_CHECK = 10;
 
   /**

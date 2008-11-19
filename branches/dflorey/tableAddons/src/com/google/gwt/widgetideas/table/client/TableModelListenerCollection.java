@@ -19,7 +19,10 @@ import java.util.ArrayList;
 
 /**
  * A helper class for implementers of {@link SourceTableModelEvents}.
+ * 
+ * @deprecated No replacement
  */
+@Deprecated
 public class TableModelListenerCollection extends ArrayList<TableModelListener> {
   private static final long serialVersionUID = -7057694055746622269L;
 

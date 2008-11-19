@@ -17,12 +17,12 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.base.client.Gen2TestBase;
 import com.google.gwt.gen2.table.client.TableModel.Callback;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortInfo;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
-import com.google.gwt.gen2.table.client.TableModelHelper.Request;
-import com.google.gwt.gen2.table.client.TableModelHelper.Response;
 import com.google.gwt.gen2.table.event.client.RowCountChangeEvent;
 import com.google.gwt.gen2.table.event.client.RowCountChangeHandler;
+import com.google.gwt.gen2.table.shared.ColumnSortInfo;
+import com.google.gwt.gen2.table.shared.ColumnSortList;
+import com.google.gwt.gen2.table.shared.Request;
+import com.google.gwt.gen2.table.shared.Response;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.List;

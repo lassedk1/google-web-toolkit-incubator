@@ -22,7 +22,11 @@ import com.google.gwt.widgetideas.table.client.TableModel.ColumnSortList;
 
 /**
  * Tests methods used for all {@link SortableGrid} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.SortableGridTest}
  */
+@Deprecated
 public class SortableGridTest extends SelectionGridTest {
   /**
    * A version of {@link SortableColumnsListener} used for testing.

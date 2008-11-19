@@ -17,7 +17,7 @@
 package com.google.gwt.gen2.table.event.client;
 
 import com.google.gwt.gen2.event.shared.AbstractEvent;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
+import com.google.gwt.gen2.table.shared.ColumnSortList;
 
 /**
  * Logical event fired when a column is sorted.

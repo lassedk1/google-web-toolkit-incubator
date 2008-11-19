@@ -17,9 +17,9 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractRowView;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnFilterList;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
-import com.google.gwt.gen2.table.client.TableModelHelper.Request;
+import com.google.gwt.gen2.table.shared.ColumnFilterList;
+import com.google.gwt.gen2.table.shared.ColumnSortList;
+import com.google.gwt.gen2.table.shared.Request;
 import com.google.gwt.libideas.client.StyleInjector;
 import com.google.gwt.libideas.resources.client.ImageResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
@@ -109,7 +109,7 @@ public class PagingScrollTreeTable<RowType extends TreeTableItem> extends
     protected ComplexPanel renderTreeNode(int rowIndex) {
       final RowType treeTableItem = table.getRowValue(getRowIndex());
       final Set<String> invertedNodes = table.getInvertedNodes();
-      boolean open = table.isOpen();
+      boolean open = table.isTreeOpen();
       TreeTableResources resources = table.getResources();
       HorizontalPanel treeNode = new HorizontalPanel();
       treeNode.setStylePrimaryName("treeNode");
@@ -118,7 +118,7 @@ public class PagingScrollTreeTable<RowType extends TreeTableItem> extends
       indent(treeNode, treeTableItem);
       if (invertedNodes.contains(treeTableItem.getId())) {
         Image image;
-        if (table.isOpen()) {
+        if (table.isTreeOpen()) {
           image = resources.treeClosed().createImage();
         } else {
           image = resources.treeOpen().createImage();
@@ -157,9 +157,9 @@ public class PagingScrollTreeTable<RowType extends TreeTableItem> extends
     }
 
     protected void indent(HorizontalPanel widget, TreeTableItem item) {
-      if (item.getParent() != null) {
+      while (item.getParent() != null) {
         widget.add(createSpacer());
-        indent(widget, item.getParent());
+        item = item.getParent();
       }
     }
   }
@@ -242,36 +242,87 @@ public class PagingScrollTreeTable<RowType extends TreeTableItem> extends
     this.open = open;
   }
 
+  /* (non-Javadoc)
+   * @see com.google.gwt.gen2.table.client.PagingScrollTable#gotoPage(int, boolean)
+   */
   public void gotoPage(int page, boolean forced) {
     super.gotoPage(page, forced);
     redraw();
   }
 
+  /**
+   * Return a set of nodes containing all tree nodes that differ from the tree state 
+   * @return the list of inverted nodes 
+   */
   public Set<String> getInvertedNodes() {
     return invertedNodes;
   }
 
-  public boolean isOpen() {
+  /**
+   * @return the default state of the tree nodes. true is all nodes are displayed open by default, false if all nodes are closed 
+   */
+  public boolean isTreeOpen() {
     return open;
   }
 
   public TreeTableResources getResources() {
     return resources;
   }
-
-  public void setOpen(boolean open) {
-    this.open = open;
-    gotoPage(getCurrentPage(), true);
+  
+  /**
+   * Opens all tree nodes
+   */
+  public void openTree() {
+    setTreeOpen(true);
   }
-
+  
+  /**
+   * Closes all tree nodes
+   */
+  public void closeTree() {
+    setTreeOpen(false);
+  }
+  
+  /**
+   * Opens the given tree item if children are available
+   * @param item the tree node to open
+   */
+  public void openTreeNode(TreeTableItem item) {
+    setTreeNodeOpen(item, true);
+  }
+  
+  /**
+   * Closes the given tree node
+   * @param item the tree node to open
+   */
+  public void closeTreeNode(TreeTableItem item) {
+    setTreeNodeOpen(item, false);
+  }
+  
   protected Request createRequest(int startRow, int pageSize,
       ColumnSortList columnSortList, ColumnFilterList columnFilterList) {
-    return new TreeTableModel.Request(startRow, pageSize, columnSortList,
+    return new TreeTableModel.TreeRequest(startRow, pageSize, columnSortList,
         columnFilterList, open, invertedNodes);
   }
 
   @Override
   protected AbstractRowView<RowType> getRowView() {
     return rowView;
+  }
+
+  protected void setTreeOpen(boolean open) {
+    this.open = open;
+    invertedNodes.clear();
+    gotoPage(getCurrentPage(), true);
+  }
+  
+  protected void setTreeNodeOpen(TreeTableItem item, boolean open) {
+    if ( item.hasChildren() ) {
+      if ( isTreeOpen() && open ) {
+        invertedNodes.remove(item.getId());
+      } else {
+        invertedNodes.add(item.getId());
+      }
+    }
   }
 }

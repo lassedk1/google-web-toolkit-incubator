@@ -26,7 +26,10 @@ import java.util.Iterator;
  * A cell editor that lists its options as radio buttons.
  * 
  * @param <R> the type of the row value associated with the editor
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.RadioCellEditor}
  */
+@Deprecated
 public class RadioCellEditor<R> extends InlineCellEditor<R> {
   /**
    * The vertical panel used to layout the contents.

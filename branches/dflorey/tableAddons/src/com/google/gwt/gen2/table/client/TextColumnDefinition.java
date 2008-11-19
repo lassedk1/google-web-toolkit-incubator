@@ -1,7 +1,7 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnFilterInfo;
+import com.google.gwt.gen2.table.shared.ColumnFilterInfo;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.KeyboardListener;
@@ -13,7 +13,7 @@ import com.google.gwt.user.client.ui.Widget;
 public abstract class TextColumnDefinition<RowType> extends
     AbstractColumnDefinition<RowType, String> {
   /**
-   * ColumnTextFilter filters columns based on text 
+   * ColumnTextFilter filters columns based on text
    */
   public static class TextColumnFilter extends ColumnFilter {
     private int operator = TextColumnFilterInfo.STARTS_WITH;
@@ -28,7 +28,7 @@ public abstract class TextColumnDefinition<RowType> extends
         if (operator == TextColumnFilterInfo.COUNT_OPERATORS) {
           operator = 0;
         }
-        setButtonText(((PushButton) operatorButton),operator);
+        setButtonText(((PushButton) operatorButton), operator);
         fireColumnFilterChanged(new TextColumnFilterInfo(getColumn(),
             filterTextBox.getText(), operator));
       }
@@ -36,14 +36,18 @@ public abstract class TextColumnDefinition<RowType> extends
 
     /**
      * Creates a filter suitable for filtering columns containing text
+     * 
      * @param column the column to be filtered
      */
     public TextColumnFilter() {
       super();
     }
 
-    /* (non-Javadoc)
-     * @see com.google.gwt.widgetideas.table.client.filter.ColumnFilter#createFilterWidget()
+    /*
+     * (non-Javadoc)
+     * 
+     * @seecom.google.gwt.widgetideas.table.client.filter.ColumnFilter#
+     * createFilterWidget()
      */
     public Widget createFilterWidget() {
       filterTextBox = new TextBox();
@@ -82,7 +86,7 @@ public abstract class TextColumnDefinition<RowType> extends
       pushButton.getDownFace().setText(operatorButtonText[operator]);
     }
   }
-  
+
   /**
    * 
    */
@@ -116,11 +120,11 @@ public abstract class TextColumnDefinition<RowType> extends
       return operator;
     }
 
-    public boolean isFilterMatchingCellContent(String cellContent) {
-      return isFilterMatchingValueObject(cellContent);
+    public String parse(String cellContent) {
+      return cellContent;
     }
 
-    public boolean isFilterMatchingValueObject(String value) {
+    public boolean isFilterMatching(String value) {
       if (operator == STARTS_WITH) {
         return value.toLowerCase().startsWith(filterText.toLowerCase());
       } else if (operator == STARTS_WITH_CASE_SENSITIVE) {
@@ -141,7 +145,7 @@ public abstract class TextColumnDefinition<RowType> extends
       return new TextColumnFilterInfo(getColumn(), filterText, operator);
     }
   }
-  
+
   /**
    * The {@link TextCellRenderer} used by the {@link TextColumnDefinition} when
    * the user does not specify one.
@@ -241,7 +245,9 @@ public abstract class TextColumnDefinition<RowType> extends
   }
 
   /**
-   * Creates the default text editor implementation. Override this method to provide custom text editor
+   * Creates the default text editor implementation. Override this method to
+   * provide custom text editor
+   * 
    * @return the created cell editor suitable for editing text
    */
   protected CellEditor<String> createTextCellEditor() {
@@ -249,7 +255,9 @@ public abstract class TextColumnDefinition<RowType> extends
   }
 
   /**
-   * Creates the default text renderer implementation. Override this method to provide custom text renderer
+   * Creates the default text renderer implementation. Override this method to
+   * provide custom text renderer
+   * 
    * @return the created cell renderer suitable for rendering text
    */
   protected CellRenderer<RowType, String> createTextCellRenderer() {
@@ -257,7 +265,9 @@ public abstract class TextColumnDefinition<RowType> extends
   }
 
   /**
-   * Creates the default text filter implementation. Override this method to provide custom filters
+   * Creates the default text filter implementation. Override this method to
+   * provide custom filters
+   * 
    * @return the created column filter suitable for filtering text columns
    */
   protected ColumnFilter createTextColumnFilter() {

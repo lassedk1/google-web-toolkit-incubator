@@ -19,7 +19,11 @@ import com.google.gwt.user.client.ui.ListBox;
 
 /**
  * Tests methods used for all {@link ListCellEditor} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.ListCellEditor}
  */
+@Deprecated
 public class ListCellEditorTest extends InlineCellEditorTest {
   @Override
   public InlineCellEditor<Object> getCellEditor() {

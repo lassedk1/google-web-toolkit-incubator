@@ -21,8 +21,10 @@ import com.google.gwt.user.client.Element;
 /**
  * This class should replace the actual class of the same name.
  * 
- * TODO: Incorporate changes into actual class.
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.override.client.Grid}
  */
+@Deprecated
 public class Grid extends HTMLTable {
   /**
    * Number of columns in the current grid.
@@ -197,7 +199,7 @@ public class Grid extends HTMLTable {
     Element tr = super.createRow();
     for (int i = 0; i < numColumns; i++) {
       tr.appendChild(createCell());
-    }   
+    }
     return tr;
   }
 

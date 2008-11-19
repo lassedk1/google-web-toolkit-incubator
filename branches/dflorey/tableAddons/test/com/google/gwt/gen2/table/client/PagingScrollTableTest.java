@@ -18,13 +18,13 @@ package com.google.gwt.gen2.table.client;
 import com.google.gwt.gen2.table.client.AbstractColumnDefinitionTest.CustomColumnDefinition;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorter;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorterCallback;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
 import com.google.gwt.gen2.table.event.client.PageChangeEvent;
 import com.google.gwt.gen2.table.event.client.PageChangeHandler;
 import com.google.gwt.gen2.table.event.client.PageCountChangeEvent;
 import com.google.gwt.gen2.table.event.client.PageCountChangeHandler;
 import com.google.gwt.gen2.table.event.client.PageLoadEvent;
 import com.google.gwt.gen2.table.event.client.PageLoadHandler;
+import com.google.gwt.gen2.table.shared.ColumnSortList;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -103,6 +103,45 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
 
     public void onPageLoad(PageLoadEvent event) {
       lastEvent = event;
+    }
+  }
+
+  /**
+   * Test absolute row index operations.
+   */
+  public void testAbsoluteRowIndex() {
+    // Initialize the grid
+    PagingScrollTable<List<Object>> table = getPagingScrollTable();
+    FixedWidthGrid grid = table.getDataTable();
+    table.setPageSize(5);
+
+    // First page with plenty of rows
+    {
+      table.setPageSize(5);
+      table.gotoPage(0, true);
+      assertEquals(0, table.getAbsoluteFirstRowIndex());
+      assertEquals(4, table.getAbsoluteLastRowIndex());
+    }
+
+    // Second page with plenty of rows
+    {
+      table.gotoPage(1, true);
+      assertEquals(5, table.getAbsoluteFirstRowIndex());
+      assertEquals(9, table.getAbsoluteLastRowIndex());
+    }
+
+    // Second page with limited rows
+    {
+      table.setPageSize(15);
+      assertEquals(15, table.getAbsoluteFirstRowIndex());
+      assertEquals(24, table.getAbsoluteLastRowIndex());
+    }
+
+    // First page with no page size
+    {
+      table.setPageSize(0);
+      assertEquals(0, table.getAbsoluteFirstRowIndex());
+      assertEquals(24, table.getAbsoluteLastRowIndex());
     }
   }
 

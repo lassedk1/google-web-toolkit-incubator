@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.TableModelHelper.Request;
+import com.google.gwt.gen2.table.shared.Request;
 
 import java.util.ArrayList;
 import java.util.List;

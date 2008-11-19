@@ -18,7 +18,11 @@ package com.google.gwt.widgetideas.table.client;
 /**
  * A callback used when rendering a {@link com.google.gwt.user.client.ui.Widget}
  * asynchronously or in a bulk operation.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.RendererCallback}
  */
+@Deprecated
 public interface RendererCallback {
   /**
    * Called when the Widget rendering completes.

@@ -24,8 +24,10 @@ import java.util.NoSuchElementException;
  * A {@link TableModel} used when the data source can be accessed synchronously.
  * 
  * @param <R> the data type of the row values
- * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.ClientTableModel}
  */
+@Deprecated
 public abstract class ClientTableModel<R> extends TableModel<R> {
   /**
    * A Response that can be used when the response is not going over a RPC

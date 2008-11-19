@@ -16,8 +16,8 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.table.client.TableModel.Callback;
-import com.google.gwt.gen2.table.client.TableModelHelper.Request;
-import com.google.gwt.gen2.table.client.TableModelHelper.Response;
+import com.google.gwt.gen2.table.shared.Request;
+import com.google.gwt.gen2.table.shared.Response;
 
 import java.util.Iterator;
 import java.util.List;

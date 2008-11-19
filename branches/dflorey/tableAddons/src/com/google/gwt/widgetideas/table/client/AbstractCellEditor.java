@@ -21,11 +21,13 @@ import com.google.gwt.widgetideas.table.client.overrides.HTMLTable;
  * Cell editors provide a mechanism to edit cells.
  * 
  * @param <R> the type of the row value associated with the editor
+ * @deprecated Replaced by {@link com.google.gwt.gen2.table.client.CellEditor}.
  */
+@Deprecated
 public interface AbstractCellEditor<R> {
   /**
-   * Callback for {@link AbstractCellEditor}. The callback will be used when
-   * the user finishes editing the cell.
+   * Callback for {@link AbstractCellEditor}. The callback will be used when the
+   * user finishes editing the cell.
    * 
    * @param <R> the type of the row value associated with the editor
    */

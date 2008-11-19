@@ -22,12 +22,12 @@ import com.google.gwt.gen2.event.dom.client.ScrollHandler;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.table.client.ColumnFilter.ColumnFilterListener;
 import com.google.gwt.gen2.table.client.ColumnResizer.ColumnWidthInfo;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnFilterInfo;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
 import com.google.gwt.gen2.table.event.client.ColumnSortEvent;
 import com.google.gwt.gen2.table.event.client.ColumnSortHandler;
 import com.google.gwt.gen2.table.override.client.ComplexPanel;
 import com.google.gwt.gen2.table.override.client.OverrideDOM;
+import com.google.gwt.gen2.table.shared.ColumnFilterInfo;
+import com.google.gwt.gen2.table.shared.ColumnSortList;
 import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
@@ -1520,7 +1520,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       DOM.setStyleAttribute(footerWrapper, "height", footerHeight + "px");
     }
     DOM.setStyleAttribute(dataWrapper, "height",
-        (totalHeight - headerHeight - footerHeight) + "px");
+        Math.max(totalHeight - headerHeight - footerHeight, 0) + "px");
     DOM.setStyleAttribute(dataWrapper, "overflow", "hidden");
     DOM.setStyleAttribute(dataWrapper, "overflow", "auto");
     scrollTables(true);

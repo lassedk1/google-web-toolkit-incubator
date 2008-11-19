@@ -21,7 +21,10 @@ import com.google.gwt.widgetideas.table.client.overrides.Grid;
 /**
  * {@link FlexTableBulkRenderer} test.
  * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.FlexTableBulkRendererTest}
  */
+@Deprecated
 public class GridBulkRendererTest extends TableBulkRendererTestBase {
 
   @Override

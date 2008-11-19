@@ -19,11 +19,11 @@ import com.google.gwt.gen2.event.shared.AbstractEvent;
 import com.google.gwt.gen2.event.shared.EventHandler;
 import com.google.gwt.gen2.event.shared.HandlerManager;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
-import com.google.gwt.gen2.table.client.TableModelHelper.Request;
-import com.google.gwt.gen2.table.client.TableModelHelper.Response;
 import com.google.gwt.gen2.table.event.client.HasRowCountChangeHandlers;
 import com.google.gwt.gen2.table.event.client.RowCountChangeEvent;
 import com.google.gwt.gen2.table.event.client.RowCountChangeHandler;
+import com.google.gwt.gen2.table.shared.Request;
+import com.google.gwt.gen2.table.shared.Response;
 
 /**
  * A class to retrieve row data to be used in a table.

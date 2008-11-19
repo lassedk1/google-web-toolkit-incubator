@@ -22,11 +22,6 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>test</name>
-			<type>2</type>
-			<locationURI>GWT_INCUBATOR/test</locationURI>
-		</link>
-		<link>
 			<name>bin</name>
 			<type>2</type>
 			<locationURI>GWT_INCUBATOR/build/out/bin</locationURI>
@@ -35,6 +30,11 @@
 			<name>src</name>
 			<type>2</type>
 			<locationURI>GWT_INCUBATOR/src</locationURI>
+		</link>
+		<link>
+			<name>test</name>
+			<type>2</type>
+			<locationURI>GWT_INCUBATOR/test</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

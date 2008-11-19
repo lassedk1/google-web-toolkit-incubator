@@ -23,7 +23,11 @@ import com.google.gwt.widgetideas.table.client.overrides.Grid;
 
 /**
  * Tests methods used for all {@link AbstractCellEditor} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.InlineCellEditorTest}
  */
+@Deprecated
 public class InlineCellEditorTest extends WidgetTestBase {
   /**
    * A callback used for testing.
@@ -82,7 +86,7 @@ public class InlineCellEditorTest extends WidgetTestBase {
       completed = true;
     }
   }
- 
+
   /**
    * Get the cell editor.
    * 

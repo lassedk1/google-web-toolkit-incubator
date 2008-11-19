@@ -15,8 +15,8 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.TableModelHelper.Request;
-import com.google.gwt.gen2.table.client.TableModelHelper.Response;
+import com.google.gwt.gen2.table.shared.Request;
+import com.google.gwt.gen2.table.shared.Response;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -130,6 +130,11 @@ public abstract class ClientTableModel extends MutableTableModel<List<Object>> {
       @Override
       public Iterator<List<Object>> getRowValues() {
         return rowIter;
+      }
+      
+      @Override
+      public int getRowCount() {
+        return ClientTableModel.this.getRowCount();
       }
     };
     callback.onRowsReady(request, response);

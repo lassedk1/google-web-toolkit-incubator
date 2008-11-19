@@ -21,8 +21,9 @@ import com.google.gwt.user.client.Element;
 /**
  * This class should be incorporated into the DOMImplSafari class.
  * 
- * TODO: incorporate into DOMImplSafari
+ * @deprecated No replacement
  */
+@Deprecated
 class OverrideDOMImplSafari extends OverrideDOMImpl {
   @Override
   public Element createTD() {

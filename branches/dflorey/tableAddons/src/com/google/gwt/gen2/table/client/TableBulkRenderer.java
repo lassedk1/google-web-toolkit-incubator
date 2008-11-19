@@ -19,9 +19,9 @@ package com.google.gwt.gen2.table.client;
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractRowView;
-import com.google.gwt.gen2.table.client.TableModelHelper.Request;
-import com.google.gwt.gen2.table.client.TableModelHelper.Response;
 import com.google.gwt.gen2.table.override.client.HTMLTable;
+import com.google.gwt.gen2.table.shared.Request;
+import com.google.gwt.gen2.table.shared.Response;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
@@ -268,10 +268,6 @@ public abstract class TableBulkRenderer<RowType> implements
 
       // Create a string buffer to assemble the table
       buffer = new StringBuffer();
-      buffer.append("<table><tbody>");
-      if (options.headerRow != null) {
-        buffer.append(options.headerRow);
-      }
       cellView.buffer = buffer;
     }
 
@@ -309,6 +305,12 @@ public abstract class TableBulkRenderer<RowType> implements
         final Iterator<RowType> rowValues,
         final RowRenderer<RowType> rowRenderer,
         final List<ColumnDefinition<RowType, ?>> visibleColumns) {
+      // Create the table
+      buffer.append("<table><tbody>");
+      if (options.headerRow != null) {
+        buffer.append(options.headerRow);
+      }
+
       // Reset the row index
       rowIndex = startRowIndex;
       final int myStamp = ++bulkRenderer.requestStamp;

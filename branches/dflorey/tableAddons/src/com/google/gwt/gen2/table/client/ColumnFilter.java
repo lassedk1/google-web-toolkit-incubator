@@ -15,7 +15,7 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnFilterInfo;
+import com.google.gwt.gen2.table.shared.ColumnFilterInfo;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * A column filter responsible for filtering specific columns
  */
-public abstract class ColumnFilter {
+public abstract class ColumnFilter<ColType> {
   /**
    * The {@link ColumnFilterListener} interface
    */
@@ -58,7 +58,7 @@ public abstract class ColumnFilter {
   /**
    * @param listener the listener to remove
    */
-  public void fireColumnFilterChanged(ColumnFilterInfo info) {
+  public void fireColumnFilterChanged(ColumnFilterInfo<ColType> info) {
     if (columnFilterListeners != null) {
       for (ColumnFilterListener columnFilterListener : columnFilterListeners) {
         columnFilterListener.onFilterChanged(info);

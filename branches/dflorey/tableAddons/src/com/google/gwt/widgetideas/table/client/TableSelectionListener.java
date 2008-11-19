@@ -17,7 +17,19 @@ package com.google.gwt.widgetideas.table.client;
 
 /**
  * Event listener interface for {@link FixedWidthGrid} events.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.event.client.CellHighlightHandler}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.CellUnhighlightHandler}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.RowHighlightHandler}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.RowUnhighlightHandler}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.RowSelectionHandler}
  */
+@Deprecated
 public interface TableSelectionListener {
   /**
    * Fired when all rows are deselected.

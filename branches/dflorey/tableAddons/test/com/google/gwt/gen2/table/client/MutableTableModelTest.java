@@ -15,13 +15,13 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.TableModelHelper.Request;
 import com.google.gwt.gen2.table.event.client.RowInsertionEvent;
 import com.google.gwt.gen2.table.event.client.RowInsertionHandler;
 import com.google.gwt.gen2.table.event.client.RowRemovalEvent;
 import com.google.gwt.gen2.table.event.client.RowRemovalHandler;
 import com.google.gwt.gen2.table.event.client.RowValueChangeEvent;
 import com.google.gwt.gen2.table.event.client.RowValueChangeHandler;
+import com.google.gwt.gen2.table.shared.Request;
 
 /**
  * Tests methods in the {@link MutableTableModel} class.

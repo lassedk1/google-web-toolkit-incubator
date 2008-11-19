@@ -24,7 +24,11 @@ import java.util.Iterator;
 
 /**
  * Helper class to bulk load {@link FixedWidthGrid} tables.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.FixedWidthGridBulkRenderer}
  */
+@Deprecated
 public class FixedWidthGridBulkRenderer extends SelectionGridBulkRenderer {
 
   /**

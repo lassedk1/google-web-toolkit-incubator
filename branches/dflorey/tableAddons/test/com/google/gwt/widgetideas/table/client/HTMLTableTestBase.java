@@ -30,7 +30,11 @@ import java.util.List;
 /**
  * Base test for HTMLTable derived classes copied from gwt user for use in table
  * testing.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.HTMLTableTestBase}
  */
+@Deprecated
 public abstract class HTMLTableTestBase extends GWTTestCase {
   public static void assertEquals(Object[] x, Object[] y) {
     assertEquals(x.length, y.length);
