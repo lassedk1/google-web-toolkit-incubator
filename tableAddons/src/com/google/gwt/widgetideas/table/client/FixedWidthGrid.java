@@ -30,7 +30,11 @@ import java.util.Map;
  * A variation of the
  * {@link com.google.gwt.widgetideas.table.client.overrides.Grid} that resizes
  * columns using a fixed table width.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.FixedWidthGrid}
  */
+@Deprecated
 public class FixedWidthGrid extends SortableGrid {
   /**
    * This class contains methods used to format a table's cells.

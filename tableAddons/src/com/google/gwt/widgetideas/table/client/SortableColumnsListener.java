@@ -21,7 +21,11 @@ import java.util.EventListener;
 
 /**
  * Event listener interface for column sort events.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.event.client.ColumnSortHandler}
  */
+@Deprecated
 public interface SortableColumnsListener extends EventListener {
   /**
    * Fired when the currently sorted column changes.

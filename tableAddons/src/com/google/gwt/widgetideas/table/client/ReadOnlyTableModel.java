@@ -20,7 +20,9 @@ package com.google.gwt.widgetideas.table.client;
  * are called, an exception is thrown.
  * 
  * @param <R> the data type of the row values
+ * @deprecated Replaced by {@link com.google.gwt.gen2.table.client.TableModel}
  */
+@Deprecated
 public abstract class ReadOnlyTableModel<R> extends TableModel<R> {
   /**
    * Error message used when calling a write operation.

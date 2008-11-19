@@ -1,7 +1,7 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnFilterInfo;
+import com.google.gwt.gen2.table.shared.ColumnFilterInfo;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
+
 
 public abstract class NumberColumnDefinition<RowType> extends
     AbstractColumnDefinition<RowType, Double> {
@@ -152,16 +153,15 @@ public abstract class NumberColumnDefinition<RowType> extends
       return secondaryNumber;
     }
 
-    public boolean isFilterMatchingCellContent(String cellContent) {
+    public Double parse(String cellContent) {
       try {
-        Double number = numberFormat.parse(cellContent);
-        return isFilterMatchingValueObject(number);
+        return numberFormat.parse(cellContent);
       } catch (NumberFormatException e) {
-        return false;
+        return null;
       }
     }
 
-    public boolean isFilterMatchingValueObject(Double value) {
+    public boolean isFilterMatching(Double value) {
       // Empty filter will match everything
       if (primaryNumber == null) {
         return true;

@@ -22,7 +22,11 @@ import java.util.List;
 
 /**
  * Tests methods in the {@link ListTableModel} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.ListTableModelTest}
  */
+@Deprecated
 public class ListTableModelTest extends ClientTableModelTest {
   /**
    * @see TableModelTestBase#getTableModel(boolean)
@@ -38,7 +42,7 @@ public class ListTableModelTest extends ClientTableModelTest {
         columnList.add(new CellPair(row, column));
       }
     }
-    
+
     // Failure mode version
     if (failureMode) {
       return new ListTableModel<R>(rowList) {
@@ -104,7 +108,7 @@ public class ListTableModelTest extends ClientTableModelTest {
     tableModel.setData(NUM_ROWS - 1, NUM_COLUMNS - 2, testObject);
     assertEquals(testObject, tableModel.getCell(NUM_ROWS - 1, NUM_COLUMNS - 2));
     assertEquals(NUM_ROWS, tableModel.getRowCount());
-    
+
     // Set data over a row and column that do not exist
     tableModel.setData(NUM_ROWS + 2, NUM_COLUMNS + 2, testObject);
     assertEquals(testObject, tableModel.getCell(NUM_ROWS + 2, NUM_COLUMNS + 2));

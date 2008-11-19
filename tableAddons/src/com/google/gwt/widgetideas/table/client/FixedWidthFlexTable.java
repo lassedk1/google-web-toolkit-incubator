@@ -31,7 +31,11 @@ import java.util.Map;
  * A variation of the {@link FlexTable} that supports smarter column resizing
  * options. Unlike the {@link FlexTable}, columns resized in the
  * {@link FixedWidthFlexTable} class are guaranteed to be resized correctly.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.FixedWidthFlexTable}
  */
+@Deprecated
 public class FixedWidthFlexTable extends FlexTable {
   /**
    * An implementation used accommodate differences in column width

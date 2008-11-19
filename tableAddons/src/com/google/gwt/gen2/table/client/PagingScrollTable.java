@@ -25,10 +25,6 @@ import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorterCallback;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractRowView;
 import com.google.gwt.gen2.table.client.TableModel.Callback;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnFilterList;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
-import com.google.gwt.gen2.table.client.TableModelHelper.Request;
-import com.google.gwt.gen2.table.client.TableModelHelper.Response;
 import com.google.gwt.gen2.table.event.client.HasPageChangeHandlers;
 import com.google.gwt.gen2.table.event.client.HasPageCountChangeHandlers;
 import com.google.gwt.gen2.table.event.client.HasPageLoadHandlers;
@@ -52,6 +48,10 @@ import com.google.gwt.gen2.table.event.client.RowRemovalEvent;
 import com.google.gwt.gen2.table.event.client.RowRemovalHandler;
 import com.google.gwt.gen2.table.event.client.RowValueChangeEvent;
 import com.google.gwt.gen2.table.event.client.RowValueChangeHandler;
+import com.google.gwt.gen2.table.shared.ColumnFilterList;
+import com.google.gwt.gen2.table.shared.ColumnSortList;
+import com.google.gwt.gen2.table.shared.Request;
+import com.google.gwt.gen2.table.shared.Response;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
@@ -64,7 +64,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-
 /**
  * A {@link ScrollTable} that acts as a view for an underlying
  * {@link MutableTableModel}.
@@ -110,7 +109,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       table.getDataTable().getCellFormatter().setStyleName(getRowIndex(),
           getCellIndex(), stylename);
     }
-    
+
     @Override
     public void setText(String text) {
       table.getDataTable().setText(getRowIndex(), getCellIndex(), text);
@@ -269,6 +268,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     }
 
     public void onRowsReady(Request request, Response<RowType> response) {
+      getTableModel().setRowCount(response.getRowCount());
       if (lastRequest == request) {
         setData(request.getStartRow(), response.getRowValues());
       }
@@ -345,16 +345,16 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     int columns = headerTable.getCellCount(0);
     boolean filteringEnabled = false;
     for (int i = 0; i < columns; i++) {
-        ColumnDefinition<RowType, ?> colDef = getColumnDefinition(i);
-        if (colDef != null) {
-          ColumnFilter filter = colDef.getColumnFilter();
-          if (filter != null) {
-            filter.setColumn(i);
-            headerTable.setWidget(filterRow, i, filter.createFilterWidget());
-            filter.addColumnFilterListener(columnFilterListener);
-            filteringEnabled = true;
-          }
+      ColumnDefinition<RowType, ?> colDef = getColumnDefinition(i);
+      if (colDef != null) {
+        ColumnFilter filter = colDef.getColumnFilter();
+        if (filter != null) {
+          filter.setColumn(i);
+          headerTable.setWidget(filterRow, i, filter.createFilterWidget());
+          filter.addColumnFilterListener(columnFilterListener);
+          filteringEnabled = true;
         }
+      }
     }
 
     if (filteringEnabled) {
@@ -399,7 +399,8 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     if (tableModel instanceof HasRowValueChangeHandlers) {
       ((HasRowValueChangeHandlers<RowType>) tableModel).addRowValueChangeHandler(new RowValueChangeHandler<RowType>() {
         public void onRowValueChange(RowValueChangeEvent<RowType> event) {
-          setRowValue(event.getRowIndex() - getFirstRow(), event.getRowValue());
+          setRowValue(event.getRowIndex() - getAbsoluteFirstRowIndex(),
+              event.getRowValue());
         }
       });
     }
@@ -428,7 +429,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     if (dataTable.getColumnFilter() == null) {
       ColumnFilterer filterer = new ColumnFilterer() {
         private Timer timer;
-        
+
         public void onFilterColumn(SortableGrid grid,
             ColumnFilterList filterList, final ColumnFilterCallback callback) {
           if (timer != null) {
@@ -436,7 +437,8 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
           }
           timer = new Timer() {
             public void run() {
-              // Jump to first page and force reloading as filtering might decrease
+              // Jump to first page and force reloading as filtering might
+              // decrease
               // visible rows
               gotoPage(0, true);
               callback.onFilteringComplete();
@@ -465,6 +467,27 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   public HandlerRegistration addPagingFailureHandler(
       PagingFailureHandler handler) {
     return addHandler(PagingFailureEvent.TYPE, handler);
+  }
+
+  /**
+   * @return the absolute index of the first visible row
+   */
+  public int getAbsoluteFirstRowIndex() {
+    return currentPage * pageSize;
+  }
+
+  /**
+   * @return the absolute index of the last visible row
+   */
+  public int getAbsoluteLastRowIndex() {
+    if (tableModel.getRowCount() < 0) {
+      // Unknown row count, so just return based on current page
+      return (currentPage + 1) * pageSize - 1;
+    } else if (pageSize == 0) {
+      // Only one page, so return row count
+      return tableModel.getRowCount() - 1;
+    }
+    return Math.min(tableModel.getRowCount(), (currentPage + 1) * pageSize) - 1;
   }
 
   /**
@@ -615,7 +638,8 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
 
       // Clear out existing data if we aren't bulk rendering
       if (bulkRenderer == null) {
-        int rowCount = getLastRow() - getFirstRow() + 1;
+        int rowCount = getAbsoluteLastRowIndex() - getAbsoluteFirstRowIndex()
+            + 1;
         if (rowCount != dataTable.getRowCount()) {
           dataTable.resizeRows(rowCount);
         }
@@ -782,7 +806,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
           public void onComplete(CellEditInfo cellEditInfo, Object cellValue) {
             colDef.setCellValue(rowValue, cellValue);
             if (tableModel instanceof MutableTableModel) {
-              int row = getFirstRow() + cellEditInfo.getRowIndex();
+              int row = getAbsoluteFirstRowIndex() + cellEditInfo.getRowIndex();
               ((MutableTableModel<RowType>) tableModel).setRowValue(row,
                   rowValue);
             } else {
@@ -806,23 +830,6 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   }
 
   /**
-   * @return the index of the first visible row
-   */
-  protected int getFirstRow() {
-    return currentPage * pageSize;
-  }
-
-  /**
-   * @return the index of the last visible row
-   */
-  protected int getLastRow() {
-    if (tableModel.getRowCount() < 0) {
-      return (currentPage + 1) * pageSize - 1;
-    }
-    return Math.min(tableModel.getRowCount(), (currentPage + 1) * pageSize) - 1;
-  }
-
-  /**
    * Get the list of row values associated with the table.
    * 
    * @return the list of row value
@@ -834,7 +841,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   protected AbstractRowView<RowType> getRowView() {
     return rowView;
   }
-  
+
   /**
    * Insert a row into the table relative to the total number of rows.
    * 
@@ -842,9 +849,9 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   protected void insertAbsoluteRow(int beforeRow) {
     // Physically insert the row
-    int lastRow = getLastRow() + 1;
+    int lastRow = getAbsoluteLastRowIndex() + 1;
     if (beforeRow <= lastRow) {
-      int firstRow = getFirstRow();
+      int firstRow = getAbsoluteFirstRowIndex();
       if (beforeRow >= firstRow) {
         // Insert row in the middle of the page
         getDataTable().insertRow(beforeRow - firstRow);
@@ -884,9 +891,9 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   protected void removeAbsoluteRow(int row) {
     // Physically remove the row
-    int lastRow = getLastRow();
+    int lastRow = getAbsoluteLastRowIndex();
     if (row <= lastRow) {
-      int firstRow = getFirstRow();
+      int firstRow = getAbsoluteFirstRowIndex();
       if (row >= firstRow) {
         // Remove a row in the middle of the page
         getDataTable().removeRow(row - firstRow);
@@ -914,8 +921,8 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       setEmptyTableWidgetVisible(false);
 
       // Get an iterator over the visible rows
-      int firstVisibleRow = getFirstRow();
-      int lastVisibleRow = getLastRow();
+      int firstVisibleRow = getAbsoluteFirstRowIndex();
+      int lastVisibleRow = getAbsoluteLastRowIndex();
       Iterator<RowType> visibleIter = new VisibleRowsIterator(rows, firstRow,
           firstVisibleRow, lastVisibleRow);
 

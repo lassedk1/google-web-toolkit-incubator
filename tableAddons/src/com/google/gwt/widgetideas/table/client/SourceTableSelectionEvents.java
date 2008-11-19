@@ -17,7 +17,19 @@ package com.google.gwt.widgetideas.table.client;
 
 /**
  * Source of selection events.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.event.client.HasCellHighlightHandlers}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.HasCellUnhighlightHandlers}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.HasRowHighlightHandlers}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.HasRowUnhighlightHandlers}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.HasRowSelectionHandlers}
  */
+@Deprecated
 public interface SourceTableSelectionEvents {
   /**
    * Add a {@link TableSelectionListener}.

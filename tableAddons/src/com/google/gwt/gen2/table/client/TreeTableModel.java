@@ -15,9 +15,10 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnFilterList;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
-import com.google.gwt.gen2.table.client.TableModelHelper.SerializableResponse;
+import com.google.gwt.gen2.table.shared.ColumnFilterList;
+import com.google.gwt.gen2.table.shared.ColumnSortList;
+import com.google.gwt.gen2.table.shared.Request;
+import com.google.gwt.gen2.table.shared.SerializableResponse;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.Collection;
@@ -32,14 +33,14 @@ public abstract class TreeTableModel<R extends TreeTableItem> extends TableModel
   /**
    * Request object taking care of the tree nodes state
    */
-  public static class Request extends TableModelHelper.Request implements IsSerializable {
+  public static class TreeRequest extends Request implements IsSerializable {
     private Set<String> invertedNodes;
     private boolean open;
 
-    public Request() {
+    public TreeRequest() {
     }
 
-    public Request(int startRow, int numRows, ColumnSortList columnSortList,
+    public TreeRequest(int startRow, int numRows, ColumnSortList columnSortList,
         ColumnFilterList columnFilterList, boolean open, Set<String> invertedNodes) {
       super(startRow, numRows, columnSortList, columnFilterList);
       this.open = open;
@@ -76,11 +77,11 @@ public abstract class TreeTableModel<R extends TreeTableItem> extends TableModel
     }
   }
 
-  public void requestRows(TableModelHelper.Request request, Callback<R> callback) {
-    requestTreeItems((TreeTableModel.Request) request, callback);
+  public void requestRows(Request request, Callback<R> callback) {
+    requestTreeItems((TreeRequest)request, callback);
   }
 
-  public abstract void requestTreeItems(TreeTableModel.Request request,
+  public abstract void requestTreeItems(TreeRequest request,
       Callback<R> callback);
 
   public void setRowMetadata(int rowCount) {

@@ -20,7 +20,11 @@ import com.google.gwt.widgetideas.table.client.overrides.FlexTable.FlexCellForma
 
 /**
  * Tests methods used for all {@link FixedWidthFlexTable} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.FixedWidthFlexTableTest}
  */
+@Deprecated
 public class FixedWidthFlexTableTest extends WidgetTestBase {
   /**
    * Get the table.

@@ -28,7 +28,10 @@ import java.util.NoSuchElementException;
  * Creates a mapping from elements to their associated ui objects.
  * 
  * @param <MappedType> the type that the element is mapped to
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.override.client.ElementMapper}
  */
+@Deprecated
 public class ElementMapper<MappedType extends UIObject> {
 
   private static class FreeNode {
@@ -43,7 +46,7 @@ public class ElementMapper<MappedType extends UIObject> {
 
   private static native void clearIndex(Element elem) /*-{
     elem["__uiObjectID"] = null;
-   }-*/;
+  }-*/;
 
   private static native int getIndex(Element elem) /*-{
     var index = elem["__uiObjectID"];
@@ -51,7 +54,7 @@ public class ElementMapper<MappedType extends UIObject> {
   }-*/;
 
   private static native void setIndex(Element elem, int index) /*-{
-     elem["__uiObjectID"] = index;
+    elem["__uiObjectID"] = index;
   }-*/;
 
   private ElementMapper.FreeNode freeList = null;

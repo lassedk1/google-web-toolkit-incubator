@@ -17,7 +17,17 @@ package com.google.gwt.widgetideas.table.client;
 
 /**
  * An interface for tables that can do paging.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.event.client.HasPageCountChangeHandlers}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.HasPageChangeHandlers}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.HasPageLoadHandlers}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.HasPagingFailureHandlers}
  */
+@Deprecated
 public interface SourceRowPagingEvents {
   /**
    * Add a new {@link RowPagingListener}.

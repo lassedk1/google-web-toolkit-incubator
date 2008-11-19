@@ -17,9 +17,9 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorter;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorterCallback;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
 import com.google.gwt.gen2.table.event.client.ColumnSortEvent;
 import com.google.gwt.gen2.table.event.client.ColumnSortHandler;
+import com.google.gwt.gen2.table.shared.ColumnSortList;
 import com.google.gwt.user.client.ui.HTML;
 
 /**

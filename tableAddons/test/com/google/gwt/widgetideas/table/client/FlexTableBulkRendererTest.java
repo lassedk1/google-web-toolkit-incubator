@@ -21,7 +21,10 @@ import com.google.gwt.widgetideas.table.client.overrides.FlexTable;
 /**
  * {@link FlexTableBulkRenderer} test.
  * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.TableBulkRendererTestBase}
  */
+@Deprecated
 public class FlexTableBulkRendererTest extends TableBulkRendererTestBase {
 
   @Override

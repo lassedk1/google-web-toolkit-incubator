@@ -57,7 +57,10 @@ import java.util.NoSuchElementException;
  * </p>
  * 
  * @param <R> the data type of the row values
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.CachedTableModel}
  */
+@Deprecated
 public class CachedTableModel<R> extends TableModel<R> {
   /**
    * A callback that retrieves data from the cache.

@@ -15,11 +15,10 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.TableModelHelper.Request;
-import com.google.gwt.gen2.table.client.TableModelHelper.Response;
+import com.google.gwt.gen2.table.shared.Request;
+import com.google.gwt.gen2.table.shared.Response;
 
 import java.util.Iterator;
-
 /**
  * A class to retrieve row data to be used in a table.
  * 
@@ -47,6 +46,11 @@ public class IterableTableModel<RowType> extends TableModel<RowType> {
       @Override
       public Iterator<RowType> getRowValues() {
         return rows.iterator();
+      }
+      
+      @Override
+      public int getRowCount() {
+        return IterableTableModel.this.getRowCount();
       }
     });
   }

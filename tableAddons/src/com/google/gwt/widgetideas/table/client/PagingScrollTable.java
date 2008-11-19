@@ -40,7 +40,10 @@ import java.util.NoSuchElementException;
  * {@link TableModel}.
  * 
  * @param <R> the data type of the row values
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.PagingScrollTable}
  */
+@Deprecated
 public class PagingScrollTable<R> extends ScrollTable implements
     SourceRowPagingEvents {
   /**
@@ -320,6 +323,31 @@ public class PagingScrollTable<R> extends ScrollTable implements
   }
 
   /**
+   * Get the absolute index of the first visible row.
+   * 
+   * @return the first row index
+   */
+  public int getFirstRow() {
+    return currentPage * pageSize;
+  }
+
+  /**
+   * Get the absolute index of the last visible row.
+   * 
+   * @return the last row index
+   */
+  public int getLastRow() {
+    if (tableModel.getRowCount() < 0) {
+      // Unknown row count, so just return based on current page
+      return (currentPage + 1) * pageSize - 1;
+    } else if (pageSize == 0) {
+      // Only one page, so return row count
+      return tableModel.getRowCount() - 1;
+    }
+    return Math.min(tableModel.getRowCount(), (currentPage + 1) * pageSize) - 1;
+  }
+
+  /**
    * @return the number of pages, or -1 if not known
    */
   public int getNumPages() {
@@ -586,27 +614,6 @@ public class PagingScrollTable<R> extends ScrollTable implements
       };
     }
     return cellEditorCallback;
-  }
-
-  /**
-   * Get the first visible row index.
-   * 
-   * @return the first row index
-   */
-  protected int getFirstRow() {
-    return currentPage * pageSize;
-  }
-
-  /**
-   * Get the last visible row index.
-   * 
-   * @return the last row index
-   */
-  protected int getLastRow() {
-    if (tableModel.getRowCount() < 0) {
-      return (currentPage + 1) * pageSize - 1;
-    }
-    return Math.min(tableModel.getRowCount(), (currentPage + 1) * pageSize) - 1;
   }
 
   /**

@@ -17,7 +17,16 @@ package com.google.gwt.widgetideas.table.client;
 
 /**
  * Event listener for {@link TableModel} class.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.event.client.RowCountChangeHandler}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.RowInsertionHandler}
+ *             ,
+ *             {@link com.google.gwt.gen2.table.event.client.RowRemovalHandler},
+ *             {@link com.google.gwt.gen2.table.event.client.RowValueChangeHandler}
  */
+@Deprecated
 public interface TableModelListener {
   /**
    * Event fired when the number of rows changes.

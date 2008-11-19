@@ -15,9 +15,9 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
-import com.google.gwt.gen2.table.client.TableModelHelper.Request;
-import com.google.gwt.gen2.table.client.TableModelHelper.Response;
+import com.google.gwt.gen2.table.shared.ColumnSortList;
+import com.google.gwt.gen2.table.shared.Request;
+import com.google.gwt.gen2.table.shared.Response;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -185,6 +185,11 @@ public class CachedTableModel<RowType> extends MutableTableModel<RowType> {
     @Override
     public Iterator<RowType> getRowValues() {
       return it;
+    }
+    
+    @Override
+    public int getRowCount() {
+      return CachedTableModel.this.getRowCount();
     }
   }
 

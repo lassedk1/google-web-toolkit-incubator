@@ -23,7 +23,10 @@ import java.util.ArrayList;
  * A helper class for implementers of the {@link SourceSortableColumnsEvents}
  * interface. This subclass of {@link ArrayList} assumes that all objects added
  * to it will be of type {@link SortableColumnsListener}.
+ * 
+ * @deprecated No replacement
  */
+@Deprecated
 public class SortableColumnsListenerCollection extends
     ArrayList<SortableColumnsListener> {
   private static final long serialVersionUID = -4412778421382569723L;

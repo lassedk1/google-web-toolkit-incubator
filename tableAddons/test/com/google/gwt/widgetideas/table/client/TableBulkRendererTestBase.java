@@ -28,7 +28,11 @@ import java.util.List;
 /**
  * Base test for HTMLTable derived classes copied from gwt user for use in table
  * testing.
+ * 
+ * @deprecated Replaced by
+ *             {@link com.google.gwt.gen2.table.client.TableBulkRendererTestBase}
  */
+@Deprecated
 public abstract class TableBulkRendererTestBase extends WidgetTestBase {
   abstract class TestCallback implements RendererCallback {
     HTMLTable table;
@@ -61,7 +65,7 @@ public abstract class TableBulkRendererTestBase extends WidgetTestBase {
       assertEquals(target.get(i), array[i]);
     }
   }
- 
+
   public void testContents() {
     doTest(createOracle(4, 4), new TestCallback() {
 

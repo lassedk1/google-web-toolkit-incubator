@@ -16,15 +16,15 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnFilterInfo;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnFilterList;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortInfo;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
 import com.google.gwt.gen2.table.event.client.ColumnFilterEvent;
 import com.google.gwt.gen2.table.event.client.ColumnSortEvent;
 import com.google.gwt.gen2.table.event.client.ColumnSortHandler;
 import com.google.gwt.gen2.table.event.client.HasColumnSortHandlers;
 import com.google.gwt.gen2.table.override.client.OverrideDOM;
+import com.google.gwt.gen2.table.shared.ColumnFilterInfo;
+import com.google.gwt.gen2.table.shared.ColumnFilterList;
+import com.google.gwt.gen2.table.shared.ColumnSortInfo;
+import com.google.gwt.gen2.table.shared.ColumnSortList;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 
@@ -85,12 +85,14 @@ public class SortableGrid extends SelectionGrid implements
         for (ColumnFilterInfo columnFilterInfo : filterList) {
           int column = columnFilterInfo.getColumn();
           Element tdElement = formatter.getRawElement(i, column);
-          String cellContent = DOM.getInnerText(tdElement);
-          if (columnFilterInfo.isFilterMatchingCellContent(cellContent)) {
-            filterMatches = true;
-          } else {
-            filterMatches = false;
-            break;
+          Object parsedContent = columnFilterInfo.parse(DOM.getInnerText(tdElement));
+          if (parsedContent != null) {
+            if (columnFilterInfo.isFilterMatching(parsedContent)) {
+              filterMatches = true;
+            } else {
+              filterMatches = false;
+              break;
+            }
           }
         }
         if (!filterMatches) {
@@ -202,7 +204,7 @@ public class SortableGrid extends SelectionGrid implements
     /**
      * Construct a new {@link ColumnSorterCallback}.
      */
-    ColumnSorterCallback(Element[] selectedRows) {
+    protected ColumnSorterCallback(Element[] selectedRows) {
       this.selectedRows = selectedRows;
     }
 
@@ -430,6 +432,7 @@ public class SortableGrid extends SelectionGrid implements
   public void setColumnFilterer(ColumnFilterer filterer) {
     this.columnFilterer = filterer;
   }
+
   /**
    * Set the current {@link ColumnSortList} and fire an event.
    * 

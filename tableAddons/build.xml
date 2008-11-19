@@ -45,6 +45,7 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
 
   <!-- Specify project jars -->
   <property name="project.jar" value="${project.dist}/gwt-incubator.jar" />
+  <property name="project-servlet.jar" value="${project.dist}/gwt-incubator-servlet.jar" />
   <property name="project.test.jar" location="${project.test}/incubator_tests.jar" />
 
 
@@ -84,6 +85,12 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
         <exclude name="**/demo/**" />
         <exclude name="**/demos/**" />
         <exclude name="**/examples/**" />
+      </fileset>
+    </jar>
+    <jar destfile="${project-servlet.jar}">
+      <fileset dir="${project.bin}">
+        <include name="**/shared/**" />
+        <include name="**/server/**" />
       </fileset>
     </jar>
   </target>

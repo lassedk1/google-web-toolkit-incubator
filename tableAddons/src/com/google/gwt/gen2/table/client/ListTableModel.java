@@ -15,12 +15,13 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.gen2.table.client.TableModelHelper.Request;
-import com.google.gwt.gen2.table.client.TableModelHelper.Response;
+import com.google.gwt.gen2.table.shared.Request;
+import com.google.gwt.gen2.table.shared.Response;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+
 
 /**
  * A {@link ClientTableModel} that uses a 2D {@link List} of Objects as its
@@ -79,6 +80,11 @@ public class ListTableModel extends MutableTableModel<List<Object>> {
       @Override
       public Iterator<List<Object>> getRowValues() {
         return it;
+      }
+      
+      @Override
+      public int getRowCount() {
+        return rowValues.size();
       }
     };
     callback.onRowsReady(request, response);
