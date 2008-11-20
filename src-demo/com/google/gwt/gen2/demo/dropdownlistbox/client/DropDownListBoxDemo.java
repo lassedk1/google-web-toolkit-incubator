@@ -22,7 +22,7 @@ import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
 import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
 import com.google.gwt.gen2.selection.client.DropDownListBox;
 import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
-import com.google.gwt.libideas.logging.shared.Log;
+import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;

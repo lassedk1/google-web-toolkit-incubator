@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <stringAttribute key="bad_container_name" value="\gwt-incubator-resources\d"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
@@ -19,5 +19,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.google.gwt.dev.GWTShell"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-out www&#13;&#10;-style PRETTY&#13;&#10;-port 2222&#13;&#10;-logLevel INFO&#13;&#10;com.google.gwt.gen2.demo.datepicker.DatePickerDemo/DatePickerDemo.html"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="gwt-incubator-resources"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx1000M"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx1000M&#13;-XstartOnFirstThread"/>
 </launchConfiguration>
