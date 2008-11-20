@@ -32,11 +32,14 @@ import java.util.List;
  */
 public class Spinner {
   /**
-   * Default resources for spinning arrows
+   * Default resources for spinning arrows.
    */
   public interface SpinnerResources extends ImageBundle {
     @Resource("arrowDown.png")
     AbstractImagePrototype arrowDown();
+
+    @Resource("arrowDownDisabled.png")
+    AbstractImagePrototype arrowDownDisabled();
 
     @Resource("arrowDownHover.png")
     AbstractImagePrototype arrowDownHover();
@@ -44,20 +47,17 @@ public class Spinner {
     @Resource("arrowDownPressed.png")
     AbstractImagePrototype arrowDownPressed();
 
-    @Resource("arrowDownDisabled.png")
-    AbstractImagePrototype arrowDownDisabled();
-
     @Resource("arrowUp.png")
     AbstractImagePrototype arrowUp();
+
+    @Resource("arrowUpDisabled.png")
+    AbstractImagePrototype arrowUpDisabled();
 
     @Resource("arrowUpHover.png")
     AbstractImagePrototype arrowUpHover();
 
     @Resource("arrowUpPressed.png")
     AbstractImagePrototype arrowUpPressed();
-
-    @Resource("arrowUpDisabled.png")
-    AbstractImagePrototype arrowUpDisabled();
   }
 
   private static final int INITIAL_SPEED = 7;

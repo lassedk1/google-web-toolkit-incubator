@@ -21,7 +21,6 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.ValueSpinner;
@@ -32,7 +31,7 @@ import com.google.gwt.widgetideas.datepicker.client.TimePicker;
 import java.util.Date;
 
 /**
- * Spinner demo panel
+ * Spinner demo panel.
  */
 public class SpinnerDemoPanel extends Composite {
   public SpinnerDemoPanel() {
@@ -49,8 +48,8 @@ public class SpinnerDemoPanel extends Composite {
         simpleSpinner.setEnabled(enableSpinner.isChecked());
       }
     });
-    table.setWidget(1,2,enableSpinner);
-    
+    table.setWidget(1, 2, enableSpinner);
+
     // Create a value spinner that displays the value as a formatted date
     final ValueSpinner dateSpinner = new ValueSpinner(new Date().getTime()) {
       protected String formatValue(long value) {
@@ -73,20 +72,20 @@ public class SpinnerDemoPanel extends Composite {
         dateSpinner.setEnabled(enableDateSpinner.isChecked());
       }
     });
-    table.setWidget(2,2,enableDateSpinner);
+    table.setWidget(2, 2, enableDateSpinner);
 
     // A TimePicker using AM/PM 12h format
     final TimePicker timePicker = new TimePicker(false);
     table.setHTML(3, 0, "Time picker:");
     table.setWidget(3, 1, timePicker);
-    final CheckBox enableTimePicker= new CheckBox("Enable/disable");
+    final CheckBox enableTimePicker = new CheckBox("Enable/disable");
     enableTimePicker.setChecked(timePicker.isEnabled());
     enableTimePicker.addClickListener(new ClickListener() {
       public void onClick(Widget sender) {
         timePicker.setEnabled(enableTimePicker.isChecked());
       }
     });
-    table.setWidget(3,2,enableTimePicker);
+    table.setWidget(3, 2, enableTimePicker);
 
     // Creating a date time picker with AM/PM 12h TimePicker
     final DateTimePicker dateTimePicker = new DateTimePicker(false);
@@ -106,14 +105,14 @@ public class SpinnerDemoPanel extends Composite {
     table.setWidget(4, 1, dateTimePicker);
     table.setWidget(5, 0, getDate);
     table.setWidget(5, 1, dateLabel);
-    final CheckBox enableDateTimePicker= new CheckBox("Enable/disable");
+    final CheckBox enableDateTimePicker = new CheckBox("Enable/disable");
     enableDateTimePicker.setChecked(dateTimePicker.isEnabled());
     enableDateTimePicker.addClickListener(new ClickListener() {
       public void onClick(Widget sender) {
         dateTimePicker.setEnabled(enableDateTimePicker.isChecked());
       }
     });
-    table.setWidget(4,2,enableDateTimePicker);
+    table.setWidget(4, 2, enableDateTimePicker);
 
     final VolumeSlider volumeSlider = new VolumeSlider(0, -100, 100);
     volumeSlider.setWidth("250px");
@@ -126,7 +125,7 @@ public class SpinnerDemoPanel extends Composite {
         volumeSlider.setEnabled(enableVolumeSlider.isChecked());
       }
     });
-    table.setWidget(7,2,enableVolumeSlider);
+    table.setWidget(7, 2, enableVolumeSlider);
 
     final TimePicker customTimePicker = new TimePicker(new Date(), null,
         DateTimeFormat.getFormat("HH"), DateTimeFormat.getFormat("mm"), null);
@@ -139,7 +138,7 @@ public class SpinnerDemoPanel extends Composite {
         customTimePicker.setEnabled(enable.isChecked());
       }
     });
-    table.setWidget(8,2,enable);
+    table.setWidget(8, 2, enable);
     initWidget(table);
   }
 }

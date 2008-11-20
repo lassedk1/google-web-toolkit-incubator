@@ -1,8 +1,9 @@
 <module>
+    <!--  Inherit Logging -->
+    <inherits name='com.google.gwt.gen2.logging.Logging' />
 
 	<!-- Inherit the custom list box code   -->
 	<inherits name='com.google.gwt.gen2.selection.Selection' />
-
 
 	<!-- Specify the app entry point class.                         -->
 	<entry-point
