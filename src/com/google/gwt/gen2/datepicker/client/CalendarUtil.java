@@ -26,12 +26,10 @@ import java.util.Date;
  */
 public class CalendarUtil {
 
-  static final DateTimeConstants intlConstants;
-
-  private static int firstDayOfWeekend;
-
-  private static int lastDayOfWeekend;
-  private static int startingDay;
+  private static final DateTimeConstants intlConstants;
+  private static final int firstDayOfWeekend;
+  private static final int lastDayOfWeekend;
+  private static final int startingDay;
 
   static {
     intlConstants = (DateTimeConstants) GWT.create(DateTimeConstants.class);
@@ -124,6 +122,31 @@ public class CalendarUtil {
   }
 
   /**
+   * Is a day in the week a weekend?
+   * 
+   * @param dayOfWeek day of week
+   * @return is the day of week a weekend?
+   */
+  public static boolean isWeekend(int dayOfWeek) {
+    return dayOfWeek == firstDayOfWeekend || dayOfWeek == lastDayOfWeekend;
+  }
+
+  /**
+   * Resets the date to have no time modifiers.
+   * 
+   * @param date the date
+   */
+  public static void resetTime(Date date) {
+    long msec = date.getTime();
+    msec = (msec / 1000) * 1000;
+    date.setTime(msec);
+
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
+  }
+
+  /**
    * Sets a date object to be at the beginning of the month and no time
    * specified.
    * 
@@ -134,33 +157,8 @@ public class CalendarUtil {
     date.setDate(1);
   }
 
-  static boolean hasTime(Date start) {
+  private static boolean hasTime(Date start) {
     return start.getHours() != 0 || start.getMinutes() != 0
         || start.getSeconds() != 0;
-  }
-
-  /**
-   * Is a day in the week a weekend?
-   * 
-   * @param dayOfWeek day of week
-   * @return is the day of week a weekend?
-   */
-  static boolean isWeekend(int dayOfWeek) {
-    return dayOfWeek == firstDayOfWeekend || dayOfWeek == lastDayOfWeekend;
-  }
-
-  /**
-   * Resets the date to have no time modifiers.
-   * 
-   * @param date the date
-   */
-  private static void resetTime(Date date) {
-    long msec = date.getTime();
-    msec = (msec / 1000) * 1000;
-    date.setTime(msec);
-
-    date.setHours(0);
-    date.setMinutes(0);
-    date.setSeconds(0);
   }
 }
