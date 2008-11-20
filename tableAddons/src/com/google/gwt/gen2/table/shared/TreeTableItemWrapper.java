@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.gwt.gen2.table.client;
+package com.google.gwt.gen2.table.shared;
 
 import java.io.Serializable;
 

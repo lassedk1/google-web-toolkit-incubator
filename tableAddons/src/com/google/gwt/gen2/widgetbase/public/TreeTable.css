@@ -1,0 +1,16 @@
+.gwt-TreeTable {
+}
+
+.treeTableIndent {
+	width: 15px;
+}
+
+@sprite .treeTableOpenNode {
+	gwt-image: "treeOpen";
+	width: 15px;
+}
+
+@sprite .treeTableClosedNode {
+	gwt-image: "treeClosed";
+	width: 15px;
+}
