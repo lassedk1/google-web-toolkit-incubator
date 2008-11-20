@@ -1,4 +1,4 @@
-#summary DRAFT working with the experimental eclipse directory.
+#summary working with eclipse and gwt incubator.
  
 = Step one =
 Refer to the main GWT documentation for how to get your formatter and checkstyle setting set up correctly.
@@ -6,15 +6,12 @@ Refer to the main GWT documentation for how to get your formatter and checkstyle
 Also, you probably want the subeclipse project as well.
 
 = Step two  =
-Set the linked resource GWT_HOME to point to the gwt version you want to use.
-Set the linked resource GWT_TOOLS to point to the gwt or gwt incubator tools dir you want to use.
+Set the class-path var `GWT_HOME` to point to the directory containing the gwt jars you want to use.
+Set the linked resource `GWT_TOOLS` to point to the gwt or gwt incubator tools dir you want to use.
 
 = Step three =
-import the gwt-incubator-resources dir.  If you are on windows, import it from incubator-resources-windows. If you are in linux import it from incubator-resources-linux.
+import the `gwt-incubator-resources` project.  If you are on windows, import it from `\eclipse\incubator-resources-windows`. If you are in linux import it from `\eclipse\incubator-resources-linux`, if you on mac, well, you get the idea.
 
 = Step four =
-cp eclipse-experimental/incubator-template/.* to the root of your gwt-incubator project, usually gwt-incubator/trunk.
-
-= Step five =
-import the new eclipse project from the root of your trunk
+import the new eclipse project from the root of your trunk.
   
