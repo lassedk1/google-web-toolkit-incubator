@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>gwt-incubator</name>
+	<name>gwt-incubator-resources</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -19,22 +19,6 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>com.atlassw.tools.eclipse.checkstyle.CheckstyleNature</nature>
+		<nature>com.google.gwt.eclipse.plugin.gwtNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>test</name>
-			<type>2</type>
-			<locationURI>GWT_INCUBATOR/test</locationURI>
-		</link>
-		<link>
-			<name>bin</name>
-			<type>2</type>
-			<locationURI>GWT_INCUBATOR/build/out/bin</locationURI>
-		</link>
-		<link>
-			<name>src</name>
-			<type>2</type>
-			<locationURI>GWT_INCUBATOR/src</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
