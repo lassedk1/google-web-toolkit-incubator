@@ -24,15 +24,18 @@ import com.google.gwt.widgetideas.client.Spinner.SpinnerResources;
 
 /**
  * {@link VolumeSlider} widget combines a {@link ProgressBar} with a
- * {@link Spinner}
+ * {@link Spinner}.
  */
 public class VolumeSlider extends Composite {
   /**
-   * Default {@link VolumeSlider} images
+   * Default {@link VolumeSlider} images.
    */
   public interface VolumeSliderButtons extends SpinnerResources {
     @Resource("arrowLeft.png")
     AbstractImagePrototype arrowDown();
+
+    @Resource("arrowLeftDisabled.png")
+    AbstractImagePrototype arrowDownDisabled();
 
     @Resource("arrowLeftHover.png")
     AbstractImagePrototype arrowDownHover();
@@ -40,20 +43,17 @@ public class VolumeSlider extends Composite {
     @Resource("arrowLeftPressed.png")
     AbstractImagePrototype arrowDownPressed();
 
-    @Resource("arrowLeftDisabled.png")
-    AbstractImagePrototype arrowDownDisabled();
-
     @Resource("arrowRight.png")
     AbstractImagePrototype arrowUp();
+
+    @Resource("arrowRightDisabled.png")
+    AbstractImagePrototype arrowUpDisabled();
 
     @Resource("arrowRightHover.png")
     AbstractImagePrototype arrowUpHover();
 
     @Resource("arrowRightPressed.png")
     AbstractImagePrototype arrowUpPressed();
-
-    @Resource("arrowRightDisabled.png")
-    AbstractImagePrototype arrowUpDisabled();
   }
 
   private Spinner spinner;
@@ -106,7 +106,6 @@ public class VolumeSlider extends Composite {
   public ProgressBar getProgressBar() {
     return progressBar;
   }
-
 
   /**
    * @return the spinner
