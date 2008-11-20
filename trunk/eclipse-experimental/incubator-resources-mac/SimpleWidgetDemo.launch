@@ -19,5 +19,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.google.gwt.dev.GWTShell"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-out www&#13;&#10;-port 2222&#13;&#10;-logLevel ERROR&#13;&#10;com.google.gwt.gen2.demo.simplewidget.simpleWidgetDemo/SimpleWidgetDemo.html"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="gwt-incubator-resources"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx1000M"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx1000M&#13;-XstartOnFirstThread"/>
 </launchConfiguration>
