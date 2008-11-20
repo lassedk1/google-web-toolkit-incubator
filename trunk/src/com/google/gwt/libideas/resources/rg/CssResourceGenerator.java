@@ -467,8 +467,19 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       }
 
       // Find the image accessor method
-      JMethod imageMethod = bundleType.findMethod(functionName, new JType[0]);
+      JMethod imageMethod = null;
+      JMethod[] allMethods = bundleType.getOverridableMethods();
+      for (int i = 0; imageMethod == null && i < allMethods.length; i++) {
+        JMethod candidate = allMethods[i];
+        // If the function name matches and takes no parameters
+        if (candidate.getName().equals(functionName)
+            && candidate.getParameters().length == 0) {
+          // We have a match
+          imageMethod = candidate;
+        }
+      }
 
+      // Method unable to be located
       if (imageMethod == null) {
         logger.log(TreeLogger.ERROR, "Unable to find ImageResource method "
             + functionName + " in " + bundleType.getQualifiedSourceName());
