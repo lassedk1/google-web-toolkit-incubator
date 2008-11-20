@@ -89,6 +89,9 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
     </jar>
     <jar destfile="${project-servlet.jar}">
       <fileset dir="${project.bin}">
+	<exclude name="**/demo/**" />
+	<exclude name="**/demos/**" />
+	<exclude name="**/examples/**" />
         <include name="**/shared/**" />
         <include name="**/server/**" />
       </fileset>

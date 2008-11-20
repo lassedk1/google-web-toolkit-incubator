@@ -20,16 +20,17 @@ import com.google.gwt.gen2.table.client.TableDefinition.AbstractRowView;
 import com.google.gwt.gen2.table.shared.ColumnFilterList;
 import com.google.gwt.gen2.table.shared.ColumnSortList;
 import com.google.gwt.gen2.table.shared.Request;
-import com.google.gwt.libideas.client.StyleInjector;
+import com.google.gwt.gen2.table.shared.TreeRequest;
+import com.google.gwt.gen2.table.shared.TreeTableItem;
+import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
+import com.google.gwt.gen2.widgetbase.client.WidgetCss;
+import com.google.gwt.i18n.client.Constants;
 import com.google.gwt.libideas.resources.client.ImageResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
-import com.google.gwt.libideas.resources.client.TextResource;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -43,21 +44,83 @@ import java.util.Set;
  */
 public class PagingScrollTreeTable<RowType extends TreeTableItem> extends
     PagingScrollTable<RowType> {
+
+  /**
+   * Interface used to allow the widget access to css style names. <p/> The
+   * class names indicate the default gwt names for these styles. <br>
+   * 
+   */
+  public static interface Css extends WidgetCss {
+    /**
+     * Widget style name.
+     * 
+     * @return the widget's style name
+     */
+    @ClassName("gwt-TreeTable")
+    String treeTable();
+
+    /**
+     * Indentation style
+     */
+    String treeTableIndent();
+
+    /**
+     * Open tree node
+     */
+    String treeTableOpenNode();
+
+    /**
+     * Open tree node
+     */
+    String treeTableClosedNode();
+  }
+
+  public interface TreeTableResources {
+    TreeTableStyle getStyle();
+
+    TreeTableConstants getConstants();
+  }
+
+  public interface TreeTableConstants extends Constants {
+    @DefaultStringValue("Open the tree node by clicking on the plus icon")
+    String openTreeNodeTooltip();
+  }
+
   /**
    * Resources used.
    */
-  public interface TreeTableResources extends ImmutableResourceBundle {
+  public interface TreeTableStyle extends ImmutableResourceBundle {
     /**
      * The css file.
      */
-    @Resource("TreeTable.css")
-    TextResource css();
+    @Resource("com/google/gwt/gen2/widgetbase/public/TreeTable.css")
+    Css css();
 
     @Resource("treeClosed.gif")
     ImageResource treeClosed();
 
     @Resource("treeOpen.gif")
     ImageResource treeOpen();
+  }
+
+  protected static class DefatulTreeTableResources implements
+      TreeTableResources {
+    private TreeTableStyle style;
+    private TreeTableConstants constants;
+
+    public TreeTableStyle getStyle() {
+      if (style == null) {
+        style = ((TreeTableStyle) GWT.create(TreeTableStyle.class));
+      }
+      return style;
+    }
+
+    public TreeTableConstants getConstants() {
+      if (constants == null) {
+        constants = ((TreeTableConstants) GWT.create(TreeTableConstants.class));
+      }
+      return constants;
+    }
   }
 
   protected static class PagingScrollTreeTableCellView<RowType extends TreeTableItem>
@@ -110,40 +173,43 @@ public class PagingScrollTreeTable<RowType extends TreeTableItem> extends
       final RowType treeTableItem = table.getRowValue(getRowIndex());
       final Set<String> invertedNodes = table.getInvertedNodes();
       boolean open = table.isTreeOpen();
-      TreeTableResources resources = table.getResources();
       HorizontalPanel treeNode = new HorizontalPanel();
       treeNode.setStylePrimaryName("treeNode");
       treeNode.setSpacing(0);
       treeNode.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
       indent(treeNode, treeTableItem);
+      Css css = table.getResources().getStyle().css();
+      TreeTableConstants constants = table.getResources().getConstants();
       if (invertedNodes.contains(treeTableItem.getId())) {
-        Image image;
+        HTML nodeIndicator = new HTML();
+        nodeIndicator.setTitle(constants.openTreeNodeTooltip());
         if (table.isTreeOpen()) {
-          image = resources.treeClosed().createImage();
+          nodeIndicator.setStyleName(css.treeTableClosedNode());
         } else {
-          image = resources.treeOpen().createImage();
+          nodeIndicator.setStyleName(css.treeTableOpenNode());
         }
-        image.addClickListener(new ClickListener() {
+        nodeIndicator.addClickListener(new ClickListener() {
           public void onClick(Widget sender) {
             invertedNodes.remove(treeTableItem.getId());
             table.reloadPage();
           }
         });
-        treeNode.add(image);
+        treeNode.add(nodeIndicator);
       } else if (treeTableItem.hasChildren()) {
-        Image image;
+        HTML nodeIndicator = new HTML();
+        nodeIndicator.setTitle(constants.openTreeNodeTooltip());
         if (open) {
-          image = resources.treeOpen().createImage();
+          nodeIndicator.setStyleName(css.treeTableOpenNode());
         } else {
-          image = resources.treeClosed().createImage();
+          nodeIndicator.setStyleName(css.treeTableClosedNode());
         }
-        image.addClickListener(new ClickListener() {
+        nodeIndicator.addClickListener(new ClickListener() {
           public void onClick(Widget sender) {
             invertedNodes.add(treeTableItem.getId());
             table.reloadPage();
           }
         });
-        treeNode.add(image);
+        treeNode.add(nodeIndicator);
       } else {
         treeNode.add(createSpacer());
       }
@@ -151,8 +217,8 @@ public class PagingScrollTreeTable<RowType extends TreeTableItem> extends
     }
 
     protected Widget createSpacer() {
-      Widget spacer = new AbsolutePanel();
-      spacer.setStylePrimaryName("spacer");
+      HTML spacer = new HTML();
+      spacer.setStylePrimaryName(table.getResources().getStyle().css().treeTableIndent());
       return spacer;
     }
 
@@ -202,23 +268,13 @@ public class PagingScrollTreeTable<RowType extends TreeTableItem> extends
   protected boolean open = false;
   protected Set<String> invertedNodes = new HashSet<String>();
   protected TreeTableResources resources;
-  protected PagingScrollTreeTableRowView<RowType> rowView = new PagingScrollTreeTableRowView<RowType>(
-      new PagingScrollTreeTableCellView<RowType>(this), this);
+  protected PagingScrollTreeTableRowView<RowType> rowView;
 
   public PagingScrollTreeTable(TreeTableModel<RowType> tableModel,
       FixedWidthGrid dataTable, FixedWidthFlexTable headerTable,
       TableDefinition<RowType> tableDefinition, boolean open) {
     this(tableModel, dataTable, headerTable, tableDefinition, open,
-        (TreeTableResources) GWT.create(TreeTableResources.class));
-  }
-
-  public PagingScrollTreeTable(TreeTableModel<RowType> tableModel,
-      FixedWidthGrid dataTable, FixedWidthFlexTable headerTable,
-      TableDefinition<RowType> tableDefinition, boolean open,
-      ScrollTableImages scrollTableImages) {
-    this(tableModel, dataTable, headerTable, tableDefinition, open,
-        (TreeTableResources) GWT.create(TreeTableResources.class),
-        scrollTableImages);
+        new DefatulTreeTableResources());
   }
 
   public PagingScrollTreeTable(TreeTableModel<RowType> tableModel,
@@ -226,24 +282,20 @@ public class PagingScrollTreeTable<RowType extends TreeTableItem> extends
       TableDefinition<RowType> tableDefinition, boolean open,
       TreeTableResources resources) {
     super(tableModel, dataTable, headerTable, tableDefinition);
-    StyleInjector.injectStylesheet(resources.css().getText(), resources);
     this.resources = resources;
+    if (Gen2CssInjector.isInjectionEnabled()) {
+      Gen2CssInjector.inject(resources.getStyle().css());
+    }
     this.open = open;
+    rowView = new PagingScrollTreeTableRowView<RowType>(
+        new PagingScrollTreeTableCellView<RowType>(this), this);
   }
 
-  public PagingScrollTreeTable(TreeTableModel<RowType> tableModel,
-      FixedWidthGrid dataTable, FixedWidthFlexTable headerTable,
-      TableDefinition<RowType> tableDefinition, boolean open,
-      TreeTableResources resources, ScrollTableImages scrollTableImages) {
-    super(tableModel, dataTable, headerTable, tableDefinition,
-        scrollTableImages);
-    StyleInjector.injectStylesheet(resources.css().getText(), resources);
-    this.resources = resources;
-    this.open = open;
-  }
-
-  /* (non-Javadoc)
-   * @see com.google.gwt.gen2.table.client.PagingScrollTable#gotoPage(int, boolean)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.google.gwt.gen2.table.client.PagingScrollTable#gotoPage(int,
+   * boolean)
    */
   public void gotoPage(int page, boolean forced) {
     super.gotoPage(page, forced);
@@ -251,15 +303,18 @@ public class PagingScrollTreeTable<RowType extends TreeTableItem> extends
   }
 
   /**
-   * Return a set of nodes containing all tree nodes that differ from the tree state 
-   * @return the list of inverted nodes 
+   * Return a set of nodes containing all tree nodes that differ from the tree
+   * state
+   * 
+   * @return the list of inverted nodes
    */
   public Set<String> getInvertedNodes() {
     return invertedNodes;
   }
 
   /**
-   * @return the default state of the tree nodes. true is all nodes are displayed open by default, false if all nodes are closed 
+   * @return the default state of the tree nodes. true is all nodes are
+   *         displayed open by default, false if all nodes are closed
    */
   public boolean isTreeOpen() {
     return open;
@@ -268,40 +323,42 @@ public class PagingScrollTreeTable<RowType extends TreeTableItem> extends
   public TreeTableResources getResources() {
     return resources;
   }
-  
+
   /**
    * Opens all tree nodes
    */
   public void openTree() {
     setTreeOpen(true);
   }
-  
+
   /**
    * Closes all tree nodes
    */
   public void closeTree() {
     setTreeOpen(false);
   }
-  
+
   /**
    * Opens the given tree item if children are available
+   * 
    * @param item the tree node to open
    */
   public void openTreeNode(TreeTableItem item) {
     setTreeNodeOpen(item, true);
   }
-  
+
   /**
    * Closes the given tree node
+   * 
    * @param item the tree node to open
    */
   public void closeTreeNode(TreeTableItem item) {
     setTreeNodeOpen(item, false);
   }
-  
+
   protected Request createRequest(int startRow, int pageSize,
       ColumnSortList columnSortList, ColumnFilterList columnFilterList) {
-    return new TreeTableModel.TreeRequest(startRow, pageSize, columnSortList,
+    return new TreeRequest(startRow, pageSize, columnSortList,
         columnFilterList, open, invertedNodes);
   }
 
@@ -315,10 +372,10 @@ public class PagingScrollTreeTable<RowType extends TreeTableItem> extends
     invertedNodes.clear();
     gotoPage(getCurrentPage(), true);
   }
-  
+
   protected void setTreeNodeOpen(TreeTableItem item, boolean open) {
-    if ( item.hasChildren() ) {
-      if ( isTreeOpen() && open ) {
+    if (item.hasChildren()) {
+      if (isTreeOpen() && open) {
         invertedNodes.remove(item.getId());
       } else {
         invertedNodes.add(item.getId());
