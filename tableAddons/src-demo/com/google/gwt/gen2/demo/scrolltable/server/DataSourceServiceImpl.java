@@ -18,9 +18,9 @@ package com.google.gwt.gen2.demo.scrolltable.server;
 import com.google.gwt.gen2.demo.scrolltable.client.DataSourceService;
 import com.google.gwt.gen2.demo.scrolltable.shared.Student;
 import com.google.gwt.gen2.demo.scrolltable.shared.StudentGenerator;
-import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
-import com.google.gwt.gen2.table.client.TableModelHelper.Request;
-import com.google.gwt.gen2.table.client.TableModelHelper.SerializableResponse;
+import com.google.gwt.gen2.table.shared.ColumnSortList;
+import com.google.gwt.gen2.table.shared.Request;
+import com.google.gwt.gen2.table.shared.SerializableResponse;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import java.util.Random;

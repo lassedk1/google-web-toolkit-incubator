@@ -16,8 +16,8 @@
 package com.google.gwt.gen2.demo.scrolltable.client;
 
 import com.google.gwt.gen2.demo.scrolltable.shared.Student;
-import com.google.gwt.gen2.table.client.TableModelHelper.Request;
-import com.google.gwt.gen2.table.client.TableModelHelper.SerializableResponse;
+import com.google.gwt.gen2.table.shared.Request;
+import com.google.gwt.gen2.table.shared.SerializableResponse;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
