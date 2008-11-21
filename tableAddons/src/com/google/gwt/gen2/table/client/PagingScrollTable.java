@@ -15,7 +15,6 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.table.client.CellEditor.CellEditInfo;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnFilterCallback;
@@ -318,8 +317,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   public PagingScrollTable(TableModel<RowType> tableModel,
       FixedWidthGrid dataTable, FixedWidthFlexTable headerTable,
       TableDefinition<RowType> tableDefinition) {
-    this(tableModel, dataTable, headerTable, tableDefinition,
-        GWT.<ScrollTableImages> create(ScrollTableImages.class));
+    this(tableModel, dataTable, headerTable, tableDefinition, new DefatulScrollTableResources());
   }
 
   /**
@@ -333,8 +331,8 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   public PagingScrollTable(TableModel<RowType> tableModel,
       FixedWidthGrid dataTable, FixedWidthFlexTable headerTable,
-      TableDefinition<RowType> tableDefinition, ScrollTableImages images) {
-    super(dataTable, headerTable, images);
+      TableDefinition<RowType> tableDefinition, ScrollTableResources resources) {
+    super(dataTable, headerTable, resources);
     this.tableModel = tableModel;
     setTableDefinition(tableDefinition);
     refreshVisibleColumnDefinitions();

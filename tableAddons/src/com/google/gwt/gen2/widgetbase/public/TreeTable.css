@@ -1,16 +1,97 @@
 .gwt-TreeTable {
+  border-color: #aaa;
+  border-style: solid;
+  border-width: 0px 0px 0px 0px;
 }
 
-.treeTableIndent {
+.gwt-TreeTable .dataTable td,
+.gwt-TreeTable .footerTable td {
+  border-color: #aaa;
+  border-style: solid;
+  border-width: 0px 1px 1px 0px;
+  padding: 3px;
+}
+
+.gwt-TreeTable .headerWrapper {
+  background: #e3e8f3 url(images/bg_headergradient.png) repeat-x;
+}
+
+.gwt-TreeTable .dataWrapper {
+}
+
+.gwt-TreeTable .footerWrapper {
+  border-top: 1px solid #aaa;
+  background: #8bd url(images/bg_header_gradient.gif) repeat-x bottom left;
+}
+
+.gwt-TreeTable .headerTable td, .gwt-TreeTable .footerTable td {
+  font-weight: bold;
+  color: #666666;
+  vertical-align: middle;
+  border-width: 0px 1px 1px 0px;
+  padding: 0px;
+  padding-left: 3px;
+  padding-right: 3px;
+  white-space: nowrap;
+}
+
+.gwt-TreeTable .dataTable tr.hovering {
+  background: #C3D9FF;
+}
+
+.gwt-TreeTable .dataTable tr.selected {
+  background: #7AA5D6;
+}
+
+.gwt-TreeTable .columnTextFilter, .gwt-TreeTable .columnNumberFilter, .columnDateFilter {
+    border: 0px;
+	padding: 0px;
+}
+
+.gwt-TreeTable .columnTextFilter td, .gwt-TreeTable .columnNumberFilter td, .gwt-TreeTable .columnDateFilter td {
+	margin: 0px;
+	border: 0px;
+	padding: 0px;
+}
+
+.gwt-TreeTable .columnTextFilter .operatorButton, .gwt-TreeTable .columnNumberFilter .operatorButton, .gwt-TreeTable .columnDateFilter .operatorButton {
+	color: #888888;
+	padding: 1px;
+	width: 40px;
+	text-align: center;
+	font-weight: bold;
+	font-style: italic;
+}
+
+.gwt-TreeTable .columnNumberFilter .operatorButton, .gwt-TreeTable .columnDateFilter .operatorButton {
+	width: 30px;
+}
+
+.gwt-TreeTable .columnNumberFilter .numberBox,
+.gwt-TreeTable .columnTextFilter .textBox,
+.gwt-TreeTable .columnDateFilter .dateBox .gwt-TextBox {
+	margin: 0px;
+	border: 0px;
+	padding: 0px;
+	width: 100%;
+	border: 1px solid #888888;
+}
+
+.gwt-TreeTable .treeNodeWrapper td {
+	border: 0px;
+	padding: 0px;
+}
+
+.gwt-TreeTable .treeTableIndent {
 	width: 15px;
 }
 
-@sprite .treeTableOpenNode {
+@sprite .gwt-TreeTable .treeTableOpenNode {
 	gwt-image: "treeOpen";
 	width: 15px;
 }
 
-@sprite .treeTableClosedNode {
+@sprite .gwt-TreeTable .treeTableClosedNode {
 	gwt-image: "treeClosed";
 	width: 15px;
 }
