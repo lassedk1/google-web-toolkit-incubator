@@ -90,8 +90,8 @@ public class ScrollTable extends AbstractScrollTable {
    * @param images the images to use in the table
    */
   public ScrollTable(FixedWidthGrid dataTable, FixedWidthFlexTable headerTable,
-      ScrollTableImages images) {
-    super(dataTable, headerTable, images);
+      ScrollTableResources resources) {
+    super(dataTable, headerTable, resources);
   }
 
   @Override
