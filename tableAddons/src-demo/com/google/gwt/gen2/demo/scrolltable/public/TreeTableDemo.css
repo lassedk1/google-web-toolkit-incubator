@@ -1,0 +1,19 @@
+/*
+* Default page and font settings 
+*/
+html,body {
+   padding: 0px;
+   margin: 0px;
+}
+
+body, table td, a, div, .p, pre {
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 11px;
+  color: black;
+}
+
+.gwt-PasswordTextBox,.gwt-TextBox,.gwt-SuggestBox {
+	border: 1px solid #bbbbbb;
+	font-size: 12px;
+	font-family: Verdana, Arial, sans-serif;
+}

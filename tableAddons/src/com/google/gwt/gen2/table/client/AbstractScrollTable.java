@@ -34,6 +34,9 @@ import com.google.gwt.i18n.client.Constants;
 import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.libideas.resources.client.ImageResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
+import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
+import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
+import com.google.gwt.libideas.resources.client.ImmutableResourceBundle.Resource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
@@ -495,6 +498,10 @@ public abstract class AbstractScrollTable extends ComplexPanel implements Resiza
 		 */
 		@Resource("scrollTableDescending.gif")
 		ImageResource scrollTableDescending();
+
+		@Resource("headerBackground.png")
+		@ImageOptions(repeatStyle=RepeatStyle.Horizontal)
+		ImageResource headerBackground();
 	}
 
 	public interface ScrollTableConstants extends Constants {
@@ -784,7 +791,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements Resiza
 
 		// Prepare the header and data tables
 		prepareTable(dataTable, css.dataTable());
-		prepareTable(headerTable, css.dataTable());
+		prepareTable(headerTable, css.headerTable());
 		if (dataTable.getSelectionPolicy().hasInputColumn()) {
 			headerTable.setColumnWidth(0, dataTable.getInputColumnWidth());
 		}
@@ -830,15 +837,17 @@ public abstract class AbstractScrollTable extends ComplexPanel implements Resiza
 
 		// Create the column filters
 		int filterRow = headerTable.getRowCount();
-		int columns = headerTable.getCellCount(0);
-		filteringEnabled = false;
-		for (int i = 0; i < columns; i++) {
-			ColumnFilter filter = createColumnFilter(i);
-			if (filter != null) {
-				filter.setColumn(i);
-				headerTable.setWidget(filterRow, i, filter.createFilterWidget());
-				filter.addColumnFilterListener(columnFilterListener);
-				filteringEnabled = true;
+		if (filterRow > 0) {
+			int columns = headerTable.getCellCount(0);
+			filteringEnabled = false;
+			for (int i = 0; i < columns; i++) {
+				ColumnFilter filter = createColumnFilter(i);
+				if (filter != null) {
+					filter.setColumn(i);
+					headerTable.setWidget(filterRow, i, filter.createFilterWidget());
+					filter.addColumnFilterListener(columnFilterListener);
+					filteringEnabled = true;
+				}
 			}
 		}
 		if (filteringEnabled) {
