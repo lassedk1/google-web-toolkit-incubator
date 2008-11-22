@@ -23,6 +23,8 @@ import com.google.gwt.gen2.table.shared.Request;
 import com.google.gwt.gen2.table.shared.TreeRequest;
 import com.google.gwt.gen2.table.shared.TreeTableItem;
 import com.google.gwt.libideas.resources.client.ImageResource;
+import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
+import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -64,7 +66,7 @@ public class PagingScrollTreeTable<RowType extends TreeTableItem> extends Paging
 		 * Indentation style
 		 */
 		String treeTableIndent();
-
+		
 		/**
 		 * Open tree node
 		 */
@@ -102,6 +104,13 @@ public class PagingScrollTreeTable<RowType extends TreeTableItem> extends Paging
 
 		@Resource("treeOpen.gif")
 		ImageResource treeOpen();
+
+		@Resource("treeIndent.gif")
+		ImageResource treeIndent();
+		
+		@Resource("headerBackground.png")
+		@ImageOptions(repeatStyle=RepeatStyle.Horizontal)
+		ImageResource headerBackground();
 	}
 
 	protected static class DefatulTreeTableResources implements TreeTableResources {
@@ -215,21 +224,27 @@ public class PagingScrollTreeTable<RowType extends TreeTableItem> extends Paging
 					}
 				});
 				treeNode.add(nodeIndicator);
-			} else {
-				treeNode.add(createSpacer());
 			}
 			return treeNode;
 		}
 
-		protected Widget createSpacer() {
+		protected Widget createSpacer(TreeTableItem treeTableItem) {
 			HTML spacer = new HTML();
 			spacer.setStylePrimaryName(table.getResources().getStyle().css().treeTableIndent());
+			final TreeTableItem parent = treeTableItem.getParent(); 
+			spacer.setTitle(parent.getDisplayName()+"(On Page: "+parent.getRow()/table.getPageSize()+", Row: "+parent.getRow()%table.getPageSize());
+			spacer.addClickListener(new ClickListener() {
+				public void onClick(Widget sender) {
+					table.gotoPage(parent.getRow()/table.getPageSize(), false);
+					table.getDataTable().selectRow(parent.getRow()%table.getPageSize(), true);
+				}
+			});
 			return spacer;
 		}
 
 		protected void indent(HorizontalPanel widget, TreeTableItem item) {
 			while (item.getParent() != null) {
-				widget.add(createSpacer());
+				widget.insert(createSpacer(item), 0);
 				item = item.getParent();
 			}
 		}

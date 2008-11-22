@@ -10,10 +10,10 @@
   <source path='shared'/>
 
   <!-- Specify the app entry point class.                   -->
-  <entry-point class='com.google.gwt.gen2.demo.scrolltable.client.PagingScrollTableDemo'/>
-  
-  <stylesheet src='ScrollTableDemo.css'/>
+  <entry-point class='com.google.gwt.gen2.demo.scrolltable.client.TreeTableDemo'/>
   
   <!-- Define the RPC service -->
   <servlet path="/datasource" class="com.google.gwt.gen2.demo.scrolltable.server.DataSourceServiceImpl"/>
+
+  <stylesheet src='TreeTableDemo.css'/>
 </module>

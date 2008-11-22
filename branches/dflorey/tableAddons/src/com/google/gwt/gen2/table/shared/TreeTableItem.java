@@ -21,8 +21,12 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public interface TreeTableItem extends IsSerializable {
   String getId();
+
+  String getDisplayName();
   
   TreeTableItem getParent();
-
+  
+  int getRow();
+  
   boolean hasChildren();
 }

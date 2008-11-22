@@ -20,57 +20,78 @@ import java.io.Serializable;
 
 /**
  * Wrapper for displaying arbitrary objects in tree table
- * @param <T> the type of the wrapped object
+ * 
+ * @param <T>
+ *            the type of the wrapped object
  */
 public class TreeTableItemWrapper<T extends Serializable> implements TreeTableItem {
-  private static final long serialVersionUID = 1L;
-  private boolean children = false;
-  private TreeTableItem parent = null;
-  private String id;
-  private T userObject;
-  
-  /**
-   * Default constructor for RPC use 
-   */
-  public TreeTableItemWrapper() {
-  }
-  
-  /**
-   * @param userObject the object to be wrapped
-   */
-  public TreeTableItemWrapper(T userObject) {
-    this.userObject = userObject;
-  }
+	private static final long serialVersionUID = 1L;
+	private boolean children = false;
+	private TreeTableItem parent = null;
+	private int row;
 
-  public String getId() {
-    return id;
-  }
-  
-  public TreeTableItem getParent() {
-    return parent;
-  }
-  
-  public T getUserObject() {
-    return userObject;
-  }
-  
-  public boolean hasChildren() {
-    return children;
-  }
+	private String id, displayName;
+	private T userObject;
 
-  public void setChildren(boolean children) {
-    this.children = children;
-  }
+	/**
+	 * Default constructor for RPC use
+	 */
+	public TreeTableItemWrapper() {
+	}
 
-  public void setId(String id) {
-    this.id = id;
-  }
-  
-  public void setParent(TreeTableItem parent) {
-    this.parent = parent;
-  }
+	/**
+	 * @param userObject
+	 *            the object to be wrapped
+	 */
+	public TreeTableItemWrapper(T userObject) {
+		this.userObject = userObject;
+	}
 
-  public void setUserObject(T userObject) {
-    this.userObject = userObject;
-  }
+	public String getId() {
+		return id;
+	}
+
+	public TreeTableItem getParent() {
+		return parent;
+	}
+
+	public T getUserObject() {
+		return userObject;
+	}
+
+	public boolean hasChildren() {
+		return children;
+	}
+
+	public void setChildren(boolean children) {
+		this.children = children;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setParent(TreeTableItem parent) {
+		this.parent = parent;
+	}
+
+	public void setUserObject(T userObject) {
+		this.userObject = userObject;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public int getRow() {
+		return row;
+	}
+
+	public void setRow(int row) {
+		this.row = row;
+	}
 }

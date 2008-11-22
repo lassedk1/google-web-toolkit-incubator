@@ -76,12 +76,10 @@ public interface ColumnDefinition<RowType, ColType> {
   int getPreferredColumnWidth();
 
   /**
-   * Returns true if the column is filterable, false if it is not.
+   * Returns null if the column is not filterable, otherwise it returns the column filter 
    * 
-   * @return true if the column is filterable, false if it is not filterable
+   * @return the column filter
    */
-  boolean isColumnFilterable();
-
   ColumnFilter getColumnFilter();
   
   /**

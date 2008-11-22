@@ -5,6 +5,7 @@
 }
 
 .gwt-TreeTable .dataTable td,
+.gwt-TreeTable .headerTable td,
 .gwt-TreeTable .footerTable td {
   border-color: #aaa;
   border-style: solid;
@@ -12,27 +13,29 @@
   padding: 3px;
 }
 
-.gwt-TreeTable .headerWrapper {
-  background: #e3e8f3 url(images/bg_headergradient.png) repeat-x;
+.gwt-TreeTable .headerTable td, 
+.gwt-TreeTable .footerTable td {
+  font-weight: bold;
+  color: #666666;
+  vertical-align: middle;
+  padding: 0px;
+  padding-left: 3px;
+  padding-right: 3px;
+  white-space: nowrap;
+}
+
+@sprite .gwt-TreeTable .headerWrapper {
+  gwt-image: "headerBackground";
+  background-color: #e3e8f3;
 }
 
 .gwt-TreeTable .dataWrapper {
 }
 
-.gwt-TreeTable .footerWrapper {
+@sprite .gwt-TreeTable .footerWrapper {
+  gwt-image: "headerBackground";
   border-top: 1px solid #aaa;
-  background: #8bd url(images/bg_header_gradient.gif) repeat-x bottom left;
-}
-
-.gwt-TreeTable .headerTable td, .gwt-TreeTable .footerTable td {
-  font-weight: bold;
-  color: #666666;
-  vertical-align: middle;
-  border-width: 0px 1px 1px 0px;
-  padding: 0px;
-  padding-left: 3px;
-  padding-right: 3px;
-  white-space: nowrap;
+  background-color: #8bd;
 }
 
 .gwt-TreeTable .dataTable tr.hovering {
@@ -77,21 +80,26 @@
 	border: 1px solid #888888;
 }
 
+.gwt-TreeTable .treeNodeWrapper {
+}
+
 .gwt-TreeTable .treeNodeWrapper td {
 	border: 0px;
 	padding: 0px;
 }
 
-.gwt-TreeTable .treeTableIndent {
-	width: 15px;
+@sprite .gwt-TreeTable .treeTableIndent {
+	gwt-image: "treeIndent";
 }
 
 @sprite .gwt-TreeTable .treeTableOpenNode {
 	gwt-image: "treeOpen";
-	width: 15px;
+	margin-left: 2px;
+	margin-right: 2px;
 }
 
 @sprite .gwt-TreeTable .treeTableClosedNode {
 	gwt-image: "treeClosed";
-	width: 15px;
+	margin-left: 2px;
+	margin-right: 2px;
 }

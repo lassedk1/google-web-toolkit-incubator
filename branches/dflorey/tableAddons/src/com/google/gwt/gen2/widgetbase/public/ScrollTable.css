@@ -86,10 +86,6 @@
   padding-right: 3px;
 }
 
-.gwt-ScrollTable .dataTable td {
- font-size: 2px;
-}
-
 .gwt-ScrollTable .dataTable tr.hovering {
   background: #C3D9FF;
 }

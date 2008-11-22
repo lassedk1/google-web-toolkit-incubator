@@ -241,7 +241,6 @@ public abstract class DateColumnDefinition<RowType> extends
   public DateColumnDefinition(DateTimeFormat dateTimeFormat,
       boolean sortingEnabled, boolean filterEnabled, boolean editingEnabled) {
     setColumnSortable(sortingEnabled);
-    setColumnFilterable(filterEnabled);
     if (filterEnabled) {
       setColumnFilter(createDateColumnFilter(dateTimeFormat, Operator.values()));
     }
