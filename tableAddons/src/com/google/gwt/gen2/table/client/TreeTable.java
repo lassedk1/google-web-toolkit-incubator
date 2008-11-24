@@ -195,13 +195,19 @@ public class TreeTable<RowType extends TreeTableItem> extends PagingScrollTable<
 	public interface TreeTableResources extends ScrollTableResources {
 		TreeTableStyle getStyle();
 
-		TreeTableConstants getConstants();
+		TreeTableMessages getConstants();
 	}
 
-	public interface TreeTableConstants extends ScrollTableConstants {
-		@DefaultStringValue("Open the tree node by clicking on the plus icon")
+	public interface TreeTableMessages extends ScrollTableMessages {
+		@DefaultMessage("Click to open tree node")
 		String openTreeNodeTooltip();
-	}
+
+		@DefaultMessage("Click to close tree node")
+    String closeTreeNodeTooltip();
+
+    @DefaultMessage("Jump to {0}")
+    String jumpTo(String displayName);
+}
 
 	/**
 	 * Resources used.
@@ -232,7 +238,7 @@ public class TreeTable<RowType extends TreeTableItem> extends PagingScrollTable<
 
 	protected static class DefaultTreeTableResources implements TreeTableResources {
 		private TreeTableStyle style;
-		private TreeTableConstants constants;
+		private TreeTableMessages constants;
 
 		public TreeTableStyle getStyle() {
 			if (style == null) {
@@ -241,9 +247,9 @@ public class TreeTable<RowType extends TreeTableItem> extends PagingScrollTable<
 			return style;
 		}
 
-		public TreeTableConstants getConstants() {
+		public TreeTableMessages getConstants() {
 			if (constants == null) {
-				constants = ((TreeTableConstants) GWT.create(TreeTableConstants.class));
+				constants = ((TreeTableMessages) GWT.create(TreeTableMessages.class));
 			}
 			return constants;
 		}
@@ -310,13 +316,14 @@ public class TreeTable<RowType extends TreeTableItem> extends PagingScrollTable<
 			treeNode.setSpacing(0);
 			treeNode.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
 			indent(treeNode, treeTableItem);
-			TreeTableConstants constants = table.getResources().getConstants();
+			TreeTableMessages messages = table.getResources().getConstants();
 			if (invertedNodes.contains(treeTableItem.getId())) {
 				HTML nodeIndicator = new HTML();
-				nodeIndicator.setTitle(constants.openTreeNodeTooltip());
 				if (table.isTreeOpen()) {
+				  nodeIndicator.setTitle(messages.openTreeNodeTooltip());
 					nodeIndicator.setStyleName(css.treeTableClosedNode());
 				} else {
+          nodeIndicator.setTitle(messages.closeTreeNodeTooltip());
 					nodeIndicator.setStyleName(css.treeTableOpenNode());
 				}
 				nodeIndicator.addClickListener(new ClickListener() {
@@ -328,10 +335,12 @@ public class TreeTable<RowType extends TreeTableItem> extends PagingScrollTable<
 				treeNode.add(nodeIndicator);
 			} else if (treeTableItem.hasChildren()) {
 				HTML nodeIndicator = new HTML();
-				nodeIndicator.setTitle(constants.openTreeNodeTooltip());
+				nodeIndicator.setTitle(messages.openTreeNodeTooltip());
 				if (open) {
+          nodeIndicator.setTitle(messages.closeTreeNodeTooltip());
 					nodeIndicator.setStyleName(css.treeTableOpenNode());
 				} else {
+          nodeIndicator.setTitle(messages.openTreeNodeTooltip());
 					nodeIndicator.setStyleName(css.treeTableClosedNode());
 				}
 				nodeIndicator.addClickListener(new ClickListener() {
@@ -348,7 +357,7 @@ public class TreeTable<RowType extends TreeTableItem> extends PagingScrollTable<
 		protected Widget createSpacer(TreeTableItem treeTableItem) {
 			HTML spacer = new HTML();
 			final TreeTableItem parent = treeTableItem.getParent();
-			spacer.setTitle(parent.getDisplayName());
+			spacer.setTitle(table.getResources().getConstants().jumpTo(parent.getDisplayName()));
 			spacer.addClickListener(new ClickListener() {
 				public void onClick(Widget sender) {
 					table.gotoPage(parent.getRow() / table.getPageSize(), false);
