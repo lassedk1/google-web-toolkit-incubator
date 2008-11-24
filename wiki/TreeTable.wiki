@@ -82,11 +82,11 @@ If you have an existing class that you want to display in a TreeTable you can al
 private static String[] firstNames = {"Miguel", "Fred", "Bob" };
 private static String[] lastNames = {"Mendez", "Sauer", "Vatwer" };
 
-List<TreeItem<Ancestor>> files = new ArrayList<TreeItem<Ancestor>>();
+List<TreeItem<Ancestor>> rootItems = new ArrayList<TreeItem<Ancestor>>();
 for (int i = 0; i < 12; i++) {
   TreeItem<Ancestor> ancestor = createAncestor();
   addChildren(ancestor, Random.nextInt(3) + 1, 0);
-  files.add(ancestor);
+  rootItems.add(ancestor);
 }
 
 private void addChildren(TreeItem<Ancestor> parent, int numberOfChildren, int level) {
@@ -154,7 +154,7 @@ Now we are ready to create the TreeTable:
 
 {{{
 TreeTable<Ancestor> treeTable = new TreeTable<Ancestor>(tableDefinition,
-    files, true);
+    rootItems, true);
 treeTable.setPageSize(12);
 treeTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
 }}}
