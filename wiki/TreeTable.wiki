@@ -79,8 +79,8 @@ If you have an existing class that you want to display in a TreeTable you can al
 === Creating some sample data ===
 
 {{{
-private static String[] firstNames = {"Miguel", "Fred", "Bob", "Emily", "John", "Ray", "Bruce", "Ray", "Larry", "Sergey", "Bill", "Steve", "Daniel" };
-private static String[] lastNames = {"Mendez", "Sauer", "Vatwer", "Crutcher", "LaBanca", "Ryan", "Johnson", "Cromwell", "Page", "Bin", "Gates", "Jobs", "Florey" };
+private static String[] firstNames = {"Miguel", "Fred", "Bob" };
+private static String[] lastNames = {"Mendez", "Sauer", "Vatwer" };
 
 List<TreeItem<Ancestor>> files = new ArrayList<TreeItem<Ancestor>>();
 for (int i = 0; i < 12; i++) {
