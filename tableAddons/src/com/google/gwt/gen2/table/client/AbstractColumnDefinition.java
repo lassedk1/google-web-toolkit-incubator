@@ -15,174 +15,204 @@
  */
 package com.google.gwt.gen2.table.client;
 
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * A definition of a column in a table.
  * 
- * @param <RowType> the type of the row value
- * @param <ColType> the data type of the column
+ * @param <RowType>
+ *            the type of the row value
+ * @param <ColType>
+ *            the data type of the column
  */
-public abstract class AbstractColumnDefinition<RowType, ColType> implements
-    ColumnDefinition<RowType, ColType> {
-  /**
-   * The default width of a column.
-   */
-  private static final int DEFAULT_WIDTH = 80;
+public abstract class AbstractColumnDefinition<RowType, ColType> implements ColumnDefinition<RowType, ColType> {
+	/**
+	 * The default width of a column.
+	 */
+	private static final int DEFAULT_WIDTH = 80;
 
-  /**
-   * The default {@link CellRenderer} to use when the
-   * {@link AbstractColumnDefinition} does not specify one.
-   */
-  private static final CellRenderer DEFAULT_CELL_RENDERER = new DefaultCellRenderer();
+	/**
+	 * The default {@link CellRenderer} to use when the
+	 * {@link AbstractColumnDefinition} does not specify one.
+	 */
+	private static final CellRenderer DEFAULT_CELL_RENDERER = new DefaultCellRenderer();
 
-  /**
-   * The cell editor used to edit the contents of this column.
-   */
-  private CellEditor<ColType> cellEditor = null;
+	/**
+	 * The cell editor used to edit the contents of this column.
+	 */
+	private CellEditor<ColType> cellEditor = null;
 
-  /**
-   * The renderer used to render the contents of this column.
-   */
-  private CellRenderer<RowType, ColType> cellRenderer = DEFAULT_CELL_RENDERER;
+	/**
+	 * The renderer used to render the contents of this column.
+	 */
+	private CellRenderer<RowType, ColType> cellRenderer = DEFAULT_CELL_RENDERER;
 
-  /**
-   * The filter used to filter the contents of this column
-   */
-  private ColumnFilter columnFilter;
-  
-  /**
-   * A boolean indicating whether or not the column is sortable. True by default
-   * to be consistent with {@link ScrollTable}.
-   */
-  private boolean isColumnSortable = true;
+	/**
+	 * The filter used to filter the contents of this column
+	 */
+	private ColumnFilter<ColType> columnFilter;
 
-  /**
-   * A boolean indicating whether or not the column is filterable.
-   */
-  private boolean isColumnFilterable = false;
+	private String header;
 
-  /**
-   * The minimum width of the column.
-   */
-  private int minWidth = -1;
+	private Widget headerWidget;
 
-  /**
-   * The maximum width of the column.
-   */
-  private int maxWidth = -1;
+	/**
+	 * A boolean indicating whether or not the column is sortable. True by
+	 * default to be consistent with {@link ScrollTable}.
+	 */
+	private boolean isColumnSortable = true;
 
-  /**
-   * The preferred width of the column.
-   */
-  private int preferredWidth = DEFAULT_WIDTH;
+	/**
+	 * A boolean indicating whether or not the column is filterable.
+	 */
+	private boolean isColumnFilterable = false;
 
-  public CellEditor<ColType> getCellEditor() {
-    return cellEditor;
-  }
+	/**
+	 * The minimum width of the column.
+	 */
+	private int minWidth = -1;
 
-  public CellRenderer<RowType, ColType> getCellRenderer() {
-    return cellRenderer;
-  }
+	/**
+	 * The maximum width of the column.
+	 */
+	private int maxWidth = -1;
 
-  public abstract ColType getCellValue(RowType rowValue);
+	/**
+	 * The preferred width of the column.
+	 */
+	private int preferredWidth = DEFAULT_WIDTH;
 
-  public ColumnFilter getColumnFilter() {
-    return columnFilter;
-  }
-   
-  public int getMaximumColumnWidth() {
-    return maxWidth;
-  }
+	public CellEditor<ColType> getCellEditor() {
+		return cellEditor;
+	}
 
-  public int getMinimumColumnWidth() {
-    return minWidth;
-  }
+	public CellRenderer<RowType, ColType> getCellRenderer() {
+		return cellRenderer;
+	}
 
-  public int getPreferredColumnWidth() {
-    return preferredWidth;
-  }
+	public abstract ColType getCellValue(RowType rowValue);
 
-  public boolean isColumnSortable() {
-    return isColumnSortable;
-  }
+	public ColumnFilter<ColType> getColumnFilter() {
+		return columnFilter;
+	}
 
-  public boolean isColumnFilterable() {
-    return isColumnFilterable;
-  }
+	public int getMaximumColumnWidth() {
+		return maxWidth;
+	}
 
-  /**
-   * Set the {@link CellEditor} that should be used to edit cells in this
-   * column.
-   * 
-   * @param cellEditor the {@link CellEditor} to use for this column
-   */
-  public void setCellEditor(CellEditor<ColType> cellEditor) {
-    this.cellEditor = cellEditor;
-  }
+	public int getMinimumColumnWidth() {
+		return minWidth;
+	}
 
-  /**
-   * Set the {@link CellRenderer} that should be used to render cells in this
-   * column.
-   * 
-   * @param cellRenderer the {@link CellRenderer} to use for this column
-   */
-  public void setCellRenderer(CellRenderer<RowType, ColType> cellRenderer) {
-    assert cellRenderer != null : "cellRenderer cannot be null";
-    this.cellRenderer = cellRenderer;
-  }
+	public String getHeader() {
+		return header;
+	}
 
-  public abstract void setCellValue(RowType rowValue, ColType cellValue);
+	public Widget getHeaderWidget() {
+		return headerWidget;
+	}
 
-  /**
-   * @param columnFilter the {@link ColumnFilter} to use for this column
-   */
-  public void setColumnFilter(ColumnFilter columnFilter) {
-    this.columnFilter = columnFilter;
-  }
-  
-  /**
-   * Set whether or not this column is filterable.
-   * 
-   * @param sortable true to make filterable, false to make unfilterable
-   */
-  public void setColumnFilterable(boolean filterable) {
-    isColumnFilterable = filterable;
-  }
+	public int getPreferredColumnWidth() {
+		return preferredWidth;
+	}
 
-  /**
-   * Set whether or not this column is sortable.
-   * 
-   * @param sortable true to make sortable, false to make unsortable
-   */
-  public void setColumnSortable(boolean sortable) {
-    isColumnSortable = sortable;
-  }
+	public boolean isColumnSortable() {
+		return isColumnSortable;
+	}
 
-  /**
-   * Set the maximum width of the column.
-   * 
-   * @param maxWidth the max width
-   */
-  public void setMaximumColumnWidth(int maxWidth) {
-    this.maxWidth = maxWidth;
-  }
+	public boolean isColumnFilterable() {
+		return isColumnFilterable;
+	}
 
-  /**
-   * Set the minimum width of the column.
-   * 
-   * @param minWidth the min width
-   */
-  public void setMinimumColumnWidth(int minWidth) {
-    this.minWidth = minWidth;
-  }
+	/**
+	 * Set the {@link CellEditor} that should be used to edit cells in this
+	 * column.
+	 * 
+	 * @param cellEditor
+	 *            the {@link CellEditor} to use for this column
+	 */
+	public void setCellEditor(CellEditor<ColType> cellEditor) {
+		this.cellEditor = cellEditor;
+	}
 
-  /**
-   * Set the preferred width of the column.
-   * 
-   * @param preferredWidth the preferred width
-   * @see #getPreferredColumnWidth()
-   */
-  public void setPreferredColumnWidth(int preferredWidth) {
-    this.preferredWidth = preferredWidth;
-  }
+	/**
+	 * Set the {@link CellRenderer} that should be used to render cells in this
+	 * column.
+	 * 
+	 * @param cellRenderer
+	 *            the {@link CellRenderer} to use for this column
+	 */
+	public void setCellRenderer(CellRenderer<RowType, ColType> cellRenderer) {
+		assert cellRenderer != null : "cellRenderer cannot be null";
+		this.cellRenderer = cellRenderer;
+	}
+
+	public abstract void setCellValue(RowType rowValue, ColType cellValue);
+
+	/**
+	 * @param columnFilter
+	 *            the {@link ColumnFilter} to use for this column
+	 */
+	public void setColumnFilter(ColumnFilter columnFilter) {
+		this.columnFilter = columnFilter;
+	}
+
+	/**
+	 * Set whether or not this column is filterable.
+	 * 
+	 * @param sortable
+	 *            true to make filterable, false to make unfilterable
+	 */
+	public void setColumnFilterable(boolean filterable) {
+		isColumnFilterable = filterable;
+	}
+
+	/**
+	 * Set whether or not this column is sortable.
+	 * 
+	 * @param sortable
+	 *            true to make sortable, false to make unsortable
+	 */
+	public void setColumnSortable(boolean sortable) {
+		isColumnSortable = sortable;
+	}
+
+	public void setHeader(String header) {
+		this.header = header;
+	}
+
+	public void setHeaderWidget(Widget headerWidget) {
+		this.headerWidget = headerWidget;
+	}
+
+	/**
+	 * Set the maximum width of the column.
+	 * 
+	 * @param maxWidth
+	 *            the max width
+	 */
+	public void setMaximumColumnWidth(int maxWidth) {
+		this.maxWidth = maxWidth;
+	}
+
+	/**
+	 * Set the minimum width of the column.
+	 * 
+	 * @param minWidth
+	 *            the min width
+	 */
+	public void setMinimumColumnWidth(int minWidth) {
+		this.minWidth = minWidth;
+	}
+
+	/**
+	 * Set the preferred width of the column.
+	 * 
+	 * @param preferredWidth
+	 *            the preferred width
+	 * @see #getPreferredColumnWidth()
+	 */
+	public void setPreferredColumnWidth(int preferredWidth) {
+		this.preferredWidth = preferredWidth;
+	}
 }

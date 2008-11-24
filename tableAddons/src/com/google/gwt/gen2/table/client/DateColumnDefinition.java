@@ -25,19 +25,19 @@ public abstract class DateColumnDefinition<RowType> extends
    */
   public static class DateColumnFilter extends ColumnFilter<Date> {
     private Operator operator;
-    private Operator[] supportedOperators; 
+    private Operator[] supportedOperators;
     private DateTimeFormat dateTimeFormat;
-    
+
     private DateBox primaryDateBox, secondaryDateBox;
     private PushButton operatorButton;
     private HorizontalPanel horizontalPanel = new HorizontalPanel();
 
     private ClickListener clickListener = new ClickListener() {
       public void onClick(Widget sender) {
-        for ( int i = 0; i < supportedOperators.length; i++ ) {
-          if ( operator == supportedOperators[i] ) {
-            if ( i < supportedOperators.length-1 ) {
-              operator = supportedOperators[i+1];
+        for (int i = 0; i < supportedOperators.length; i++) {
+          if (operator == supportedOperators[i]) {
+            if (i < supportedOperators.length - 1) {
+              operator = supportedOperators[i + 1];
             } else {
               operator = supportedOperators[0];
             }
@@ -72,18 +72,11 @@ public abstract class DateColumnDefinition<RowType> extends
     /**
      * Creates a filter suitable for filtering columns containing dates
      * 
-     * @param dateTimeFormat the dateTimeFormat used for the formatting of the filter text
+     * @param dateTimeFormat the dateTimeFormat used for the formatting of the
+     *          filter text
      */
-    public DateColumnFilter(DateTimeFormat dateTimeFormat) {
-      this(dateTimeFormat, Operator.values());
-    }
-
-    /**
-     * Creates a filter suitable for filtering columns containing dates
-     * 
-     * @param dateTimeFormat the dateTimeFormat used for the formatting of the filter text
-     */
-    public DateColumnFilter(DateTimeFormat dateTimeFormat, Operator[] supportedOperators) {
+    public DateColumnFilter(DateTimeFormat dateTimeFormat,
+        Operator[] supportedOperators) {
       this.dateTimeFormat = dateTimeFormat;
       this.supportedOperators = supportedOperators;
       this.operator = supportedOperators[0];
@@ -100,10 +93,12 @@ public abstract class DateColumnDefinition<RowType> extends
       primaryDateBox.setDateFormat(dateTimeFormat);
       primaryDateBox.setWidth("100%");
       primaryDateBox.addStyleName("dateBox");
+      primaryDateBox.addKeyDownHandler(keyDownHandler);
       secondaryDateBox = new DateBox();
       secondaryDateBox.setDateFormat(dateTimeFormat);
       secondaryDateBox.setWidth("100%");
       secondaryDateBox.addStyleName("dateBox");
+      secondaryDateBox.addKeyDownHandler(keyDownHandler);
       operatorButton = new PushButton();
       setButtonText(operatorButton, operator);
       operatorButton.addClickListener(clickListener);
@@ -120,8 +115,9 @@ public abstract class DateColumnDefinition<RowType> extends
       primaryDateBox.getTextBox().addChangeListener(new ChangeListener() {
         public void onChange(Widget sender) {
           String text = primaryDateBox.getText();
-          System.out.println("Date: "+text);
-        }});
+          System.out.println("Date: " + text);
+        }
+      });
       return horizontalPanel;
     }
 
@@ -186,6 +182,7 @@ public abstract class DateColumnDefinition<RowType> extends
 
     /**
      * Construct a new {@link DateCellEditor} using a {@link DateBox}.
+     * 
      * @param dateTimeFormat the {@link DateTimeFormat} used for inline editing
      */
     public DateCellEditor(DateTimeFormat dateTimeFormat) {
@@ -194,6 +191,7 @@ public abstract class DateColumnDefinition<RowType> extends
 
     /**
      * Construct a new {@link DateCellEditor} using a {@link DateBox}.
+     * 
      * @param dateBox the {@link DateBox} used for inline editing
      * @param dateTimeFormat the {@link DateTimeFormat} used for inline editing
      */
@@ -231,8 +229,39 @@ public abstract class DateColumnDefinition<RowType> extends
     }
   }
 
+  public DateColumnDefinition(String header, DateTimeFormat dateTimeFormat,
+      boolean sortingEnabled, boolean filterEnabled, boolean editingEnabled) {
+    this(dateTimeFormat, sortingEnabled, filterEnabled, editingEnabled);
+    setHeader(header);
+  }
+
+  public DateColumnDefinition(String header, DateTimeFormat dateTimeFormat,
+      boolean sortingEnabled, boolean filterEnabled,
+      Operator[] supportedOperators, boolean editingEnabled) {
+    this(dateTimeFormat, sortingEnabled, filterEnabled, supportedOperators,
+        editingEnabled);
+    setHeader(header);
+  }
+
+  public DateColumnDefinition(Widget headerWidget,
+      DateTimeFormat dateTimeFormat, boolean sortingEnabled,
+      boolean filterEnabled, boolean editingEnabled) {
+    this(dateTimeFormat, sortingEnabled, filterEnabled, editingEnabled);
+    setHeaderWidget(headerWidget);
+  }
+
+  public DateColumnDefinition(Widget headerWidget,
+      DateTimeFormat dateTimeFormat, boolean sortingEnabled,
+      boolean filterEnabled, Operator[] supportedOperators,
+      boolean editingEnabled) {
+    this(dateTimeFormat, sortingEnabled, filterEnabled, supportedOperators,
+        editingEnabled);
+    setHeaderWidget(headerWidget);
+  }
+
   /**
    * Column definition used for columns containing {@link Date} objects
+   * 
    * @param dateTimeFormat
    * @param sortingEnabled
    * @param filterEnabled
@@ -249,17 +278,19 @@ public abstract class DateColumnDefinition<RowType> extends
       setCellEditor(createDateCellEditor(dateTimeFormat));
     }
   }
-  
+
   /**
    * Column definition used for columns containing {@link Date} objects
+   * 
    * @param dateTimeFormat
    * @param sortingEnabled
    * @param filterEnabled
-   * @param supportedOperators 
+   * @param supportedOperators
    * @param editingEnabled
    */
   public DateColumnDefinition(DateTimeFormat dateTimeFormat,
-      boolean sortingEnabled, boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled) {
+      boolean sortingEnabled, boolean filterEnabled,
+      Operator[] supportedOperators, boolean editingEnabled) {
     setColumnSortable(sortingEnabled);
     setColumnFilterable(filterEnabled);
     if (filterEnabled) {
@@ -272,26 +303,36 @@ public abstract class DateColumnDefinition<RowType> extends
   }
 
   /**
-   * Creates the default date filter implementation. Override this method to provide custom filters
+   * Creates the default date filter implementation. Override this method to
+   * provide custom filters
+   * 
    * @return the created column filter suitable for filtering date columns
    */
-  protected ColumnFilter<Date> createDateColumnFilter(DateTimeFormat dateTimeFormat, Operator[] supportedOperators) {
+  protected ColumnFilter<Date> createDateColumnFilter(
+      DateTimeFormat dateTimeFormat, Operator[] supportedOperators) {
     return new DateColumnFilter(dateTimeFormat, supportedOperators);
   }
 
   /**
-   * Creates the default date renderer implementation. Override this method to provide custom date renderer
+   * Creates the default date renderer implementation. Override this method to
+   * provide custom date renderer
+   * 
    * @return the created cell renderer suitable for rendering dates
    */
-  protected CellRenderer<RowType, Date> createDateCellRenderer(DateTimeFormat dateTimeFormat) {
+  protected CellRenderer<RowType, Date> createDateCellRenderer(
+      DateTimeFormat dateTimeFormat) {
     return new DateCellRenderer(dateTimeFormat);
   }
 
   /**
-   * Creates the default date editor implementation. Override this method to provide custom date editor
+   * Creates the default date editor implementation. Override this method to
+   * provide custom date editor
+   * 
    * @return the created cell editor suitable for editing dates
    */
   protected CellEditor<Date> createDateCellEditor(DateTimeFormat dateTimeFormat) {
     return new DateCellEditor(dateTimeFormat);
   }
+  
+  public void setCellValue(RowType rowValue, Date cellValue) {};
 }

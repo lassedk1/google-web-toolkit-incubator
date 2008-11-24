@@ -1,7 +1,7 @@
 .gwt-TreeTable {
   border-color: #aaa;
   border-style: solid;
-  border-width: 0px 0px 0px 0px;
+  border-width: 1px 0px 1px 0px;
 }
 
 .gwt-TreeTable .dataTable td,
@@ -90,6 +90,10 @@
 
 @sprite .gwt-TreeTable .treeTableIndent {
 	gwt-image: "treeIndent";
+}
+
+@sprite .gwt-TreeTable .treeTableIndentUp {
+	gwt-image: "treeIndentUp";
 }
 
 @sprite .gwt-TreeTable .treeTableOpenNode {

@@ -1,7 +1,8 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
-import com.google.gwt.gen2.table.shared.ColumnFilterInfo;
+import com.google.gwt.gen2.table.shared.TextColumnFilterInfo;
+import com.google.gwt.gen2.table.shared.TextColumnFilterInfo.Operator;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.KeyboardListener;
@@ -15,18 +16,22 @@ public abstract class TextColumnDefinition<RowType> extends
   /**
    * ColumnTextFilter filters columns based on text
    */
-  public static class TextColumnFilter extends ColumnFilter {
-    private int operator = TextColumnFilterInfo.STARTS_WITH;
-    private String[] operatorButtonText = new String[] {
-        "xx..", "Xx..", "..xx..", "..Xx..", "..xx", "..Xx"};
-
+  public static class TextColumnFilter extends ColumnFilter<String> {
+    private Operator operator;
+    private final Operator[] supportedOperators;
     private TextBox filterTextBox;
     private PushButton operatorButton;
     private ClickListener clickListener = new ClickListener() {
       public void onClick(Widget sender) {
-        operator++;
-        if (operator == TextColumnFilterInfo.COUNT_OPERATORS) {
-          operator = 0;
+        for (int i = 0; i < supportedOperators.length; i++) {
+          if (operator == supportedOperators[i]) {
+            if (i < supportedOperators.length - 1) {
+              operator = supportedOperators[i + 1];
+            } else {
+              operator = supportedOperators[0];
+            }
+            break;
+          }
         }
         setButtonText(((PushButton) operatorButton), operator);
         fireColumnFilterChanged(new TextColumnFilterInfo(getColumn(),
@@ -34,13 +39,15 @@ public abstract class TextColumnDefinition<RowType> extends
       }
     };
 
+
     /**
      * Creates a filter suitable for filtering columns containing text
      * 
      * @param column the column to be filtered
      */
-    public TextColumnFilter() {
-      super();
+    public TextColumnFilter(Operator[] supportedOperators) {
+      this.operator = supportedOperators[0];
+      this.supportedOperators = supportedOperators;
     }
 
     /*
@@ -80,69 +87,11 @@ public abstract class TextColumnDefinition<RowType> extends
       return horizontalPanel;
     }
 
-    private void setButtonText(PushButton pushButton, int operator) {
-      pushButton.getUpFace().setText(operatorButtonText[operator]);
-      pushButton.getUpHoveringFace().setText(operatorButtonText[operator]);
-      pushButton.getDownFace().setText(operatorButtonText[operator]);
-    }
-  }
-
-  /**
-   * 
-   */
-  public static class TextColumnFilterInfo extends ColumnFilterInfo<String> {
-    public static final int STARTS_WITH = 0;
-    public static final int STARTS_WITH_CASE_SENSITIVE = 1;
-    public static final int CONTAINS = 2;
-    public static final int CONTAINS_CASE_SENSITIVE = 3;
-    public static final int ENDS_WITH = 4;
-    public static final int ENDS_WITH_CASE_SENSITIVE = 5;
-    public static final int COUNT_OPERATORS = 6;
-
-    private String filterText;
-    private int operator;
-
-    public TextColumnFilterInfo() {
-      super();
-    }
-
-    public TextColumnFilterInfo(int column, String filterText, int operator) {
-      super(column);
-      this.filterText = filterText;
-      this.operator = operator;
-    }
-
-    public String getFilterText() {
-      return filterText;
-    }
-
-    public int getOperator() {
-      return operator;
-    }
-
-    public String parse(String cellContent) {
-      return cellContent;
-    }
-
-    public boolean isFilterMatching(String value) {
-      if (operator == STARTS_WITH) {
-        return value.toLowerCase().startsWith(filterText.toLowerCase());
-      } else if (operator == STARTS_WITH_CASE_SENSITIVE) {
-        return value.startsWith(filterText);
-      } else if (operator == CONTAINS) {
-        return value.toLowerCase().contains(filterText.toLowerCase());
-      } else if (operator == CONTAINS_CASE_SENSITIVE) {
-        return value.contains(filterText);
-      } else if (operator == ENDS_WITH) {
-        return value.toLowerCase().endsWith(filterText.toLowerCase());
-      } else if (operator == ENDS_WITH_CASE_SENSITIVE) {
-        return value.endsWith(filterText);
-      }
-      return false;
-    }
-
-    public ColumnFilterInfo copy() {
-      return new TextColumnFilterInfo(getColumn(), filterText, operator);
+    private void setButtonText(PushButton pushButton, Operator operator) {
+      pushButton.getUpFace().setText(operator.getSymbol());
+      pushButton.getUpHoveringFace().setText(operator.getSymbol());
+      pushButton.getDownFace().setText(operator.getSymbol());
+      pushButton.setTitle(operator.getTooltip());
     }
   }
 
@@ -234,9 +183,33 @@ public abstract class TextColumnDefinition<RowType> extends
     }
   }
 
+  public TextColumnDefinition(Widget headerWidget, boolean filterEnabled, boolean editingEnabled) {
+    this(filterEnabled, editingEnabled);
+    setHeaderWidget(headerWidget);
+  }
+
+  public TextColumnDefinition(String header, boolean filterEnabled, boolean editingEnabled) {
+    this(filterEnabled, editingEnabled);
+    setHeader(header);
+  }
+
+  public TextColumnDefinition(Widget headerWidget, boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled) {
+	  this(filterEnabled, supportedOperators, editingEnabled);
+	  setHeaderWidget(headerWidget);
+  }
+
+  public TextColumnDefinition(String header, boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled) {
+	  this(filterEnabled, supportedOperators, editingEnabled);
+	  setHeader(header);
+  }
+  
   public TextColumnDefinition(boolean filterEnabled, boolean editingEnabled) {
+    this(filterEnabled, Operator.values(), editingEnabled);
+  }
+    
+  public TextColumnDefinition(boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled) {
     if (filterEnabled) {
-      setColumnFilter(createTextColumnFilter());
+      setColumnFilter(createTextColumnFilter(supportedOperators));
     }
     setCellRenderer(createTextCellRenderer());
     if (editingEnabled) {
@@ -270,7 +243,9 @@ public abstract class TextColumnDefinition<RowType> extends
    * 
    * @return the created column filter suitable for filtering text columns
    */
-  protected ColumnFilter createTextColumnFilter() {
-    return new TextColumnFilter();
+  protected ColumnFilter<String> createTextColumnFilter(Operator[] supportedOperators) {
+    return new TextColumnFilter(supportedOperators);
   }
+  
+  public void setCellValue(RowType rowValue, String cellValue) {};
 }

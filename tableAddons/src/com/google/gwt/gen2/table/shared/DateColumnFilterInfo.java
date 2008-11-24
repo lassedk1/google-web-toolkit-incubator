@@ -8,7 +8,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import java.util.Date;
 
 public class DateColumnFilterInfo extends ColumnFilterInfo<Date> {
-  public static enum Operator {
+  public enum Operator {
     EQUALS("=", "equals", "Shows only dates that are equal"),
     NOT_EQUAL("!=", "not equal", "Shows only dates that not equal"),
     BEFORE("<", "before", "Show only dates before the given date"),

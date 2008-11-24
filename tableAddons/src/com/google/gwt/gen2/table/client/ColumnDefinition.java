@@ -15,6 +15,8 @@
  */
 package com.google.gwt.gen2.table.client;
 
+import com.google.gwt.user.client.ui.Widget;
+
 
 /**
  * A definition of a column in a table.
@@ -47,6 +49,10 @@ public interface ColumnDefinition<RowType, ColType> {
    */
   ColType getCellValue(RowType rowValue);
 
+  String getHeader();
+  
+  Widget getHeaderWidget();
+  
   /**
    * Get the maximum width of the column. A return value of -1 indicates that
    * the column has no maximum width, but the consumer of the data may impose
