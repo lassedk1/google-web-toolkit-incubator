@@ -24,18 +24,29 @@ import com.google.gwt.gen2.table.event.client.PageLoadEvent;
 import com.google.gwt.gen2.table.event.client.PageLoadHandler;
 import com.google.gwt.gen2.table.event.client.PagingFailureEvent;
 import com.google.gwt.gen2.table.event.client.PagingFailureHandler;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
+import com.google.gwt.gen2.widgetbase.client.WidgetCss;
+import com.google.gwt.i18n.client.Messages;
+import com.google.gwt.libideas.resources.client.ImageResource;
+import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
+import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
+import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.ImageBundle;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
+import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.widgetideas.client.SliderBar;
+import com.google.gwt.widgetideas.client.SliderBar.LabelFormatter;
 
 /**
  * A panel that wraps a {@link PagingScrollTable} and includes options to
@@ -49,56 +60,111 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * <li>.gwt-PagingOptions .errorMessage { applied to the error message }</li>
  * 
- * <li>.pagingOptionsFirstPage { the first page button }</li>
- * 
- * <li>.pagingOptionsLastPage { the last page button }</li>
- * 
- * <li>.pagingOptionsNextPage { the next page button }</li>
- * 
- * <li>.pagingOptionsPreviousPage { the previous page button }</li>
- * 
  * </ul>
  */
 public class PagingOptions extends Composite {
   /**
-   * An {@link com.google.gwt.user.client.ui.ImageBundle} that provides images
-   * for {@link PagingOptions}.
+   * Interface used to allow the widget access to css style names. <p/> The
+   * class names indicate the default gwt names for these styles. <br>
+   * 
    */
-  public static interface PagingOptionsImages extends ImageBundle {
+  public static interface Css extends WidgetCss {
     /**
-     * An image used to navigate to the first page.
+     * Widget style name.
      * 
-     * @return a prototype of this image
+     * @return the widget's style name
      */
-    AbstractImagePrototype pagingOptionsFirstPage();
+    @ClassName("gwt-PagingOptions")
+    String defaultStyleName();
 
-    /**
-     * An image used to navigate to the last page.
-     * 
-     * @return a prototype of this image
-     */
-    AbstractImagePrototype pagingOptionsLastPage();
+    String errorMessage();
+    
+    String currentPageBox();
+  }
 
-    /**
-     * An image used to navigate to the next page.
-     * 
-     * @return a prototype of this image
-     */
-    AbstractImagePrototype pagingOptionsNextPage();
+  public interface PagingOptionsResources {
+    PagingOptionsStyle getStyle();
 
-    /**
-     * An image used to navigate to the previous page.
-     * 
-     * @return a prototype of this image
-     */
-    AbstractImagePrototype pagingOptionsPrevPage();
+    PagingOptionsMessages getMessages();
+  }
+
+  public interface PagingOptionsMessages extends Messages {
+    @DefaultMessage("Go to first page")
+    String gotoFirstPage();
+
+    @DefaultMessage("Go to last page")
+    String gotoLastPage();
+
+    @DefaultMessage("Go to next page")
+    String gotoNextPage();
+
+    @DefaultMessage("Go to previous page")
+    String gotoPreviousPage();
+
+    @DefaultMessage("{0} of {1} pages")
+    String currentOfPages(int currentPage, int pages);
   }
 
   /**
-   * The default style name.
+   * Resources used.
    */
-  public static final String DEFAULT_STYLENAME = "gwt-PagingOptions";
-  public static final String STYLENAME_PREFIX = "pagingOptions";
+  public interface PagingOptionsStyle extends ImmutableResourceBundle {
+    /**
+     * The css file.
+     */
+    @Resource("com/google/gwt/gen2/widgetbase/public/PagingOptions.css")
+    Css css();
+
+    @Resource("firstPage.png")
+    ImageResource firstPage();
+
+    @Resource("firstPageDisabled.png")
+    ImageResource firstPageDisabled();
+
+    @Resource("lastPage.png")
+    ImageResource lastPage();
+
+    @Resource("lastPageDisabled.png")
+    ImageResource lastPageDisabled();
+
+    @Resource("nextPage.png")
+    ImageResource nextPage();
+
+    @Resource("nextPageDisabled.png")
+    ImageResource nextPageDisabled();
+
+    @Resource("previousPage.png")
+    ImageResource previousPage();
+
+    @Resource("previousPageDisabled.png")
+    ImageResource previousPageDisabled();
+
+    @Resource("headerBackground.png")
+    @ImageOptions(repeatStyle = RepeatStyle.Horizontal)
+    ImageResource pagingBackground();
+  }
+
+  protected static class DefaultPagingOptionsResources implements
+      PagingOptionsResources {
+    private PagingOptionsStyle style;
+    private PagingOptionsMessages messages;
+
+    public PagingOptionsStyle getStyle() {
+      if (style == null) {
+        style = ((PagingOptionsStyle) GWT.create(PagingOptionsStyle.class));
+      }
+      return style;
+    }
+
+    public PagingOptionsMessages getMessages() {
+      if (messages == null) {
+        messages = ((PagingOptionsMessages) GWT.create(PagingOptionsMessages.class));
+      }
+      return messages;
+    }
+  }
+
+  private HorizontalPanel buttonPanel;
 
   /**
    * The label used to display errors.
@@ -106,14 +172,10 @@ public class PagingOptions extends Composite {
   private HTML errorLabel;
 
   /**
-   * Goto first page button.
+   * Buttons
    */
-  private Image firstImage;
-
-  /**
-   * Goto last page button.
-   */
-  private Image lastImage;
+  private PushButton firstPageButton, lastPageButton, nextPageButton,
+      previousPageButton;
 
   /**
    * The loading image.
@@ -121,29 +183,21 @@ public class PagingOptions extends Composite {
   private Image loadingImage;
 
   /**
-   * Goto next page button.
-   */
-  private Image nextImage;
-
-  /**
-   * The HTML field that contains the number of pages.
-   */
-  private HTML numPagesLabel;
-
-  /**
-   * Goto previous page button.
-   */
-  private Image prevImage;
-
-  /**
    * The box where the user can select the current page.
    */
-  private TextBox curPageBox = new TextBox();
+  private TextBox currentPageBox = new TextBox();
 
+  private SliderBar pageSlider = new SliderBar(1, 1, new LabelFormatter() {
+    public String formatLabel(SliderBar slider, double value) {
+      return String.valueOf((int) value);
+    }
+  });
   /**
    * The table being affected.
    */
   private PagingScrollTable<?> table;
+  private PagingOptionsResources resources;
+  private int pageCount;
 
   /**
    * Constructor.
@@ -151,32 +205,36 @@ public class PagingOptions extends Composite {
    * @param table the table being ad
    */
   public PagingOptions(PagingScrollTable<?> table) {
-    this(table, GWT.<PagingOptionsImages> create(PagingOptionsImages.class));
+    this(table, new DefaultPagingOptionsResources());
   }
 
   /**
    * Constructor.
    * 
    * @param table the table being affected
-   * @param images the images to use
+   * @param resources the images to use
    */
-  public PagingOptions(PagingScrollTable<?> table, PagingOptionsImages images) {
+  public PagingOptions(PagingScrollTable<?> table,
+      PagingOptionsResources resources) {
     this.table = table;
+    this.resources = resources;
+    Css css = resources.getStyle().css();
+    if (Gen2CssInjector.isInjectionEnabled()) {
+      Gen2CssInjector.inject(css);
+    }
 
     // Create the main widget
-    HorizontalPanel hPanel = new HorizontalPanel();
-    initWidget(hPanel);
-    hPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    setStyleName(DEFAULT_STYLENAME);
+    HorizontalPanel pagingPanel = new HorizontalPanel();
+    initWidget(pagingPanel);
+    pagingPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+    pagingPanel.setWidth("100%");
+    setStyleName(resources.getStyle().css().defaultStyleName());
 
     // Create the paging image buttons
-    createPageButtons(images);
+    createPageButtons();
 
     // Create the current page box
-    createCurPageBox();
-
-    // Create the page count label
-    numPagesLabel = new HTML();
+    createCurrentPageBox();
 
     // Create the loading image
     loadingImage = new Image("scrollTableLoading.gif");
@@ -185,34 +243,52 @@ public class PagingOptions extends Composite {
     // Create the error label
     errorLabel = new HTML();
     errorLabel.setStylePrimaryName("errorMessage");
+    pageSlider.setStepSize(1.0);
+    pageSlider.setMaxValue(getPageCount());
+    pageSlider.addChangeListener(new ChangeListener() {
+      private Timer timer;
 
+      public void onChange(Widget sender) {
+        final int currentPage = (int) pageSlider.getCurrentValue();
+        pageSlider.setTitle(PagingOptions.this.resources.getMessages().currentOfPages(
+            currentPage, getPageCount()));
+        if (timer != null) {
+          timer.cancel();
+        }
+        timer = new Timer() {
+          public void run() {
+            PagingOptions.this.table.gotoPage(currentPage - 1, false);
+          }
+        };
+        timer.schedule(250);
+      }
+    });
+
+    buttonPanel = new HorizontalPanel();
+    buttonPanel.setSpacing(3);
+    buttonPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+    buttonPanel.add(firstPageButton);
+    buttonPanel.add(previousPageButton);
+    buttonPanel.add(pageSlider);
+    buttonPanel.add(currentPageBox);
+    buttonPanel.add(nextPageButton);
+    buttonPanel.add(lastPageButton);
+    buttonPanel.add(loadingImage);
+    pagingPanel.add(buttonPanel);
     // Add the widgets to the panel
-    hPanel.add(createSpacer());
-    hPanel.add(firstImage);
-    hPanel.add(createSpacer());
-    hPanel.add(prevImage);
-    hPanel.add(createSpacer());
-    hPanel.add(curPageBox);
-    hPanel.add(createSpacer());
-    hPanel.add(numPagesLabel);
-    hPanel.add(createSpacer());
-    hPanel.add(nextImage);
-    hPanel.add(createSpacer());
-    hPanel.add(lastImage);
-    hPanel.add(createSpacer());
-    hPanel.add(loadingImage);
-    hPanel.add(errorLabel);
+    pagingPanel.add(errorLabel);
 
     // Add handlers to the table
     table.addPageLoadHandler(new PageLoadHandler() {
       public void onPageLoad(PageLoadEvent event) {
         loadingImage.setVisible(false);
         errorLabel.setHTML("");
+        updateButtonState();
       }
     });
     table.addPageChangeHandler(new PageChangeHandler() {
       public void onPageChange(PageChangeEvent event) {
-        curPageBox.setText((event.getNewPage() + 1) + "");
+        currentPageBox.setText((event.getNewPage() + 1) + "");
         loadingImage.setVisible(true);
         errorLabel.setHTML("");
       }
@@ -226,6 +302,7 @@ public class PagingOptions extends Composite {
     table.addPageCountChangeHandler(new PageCountChangeHandler() {
       public void onPageCountChange(PageCountChangeEvent event) {
         setPageCount(event.getNewPageCount());
+        updateButtonState();
       }
     });
     setPageCount(table.getPageCount());
@@ -238,23 +315,21 @@ public class PagingOptions extends Composite {
     return table;
   }
 
-  /**
-   * Create a widget that can be used to add space.
-   * 
-   * @return a spacer widget
-   */
-  protected Widget createSpacer() {
-    return new HTML("&nbsp;&nbsp;");
+  public HorizontalPanel getButtonPanel() {
+    return buttonPanel;
+  }
+
+  public int getPageCount() {
+    return pageCount;
   }
 
   /**
    * Create a box that holds the current page.
    */
-  private void createCurPageBox() {
+  protected void createCurrentPageBox() {
     // Setup the widget
-    curPageBox.setWidth("3em");
-    curPageBox.setText("1");
-    curPageBox.setTextAlignment(TextBoxBase.ALIGN_RIGHT);
+    currentPageBox.setStyleName(resources.getStyle().css().currentPageBox());
+    currentPageBox.setText("1");
 
     // Disallow non-numeric pages
     KeyboardListenerAdapter listener = new KeyboardListenerAdapter() {
@@ -274,45 +349,90 @@ public class PagingOptions extends Composite {
     };
 
     // Add the listener
-    curPageBox.addKeyboardListener(listener);
+    currentPageBox.addKeyboardListener(listener);
   }
 
   /**
    * Create a paging image buttons.
    * 
-   * @param images the images to use
+   * @param resources the resources to use
    */
-  private void createPageButtons(PagingOptionsImages images) {
-    // Create the images
-    firstImage = images.pagingOptionsFirstPage().createImage();
-    firstImage.addStyleName(STYLENAME_PREFIX + "FirstPage");
-    prevImage = images.pagingOptionsPrevPage().createImage();
-    prevImage.addStyleName(STYLENAME_PREFIX + "PreviousPage");
-    nextImage = images.pagingOptionsNextPage().createImage();
-    nextImage.addStyleName(STYLENAME_PREFIX + "NextPage");
-    lastImage = images.pagingOptionsLastPage().createImage();
-    lastImage.addStyleName(STYLENAME_PREFIX + "LastPage");
+  protected void createPageButtons() {
+    firstPageButton = new PushButton(
+        createImage(resources.getStyle().firstPage()));
+    firstPageButton.getUpDisabledFace().setImage(
+        createImage(resources.getStyle().firstPageDisabled()));
+    firstPageButton.setTitle(resources.getMessages().gotoFirstPage());
+
+    lastPageButton = new PushButton(
+        createImage(resources.getStyle().lastPage()));
+    lastPageButton.getUpDisabledFace().setImage(
+        createImage(resources.getStyle().lastPageDisabled()));
+    lastPageButton.setTitle(resources.getMessages().gotoLastPage());
+
+    nextPageButton = new PushButton(
+        createImage(resources.getStyle().nextPage()));
+    nextPageButton.getUpDisabledFace().setImage(
+        createImage(resources.getStyle().nextPageDisabled()));
+    nextPageButton.setTitle(resources.getMessages().gotoNextPage());
+
+    previousPageButton = new PushButton(
+        createImage(resources.getStyle().previousPage()));
+    previousPageButton.getUpDisabledFace().setImage(
+        createImage(resources.getStyle().previousPageDisabled()));
+    previousPageButton.setTitle(resources.getMessages().gotoPreviousPage());
 
     // Create the listener
     ClickListener listener = new ClickListener() {
       public void onClick(Widget sender) {
-        if (sender == firstImage) {
+        if (sender == firstPageButton) {
           table.gotoFirstPage();
-        } else if (sender == lastImage) {
+        } else if (sender == lastPageButton) {
           table.gotoLastPage();
-        } else if (sender == nextImage) {
+        } else if (sender == nextPageButton) {
           table.gotoNextPage();
-        } else if (sender == prevImage) {
+        } else if (sender == previousPageButton) {
           table.gotoPreviousPage();
         }
       }
     };
 
     // Add the listener to each image
-    firstImage.addClickListener(listener);
-    prevImage.addClickListener(listener);
-    nextImage.addClickListener(listener);
-    lastImage.addClickListener(listener);
+    firstPageButton.addClickListener(listener);
+    nextPageButton.addClickListener(listener);
+    lastPageButton.addClickListener(listener);
+    previousPageButton.addClickListener(listener);
+  }
+
+  protected Image createImage(ImageResource imageResource) {
+    Image image = new Image();
+    applyImage(image, imageResource);
+    return image;
+  }
+
+  protected void applyImage(Image image, ImageResource imageResource) {
+    image.setUrlAndVisibleRect(imageResource.getURL(), imageResource.getLeft(),
+        imageResource.getTop(), imageResource.getWidth(),
+        imageResource.getHeight());
+  }
+
+  protected void updateButtonState() {
+    int currentPage = getPagingBoxValue();
+    if (currentPage <= 0) {
+      firstPageButton.setEnabled(false);
+      previousPageButton.setEnabled(false);
+    } else {
+      firstPageButton.setEnabled(true);
+      previousPageButton.setEnabled(true);
+    }
+    if (currentPage >= pageCount - 1) {
+      nextPageButton.setEnabled(false);
+      lastPageButton.setEnabled(false);
+    } else {
+      nextPageButton.setEnabled(true);
+      lastPageButton.setEnabled(true);
+    }
+    pageSlider.setCurrentValue(getPagingBoxValue() + 1);
   }
 
   /**
@@ -321,18 +441,18 @@ public class PagingOptions extends Composite {
    * 
    * @return the value in the page box
    */
-  private int getPagingBoxValue() {
+  protected int getPagingBoxValue() {
     int page = 0;
     try {
-      page = Integer.parseInt(curPageBox.getText()) - 1;
+      page = Integer.parseInt(currentPageBox.getText()) - 1;
     } catch (NumberFormatException e) {
       // This will catch an empty box
-      curPageBox.setText("1");
+      currentPageBox.setText("1");
     }
 
     // Replace values less than 1
     if (page < 1) {
-      curPageBox.setText("1");
+      currentPageBox.setText("1");
       page = 0;
     }
 
@@ -345,14 +465,17 @@ public class PagingOptions extends Composite {
    * 
    * @param pageCount the current page count
    */
-  private void setPageCount(int pageCount) {
+  protected void setPageCount(int pageCount) {
+    this.pageCount = pageCount;
     if (pageCount < 0) {
-      numPagesLabel.setHTML("");
-      lastImage.setVisible(false);
+      pageSlider.setVisible(false);
+      lastPageButton.setVisible(false);
     } else {
-      numPagesLabel.setHTML("of&nbsp;&nbsp;" + pageCount);
-      numPagesLabel.setVisible(true);
-      lastImage.setVisible(true);
+      pageSlider.setVisible(true);
+      pageSlider.setMaxValue(pageCount);
+      pageSlider.setNumLabels(Math.min(getPageCount() - 1, 5));
+      pageSlider.setNumTicks(Math.min(getPageCount() - 1, 10));
+      lastPageButton.setVisible(true);
     }
   }
 }

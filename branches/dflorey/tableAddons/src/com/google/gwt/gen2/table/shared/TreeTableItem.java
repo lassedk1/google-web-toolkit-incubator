@@ -26,6 +26,8 @@ public interface TreeTableItem extends IsSerializable {
   
   TreeTableItem getParent();
   
+  void setRow(int row);
+  
   int getRow();
   
   boolean hasChildren();

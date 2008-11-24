@@ -1,7 +1,8 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
-import com.google.gwt.gen2.table.shared.ColumnFilterInfo;
+import com.google.gwt.gen2.table.shared.NumberColumnFilterInfo;
+import com.google.gwt.gen2.table.shared.NumberColumnFilterInfo.Operator;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -11,16 +12,14 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
 
-
 public abstract class NumberColumnDefinition<RowType> extends
     AbstractColumnDefinition<RowType, Double> {
   /**
    * ColumnTextFilter filters columns containing numbers
    */
-  public static class NumberColumnFilter extends ColumnFilter {
-    private int operator = 0;
-    private String[] operatorButtonText = new String[] {
-        "=", "!=", "<", ">", ">-<"};
+  public static class NumberColumnFilter extends ColumnFilter<Double> {
+    private Operator operator;
+    private Operator[] supportedOperators;
 
     private NumberFormat numberFormat;
     private TextBox primaryNumberBox, secondaryNumberBox;
@@ -29,11 +28,17 @@ public abstract class NumberColumnDefinition<RowType> extends
 
     private ClickListener clickListener = new ClickListener() {
       public void onClick(Widget sender) {
-        operator++;
-        if (operator == NumberColumnFilterInfo.COUNT_OPERATORS) {
-          operator = 0;
+        for (int i = 0; i < supportedOperators.length; i++) {
+          if (operator == supportedOperators[i]) {
+            if (i < supportedOperators.length - 1) {
+              operator = supportedOperators[i + 1];
+            } else {
+              operator = supportedOperators[0];
+            }
+            break;
+          }
         }
-        if (operator == NumberColumnFilterInfo.BETWEEN) {
+        if (operator == Operator.BETWEEN) {
           secondaryNumberBox.setVisible(true);
           horizontalPanel.setCellWidth(primaryNumberBox, "50%");
           horizontalPanel.setCellWidth(secondaryNumberBox, "50%");
@@ -59,9 +64,12 @@ public abstract class NumberColumnDefinition<RowType> extends
 
     /**
      * Creates a filter suitable for filtering columns containing numbers
+     * @param supportedOperators 
      */
-    public NumberColumnFilter(NumberFormat numberFormat) {
+    public NumberColumnFilter(NumberFormat numberFormat, Operator[] supportedOperators) {
       this.numberFormat = numberFormat;
+      this.supportedOperators = supportedOperators;
+      this.operator = supportedOperators[0];
     }
 
     public Widget createFilterWidget() {
@@ -101,89 +109,15 @@ public abstract class NumberColumnDefinition<RowType> extends
         } catch (NumberFormatException e) {
         }
       }
-      fireColumnFilterChanged(new NumberColumnFilterInfo(numberFormat, getColumn(),
-          primaryNumber, secondaryNumber, operator));
+      fireColumnFilterChanged(new NumberColumnFilterInfo(numberFormat,
+          getColumn(), primaryNumber, secondaryNumber, operator));
     }
 
-    private void setButtonText(PushButton pushButton, int operator) {
-      pushButton.getUpFace().setText(operatorButtonText[operator]);
-      pushButton.getUpHoveringFace().setText(operatorButtonText[operator]);
-      pushButton.getDownFace().setText(operatorButtonText[operator]);
-    }
-  }
-
-  /**
-   * 
-   */
-  public static class NumberColumnFilterInfo extends ColumnFilterInfo<Double> {
-    public static final int EQUAL = 0;
-    public static final int NOT_EQUAL = 1;
-    public static final int LESS_THAN = 2;
-    public static final int GREATER_THAN = 3;
-    public static final int BETWEEN = 4;
-    public static final int COUNT_OPERATORS = 5;
-
-    private Double primaryNumber, secondaryNumber;
-    private int operator;
-    private transient NumberFormat numberFormat;
-
-    public NumberColumnFilterInfo(NumberFormat numberFormat) {
-      super();
-      this.numberFormat = numberFormat;
-    }
-
-    public NumberColumnFilterInfo(NumberFormat numberFormat, int column, Double primaryNumber,
-        Double secondaryNumber, int operator) {
-      super(column);
-      this.numberFormat = numberFormat;
-      this.primaryNumber = primaryNumber;
-      this.secondaryNumber = secondaryNumber;
-      this.operator = operator;
-    }
-
-    public int getOperator() {
-      return operator;
-    }
-
-    public double getPrimaryNumber() {
-      return primaryNumber;
-    }
-
-    public double getSecondaryNumber() {
-      return secondaryNumber;
-    }
-
-    public Double parse(String cellContent) {
-      try {
-        return numberFormat.parse(cellContent);
-      } catch (NumberFormatException e) {
-        return null;
-      }
-    }
-
-    public boolean isFilterMatching(Double value) {
-      // Empty filter will match everything
-      if (primaryNumber == null) {
-        return true;
-      }
-      if (operator == EQUAL) {
-        return value == primaryNumber;
-      } else if (operator == NOT_EQUAL) {
-        return value  != primaryNumber;
-      } else if (operator == LESS_THAN) {
-        return value  < primaryNumber;
-      } else if (operator == GREATER_THAN) {
-        return value  > primaryNumber;
-      } else if (operator == BETWEEN) {
-        return value >= primaryNumber
-            && value <= secondaryNumber;
-      }
-      return false;
-    }
-
-    public ColumnFilterInfo<Double> copy() {
-      return new NumberColumnFilterInfo(numberFormat, getColumn(), primaryNumber,
-          secondaryNumber, operator);
+    private void setButtonText(PushButton pushButton, Operator operator) {
+      pushButton.getUpFace().setText(operator.getSymbol());
+      pushButton.getUpHoveringFace().setText(operator.getSymbol());
+      pushButton.getDownFace().setText(operator.getSymbol());
+      pushButton.setTitle(operator.getTooltip());
     }
   }
 
@@ -224,7 +158,7 @@ public abstract class NumberColumnDefinition<RowType> extends
     private NumberFormat numberFormat;
 
     /**
-     * Construct a new {@link TextCellEditor} using a normal {@link TextBox}.
+     * Construct a new {@link TextCellEditor} using a normal {@link TextBox} .
      */
     public NumberCellEditor(NumberFormat numberFormat) {
       this(new TextBox(), numberFormat);
@@ -287,11 +221,35 @@ public abstract class NumberColumnDefinition<RowType> extends
 
   protected NumberFormat numberFormat;
 
-  public NumberColumnDefinition(NumberFormat numberFormat,
+  public NumberColumnDefinition(String header, NumberFormat numberFormat,
+      boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled) {
+    this(numberFormat, filterEnabled, supportedOperators, editingEnabled);
+    setHeader(header);
+  }
+
+  public NumberColumnDefinition(Widget headerWidget, NumberFormat numberFormat,
+      boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled) {
+    this(numberFormat, filterEnabled, supportedOperators, editingEnabled);
+    setHeaderWidget(headerWidget);
+  }
+
+  public NumberColumnDefinition(String header, NumberFormat numberFormat,
       boolean filterEnabled, boolean editingEnabled) {
+    this(numberFormat, filterEnabled, Operator.values(), editingEnabled);
+    setHeader(header);
+  }
+
+  public NumberColumnDefinition(Widget headerWidget, NumberFormat numberFormat,
+      boolean filterEnabled, boolean editingEnabled) {
+    this(numberFormat, filterEnabled, Operator.values(), editingEnabled);
+    setHeaderWidget(headerWidget);
+  }
+
+  public NumberColumnDefinition(NumberFormat numberFormat,
+      boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled) {
     this.numberFormat = numberFormat;
     if (filterEnabled) {
-      setColumnFilter(createNumberColumnFilter(numberFormat));
+      setColumnFilter(createNumberColumnFilter(numberFormat, supportedOperators));
     }
     setCellRenderer(createNumberCellRenderer(numberFormat));
     if (editingEnabled) {
@@ -326,7 +284,10 @@ public abstract class NumberColumnDefinition<RowType> extends
    * 
    * @return the created column filter suitable for filtering text columns
    */
-  protected ColumnFilter createNumberColumnFilter(NumberFormat numberFormat) {
-    return new NumberColumnFilter(numberFormat);
+  protected ColumnFilter<Double> createNumberColumnFilter(
+      NumberFormat numberFormat, Operator []supportedOperators) {
+    return new NumberColumnFilter(numberFormat, supportedOperators);
   }
+  
+  public void setCellValue(RowType rowValue, Double cellValue) {};
 }
