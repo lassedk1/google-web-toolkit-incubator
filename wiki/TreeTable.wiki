@@ -9,7 +9,7 @@
 The TreeTable is extending the gwt incubator table framework. The code currently exists in my branch. To check out the latest sources, type
 
 {{{
-svn checkout http://google-web-toolkit-incubator.googlecode.com/svn/branches/dflorey/tableAddons google-web-toolkit-incubator-with-treetable
+svn checkout http://google-web-toolkit-incubator.googlecode.com/svn/branches/dflorey/tableAddons gwt-incubator-tableaddons
 }}}
 
 A TreeTable is able to show a tree where each tree item can have some additional fields that shall be displayed. 
@@ -109,3 +109,47 @@ tableDefinition.addColumnDefinition(new DateColumnDefinition<Ancestor>(
   }
 });
 }}}
+
+You have to provide a column definition for each column. The column definition will tell the table if this column shall be sortable, filterable, editable and which header to display.
+There are already some column definition classes available for the most frequently used types. 
+If you define a column you will be asked to implement the proper getter method to enable the table to access the right field belonging to the column.
+If you define your column as editable you also have to implement the proper setter method.
+
+=== Create the TreeTable 
+
+Now we are ready to create the TreeTable:
+
+{{{
+TreeTable<Ancestor> treeTable = new TreeTable<Ancestor>(tableDefinition,
+    files, true);
+treeTable.setPageSize(12);
+treeTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
+}}}
+
+In our example we specify that the tree should be expanded by default by passing the optional boolean parameter set to true.
+
+=== Create the TreeTableController
+
+As we set our page size we get a paging tree table. To provide the tree table controls for paging and other features to the user we have to create a TreeTableController.
+
+{{{
+TreeTableController treeTableController = new TreeTableController(treeTable);
+}}}
+
+=== Putting it all together
+
+Finally we will wrap both elements into a DockPanel, but this is nothing TreeTable specific, just daily business:
+
+{{{
+treeTableController.setWidth("100%");
+treeTable.setSize("100%", "100%");
+DockPanel dockPanel = new DockPanel();
+dockPanel.setWidth("100%");
+dockPanel.setHeight("300px");
+dockPanel.add(treeTable, DockPanel.CENTER);
+dockPanel.setCellHeight(treeTable, "100%");
+dockPanel.setCellWidth(treeTable, "100%");
+dockPanel.add(treeTableController, DockPanel.SOUTH);
+}}}
+
+That's it. You'll find a link to the full demo source code and the working output at the top of this page.
