@@ -76,6 +76,36 @@ We have to implement the getDisplayName() method that should return a user frien
 
 If you have an existing class that you want to display in a TreeTable you can also implement the TreeTableItem interface directly of you can simply wrap your class into the TreeTableItemWrapper.
 
+=== Creating some sample data
+
+{{{
+private static String[] firstNames = {"Miguel", "Fred", "Bob", "Emily", "John", "Ray", "Bruce", "Ray", "Larry", "Sergey", "Bill", "Steve", "Daniel" };
+private static String[] lastNames = {"Mendez", "Sauer", "Vatwer", "Crutcher", "LaBanca", "Ryan", "Johnson", "Cromwell", "Page", "Bin", "Gates", "Jobs", "Florey" };
+
+List<TreeItem<Ancestor>> files = new ArrayList<TreeItem<Ancestor>>();
+for (int i = 0; i < 12; i++) {
+  TreeItem<Ancestor> ancestor = createAncestor();
+  addChildren(ancestor, Random.nextInt(3) + 1, 0);
+  files.add(ancestor);
+}
+
+private void addChildren(TreeItem<Ancestor> parent, int numberOfChildren, int level) {
+  for (int i = 0; i < numberOfChildren; i++) {
+    TreeItem<Ancestor> child = createAncestor();
+    parent.addChild(child);
+    if (level < 4) {
+      addChildren(child, Random.nextInt(4) + 1, level + 1);
+    }
+  }
+}
+}}}
+
+There is no magic in this part of the code. Create a types TreeItem containing your domain object for each tree item and add children to each tree node as desired.
+
+private TreeItem<Ancestor> createAncestor() {
+  return new TreeItem(new Ancestor(firstNames[Random.nextInt(firstNames.length-1)], lastNames[Random.nextInt(lastNames.length-1)], Random.nextInt(50)+80, new Date((long)Random.nextInt(1000000)*500000L)));
+}
+
 === Define the table ===
 
 You have to create a TableDefinition in order to tell the TreeTable which columns you want to display and what type of values they will contain.
