@@ -29,7 +29,6 @@ public class TreeTableDemo implements EntryPoint {
     private Date dateOfBirth;
 
     public Ancestor(String firstName, String lastName, int iq, Date dateOfBirth) {
-      super();
       this.firstName = firstName;
       this.lastName = lastName;
       this.iq = iq;
@@ -70,11 +69,11 @@ public class TreeTableDemo implements EntryPoint {
     DatePicker.injectDefaultCss();
 
     // Create some dummy data
-    List<TreeItem<Ancestor>> files = new ArrayList<TreeItem<Ancestor>>();
+    List<TreeItem<Ancestor>> rootItems = new ArrayList<TreeItem<Ancestor>>();
     for (int i = 0; i < 12; i++) {
       TreeItem<Ancestor> ancestor = createAncestor();
       addChildren(ancestor, Random.nextInt(3) + 1, 0);
-      files.add(ancestor);
+      rootItems.add(ancestor);
     }
     // Create table definition
     DefaultTableDefinition<Ancestor> tableDefinition = new DefaultTableDefinition<Ancestor>();
@@ -105,11 +104,9 @@ public class TreeTableDemo implements EntryPoint {
     });
 
     TreeTable<Ancestor> treeTable = new TreeTable<Ancestor>(tableDefinition,
-        files, true);
+        rootItems, true);
     treeTable.setPageSize(12);
     treeTable.setSortPolicy(SortPolicy.SINGLE_CELL);
-    treeTable.setWidth("100%");
-    treeTable.setHeight("100%");
     treeTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
     TreeTableController treeTableController = new TreeTableController(treeTable);
     treeTableController.setWidth("100%");
