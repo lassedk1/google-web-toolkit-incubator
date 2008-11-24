@@ -100,7 +100,10 @@ private void addChildren(TreeItem<Ancestor> parent, int numberOfChildren, int le
 }
 
 private TreeItem<Ancestor> createAncestor() {
-  return new TreeItem(new Ancestor(firstNames[Random.nextInt(firstNames.length-1)], lastNames[Random.nextInt(lastNames.length-1)], Random.nextInt(50)+80, new Date((long)Random.nextInt(1000000)*500000L)));
+  return new TreeItem(new Ancestor(firstNames[Random.nextInt(firstNames.length-1)],
+  lastNames[Random.nextInt(lastNames.length-1)], 
+  Random.nextInt(50)+80, 
+  new Date((long)Random.nextInt(1000000)*500000L)));
 }
 }}}
 
