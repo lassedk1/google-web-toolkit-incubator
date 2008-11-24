@@ -105,18 +105,18 @@ public class TreeTableDemo implements EntryPoint {
 
     TreeTable<Ancestor> treeTable = new TreeTable<Ancestor>(tableDefinition,
         rootItems, true);
-    treeTable.setPageSize(12);
+    treeTable.setPageSize(15);
     treeTable.setSortPolicy(SortPolicy.SINGLE_CELL);
     treeTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
     TreeTableController treeTableController = new TreeTableController(treeTable);
     treeTableController.setWidth("100%");
-    treeTable.setSize("100%", "100%");
+    treeTable.setSize("100%", "300px");
     DockPanel dockPanel = new DockPanel();
     dockPanel.setWidth("100%");
     dockPanel.setHeight("300px");
     dockPanel.add(treeTable, DockPanel.CENTER);
-    dockPanel.setCellHeight(treeTable, "100%");
     dockPanel.setCellWidth(treeTable, "100%");
+    dockPanel.setCellHeight(treeTable, "300px");
     dockPanel.add(treeTableController, DockPanel.SOUTH);
     RootPanel.get().add(dockPanel);
   }
