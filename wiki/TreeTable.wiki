@@ -76,7 +76,7 @@ We have to implement the getDisplayName() method that should return a user frien
 
 If you have an existing class that you want to display in a TreeTable you can also implement the TreeTableItem interface directly of you can simply wrap your class into the TreeTableItemWrapper.
 
-=== Creating some sample data
+=== Creating some sample data ===
 
 {{{
 private static String[] firstNames = {"Miguel", "Fred", "Bob", "Emily", "John", "Ray", "Bruce", "Ray", "Larry", "Sergey", "Bill", "Steve", "Daniel" };
@@ -145,7 +145,7 @@ There are already some column definition classes available for the most frequent
 If you define a column you will be asked to implement the proper getter method to enable the table to access the right field belonging to the column.
 If you define your column as editable you also have to implement the proper setter method.
 
-=== Create the TreeTable 
+=== Create the TreeTable ===
 
 Now we are ready to create the TreeTable:
 
@@ -166,7 +166,7 @@ As we set our page size we get a paging tree table. To provide the tree table co
 TreeTableController treeTableController = new TreeTableController(treeTable);
 }}}
 
-=== Putting it all together
+=== Putting it all together ===
 
 Finally we will wrap both elements into a DockPanel, but this is nothing TreeTable specific, just daily business:
 
