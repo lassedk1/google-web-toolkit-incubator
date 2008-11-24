@@ -25,7 +25,6 @@ import java.io.Serializable;
  *            the type of the wrapped object
  */
 public class TreeTableItemWrapper<T extends Serializable> implements TreeTableItem {
-	private static final long serialVersionUID = 1L;
 	private boolean children = false;
 	private TreeTableItem parent = null;
 	private int row;

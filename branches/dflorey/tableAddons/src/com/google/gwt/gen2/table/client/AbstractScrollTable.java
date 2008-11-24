@@ -31,6 +31,7 @@ import com.google.gwt.gen2.table.shared.ColumnSortList;
 import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
 import com.google.gwt.gen2.widgetbase.client.WidgetCss;
 import com.google.gwt.i18n.client.Constants;
+import com.google.gwt.i18n.client.Messages;
 import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.libideas.resources.client.ImageResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
@@ -502,21 +503,21 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     ImageResource headerBackground();
   }
 
-  public interface ScrollTableConstants extends Constants {
-    @DefaultStringValue("Shrink/Expand to fill visible area")
+  public interface ScrollTableMessages extends Messages {
+    @DefaultMessage("Shrink/Expand to fill visible area")
     String shrinkExpandTooltip();
   }
 
   public interface ScrollTableResources {
     ScrollTableStyle getStyle();
 
-    ScrollTableConstants getConstants();
+    ScrollTableMessages getConstants();
   }
 
   protected static class DefatulScrollTableResources implements
       ScrollTableResources {
     private ScrollTableStyle style;
-    private ScrollTableConstants constants;
+    private ScrollTableMessages constants;
 
     public ScrollTableStyle getStyle() {
       if (style == null) {
@@ -525,9 +526,9 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       return style;
     }
 
-    public ScrollTableConstants getConstants() {
+    public ScrollTableMessages getConstants() {
       if (constants == null) {
-        constants = ((ScrollTableConstants) GWT.create(ScrollTableConstants.class));
+        constants = ((ScrollTableMessages) GWT.create(ScrollTableMessages.class));
       }
       return constants;
     }
