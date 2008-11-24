@@ -16,6 +16,13 @@ A TreeTable is able to show a tree where each tree item can have some additional
 
 = Details =
 
+The !TreeTable is able to display extremely large trees as you can use paging. On source code level the !TreeTable extends !PagingScrollTable and inherits all the nice features like column specific sorting and filtering.
+If you display a large amount of data, you will end up with navigating to a page, where the root parent of your items may not be visible.
+The !TreeTable makes navigation handy by giving you shortcuts to all the parent items by simply clicking on the dotted lines referring to the parent node.
+The !TreeTable takes care of just passing the minimum of data when using server side tree data. 
+It will keep track of all opened / closed nodes by remembering the nodes the user clicked. So opening tree full tree is a extremely cheap operation.
+You can navigate between pages without loosing any information about opened or closed tree nodes.
+
 = Tutorial =
 
 The following short tutorials will guide you to create a working !TreeTable.
@@ -76,7 +83,7 @@ We have to implement the getDisplayName() method that should return a user frien
 
 If you have an existing class that you want to display in a TreeTable you can also implement the TreeTableItem interface directly of you can simply wrap your class into the TreeTableItemWrapper.
 
-=== Creating some sample data ===
+=== Create some sample data ===
 
 {{{
 private static String[] firstNames = {"Miguel", "Fred", "Bob" };
@@ -161,9 +168,9 @@ treeTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);
 
 In our example we specify that the tree should be expanded by default by passing the optional boolean parameter set to true.
 
-=== Create the TreeTableController ===
+=== Create the !TreeTableController ===
 
-As we set our page size we get a paging tree table. To provide the tree table controls for paging and other features to the user we have to create a TreeTableController.
+As we set our page size we get a paging tree table. To provide the tree table controls for paging and other features to the user we have to create a !TreeTableController.
 
 {{{
 TreeTableController treeTableController = new TreeTableController(treeTable);
@@ -171,7 +178,7 @@ TreeTableController treeTableController = new TreeTableController(treeTable);
 
 === Putting it all together ===
 
-Finally we will wrap both elements into a DockPanel, but this is nothing TreeTable specific, just daily business:
+Finally we will wrap both elements into a !DockPanel - this is nothing TreeTable specific, just daily business:
 
 {{{
 treeTableController.setWidth("100%");
