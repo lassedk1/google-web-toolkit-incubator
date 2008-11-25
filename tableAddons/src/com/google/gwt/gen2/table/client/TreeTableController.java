@@ -32,6 +32,12 @@ public class TreeTableController extends PagingOptions {
 
     @DefaultMessage("Close all tree nodes")
     String closeTree();
+
+    @DefaultMessage("Switch to table view")
+    String tableView();
+
+    @DefaultMessage("Switch to tree view")
+    String treeView();
   }
 
   /**
@@ -46,6 +52,12 @@ public class TreeTableController extends PagingOptions {
 
     @Resource("openTree.png")
     ImageResource openTree();
+
+    @Resource("treeView.png")
+    ImageResource treeView();
+
+    @Resource("tableView.png")
+    ImageResource tableView();
 
     @Resource("headerBackground.png")
     @ImageOptions(repeatStyle = RepeatStyle.Horizontal)
@@ -73,10 +85,9 @@ public class TreeTableController extends PagingOptions {
   }
 
   private TreeTable<?> treeTable;
-  private Image toggleTreeImage;
-  private PushButton toggleTreeButton;
+  private Image toggleTreeImage, flattenTreeImage;
+  private PushButton toggleTreeButton, flattenTreeButton;
   private TreeTableControllerResources resources;
-
 
   public TreeTableController(TreeTable<?> treeTable) {
     this(treeTable, new DefaultTreeTableControllerResources());
@@ -87,24 +98,37 @@ public class TreeTableController extends PagingOptions {
     super(treeTable, resources);
     this.treeTable = treeTable;
     this.resources = resources;
+    flattenTreeImage = createImage(resources.getStyle().tableView());
+    flattenTreeButton = new PushButton(flattenTreeImage);
+    getButtonPanel().insert(flattenTreeButton, 0);
     toggleTreeImage = createImage(resources.getStyle().closeTree());
     toggleTreeButton = new PushButton(toggleTreeImage);
     getButtonPanel().insert(toggleTreeButton, 0);
-    getButtonPanel().getWidget(3).setVisible(false);
-    getButtonPanel().getWidget(3).setVisible(false);
     ClickListener listener = new ClickListener() {
       public void onClick(Widget sender) {
-        TreeTableController.this.treeTable.setTreeOpen(!TreeTableController.this.treeTable.isTreeOpen());
+        if (sender == toggleTreeButton) {
+          TreeTableController.this.treeTable.setTreeOpen(!TreeTableController.this.treeTable.isTreeOpen());
+        } else if (sender == flattenTreeButton) {
+          TreeTableController.this.treeTable.setFlattened(!TreeTableController.this.treeTable.isFlattened());
+          updateButtonState();
+        }
       }
     };
     toggleTreeButton.addClickListener(listener);
-
+    flattenTreeButton.addClickListener(listener);
     updateButtonState();
   }
 
   @Override
   protected void updateButtonState() {
     super.updateButtonState();
+    if (treeTable.isFlattened()) {
+      applyImage(flattenTreeImage, resources.getStyle().treeView());
+      flattenTreeButton.setTitle(resources.getMessages().treeView());
+    } else {
+      applyImage(flattenTreeImage, resources.getStyle().tableView());
+      flattenTreeButton.setTitle(resources.getMessages().tableView());
+    }
     if (treeTable.isTreeOpen()) {
       applyImage(toggleTreeImage, resources.getStyle().closeTree());
       toggleTreeButton.setTitle(resources.getMessages().closeTree());
@@ -112,6 +136,5 @@ public class TreeTableController extends PagingOptions {
       applyImage(toggleTreeImage, resources.getStyle().openTree());
       toggleTreeButton.setTitle(resources.getMessages().openTree());
     }
-
   }
 }
