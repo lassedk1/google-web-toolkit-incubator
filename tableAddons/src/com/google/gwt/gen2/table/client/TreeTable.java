@@ -50,7 +50,6 @@ import java.util.Set;
  */
 public class TreeTable<RowType extends TreeTableItem> extends PagingScrollTable<RowType> {
 	static class ClientTreeTableModel<RowType extends TreeTableItem> extends TreeTableModel<RowType> {
-
 		class TreeItemComparator implements Comparator<TreeItem<RowType>> {
 			private final ColumnDefinition<RowType, ?> columnDefinition;
 			private final boolean ascending;
@@ -64,7 +63,7 @@ public class TreeTable<RowType extends TreeTableItem> extends PagingScrollTable<
 				return ((Comparable) columnDefinition.getCellValue(o1.getTreeTableItem())).compareTo(columnDefinition.getCellValue(o2.getTreeTableItem()))
 						* (ascending ? 1 : -1);
 			}
-		}
+ 	 	}
 
 		private List<TreeItem<RowType>> rootItems = new ArrayList<TreeItem<RowType>>();
 		private final TableDefinition<RowType> tableDefinition;

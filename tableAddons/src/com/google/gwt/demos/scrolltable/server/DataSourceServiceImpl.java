@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Implementation of {@link DataSourceService}.
+ * Implementation of {@link RemoteTableService}.
  */
 public class DataSourceServiceImpl extends RemoteServiceServlet implements
     DataSourceService {

@@ -59,7 +59,7 @@ public class GwtCompilerTask extends Task {
         if (new File(moduleFile).exists()) {
           moduleName = convertModuleFileToName(srcDir, moduleFile);
         } else {
-          throw new BuildException("File not found: " + moduleFile);
+          throw new BuildException("FileTreeTableItem not found: " + moduleFile);
         }
       }
     }

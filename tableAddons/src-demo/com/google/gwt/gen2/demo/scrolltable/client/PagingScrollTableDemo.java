@@ -73,9 +73,9 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   private StudentPagingScrollTable pagingScrollTable = null;
 
   /**
-   * The {@link DataSourceTableModel}.
+   * The {@link RemoteStudentTableModel}.
    */
-  private DataSourceTableModel tableModel = null;
+  private RemoteStudentTableModel tableModel = null;
 
   /**
    * The {@link DefaultTableDefinition}.
@@ -106,7 +106,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   /**
    * @return the table model
    */
-  public DataSourceTableModel getTableModel() {
+  public RemoteStudentTableModel getTableModel() {
     return tableModel;
   }
 
@@ -145,7 +145,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       FixedWidthFlexTable headerTable, FixedWidthGrid dataTable,
       FixedWidthFlexTable footerTable) {
     // Setup the controller
-    tableModel = new DataSourceTableModel();
+    tableModel = new RemoteStudentTableModel();
     cachedTableModel = new CachedTableModel<Student>(tableModel);
     cachedTableModel.setPreCachedRowCount(50);
     cachedTableModel.setPostCachedRowCount(50);

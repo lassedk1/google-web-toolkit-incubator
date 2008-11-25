@@ -15,15 +15,21 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client;
 
+import com.google.gwt.gen2.demo.scrolltable.shared.FileTreeTableItem;
 import com.google.gwt.gen2.demo.scrolltable.shared.Student;
 import com.google.gwt.gen2.table.shared.Request;
 import com.google.gwt.gen2.table.shared.SerializableResponse;
+import com.google.gwt.gen2.table.shared.TreeRequest;
 import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
  * A {@link RemoteService} to retrieve row data for the
  * {@link PagingScrollTableDemo}.
  */
-public interface DataSourceService extends RemoteService {
+@RemoteServiceRelativePath("datasource")
+public interface RemoteTableService extends RemoteService {
   SerializableResponse<Student> requestRows(Request request);
+  
+  SerializableResponse<FileTreeTableItem> requestTreeItems(TreeRequest request);
 }

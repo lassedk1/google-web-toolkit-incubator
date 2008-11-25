@@ -22,7 +22,7 @@ import com.google.gwt.widgetideas.table.client.TableModelHelper.SerializableResp
 import java.io.Serializable;
 
 /**
- * Asynchronous version of {@link DataSourceService}.
+ * Asynchronous version of {@link RemoteTableService}.
  */
 public interface DataSourceServiceAsync {
   void requestRows(Request request,
