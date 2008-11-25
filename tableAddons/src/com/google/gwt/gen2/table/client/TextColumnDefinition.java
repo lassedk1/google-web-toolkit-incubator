@@ -39,11 +39,15 @@ public abstract class TextColumnDefinition<RowType> extends
       }
     };
 
+    /**
+     * Creates a filter suitable for filtering columns containing text
+     */
+    public TextColumnFilter() {
+      this(Operator.values());
+    }
 
     /**
      * Creates a filter suitable for filtering columns containing text
-     * 
-     * @param column the column to be filtered
      */
     public TextColumnFilter(Operator[] supportedOperators) {
       this.operator = supportedOperators[0];
