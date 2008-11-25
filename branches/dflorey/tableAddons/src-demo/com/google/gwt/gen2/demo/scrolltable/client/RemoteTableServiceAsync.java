@@ -15,15 +15,20 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client;
 
+import com.google.gwt.gen2.demo.scrolltable.shared.FileTreeTableItem;
 import com.google.gwt.gen2.demo.scrolltable.shared.Student;
 import com.google.gwt.gen2.table.shared.Request;
 import com.google.gwt.gen2.table.shared.SerializableResponse;
+import com.google.gwt.gen2.table.shared.TreeRequest;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * Asynchronous version of {@link DataSourceService}.
+ * Asynchronous version of {@link RemoteTableService}.
  */
-public interface DataSourceServiceAsync {
+public interface RemoteTableServiceAsync {
   void requestRows(Request request,
       AsyncCallback<SerializableResponse<Student>> callback);
+
+  void requestTreeItems(TreeRequest request,
+      AsyncCallback<SerializableResponse<FileTreeTableItem>> asyncCallback);
 }

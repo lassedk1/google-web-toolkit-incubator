@@ -1,10 +1,12 @@
 package com.google.gwt.gen2.demo.scrolltable.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.datepicker.client.DatePicker;
 import com.google.gwt.gen2.table.client.DateColumnDefinition;
 import com.google.gwt.gen2.table.client.DefaultTableDefinition;
 import com.google.gwt.gen2.table.client.NumberColumnDefinition;
+import com.google.gwt.gen2.table.client.RemoteTreeTable;
 import com.google.gwt.gen2.table.client.ScrollTable;
 import com.google.gwt.gen2.table.client.TextColumnDefinition;
 import com.google.gwt.gen2.table.client.TreeItem;
@@ -12,18 +14,23 @@ import com.google.gwt.gen2.table.client.TreeTable;
 import com.google.gwt.gen2.table.client.TreeTableController;
 import com.google.gwt.gen2.table.client.AbstractScrollTable.SortPolicy;
 import com.google.gwt.gen2.table.shared.AbstractTreeTableItem;
+import com.google.gwt.gen2.table.shared.SerializableResponse;
+import com.google.gwt.gen2.table.shared.TreeRequest;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Random;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class TreeTableDemo implements EntryPoint {
-  static class Ancestor extends AbstractTreeTableItem {
+  class Ancestor extends AbstractTreeTableItem {
     private String firstName, lastName;
     private double iq;
     private Date dateOfBirth;
@@ -53,28 +60,33 @@ public class TreeTableDemo implements EntryPoint {
 
     @Override
     public String getDisplayName() {
-      return firstName+" "+lastName;
+      return firstName + " " + lastName;
     }
 
     @Override
     public String getId() {
-      return firstName+lastName+dateOfBirth;
+      return firstName + lastName + dateOfBirth;
     }
   }
 
-  private static String[] firstNames = {"Miguel", "Fred", "Bob", "Emily", "John", "Ray", "Bruce", "Ray", "Larry", "Sergey", "Bill", "Steve", "Daniel" };
-  private static String[] lastNames = {"Mendez", "Sauer", "Vatwer", "Crutcher", "LaBanca", "Ryan", "Johnson", "Cromwell", "Page", "Bin", "Gates", "Jobs", "Florey" };
-  
+  private static String[] firstNames = {
+      "Miguel", "Fred", "Bob", "Emily", "John", "Ray", "Bruce", "Ray", "Larry",
+      "Sergey", "Bill", "Steve", "Daniel"};
+  private static String[] lastNames = {
+      "Mendez", "Sauer", "Vatwer", "Crutcher", "LaBanca", "Ryan", "Johnson",
+      "Cromwell", "Page", "Bin", "Gates", "Jobs", "Florey"};
+
   public void onModuleLoad() {
     DatePicker.injectDefaultCss();
 
-    // Create some dummy data
+    // Create some dummy data for client side table model
     List<TreeItem<Ancestor>> rootItems = new ArrayList<TreeItem<Ancestor>>();
     for (int i = 0; i < 12; i++) {
       TreeItem<Ancestor> ancestor = createAncestor();
       addChildren(ancestor, Random.nextInt(3) + 1, 0);
       rootItems.add(ancestor);
     }
+
     // Create table definition
     DefaultTableDefinition<Ancestor> tableDefinition = new DefaultTableDefinition<Ancestor>();
     tableDefinition.addColumnDefinition(new TextColumnDefinition<Ancestor>(
@@ -103,6 +115,7 @@ public class TreeTableDemo implements EntryPoint {
       }
     });
 
+    // Create client tree table
     TreeTable<Ancestor> treeTable = new TreeTable<Ancestor>(tableDefinition,
         rootItems, true);
     treeTable.setPageSize(15);
@@ -133,6 +146,10 @@ public class TreeTableDemo implements EntryPoint {
   }
 
   private TreeItem<Ancestor> createAncestor() {
-    return new TreeItem(new Ancestor(firstNames[Random.nextInt(firstNames.length-1)], lastNames[Random.nextInt(lastNames.length-1)], Random.nextInt(50)+80, new Date((long)Random.nextInt(1000000)*500000L)));
+    return new TreeItem<Ancestor>(new Ancestor(
+        firstNames[Random.nextInt(firstNames.length - 1)],
+        lastNames[Random.nextInt(lastNames.length - 1)],
+        Random.nextInt(50) + 80, new Date(
+            (long) Random.nextInt(1000000) * 500000L)));
   }
 }

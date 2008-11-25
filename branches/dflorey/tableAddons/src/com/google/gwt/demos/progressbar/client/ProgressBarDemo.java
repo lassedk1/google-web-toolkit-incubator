@@ -54,7 +54,7 @@ public class ProgressBarDemo implements EntryPoint {
     protected String generateText(double curProgress) {
       if (useCustomText) {
         if (getPercent() >= 1.0) {
-          return "File Uploaded";
+          return "FileTreeTableItem Uploaded";
         } else {
           return kb2s(curProgress) + " out of " + kb2s(getMaxProgress()) + "("
               + super.generateText(curProgress) + ") uploaded";

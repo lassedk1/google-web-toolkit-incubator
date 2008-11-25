@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * An iterator that serves as the data source for TableOracle requests.
  */
-public class DataSourceTableModel extends MutableTableModel<Student> {
+public class RemoteStudentTableModel extends MutableTableModel<Student> {
   /**
    * The source of the data.
    */
@@ -44,7 +44,7 @@ public class DataSourceTableModel extends MutableTableModel<Student> {
   /**
    * The RPC service used to generate data, if RPC mode is enabled.
    */
-  private DataSourceServiceAsync dataService = null;
+  private RemoteTableServiceAsync dataService = null;
 
   /**
    * A boolean indicating that we should throw an error.
@@ -105,10 +105,7 @@ public class DataSourceTableModel extends MutableTableModel<Student> {
     } else if (rpcMode) {
       // Create the service if needed
       if (dataService == null) {
-        dataService = GWT.create(DataSourceService.class);
-        ServiceDefTarget endpoint = (ServiceDefTarget) dataService;
-        String moduleRelativeURL = GWT.getModuleBaseURL() + "datasource";
-        endpoint.setServiceEntryPoint(moduleRelativeURL);
+        dataService = GWT.create(RemoteTableService.class);
       }
 
       // Send RPC request for data

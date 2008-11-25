@@ -15,5 +15,5 @@
   <stylesheet src='ScrollTableDemo.css'/>
   
   <!-- Define the RPC service -->
-  <servlet path="/datasource" class="com.google.gwt.gen2.demo.scrolltable.server.DataSourceServiceImpl"/>
+  <servlet path="/datasource" class="com.google.gwt.gen2.demo.scrolltable.server.RemoteTableServiceImpl"/>
 </module>

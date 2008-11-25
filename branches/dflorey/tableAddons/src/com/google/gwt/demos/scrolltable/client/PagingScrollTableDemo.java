@@ -97,7 +97,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   protected static CachedTableModel<Serializable> cachedTableModel = null;
 
   /**
-   * The {@link DataSourceTableModel}.
+   * The {@link RemoteStudentTableModel}.
    */
   protected static DataSourceTableModel tableModel = null;
 
