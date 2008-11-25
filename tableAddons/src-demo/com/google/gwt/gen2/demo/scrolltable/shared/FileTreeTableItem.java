@@ -1,16 +1,13 @@
 package com.google.gwt.gen2.demo.scrolltable.shared;
 
-import com.google.gwt.gen2.table.shared.TreeTableItem;
+import com.google.gwt.gen2.table.shared.AbstractTreeTableItem;
 
 import java.util.Date;
 
-public class FileTreeTableItem implements TreeTableItem {
+public class FileTreeTableItem extends AbstractTreeTableItem {
   private String path, name;
   private Double size;
   private Date lastModified;
-  private FileTreeTableItem parent;
-  private int row;
-  private boolean hasChildren;
   
   public FileTreeTableItem() {}
   
@@ -43,29 +40,5 @@ public class FileTreeTableItem implements TreeTableItem {
 
   public String getId() {
     return path;
-  }
-
-  public void setParent(FileTreeTableItem parent) {
-    this.parent = parent;
-  }
-
-  public TreeTableItem getParent() {
-    return parent;
-  }
-
-  public void setRow(int row) {
-    this.row = row;
-  }
-
-  public int getRow() {
-    return row;
-  }
-
-  public void setChildren(boolean hasChildren) {
-    this.hasChildren = hasChildren;
-  }
-  
-  public boolean hasChildren() {
-    return hasChildren;
   }
 }

@@ -40,6 +40,9 @@ import java.util.Set;
  */
 public class RemoteTableServiceImpl extends RemoteServiceServlet implements
     RemoteTableService {
+  /**
+   * Comparator is used for proper tree sorting
+   */
   class FileComparator implements Comparator<File> {
     private final ColumnSortInfo sortInfo;
 
@@ -98,6 +101,9 @@ public class RemoteTableServiceImpl extends RemoteServiceServlet implements
     return new SerializableResponse<Student>(data.generateStudents(numRows));
   }
 
+  /* 
+   * This method will be invoked when the RemoteTreeTable request the data of a single page
+   */
   public SerializableResponse<FileTreeTableItem> requestTreeItems(TreeRequest request) {
     try {
       int startRow = request.getStartRow();
