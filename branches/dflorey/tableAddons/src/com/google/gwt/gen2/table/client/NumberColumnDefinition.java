@@ -66,6 +66,13 @@ public abstract class NumberColumnDefinition<RowType> extends
      * Creates a filter suitable for filtering columns containing numbers
      * @param supportedOperators 
      */
+    public NumberColumnFilter(NumberFormat numberFormat) {
+      this(numberFormat, Operator.values());
+    }
+    /**
+     * Creates a filter suitable for filtering columns containing numbers
+     * @param supportedOperators 
+     */
     public NumberColumnFilter(NumberFormat numberFormat, Operator[] supportedOperators) {
       this.numberFormat = numberFormat;
       this.supportedOperators = supportedOperators;

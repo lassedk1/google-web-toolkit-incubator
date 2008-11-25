@@ -75,6 +75,15 @@ public abstract class DateColumnDefinition<RowType> extends
      * @param dateTimeFormat the dateTimeFormat used for the formatting of the
      *          filter text
      */
+    public DateColumnFilter(DateTimeFormat dateTimeFormat) {
+      this(dateTimeFormat, Operator.values());
+    }
+    /**
+     * Creates a filter suitable for filtering columns containing dates
+     * 
+     * @param dateTimeFormat the dateTimeFormat used for the formatting of the
+     *          filter text
+     */
     public DateColumnFilter(DateTimeFormat dateTimeFormat,
         Operator[] supportedOperators) {
       this.dateTimeFormat = dateTimeFormat;
