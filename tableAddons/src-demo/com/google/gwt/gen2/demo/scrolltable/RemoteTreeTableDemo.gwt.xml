@@ -10,7 +10,7 @@
   <source path='shared'/>
 
   <!-- Specify the app entry point class.                   -->
-  <entry-point class='com.google.gwt.gen2.demo.scrolltable.client.TreeTableDemo'/>
+  <entry-point class='com.google.gwt.gen2.demo.scrolltable.client.RemoteTreeTableDemo'/>
   
   <!-- Define the RPC service -->
   <servlet path="/datasource" class="com.google.gwt.gen2.demo.scrolltable.server.RemoteTableServiceImpl"/>
