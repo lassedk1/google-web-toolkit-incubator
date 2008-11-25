@@ -6,24 +6,22 @@
 || Source starting point|| [http://google-web-toolkit-incubator.googlecode.com/svn/branches/dflorey/tableAddons/src/com/google/gwt/gen2/table/client/TreeTable.java TreeTable.java] ||
 
 = Introduction =
-The TreeTable is extending the gwt incubator table framework. The code currently exists in my branch. To check out the latest sources, type
+A !TreeTable is able to show a tree where each tree item can have some additional fields that shall be displayed. 
+The !TreeTable is extending the gwt incubator table framework. The code currently exists in my branch. To check out the latest sources, type
 
 {{{
 svn checkout http://google-web-toolkit-incubator.googlecode.com/svn/branches/dflorey/tableAddons gwt-incubator-tableaddons
 }}}
 
-A TreeTable is able to show a tree where each tree item can have some additional fields that shall be displayed. 
-
 = Details =
 
 The !TreeTable is able to display extremely large trees as you can use paging. On source code level the !TreeTable extends !PagingScrollTable and inherits all the nice features like column specific sorting and filtering.
+
 If you display a large amount of data, you will end up with navigating to a page, where the root parent of your items may not be visible.
 The !TreeTable makes navigation handy by giving you shortcuts to all the parent items by simply clicking on the dotted lines referring to the parent node.
-The !TreeTable takes care of just passing the minimum of data when using server side tree data. 
-It will keep track of all opened / closed nodes by remembering the nodes the user clicked. So opening tree full tree is a extremely cheap operation.
 You can navigate between pages without loosing any information about opened or closed tree nodes.
 
-= Tutorial =
+= Tutorials =
 
 The following short tutorials will guide you to create a working !TreeTable.
 The !TreeTable can be used to display data constructed on client side (in the browser) or to display large trees coming from the server.
@@ -193,3 +191,254 @@ dockPanel.add(treeTableController, DockPanel.SOUTH);
 }}}
 
 That's it. You'll find a link to the full demo source code and the working output at the top of this page.
+
+== Server side !TreeTable ==
+
+If you want to display large trees in a !TreeTable you typically have the data on the server side and you just want to pass the visible tree nodes to the client.
+
+The !TreeTable takes care of passing only the required data when using server side tree data. It will keep track of all opened / closed nodes by remembering the nodes the user clicked. So opening all tree nodes is an extremely cheap operation.
+
+The client side code is a little bit different from the previous example, as we don't have to create sample data etc.
+
+Let's assume we want to use the !TreeTable to browse a filesystem.
+
+=== Create the domain class ===
+
+Again we start with creating a class representing the objects in our tree:
+
+{{{
+public class FileTreeTableItem extends AbstractTreeTableItem {
+  private String path, name;
+  private Double size;
+  private Date lastModified;
+  
+  public FileTreeTableItem() {}
+  
+  public FileTreeTableItem(String path, String name, Double size, Date lastModified) {
+    this.path = path;
+    this.name = name;
+    this.size = size;
+    this.lastModified = lastModified;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public Double getSize() {
+    return size;
+  }
+
+  public Date getLastModified() {
+    return lastModified;
+  }
+
+  public String getDisplayName() {
+    return name;
+  }
+
+  public String getId() {
+    return path;
+  }
+}
+}}}
+
+We can use the file path as the unique id for our tree items.
+
+=== Define the table ===
+
+You have to create a TableDefinition in order to tell the TreeTable which columns you want to display and what type of values they will contain.
+The easiest way is to use the DefaultTableDefinition class:
+
+{{{
+DefaultTableDefinition<FileTreeTableItem> tableDefinition = new DefaultTableDefinition<FileTreeTableItem>();
+tableDefinition.addColumnDefinition(new TextColumnDefinition<FileTreeTableItem>(
+    "Filename", true, false) {
+  public String getCellValue(FileTreeTableItem file) {
+    return file.getName();
+  }
+});
+tableDefinition.addColumnDefinition(new NumberColumnDefinition<FileTreeTableItem>(
+    "Size", NumberFormat.getDecimalFormat(), true, false) {
+  public Double getCellValue(FileTreeTableItem file) {
+    return file.getSize();
+  }
+});
+tableDefinition.addColumnDefinition(new DateColumnDefinition<FileTreeTableItem>(
+    "Last modified", DateTimeFormat.getMediumDateFormat(), true, true,
+    false) {
+  public Date getCellValue(FileTreeTableItem file) {
+    return file.getLastModified();
+  }
+});
+}}}
+
+We use static header names in our example, in real life it would be better to pass a localized message (see gwt i18n concepts).
+
+== Creating a !RemoteTreeTable ==
+
+Up to this part, everything looked exactly as in the previous example.
+Now we want to create the tree data on the server side instead of creating the full tree on the client.
+
+We can use the !RemoteTreeTable to setup such a table easily:
+
+{{{
+TreeTable<FileTreeTableItem> remoteTreeTable = new RemoteTreeTable<FileTreeTableItem>(
+    tableDefinition, true) {
+  RemoteTableServiceAsync remoteTableService = GWT.create(RemoteTableService.class);
+  @Override
+  protected void requestTreeItems(TreeRequest request,
+      AsyncCallback<SerializableResponse<FileTreeTableItem>> callback) {
+    remoteTableService.requestTreeItems(request, callback);
+  }
+};
+}}}
+
+When creating a !RemoteTreeTable you have to implement the requestTreeItems method in order to tell the table which service to call to retrieve the tree items.
+In our example we construct the !RemoteTableService and call the requestTreeItems method on it to get the data.
+
+== Implementing the server side logic ==
+
+Up to this point everything looked very simple, even simpler than in the previous example. This is because the complicated logic to construct the tree will be done on the server side.
+
+As the source of the data may differ, I will not pay too much attention on the server side code. We'll just have a quick look at the code that is grabbing the data from the filesystem and passes it back to the client:
+
+{{{
+public class RemoteTableServiceImpl extends RemoteServiceServlet implements
+    RemoteTableService {
+  /**
+   * Comparator is used for proper tree sorting
+   */
+  class FileComparator implements Comparator<File> {
+    private final ColumnSortInfo sortInfo;
+
+    public FileComparator(ColumnSortInfo sortInfo) {
+      this.sortInfo = sortInfo;
+    }
+
+    public int compare(File file1, File file2) {
+      int result = 0;
+      if (sortInfo.getColumn() == 0) {
+        String name1 = file1.getName();
+        if (name1.length() == 0) {
+          name1 = file1.getAbsolutePath();
+        }
+        String name2 = file1.getName();
+        if (name2.length() == 0) {
+          name2 = file2.getAbsolutePath();
+        }
+        result = name1.compareTo(name2);
+      } else if (sortInfo.getColumn() == 1) {
+        result = Long.valueOf(file1.length()).compareTo(
+            Long.valueOf(file2.length()));
+      } else if (sortInfo.getColumn() == 2) {
+        result = new Date(file1.lastModified()).compareTo(new Date(
+            file2.lastModified()));
+      }
+      return result * (sortInfo.isAscending() ? 1 : -1);
+    }
+  }
+
+  /* 
+   * This method will be invoked when the RemoteTreeTable request a page of data
+   */
+  public SerializableResponse<FileTreeTableItem> requestTreeItems(TreeRequest request) {
+    try {
+      int startRow = request.getStartRow();
+      int numRows = request.getNumRows();
+      Set<String> invertedNodes = request.getInvertedNodes();
+      boolean open = request.isOpen();
+
+      ColumnSortList columnSortList = request.getColumnSortList();
+      ColumnSortInfo columnSortInfo = columnSortList.getPrimaryColumnSortInfo();
+      FileComparator comparator = null;
+      File[] roots = File.listRoots();
+      if (columnSortInfo != null) {
+        comparator = new FileComparator(columnSortInfo);
+        Arrays.sort(roots, comparator);
+      }
+      List<FileTreeTableItem> fileTreeItems = new ArrayList<FileTreeTableItem>();
+      int row = 0;
+      for (File root : roots) {
+        FileTreeTableItem fileTreeItem = createFileTreeItem(root);
+        fileTreeItem.setChildren(false);
+        fileTreeItem.setParent(null);
+        fileTreeItem.setRow(row);
+        if (row >= startRow && row < startRow + numRows) {
+          fileTreeItems.add(fileTreeItem);
+        }
+        row++;
+        if (row == startRow + numRows) {
+          break;
+        }
+        row = addChildren(fileTreeItems, fileTreeItem, root, row, startRow,
+            numRows, invertedNodes, open, comparator);
+      }
+      return new SerializableResponse<FileTreeTableItem>(fileTreeItems, row);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  private boolean isNodeOpen(String id, Set<String> invertedNodes, boolean open) {
+    if (invertedNodes.contains(id)) {
+      return !open;
+    } else {
+      return open;
+    }
+  }
+
+  private int addChildren(List<FileTreeTableItem> fileTreeItems,
+      FileTreeTableItem parentTreeItem, File parentFile, int row, int startRow,
+      int numRows, Set<String> invertedNodes, boolean open,
+      FileComparator comparator) {
+    if (parentFile.isDirectory()) {
+      File[] children = parentFile.listFiles();
+      if (children != null) {
+        if (comparator != null) {
+          Arrays.sort(children, comparator);
+        }
+        if (children.length > 0) {
+          parentTreeItem.setChildren(true);
+          if (isNodeOpen(parentTreeItem.getId(), invertedNodes, open)) {
+            for (File childFile : children) {
+              FileTreeTableItem childTreeItem = createFileTreeItem(childFile);
+              childTreeItem.setParent(parentTreeItem);
+              childTreeItem.setRow(row);
+              if (row >= startRow && row <= startRow + numRows) {
+                fileTreeItems.add(childTreeItem);
+              }
+              row++;
+              if (row >= startRow + numRows) {
+                return row;
+              }
+              row = addChildren(fileTreeItems, childTreeItem, childFile, row,
+                  startRow, numRows, invertedNodes, open, comparator);
+            }
+          }
+        }
+      } else {
+        parentTreeItem.setChildren(false);
+      }
+    }
+    return row;
+  }
+
+  private FileTreeTableItem createFileTreeItem(File root) {
+    String name = root.getName();
+    double size = root.length();
+    if (name.length() == 0) {
+      name = root.getAbsolutePath();
+    }
+    return new FileTreeTableItem(root.getAbsolutePath(), name, size, new Date(
+        root.lastModified()));
+  }
+}
+}}}
+
+You can find the working example in the src-demo folder.
