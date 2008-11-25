@@ -220,11 +220,11 @@ function com_google_gwt_gen2_demo_scrolltable_TreeTableDemo(){
   }
    else {
     try {
-      unflattenKeylistIntoAnswers(['ie6'], '2DFD51CD1F2337F611F8BB18296B6B16.cache.html');
-      unflattenKeylistIntoAnswers(['opera'], '57DAA5C0F760216EF7B733932DEEC625.cache.html');
-      unflattenKeylistIntoAnswers(['gecko'], '6A1E118FE25C0E176A384380E228ED55.cache.html');
-      unflattenKeylistIntoAnswers(['safari'], 'EC4C0AEE21701F3B1C6AC680A0050F25.cache.html');
-      unflattenKeylistIntoAnswers(['gecko1_8'], '850A28E273626ED415A3A26FC2FEDCD2.cache.html');
+      unflattenKeylistIntoAnswers(['ie6'], '80F86B70F72E62364897A427E1CD5C37.cache.html');
+      unflattenKeylistIntoAnswers(['opera'], 'C3D753A1E9CC33D61AE7E6172D25FFCC.cache.html');
+      unflattenKeylistIntoAnswers(['gecko'], '75F5002E34F0C67E6D2C97FBBC55B8C1.cache.html');
+      unflattenKeylistIntoAnswers(['safari'], '1B32A3825900BF19FE44EF5643A3B0B9.cache.html');
+      unflattenKeylistIntoAnswers(['gecko1_8'], '4F0BE4681C669596693E365098D9555A.cache.html');
       strongName = answers[computePropValue('user.agent')];
     }
      catch (e) {
