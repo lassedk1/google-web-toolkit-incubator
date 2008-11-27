@@ -117,7 +117,10 @@ There is no magic in this part of the code. Create a types TreeItem containing y
 === Define the table ===
 
 You have to create a TableDefinition in order to tell the TreeTable which columns you want to display and what type of values they will contain.
-The easiest way is to use the DefaultTableDefinition class:
+
+== Defining the table programmatically ==
+
+You have two options how to do that. Let's first have a look at the classic approach using the the DefaultTableDefinition class:
 
 {{{
 DefaultTableDefinition<Ancestor> tableDefinition = new DefaultTableDefinition<Ancestor>();
@@ -153,9 +156,67 @@ There are already some column definition classes available for the most frequent
 If you define a column you will be asked to implement the proper getter method to enable the table to access the right field belonging to the column.
 If you define your column as editable you also have to implement the proper setter method.
 
+== Defining the table using annotations ==
+
+You can also use an annotation based approach to define you table. To do so you have to let your domain class implement the !RowValue interface and add annotations to the getter methods that you want to expose to the table:
+
+{{{
+class Ancestor extends AbstractTreeTableItem implements RowValue {
+    private String firstName, lastName;
+    private double iq;
+    private Date dateOfBirth;
+
+    public Ancestor(String firstName, String lastName, int iq, Date dateOfBirth) {
+      this.firstName = firstName;
+      this.lastName = lastName;
+      this.iq = iq;
+      this.dateOfBirth = dateOfBirth;
+    }
+
+    @ColumnDefinition(column = 0, header = "First name", sortable = true, filterable = false)
+    public String getFirstName() {
+      return firstName;
+    }
+
+    @ColumnDefinition(column = 1, header = "Last name")
+    public String getLastName() {
+      return lastName;
+    }
+
+    @ColumnDefinition(column = 2, header = "IQ", numberFormat = NumberColumnFormat.DECIMAL_FORMAT)
+    public double getIq() {
+      return iq;
+    }
+
+    @ColumnDefinition(column = 3, header = "Date of birth", dateTimeFormat = DateColumnFormat.SHORT_DATE_FORMAT)
+    public Date getDateOfBirth() {
+      return dateOfBirth;
+    }
+
+
+    @Override
+    public String getDisplayName() {
+      return firstName+" "+lastName;
+    }
+
+    @Override
+    public String getId() {
+      return firstName+lastName+dateOfBirth;
+    }
+}
+
+}}}
+
+Now you can create the table definition by calling:
+
+{{{
+TableDefinition<Ancestor> tableDefinition = GWT.create(Ancestor.class);
+}}}
+
+
 === Create the !TreeTable ===
 
-Now we are ready to create the !TreeTable:
+Now we are ready to create the !TreeTable. We have to pass our table definition and the tree items:
 
 {{{
 TreeTable<Ancestor> treeTable = new TreeTable<Ancestor>(tableDefinition,
