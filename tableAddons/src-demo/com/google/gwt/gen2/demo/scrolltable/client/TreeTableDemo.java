@@ -3,34 +3,24 @@ package com.google.gwt.gen2.demo.scrolltable.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.datepicker.client.DatePicker;
-import com.google.gwt.gen2.table.client.DateColumnDefinition;
-import com.google.gwt.gen2.table.client.DefaultTableDefinition;
-import com.google.gwt.gen2.table.client.NumberColumnDefinition;
-import com.google.gwt.gen2.table.client.RemoteTreeTable;
+import com.google.gwt.gen2.table.client.RowValue;
 import com.google.gwt.gen2.table.client.ScrollTable;
-import com.google.gwt.gen2.table.client.TextColumnDefinition;
+import com.google.gwt.gen2.table.client.TableDefinition;
 import com.google.gwt.gen2.table.client.TreeItem;
 import com.google.gwt.gen2.table.client.TreeTable;
 import com.google.gwt.gen2.table.client.TreeTableController;
 import com.google.gwt.gen2.table.client.AbstractScrollTable.SortPolicy;
 import com.google.gwt.gen2.table.shared.AbstractTreeTableItem;
-import com.google.gwt.gen2.table.shared.SerializableResponse;
-import com.google.gwt.gen2.table.shared.TreeRequest;
-import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Random;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class TreeTableDemo implements EntryPoint {
-  class Ancestor extends AbstractTreeTableItem {
+  public static class Ancestor extends AbstractTreeTableItem implements RowValue {
     private String firstName, lastName;
     private double iq;
     private Date dateOfBirth;
@@ -42,18 +32,22 @@ public class TreeTableDemo implements EntryPoint {
       this.dateOfBirth = dateOfBirth;
     }
 
+    @ColumnDefinition(column = 0, header = "Vorname", filterable = false)
     public String getFirstName() {
       return firstName;
     }
 
+    @ColumnDefinition(column = 1, header = "Last name")
     public String getLastName() {
       return lastName;
     }
 
+    @ColumnDefinition(column = 2, header = "IQ", numberFormat = NumberColumnFormat.SCIENTIFIC_FORMAT)
     public double getIq() {
       return iq;
     }
 
+    @ColumnDefinition(column = 3, header = "Date of birth", dateTimeFormat = DateColumnFormat.SHORT_DATE_FORMAT)
     public Date getDateOfBirth() {
       return dateOfBirth;
     }
@@ -77,6 +71,10 @@ public class TreeTableDemo implements EntryPoint {
       "Cromwell", "Page", "Bin", "Gates", "Jobs", "Florey"};
 
   public void onModuleLoad() {
+   // TableDefinition<Ancestor> tableDefinition = ;
+//    TableDefinition<Ancestor> tableDefinition = new AncestorTableDefinition();
+
+    // DefaultTableDefinition<Ancestor> td = GWT.create(Ancestor.class);
     DatePicker.injectDefaultCss();
 
     // Create some dummy data for client side table model
@@ -87,37 +85,8 @@ public class TreeTableDemo implements EntryPoint {
       rootItems.add(ancestor);
     }
 
-    // Create table definition
-    DefaultTableDefinition<Ancestor> tableDefinition = new DefaultTableDefinition<Ancestor>();
-    tableDefinition.addColumnDefinition(new TextColumnDefinition<Ancestor>(
-        "First name", true, false) {
-      public String getCellValue(Ancestor ancestor) {
-        return ancestor.getFirstName();
-      }
-    });
-    tableDefinition.addColumnDefinition(new TextColumnDefinition<Ancestor>(
-        "Last name", true, false) {
-      public String getCellValue(Ancestor ancestor) {
-        return ancestor.getLastName();
-      }
-    });
-    tableDefinition.addColumnDefinition(new NumberColumnDefinition<Ancestor>(
-        "IQ", NumberFormat.getDecimalFormat(), true, false) {
-      public Double getCellValue(Ancestor ancestor) {
-        return ancestor.getIq();
-      }
-    });
-    tableDefinition.addColumnDefinition(new DateColumnDefinition<Ancestor>(
-        "Date of birth", DateTimeFormat.getMediumDateFormat(), true, true,
-        false) {
-      public Date getCellValue(Ancestor ancestor) {
-        return ancestor.getDateOfBirth();
-      }
-    });
-
     // Create client tree table
-    TreeTable<Ancestor> treeTable = new TreeTable<Ancestor>(tableDefinition,
-        rootItems, true);
+    TreeTable<Ancestor> treeTable = new TreeTable<Ancestor>((TableDefinition<Ancestor>) GWT.create(Ancestor.class), rootItems, true);
     treeTable.setPageSize(15);
     treeTable.setSortPolicy(SortPolicy.SINGLE_CELL);
     treeTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);

@@ -61,10 +61,12 @@ public abstract class TextColumnDefinition<RowType> extends
     public TextColumnFilter(Operator[] supportedOperators) {
       this(supportedOperators, new DefaultTextColumnResources());
     }
+
     /**
      * Creates a filter suitable for filtering columns containing text
      */
-    public TextColumnFilter(Operator[] supportedOperators, TextColumnResources resources) {
+    public TextColumnFilter(Operator[] supportedOperators,
+        TextColumnResources resources) {
       this.resources = resources;
       this.operator = supportedOperators[0];
       this.supportedOperators = supportedOperators;
@@ -272,34 +274,82 @@ public abstract class TextColumnDefinition<RowType> extends
     }
   }
 
-  public TextColumnDefinition(Widget headerWidget, boolean sortable, boolean filterEnabled, boolean editingEnabled) {
-    this(sortable, filterEnabled, editingEnabled);
+  public TextColumnDefinition(Widget headerWidget, boolean sortable,
+      boolean filterEnabled, boolean editingEnabled,
+      TextColumnResources resources) {
+    this(headerWidget, sortable, filterEnabled, Operator.values(),
+        editingEnabled, resources);
+  }
+
+  public TextColumnDefinition(Widget headerWidget, boolean sortable,
+      boolean filterEnabled, boolean editingEnabled) {
+    this(headerWidget, sortable, filterEnabled, Operator.values(),
+        editingEnabled);
+  }
+
+  public TextColumnDefinition(Widget headerWidget, boolean sortable,
+      boolean filterEnabled, Operator[] supportedOperators,
+      boolean editingEnabled) {
+    this(headerWidget, sortable, filterEnabled, supportedOperators,
+        editingEnabled, new DefaultTextColumnResources());
+  }
+
+  public TextColumnDefinition(Widget headerWidget, boolean sortable,
+      boolean filterEnabled, Operator[] supportedOperators,
+      boolean editingEnabled, TextColumnResources resources) {
+    this(sortable, filterEnabled, supportedOperators, editingEnabled, resources);
     setHeaderWidget(headerWidget);
   }
 
-  public TextColumnDefinition(String header, boolean sortable, boolean filterEnabled, boolean editingEnabled) {
-    this(sortable, filterEnabled, editingEnabled);
+  public TextColumnDefinition(String header, boolean sortable,
+      boolean filterEnabled, boolean editingEnabled) {
+    this(header, sortable, filterEnabled, Operator.values(), editingEnabled);
+  }
+
+  public TextColumnDefinition(String header, boolean sortable,
+      boolean filterEnabled, boolean editingEnabled,
+      TextColumnResources resources) {
+    this(header, sortable, filterEnabled, Operator.values(), editingEnabled,
+        resources);
+  }
+
+  public TextColumnDefinition(String header, boolean sortable,
+      boolean filterEnabled, Operator[] supportedOperators,
+      boolean editingEnabled) {
+    this(sortable, filterEnabled, supportedOperators, editingEnabled,
+        new DefaultTextColumnResources());
     setHeader(header);
   }
 
-  public TextColumnDefinition(Widget headerWidget, boolean sortable, boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled) {
-	  this(sortable, filterEnabled, supportedOperators, editingEnabled);
-	  setHeaderWidget(headerWidget);
+  public TextColumnDefinition(String header, boolean sortable,
+      boolean filterEnabled, Operator[] supportedOperators,
+      boolean editingEnabled, TextColumnResources resources) {
+    this(sortable, filterEnabled, supportedOperators, editingEnabled, resources);
+    setHeader(header);
   }
 
-  public TextColumnDefinition(String header, boolean sortable, boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled) {
-	  this(sortable, filterEnabled, supportedOperators, editingEnabled);
-	  setHeader(header);
-  }
-  
-  public TextColumnDefinition(boolean sortable, boolean filterEnabled, boolean editingEnabled) {
+  public TextColumnDefinition(boolean sortable, boolean filterEnabled,
+      boolean editingEnabled) {
     this(sortable, filterEnabled, Operator.values(), editingEnabled);
   }
-    
-  public TextColumnDefinition(boolean sortable, boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled) {
+
+  public TextColumnDefinition(boolean sortable, boolean filterEnabled,
+      boolean editingEnabled, TextColumnResources resources) {
+    this(sortable, filterEnabled, Operator.values(), editingEnabled, resources);
+  }
+
+  public TextColumnDefinition(boolean sortable, boolean filterEnabled,
+      Operator[] supportedOperators, boolean editingEnabled) {
+    this(sortable, filterEnabled, supportedOperators, editingEnabled,
+        new DefaultTextColumnResources());
+  }
+
+  public TextColumnDefinition(boolean sortable, boolean filterEnabled,
+      Operator[] supportedOperators, boolean editingEnabled,
+      TextColumnResources resources) {
     setColumnSortable(sortable);
     if (filterEnabled) {
-      setColumnFilter(createTextColumnFilter(supportedOperators));
+      setColumnFilter(createTextColumnFilter(supportedOperators, resources));
     }
     setCellRenderer(createTextCellRenderer());
     if (editingEnabled) {
@@ -333,9 +383,11 @@ public abstract class TextColumnDefinition<RowType> extends
    * 
    * @return the created column filter suitable for filtering text columns
    */
-  protected ColumnFilter<String> createTextColumnFilter(Operator[] supportedOperators) {
-    return new TextColumnFilter(supportedOperators);
+  protected ColumnFilter<String> createTextColumnFilter(
+      Operator[] supportedOperators, TextColumnResources resources) {
+    return new TextColumnFilter(supportedOperators, resources);
   }
-  
-  public void setCellValue(RowType rowValue, String cellValue) {};
+
+  public void setCellValue(RowType rowValue, String cellValue) {
+  };
 }

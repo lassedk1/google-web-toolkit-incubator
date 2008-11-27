@@ -30,7 +30,7 @@ public class RemoteTreeTableDemo implements EntryPoint {
     // Create table definition
     DefaultTableDefinition<FileTreeTableItem> tableDefinition = new DefaultTableDefinition<FileTreeTableItem>();
     tableDefinition.addColumnDefinition(new TextColumnDefinition<FileTreeTableItem>(
-        "Filename", true, false) {
+        "Filename", true, true, false) {
       public String getCellValue(FileTreeTableItem file) {
         return file.getName();
       }
