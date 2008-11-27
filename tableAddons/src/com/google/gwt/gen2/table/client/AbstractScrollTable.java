@@ -506,12 +506,27 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   public interface ScrollTableMessages extends Messages {
     @DefaultMessage("Shrink/Expand to fill visible area")
     String shrinkExpandTooltip();
+    
+    @DefaultMessage("Shows only dates that are equal")
+    String dateOperatorEqualTooltip();
+    
+    @DefaultMessage("Shows only dates that not equal")
+    String dateOperatorUnequalTooltip();
+    
+    @DefaultMessage("Show only dates before the given date")
+    String dateOperatorBeforeTooltip();
+    
+    @DefaultMessage("Show only dates after the given date")
+    String dateOperatorAfterTooltip();
+    
+    @DefaultMessage("Show only dates between the given dates")
+    String dateOperatorBetweenTooltip();
   }
 
   public interface ScrollTableResources {
     ScrollTableStyle getStyle();
 
-    ScrollTableMessages getConstants();
+    ScrollTableMessages getMessages();
   }
 
   protected static class DefatulScrollTableResources implements
@@ -526,7 +541,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       return style;
     }
 
-    public ScrollTableMessages getConstants() {
+    public ScrollTableMessages getMessages() {
       if (constants == null) {
         constants = ((ScrollTableMessages) GWT.create(ScrollTableMessages.class));
       }
@@ -821,7 +836,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
         }
       }
     };
-    fillWidthImage.setTitle(resources.getConstants().shrinkExpandTooltip());
+    fillWidthImage.setTitle(resources.getMessages().shrinkExpandTooltip());
     ImageResource imageResource = resources.getStyle().scrollTableFillWidth();
     fillWidthImage.setUrlAndVisibleRect(imageResource.getURL(),
         imageResource.getLeft(), imageResource.getTop(),

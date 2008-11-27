@@ -9,32 +9,20 @@ import java.util.Date;
 
 public class DateColumnFilterInfo extends ColumnFilterInfo<Date> {
   public enum Operator {
-    EQUALS("=", "equals", "Shows only dates that are equal"),
-    NOT_EQUAL("!=", "not equal", "Shows only dates that not equal"),
-    BEFORE("<", "before", "Show only dates before the given date"),
-    AFTER(">", "after", "Show only dates after the given date"),
-    BETWEEN("-", "between", "Show only dates between the given dates");
+    EQUAL("="),
+    UNEQUAL("!="),
+    BEFORE("<"),
+    AFTER(">"),
+    BETWEEN("-");
     
     private final String symbol;
-    private final String title;
-    private final String tooltip;
 
-    Operator(String symbol, String title, String tooltip) {
+    Operator(String symbol) {
       this.symbol = symbol;
-      this.title = title;
-      this.tooltip = tooltip;
     }
 
     public String getSymbol() {
       return symbol;
-    }
-
-    public String getTitle() {
-      return title;
-    }
-
-    public String getTooltip() {
-      return tooltip;
     }
   }      
   
@@ -108,9 +96,9 @@ public class DateColumnFilterInfo extends ColumnFilterInfo<Date> {
     if (primaryDate == null) {
       return false;
     }
-    if (operator == Operator.EQUALS) {
+    if (operator == Operator.EQUAL) {
       return value.equals(primaryDate);
-    } else if (operator == Operator.NOT_EQUAL) {
+    } else if (operator == Operator.UNEQUAL) {
       return !value.equals(primaryDate);
     } else if (operator == Operator.BEFORE) {
       return value.before(primaryDate);

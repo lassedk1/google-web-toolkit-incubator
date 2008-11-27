@@ -26,4 +26,7 @@
     
     <source path="client"/>
     <source path="shared" />
+    <generate-with class="com.google.gwt.gen2.table.rebind.RowValueGenerator">
+     <when-type-assignable class="com.google.gwt.gen2.table.client.RowValue"/>
+  </generate-with>
 </module>

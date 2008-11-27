@@ -1,15 +1,16 @@
 package com.google.gwt.gen2.table.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.datepicker.client.DateBox;
 import com.google.gwt.gen2.datepicker.client.DatePicker;
 import com.google.gwt.gen2.event.dom.client.KeyDownEvent;
 import com.google.gwt.gen2.event.dom.client.KeyDownHandler;
-import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
-import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
 import com.google.gwt.gen2.table.shared.DateColumnFilterInfo;
 import com.google.gwt.gen2.table.shared.DateColumnFilterInfo.Operator;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.Messages;
+import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -27,6 +28,7 @@ public abstract class DateColumnDefinition<RowType> extends
     private Operator operator;
     private Operator[] supportedOperators;
     private DateTimeFormat dateTimeFormat;
+    private DateColumnResources resources;
 
     private DateBox primaryDateBox, secondaryDateBox;
     private PushButton operatorButton;
@@ -58,26 +60,20 @@ public abstract class DateColumnDefinition<RowType> extends
         fireColumnFilterChangedEvent(primaryDate, secondaryDate);
       }
     };
-    private SelectionHandler<Date> selectionHandler = new SelectionHandler<Date>() {
-      public void onSelection(SelectionEvent<Date> event) {
-        fireColumnFilterChangedEvent();
-      }
-    };
     private KeyDownHandler keyDownHandler = new KeyDownHandler() {
       public void onKeyDown(KeyDownEvent event) {
         fireColumnFilterChangedEvent();
       }
     };
 
-    /**
-     * Creates a filter suitable for filtering columns containing dates
-     * 
-     * @param dateTimeFormat the dateTimeFormat used for the formatting of the
-     *          filter text
-     */
     public DateColumnFilter(DateTimeFormat dateTimeFormat) {
       this(dateTimeFormat, Operator.values());
     }
+
+    public DateColumnFilter(DateTimeFormat dateTimeFormat, Operator[] supportedOperators) {
+      this(dateTimeFormat, supportedOperators, new DefaultDateColumnResources());
+    }
+    
     /**
      * Creates a filter suitable for filtering columns containing dates
      * 
@@ -85,9 +81,21 @@ public abstract class DateColumnDefinition<RowType> extends
      *          filter text
      */
     public DateColumnFilter(DateTimeFormat dateTimeFormat,
-        Operator[] supportedOperators) {
+        DateColumnResources resources) {
+      this(dateTimeFormat, Operator.values(), resources);
+    }
+
+    /**
+     * Creates a filter suitable for filtering columns containing dates
+     * 
+     * @param dateTimeFormat the dateTimeFormat used for the formatting of the
+     *          filter text
+     */
+    public DateColumnFilter(DateTimeFormat dateTimeFormat,
+        Operator[] supportedOperators, DateColumnResources resources) {
       this.dateTimeFormat = dateTimeFormat;
       this.supportedOperators = supportedOperators;
+      this.resources = resources;
       this.operator = supportedOperators[0];
     }
 
@@ -153,7 +161,22 @@ public abstract class DateColumnDefinition<RowType> extends
       pushButton.getUpFace().setText(operator.getSymbol());
       pushButton.getUpHoveringFace().setText(operator.getSymbol());
       pushButton.getDownFace().setText(operator.getSymbol());
-      pushButton.setTitle(operator.getTooltip());
+      pushButton.setTitle(getOperatorTooltip(operator));
+    }
+
+    private String getOperatorTooltip(Operator operator) {
+      if (operator == Operator.EQUAL) {
+        return resources.getMessages().equalTooltip();
+      } else if (operator == Operator.UNEQUAL) {
+        return resources.getMessages().unequalTooltip();
+      } else if (operator == Operator.BEFORE) {
+        return resources.getMessages().beforeTooltip();
+      } else if (operator == Operator.AFTER) {
+        return resources.getMessages().afterTooltip();
+      } else if (operator == Operator.BETWEEN) {
+        return resources.getMessages().betweenTooltip();
+      }
+      return "";
     }
   }
 
@@ -238,33 +261,105 @@ public abstract class DateColumnDefinition<RowType> extends
     }
   }
 
+  /**
+   * Resources used.
+   */
+  public interface DateColumnStyle extends ImmutableResourceBundle {
+  }
+
+  public interface DateColumnMessages extends Messages {
+    @DefaultMessage("Shows only dates that are equal")
+    String equalTooltip();
+
+    @DefaultMessage("Shows only dates that not equal")
+    String unequalTooltip();
+
+    @DefaultMessage("Show only dates before the given date")
+    String beforeTooltip();
+
+    @DefaultMessage("Show only dates after the given date")
+    String afterTooltip();
+
+    @DefaultMessage("Show only dates between the given dates")
+    String betweenTooltip();
+  }
+
+  public interface DateColumnResources {
+    DateColumnStyle getStyle();
+
+    DateColumnMessages getMessages();
+  }
+
+  protected static class DefaultDateColumnResources implements
+      DateColumnResources {
+    private DateColumnStyle style;
+    private DateColumnMessages constants;
+
+    public DateColumnStyle getStyle() {
+      if (style == null) {
+        style = ((DateColumnStyle) GWT.create(DateColumnStyle.class));
+      }
+      return style;
+    }
+
+    public DateColumnMessages getMessages() {
+      if (constants == null) {
+        constants = ((DateColumnMessages) GWT.create(DateColumnMessages.class));
+      }
+      return constants;
+    }
+  }
+
   public DateColumnDefinition(String header, DateTimeFormat dateTimeFormat,
       boolean sortingEnabled, boolean filterEnabled, boolean editingEnabled) {
-    this(dateTimeFormat, sortingEnabled, filterEnabled, editingEnabled);
-    setHeader(header);
+    this(header, dateTimeFormat, sortingEnabled, filterEnabled, Operator.values(), editingEnabled);
   }
 
   public DateColumnDefinition(String header, DateTimeFormat dateTimeFormat,
       boolean sortingEnabled, boolean filterEnabled,
       Operator[] supportedOperators, boolean editingEnabled) {
-    this(dateTimeFormat, sortingEnabled, filterEnabled, supportedOperators,
-        editingEnabled);
-    setHeader(header);
+    this(header, dateTimeFormat, sortingEnabled, filterEnabled, supportedOperators,
+        editingEnabled, new DefaultDateColumnResources());
   }
 
-  public DateColumnDefinition(Widget headerWidget,
-      DateTimeFormat dateTimeFormat, boolean sortingEnabled,
-      boolean filterEnabled, boolean editingEnabled) {
-    this(dateTimeFormat, sortingEnabled, filterEnabled, editingEnabled);
-    setHeaderWidget(headerWidget);
+  public DateColumnDefinition(String header, DateTimeFormat dateTimeFormat,
+      boolean sortingEnabled, boolean filterEnabled, boolean editingEnabled,
+      DateColumnResources resources) {
+    this(header, dateTimeFormat, sortingEnabled, filterEnabled, Operator.values(), editingEnabled,
+        resources);
+  }
+
+  public DateColumnDefinition(String header, DateTimeFormat dateTimeFormat,
+      boolean sortingEnabled, boolean filterEnabled,
+      Operator[] supportedOperators, boolean editingEnabled,
+      DateColumnResources resources) {
+    this(dateTimeFormat, sortingEnabled, filterEnabled, supportedOperators,
+        editingEnabled, resources);
+    setHeader(header);
   }
 
   public DateColumnDefinition(Widget headerWidget,
       DateTimeFormat dateTimeFormat, boolean sortingEnabled,
       boolean filterEnabled, Operator[] supportedOperators,
       boolean editingEnabled) {
+    this(headerWidget, dateTimeFormat, sortingEnabled, filterEnabled, supportedOperators,
+        editingEnabled, new DefaultDateColumnResources());
+  }
+
+  public DateColumnDefinition(Widget headerWidget,
+      DateTimeFormat dateTimeFormat, boolean sortingEnabled,
+      boolean filterEnabled, boolean editingEnabled,
+      DateColumnResources resources) {
+    this(headerWidget, dateTimeFormat, sortingEnabled, filterEnabled, Operator.values(), editingEnabled,
+        resources);
+  }
+  
+  public DateColumnDefinition(Widget headerWidget,
+      DateTimeFormat dateTimeFormat, boolean sortingEnabled,
+      boolean filterEnabled, Operator[] supportedOperators,
+      boolean editingEnabled, DateColumnResources resources) {
     this(dateTimeFormat, sortingEnabled, filterEnabled, supportedOperators,
-        editingEnabled);
+        editingEnabled, resources);
     setHeaderWidget(headerWidget);
   }
 
@@ -278,14 +373,21 @@ public abstract class DateColumnDefinition<RowType> extends
    */
   public DateColumnDefinition(DateTimeFormat dateTimeFormat,
       boolean sortingEnabled, boolean filterEnabled, boolean editingEnabled) {
-    setColumnSortable(sortingEnabled);
-    if (filterEnabled) {
-      setColumnFilter(createDateColumnFilter(dateTimeFormat, Operator.values()));
-    }
-    setCellRenderer(createDateCellRenderer(dateTimeFormat));
-    if (editingEnabled) {
-      setCellEditor(createDateCellEditor(dateTimeFormat));
-    }
+    this(dateTimeFormat, sortingEnabled, filterEnabled, editingEnabled,
+        new DefaultDateColumnResources());
+  }
+
+  /**
+   * Column definition used for columns containing {@link Date} objects
+   * 
+   * @param dateTimeFormat
+   * @param sortingEnabled
+   * @param filterEnabled
+   * @param editingEnabled
+   */
+  public DateColumnDefinition(DateTimeFormat dateTimeFormat,
+      boolean sortingEnabled, boolean filterEnabled, boolean editingEnabled, DateColumnResources resources) {
+    this(dateTimeFormat, sortingEnabled, filterEnabled, Operator.values(), editingEnabled, resources);
   }
 
   /**
@@ -299,11 +401,13 @@ public abstract class DateColumnDefinition<RowType> extends
    */
   public DateColumnDefinition(DateTimeFormat dateTimeFormat,
       boolean sortingEnabled, boolean filterEnabled,
-      Operator[] supportedOperators, boolean editingEnabled) {
+      Operator[] supportedOperators, boolean editingEnabled,
+      DateColumnResources resources) {
     setColumnSortable(sortingEnabled);
     setColumnFilterable(filterEnabled);
     if (filterEnabled) {
-      setColumnFilter(createDateColumnFilter(dateTimeFormat, supportedOperators));
+      setColumnFilter(createDateColumnFilter(dateTimeFormat,
+          supportedOperators, resources));
     }
     setCellRenderer(createDateCellRenderer(dateTimeFormat));
     if (editingEnabled) {
@@ -318,8 +422,9 @@ public abstract class DateColumnDefinition<RowType> extends
    * @return the created column filter suitable for filtering date columns
    */
   protected ColumnFilter<Date> createDateColumnFilter(
-      DateTimeFormat dateTimeFormat, Operator[] supportedOperators) {
-    return new DateColumnFilter(dateTimeFormat, supportedOperators);
+      DateTimeFormat dateTimeFormat, Operator[] supportedOperators,
+      DateColumnResources resources) {
+    return new DateColumnFilter(dateTimeFormat, supportedOperators, resources);
   }
 
   /**
@@ -342,6 +447,7 @@ public abstract class DateColumnDefinition<RowType> extends
   protected CellEditor<Date> createDateCellEditor(DateTimeFormat dateTimeFormat) {
     return new DateCellEditor(dateTimeFormat);
   }
-  
-  public void setCellValue(RowType rowValue, Date cellValue) {};
+
+  public void setCellValue(RowType rowValue, Date cellValue) {
+  };
 }

@@ -6,33 +6,21 @@ package com.google.gwt.gen2.table.shared;
  */
 public class TextColumnFilterInfo extends ColumnFilterInfo<String> {
   public enum Operator {
-    STARTS_WITH("xx..", "startsWith", "Show text starting with"),
-    STARTS_WITH_CASE_SENSITIVE("Xx..", "startsWithCaseSensitive", "Show items starting with (case sensitive)"),
-    CONTAINS("..xx..", "contains", "Show items containing"),
-    CONTAINS_CASE_SENSITIVE("..Xx..", "containsCaseSensitive", "Show items containing (case sensitive)"),
-    ENDS_WITH("..xx", "endsWith", "Show items ending with"),
-    ENDS_WITH_CASE_SENSITIVE("..Xx", "endsWithCaseSensitive", "Show items ending with (case sensitive)");
+    STARTS_WITH("xx.."),
+    STARTS_WITH_CASE_SENSITIVE("Xx.."),
+    CONTAINS("..xx.."),
+    CONTAINS_CASE_SENSITIVE("..Xx.."),
+    ENDS_WITH("..xx"),
+    ENDS_WITH_CASE_SENSITIVE("..Xx");
     
     private final String symbol;
-    private final String title;
-    private final String tooltip;
 
-    Operator(String symbol, String title, String tooltip) {
+    Operator(String symbol) {
       this.symbol = symbol;
-      this.title = title;
-      this.tooltip = tooltip;
     }
 
     public String getSymbol() {
       return symbol;
-    }
-
-    public String getTitle() {
-      return title;
-    }
-
-    public String getTooltip() {
-      return tooltip;
     }
   };      
 
