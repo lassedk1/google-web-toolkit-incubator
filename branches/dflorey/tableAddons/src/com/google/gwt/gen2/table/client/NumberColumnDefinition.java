@@ -1,9 +1,13 @@
 package com.google.gwt.gen2.table.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
 import com.google.gwt.gen2.table.shared.NumberColumnFilterInfo;
 import com.google.gwt.gen2.table.shared.NumberColumnFilterInfo.Operator;
+import com.google.gwt.i18n.client.Messages;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.i18n.client.Messages.DefaultMessage;
+import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.KeyboardListener;
@@ -20,6 +24,7 @@ public abstract class NumberColumnDefinition<RowType> extends
   public static class NumberColumnFilter extends ColumnFilter<Double> {
     private Operator operator;
     private Operator[] supportedOperators;
+    private NumberColumnResources resources;
 
     private NumberFormat numberFormat;
     private TextBox primaryNumberBox, secondaryNumberBox;
@@ -67,16 +72,25 @@ public abstract class NumberColumnDefinition<RowType> extends
      * @param supportedOperators 
      */
     public NumberColumnFilter(NumberFormat numberFormat) {
-      this(numberFormat, Operator.values());
+      this(numberFormat, Operator.values(), new DefaultNumberColumnResources());
+    }
+
+    /**
+     * Creates a filter suitable for filtering columns containing numbers
+     * @param supportedOperators 
+     */
+    public NumberColumnFilter(NumberFormat numberFormat, NumberColumnResources resources) {
+      this(numberFormat, Operator.values(), resources);
     }
     /**
      * Creates a filter suitable for filtering columns containing numbers
      * @param supportedOperators 
      */
-    public NumberColumnFilter(NumberFormat numberFormat, Operator[] supportedOperators) {
+    public NumberColumnFilter(NumberFormat numberFormat, Operator[] supportedOperators, NumberColumnResources resources) {
       this.numberFormat = numberFormat;
       this.supportedOperators = supportedOperators;
       this.operator = supportedOperators[0];
+      this.resources = resources;
     }
 
     public Widget createFilterWidget() {
@@ -124,7 +138,22 @@ public abstract class NumberColumnDefinition<RowType> extends
       pushButton.getUpFace().setText(operator.getSymbol());
       pushButton.getUpHoveringFace().setText(operator.getSymbol());
       pushButton.getDownFace().setText(operator.getSymbol());
-      pushButton.setTitle(operator.getTooltip());
+      pushButton.setTitle(getOperatorTooltip(operator));
+    }
+
+    private String getOperatorTooltip(Operator operator) {
+      if (operator == Operator.EQUAL) {
+        return resources.getMessages().equalTooltip();
+      } else if (operator == Operator.NOT_EQUAL) {
+        return resources.getMessages().notEqualTooltip();
+      } else if (operator == Operator.LESS_THAN) {
+        return resources.getMessages().lessThanTooltip();
+      } else if (operator == Operator.GREATER_THAN) {
+        return resources.getMessages().greaterThanTooltip();
+      } else if (operator == Operator.BETWEEN) {
+        return resources.getMessages().betweenTooltip();
+      }
+      return "";
     }
   }
 
@@ -226,37 +255,109 @@ public abstract class NumberColumnDefinition<RowType> extends
     }
   }
 
+  /**
+   * Resources used.
+   */
+  public interface NumberColumnStyle extends ImmutableResourceBundle {
+  }
+
+  public interface NumberColumnMessages extends Messages {
+    @DefaultMessage("Shows numbers that are equal")
+    String equalTooltip();
+
+    @DefaultMessage("Shows numbers that not equal")
+    String notEqualTooltip();
+
+    @DefaultMessage("Show numbers less than given value")
+    String lessThanTooltip();
+
+    @DefaultMessage("Show numbers greater than given value")
+    String greaterThanTooltip();
+
+    @DefaultMessage("Show numbers between the given values")
+    String betweenTooltip();
+  }
+
+  public interface NumberColumnResources {
+    NumberColumnStyle getStyle();
+
+    NumberColumnMessages getMessages();
+  }
+
+  protected static class DefaultNumberColumnResources implements
+      NumberColumnResources {
+    private NumberColumnStyle style;
+    private NumberColumnMessages constants;
+
+    public NumberColumnStyle getStyle() {
+      if (style == null) {
+        style = ((NumberColumnStyle) GWT.create(NumberColumnStyle.class));
+      }
+      return style;
+    }
+
+    public NumberColumnMessages getMessages() {
+      if (constants == null) {
+        constants = ((NumberColumnMessages) GWT.create(NumberColumnMessages.class));
+      }
+      return constants;
+    }
+  }
+
   protected NumberFormat numberFormat;
 
-  public NumberColumnDefinition(String header, NumberFormat numberFormat,
-      boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled) {
-    this(numberFormat, filterEnabled, supportedOperators, editingEnabled);
-    setHeader(header);
+  public NumberColumnDefinition(Widget headerWidget, NumberFormat numberFormat,
+      boolean filterEnabled, boolean editingEnabled) {
+    this(headerWidget, numberFormat, filterEnabled, Operator.values(), editingEnabled);
+  }
+
+  public NumberColumnDefinition(Widget headerWidget, NumberFormat numberFormat,
+      boolean filterEnabled, boolean editingEnabled, NumberColumnResources resources) {
+    this(headerWidget, numberFormat, filterEnabled, Operator.values(), editingEnabled, resources);
   }
 
   public NumberColumnDefinition(Widget headerWidget, NumberFormat numberFormat,
       boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled) {
-    this(numberFormat, filterEnabled, supportedOperators, editingEnabled);
+    this(headerWidget, numberFormat, filterEnabled, supportedOperators, editingEnabled, new DefaultNumberColumnResources());
+  }
+
+  public NumberColumnDefinition(Widget headerWidget, NumberFormat numberFormat,
+      boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled, NumberColumnResources resources) {
+    this(numberFormat, filterEnabled, supportedOperators, editingEnabled, resources);
     setHeaderWidget(headerWidget);
   }
 
   public NumberColumnDefinition(String header, NumberFormat numberFormat,
       boolean filterEnabled, boolean editingEnabled) {
-    this(numberFormat, filterEnabled, Operator.values(), editingEnabled);
-    setHeader(header);
+    this(header, numberFormat, filterEnabled, Operator.values(), editingEnabled);
   }
 
-  public NumberColumnDefinition(Widget headerWidget, NumberFormat numberFormat,
-      boolean filterEnabled, boolean editingEnabled) {
-    this(numberFormat, filterEnabled, Operator.values(), editingEnabled);
-    setHeaderWidget(headerWidget);
+  public NumberColumnDefinition(String header, NumberFormat numberFormat,
+      boolean filterEnabled, boolean editingEnabled, NumberColumnResources resources) {
+    this(header, numberFormat, filterEnabled, Operator.values(), editingEnabled, resources);
+  }
+
+  public NumberColumnDefinition(String header, NumberFormat numberFormat,
+      boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled) {
+    this(header, numberFormat, filterEnabled, supportedOperators, editingEnabled, new DefaultNumberColumnResources());
+  }
+    
+  public NumberColumnDefinition(String header, NumberFormat numberFormat,
+      boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled, NumberColumnResources resources) {
+    this(numberFormat, filterEnabled, supportedOperators, editingEnabled, resources);
+    setHeader(header);
   }
 
   public NumberColumnDefinition(NumberFormat numberFormat,
       boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled) {
+    this(numberFormat, filterEnabled, supportedOperators, editingEnabled, new DefaultNumberColumnResources());
+  }
+    
+  public NumberColumnDefinition(NumberFormat numberFormat,
+      boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled, NumberColumnResources resources) {
     this.numberFormat = numberFormat;
     if (filterEnabled) {
-      setColumnFilter(createNumberColumnFilter(numberFormat, supportedOperators));
+      setColumnFilter(createNumberColumnFilter(numberFormat, supportedOperators, resources));
     }
     setCellRenderer(createNumberCellRenderer(numberFormat));
     if (editingEnabled) {
@@ -292,8 +393,8 @@ public abstract class NumberColumnDefinition<RowType> extends
    * @return the created column filter suitable for filtering text columns
    */
   protected ColumnFilter<Double> createNumberColumnFilter(
-      NumberFormat numberFormat, Operator []supportedOperators) {
-    return new NumberColumnFilter(numberFormat, supportedOperators);
+      NumberFormat numberFormat, Operator []supportedOperators, NumberColumnResources resources) {
+    return new NumberColumnFilter(numberFormat, supportedOperators, resources);
   }
   
   public void setCellValue(RowType rowValue, Double cellValue) {};
