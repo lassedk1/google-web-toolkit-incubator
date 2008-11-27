@@ -129,6 +129,7 @@ public class TreeTableController extends PagingOptions {
       applyImage(flattenTreeImage, resources.getStyle().tableView());
       flattenTreeButton.setTitle(resources.getMessages().tableView());
     }
+    toggleTreeButton.setEnabled(!treeTable.isFlattened());
     if (treeTable.isTreeOpen()) {
       applyImage(toggleTreeImage, resources.getStyle().closeTree());
       toggleTreeButton.setTitle(resources.getMessages().closeTree());

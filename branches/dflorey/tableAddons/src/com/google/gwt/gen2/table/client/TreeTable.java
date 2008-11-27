@@ -16,6 +16,7 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.gen2.demo.scrolltable.client.TreeTableDemo.Ancestor;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractRowView;
 import com.google.gwt.gen2.table.shared.ColumnFilterInfo;
 import com.google.gwt.gen2.table.shared.ColumnFilterList;
@@ -89,6 +90,34 @@ public class TreeTable<RowType extends TreeTableItem> extends
       }
     }
 
+    // if (getRowIndex() == 0) {
+    // TreeTableItem treeTableItem = treeTable.getRowValue(0);
+    // if (treeTableItem.getParent() != null) {
+    // // Create path
+    // TreeTableItem parent = treeTableItem.getParent();
+    // HorizontalPanel pathWidget = new HorizontalPanel();
+    // pathWidget.clear();
+    // Label pathLabel = new Label();
+    // Css css = treeTable.getResources().getStyle().css();
+    // TreeTableMessages messages = treeTable.getResources().getConstants();
+    // while (parent != null) {
+    // HTML nodeIndicator = new HTML();
+    //nodeIndicator.setTitle(messages.closeTreeNodeTooltip(parent.getDisplayName
+    // ()));
+    // nodeIndicator.setStyleName(css.treeTableOpenNode());
+    // pathWidget.add(nodeIndicator);
+    // pathLabel.setText(parent.getDisplayName() + "/"
+    // + pathLabel.getText());
+    // parent = parent.getParent();
+    // }
+    // pathWidget.add(pathLabel);
+    // treeTable.getDataTable().insertRow(0);
+    // treeTable.getDataTable().setWidget(0, 0, pathWidget);
+    // Element element =
+    // treeTable.getDataTable().getCellFormatter().getElement(0, 0);
+    // DOM.setElementPropertyInt(element, "colSpan", 4);
+    // }
+
     @Override
     public void requestTreeItems(TreeRequest request, Callback<RowType> callback) {
       boolean open = request.isOpen();
@@ -104,16 +133,21 @@ public class TreeTable<RowType extends TreeTableItem> extends
         List<ColumnDefinition<RowType, ?>> visibleColumnDefinitions = tableDefinition.getVisibleColumnDefinitions();
         ColumnDefinition<RowType, ?> sortableColumnDefinition = null;
         for (ColumnDefinition<RowType, ?> columnDefinition : visibleColumnDefinitions) {
-          if (columnDefinition.getColumnFilter().getColumn() == columnSortInfo.getColumn()) {
-            sortableColumnDefinition = columnDefinition;
+          if (columnDefinition.getColumnFilter() != null
+              && columnSortInfo != null) {
+            if (columnDefinition.getColumnFilter().getColumn() == columnSortInfo.getColumn()) {
+              sortableColumnDefinition = columnDefinition;
+            }
           }
         }
-        treeItemComparator = new TreeItemComparator(sortableColumnDefinition,
-            columnSortInfo.isAscending());
-        if (flattened) {
-          Collections.sort(flattenedItems, treeItemComparator);
-        } else {
-          Collections.sort(rootItems, treeItemComparator);
+        if (sortableColumnDefinition != null) {
+          treeItemComparator = new TreeItemComparator(sortableColumnDefinition,
+              columnSortInfo.isAscending());
+          if (flattened) {
+            Collections.sort(flattenedItems, treeItemComparator);
+          } else {
+            Collections.sort(rootItems, treeItemComparator);
+          }
         }
       }
       List<RowType> visibleItems = new ArrayList<RowType>();
@@ -229,15 +263,15 @@ public class TreeTable<RowType extends TreeTableItem> extends
   public interface TreeTableResources extends ScrollTableResources {
     TreeTableStyle getStyle();
 
-    TreeTableMessages getConstants();
+    TreeTableMessages getMessages();
   }
 
   public interface TreeTableMessages extends ScrollTableMessages {
-    @DefaultMessage("Click to open tree node")
-    String openTreeNodeTooltip();
+    @DefaultMessage("Click to open node {0}")
+    String openTreeNodeTooltip(String displayName);
 
-    @DefaultMessage("Click to close tree node")
-    String closeTreeNodeTooltip();
+    @DefaultMessage("Click to close node {0}")
+    String closeTreeNodeTooltip(String displayName);
 
     @DefaultMessage("Jump to {0}")
     String jumpTo(String displayName);
@@ -282,7 +316,7 @@ public class TreeTable<RowType extends TreeTableItem> extends
       return style;
     }
 
-    public TreeTableMessages getConstants() {
+    public TreeTableMessages getMessages() {
       if (constants == null) {
         constants = ((TreeTableMessages) GWT.create(TreeTableMessages.class));
       }
@@ -349,20 +383,20 @@ public class TreeTable<RowType extends TreeTableItem> extends
     protected ComplexPanel renderTreeNode(int rowIndex) {
       final RowType treeTableItem = treeTable.getRowValue(getRowIndex());
       final Set<String> invertedNodes = treeTable.getInvertedNodes();
-      boolean open = treeTable.isTreeOpen();
       Css css = treeTable.getResources().getStyle().css();
+      TreeTableMessages messages = treeTable.getResources().getMessages();
+      boolean open = treeTable.isTreeOpen();
       HorizontalPanel treeNode = new HorizontalPanel();
       treeNode.setSpacing(0);
       treeNode.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
       indent(treeNode, treeTableItem);
-      TreeTableMessages messages = treeTable.getResources().getConstants();
       if (invertedNodes.contains(treeTableItem.getId())) {
         HTML nodeIndicator = new HTML();
         if (treeTable.isTreeOpen()) {
-          nodeIndicator.setTitle(messages.openTreeNodeTooltip());
+          nodeIndicator.setTitle(messages.openTreeNodeTooltip(treeTableItem.getDisplayName()));
           nodeIndicator.setStyleName(css.treeTableClosedNode());
         } else {
-          nodeIndicator.setTitle(messages.closeTreeNodeTooltip());
+          nodeIndicator.setTitle(messages.closeTreeNodeTooltip(treeTableItem.getDisplayName()));
           nodeIndicator.setStyleName(css.treeTableOpenNode());
         }
         nodeIndicator.addClickListener(new ClickListener() {
@@ -374,12 +408,11 @@ public class TreeTable<RowType extends TreeTableItem> extends
         treeNode.add(nodeIndicator);
       } else if (treeTableItem.hasChildren()) {
         HTML nodeIndicator = new HTML();
-        nodeIndicator.setTitle(messages.openTreeNodeTooltip());
         if (open) {
-          nodeIndicator.setTitle(messages.closeTreeNodeTooltip());
+          nodeIndicator.setTitle(messages.closeTreeNodeTooltip(treeTableItem.getDisplayName()));
           nodeIndicator.setStyleName(css.treeTableOpenNode());
         } else {
-          nodeIndicator.setTitle(messages.openTreeNodeTooltip());
+          nodeIndicator.setTitle(messages.openTreeNodeTooltip(treeTableItem.getDisplayName()));
           nodeIndicator.setStyleName(css.treeTableClosedNode());
         }
         nodeIndicator.addClickListener(new ClickListener() {
@@ -396,7 +429,7 @@ public class TreeTable<RowType extends TreeTableItem> extends
     protected Widget createSpacer(TreeTableItem treeTableItem) {
       HTML spacer = new HTML();
       final TreeTableItem parent = treeTableItem.getParent();
-      spacer.setTitle(treeTable.getResources().getConstants().jumpTo(
+      spacer.setTitle(treeTable.getResources().getMessages().jumpTo(
           parent.getDisplayName()));
       spacer.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
@@ -465,13 +498,13 @@ public class TreeTable<RowType extends TreeTableItem> extends
   protected TreeTableResources resources;
   protected TreeTableRowView<RowType> rowView;
 
-  public TreeTable(DefaultTableDefinition<RowType> tableDefinition,
+  public TreeTable(TableDefinition<RowType> tableDefinition,
       List<TreeItem<RowType>> rootItems) {
     this(new ClientTreeTableModel<RowType>(tableDefinition, rootItems, true),
         new FixedWidthGrid(), new FixedWidthFlexTable(), tableDefinition, false);
   }
 
-  public TreeTable(DefaultTableDefinition<RowType> tableDefinition,
+  public TreeTable(TableDefinition<RowType> tableDefinition,
       List<TreeItem<RowType>> rootItems, boolean open) {
     this(new ClientTreeTableModel<RowType>(tableDefinition, rootItems, true),
         new FixedWidthGrid(), new FixedWidthFlexTable(), tableDefinition, open);
@@ -489,6 +522,7 @@ public class TreeTable<RowType extends TreeTableItem> extends
       TableDefinition<RowType> tableDefinition, boolean open,
       TreeTableResources resources) {
     super(tableModel, dataTable, headerTable, tableDefinition, resources);
+    // Setup the empty table widget wrapper
     this.resources = resources;
     this.open = open;
     rowView = new TreeTableRowView<RowType>(
