@@ -44,8 +44,6 @@ import com.google.gwt.gen2.table.client.SelectionGrid.SelectionPolicy;
 import com.google.gwt.gen2.table.override.client.FlexTable;
 import com.google.gwt.gen2.table.override.client.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.Random;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.WindowResizeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -236,6 +234,7 @@ public class ScrollTableDemo implements EntryPoint {
 
       // Add the scroll table to the layout
       layout.setWidget(0, 1, scrollTable);
+      formatter.setWidth(0, 1, "100%");
       formatter.setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_TOP);
     }
 
@@ -248,20 +247,6 @@ public class ScrollTableDemo implements EntryPoint {
       formatter.setColSpan(1, 0, 2);
       formatter.setHorizontalAlignment(1, 0,
           HasHorizontalAlignment.ALIGN_CENTER);
-    }
-
-    // Resize the table on window resize
-    {
-      WindowResizeListener wrl = new WindowResizeListener() {
-        public void onWindowResized(int width, int height) {
-          width = (int) (width * 0.95) - MENU_WIDTH - 10;
-          scrollTable.setWidth(width + "px");
-          formatter.setWidth(0, 1, width + "px");
-          scrollTable.redraw();
-        }
-      };
-      Window.addWindowResizeListener(wrl);
-      wrl.onWindowResized(Window.getClientWidth(), Window.getClientHeight());
     }
 
     // Do any required post processing
