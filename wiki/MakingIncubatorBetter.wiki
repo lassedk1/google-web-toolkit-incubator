@@ -21,23 +21,7 @@ From the incubator directory, type {{{ ant -Dgwt.home=<path to your gwt jar> tes
 If you are building gwt from source, the gwt.home argument will be something like {{{ -Dgwt.home=/home/you/src/gwt1.5/build/staging/gwt-mac-0.0.0 }}}
 
 === Setup for Eclipse ===
-
- # Follow the instructions [http://google-web-toolkit.googlecode.com/svn/trunk/eclipse/README.txt here] to set up your eclipse environment.
- # Create a variable named "GWT_INCUBATOR" pointing to your "gwt-incubator" folder
-    # Window->Preferences->Java->Build Path->Classpath Variables
-    # Click New...
-    # Type GWT_INCUBATOR in the name field, and click the Folder... button.
- # Import the eclipse project
-    # File->Import->Existing Projects into Workspace
-    # Select your gwt-incubator directory
-    # incubator should appear in the Projects list. Click Finish.
- # If you not on Windows, you will need to fix the gwt-dev project reference
-    # Right click on the new incubator project in the explorer and choose Properties
-    # Java Build Path
-    # Under the Projects tab, replace gwt-dev-windows as appropriate
-
-You now should be ready to go. 
-
+Use the instructions from the WorkingWithEclipse wiki page.
 === Setup for other IDEs ===
 We would much appreciate instructions here, if you are motivated to add them, add them as a comment below and I'll pull them up to this section.
 
