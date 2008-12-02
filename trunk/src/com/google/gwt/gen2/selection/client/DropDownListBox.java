@@ -31,7 +31,6 @@ import com.google.gwt.libideas.client.StyleInjector;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HasAnimation;
-import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.ToggleButton;
 
@@ -42,7 +41,7 @@ import com.google.gwt.user.client.ui.ToggleButton;
  * @param <ValueType> the type of values stored in the list box.
  */
 public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
-    implements HasAnimation, HasBeforeShowHandlers, HasValue<ValueType> {
+    implements HasAnimation, HasBeforeShowHandlers {
 
   /**
    * Css interface for drop down list box.
