@@ -58,6 +58,15 @@ import java.util.List;
  * and right side of the cells).
  * </p>
  * 
+ * <p>
+ * NOTE: AbstractScrollTable does not resize correctly in older versions of
+ * Mozilla (specifically, Linux hosted mode). In use, the PagingScrollTable will
+ * expand horizontally, but it will not contract when you reduce the screen
+ * size. However, the AbstractScrollTable resizes naturally (you can set width
+ * in percentages) on all modern browsers including IE6+, FF2+, Safari2+,
+ * Chrome, Opera 9.6.
+ * </p>
+ * 
  * <h3>CSS Style Rules</h3>
  * 
  * <ul class="css">
@@ -534,6 +543,11 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
+   * The div that wraps the table wrappers.
+   */
+  private Element absoluteElem;
+
+  /**
    * The helper class used to resize columns.
    */
   private ColumnResizer columnResizer = new ColumnResizer();
@@ -700,6 +714,18 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     DOM.setStyleAttribute(mainElem, "overflow", "hidden");
     DOM.setStyleAttribute(mainElem, "position", "relative");
 
+    // Wrap the table wrappers in another div
+    absoluteElem = DOM.createDiv();
+    absoluteElem.getStyle().setProperty("position", "absolute");
+    absoluteElem.getStyle().setProperty("top", "0px");
+    absoluteElem.getStyle().setProperty("left", "0px");
+    absoluteElem.getStyle().setProperty("width", "100%");
+    absoluteElem.getStyle().setProperty("padding", "0px");
+    absoluteElem.getStyle().setProperty("margin", "0px");
+    absoluteElem.getStyle().setProperty("border", "0px");
+    absoluteElem.getStyle().setProperty("overflow", "hidden");
+    mainElem.appendChild(absoluteElem);
+
     // Create the table wrapper and spacer
     headerWrapper = createWrapper("headerWrapper");
     headerSpacer = createSpacer(headerWrapper);
@@ -726,8 +752,8 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     add(fillWidthImage, getElement());
 
     // Adopt the header and data tables into the panel
-    adoptTable(headerTable, headerWrapper, 1);
-    adoptTable(dataTable, dataWrapper, 2);
+    adoptTable(headerTable, headerWrapper, 0);
+    adoptTable(dataTable, dataWrapper, 1);
 
     // Create the sort indicator Image
     sortedColumnWrapper = DOM.createSpan();
@@ -805,7 +831,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     if (clientWidth <= 0) {
       return;
     }
-    int diff = clientWidth - ((Widget) dataTable).getOffsetWidth();
+    int diff = clientWidth - dataTable.getOffsetWidth();
 
     // Calculate the new column widths
     int numColumns = dataTable.getColumnCount();
@@ -1203,19 +1229,18 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
       // Adopt the header table into the panel
       adoptTable(footerTable, footerWrapper,
-          getElement().getChildNodes().getLength());
+          absoluteElem.getChildNodes().getLength());
     }
 
     // Resize the tables
     resizeTablesVertically();
   }
 
-  /**
-   * @see com.google.gwt.user.client.ui.UIObject
-   */
   @Override
   public void setHeight(String height) {
-    this.lastHeight = height;
+    if (scrollPolicy == ScrollPolicy.BOTH) {
+      this.lastHeight = height;
+    }
     super.setHeight(height);
   }
 
@@ -1240,22 +1265,20 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     if (scrollPolicy == ScrollPolicy.DISABLED) {
       // Disabled scroll bars
-      super.setHeight("auto");
       dataWrapper.getStyle().setProperty("height", "auto");
       dataWrapper.getStyle().setProperty("overflow", "");
-      getElement().getStyle().setProperty("overflow", "");
     } else if (scrollPolicy == ScrollPolicy.HORIZONTAL) {
       // Only show horizontal scroll bar
-      super.setHeight("auto");
+      dataWrapper.getStyle().setProperty("height", "auto");
       dataWrapper.getStyle().setProperty("overflow", "auto");
-      getElement().getStyle().setProperty("overflow", "hidden");
     } else if (scrollPolicy == ScrollPolicy.BOTH) {
       // Show both scroll bars
       if (lastHeight != null) {
         super.setHeight(lastHeight);
+      } else {
+        super.setHeight("");
       }
       dataWrapper.getStyle().setProperty("overflow", "auto");
-      getElement().getStyle().setProperty("overflow", "hidden");
     }
 
     // Resize the tables
@@ -1375,10 +1398,12 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     if (scrollPolicy == ScrollPolicy.DISABLED) {
       dataWrapper.getStyle().setProperty("overflow", "auto");
       dataWrapper.getStyle().setProperty("overflow", "");
+      setHeight(absoluteElem.getOffsetHeight() + "px");
       return;
     } else if (scrollPolicy == ScrollPolicy.HORIZONTAL) {
       dataWrapper.getStyle().setProperty("overflow", "hidden");
       dataWrapper.getStyle().setProperty("overflow", "auto");
+      setHeight(absoluteElem.getOffsetHeight() + "px");
       scrollTables(true);
       return;
     }
@@ -1394,8 +1419,9 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     if (footerWrapper != null) {
       DOM.setStyleAttribute(footerWrapper, "height", footerHeight + "px");
     }
-    DOM.setStyleAttribute(dataWrapper, "height",
-        Math.max(totalHeight - headerHeight - footerHeight, 0) + "px");
+    DOM.setStyleAttribute(dataWrapper, "height", Math.max(totalHeight
+        - headerHeight - footerHeight, 0)
+        + "px");
     DOM.setStyleAttribute(dataWrapper, "overflow", "hidden");
     DOM.setStyleAttribute(dataWrapper, "overflow", "auto");
     scrollTables(true);
@@ -1434,7 +1460,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * @param index the index to insert the wrapper in the main element
    */
   private void adoptTable(Widget table, Element wrapper, int index) {
-    DOM.insertChild(getElement(), wrapper, index);
+    DOM.insertChild(absoluteElem, wrapper, index);
     add(table, wrapper);
   }
 
