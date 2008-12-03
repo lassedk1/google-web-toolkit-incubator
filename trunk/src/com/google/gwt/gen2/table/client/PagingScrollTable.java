@@ -282,6 +282,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   private RendererCallback tableRendererCallback = new RendererCallback() {
     public void onRendered() {
       maybeFillWidth();
+      resizeTablesVertically();
       fireEvent(new PageLoadEvent(currentPage));
     }
   };
@@ -574,7 +575,13 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       }
 
       // Request the new data from the table model
-      lastRequest = new Request(currentPage * pageSize, pageSize,
+      int startRow = currentPage * pageSize;
+      int numRows = pageSize;
+      int rowCount = tableModel.getRowCount();
+      if (rowCount != TableModel.UNKNOWN_ROW_COUNT) {
+        numRows = Math.min(numRows, rowCount - startRow);
+      }
+      lastRequest = new Request(startRow, numRows,
           dataTable.getColumnSortList());
       tableModel.requestRows(lastRequest, pagingCallback);
     }
