@@ -822,11 +822,11 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     // Calculate how much room we have to work with
     int clientWidth = -1;
     if (scrollPolicy == ScrollPolicy.BOTH) {
-      DOM.setStyleAttribute(dataWrapper, "overflow", "scroll");
-      clientWidth = DOM.getElementPropertyInt(dataWrapper, "clientWidth") - 1;
-      DOM.setStyleAttribute(dataWrapper, "overflow", "auto");
+      absoluteElem.getStyle().setProperty("overflow", "scroll");
+      clientWidth = absoluteElem.getPropertyInt("clientWidth") - 1;
+      absoluteElem.getStyle().setProperty("overflow", "hidden");
     } else {
-      clientWidth = DOM.getElementPropertyInt(dataWrapper, "clientWidth");
+      clientWidth = absoluteElem.getPropertyInt("clientWidth");
     }
     if (clientWidth <= 0) {
       return;
