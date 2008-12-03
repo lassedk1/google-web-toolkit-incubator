@@ -1453,6 +1453,13 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
+   * @return the absolutely positioned wrapper element
+   */
+  Element getAbsoluteElement() {
+    return absoluteElem;
+  }
+
+  /**
    * Adopt a table into this {@link AbstractScrollTable} within its wrapper.
    * 
    * @param table the table to adopt
