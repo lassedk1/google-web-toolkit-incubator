@@ -33,7 +33,6 @@ import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
 import com.google.gwt.gen2.widgetbase.client.WidgetCss;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Date;
@@ -46,7 +45,7 @@ import java.util.Map;
  */
 public class DatePicker extends Gen2Composite implements
     HasSelectionHandlers<Date>, HasHighlightHandlers<Date>,
-    HasShowRangeHandlers<Date>, HasValue<Date> {
+    HasShowRangeHandlers<Date> {
   /**
    * Css interface for DatePicker.
    */
