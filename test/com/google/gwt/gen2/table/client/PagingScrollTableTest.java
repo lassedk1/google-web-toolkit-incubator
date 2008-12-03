@@ -19,6 +19,7 @@ import com.google.gwt.gen2.table.client.AbstractColumnDefinitionTest.CustomColum
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorter;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorterCallback;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
+import com.google.gwt.gen2.table.client.TableModelHelper.Request;
 import com.google.gwt.gen2.table.event.client.PageChangeEvent;
 import com.google.gwt.gen2.table.event.client.PageChangeHandler;
 import com.google.gwt.gen2.table.event.client.PageCountChangeEvent;
@@ -103,6 +104,30 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
 
     public void onPageLoad(PageLoadEvent event) {
       lastEvent = event;
+    }
+  }
+
+  /**
+   * A custom {@link ListTableModel} used for testing.
+   */
+  private static class TestListTableModel extends ListTableModel {
+    /**
+     * The last {@link Request} that was received.
+     */
+    private Request lastRequest = null;
+
+    public TestListTableModel(List<List<Object>> rows) {
+      super(rows);
+    }
+
+    public Request getLastRequest() {
+      return lastRequest;
+    }
+
+    @Override
+    public void requestRows(Request request, Callback<List<Object>> callback) {
+      lastRequest = request;
+      super.requestRows(request, callback);
     }
   }
 
@@ -339,6 +364,23 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
     assertEquals(0, table.getCurrentPage());
   }
 
+  /**
+   * Test paging to the last page when there are not enough rows available.
+   */
+  public void testPagingOnPartialPage() {
+    PagingScrollTable<List<Object>> table = getPagingScrollTable();
+    TestListTableModel tableModel = (TestListTableModel) table.getTableModel();
+
+    // Go to last page and verify only 5 rows (not 10) were requested
+    {
+      table.setPageSize(10);
+      table.gotoPage(2, true);
+      Request request = tableModel.getLastRequest();
+      assertEquals(20, request.getStartRow());
+      assertEquals(5, request.getNumRows());
+    }
+  }
+
   public void testPagingAccessors() {
     // Initialize the grid
     PagingScrollTable<List<Object>> table = getPagingScrollTable();
@@ -454,6 +496,6 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
         columnList.add(row + ":" + column);
       }
     }
-    return new ListTableModel(rowList);
+    return new TestListTableModel(rowList);
   }
 }

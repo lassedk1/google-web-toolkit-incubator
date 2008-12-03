@@ -1206,7 +1206,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     // Disown the old footer table
     if (this.footerTable != null) {
       super.remove(this.footerTable);
-      DOM.removeChild(getElement(), footerWrapper);
+      DOM.removeChild(absoluteElem, footerWrapper);
     }
 
     // Set the new footer table
