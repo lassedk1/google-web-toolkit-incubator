@@ -1,6 +1,6 @@
 #summary Drop down list box
 The default html list box widget cannot be styled very well. Therefore, we are developing a drop down list box widget that can be styled.
-||Demo:|| [http://collectionofdemos.appspot.comhttp://collectionofdemos.appspot.com/demo/com.google.gwt.gen2.demo.dropdownlistbox.DropDownListBoxDemo/DropDownListBoxDemo.html live demo]||
+||Demo:|| [http://collectionofdemos.appspot.com/demo/com.google.gwt.gen2.demo.dropdownlistbox.DropDownListBoxDemo/DropDownListBoxDemo.html live demo]||
 ||Java doc: || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/com/google/gwt/widgetideas/datepicker/client/DatePicker.html java doc]||
 ||Sample Code:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src-demo/com/google/gwt/gen2/DropDownListBox/client/DropDownListBoxDemo.java sample code] ||
 ||Module:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/selection/Selection.gwt.xml Selection]||
