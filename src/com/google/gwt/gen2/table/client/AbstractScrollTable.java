@@ -851,10 +851,10 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       }
 
       // Determine the largest table
-      if (numHeaderCols > numDataCols && numHeaderCols > numFooterCols) {
+      if (numHeaderCols >= numDataCols && numHeaderCols >= numFooterCols) {
         numColumns = numHeaderCols;
         diff = clientWidth - headerTable.getElement().getScrollWidth();
-      } else if (numFooterCols > numDataCols && numFooterCols > numHeaderCols) {
+      } else if (numFooterCols >= numDataCols && numFooterCols >= numHeaderCols) {
         numColumns = numFooterCols;
         diff = clientWidth - footerTable.getElement().getScrollWidth();
       } else if (numDataCols > 0) {
