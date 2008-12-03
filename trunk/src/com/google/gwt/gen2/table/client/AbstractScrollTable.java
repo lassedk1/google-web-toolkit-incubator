@@ -348,11 +348,11 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
           }
 
           // Apply the widths to the sacrifice column
-          table.applyNewColumnWidths(sacrificeCellIndex, sacrificeCells);
+          table.applyNewColumnWidths(sacrificeCellIndex, sacrificeCells, true);
         }
 
         // Set the new widths
-        table.applyNewColumnWidths(curCellIndex, curCells);
+        table.applyNewColumnWidths(curCellIndex, curCells, true);
 
         // Scroll to table back into alignment
         table.scrollTables(false);
@@ -831,15 +831,47 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     if (clientWidth <= 0) {
       return;
     }
-    int diff = clientWidth - dataTable.getOffsetWidth();
+
+    // Calculate the difference and number of column to resize
+    int diff = 0;
+    int numColumns = 0;
+    {
+      // Calculate the number of columns in each table
+      int numHeaderCols = 0;
+      int numDataCols = 0;
+      int numFooterCols = 0;
+      if (headerTable.getElement().getScrollWidth() > 0) {
+        numHeaderCols = headerTable.getColumnCount() - getHeaderOffset();
+      }
+      if (dataTable.getElement().getScrollWidth() > 0) {
+        numDataCols = dataTable.getColumnCount();
+      }
+      if (footerTable != null && footerTable.getOffsetWidth() > 0) {
+        numFooterCols = footerTable.getColumnCount() - getHeaderOffset();
+      }
+
+      // Determine the largest table
+      if (numHeaderCols > numDataCols && numHeaderCols > numFooterCols) {
+        numColumns = numHeaderCols;
+        diff = clientWidth - headerTable.getElement().getScrollWidth();
+      } else if (numFooterCols > numDataCols && numFooterCols > numHeaderCols) {
+        numColumns = numFooterCols;
+        diff = clientWidth - footerTable.getElement().getScrollWidth();
+      } else if (numDataCols > 0) {
+        numColumns = numDataCols;
+        diff = clientWidth - dataTable.getElement().getScrollWidth();
+      }
+    }
+    if (diff == 0 || numColumns <= 0) {
+      return;
+    }
 
     // Calculate the new column widths
-    int numColumns = dataTable.getColumnCount();
     List<ColumnWidthInfo> colWidthInfos = getColumnWidthInfo(0, numColumns);
     columnResizer.distributeWidth(colWidthInfos, diff);
 
     // Set the new column widths
-    applyNewColumnWidths(0, colWidthInfos);
+    applyNewColumnWidths(0, colWidthInfos, false);
 
     // Rescroll the tables
     scrollTables(false);
@@ -1099,7 +1131,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     columnResizer.distributeWidth(colWidthInfos, totalWidth);
 
     // Set the new column widths
-    applyNewColumnWidths(0, colWidthInfos);
+    applyNewColumnWidths(0, colWidthInfos, false);
 
     // Rescroll the tables
     scrollTables(false);
@@ -1174,7 +1206,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       int undistributed = columnResizer.distributeWidth(infos, -diff);
 
       // Set the new column widths
-      applyNewColumnWidths(sacrificeColumn, infos);
+      applyNewColumnWidths(sacrificeColumn, infos, false);
 
       // Prevent over resizing
       if (resizePolicy.isFixedWidth()) {
@@ -1476,16 +1508,21 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * 
    * @param startIndex the index of the first column
    * @param infos the new column width info
+   * @param forced if false, only set column widths that have changed
    */
-  private void applyNewColumnWidths(int startIndex, List<ColumnWidthInfo> infos) {
+  private void applyNewColumnWidths(int startIndex,
+      List<ColumnWidthInfo> infos, boolean forced) {
     int offset = getHeaderOffset();
     int numColumns = infos.size();
     for (int i = 0; i < numColumns; i++) {
-      int width = infos.get(i).getNewWidth();
-      dataTable.setColumnWidth(startIndex + i, width);
-      headerTable.setColumnWidth(startIndex + i + offset, width);
-      if (footerTable != null) {
-        footerTable.setColumnWidth(startIndex + i + offset, width);
+      ColumnWidthInfo info = infos.get(i);
+      int newWidth = info.getNewWidth();
+      if (forced || info.getCurrentWidth() != newWidth) {
+        dataTable.setColumnWidth(startIndex + i, newWidth);
+        headerTable.setColumnWidth(startIndex + i + offset, newWidth);
+        if (footerTable != null) {
+          footerTable.setColumnWidth(startIndex + i + offset, newWidth);
+        }
       }
     }
   }
