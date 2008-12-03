@@ -332,7 +332,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     emptyTableWidgetWrapper.getElement().getStyle().setPropertyPx("border", 0);
     emptyTableWidgetWrapper.getElement().getStyle().setPropertyPx("margin", 0);
     emptyTableWidgetWrapper.getElement().getStyle().setPropertyPx("padding", 0);
-    insert(emptyTableWidgetWrapper, getElement(), 2, true);
+    insert(emptyTableWidgetWrapper, getAbsoluteElement(), 2, true);
     setEmptyTableWidgetVisible(false);
 
     // Listen to table model events
