@@ -228,6 +228,7 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
       <packageset dir="src">
         <include name="com/google/gwt/widgetideas/**" />
         <include name="com/google/gwt/libideas/**" />
+        <include name="com/google/gwt/gen2/**" />
         <exclude name="**/impl/**" />
       </packageset>
       <!-- we have a few impl classes that we don't want javadoc created for that must live in ui-->
@@ -383,7 +384,7 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
   <target name="build.demos">
     <property name="demo.src.dir" value="${project.root}/src-demo" />
     <property name="demo.out.dir" value="${project.root}/demo" />
-    <property name="demo.js.style" value="PRETTY" />
+    <property name="demo.js.style" value="OBFUSCATED" />
 
     <foreach target="gwtc" param="gwtc.module.file">
       <param name="gwtc.src.dir" value="${demo.src.dir}" />
