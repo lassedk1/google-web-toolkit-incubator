@@ -1,4 +1,5 @@
 #summary Drop down list box
+#labels Type-Widget
 The default html list box widget cannot be styled very well. Therefore, we are developing a drop down list box widget that can be styled.
 ||Demo:|| [http://collectionofdemos.appspot.com/demo/com.google.gwt.gen2.demo.dropdownlistbox.DropDownListBoxDemo/DropDownListBoxDemo.html live demo]||
 ||Java doc: || [http://collectionofdemos.appspot.com/javadoc/com/google/gwt/gen2/selection/client/DropDownListBox.html  java doc]||
