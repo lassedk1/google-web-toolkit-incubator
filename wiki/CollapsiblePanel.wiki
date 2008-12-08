@@ -13,7 +13,4 @@ A `CollapsiblePanel` is commonly used for nav bar and help pages which need the 
 ||Demo:|| [http://collectionofdemos.appspot.com/demo/com.google.gwt.widgetideas.demo.collapsiblepanel.CollapsiblePanelDemo/CollapsiblePanelDemo.html live demo]||
 ||Sample Code:|| [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src-demo/com/google/gwt/widgetideas/demo/collapsiblepanel/client/CollapsiblePanelDemo.java sample code] ||
 ||Module:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/widgetideas/WidgetIdeas.gwt.xml WidgetIdeas]||
-
-   
-= Class Design =
-http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/wiki-support/images/PinnedPanel.jpg
+ 
