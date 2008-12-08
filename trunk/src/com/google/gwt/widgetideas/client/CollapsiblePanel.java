@@ -378,6 +378,13 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     return timeToSlide;
   }
 
+  public void hide() {
+    cancelAllTimers();
+    setState(State.HIDING);
+    startFrom = currentOffshift;
+    hidingTimer.run(timeToSlide);
+  }
+
   /**
    * Uses the given toggle button to control whether the panel is collapsed or
    * not.
@@ -466,6 +473,13 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     refreshWidth();
   }
 
+  public void show() {
+    cancelAllTimers();
+    setState(State.SHOWING);
+    startFrom = currentOffshift;
+    overlayTimer.run(this.getTimeToSlide());
+  }
+
   /**
    * Display this panel in its collapsed state.
    */
@@ -497,13 +511,6 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     setState(State.EXPANDED);
   }
 
-  protected void hide() {
-    cancelAllTimers();
-    setState(State.HIDING);
-    startFrom = currentOffshift;
-    hidingTimer.run(timeToSlide);
-  }
-
   /**
    * This method is called immediately after a widget becomes attached to the
    * browser's document.
@@ -518,13 +525,6 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   protected void setPanelPos(int pos) {
     currentOffshift = pos;
     DOM.setStyleAttribute(container.getElement(), "left", pos - width + "px");
-  }
-
-  protected void show() {
-    cancelAllTimers();
-    setState(State.SHOWING);
-    startFrom = currentOffshift;
-    overlayTimer.run(this.getTimeToSlide());
   }
 
   State getState() {
