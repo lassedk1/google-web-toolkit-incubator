@@ -15,24 +15,28 @@
  */
 package com.google.gwt.libideas.resources.css.ast;
 
+import com.google.gwt.libideas.resources.css.ast.CssProperty.Value;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A constant definition.
  */
 public class CssDef extends CssNode {
   private final String key;
-  private final String value;
+  private final List<Value> values = new ArrayList<Value>();
 
-  public CssDef(String key, String value) {
+  public CssDef(String key) {
     this.key = key;
-    this.value = value;
   }
 
   public String getKey() {
     return key;
   }
 
-  public String getValue() {
-    return value;
+  public List<Value> getValues() {
+    return values;
   }
 
   public void traverse(CssVisitor visitor, Context context) {

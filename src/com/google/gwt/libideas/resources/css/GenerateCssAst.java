@@ -32,7 +32,9 @@ import com.google.gwt.libideas.resources.css.ast.CssUrl;
 import com.google.gwt.libideas.resources.css.ast.HasNodes;
 import com.google.gwt.libideas.resources.css.ast.HasProperties;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.DotPathValue;
+import com.google.gwt.libideas.resources.css.ast.CssProperty.IdentValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.ListValue;
+import com.google.gwt.libideas.resources.css.ast.CssProperty.NumberValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.StringValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.Value;
 
@@ -291,18 +293,36 @@ public class GenerateCssAst {
     }
 
     void parseDef(String atRule) {
-      // @def key value with strings
-      String[] parts = atRule.substring(0, atRule.length() - 1).split("\\s");
+      String value = atRule.substring(4, atRule.length() - 1).trim();
 
-      StringBuilder b = new StringBuilder();
-      for (int i = 2; i < parts.length; i++) {
-        b.append(parts[i]);
-        if (i < parts.length - 1) {
-          b.append(" ");
-        }
+      InputSource s = new InputSource();
+      s.setCharacterStream(new StringReader(value));
+      Parser parser = new Parser();
+      // parser.setDocumentHandler(this);
+      parser.setErrorHandler(errors);
+
+      List<Value> values = new ArrayList<Value>();
+      try {
+        LexicalUnit lu = parser.parsePropertyValue(s);
+        extractValueOf(values, lu);
+      } catch (IOException e) {
+        throw new CSSException(CSSException.SAC_SYNTAX_ERR,
+            "Unable to parse @if", e);
       }
 
-      CssDef def = new CssDef(parts[1], b.toString());
+      if (values.size() < 2) {
+        throw new CSSException(CSSException.SAC_SYNTAX_ERR,
+            "@def rules must specify an identifier and one or more values",
+            null);
+      }
+
+      if (!(values.get(0) instanceof IdentValue)) {
+        throw new CSSException(CSSException.SAC_SYNTAX_ERR,
+            "First lexical unit must be an identifier", null);
+      }
+
+      CssDef def = new CssDef(((IdentValue) values.get(0)).getIdent());
+      def.getValues().addAll(values.subList(1, values.size()));
       addNode(def);
     }
 
@@ -629,11 +649,12 @@ public class GenerateCssAst {
         switch (c.getConditionType()) {
           case Condition.SAC_ATTRIBUTE_CONDITION:
             return "[" + c.getLocalName()
-                + (c.getValue() != null ? "=" + c.getValue() : "") + "]";
+                + (c.getValue() != null ? "=\"" + c.getValue() + '"' : "")
+                + "]";
           case Condition.SAC_ONE_OF_ATTRIBUTE_CONDITION:
-            return "[" + c.getLocalName() + "~=" + c.getValue() + "]";
+            return "[" + c.getLocalName() + "~=\"" + c.getValue() + "\"]";
           case Condition.SAC_BEGIN_HYPHEN_ATTRIBUTE_CONDITION:
-            return "[" + c.getLocalName() + "|=" + c.getValue() + "]";
+            return "[" + c.getLocalName() + "|=\"" + c.getValue() + "\"]";
           case Condition.SAC_ID_CONDITION:
             return "#" + c.getValue();
           case Condition.SAC_CLASS_CONDITION:
@@ -669,23 +690,12 @@ public class GenerateCssAst {
           + condition.getConditionType() + " " + condition.getClass().getName());
     }
 
-    private StringValue valueOf(float f, String dimension) {
-      String s;
-      int i = (int) f;
-      if (i == f) {
-        s = String.valueOf(i);
-      } else {
-        s = String.valueOf(f);
-      }
-      return new StringValue(s + dimension);
-    }
-
     private Value valueOf(LexicalUnit value) {
       switch (value.getLexicalUnitType()) {
         case LexicalUnit.SAC_ATTR:
           return new StringValue("attr(" + value.getStringValue() + ")");
         case LexicalUnit.SAC_IDENT:
-          return new StringValue(value.getStringValue());
+          return new IdentValue(value.getStringValue());
         case LexicalUnit.SAC_STRING_VALUE:
           return new StringValue(
               '"' + escapeValue(value.getStringValue(), true) + '"');
@@ -693,9 +703,9 @@ public class GenerateCssAst {
           // flute models the commas as operators so no separator needed
           return colorValue(value.getParameters());
         case LexicalUnit.SAC_INTEGER:
-          return new StringValue(String.valueOf(value.getIntegerValue()));
+          return new NumberValue(value.getIntegerValue());
         case LexicalUnit.SAC_REAL:
-          return valueOf(value.getFloatValue(), "");
+          return new NumberValue(value.getFloatValue());
         case LexicalUnit.SAC_CENTIMETER:
         case LexicalUnit.SAC_DEGREE:
         case LexicalUnit.SAC_DIMENSION:
@@ -712,7 +722,8 @@ public class GenerateCssAst {
         case LexicalUnit.SAC_POINT:
         case LexicalUnit.SAC_RADIAN:
         case LexicalUnit.SAC_SECOND:
-          return valueOf(value.getFloatValue(), value.getDimensionUnitText());
+          return new NumberValue(value.getFloatValue(),
+              value.getDimensionUnitText());
         case LexicalUnit.SAC_URI:
           return new StringValue("url(" + value.getStringValue() + ")");
         case LexicalUnit.SAC_OPERATOR_COMMA:
