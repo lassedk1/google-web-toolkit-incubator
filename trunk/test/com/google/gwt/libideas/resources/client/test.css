@@ -33,11 +33,23 @@
     offset: value("spriteMethod.getWidth", "px") value("spriteMethod.getHeight", "px");
 }
 
+.blahA {
+	background-color: #000;
+}
+
+.blahA[someAttribute="foo"][beer="baz"] {
+	background-color: #fff;
+}
+
 /* Test value substitution */
 div {
     border: BIG solid RED;
     direction: DIRECTION;
     background: BACKGROUND;
+}
+
+div[foo="bar"] {
+    content: 'bar';
 }
 
 /* Test structural modifications */

@@ -32,6 +32,22 @@ public class CSSResourceTest extends LibTestBase {
     CssResource css();
   }
 
+  interface CssWithDefines extends CssResource {
+    double lengthFloat();
+
+    int lengthInt();
+
+    double percentFloat();
+
+    int percentInt();
+
+    double rawDouble();
+
+    float rawFloat();
+
+    int rawInt();
+  }
+
   interface MyCssResource extends CssResource, MyNonCssResource {
     @ClassName("replacement-not-java-ident")
     String nameOverride();
@@ -83,6 +99,9 @@ public class CSSResourceTest extends LibTestBase {
     @Resource("32x32.png")
     DataResource dataMethod();
 
+    @Resource("deftest.css")
+    CssWithDefines defines();
+
     @Resource("unrelatedDescendants.css")
     @Import(value = {MyCssResourceA.class, MyCssResourceB.class})
     @Strict
@@ -114,6 +133,13 @@ public class CSSResourceTest extends LibTestBase {
 
   public static String red() {
     return "orange";
+  }
+
+  public void testConcatenatedResource() {
+    ConcatenatedResources r = GWT.create(ConcatenatedResources.class);
+    String text = r.css().getText();
+    assertTrue(text.contains(".partA"));
+    assertTrue(text.contains(".partB"));
   }
 
   public void testCSS() {
@@ -174,11 +200,19 @@ public class CSSResourceTest extends LibTestBase {
     assertTrue(text.indexOf("prevent:true") < text.indexOf("may-not-combine2"));
   }
 
-  public void testConcatenatedResource() {
-    ConcatenatedResources r = GWT.create(ConcatenatedResources.class);
-    String text = r.css().getText();
-    assertTrue(text.contains(".partA"));
-    assertTrue(text.contains(".partB"));
+  public void testDefines() {
+    Resources r = GWT.create(Resources.class);
+    CssWithDefines defines = r.defines();
+
+    assertEquals(1, defines.rawInt());
+    assertEquals(1.5F, defines.rawFloat());
+    assertEquals(1.5, defines.rawDouble());
+
+    assertEquals(50, defines.lengthInt());
+    assertEquals(1.5, defines.lengthFloat());
+
+    assertEquals(50, defines.percentInt());
+    assertEquals(50.5, defines.percentFloat());
   }
 
   public void testMultipleBundles() {

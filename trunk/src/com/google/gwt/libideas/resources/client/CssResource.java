@@ -32,6 +32,9 @@ import java.lang.annotation.Target;
  * <li>{@code String someClassName();} will allow the css class
  * <code>.someClassName</code> to be obfuscated at runtime. The function will
  * return the obfuscated class name.</li>
+ * <li>{@code <primitive numeric type> someDefName();} will allow access to the
+ * values defined by {@literal @def} rules within the CSS file. The defined
+ * value must be a raw number, a CSS length, or a percentage value.
  * </ul>
  * 
  * <p>
@@ -67,9 +70,9 @@ import java.lang.annotation.Target;
  * {@link com.google.gwt.core.client.GWT#create(Class)}.</li>
  * </ul>
  * 
- * @see <a href= *
- *      "http://code.google.com/p/google-web-toolkit-incubator/wiki/CssResource"
- *      * >CssResource design doc< /a>
+ * @see <a
+ *      href="http://code.google.com/p/google-web-toolkit-incubator/wiki/CssResource"
+ *      >CssResource design doc</a>
  */
 @ResourceGeneratorType(CssResourceGenerator.class)
 public interface CssResource extends ResourcePrototype {
@@ -89,18 +92,6 @@ public interface CssResource extends ResourcePrototype {
   @Documented
   @Target(ElementType.METHOD)
   public @interface ClassName {
-    String value();
-  }
-
-  /**
-   * Specifies the string prefix to use when one CssResource is imported into
-   * the scope of another CssResource.
-   * 
-   * @see Import
-   */
-  @Documented
-  @Target(ElementType.TYPE)
-  public @interface ImportedWithPrefix {
     String value();
   }
 
@@ -147,6 +138,18 @@ public interface CssResource extends ResourcePrototype {
   @Target(ElementType.METHOD)
   public @interface Import {
     Class<? extends CssResource>[] value();
+  }
+
+  /**
+   * Specifies the string prefix to use when one CssResource is imported into
+   * the scope of another CssResource.
+   * 
+   * @see Import
+   */
+  @Documented
+  @Target(ElementType.TYPE)
+  public @interface ImportedWithPrefix {
+    String value();
   }
 
   /**
