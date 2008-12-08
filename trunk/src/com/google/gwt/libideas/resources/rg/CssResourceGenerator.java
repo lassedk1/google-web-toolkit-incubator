@@ -654,6 +654,12 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', '0',
       '1', '2', '3', '4'};
 
+  /**
+   * This value is used by {@link #concatOp} to help create a more balanced AST
+   * tree by producing parenthetical expressions.
+   */
+  private static final int CONCAT_EXPRESSION_LIMIT = 20;
+
   public static void main(String[] args) {
     for (int i = 0; i < 1000; i++) {
       System.out.println(makeIdent(i));
@@ -1021,6 +1027,26 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   }
 
   /**
+   * Check if number of concat expressions currently exceeds limit and either
+   * append '+' if the limit isn't reached or ') + (' if it is.
+   * 
+   * @return numExpressions + 1 or 0 if limit was exceeded.
+   */
+  private int concatOp(int numExpressions, StringBuilder b) {
+    /*
+     * TODO: Fix the compiler to better handle arbitrarily long concatenation
+     * expressions.
+     */
+    if (numExpressions >= CONCAT_EXPRESSION_LIMIT) {
+      b.append(") + (");
+      return 0;
+    }
+
+    b.append(" + ");
+    return numExpressions + 1;
+  }
+
+  /**
    * Determine if a type is derived from CssResource.
    */
   private boolean derivedFromCssResource(JClassType type) {
@@ -1106,11 +1132,24 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     String template = out.toString();
     StringBuilder b = new StringBuilder();
     int start = 0;
+
+    /*
+     * Very large concatenation expressions using '+' cause the GWT compiler to
+     * overflow the stack due to deep AST nesting. The workaround for now is to
+     * force it to be more balanced using intermediate concatenation groupings.
+     * 
+     * This variable is used to track the number of subexpressions within the
+     * current parenthetical expression.
+     */
+    int numExpressions = 0;
+
+    b.append('(');
     for (Map.Entry<Integer, List<CssNode>> entry : v.getSubstitutionPositions().entrySet()) {
       // Add the static section between start and the substitution point
       b.append('"');
       b.append(Generator.escape(template.substring(start, entry.getKey())));
-      b.append("\" + ");
+      b.append('\"');
+      numExpressions = concatOp(numExpressions, b);
 
       // Add the nodes at the substitution point
       for (CssNode x : entry.getValue()) {
@@ -1135,7 +1174,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
           // ((expr) ? "CSS" : "elseCSS") +
           b.append("((" + asIf.getExpression() + ") ? " + expression + " : "
-              + elseExpression + ") + ");
+              + elseExpression + ") ");
+          numExpressions = concatOp(numExpressions, b);
 
         } else if (x instanceof CssProperty) {
           CssProperty property = (CssProperty) x;
@@ -1144,7 +1184,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
               property.getValues());
 
           // (expr) +
-          b.append("(" + property.getValues().getExpression() + ") + ");
+          b.append("(" + property.getValues().getExpression() + ") ");
+          numExpressions = concatOp(numExpressions, b);
 
         } else {
           // This indicates that some magic node is slipping by our visitors
@@ -1160,6 +1201,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     b.append('"');
     b.append(Generator.escape(template.substring(start)));
     b.append('"');
+    b.append(')');
 
     return b.toString();
   }
