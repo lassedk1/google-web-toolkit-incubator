@@ -283,6 +283,8 @@ Note also that there is no requirement that a with: class implement the ClientBu
 
 Extends Resourceful (from the example above) to allow its bundle to be passed in.
 
+<strong>The with() scheme proposed here is redundant with the create...() scheme outlined below, under "Using a widget that requires constructor args". Need to pick one. with()... is a bit more complex, create...() more brittle. rjrjr 8 dec 08</strong>
+
 {{{
 public class Resourceful extends Composite {
  
