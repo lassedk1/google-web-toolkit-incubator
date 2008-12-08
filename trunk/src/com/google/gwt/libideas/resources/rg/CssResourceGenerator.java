@@ -809,9 +809,28 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     sw.println("public String getText() {");
     sw.indent();
 
+    boolean strict = method.getAnnotation(Strict.class) != null;
+    if (!strict) {
+      /*
+       * The developer may choose to force strict behavior onto the system. If
+       * the method does already have the @Strict annotation, print a warning.
+       */
+      try {
+        PropertyOracle propertyOracle = context.getGeneratorContext().getPropertyOracle();
+        String propertyValue = propertyOracle.getPropertyValue(logger,
+            "CssResource.forceStrict");
+        if (Boolean.valueOf(propertyValue)) {
+          logger.log(TreeLogger.WARN, "CssResource.forceStrict is true, but "
+              + method.getName() + "() is missing the @Strict annotation.");
+          strict = true;
+        }
+      } catch (BadPropertyValueException e) {
+        // Ignore
+      }
+    }
+
     String cssExpression = makeExpression(logger, context, cssResourceSubtype,
-        stylesheetMap.get(method), replacementsWithPrefix,
-        method.getAnnotation(Strict.class) != null);
+        stylesheetMap.get(method), replacementsWithPrefix, strict);
     sw.println("return " + cssExpression + ";");
     sw.outdent();
     sw.println("}");
