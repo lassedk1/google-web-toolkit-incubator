@@ -17,7 +17,7 @@
       * [PagingScrollTable]
       * [BulkTableRenderers]
     * Panels
-      * [PinnedPanel]
+      * [CollaspiblePanel]
       * [GlassPanel]
       * [FastTree]
       * [LazyPanel]
