@@ -134,10 +134,10 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
   /**
    * Test absolute row index operations.
    */
+  @SuppressWarnings("deprecation")
   public void testAbsoluteRowIndex() {
     // Initialize the grid
     PagingScrollTable<List<Object>> table = getPagingScrollTable();
-    FixedWidthGrid grid = table.getDataTable();
     table.setPageSize(5);
 
     // First page with plenty of rows
@@ -146,6 +146,8 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
       table.gotoPage(0, true);
       assertEquals(0, table.getAbsoluteFirstRowIndex());
       assertEquals(4, table.getAbsoluteLastRowIndex());
+      assertEquals(0, table.getFirstRow());
+      assertEquals(4, table.getLastRow());
     }
 
     // Second page with plenty of rows
@@ -153,6 +155,8 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
       table.gotoPage(1, true);
       assertEquals(5, table.getAbsoluteFirstRowIndex());
       assertEquals(9, table.getAbsoluteLastRowIndex());
+      assertEquals(5, table.getFirstRow());
+      assertEquals(9, table.getLastRow());
     }
 
     // Second page with limited rows
@@ -160,6 +164,8 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
       table.setPageSize(15);
       assertEquals(15, table.getAbsoluteFirstRowIndex());
       assertEquals(24, table.getAbsoluteLastRowIndex());
+      assertEquals(15, table.getFirstRow());
+      assertEquals(24, table.getLastRow());
     }
 
     // First page with no page size
@@ -167,6 +173,8 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
       table.setPageSize(0);
       assertEquals(0, table.getAbsoluteFirstRowIndex());
       assertEquals(24, table.getAbsoluteLastRowIndex());
+      assertEquals(0, table.getFirstRow());
+      assertEquals(24, table.getLastRow());
     }
   }
 
@@ -362,23 +370,6 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
     assertEquals(300, table.getCurrentPage());
     table.gotoFirstPage();
     assertEquals(0, table.getCurrentPage());
-  }
-
-  /**
-   * Test paging to the last page when there are not enough rows available.
-   */
-  public void testPagingOnPartialPage() {
-    PagingScrollTable<List<Object>> table = getPagingScrollTable();
-    TestListTableModel tableModel = (TestListTableModel) table.getTableModel();
-
-    // Go to last page and verify only 5 rows (not 10) were requested
-    {
-      table.setPageSize(10);
-      table.gotoPage(2, true);
-      Request request = tableModel.getLastRequest();
-      assertEquals(20, request.getStartRow());
-      assertEquals(5, request.getNumRows());
-    }
   }
 
   public void testPagingAccessors() {
