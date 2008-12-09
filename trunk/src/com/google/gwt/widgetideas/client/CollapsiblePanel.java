@@ -310,7 +310,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
               }
               break;
             case Event.ONMOUSEDOWN:
-              setCollapsed(false);
+              setCollapsedState(false, true);
           }
         }
       }
@@ -378,11 +378,14 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     return timeToSlide;
   }
 
+  /**
+   * Hides the panel when the panel is the collapsible state. Does nothing if
+   * the panel is expanded or not attached.
+   */
   public void hide() {
-    cancelAllTimers();
-    setState(State.HIDING);
-    startFrom = currentOffshift;
-    hidingTimer.run(timeToSlide);
+    if (getState() != State.EXPANDED && isAttached()) {
+      hiding();
+    }
   }
 
   /**
@@ -395,7 +398,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     collapseToggle.setDown(!this.isCollapsed());
     collapseToggle.addClickListener(new ClickListener() {
       public void onClick(Widget sender) {
-        setCollapsed(!CollapsiblePanel.this.collapseToggle.isDown());
+        setCollapsedState(!CollapsiblePanel.this.collapseToggle.isDown(), true);
       }
     });
   }
@@ -425,6 +428,39 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
 
   public void setAnimationEnabled(boolean enable) {
     animate = enable;
+  }
+
+  /**
+   * Sets the state of the collapsible panel.
+   * 
+   * @param collapsed is the panel collapsed?
+   * @param fireEvents should the change listeners be fired?
+   */
+  public void setCollapsedState(boolean collapsed) {
+    setCollapsedState(collapsed, false);
+  }
+
+  /**
+   * Sets the state of the collapsible panel.
+   * 
+   * @param collapsed is the panel collapsed?
+   * @param fireEvents should the change listeners be fired?
+   */
+  public void setCollapsedState(boolean collapsed, boolean fireEvents) {
+    if (isCollapsed() == collapsed) {
+      return;
+    }
+    if (collapseToggle != null) {
+      collapseToggle.setDown(!collapsed);
+    }
+    if (collapsed) {
+      becomeCollapsed();
+    } else {
+      becomeExpanded();
+    }
+    if (fireEvents) {
+      changeListeners.fireChange(this);
+    }
   }
 
   /**
@@ -473,41 +509,51 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     refreshWidth();
   }
 
+  /**
+   * Shows the panel if the panel is in a collapsible state. Does nothing if the
+   * panel is expanded or not attached.
+   * 
+   * Note: this method should only be called if the user's mouse will be over
+   * the panel's contents after show() is executed.
+   */
   public void show() {
-    cancelAllTimers();
-    setState(State.SHOWING);
-    startFrom = currentOffshift;
-    overlayTimer.run(this.getTimeToSlide());
+    if (getState() != State.EXPANDED && isAttached()) {
+      cancelAllTimers();
+      setState(State.SHOWING);
+      startFrom = currentOffshift;
+      overlayTimer.run(this.getTimeToSlide());
+    }
   }
 
   /**
-   * Display this panel in its collapsed state.
+   * Display this panel in its collapsed state. The panel's contents will be
+   * hidden and only the hover var will be visible.
    */
   protected void becomeCollapsed() {
     cancelAllTimers();
-    int hoverBarWidth = hoverBar.getOffsetWidth();
-    int aboutHalf = (hoverBarWidth / 2) + 1;
-    int newWidth = width + aboutHalf;
-    maxOffshift = newWidth;
 
-    // Width is now hoverBarWidth.
-    master.setWidth(hoverBarWidth + "px");
-
-    // clean up state.
-    currentOffshift = width;
-    hide();
+    // Now hide.
+    if (isAttached()) {
+      adjustmentsForCollapsedState();
+      hiding();
+    } else {
+      // onLoad will ensure this is correctly displayed. Here we just ensure
+      // that the panel is the correct final hidden state. Forcing the state to
+      // is hidden regardless of what is was.
+      state = State.IS_HIDDEN;
+    }
   }
 
   /**
-   * Display this panel in its expanded state.
+   * Display this panel in its expanded state. The panel's contents will be
+   * fully visible and take up all required space.
    */
   protected void becomeExpanded() {
     cancelAllTimers();
     // The master width needs to be readjusted back to it's original size.
     if (isAttached()) {
-      refreshWidth();
+      adjustmentsForExpandedState();
     }
-    DOM.setStyleAttribute(container.getElement(), "left", "0px");
     setState(State.EXPANDED);
   }
 
@@ -531,11 +577,37 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     return state;
   }
 
+  private void adjustmentsForCollapsedState() {
+    int hoverBarWidth = hoverBar.getOffsetWidth();
+    int aboutHalf = (hoverBarWidth / 2) + 1;
+    int newWidth = width + aboutHalf;
+    maxOffshift = newWidth;
+
+    // Width is now hoverBarWidth.
+    master.setWidth(hoverBarWidth + "px");
+
+    // clean up state.
+    currentOffshift = width;
+  }
+
+  private void adjustmentsForExpandedState() {
+    master.setWidth(width + "px");
+    DOM.setStyleAttribute(container.getElement(), "left", "0px");
+  }
+
   private void cancelAllTimers() {
     delayedHide.cancel();
     delayedShow.cancel();
     overlayTimer.cancel();
     hidingTimer.cancel();
+  }
+
+  private void hiding() {
+    assert (isAttached());
+    cancelAllTimers();
+    setState(State.HIDING);
+    startFrom = currentOffshift;
+    hidingTimer.run(timeToSlide);
   }
 
   /**
@@ -563,25 +635,18 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
       throw new IllegalStateException(
           "The underlying content width cannot be 0. Please ensure that the .container css style has a fixed width");
     }
-    master.setWidth(width + "px");
-  }
-
-  private void setCollapsed(boolean collapsed) {
-    if (isCollapsed() == collapsed) {
-      return;
-    }
-    if (collapseToggle != null) {
-      collapseToggle.setDown(!collapsed);
-    }
-    if (collapsed) {
-      becomeCollapsed();
+    if (getState() == State.EXPANDED) {
+      adjustmentsForExpandedState();
     } else {
-      becomeExpanded();
+      adjustmentsForCollapsedState();
+      // we don't know if we just moved the mouse outside of the
+      setPanelPos(0);
+      state = State.IS_HIDDEN;
     }
-    changeListeners.fireChange(this);
   }
 
   private void setState(State state) {
+    // checks are assuming animation.
     if (isAnimationEnabled()) {
       State.checkTo(this.state, state);
     }
