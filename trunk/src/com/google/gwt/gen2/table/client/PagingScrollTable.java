@@ -575,13 +575,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       }
 
       // Request the new data from the table model
-      int startRow = currentPage * pageSize;
-      int numRows = pageSize;
-      int rowCount = tableModel.getRowCount();
-      if (rowCount != TableModel.UNKNOWN_ROW_COUNT) {
-        numRows = Math.min(numRows, rowCount - startRow);
-      }
-      lastRequest = new Request(startRow, numRows,
+      lastRequest = new Request(currentPage * pageSize, pageSize,
           dataTable.getColumnSortList());
       tableModel.requestRows(lastRequest, pagingCallback);
     }
@@ -736,6 +730,24 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       return visibleColumns.get(colIndex);
     }
     return null;
+  }
+
+  /**
+   * @return the index of the first visible row
+   * @deprecated use {@link #getAbsoluteFirstRowIndex()} instead
+   */
+  @Deprecated
+  protected int getFirstRow() {
+    return getAbsoluteFirstRowIndex();
+  }
+
+  /**
+   * @return the index of the last visible row
+   * @deprecated use {@link #getAbsoluteLastRowIndex()} instead
+   */
+  @Deprecated
+  protected int getLastRow() {
+    return getAbsoluteLastRowIndex();
   }
 
   /**
