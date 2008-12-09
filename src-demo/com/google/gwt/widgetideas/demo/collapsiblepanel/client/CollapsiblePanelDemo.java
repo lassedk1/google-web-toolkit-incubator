@@ -21,8 +21,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -94,6 +95,18 @@ public class CollapsiblePanelDemo implements EntryPoint {
 
       // The panel.
       final CollapsiblePanel panel = new CollapsiblePanel();
+      String value = Location.getParameter("collapsed");
+      if (value != null) {
+        value = value.trim();
+        if (value.equals("true")) {
+          panel.setCollapsedState(true);
+        } else if (value.equals("false")) {
+          // do nothing, default.
+        } else {
+          Window.alert("collapsed should not be given " + value
+              + " use true or false instead");
+        }
+      }
       RootPanel.get("collapsible-panel").add(panel);
       panel.add(contents);
       panel.setWidth("200px");
@@ -107,12 +120,15 @@ public class CollapsiblePanelDemo implements EntryPoint {
   }
 
   private Panel createSchoolNavBar() {
-    controlButton = createToggleButton();
+    ToggleButton toggler = new ToggleButton(
+        "Directory (click to pin)",
+        "Directory (click to collapse)");
+    toggler.setStyleName("CollapsibleToggle");
+    controlButton = toggler;
 
     MyStackPanel wrapper = new MyStackPanel();
     FlowPanel navBar = new FlowPanel();
     navBar.setSize("200px", "100%");
-    final HTML title = new HTML("School Directory");
 
     HorizontalPanel panel = new HorizontalPanel();
     panel.setWidth("100%");
@@ -120,10 +136,11 @@ public class CollapsiblePanelDemo implements EntryPoint {
     panel.setCellHorizontalAlignment(controlButton,
         HasHorizontalAlignment.ALIGN_LEFT);
 
-    panel.add(title);
+    panel.add(controlButton);
     panel.add(controlButton);
     panel.setCellWidth(controlButton, "1px");
-    panel.setCellHorizontalAlignment(title, HorizontalPanel.ALIGN_CENTER);
+    panel.setCellHorizontalAlignment(controlButton,
+        HorizontalPanel.ALIGN_CENTER);
 
     navBar.add(panel);
 
@@ -152,11 +169,4 @@ public class CollapsiblePanelDemo implements EntryPoint {
     admin.addItem("The Grand High Supreme Master Pubba");
     return navBar;
   }
-
-  private ToggleButton createToggleButton() {
-    ToggleButton toggler = new ToggleButton(">>>", "<<<");
-    toggler.setStyleName("CollapsibleToggle");
-    return toggler;
-  }
-
 }
