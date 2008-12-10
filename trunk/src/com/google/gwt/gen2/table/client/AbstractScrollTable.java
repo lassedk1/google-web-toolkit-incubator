@@ -1270,10 +1270,9 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   @Override
   public void setHeight(String height) {
-    if (scrollPolicy == ScrollPolicy.BOTH) {
-      this.lastHeight = height;
-    }
+    this.lastHeight = height;
     super.setHeight(height);
+    resizeTablesVertically();
   }
 
   /**
@@ -1416,8 +1415,8 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * remaining vertical space.
    */
   protected void resizeTablesVertically() {
-    if (!verticalResizePending) {
-      verticalResizePending = false;
+    if (!verticalResizePending && isAttached()) {
+      verticalResizePending = true;
       DeferredCommand.addCommand(resizeTablesVerticallyCommand);
     }
   }
@@ -1426,16 +1425,21 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * Helper method that actually performs the vertical resizing.
    */
   protected void resizeTablesVerticallyNow() {
+    // If we aren't attached, return immediately
+    if (!isAttached()) {
+      return;
+    }
+
     // Force browser to redraw
     if (scrollPolicy == ScrollPolicy.DISABLED) {
       dataWrapper.getStyle().setProperty("overflow", "auto");
       dataWrapper.getStyle().setProperty("overflow", "");
-      setHeight(absoluteElem.getOffsetHeight() + "px");
+      resizeTablesVerticallyNowImpl();
       return;
     } else if (scrollPolicy == ScrollPolicy.HORIZONTAL) {
       dataWrapper.getStyle().setProperty("overflow", "hidden");
       dataWrapper.getStyle().setProperty("overflow", "auto");
-      setHeight(absoluteElem.getOffsetHeight() + "px");
+      resizeTablesVerticallyNowImpl();
       scrollTables(true);
       return;
     }
@@ -1611,6 +1615,17 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       int footerWidth = footerTable.getOffsetWidth();
       footerSpacer.getStyle().setPropertyPx("left", footerWidth);
     }
+  }
+
+  /**
+   * Set the height of the outer div equal to the height of the absolute
+   * element.
+   */
+  private void resizeTablesVerticallyNowImpl() {
+    // Old mozilla reports the offset height of elements as 0px if the parent
+    // has a height of 0px, so we need to set the height to 1px as a workaround.
+    int height = Math.max(1, absoluteElem.getOffsetHeight());
+    super.setHeight(height + "px");
   }
 
   /**
