@@ -27,6 +27,7 @@
     * [GWTCanvas]
     * [Spinner]
     * [DropDownListBox]
+    * [SimpleWidget]
   * [FAQ]
     * [StubbingRPC]
     * [IntegratingWithSpring]
