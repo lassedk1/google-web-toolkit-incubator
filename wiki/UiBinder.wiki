@@ -222,7 +222,7 @@ There are type matching issues here. The ui:field of a DOM element is a string i
   <input type="checkbox" ui:field="myCheckBox">
   <label for="{myCheckBox}" ui:field="myLabel"/>
 </span>
-}}}}
+}}}
 
 </blockquote>
 =Using ClientBundles with a UiBinder=
