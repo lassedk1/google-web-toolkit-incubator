@@ -47,13 +47,16 @@ abstract class ScrollableLogHandler<ContentType extends Widget & HasWidgets>
     setStyleName(styleName);
     scroller.setStyleName("logContentPane");
     panel.add(scroller);
+    
     this.contents = createContents();
     scroller.add(contents);
-    panel.add(new Button("clear log", new ClickListener() {
+    Button button = new Button("clear log", new ClickListener() {
       public void onClick(Widget sender) {
         clear();
       }
-    }));
+    });
+    panel.add(button);
+   panel.setCellHeight(button, "1px");
   }
 
   /**
