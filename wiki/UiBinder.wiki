@@ -440,8 +440,6 @@ public @UiConstructor CricketScores(String... teamNames) {...}
 </g:HTMLPanel>
 }}}
 
-The with...() method approach require that you put a g
-
 =Apply different xml templates to the same widget=
 
 You're an MVC developer. You have a nice view interface, and a templated Widget that implements it. How might you use several different xml templates for the same view?
