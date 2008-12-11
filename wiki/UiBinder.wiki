@@ -289,9 +289,7 @@ ClientBundle interface.
 
 <blockquote>
   As above, this is an abuse of attribute prefixing, and a bad idea.
-
-  Instead, we should bite the bullet and adopt a mini-expression
-  language, something like:
+  Here again we should use our little expression language:
 
 {{{
 <g:HTMLPanel xmlns:ui='urn:ui:com.google.gwt.uibinder'
