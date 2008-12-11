@@ -6,7 +6,7 @@ The simple widget is meant to help users create widgets quickly and easily.
 ||Java doc: || [http://collectionofdemos.appspot.com/javadoc/com/google/gwt/gen2/commonwidget/client/SimpleWidget.html  java doc]||
 ||Sample Code:|| [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src-demo/com/google/gwt/gen2/demo/simplewidget/client/SimpleWidgetDemo.java sample code] ||
 ||Module:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/commonwidget/CommonWidget.gwt.xml CommonWidget]||
-||Source ||[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/commonwidget/client/CommonWidget.java source code]|| 
+||Source ||[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/commonwidget/client/SimpleWidget.java source code]|| 
 
 = Sample usage =
 == Create a clickable widget ==
