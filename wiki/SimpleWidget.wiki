@@ -1,4 +1,5 @@
-#summary DRAFT `SimpleWidget`
+#summary `SimpleWidget`
+#labels Type-Widget
 
 The simple widget is meant to help users create widgets quickly and easily. 
 
