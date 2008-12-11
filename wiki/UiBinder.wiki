@@ -22,49 +22,42 @@ Emily hit upon the idea of the Configurator (here rechristened UiBinder). It’s
 
 {{{
 /**
- * Interface implemented by classes that generate DOM and widget
- * structures from ui.xml template files. Put the {@link Template}
- * annotation  on a UiBinder class declaration to point the code
- * generator at the right ui.xml file.
- */
-interface UiBinder<T> {
-
-  /**
-   * Create a new UI and inject it into the given owner.
-   * Elements marked in the template by g:field will be
-   * assigned to like named fields or setter methods
-   * in owner.
-   */
-  bindUi(T owner);
-}
-}}}
-
-{{{
-/**
- * Extends UiBinder to provide separate calls to create the root
- * of the UI, and to bind the UI. This allows fancy implementations
- * to support deferred instantiation.
+ * Interface implemented by classes that generate DOM or Widget structures from
+ * ui.xml template files, and which inject portions of the generated UI into the
+ * fields of an owner.
+ * <p>
+ * The generated UiBinder implementation will be based on an xml file resource
+ * in the same package as the owner class, with the same name and a "ui.xml"
+ * suffix. For example, a UI owned by class {@code bar.baz.Foo} will be sought
+ * in {@code /bar/baz/Foo.ui.xml}. (To use a different template file, put the
+ * {@link UiTemplate} annotation on your UiBinder interface declaration to point
+ * the code generator at it.)
  *
- * <p>Calling the inherited bindUi(owner) method is the same
- * as calling bindRest(createRoot(), owner);
+ * @param <U> The type of the root object of the generated UI, typically a
+ *          subclass of {@link com.google.gwt.dom.client.Element} or
+ *          {@link com.google.gwt.user.client.ui.UIObject}
+ * @param <O> The type of the object that will own the generated UI
  */
-interface ForkedUiBinder<R, O> extends UiBinder<O> {
+public interface UiBinder<U, O> {
+  
   /**
-   * Return the root element defined in the template,
-   * possibly empty. The type R must match the root
-   * element in the ui.xml template file.
+   * Creates and returns the root object of the UI. If possible the creation of
+   * the rest of the UI is deferred until {@link #bindUi} is called.
    */
-  R createRoot();
+  U createUiRoot();
 
   /**
-   * Given a ui root from a previous call to createRoot(),
-   * install it into owner. Elements marked in the
-   * template by g:field will be assigned to like named
-   * fields or setter methods in owner.(If creation of
-   * root's contents were deferred, they will be
-   * instantiated now.)
+   * Completes the creation of a UI started with a call to {@link #createUiRoot},
+   * and fills any owner fields tagged with {@link UiField}.
    */
-  bindRest(R root, O owner);
+  void bindUi(U root, O owner);
+  
+  /**
+   * Convenience method that creates and binds the UI in one call. May be
+   * optimized rather than actually calling both {@link #createUiRoot} and
+   * {@link #bindUi}.
+   */
+  U createAndBindUi(O owner);
 }
 }}}
 
@@ -75,23 +68,22 @@ Make a simple generated UI, with a named element, and without widgets.
 {{{
 <!-- HelloWorld.ui.xml -->
 
-<span xmlns:g='import:com.google.gwt.user.client.ui'>
-  Hello, <span g:field="nameSpan"/>.
-</span>
+<div xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  Hello, <span ui:field="nameSpan"/>.
+</div>
 }}}
 
 {{{
 public class HelloWorld extends UIObject { // Could extend Widget instead
 
-  @Template("HelloWorld.ui.xml")
-  interface MyUiBinder extends UiBinder<HelloWorld> {}
+  interface MyUiBinder extends UiBinder<DivElement, HelloWorld> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
-  SpanElement nameSpan;
+  @UiField SpanElement nameSpan;
 
   public HelloWorld(String name) {
     // call setElement(), set nameSpan
-    uiBinder.bindUi(this);
+    uiBinder.createAndBindUi(this);
     nameSpan.setInnerText(name);
   }
 }
@@ -108,23 +100,23 @@ Make a simple widget-based UI
 {{{
 <!-- HelloWidgetWorld.ui.xml -->
 
-<g:HTMLPanel xmlns:g='import:com.google.gwt.user.client.ui'>
-  Hello, <g:ListBox g:field="listBox"/>.
+<g:HTMLPanel xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  xmlns:g='import:com.google.gwt.user.client.ui'>
+  Hello, <g:ListBox ui:field="listBox"/>.
 </g:HTMLPanel>
 }}}
 
 {{{
 public class HelloWidgetWorld extends Composite {
 
-  @Template("HelloWidgetWorld.ui.xml")
-  interface MyUiBinder extends UiBinder<HelloWidgetWorld> {}
+  interface MyUiBinder extends UiBinder<Widget, HelloWidgetWorld> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
   ListBox listBox;
 
   public HelloWidgetWorld(String... names) {
     // call initWidget(), set listBox
-    uiBinder.bind(this);
+    uiBinder.createAndBindUi(this);
     for (String name : names) { listBox.addItem(name); }
   }
 }
@@ -143,27 +135,27 @@ Note that this example uses the same ui.xml file as the first. Templates need ha
 {{{
 <!-- HelloWorld.ui.xml -->
 
-<span xmlns:g='import:com.google.gwt.user.client.ui'>
-  Hello, <span g:field='nameSpan'/>.
+<span xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  xmlns:g='import:com.google.gwt.user.client.ui'>
+  Hello, <span ui:field='nameSpan'/>.
 </span>
 }}}
 
 {{{
 public class Deferral extends Widget {
 
-  @Template("HelloWorld.ui.xml")
-  interface MyUiBinder extends ForkedUiBinder<SpanElement, Topical> {}
+  interface MyUiBinder extends UiBinder<SpanElement, Topical> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
   SpanElement nameSpan;
 
   public Deferral(String name) {
-    setElement(uiBinder.createRoot());
+    setElement(uiBinder.createUiRoot());
   }
 
   @Override protected onAttach() {
     // set nameSpan
-    uiBinder.bindRest((SpanElement)getElement(), this);
+    uiBinder.bindUi((SpanElement)getElement(), this);
     nameSpan.setInnerText(name);
     super.onAttach();
   }
@@ -181,22 +173,22 @@ You want to make your personal variant on the single most common widget, a check
 {{{
 <!-- LabeledCheckBox.ui.xml -->
 
-<span xmlns:g='import:com.google.gwt.user.client.ui'>
-  <input type="checkbox" g:field="myCheckBox">
-  <label g:for="myCheckBox" g:field="myLabel"/>
+<span xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  xmlns:g='import:com.google.gwt.user.client.ui'>
+  <input type="checkbox" ui:field="myCheckBox">
+  <label g:for="myCheckBox" ui:field="myLabel"/>
 </span>
 }}}
 
 {{{
 public class LabeledCheckBox extends Widget {
-  @Template("LabeledCheckBox.ui.xml")
-  interface MyUiBinder extends UiBinder<LabeledCheckbox> {}
+  interface MyUiBinder extends UiBinder<Widget, LabeledCheckbox> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
   InputElement myCheckBox;
   LabelElement myLabel;
 
-  public LabeledCheckBox() { uiBinder.bind(this); }
+  public LabeledCheckBox() { uiBinder.createAndBindUi(this); }
  
   public void setValue(boolean b) { myCheckBox.setChecked(b); }
 
@@ -208,43 +200,59 @@ public class LabeledCheckBox extends Widget {
 }
 }}}
 
-The proposal here is that a g: prefix on any attribute other than id fills it with the id generated for a corresponding g:field.
+The proposal here is that a g: prefix on any attribute other than id fills it with the id generated for a corresponding ui:field.
 
-There are type matching issues here. The g:field of a DOM element is a string id, while that for a UIObject is typed. So, this should fail with a type mismatch:
+There are type matching issues here. The ui:field of a DOM element is a string id, while that for a UIObject is typed. So, this should fail with a type mismatch:
 
 {{{
-<some:WidgetOfSomeKind g:field="theWidget"> <label gwt:for="theWidget" />
+<some:WidgetOfSomeKind ui:field="theWidget"> <label g:for="theWidget" />
 }}}
 
+<blockquote> 
+  The use of attribute prefixing for this would be a mistake, a bad
+  use of XML. In particular, it fights the use of XML tools to enforce
+  things like, "all labels must have a 'for' attribute."
+
+  Instead, we should bite the bullet and adopt a mini-expression
+  language, something like:
+
+{{{
+<span xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  xmlns:g='import:com.google.gwt.user.client.ui'>
+  <input type="checkbox" ui:field="myCheckBox">
+  <label for="{myCheckBox}" ui:field="myLabel"/>
+</span>
+}}}}
+
+</blockquote>
 =Using ClientBundles with a UiBinder=
 
 {{{
 <!-- LogoNamePanel.ui.xml -->
-<gwt:HTMLPanel
+<g:HTMLPanel xmlns:ui='urn:ui:com.google.gwt.uibinder'
   xmlns:g="import:com.google.gwt.user.client.ui"
-  xmlns:res="with:com.my.app.widgets.logoname.Resources">
+  xmlns:res="urn:with:com.my.app.widgets.logoname.Resources">
 
   <img res:apply="logoImage">
 
   <div res:class="style.mainBlock">
     <div res:apply="style.userPictureSprite">
       Well hello there
-      <span res:class="style.nameSpan" g:field="userNameField"/>
+      <span res:class="style.nameSpan" ui:field="userNameField"/>
     </div>
   </div>
-</gwt:HTMLPanel>
+</g:HTMLPanel>
 }}}
 
 {{{
 public class LogoNamePanel extends Composite {
-  @Template("LogoNamePanel.ui.xml")
-  interface MyUiBinder extend UiBinder<LogoNamePanel> {}
+  interface MyUiBinder extend UiBinder<Widget, LogoNamePanel> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
   SpanElement nameSpan;
 
   public LogoNamePanel() {
-    uiBinder.bind(this);
+    uiBinder.createAndBindUi(this);
   }
 
   public void setUserName(String userName) {
@@ -267,68 +275,93 @@ public interface Resources extends ClientBundle {
 }
 }}}
 
-The with: uri type marks an object whose methods can be called to fill in attribute values. If no public api is provided to set the "with" argument (as in this example), it must be instantiable by GWT.create().
+The with: uri type marks an object whose methods can be called to fill
+in attribute values. If no public api is provided to set the "with"
+argument (as in this example), it must be instantiable by
+GWT.create().
+
+An element can be passed as an argument to a method on such resource
+class via an apply attribute, as illustrated above with the Sprite and
+ImageResource uses.
+
+Note that there is no requirement that a with: class implement the
+ClientBundle interface.
+
+<blockquote>
+  As above, this is an abuse of attribute prefixing, and a bad idea.
+
+  Instead, we should bite the bullet and adopt a mini-expression
+  language, something like:
 
 {{{
-public interface Applicator<T> {
-  void apply(T t);
-}
+<g:HTMLPanel xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  xmlns:g="import:com.google.gwt.user.client.ui"
+  xmlns:res="urn:with:com.my.app.widgets.logoname.Resources">
 
-<div res:-apply="style.widgetyLogoSprite"/>
+  <div class="{res.style.mainBlock}">
+    Well hello there
+    <span class="{res.style.nameSpan}" ui:field="userNameField"/>
+  </div>
+</g:HTMLPanel>
 }}}
 
-Note also that there is no requirement that a with: class implement the ClientBundle interface.
+</blockquote>
 
 =Share ClientBundle instances=
 
 Extends Resourceful (from the example above) to allow its bundle to be passed in.
 
-<strong>The with() scheme proposed here is redundant with the create...() scheme outlined below, under "Using a widget that requires constructor args". Need to pick one. with()... is a bit more complex, create...() more brittle. rjrjr 8 dec 08</strong>
-
 {{{
 public class Resourceful extends Composite {
  
-  @Template("Resourceful.ui.xml")
-  interface MyUiBinder extends UiBinder<Resourceful> {
-    MyUiBinder with(Resources resources);
+  interface MyUiBinder extends UiBinder<Widget, Resourceful> {
+    MyUiBinder withRes(Resources resources);
   }
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
   SpanElement widgetyText;
 
   public Resourceful(Resources resources) {
-    uiBinder.with(resources).bind(this);
+    uiBinder.withRes(resources).createAndBindUi(this);
   }
 }
 }}}
 
-If this were using a ForkedUiBinder, it would look like this:
+If this were using the split-call style, it would look like this:
 
 {{{
 public class Resourceful extends Composite {
 
-  @Template("Resourceful.ui.xml")
-  interface MyUiBinder extends ForkedUiBinder<HTMLPanel, Resourceful> {
-    MyUiBinder with(Resources resources);
+  interface MyUiBinder extends UiBinder<HTMLPanel, Resourceful> {
+    MyUiBinder withRes(Resources resources);
   }
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
   SpanElement widgetyText;
 
   public Resourceful(Resources resources) {
-    initWidget(uiBinder.createRoot());
-    uiBinder.with(resources).bindRest(getWidget(), this);
+    initWidget(uiBinder.createUiRoot());
+    uiBinder.withRes(resources).bindUi(getWidget(), this);
   }
 }
 }}}
 
-The trick here is to define a with() method on MyUiBinder, corresponding to any with: url defined in your template that you wish to make public.
+The trick here is to define a with...() method on MyUiBinder,
+corresponding to any with: url defined in your template that you wish
+to make public. 
 
-But wait, I hear you say. We have a single static instance of MyUiBinder, shared by every call to the Resourceful() constructor. Is it really safe to give it an instance method like with(), and load it up with state that may linger if bindRest() is never called?
+But wait, I hear you say. We have a single static instance of
+MyUiBinder, shared by every call to the Resourceful() constructor. Is
+it really safe to give it an instance method like withRes(), and load it
+up with state that may linger if bindUi() is never called?
 
-Not to worry--the binder instance returned by with() does not need to be the same instance that received the with() call. When made necessary like this, we can return a disposable UiBinder instance to accumulate whatever per-instance state is needed. Slick, eh?
+Not to worry--the binder instance returned by withRes() does not need to
+be the same instance that received the withRes() call. When made
+necessary like this, we can return a disposable UiBinder instance to
+accumulate whatever per-instance state is needed. Slick, eh?
 
-And you've probably noticed that you can use this technique to make any constructor argument available to the template...
+And you've probably noticed that you can use this technique to make
+any constructor argument available to the template...
 
 =Using a widget that requires constructor args=
 
@@ -342,24 +375,23 @@ You use it in a template.
 
 {{{
 <!-- UserDashboard.ui.xml -->
-<gwt:HTMLPanel
-  xmlns:gwt='import:com.google.gwt.user.client.ui'
+<g:HTMLPanel xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  xmlns:g='import:com.google.gwt.user.client.ui'
   xmlns:my='import:com.my.app.widgets' >
 
-  <my:WeatherReport g:field="weather"/>
-  <my:Stocks g:field="stocks"/>
-  <my:CricketScores g:field="scores" />
-</gwt:HTMLPanel>
+  <my:WeatherReport ui:field="weather"/>
+  <my:Stocks ui:field="stocks"/>
+  <my:CricketScores ui:field="scores" />
+</g:HTMLPanel>
 }}}
 
 {{{
 public class UserDashboard extends Composite {
-  @Template("UserDashboard.ui.xml")
-  interface MyUiBinder extends UiBinder<UserDashboard> {}
+  interface MyUiBinder extends UiBinder<Widget, UserDashboard> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
   public UserDashboard() {
-    uiBinder.bind(this);
+    uiBinder.createAndBindUi(this);
   }
 }
 }}}
@@ -367,50 +399,50 @@ public class UserDashboard extends Composite {
 An error results:
 
 {{{
+
 UserDashboard.ui.xml:7:2 [ERROR] Cannot instantiate CricketScores
-without a zero args constructor. You must define a non-private
-CricketScores createCricketScores() method on UserDashboard.
+without a zero args constructor. You can define
+MyUiBinder#withScores(CricketScores) to pass an instance in,
+or annotate a constructor of CricketScores with @UiConstructor to
+allow its arguments to be provided by the template.
+
 }}}
 
-So you define one:
+So you either make the withScores() method:
 
 {{{
 public class UserDashboard extends Composite {
-  @Template("UserDashboard.ui.xml")
-  interface MyUiBinder extends UiBinder<UserDashboard> {}
+  interface MyUiBinder extends UiBinder<Widget, UserDashboard> {
+    MyUiBinder withScores(CricketScores scores);
+  }
 
-  String[] teamNames;
- 
   public UserDashboard(String... teamNames) {
     this.teamNames = teamNames;
-    uiBinder.bind(this);
-  }
-
-  CricketScores createCricketScores() {
-    return new CricketSores(teamNames);
+    uiBinder.withScores(new CricketSores(teamNames))
+      .createAndBindUi(this);
   }
 }
 }}}
 
-or perhaps
+or annotate the constructor:
 
 {{{
-public class UserDashboard extends Composite {
-  @Template("UserDashboard.ui.xml")
-  interface MyUiBinder extends UiBinder<UserDashboard> {}
-
-  CricketScores scores;
- 
-  public UserDashboard(CricketScores scores) {
-    this.scores = scores;
-    uiBinder.bind(this);
-  }
-
-  CricketScores createCricketScores() {
-    return scores;
-  }
-}
+public @UiConstructor CricketScores(String... teamNames) {...} 
 }}}
+
+{{{
+<!-- UserDashboard.ui.xml -->
+<g:HTMLPanel xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  xmlns:g='import:com.google.gwt.user.client.ui'
+  xmlns:my='import:com.my.app.widgets' >
+
+  <my:WeatherReport ui:field="weather"/>
+  <my:Stocks ui:field="stocks"/>
+  <my:CricketScores ui:field="scores" teamNames="AUS, SAF, WA, QLD, VIC"/>
+</g:HTMLPanel>
+}}}
+
+The with...() method approach require that you put a g
 
 =Apply different xml templates to the same widget=
 
@@ -429,19 +461,19 @@ public class FooPickerController {
 public class FooPickerDisplay extends Composite
     implements FooPickerController.Display {
  
-  @Template("RedFooPicker.ui.xml")
-  interface RedBinder extends UiBinder<FooPickerDisplay> {}
+  @UiTemplate("RedFooPicker.ui.xml")
+  interface RedBinder extends UiBinder<Widget, FooPickerDisplay> {}
   private static RedBinder redBinder = GWT.create(MyUiBinder.class);
 
-  @Template("BlueFooPicker.ui.xml")
-  interface BlueBinder extends UiBinder<FooPickerDisplay> {}
+  @UiTemplate("BlueFooPicker.ui.xml")
+  interface BlueBinder extends UiBinder<Widget, FooPickerDisplay> {}
   private static BlueBinder blueBinder = GWT.create(MyUiBinder.class);
 
   HasText titleField();
   SourcesChangeEvents pickerSelect();
 
-  protected FooPickerDisplay(UiBinder<FooPickerDisplay> binder) {
-    uiBinder.bind(this);
+  protected FooPickerDisplay(UiBinder<Widget, FooPickerDisplay> binder) {
+    uiBinder.createAndBindUi(this);
   }
 
   public static FooPickerDisplay createRedPicker() {
