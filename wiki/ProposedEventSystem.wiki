@@ -78,7 +78,7 @@ This is the API that will be used by all GWT users. It allows users to add new h
  DateBox start = new DateBox();
  start.addKeyDownHandler(new KeyDownHandler() {
       public void onKeyDown(KeyDownEvent e) {
-        if (e.getKeyCode() == KEY_RIGHT){
+        if (e.getNativeKeyCode() == KEY_RIGHT){
            Window.alert("I have to be right");
         }
       }
@@ -104,7 +104,7 @@ This is the API that will be used by most widget creators who are creating and p
 === Extra Widget methods===
    * `protected final HandlerRegistration addHandler(AbstractEvent.Key<?,HandlerType> key, HandlerType handler)`
        * Registers the handler for the event type.
-   * `protected final HandlerRegistration addHandlerAndSink(DomEvent.Key<?,HandlerType> key, HandlerType handler)`
+   * `protected final HandlerRegistration addHandlerAndSink(DomEvent.Type<?,HandlerType> key, HandlerType handler)`
        *  Registers the handler and also sinks events on it.
    * `protected final void fireEvent(AbstractEvent event)`
        *  Fires the event to all registered handlers 
@@ -181,10 +181,10 @@ interface HasHappyEvents {
   public HandlerRegistration addHappyHandler(HappyHandler handler);
 }
 }}}
-  # Add a unique event key
+  # Add a unique event type
 {{{
-class HappyEvent extends AbstractEvent{
-  public static AbstractEvent.Key KEY = new AbstractEvent.Key(){...}
+class HappyEvent extends GwtEvent{
+  public static AbstractEvent.Type TYPE = new AbstractEvent.Key(){...}
  
   public AbstractEvent.Key getKey(){
     return KEY; 
