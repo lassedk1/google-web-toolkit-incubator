@@ -102,11 +102,11 @@ This is the API that will be used by most widget creators who are creating and p
      * Unique id associated with the event type (used to store handlers)
      * How to fire the handler method 
 === Extra Widget methods===
-   * `protected final HandlerRegistration addHandler(AbstractEvent.Key<?,HandlerType> key, HandlerType handler)`
+   * `protected final HandlerRegistration addHandler(GwtEvent.Key<?,HandlerType> key, HandlerType handler)`
        * Registers the handler for the event type.
    * `protected final HandlerRegistration addHandlerAndSink(DomEvent.Type<?,HandlerType> key, HandlerType handler)`
        *  Registers the handler and also sinks events on it.
-   * `protected final void fireEvent(AbstractEvent event)`
+   * `protected final void fireEvent(GwtEvent event)`
        *  Fires the event to all registered handlers 
    
 === How it works ===
@@ -183,10 +183,10 @@ interface HasHappyEvents {
 }}}
   # Add a unique event type
 {{{
-class HappyEvent extends GwtEvent{
-  public static AbstractEvent.Type TYPE = new AbstractEvent.Key(){...}
+class HappyEvent extends AbstractEvent{
+  public static AbstractEvent.Key KEY = new AbstractEvent.Key(){...}
  
-  public AbstractEvent.Key getKey(){
+  public GwtEvent.Key getKey(){
     return KEY; 
   }
   ...
@@ -194,7 +194,7 @@ class HappyEvent extends GwtEvent{
 }}}
   # Wire up the handler's `fire` method
 {{{
-class HappyEvent extends AbstractEvent {
+class HappyEvent extends GwtEvent {
   static Key<HappyEvent,HappyHandler> KEY = new Key<HappyEvent,HappyHandler>(){
     protected void fire(HappyHandler handler, HappyEvent event) {
        handler.onHappiness(event);
@@ -217,13 +217,13 @@ public interface HasHappyEvents {
   public HandlerRegistration addHappyHandler(HappyHandler handler);
 }
 
-public class HappyEvent extends AbstractEvent { 
+public class HappyEvent extends GwtEvent { 
   public final static Key<HappyEvent,HappyHandler> KEY = new Key<HappyEvent,HappyHandler>(){
     protected void fire(HappyHandler handler, HappyEvent event) {
        handler.onHappiness(event);
     }
 
-  public AbstractEvent.Key getKey(){
+  public GwtEvent.Key getKey(){
     return KEY; 
   } 
 }
@@ -285,10 +285,10 @@ We register dom event keys lazily, so that unused event types (i.e. ones where n
 }}}
 
 ==== In `DomEvent` ====
-We introduce a specialized `Key` type with the following information:
+We introduce a specialized `Type` subclass with the following information:
   * A single native event type.
-  * A global mapping which registers each key based on the native event type. 
-  * A helper `wrap` method which wraps a native event in the corresponding dom event. 
+  * A global mapping which registers each type based on the native event type. 
+  
 For instance, here is the `DomEvent.Key` for click events:
 {{{
   /**
