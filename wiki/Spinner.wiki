@@ -1,6 +1,6 @@
 #summary Spinner and widgets using it
 
-|| Live demo || [spinner demo http://collectionofdemos.appspot.com/demo/com.google.gwt.widgetideas.demo.collapsiblepanel.CollapsiblePanelDemo/CollapsiblePanelDemo.html] ||
+|| Live demo || [http://collectionofdemos.appspot.com/demo/com.google.gwt.widgetideas.demo.collapsiblepanel.CollapsiblePanelDemo/CollapsiblePanelDemo.html] ||
 || Java docs || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/doc/javadoc/index.html?com/google/gwt/widgetideas/client/Spinner.html Javadocs]||
 || Sample code || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/spinner/client/SpinnerDemoPanel.java Demo code] ||
 || Source starting point|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/widgetideas/client/Spinner.java Spinner.java] ||
