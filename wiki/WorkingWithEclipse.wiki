@@ -11,8 +11,9 @@ Set the following classpath variables
 
 ====`GWT_HOME`==== 
 Set to the directory containing the gwt jars you want to use.
+
 ====`GWT_TOOLS`====
-Set to the gwt-incubator tools directory.
+Set to your gwt tools directory.
  
 = Step three =
 import the `gwt-incubator-resources` project.  These paths are are relative to your project's root, so, for example a typical root would be `c:\gwt-incubator\trunk\`.
