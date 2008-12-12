@@ -46,8 +46,7 @@ Visual styling
   margin-left: 10px;
 }
 
-.gwt-FastTreeItem .open,.gwt-FastTreeItem .closed,.gwt-FastTreeItem-leaf
-  {
+.gwt-FastTreeItem .open,.gwt-FastTreeItem .closed,.gwt-FastTreeItem-leaf {
   color: black;
 }
 
@@ -59,9 +58,6 @@ Visual styling
   background: url('%treeClosed%') no-repeat center left;
 }
 
-.gwt-FastTreeItem-leaf {
-  no-repeat center left;
-}
 .gwt-FastTree .treeItemContent {
   padding: 2px;
 }
