@@ -33,6 +33,7 @@ import com.google.gwt.user.client.ui.KeyboardListenerCollection;
 import com.google.gwt.user.client.ui.MouseListener;
 import com.google.gwt.user.client.ui.MouseListenerCollection;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.impl.FocusImpl;
@@ -666,7 +667,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       }
       curSelection.setSelection(false, fireEvents);
     }
-
+    
     curSelection = item;
 
     if (curSelection != null) {

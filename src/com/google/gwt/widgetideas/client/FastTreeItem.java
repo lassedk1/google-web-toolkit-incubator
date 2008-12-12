@@ -121,7 +121,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
       item.remove();
     }
     if (isLeafNode()) {
-      becomeInteriorNode();
+      becomeInteriorNode();      
     }
     if (children == null) {
       // Never had children.
@@ -489,7 +489,7 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
   }
 
   void convertElementToInteriorNode(Element control) {
-    setStyleName(getElement(), "gwt-FastTreeItem-leaf", false);
+    setStyleName(getElement(), getStylePrimaryName() + "-leaf", false);
     DOM.appendChild(getElement(), control);
   }
 
