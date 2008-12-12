@@ -42,7 +42,7 @@ The current listener widget event system is very easy to use and understand, whi
 This is the API that will be used by all GWT users. It allows users to add new handlers to widgets.
 
 === Class overview ===
-  * `AbstractEvent`
+  * `GwtEvent`
    * Base class for all events
    * New Event classes  
     * `ClickEvent`
@@ -90,16 +90,16 @@ This is the API that will be used by most widget creators who are creating and p
 
 === Class overview ===
   
-  * `AbstractEvent.Key`
-   * The unique key used to represent an event type. It encapsulates the meta information about an event. 
-   * For each event type, we have a specific key
-     * `ClickEvent.KEY`
-       * The key used to register handlers on a click event.
-     * `KeyDownEvent.KEY`
-       * The key used to register  handlers on a key down event.
+  * `AbstractEvent.Type`
+   * Encapsulates the meta information about an event class. 
+   * For each event type, we have a specific type
+     * `ClickEvent.getType()`
+       * The type used to register handlers on a click event.
+     * `KeyDownEvent.getType()`
+       * The type used to register  handlers on a key down event.
      * ...
-   * Each event key has the following information
-     * Unique id associated with the key (used to store handlers)
+   * Each event type has the following information
+     * Unique id associated with the event type (used to store handlers)
      * How to fire the handler method 
 === Extra Widget methods===
    * `protected final HandlerRegistration addHandler(AbstractEvent.Key<?,HandlerType> key, HandlerType handler)`
@@ -110,10 +110,10 @@ This is the API that will be used by most widget creators who are creating and p
        *  Fires the event to all registered handlers 
    
 === How it works ===
-  * When a handler is added to a widget, the widget calls `addHandler` with the event's key and the supplied handler.
+  * When a handler is added to a widget, the widget calls `addHandler` with the event's type and the supplied handler.
 {{{
  public void addKeyDownHandler(KeyDownHandler handler) {
-    addHandler(KeyDownEvent.KEY, handler);
+    addHandler(handler,KeyDownEvent.getType());
  } 
 }}}
 
@@ -137,19 +137,14 @@ public class DateBox extends Composite implements FiresKeyDownEvents {
 
  // implements FiresKeyDownEvents.addKeyDownHandler
  public void addKeyDownHandler(KeyDownHandler handler) {
-    // Widget's addHandler method. Registers the current handler as a KeyDownEvent handler.
-    addHandler(KeyDownEvent.KEY, handler);
+    // Widget's addDomHandler method. 
+    // Registers the current handler as a KeyDownEvent handler.
+    addDomHandler(handler,KeyDownEvent.getType());
  }
-  @Override
-  public void onBrowserEvent(Event e){
-    ...
-    case ON_KEYDOWN:
-      // Widget's fireEvent method. It will call each handler registered to KeyDownEvent.
-      fireEvent(new KeyDownEvent(e)); 
-  }
-}
 }}}
 
+As `Widget` now has a default `onBrowserEvent` implementation, you do not need to explicitly fire the key down event yourself.
+ 
 == Advanced widget creation ==
 This API is for those widget creators who need to create custom events and for those creating widgets that do not extend `Widget`
 
@@ -160,11 +155,11 @@ This API is for those widget creators who need to create custom events and for t
 
 === Protected methods ===
  * `AbstractEvent`
-   * `abstract AbstractEvent.Key getKey()`
-     * Allows event instances to specify the static event key.  
- * `AbstractEvent.Key`
-   * `protected abstract void fire(EventHandler handler, EventKey key)`
-     * Allows event manager to call correct handler method on the instance. 
+   * `abstract AbstractEvent.Type getAssociatedType()`
+     * Allows event instances to specify the static event type.  
+ * `AbstractEvent.Type`
+   * `protected abstract void fireEvent(EventHandler handler, EventType.Type type)`
+     * Allows handler manager to call correct handler method on the instance. 
 
 
 === Steps to create a custom event ===
@@ -172,7 +167,7 @@ This is an event that is triggered when the user becomes happy.
 
   # Define a new event class.  You can add arbitrary metadata in the event class. For simplicity, we will not include any here though.
 {{{
-public class HappyEvent extends AbstractEvent{
+public class HappyEvent extends GwtEvent{
    ...
 }
 }}}
