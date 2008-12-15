@@ -32,7 +32,7 @@ public final class RemoteLogHandler implements LogHandler {
   /**
    * Default callback for remote log handler.
    */
-  class DefaultCallback implements AsyncCallback {
+  class DefaultCallback implements AsyncCallback<Object> {
 
     public void onFailure(Throwable caught) {
       Log.removeLogHandler(RemoteLogHandler.this);
@@ -78,14 +78,14 @@ public final class RemoteLogHandler implements LogHandler {
      * @param callback the callback
      */
     void publish(String message, Level level, String category,
-        Throwable throwable, AsyncCallback callback);
+        Throwable throwable, AsyncCallback<Object> callback);
   }
 
   private static final String CATEGORY = "gwt.logging.RemoteLogHandler";
 
   private ServiceAsync service;
 
-  private AsyncCallback callback;
+  private AsyncCallback<Object> callback;
 
   /**
    * Constructor.
@@ -121,7 +121,7 @@ public final class RemoteLogHandler implements LogHandler {
    * 
    * @param callback the callback
    */
-  public void setCallBack(AsyncCallback callback) {
+  public void setCallBack(AsyncCallback<Object> callback) {
     this.callback = callback;
   }
 }

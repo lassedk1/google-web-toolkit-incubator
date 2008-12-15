@@ -46,11 +46,11 @@ public abstract class LogImpl {
 
   public abstract boolean isLoggable(Level level);
 
-  public abstract boolean isLoggingMinimal();
+  public abstract boolean isLoggingEnabled();
 
-  public abstract boolean isLoggingSupported();
+  public abstract boolean isLoggingProduction();
 
-  public abstract Iterator levelIterator();
+  public abstract Iterator<Level> levelIterator();
 
   public abstract void log(String msg, Level level, String category, Throwable e);
 

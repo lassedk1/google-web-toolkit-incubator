@@ -87,8 +87,8 @@ class LogManager {
     return true;
   }
 
-  public Iterator levelIterator() {
-    ArrayList accum = new ArrayList();
+  public Iterator<Level> levelIterator() {
+    ArrayList<Level> accum = new ArrayList<Level>();
     accum.addAll(levels.values());
     Collections.sort(accum);
     return accum.iterator();
@@ -136,7 +136,7 @@ class LogManager {
 
   public void setLevel(String category, Level level) {
     if (categoryLevels == null) {
-      categoryLevels = new HashMap();
+      categoryLevels = new HashMap<String, Level>();
     }
     categoryLevels.put(category, level);
   }

@@ -24,7 +24,7 @@ import java.util.Iterator;
 /**
  * Log impl used when logging is completely turned off.
  */
-public class LogImplOff extends LogImpl {
+public class LogImplDisabled extends LogImpl {
 
   public void addLogHandler(LogHandler handler) {
   }
@@ -59,15 +59,15 @@ public class LogImplOff extends LogImpl {
     return false;
   }
 
-  public boolean isLoggingMinimal() {
+  public boolean isLoggingEnabled() {
     return false;
   }
 
-  public boolean isLoggingSupported() {
+  public boolean isLoggingProduction() {
     return false;
   }
 
-  public Iterator levelIterator() {
+  public Iterator<Level> levelIterator() {
     return null;
   }
 

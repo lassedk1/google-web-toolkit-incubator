@@ -24,7 +24,7 @@ import com.google.gwt.core.client.GWT;
  * error messages are included.
  * 
  */
-public class LogImplMinimal extends LogImplWithManager {
+public class LogImplProduction extends LogImplWithManager {
 
   public void config(String msg, String category) {
   }
@@ -49,11 +49,11 @@ public class LogImplMinimal extends LogImplWithManager {
     }
   }
 
-  public boolean isLoggingMinimal() {
+  public boolean isLoggingEnabled() {
     return true;
   }
 
-  public boolean isLoggingSupported() {
+  public boolean isLoggingProduction() {
     return true;
   }
 

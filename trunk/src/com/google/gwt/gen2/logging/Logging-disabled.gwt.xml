@@ -1,6 +1,6 @@
 <module>
 
 	<inherits name='com.google.gwt.gen2.logging.Logging' />
-	<set-property name="logging" value="off" />
+	<set-property name="gwt-logging" value="diabled" />
 
 </module>
