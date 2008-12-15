@@ -371,8 +371,7 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
           vmMaxMemory="${gwtc.vm.maxMemory}">
       <classpath>
         <path path="${gwtc.src.dir}" />
-        <path path="${project.src}" />
-        <path path="${project.bin}" />
+        <path path="${project.jar}" />
         <pathelement location="${gwt.user.jar}" />
         <pathelement location="${gwt.dev.jar}" />
         <pathelement location="${gwt.tools}/lib/w3c/sac/sac-1.3.jar" />
