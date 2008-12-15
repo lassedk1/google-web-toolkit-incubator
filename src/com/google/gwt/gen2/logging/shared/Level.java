@@ -24,7 +24,7 @@ import java.io.Serializable;
  * support for names.
  */
 
-public class Level implements Comparable, Serializable {
+public class Level implements Comparable<Level>, Serializable {
 
   /**
    * OFF is a special level that can be used to turn off logging. This level is
@@ -155,7 +155,7 @@ public class Level implements Comparable, Serializable {
     Log.registerLevel(this);
   }
 
-  public int compareTo(Object o) {
+  public int compareTo(Level o) {
     Level that = (Level) o;
     if (value < that.value) {
       return -1;

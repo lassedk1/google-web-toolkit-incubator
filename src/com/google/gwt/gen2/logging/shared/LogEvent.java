@@ -172,7 +172,7 @@ public class LogEvent extends AbstractEvent {
   }
 
   @Override
-  protected Type getType() {
+  protected Type<LogEvent, LogHandler> getType() {
     return TYPE;
   }
 

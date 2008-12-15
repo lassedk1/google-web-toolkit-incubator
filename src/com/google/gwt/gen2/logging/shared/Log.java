@@ -26,9 +26,30 @@ import java.util.Iterator;
  * This class is very loosely based Java's Logger class. It is static to allow
  * differed binding to remove logging information in production code.
  * <p>
+ * In order to use logging you must include one of the following gwt.xml modules
+ * <table border = "1px">
+ * <tr>
+ * <td>com.google.gwt.gen2.logging.Logging</td>
+ * <td>Enables logging.<br/>
+ * The gwt.logging property is set to 'enabled'</td>
+ * </tr>
+ * <tr>
+ * <td>com.google.gwt.gen2.logging.Logging-disabled</td>
+ * <td>Disables all logging, but allows the source code to compile.<br/>
+ * The gwt.logging property is set to 'disabled'</td>
+ * </tr>
+ * <tr>
+ * <td>com.google.gwt.gen2.logging.Logging-production</code></td>
+ * <td>Allows only severe error messages to be logged. <br/>
+ * The gwt.logging property is set to 'production'</td>
+ * </tr>
+ * </table>
+ * <p>
  * A default logger is always installed in hosted mode and is installed in web
- * mode when logging is set to "all". In "minimal" mode, you must add a log
- * handler manually to see your log messages.
+ * mode when logging is set to "enabled".
+ * 
+ * In "production" mode, you must add a log handler manually to see your log
+ * messages.
  * </p>
  */
 
@@ -200,22 +221,54 @@ public class Log {
   }
 
   /**
+   * Is any form of Logging enabled?
+   * 
+   * @return whether logging is enabled
+   */
+  @Deprecated
+  public static boolean isLoggingEnabled() {
+    return impl.isLoggingEnabled();
+  }
+
+  /**
    * Is the logging system in minimal mode? i.e. only severe logging messages
    * are logged.
    * 
+   * @deprecated use isLoggingProduction instead.
    * @return whether logging is minimal
    */
+  @Deprecated
   public static boolean isLoggingMinimal() {
-    return impl.isLoggingMinimal();
+    return impl.isLoggingProduction();
+  }
+
+  /**
+   * Is the logging system in production mode? i.e. only severe logging messages
+   * are logged.
+   * <p>
+   * To set logging to production mode, include the following line in your gwt
+   * module file. <br/>
+   * <code class = "code"> &lt;set-property name="gwt.logging"
+   * value="production"&gt;</code> <br/>
+   * or include the gwt module
+   * <code> com.google.gwt.gen2.logging.Logging-production</code>.
+   * </p>
+   * 
+   * @return whether logging is production
+   */
+  public static boolean isLoggingProduction() {
+    return impl.isLoggingProduction();
   }
 
   /**
    * Is any form of Logging supported?
    * 
+   * @deprecated use logging enabled instead
    * @return whether logging is supported
    */
+  @Deprecated
   public static boolean isLoggingSupported() {
-    return impl.isLoggingSupported();
+    return impl.isLoggingEnabled();
   }
 
   /**
@@ -279,6 +332,12 @@ public class Log {
 
   /**
    * Log a {@link Level#SEVERE} message.
+   * <p>
+   * Only severe messages are logged in production mode. To set logging to
+   * production mode include the following line in your gwt module file. <pre
+   * class = "code"> &lt;set-property name="gwt.logging"
+   * value="production"&gt;</pre>
+   * </p>
    * 
    * @param message The string message
    */
@@ -289,8 +348,12 @@ public class Log {
   /**
    * Log a {@link Level#SEVERE} message. The message category uses "." to denote
    * sub-categories.
-   * 
-   * param category the message category
+   * <p>
+   * Only severe messages are logged in production mode. To set logging to
+   * production mode include the following line in your gwt module file. <pre
+   * class = "code"> &lt;set-property name="gwt.logging"
+   * value="production"&gt;</pre>
+   * </p>
    * 
    * @param message the message
    * @param category the category
@@ -303,6 +366,14 @@ public class Log {
    * Log a {@link Level#SEVERE} message. The message category uses "." to denote
    * sub-categories.
    * 
+   * <p>
+   * Only severe messages are logged in production mode. To set logging to
+   * production mode include the following line in your gwt module file.
+   * 
+   * <pre class = "code"> &lt;set-property name="gwt.logging"
+   * value="production"&gt;</pre>
+   * </p>
+   * 
    * @param message the message
    * @param category the message category
    * @param throwable the associated error or exception
@@ -314,6 +385,12 @@ public class Log {
   /**
    * Log a {@link Level#WARNING} message.
    * 
+   * <p>
+   * Warning message are <b> not </b> logging in production mode. Use
+   * {@link #severe(String)} if you want to log a message in a normal production
+   * environment.
+   * </p>
+   * 
    * @param message The string message
    */
   public static void warning(String message) {
@@ -323,6 +400,12 @@ public class Log {
   /**
    * Log a {@link Level#WARNING} message. The message category uses "." to
    * denote sub-categories.
+   * 
+   * <p>
+   * Warning message are <b> not </b> logging in production mode. Use
+   * {@link #severe(String,String)} if you want to log a message in a normal
+   * production environment.
+   * </p>
    * 
    * @param message the message
    * @param category the message category
@@ -334,6 +417,11 @@ public class Log {
   /**
    * Log a {@link Level#WARNING} message. The message category uses "." to
    * denote sub-categories.
+   * <p>
+   * Warning message are <b> not </b> logging in production mode. Use
+   * {@link #severe(String,String,Throwable)} if you want to log a message in a
+   * normal production environment.
+   * </p>
    * 
    * @param message the message
    * @param category the message category

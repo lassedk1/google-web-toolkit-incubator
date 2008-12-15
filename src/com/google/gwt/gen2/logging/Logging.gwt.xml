@@ -18,27 +18,27 @@
 
 
 	<!-- Defines the logging property -->
-	<define-property name="logging" values="all,off,minimal" />
-	<set-property name="logging" value="all" />
+	<define-property name="gwt.logging" values="enabled,disabled,production" />
+	<set-property name="gwt.logging" value="enabled" />
 
 
 	<!--
       Bindings for LogImpl.
   -->
 
-	<replace-with class="com.google.gwt.gen2.logging.impl.client.LogImplAll">
+	<replace-with class="com.google.gwt.gen2.logging.impl.client.LogImplEnabled">
 		<when-type-is class="com.google.gwt.gen2.logging.impl.shared.LogImpl" />
-		<when-property-is name="logging" value="all" />
+		<when-property-is name="gwt.logging" value="enabled" />
 	</replace-with>
 
-	<replace-with class="com.google.gwt.gen2.logging.impl.shared.LogImplMinimal">
+	<replace-with class="com.google.gwt.gen2.logging.impl.shared.LogImplProduction">
 		<when-type-is class="com.google.gwt.gen2.logging.impl.shared.LogImpl" />
-		<when-property-is name="logging" value="minimal" />
+		<when-property-is name="gwt.logging" value="production" />
 	</replace-with>
 
-	<replace-with class="com.google.gwt.gen2.logging.impl.shared.LogImplOff">
+	<replace-with class="com.google.gwt.gen2.logging.impl.shared.LogImplDisabled">
 		<when-type-is class="com.google.gwt.gen2.logging.impl.shared.LogImpl" />
-		<when-property-is name="logging" value="off" />
+		<when-property-is name="gwt.logging" value="disabled" />
 	</replace-with>
 
 

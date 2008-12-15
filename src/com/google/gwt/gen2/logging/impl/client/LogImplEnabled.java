@@ -25,7 +25,7 @@ import com.google.gwt.user.client.Window.Location;
 /**
  * LogImpl used when logging is set to "all".
  */
-public class LogImplAll extends LogImplWithManager {
+public class LogImplEnabled extends LogImplWithManager {
 
   private static void readLevel() {
     String param = Location.getParameter("logLevel");
