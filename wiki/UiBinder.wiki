@@ -112,7 +112,7 @@ public class HelloWidgetWorld extends Composite {
   interface MyUiBinder extends UiBinder<Widget, HelloWidgetWorld> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
-  ListBox listBox;
+  @UiField ListBox listBox;
 
   public HelloWidgetWorld(String... names) {
     // call initWidget(), set listBox
@@ -147,7 +147,7 @@ public class Deferral extends Widget {
   interface MyUiBinder extends UiBinder<SpanElement, Topical> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
-  SpanElement nameSpan;
+  @UiField SpanElement nameSpan;
 
   public Deferral(String name) {
     setElement(uiBinder.createUiRoot());
@@ -185,8 +185,8 @@ public class LabeledCheckBox extends Widget {
   interface MyUiBinder extends UiBinder<Widget, LabeledCheckbox> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
-  InputElement myCheckBox;
-  LabelElement myLabel;
+  @UiField InputElement myCheckBox;
+  @UiField LabelElement myLabel;
 
   public LabeledCheckBox() { uiBinder.createAndBindUi(this); }
  
@@ -249,7 +249,7 @@ public class LogoNamePanel extends Composite {
   interface MyUiBinder extend UiBinder<Widget, LogoNamePanel> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
-  SpanElement nameSpan;
+  @UiField SpanElement nameSpan;
 
   public LogoNamePanel() {
     uiBinder.createAndBindUi(this);
