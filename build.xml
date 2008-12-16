@@ -124,7 +124,7 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
 
 
   <target name="dist"
-          depends="build,createJavadoc"
+          depends="build,createJavadoc,build.demos"
           description="Assembles the full incubator distribution.">
     <mkdir dir="${project.out}" />
     <mkdir dir="${project.demos}" />
@@ -382,7 +382,7 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
 
   <target name="build.demos">
     <property name="demo.src.dir" value="${project.root}/src-demo" />
-    <property name="demo.out.dir" value="${project.root}/demo" />
+    <property name="demo.out.dir" value="${project.out}/compiled-demos" />
     <property name="demo.js.style" value="OBFUSCATED" />
 
     <foreach target="gwtc" param="gwtc.module.file">
