@@ -312,54 +312,22 @@ Extends Resourceful (from the example above) to allow its bundle to be passed in
 {{{
 public class Resourceful extends Composite {
  
-  interface MyUiBinder extends UiBinder<Widget, Resourceful> {
-    MyUiBinder withRes(Resources resources);
-  }
+  interface MyUiBinder extends UiBinder<Widget, Resourceful>;
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
-  SpanElement widgetyText;
+  @UiField SpanElement widgetyText;
+  
+  private final Resources resources;
 
   public Resourceful(Resources resources) {
-    uiBinder.withRes(resources).createAndBindUi(this);
+    uiBinder.createAndBindUi(this);
+  }
+
+  @UiFactory Resources getResources() {
+    return resources;
   }
 }
 }}}
-
-If this were using the split-call style, it would look like this:
-
-{{{
-public class Resourceful extends Composite {
-
-  interface MyUiBinder extends UiBinder<HTMLPanel, Resourceful> {
-    MyUiBinder withRes(Resources resources);
-  }
-  private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
-
-  SpanElement widgetyText;
-
-  public Resourceful(Resources resources) {
-    initWidget(uiBinder.createUiRoot());
-    uiBinder.withRes(resources).bindUi(getWidget(), this);
-  }
-}
-}}}
-
-The trick here is to define a with...() method on MyUiBinder,
-corresponding to any with: url defined in your template that you wish
-to make public. 
-
-But wait, I hear you say. We have a single static instance of
-MyUiBinder, shared by every call to the Resourceful() constructor. Is
-it really safe to give it an instance method like withRes(), and load it
-up with state that may linger if bindUi() is never called?
-
-Not to worry--the binder instance returned by withRes() does not need to
-be the same instance that received the withRes() call. When made
-necessary like this, we can return a disposable UiBinder instance to
-accumulate whatever per-instance state is needed. Slick, eh?
-
-And you've probably noticed that you can use this technique to make
-any constructor argument available to the template...
 
 =Using a widget that requires constructor args=
 
@@ -398,28 +366,67 @@ An error results:
 
 {{{
 
-UserDashboard.ui.xml:7:2 [ERROR] Cannot instantiate CricketScores
-without a zero args constructor. You can define
-MyUiBinder#withScores(CricketScores) to pass an instance in,
+UserDashboard.ui.xml:7:2 [ERROR] com.my.app.widgets.CricketScores
+has no default (zero args) constructor. You can define a
+@UiFactory annotated method on UserDashboard to create an instance,
 or annotate a constructor of CricketScores with @UiConstructor to
 allow its arguments to be provided by the template.
 
 }}}
 
-So you either make the withScores() method:
+So you either make the @UiFactory method:
 
 {{{
 public class UserDashboard extends Composite {
-  interface MyUiBinder extends UiBinder<Widget, UserDashboard> {
-    MyUiBinder withScores(CricketScores scores);
-  }
+  interface MyUiBinder extends UiBinder<Widget, UserDashboard>;
+  private static final MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
+
+  private final String[] teamNames;
 
   public UserDashboard(String... teamNames) {
     this.teamNames = teamNames;
-    uiBinder.withScores(new CricketSores(teamNames))
-      .createAndBindUi(this);
+    uiBinder.createAndBindUi(this);
+  }
+
+  /** Used by MyUiBinder to instantiate CricketScores */
+  @UiFactory CricketScores() {
+    return new CricketScores(teamNames);
   }
 }
+}}}
+
+or perhaps:
+
+{{{
+public class UserDashboard extends Composite {
+  interface MyUiBinder extends UiBinder<Widget, UserDashboard>;
+  private static final MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
+
+  public UserDashboard() {
+    this.teamNames = teamNames;
+    uiBinder.createAndBindUi(this);
+  }
+
+  /** 
+   * Used by MyUiBinder to instantiate CricketScores. 
+   * Arguments to be filled in the template
+   */
+  @UiFactory CricketScores(String... teamNames) {
+    return new CricketScores(teamNames);
+  }
+}
+}}}
+
+{{{
+<!-- UserDashboard.ui.xml -->
+<g:HTMLPanel xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  xmlns:g='import:com.google.gwt.user.client.ui'
+  xmlns:my='import:com.my.app.widgets' >
+
+  <my:WeatherReport ui:field="weather"/>
+  <my:Stocks ui:field="stocks"/>
+  <my:CricketScores ui:field="scores" teamNames="AUS, SAF, WA, QLD, VIC"/>
+</g:HTMLPanel>
 }}}
 
 or annotate the constructor:
