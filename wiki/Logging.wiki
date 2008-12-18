@@ -1,5 +1,11 @@
 #summary GWT logging API.
 #labels Type-Library
+||Demo:|| [http://collectionofdemos.appspot.com/demo/com.google.gwt.gen2.demo.logging.LoggingDemo/LoggingDemo.html live demo]||
+||Java doc: || [http://collectionofdemos.appspot.com/javadoc/com/google/gwt/gen2/logging/shared/Log.html  java doc]||
+||Sample Code:|| [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src-demo/com/google/gwt/gen2/demo/logging/client/LoggingDemo.java sample code] ||
+||Module:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/logging/Logging.gwt.xml Logging]||
+||Source ||[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/logging/shared/Log.java source code]|| 
+  
 
 = Introduction =
 The logging package is designed to be a simple client side logging API. The GWT logging design draws heavily from the [http://java.sun.com/j2se/1.4.2/docs/guide/util/logging/overview.html Java logging API]
@@ -8,12 +14,6 @@ and the [http://code.google.com/p/gwt-log/ gwt-log] project by Fred Sauer. A spe
 
 == Summary Table ==
 
-||Demo:|| [http://collectionofdemos.appspot.com/demo/com.google.gwt.gen2.demo.logging.LoggingDemo/LoggingDemo.html live demo]||
-||Java doc: || [http://collectionofdemos.appspot.com/javadoc/com/google/gwt/gen2/logging/shared/Log.html  java doc]||
-||Sample Code:|| [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src-demo/com/google/gwt/gen2/demo/logging/client/LoggingDemo.java sample code] ||
-||Module:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/logging/Logging.gwt.xml Logging]||
-||Source ||[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/logging/shared/Log.java source code]|| 
-  
 Test
 == Design Goals ==
 === Logging API ===
