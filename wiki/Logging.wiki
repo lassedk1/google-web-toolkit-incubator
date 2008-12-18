@@ -13,9 +13,7 @@ and the [http://code.google.com/p/gwt-log/ gwt-log] project by Fred Sauer. A spe
 ||Sample Code:|| [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src-demo/com/google/gwt/gen2/demo/logging/client/LoggingDemo.java sample code] ||
 ||Module:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/logging/Logging.gwt.xml Logging]||
 ||Source ||[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/logging/shared/Log.java source code]|| 
- 
-= Details =
- 
+  
 == Design Goals ==
 === Logging API ===
   * No overhead for logging messages when logging is disabled.
