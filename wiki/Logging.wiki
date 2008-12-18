@@ -1,15 +1,16 @@
 #summary GWT logging API.
 #labels Type-Library
+
+
 || Demo: || [http://collectionofdemos.appspot.com/demo/com.google.gwt.gen2.demo.logging.LoggingDemo/LoggingDemo.html live demo] || 
 || Java doc: || [http://collectionofdemos.appspot.com/javadoc/com/google/gwt/gen2/logging/shared/Log.html  java doc] || 
 || Sample Code: || [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src-demo/com/google/gwt/gen2/demo/logging/client/LoggingDemo.java sample code] || 
-|| Module: || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/logging/Logging.gwt.xml Logging] ||
-|| Source ||[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/logging/shared/Log.java source code] || 
+|| Module: || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/logging/Logging.gwt.xml Logging] || 
+|| Source || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/logging/shared/Log.java source code] || 
  
 The logging package is designed to be a simple client side logging API. The GWT logging design draws heavily from the [http://java.sun.com/j2se/1.4.2/docs/guide/util/logging/overview.html Java logging API]
 and the [http://code.google.com/p/gwt-log/ gwt-log] project by Fred Sauer. A special thanks to Fred Sauer for contributing his time to working on the design of this logging system.
 
- 
 == Design Goals ==
 === Logging API ===
   * No overhead for logging messages when logging is disabled.
@@ -62,13 +63,20 @@ In some cases, it would be useful to directly access a Logger or Handler and pri
 Log is a static class. Its API is modeled on the java Logger API. Almost all user interactions should be done through this class to allow compile time removal of logging. It will also include some GWT-specific method.  For instance the methods below:
 {{{
    Log.isLoggingEnabled();
-   Log.isLoggingMinimal()
+   Log.isLoggingProduction();
+   Log.debug("I am a message");
 }}}
  
-== `LogHandler` ==
-A `LogHandle`r is a class which actually handles the logging messages.  Its API is modeled in the java Handler class.  Its subclasses will be drawn heavily from the gwt-log subclasses of `AbstractLogge`.
-
  
+== `LogHandler` ==
+A `LogHandler` is an interface which actually handles the logging messages.  It is a gwt event handler with a single method `LogHandler.onLog(LogEvent event)`
+
+== `LogEvent` ==
+A  `LogEvent` is created once the `Log` class determines that it should broadcast its messages to the registered `LogHandler` instances. 
+ 
+== `LogFormatter` ==
+As log handlers are no longer classes, the formatting helper methods have been abstracted out into the `LogFormatter` hierarchy. We provide a default text and html log formatter.
+
 == `Level` ==
 Defines the current logging Level. Based on the java logging Level class.
 
@@ -92,44 +100,14 @@ Categories are hierarchical using the "." notation. For instance, the following 
 }}}
  
 == Logging states ==
-=== All ===
+=== Enabled ===
   # Logging is fully enabled
   # Default handler is `GWTHandler` in hosted mode, `TreeHandler` in web. We use a default widget handler in web mode to ensure the first time someone tries to use the logging system they can find their messages.  
   # Default log level is read as a URL argument parameter.  For example `http://myurl logLevel=INFO`
  
-=== Minimal ===
+=== Production ===
   # Only severe error messages are enabled
   # No default handler
-=== None ===
+=== Disabled ===
 No logging support
-
-= Gen2 modifications =
-
-== `LogEvent` ==
-A  `LogEvent` is created once the `Log` class determines that it should broadcast its messages to the registered `LogHandler` instances. 
-
-== `LogHandler` ==
-`LogHandler` is now an interface with a single method `onLog(LogEvent)`. The`SmartLogHandler` decorator class has been introduced to contain the current "smart" log handler functionality. In specific, the `SmartLogHandler` allows handlers to be sensitive to levels and to lazily create the actual output log handler.
-
-== `LogFormatter` ==
-As log handlers are no longer classes, the formatting helper methods have been abstracted out into the `LogFormatter` hierarchy. We provide a default text and html log formatter.
-
-== Log handler implementations ==
-A new default log handler `ClientConsoleLogHandler` has been written that combines the functionality of the `FireBugLogHandler`, `ConsoleLogHandler`, `WindowLogger`(from gwt-log), and the `GWTLogHandler`.  Its goal is to use the best approximation of a console as possible.  
  
-The `DivLogHandler` and `SimpleLogHandler` have been factored into a single `SimpleLogHandler` which now can take as input a `LogFormatter`.
-
-The `TreeLogHandler` was converted to use the gwt `Tree` widget and renamed `GroupLogHandler` to avoid the confusion some people had with the hosted mode log handler.
-
-The `PopupLogHandler` became a decorator log handler that can wrap any widget log handler.
-
-== `Log` ==
-The actual Log static API is unchanged, so for most users, the rewrite does not make a significant difference. 
-
-We now use super-source tricks so that the `Log` class can be initialized on the java server without an extra user call. You can set the default user log handler using the `ServerLogConfig` class.
-
-== `Level` ==
-`Level` now is associated with a `clinit` in order to ensure that the first call to Level.X does not create a null reference.  However, when logging is off, everything should still get compiled out, including the extra `clinits`.
-
-== Logging property ==
-The logging property now uses "off" rather then "none" in order to match the java logging level "Level.OFF".
