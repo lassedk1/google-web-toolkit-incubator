@@ -379,13 +379,24 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
       </classpath>
     </gwtc>
   </target>
+  <target name="build.single.demo" depends="gwtc">
+    <concat destfile="${gwtc.out.dir}/index.html" append="true">
+      <filterchain>
+        <replaceregex flags="g" pattern="\\" replace="/" />
+        <replaceregex pattern="\('.*/src-demo/" replace="('" />
+      </filterchain>
+&lt;script&gt;writeDemoLink('${gwtc.module.file}');&lt;/script&gt;
+	</concat>
+  </target>
 
   <target name="build.demos">
     <property name="demo.src.dir" value="${project.root}/src-demo" />
     <property name="demo.out.dir" value="${project.out}/compiled-demos" />
     <property name="demo.js.style" value="OBFUSCATED" />
 
-    <foreach target="gwtc" param="gwtc.module.file">
+    <delete dir="${demo.out.dir}" />
+    <copy file="demoindex.template" tofile="${demo.out.dir}/index.html" />
+    <foreach target="build.single.demo" param="gwtc.module.file">
       <param name="gwtc.src.dir" value="${demo.src.dir}" />
       <param name="gwtc.out.dir" value="${demo.out.dir}" />
       <param name="gwtc.js.style" value="${demo.js.style}" />
