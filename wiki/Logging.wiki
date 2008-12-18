@@ -12,15 +12,8 @@ and the [http://code.google.com/p/gwt-log/ gwt-log] project by Fred Sauer. A spe
 ||Java doc: || [http://collectionofdemos.appspot.com/javadoc/com/google/gwt/gen2/logging/shared/Log.html  java doc]||
 ||Sample Code:|| [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src-demo/com/google/gwt/gen2/demo/logging/client/LoggingDemo.java sample code] ||
 ||Module:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/logging/Logging.gwt.xml Logging]||
-||Source ||[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/logging/shared/Logging.java source code]|| 
-
-= Sample usage =
-|| *Field* || * Location * ||
-|| Demo || http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/LoggingDemo/LoggingDemo.html || 
-|| Sample Code || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/logging/client/LoggingDemo.java demo code] ||
-|| Module || `com.google.gwt.libideas.Logging` ||
-|| Source starting point || http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/libideas/logging/shared/Log.java ||
-
+||Source ||[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/logging/shared/Log.java source code]|| 
+ 
 = Details =
  
 == Design Goals ==
@@ -46,7 +39,7 @@ and the [http://code.google.com/p/gwt-log/ gwt-log] project by Fred Sauer. A spe
 =Design Decisions=
 
 ==Deferred binding==
-The Logging api has three compiled options(logging:all/none/minimal).  The other option would be to have a set of predefined levels i.e. logging(off/fine/finer/.../severe). Both are good options, so far we believe the single switch will lead to best full experience.
+The Logging api has three compiled options(logging:enabled/disabled/production).  The other option would be to have a set of predefined levels i.e. logging(off/fine/finer/.../severe). Both are good options, so far we believe the single switch will lead to best full experience.
 
 Advantages for multiple levels:
   # No overhead for logging levels not used when compiled with a GWT 1.5 compiler
@@ -66,7 +59,7 @@ Advantages of compiler all/none/minimal switch
     # One "debug" system with all logging options.
 
 == Allowing direct access to Logger instances ==
-In some cases, it would be useful to directly access a Logger or Handler and print to that one alone.  However, this code would probably not be compiled out in production, so this feature is currently not supported.
+In some cases, it would be useful to directly access a Logger or Handler and print to that one alone.  However, this code would probably not be compiled out in production, so this feature is currently not supported, though the design is meant to accommodation instance loggers.
 
 = Design overview =
 
