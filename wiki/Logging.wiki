@@ -7,7 +7,7 @@ and the [http://code.google.com/p/gwt-log/ gwt-log] project by Fred Sauer. A spe
 
 
 == Summary Table ==
-
+Summary table
 ||Demo:|| [http://collectionofdemos.appspot.com/demo/com.google.gwt.gen2.demo.logging.LoggingDemo/LoggingDemo.html live demo]||
 ||Java doc: || [http://collectionofdemos.appspot.com/javadoc/com/google/gwt/gen2/logging/shared/Log.html  java doc]||
 ||Sample Code:|| [http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src-demo/com/google/gwt/gen2/demo/logging/client/LoggingDemo.java sample code] ||
