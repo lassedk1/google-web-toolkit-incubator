@@ -1,5 +1,5 @@
 #summary A scrollable table with fixed header and footer sections and a scrollable data area that supports paging
-#labels Type-Widget
+#labels Type-Widget,Deprecated
 
 = Soon to be Deprecated =
 
