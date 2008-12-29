@@ -1,7 +1,7 @@
 #summary gwt-incubator documentation
 
 = Documentation = 
-Please visit [http://code.google.com/docreader/#p=google-web-toolkit-incubator&s=google-web-toolkit-incubator&t=FunctionalitySummary gwt-incubator documentation] for information about our widgets and libraries.
+Please visit the [http://code.google.com/docreader/#p=google-web-toolkit-incubator&s=google-web-toolkit-incubator&t=FunctionalitySummary gwt-incubator documentation] for information about our widgets and libraries.
 
 For a list of all wiki documents in this project, see the [http://code.google.com/p/google-web-toolkit-incubator/w/list Wiki document list].
 
