@@ -1,6 +1,7 @@
 #summary information about the 1.5 gwt-incubator drop
 = Release info =
-|| URL || http://google-web-toolkit-incubator.googlecode.com/svn/releases/1.5 ||
+|| Download|| http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator_1-5_Dec_28.jar ||
+|| Source || http://google-web-toolkit-incubator.googlecode.com/svn/releases/1.5 ||
 || Revision || 1337 ||
 || Last Changed Date || Fri, 19 Dec 2008 ||
 || Java docs || http://collectionofdemos.appspot.com/javadoc/index.html || 
