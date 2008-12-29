@@ -6,4 +6,4 @@
 || Last Changed Date || Fri, 19 Dec 2008 ||
 || Java docs || http://collectionofdemos.appspot.com/javadoc/index.html || 
 
-This is probably the last gwt 1.5 based release of gwt-incubator. However, this wiki's svn information will be updated if new  gwt-incubator 1.5 drop does become necessary. 
+This is probably the last gwt 1.5 based release of gwt-incubator. This wiki will be updated if a new gwt-incubator 1.5 drop does become necessary. 
