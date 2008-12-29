@@ -21,7 +21,10 @@ import com.google.gwt.gen2.event.shared.AbstractEvent.Type;
 /**
  * Manager responsible for adding handlers to event sources and firing those
  * handlers on passed in events.
+ * 
+ * @deprecated use the com.google.gwt.event.shared classes instead
  */
+@Deprecated
 public class HandlerManager {
   // Used to optimize the JavaScript handler container structure.
   static int EXPECTED_HANDLERS = 5;

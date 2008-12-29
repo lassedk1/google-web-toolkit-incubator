@@ -18,7 +18,10 @@ package com.google.gwt.gen2.event.shared;
 /**
  * Marker interface for event handlers. All GWT event handlers should extend
  * {@link EventHandler}.
+ * 
+ * @deprecated use the com.google.gwt.event.shared classes instead
  */
+@Deprecated
 public interface EventHandler {
 
 }

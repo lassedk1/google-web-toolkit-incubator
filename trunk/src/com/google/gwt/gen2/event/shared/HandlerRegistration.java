@@ -21,7 +21,10 @@ import com.google.gwt.gen2.event.shared.AbstractEvent.Type;
  * HandlerRegistration instances are returned by
  * HandlerManager.addEventHandler() and used to remove event handler
  * registrations.
+ * 
+ * @deprecated use the com.google.gwt.event.shared classes instead
  */
+@Deprecated
 public class HandlerRegistration {
 
   private HandlerManager manager;
