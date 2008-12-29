@@ -19,24 +19,28 @@ import com.google.gwt.user.client.Event;
 
 /**
  * Represents a native key up event.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public class KeyUpEvent extends KeyCodeEvent {
 
   /**
-    Event type for key up events. Represents the meta-data associated with this event.
-  */
-  public static final Type<KeyUpEvent, KeyUpHandler> TYPE = new Type<KeyUpEvent,KeyUpHandler>(
+   * Event type for key up events. Represents the meta-data associated with this
+   * event.
+   */
+  public static final Type<KeyUpEvent, KeyUpHandler> TYPE = new Type<KeyUpEvent, KeyUpHandler>(
       Event.ONKEYUP) {
-     @Override
-     public void fire(KeyUpHandler handler, KeyUpEvent event) {
-       handler.onKeyUp(event);
-     }
+    @Override
+    public void fire(KeyUpHandler handler, KeyUpEvent event) {
+      handler.onKeyUp(event);
+    }
 
-     @Override     
+    @Override
     KeyUpEvent wrap(Event nativeEvent) {
-       return new KeyUpEvent(nativeEvent);
-     }
-   };
+      return new KeyUpEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructor.
@@ -46,8 +50,8 @@ public class KeyUpEvent extends KeyCodeEvent {
   public KeyUpEvent(Event nativeEvent) {
     super(nativeEvent);
   }
-  
- @Override
+
+  @Override
   protected Type getType() {
     return TYPE;
   }

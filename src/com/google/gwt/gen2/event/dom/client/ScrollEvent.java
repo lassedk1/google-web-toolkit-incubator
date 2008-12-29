@@ -19,24 +19,28 @@ import com.google.gwt.user.client.Event;
 
 /**
  * Represents a native scroll event.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public class ScrollEvent extends DomEvent {
 
   /**
-    Event type for scroll events. Represents the meta-data associated with this event.
-  */
-  public static final Type<ScrollEvent, ScrollHandler> TYPE = new Type<ScrollEvent,ScrollHandler>(
+   * Event type for scroll events. Represents the meta-data associated with this
+   * event.
+   */
+  public static final Type<ScrollEvent, ScrollHandler> TYPE = new Type<ScrollEvent, ScrollHandler>(
       Event.ONSCROLL) {
-     @Override
-     public void fire(ScrollHandler handler, ScrollEvent event) {
-       handler.onScroll(event);
-     }
+    @Override
+    public void fire(ScrollHandler handler, ScrollEvent event) {
+      handler.onScroll(event);
+    }
 
-     @Override     
+    @Override
     ScrollEvent wrap(Event nativeEvent) {
-       return new ScrollEvent(nativeEvent);
-     }
-   };
+      return new ScrollEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructor.
@@ -46,8 +50,8 @@ public class ScrollEvent extends DomEvent {
   public ScrollEvent(Event nativeEvent) {
     super(nativeEvent);
   }
-  
- @Override
+
+  @Override
   protected Type getType() {
     return TYPE;
   }

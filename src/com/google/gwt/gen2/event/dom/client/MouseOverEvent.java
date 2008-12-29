@@ -19,24 +19,28 @@ import com.google.gwt.user.client.Event;
 
 /**
  * Represents a native mouse over event.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public class MouseOverEvent extends MouseEvent {
 
   /**
-    Event type for mouse over events. Represents the meta-data associated with this event.
-  */
-  public static final Type<MouseOverEvent, MouseOverHandler> TYPE = new Type<MouseOverEvent,MouseOverHandler>(
+   * Event type for mouse over events. Represents the meta-data associated with
+   * this event.
+   */
+  public static final Type<MouseOverEvent, MouseOverHandler> TYPE = new Type<MouseOverEvent, MouseOverHandler>(
       Event.ONMOUSEOVER) {
-     @Override
-     public void fire(MouseOverHandler handler, MouseOverEvent event) {
-       handler.onMouseOver(event);
-     }
+    @Override
+    public void fire(MouseOverHandler handler, MouseOverEvent event) {
+      handler.onMouseOver(event);
+    }
 
-     @Override     
+    @Override
     MouseOverEvent wrap(Event nativeEvent) {
-       return new MouseOverEvent(nativeEvent);
-     }
-   };
+      return new MouseOverEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructor.
@@ -46,8 +50,8 @@ public class MouseOverEvent extends MouseEvent {
   public MouseOverEvent(Event nativeEvent) {
     super(nativeEvent);
   }
-  
- @Override
+
+  @Override
   protected Type getType() {
     return TYPE;
   }

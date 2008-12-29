@@ -25,7 +25,9 @@ import com.google.gwt.gen2.event.shared.HasHandlerManager;
  * interface will be expanded, so only implement this interface if you wish to
  * have your widget break if a new key event type is introduced.
  * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public interface HasAllKeyHandlers extends HasKeyUpHandlers,
     HasKeyDownHandlers, HasKeyPressHandlers {
 

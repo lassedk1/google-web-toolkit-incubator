@@ -23,11 +23,14 @@ import com.google.gwt.gen2.event.shared.HasHandlerManager;
  * This is a convenience interface that includes all focus handlers defined by
  * the core GWT system.
  * 
- * <br/> WARNING, PLEASE READ: As this interface is intended for developers who
- * wish to handle all focus events in GWT, in the unlikely event that a new
- * focus event is added, this interface will change.
+ * <br/>
+ * WARNING, PLEASE READ: As this interface is intended for developers who wish
+ * to handle all focus events in GWT, in the unlikely event that a new focus
+ * event is added, this interface will change.
  * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public interface HasAllFocusHandlers extends HasFocusHandlers, HasBlurHandlers {
   /**
    * Adaptor used to implement both {@link FocusHandler} and {@link BlurHandler}
