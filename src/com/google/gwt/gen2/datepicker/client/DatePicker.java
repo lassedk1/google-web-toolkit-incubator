@@ -42,7 +42,10 @@ import java.util.Map;
 
 /**
  * Standard GWT date picker.
+ * 
+ * @deprecated use the com.google.gwt.user.datepicker.client classes instead
  */
+@Deprecated
 public class DatePicker extends Gen2Composite implements
     HasSelectionHandlers<Date>, HasHighlightHandlers<Date>,
     HasShowRangeHandlers<Date> {

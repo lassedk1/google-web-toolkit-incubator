@@ -20,7 +20,9 @@ import java.util.Date;
 /**
  * Abstract month selector widget.
  * 
+ * @deprecated use the com.google.gwt.user.datepicker.client classes instead
  */
+@Deprecated
 public abstract class MonthSelector extends DatePickerComponent {
 
   /**

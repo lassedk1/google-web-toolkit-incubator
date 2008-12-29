@@ -45,7 +45,10 @@ import java.util.Date;
 
 /**
  * A simple date box.
+ * 
+ * @deprecated use the com.google.gwt.user.datepicker.client classes instead
  */
+@Deprecated
 public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
     HasAnimation {
 
@@ -248,11 +251,11 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
   public String getText() {
     return box.getText();
   }
-  
+
   /**
    * Get text box
    * 
-   * @return the text box used to enter the formatted date 
+   * @return the text box used to enter the formatted date
    */
   public TextBox getTextBox() {
     return box;
