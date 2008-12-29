@@ -1,0 +1,12 @@
+<module>
+
+	<!-- Inherit the core Web Toolkit stuff.                  -->
+	<inherits name='com.google.gwt.museum.Museum' />
+	<!--  <inherits name='com.google.gwt.widgetideas.WidgetIdeas' /> -->
+	<inherits name='com.google.gwt.gen2.commonwidget.CommonWidget' />
+	<!-- Specify the app entry point class.                   -->
+	<entry-point class='com.google.gwt.museum.client.feature.KeyboardHandlerVisuals' />
+	<source path="client/common" />
+	<source path="client/feature" />
+	<source path="client/viewer" />
+</module>
