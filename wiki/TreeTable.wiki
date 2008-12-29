@@ -1,4 +1,5 @@
 #summary TreeTable
+#labels Type-Widget
 
 || Live demo || [http://google-web-toolkit-incubator.googlecode.com/svn/branches/dflorey/tableAddons/demo/TreeTableDemo/TreeTableDemo.html] ||
 || Java docs || coming soon... ||
