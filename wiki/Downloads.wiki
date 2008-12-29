@@ -9,6 +9,7 @@ Currently, the released gwt-incubator drop requires gwt 1.5.3 or higher.  [http:
 || Revision || 1337 ||
 || Last Changed Date || Fri, 19 Dec 2008 ||
 || Java docs || http://collectionofdemos.appspot.com/javadoc/index.html || 
+|| GWT version || GWT 1.5 or greater, available [http://code.google.com/p/google-web-toolkit/downloads/list here] ||
 
 This is probably the last gwt 1.5 based drop of gwt-incubator. This wiki will be updated if later a new gwt-incubator 1.5 drop does become necessary. 
 
