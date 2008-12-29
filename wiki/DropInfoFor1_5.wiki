@@ -3,5 +3,6 @@
 || URL || http://google-web-toolkit-incubator.googlecode.com/svn/releases/1.5 ||
 || Revision || 1337 ||
 || Last Changed Date || Fri, 19 Dec 2008 ||
+|| Java docs || http://collectionofdemos.appspot.com/javadoc/index.html || 
 
 This is probably the last gwt 1.5 based release of gwt-incubator. However, this wiki's svn information will be updated if new  gwt-incubator 1.5 drop does become necessary. 
