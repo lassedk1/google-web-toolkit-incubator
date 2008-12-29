@@ -22,7 +22,9 @@ import com.google.gwt.gen2.event.shared.AbstractEvent;
  * Fired after an event source has selected a new value.
  * 
  * @param <Value> the type of value the widget has selected
+ * @deprecated use the com.google.gwt.event.logical.shared classes instead
  */
+@Deprecated
 public class SelectionEvent<Value> extends AbstractEvent {
 
   /**
