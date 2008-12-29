@@ -1,9 +1,14 @@
-#summary information about the 1.5 gwt-incubator drop
-=[http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator_1-5_Dec_28.jar click here to download the 1.5 gwt-incubator jar] == 
-= Release information =
+#summary Downloads
+
+= gwt-incubator drop for gwt 1.5.3 =
+====[http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator_1-5_Dec_28.jar click here to download the 1.5 gwt-incubator jar] ====
+ 
 || Source || http://google-web-toolkit-incubator.googlecode.com/svn/releases/1.5 ||
 || Revision || 1337 ||
 || Last Changed Date || Fri, 19 Dec 2008 ||
 || Java docs || http://collectionofdemos.appspot.com/javadoc/index.html || 
 
 This is probably the last gwt 1.5 based drop of gwt-incubator. This wiki will be updated if later a new gwt-incubator 1.5 drop does become necessary. 
+
+
+=[http://code.google.com/p/google-web-toolkit-incubator/downloads/list?can=2&q=&colspec=Filename+Summary+Uploaded+Size+DownloadCount For a list of all gwt-incubator downloads, click here]=
