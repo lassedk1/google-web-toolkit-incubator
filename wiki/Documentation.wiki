@@ -1,5 +1,3 @@
-#summary gwt-incubator documentation
-
 === Design and user documentation ===
 Please visit the [http://code.google.com/docreader/#p=google-web-toolkit-incubator&s=google-web-toolkit-incubator&t=FunctionalitySummary gwt-incubator documentation site] for information about our widgets and libraries.
 
