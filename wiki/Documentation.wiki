@@ -1,13 +1,14 @@
 #summary gwt-incubator documentation
 
+=== Design and user documentation ===
 Please visit the [http://code.google.com/docreader/#p=google-web-toolkit-incubator&s=google-web-toolkit-incubator&t=FunctionalitySummary gwt-incubator documentation site] for information about our widgets and libraries.
 
 For a list of all wiki documents in this project, see the [http://code.google.com/p/google-web-toolkit-incubator/w/list Wiki document list].
 
-== Code ==
+=== Code ===
 If you are looking for the most recent release's java docs, [http://collectionofdemos.appspot.com/javadoc/index.html they are here].
 
 If you want to just take a peek at the most recent demos, [http://collectionofdemos.appspot.com/demo/index.html they are here]. 
 
-== Contributors ==
+=== Contributors ===
 gwt-incubator is an open source project under the Apache 2.0 license. If you'd like to get involved building new widgets and libraries for gwt, please read [http://code.google.com/p/google-web-toolkit-incubator/wiki/MakingIncubatorBetter making gwt-incubator better] for more information on how to contribute.
