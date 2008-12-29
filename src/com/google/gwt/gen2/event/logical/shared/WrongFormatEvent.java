@@ -19,7 +19,9 @@ package com.google.gwt.gen2.event.logical.shared;
  * Fired when an event source receives a value in the wrong format.
  * 
  * @param <Value> the type of value with the wrong format
+ * @deprecated use the com.google.gwt.event.logical.shared classes instead
  */
+@Deprecated
 public class WrongFormatEvent<Value> extends ValueEvent<Value> {
 
   /**

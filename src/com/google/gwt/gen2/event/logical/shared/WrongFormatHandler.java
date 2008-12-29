@@ -21,7 +21,9 @@ import com.google.gwt.gen2.event.shared.EventHandler;
  * Handler interface for {@link WrongFormatEvent} events.
  * 
  * @param <Value> the value with the wrong format
+ * @deprecated use the com.google.gwt.event.logical.shared classes instead
  */
+@Deprecated
 public interface WrongFormatHandler<Value> extends EventHandler {
 
   /**

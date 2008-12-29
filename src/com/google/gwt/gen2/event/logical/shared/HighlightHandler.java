@@ -21,7 +21,9 @@ import com.google.gwt.gen2.event.shared.EventHandler;
  * Handler interface for {@link HighlightEvent} events.
  * 
  * @param <Value> the value associated with the highlight event
+ * @deprecated use the com.google.gwt.event.logical.shared classes instead
  */
+@Deprecated
 public interface HighlightHandler<Value> extends EventHandler {
 
   /**

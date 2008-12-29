@@ -21,7 +21,9 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  * {@link UnhighlightEvent} events.
  * 
  * @param <Value> The value associated with the UnhighlightEvent
+ * @deprecated use the com.google.gwt.event.logical.shared classes instead
  */
+@Deprecated
 public interface HasUnhighlightHandlers<Value> {
   /**
    * Adds a {@link UnhighlightHandler}.

@@ -21,7 +21,9 @@ import com.google.gwt.gen2.event.shared.EventHandler;
  * Handler interface for {@link ShowRangeEvent} events.
  * 
  * @param <Value> the range's value
+ * @deprecated use the com.google.gwt.event.logical.shared classes instead
  */
+@Deprecated
 public interface ShowRangeHandler<Value> extends EventHandler {
 
   /**
