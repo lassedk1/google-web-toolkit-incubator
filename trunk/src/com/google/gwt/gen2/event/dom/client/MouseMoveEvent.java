@@ -19,24 +19,28 @@ import com.google.gwt.user.client.Event;
 
 /**
  * Represents a native mouse move event.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public class MouseMoveEvent extends MouseEvent {
 
   /**
-    Event type for mouse move events. Represents the meta-data associated with this event.
-  */
-  public static final Type<MouseMoveEvent, MouseMoveHandler> TYPE = new Type<MouseMoveEvent,MouseMoveHandler>(
+   * Event type for mouse move events. Represents the meta-data associated with
+   * this event.
+   */
+  public static final Type<MouseMoveEvent, MouseMoveHandler> TYPE = new Type<MouseMoveEvent, MouseMoveHandler>(
       Event.ONMOUSEMOVE) {
-     @Override
-     public void fire(MouseMoveHandler handler, MouseMoveEvent event) {
-       handler.onMouseMove(event);
-     }
+    @Override
+    public void fire(MouseMoveHandler handler, MouseMoveEvent event) {
+      handler.onMouseMove(event);
+    }
 
-     @Override     
+    @Override
     MouseMoveEvent wrap(Event nativeEvent) {
-       return new MouseMoveEvent(nativeEvent);
-     }
-   };
+      return new MouseMoveEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructor.
@@ -46,8 +50,8 @@ public class MouseMoveEvent extends MouseEvent {
   public MouseMoveEvent(Event nativeEvent) {
     super(nativeEvent);
   }
-  
- @Override
+
+  @Override
   protected Type getType() {
     return TYPE;
   }

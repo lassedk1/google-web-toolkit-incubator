@@ -19,7 +19,10 @@ import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
  * Handler interface for {@link MouseDownEvent} events.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public interface MouseDownHandler extends EventHandler {
 
   /**

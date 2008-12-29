@@ -19,7 +19,10 @@ import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
  * Handler for {@link ClickEvent} events.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public interface ClickHandler extends EventHandler {
   /**
    * Called when a native click event is fired.

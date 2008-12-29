@@ -19,24 +19,28 @@ import com.google.gwt.user.client.Event;
 
 /**
  * Represents a native error event.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public class ErrorEvent extends DomEvent {
 
   /**
-    Event type for error events. Represents the meta-data associated with this event.
-  */
-  public static final Type<ErrorEvent, ErrorHandler> TYPE = new Type<ErrorEvent,ErrorHandler>(
+   * Event type for error events. Represents the meta-data associated with this
+   * event.
+   */
+  public static final Type<ErrorEvent, ErrorHandler> TYPE = new Type<ErrorEvent, ErrorHandler>(
       Event.ONERROR) {
-     @Override
-     public void fire(ErrorHandler handler, ErrorEvent event) {
-       handler.onError(event);
-     }
+    @Override
+    public void fire(ErrorHandler handler, ErrorEvent event) {
+      handler.onError(event);
+    }
 
-     @Override     
+    @Override
     ErrorEvent wrap(Event nativeEvent) {
-       return new ErrorEvent(nativeEvent);
-     }
-   };
+      return new ErrorEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructor.
@@ -46,8 +50,8 @@ public class ErrorEvent extends DomEvent {
   public ErrorEvent(Event nativeEvent) {
     super(nativeEvent);
   }
-  
- @Override
+
+  @Override
   protected Type getType() {
     return TYPE;
   }

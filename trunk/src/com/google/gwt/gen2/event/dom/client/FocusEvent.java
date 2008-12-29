@@ -19,24 +19,28 @@ import com.google.gwt.user.client.Event;
 
 /**
  * Represents a native focus event.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public class FocusEvent extends DomEvent {
 
   /**
-    Event type for focus events. Represents the meta-data associated with this event.
-  */
-  public static final Type<FocusEvent, FocusHandler> TYPE = new Type<FocusEvent,FocusHandler>(
+   * Event type for focus events. Represents the meta-data associated with this
+   * event.
+   */
+  public static final Type<FocusEvent, FocusHandler> TYPE = new Type<FocusEvent, FocusHandler>(
       Event.ONFOCUS) {
-     @Override
-     public void fire(FocusHandler handler, FocusEvent event) {
-       handler.onFocus(event);
-     }
+    @Override
+    public void fire(FocusHandler handler, FocusEvent event) {
+      handler.onFocus(event);
+    }
 
-     @Override     
+    @Override
     FocusEvent wrap(Event nativeEvent) {
-       return new FocusEvent(nativeEvent);
-     }
-   };
+      return new FocusEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructor.
@@ -46,8 +50,8 @@ public class FocusEvent extends DomEvent {
   public FocusEvent(Event nativeEvent) {
     super(nativeEvent);
   }
-  
- @Override
+
+  @Override
   protected Type getType() {
     return TYPE;
   }

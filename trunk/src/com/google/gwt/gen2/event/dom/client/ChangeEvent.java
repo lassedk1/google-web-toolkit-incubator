@@ -19,24 +19,28 @@ import com.google.gwt.user.client.Event;
 
 /**
  * Represents a native change event.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public class ChangeEvent extends DomEvent {
 
   /**
-    Event type for change events. Represents the meta-data associated with this event.
-  */
-  public static final Type<ChangeEvent, ChangeHandler> TYPE = new Type<ChangeEvent,ChangeHandler>(
+   * Event type for change events. Represents the meta-data associated with this
+   * event.
+   */
+  public static final Type<ChangeEvent, ChangeHandler> TYPE = new Type<ChangeEvent, ChangeHandler>(
       Event.ONCHANGE) {
-     @Override
-     public void fire(ChangeHandler handler, ChangeEvent event) {
-       handler.onChange(event);
-     }
+    @Override
+    public void fire(ChangeHandler handler, ChangeEvent event) {
+      handler.onChange(event);
+    }
 
-     @Override     
+    @Override
     ChangeEvent wrap(Event nativeEvent) {
-       return new ChangeEvent(nativeEvent);
-     }
-   };
+      return new ChangeEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructor.
@@ -46,8 +50,8 @@ public class ChangeEvent extends DomEvent {
   public ChangeEvent(Event nativeEvent) {
     super(nativeEvent);
   }
-  
- @Override
+
+  @Override
   protected Type getType() {
     return TYPE;
   }
