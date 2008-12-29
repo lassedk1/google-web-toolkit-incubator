@@ -1,7 +1,9 @@
 #summary Downloads
+Currently, the released gwt-incubator drop requires gwt 1.5.3 or higher.  [http://code.google.com/p/google-web-toolkit-incubator/downloads/list?can=2&q=&colspec=Filename+Summary+Uploaded+Size+DownloadCount For a list of all downloads, click here] 
 
 = gwt-incubator drop for gwt 1.5.3 =
-====[http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator_1-5_Dec_28.jar click here to download the 1.5 gwt-incubator jar] ====
+
+[http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator_1-5_Dec_28.jar click here to download the 1.5 gwt-incubator jar]
  
 || Source || http://google-web-toolkit-incubator.googlecode.com/svn/releases/1.5 ||
 || Revision || 1337 ||
@@ -10,5 +12,4 @@
 
 This is probably the last gwt 1.5 based drop of gwt-incubator. This wiki will be updated if later a new gwt-incubator 1.5 drop does become necessary. 
 
-
-=[http://code.google.com/p/google-web-toolkit-incubator/downloads/list?can=2&q=&colspec=Filename+Summary+Uploaded+Size+DownloadCount For a list of all gwt-incubator downloads, click here]=
+ 
