@@ -1,4 +1,4 @@
-#summary Downloads
+#summary gwt-incubator download launch page
 Currently, the released gwt-incubator drop requires gwt 1.5.3 or higher.  [http://code.google.com/p/google-web-toolkit-incubator/downloads/list?can=2&q=&colspec=Filename+Summary+Uploaded+Size+DownloadCount For a list of all downloads, click here] 
 
 = gwt-incubator drop for gwt 1.5.3 =
