@@ -1,5 +1,5 @@
 #summary information about the 1.5 gwt-incubator drop
-=[http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator_1-5_Dec_28.jar click here to download the 1.5 gwt-incubator.jar] == 
+=[http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator_1-5_Dec_28.jar click here to download the 1.5 gwt-incubator jar] == 
 = Release information =
 || Source || http://google-web-toolkit-incubator.googlecode.com/svn/releases/1.5 ||
 || Revision || 1337 ||
