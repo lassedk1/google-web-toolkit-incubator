@@ -17,12 +17,12 @@
   	  * [ProgressBar]
 	  * Convenience
       * [SimpleWidget]
-  * Client libraries
+  * Stand alone libraries
     * [Validation Validation library]
     * [Logging Logging library]
     * [GWTCanvas Graphics library]
   * Widget utilities
-    * [Decorators html Decorators]
+    * [Decorators HTML Decorators]
   * [ImmutableResourceBundle Resource utilities]
     * [CssResource]
       * [CssResourceCookbook]
@@ -36,7 +36,7 @@
       * [Gen2DevelopersWidgetGuide gen2 widget guide]
       * [WorkingWithEclipse eclipse setup]
     * [HowToUseTheIncubator user's guide]
-  * Faq's under development
+  * Gwt FAQ's
     * [StubbingRPC]
     * [IntegratingWithSpring]
     * [ServerPushFAQ]
