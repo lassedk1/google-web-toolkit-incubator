@@ -24,7 +24,10 @@ import com.google.gwt.widgetideas.client.HasFastTreeItems;
 
 /**
  * Publishes log messages into a popup tree sorted by category.
+ * 
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
+@Deprecated
 public class TreeLogHandler extends PopupWidgetLogHandler<FastTree> {
   private FastTree tree = new FastTree();
 

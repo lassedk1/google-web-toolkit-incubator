@@ -25,8 +25,10 @@ import java.io.Serializable;
  * 
  * The logging levels are initialized by the Log class, so a method from Log
  * must be called before the level fields are used.
+ * 
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
-
+@Deprecated
 public class Level implements Comparable, Serializable {
   /**
    * OFF is a special level that can be used to turn off logging. This level is

@@ -31,7 +31,10 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
  * While this class ended up sharing no code with gwt-logs remote service API
  * due to naming/functionality differences, its design is modeled using the same
  * pattern as the gwt-logs <code>RemoteLogger</code>.
+ * 
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
+@Deprecated
 public class RemoteLogHandler extends LogHandler {
   class DefaultCallback implements AsyncCallback {
 

@@ -21,7 +21,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * Remote Service Async.
+ * 
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
+@Deprecated
 public interface RemoteLoggingServiceAsync {
   void publish(String message, Level level, String category, Throwable e,
       AsyncCallback callback);

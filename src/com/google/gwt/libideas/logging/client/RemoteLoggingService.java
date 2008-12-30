@@ -21,7 +21,10 @@ import com.google.gwt.user.client.rpc.RemoteService;
 
 /**
  * Logging service definition.
+ * 
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
+@Deprecated
 public interface RemoteLoggingService extends RemoteService {
   void publish(String message, Level level, String category, Throwable e);
 }
