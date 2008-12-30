@@ -1,7 +1,6 @@
 <module>
 
-	<!--  Sets up dependent code -->
-	<inherits name='com.google.gwt.gen2.event.Event' />
+	<!--  Sets up dependent code --> 
 	<inherits name='com.google.gwt.gen2.widgetbase.WidgetBase' />
 
 	<!--  Sets up source path -->

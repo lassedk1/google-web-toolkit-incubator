@@ -16,7 +16,7 @@
 
 package com.google.gwt.gen2.logging.shared;
 
-import com.google.gwt.gen2.event.shared.AbstractEvent;
+import com.google.gwt.event.shared.GwtEvent;
 
 import java.util.Date;
 
@@ -27,19 +27,8 @@ import java.util.Date;
  * When fired from {@link Log}, the event has no source, when fired from a
  * custom logger, the event should have that logger as its source.
  */
-public class LogEvent extends AbstractEvent {
-
-  /**
-   * Logging type type.
-   */
-  public static final Type<LogEvent, LogHandler> TYPE = new Type<LogEvent, LogHandler>() {
-
-    @Override
-    protected void fire(LogHandler handler, LogEvent event) {
-      handler.onLog(event);
-    }
-  };
-
+public class LogEvent extends GwtEvent<LogHandler> {
+  private static Type<LogHandler> TYPE = new Type<LogHandler>();
   private String message;
   private Level level;
   private String category;
@@ -172,7 +161,12 @@ public class LogEvent extends AbstractEvent {
   }
 
   @Override
-  protected Type<LogEvent, LogHandler> getType() {
+  protected void dispatch(LogHandler handler) {
+    handler.onLog(this);
+  }
+
+  @Override
+  protected Type<LogHandler> getAssociatedType() {
     return TYPE;
   }
 
