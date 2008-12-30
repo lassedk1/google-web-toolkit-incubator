@@ -38,7 +38,7 @@ import java.util.Map;
 /**
  * Date picker.
  * 
- * @deprecated use the com.google.gwt.user.datepicker.client classes instead
+ * @deprecated use  com.google.gwt.user.datepicker.client.DatePicker instead
  */
 @Deprecated
 public class DatePicker extends Composite implements FiresChangeEvents<Date>,

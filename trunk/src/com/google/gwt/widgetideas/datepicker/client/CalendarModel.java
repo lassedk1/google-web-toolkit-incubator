@@ -24,8 +24,10 @@ import java.util.Date;
 
 /**
  * Model used to get calendar information.
+ * @deprecated use the com.google.gwt.user.datepicker.client classes instead
  */
 @SuppressWarnings("deprecation")
+@Deprecated
 public class CalendarModel {
 
   public static final int WEEKS_IN_MONTH = 6;

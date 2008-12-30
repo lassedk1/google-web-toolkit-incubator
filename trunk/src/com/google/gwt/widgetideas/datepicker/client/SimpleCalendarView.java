@@ -30,8 +30,9 @@ import java.util.Date;
 
 /**
  * Simple calendar view.
- * 
+ * use the com.google.gwt.user.datepicker.client classes instead
  */
+@Deprecated
 @SuppressWarnings( {"deprecation"})
 public class SimpleCalendarView extends CalendarView<DatePicker> {
 

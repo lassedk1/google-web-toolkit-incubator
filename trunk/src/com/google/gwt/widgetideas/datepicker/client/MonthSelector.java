@@ -21,7 +21,7 @@ import java.util.Date;
  * Abstract month selector widget.
  * 
  * @param <MyDatePicker> date picker used with this month selector
- * @deprecated use the com.google.gwt.user.datepicker.client classes instead
+ * @deprecated use the com.google.gwt.user.datepicker.client.MonthSelector instead
  */
 @Deprecated
 public abstract class MonthSelector<MyDatePicker extends DatePicker> extends
