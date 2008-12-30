@@ -17,7 +17,7 @@
 package com.google.gwt.widgetideas.datepicker.client;
 
 import com.google.gwt.user.client.ui.Composite;
-
+@Deprecated
 abstract class DatePickerComponent<MyDatePicker extends DatePicker> extends
     Composite {
   private MyDatePicker datePicker;
