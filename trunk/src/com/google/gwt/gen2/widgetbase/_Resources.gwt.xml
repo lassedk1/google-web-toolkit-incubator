@@ -17,6 +17,6 @@ the License.
 <!-- Includes the public resources used by the the Standard theme.  This   -->
 <!-- file does not inject a style sheet into the application.              -->
 <module>
-    <!-- get gwt images                                    -->
-    <inherits name="com.google.gwt.user.theme.standard.StandardResources"/>
+    <!-- get gwt standard                                    -->
+    <inherits name="com.google.gwt.user.theme.standard.Standard"/>
 </module>

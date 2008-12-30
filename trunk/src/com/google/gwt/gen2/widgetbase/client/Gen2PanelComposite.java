@@ -26,7 +26,9 @@ import java.util.Iterator;
  * A special case composite for panels.
  * 
  * @param <PanelType> the type of panel being wrapped.
+ * @deprecated gen2Panel functionality has been subsumed by 1.6 Panel
  */
+@Deprecated
 public abstract class Gen2PanelComposite<PanelType extends Widget & HasWidgets>
     extends Gen2Composite<PanelType> implements HasWidgets {
 
