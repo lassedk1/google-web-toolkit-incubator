@@ -21,9 +21,11 @@ import java.util.Date;
  * Abstract month selector widget.
  * 
  * @param <MyDatePicker> date picker used with this month selector
+ * @deprecated use the com.google.gwt.user.datepicker.client classes instead
  */
-public abstract class MonthSelector<MyDatePicker extends DatePicker>
-    extends DatePickerComponent<MyDatePicker> {
+@Deprecated
+public abstract class MonthSelector<MyDatePicker extends DatePicker> extends
+    DatePickerComponent<MyDatePicker> {
 
   public abstract void setAllowableDateRange(Date from, Date to);
 
