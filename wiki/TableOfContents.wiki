@@ -1,18 +1,17 @@
 #summary Table of contents for GWT incubator documentation
 #labels Type-Guide, Type-Widget, Type-Library
   * [Overview GWT Incubator Overview]
-  * Stand alone libraries
-    * [ImmutableResourceBundle Resource bundles]
-      * [CssResource]
-        * [CssResourceCookbook]
-      * [SoundResource]
-      * [StyleInjector]
-    * [Validation server and client form validation]
-    * [Logging client logging]
-	  * [GWTCanvas graphics]
-      * [ImageLoader]
-	  * [Decorators html decorators]
-  * Server side libraries
+  * [ImmutableResourceBundle Resource bundles]
+    * [CssResource]
+      * [CssResourceCookbook]
+    * [SoundResource]
+    * [StyleInjector]
+  * [Validation server and client form validation]
+  * [Logging client logging]
+	* [GWTCanvas graphics]
+    * [ImageLoader]
+	* [Decorators html decorators]
+  * Server utilities
     * [ServerSideLocaleSelection locale selection]
   * Widgets
     * Tables 
@@ -31,7 +30,7 @@
   	  * [ProgressBar]
 	  * Convenience
       * [SimpleWidget]
-  * gwt-incubator infrastructure 
+  * Infrastructure 
     * [MakingIncubatorBetter developer's guide]
       * [Gen2DevelopersWidgetGuide gen2 widget guide]
       * [WorkingWithEclipse eclipse setup]
