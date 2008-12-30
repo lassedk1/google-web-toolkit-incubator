@@ -1,6 +1,5 @@
 #summary Table of contents for GWT incubator documentation
 #labels Type-Guide, Type-Widget, Type-Library
-  * [Overview GWT Incubator Overview]
   * Widgets
     * Tables 
       * [ScrollTable]
@@ -32,6 +31,7 @@
   * Server utilities
     * [ServerSideLocaleSelection locale selection]
   * Infrastructure 
+    * [Overview GWT Incubator Overview]
     * [MakingIncubatorBetter developer's guide]
       * [Gen2DevelopersWidgetGuide gen2 widget guide]
       * [WorkingWithEclipse eclipse setup]
