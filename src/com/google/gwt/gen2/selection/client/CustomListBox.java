@@ -25,7 +25,6 @@ import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
 import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.widgetbase.client.Gen2Composite;
-import com.google.gwt.gen2.widgetbase.client.WidgetCss;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -45,68 +44,16 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
     implements HasSelectionHandlers<ValueType> {
 
   /**
-   * Interface used to allow the widget access to css style names. <p/> The
-   * class names indicate the default gwt names for these styles. <br>
-   * 
+   * Helper class to support styling.
    */
-  public static interface Css extends WidgetCss {
-    /**
-     * Disabled item.
-     */
-    String customListBoxDisabledItem();
+  static class StandardCss extends StandardCssImpl {
 
-    /**
-     * Highlighted item.
-     */
-    String customListBoxHighlightedItem();
+    public StandardCss(String styleName) {
+      super("gwt-CustomListBox", "CustomList");
+    }
 
-    /**
-     * Inner div of a list separator.
-     */
-    String customListBoxInnerSeparator();
-
-    /**
-     * List item.
-     */
-    String customListBoxItem();
-
-    /**
-     * Wrapper around the list.
-     */
-    String customListBoxList();
-
-    /**
-     * Outer div of a list separator.
-     */
-    String customListBoxOuterSeparator();
-
-    /**
-     * Selected and disabled item.
-     */
-    String customListBoxSelectedAndDisabledItem();
-
-    /**
-     * Selected and highlighted item.
-     */
-    String customListBoxSelectedAndHighlightedItem();
-
-    /**
-     * Selected item.
-     */
-    String customListBoxSelectedItem();
-  }
-
-  /**
-   * Used by instantiable subclasses to actually create a standard css impl.
-   */
-  abstract static class StandardCss extends StandardCssImpl implements
-      CustomListBox.Css {
-
-    /**
-     * Constructor.
-     */
-    public StandardCss(String styleName, String baseStyleName) {
-      super(styleName, baseStyleName);
+    public StandardCss() {
+      super("gwt-CustomListBox", "CustomList");
     }
 
     public String customListBoxDisabledItem() {
@@ -228,7 +175,7 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
     }
   }
 
-  private Css css;
+  private StandardCss css;
 
   // The fact that we are backed by an item grid is not part of the public API.
   private ItemList itemList = new ItemList();
@@ -244,17 +191,10 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
   private String currentSummary;
 
   /**
-   * Creates a custom list box with the given css.
-   */
-  public CustomListBox(Css css) {
-    this(css, "");
-  }
-
-  /**
    * Creates a custom list box with the given css and default summary describing
    * the list.
    */
-  public CustomListBox(Css css, String defaultSummary) {
+  CustomListBox(StandardCss css, String defaultSummary) {
     setCss(css);
     this.defaultSummary = defaultSummary;
     this.currentSummary = defaultSummary;
@@ -373,7 +313,7 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
   /**
    * Sets the css for this widget.
    */
-  void setCss(Css css) {
+  void setCss(StandardCss css) {
     this.css = css;
     itemList.setStylePrimaryName(css.customListBoxList());
   }

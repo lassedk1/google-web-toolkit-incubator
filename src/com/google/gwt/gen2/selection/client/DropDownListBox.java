@@ -16,7 +16,6 @@
 
 package com.google.gwt.gen2.selection.client;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.commonwidget.client.Decorator;
 import com.google.gwt.gen2.commonwidget.client.DecoratorPanel;
 import com.google.gwt.gen2.commonwidget.client.DropDownPanel;
@@ -27,8 +26,6 @@ import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
 import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
-import com.google.gwt.libideas.client.StyleInjector;
-import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HasAnimation;
 import com.google.gwt.user.client.ui.KeyboardListener;
@@ -43,57 +40,7 @@ import com.google.gwt.user.client.ui.ToggleButton;
 public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
     implements HasAnimation, HasBeforeShowHandlers {
 
-  /**
-   * Css interface for drop down list box.
-   */
-  public static interface Css extends CustomListBox.Css {
-    @ClassName("gwt-DropDownListBox")
-    String dropDownListBox();
-  }
-
-  /**
-   * Creates the standard css instance used for this widget and groups all the
-   * css processing under it.
-   */
-  static class StandardCss extends CustomListBox.StandardCss implements Css {
-
-    /**
-     * CSS resource.
-     */
-    public static interface Resources extends ImmutableResourceBundle {
-      @Resource("com/google/gwt/gen2/widgetbase/public/DropDownListBox.css")
-      DropDownListBox.Css dropDownListBoxCss();
-    }
-
-    /**
-     * Provides the default css info for this widget.
-     */
-    public static DropDownListBox.Css DEFAULT_CSS;
-
-    static Css ensureDefaultCss() {
-      if (DEFAULT_CSS == null) {
-        DEFAULT_CSS = createCss("gwt-DropDownListBox");
-      }
-      return DEFAULT_CSS;
-    }
-
-    static void injectCss() {
-      if (Gen2CssInjector.isInjectionEnabled()) {
-        Resources resources = GWT.create(Resources.class);
-        DropDownListBox.Css css = resources.dropDownListBoxCss();
-        StyleInjector.injectStylesheet(css.getText());
-        DEFAULT_CSS = css;
-      }
-    }
-
-    public StandardCss(String styleName) {
-      super(styleName, "customListBox");
-    }
-
-    public String dropDownListBox() {
-      return getWidgetStyleName();
-    }
-  }
+  private static StandardCss CSS = new StandardCss("gwt-DropDownListBox");
 
   /**
    * Drop down panel class.
@@ -114,21 +61,10 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
   }
 
   /**
-   * Creates a {@link Css} instance with the given style name. Note, only the
-   * primary style name changes.
-   * 
-   * @param styleName style name for the widget
-   * @return the standard css
-   */
-  public static Css createCss(String styleName) {
-    return new StandardCss(styleName);
-  }
-
-  /**
    * Injects the default styles as a css resource.
    */
   public static void injectDefaultCss() {
-    StandardCss.injectCss();
+    Gen2CssInjector.addDropDownListBoxDefault();
   }
 
   private final ToggleButton button = new ToggleButton() {
@@ -186,17 +122,17 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
    * Constructor.
    */
   public DropDownListBox(String buttonHtml) {
-    this(buttonHtml, StandardCss.ensureDefaultCss());
+    this(buttonHtml, CSS);
   }
 
   /**
    * Constructor.
    */
-  public DropDownListBox(String buttonHtml, Css css) {
+  DropDownListBox(String buttonHtml, StandardCss css) {
     super(css, buttonHtml);
     initWidget(new DecoratorPanel(button, supplyButtonDecorator()));
 
-    getWidget().setStyleName(css.dropDownListBox());
+    getWidget().setStyleName(css.getWidgetStyleName());
 
     dropDown.add(new DecoratorPanel(getListBox(), supplyListBoxDecorator()));
 
@@ -244,24 +180,15 @@ public class DropDownListBox<ValueType> extends CustomListBox<ValueType>
     dropDown.setAnimationEnabled(enabled);
   }
 
-  /**
-   * Sets the default.
-   * 
-   * @param css
-   */
-  public void setDefaultCss(Css css) {
-    StandardCss.DEFAULT_CSS = css;
-  }
-
   @Override
   public void setStyleName(String styleName) {
-    setCss(createCss(styleName));
+    setCss(new StandardCss(styleName));
     super.setStyleName(styleName);
   }
 
   @Override
   public void setStylePrimaryName(String styleName) {
-    setCss(createCss(styleName));
+    setCss(new StandardCss(styleName));
     super.setStylePrimaryName(styleName);
   }
 
