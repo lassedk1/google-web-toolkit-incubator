@@ -1,18 +1,21 @@
 #summary Table of contents for GWT incubator documentation
-#labels Type-Guide
+#labels Type-Guide, Type-Widget, Type-Library
   * [Overview GWT Incubator Overview]
-  * [Libraries]
-    * [ImmutableResourceBundle Resource usage]
+  * Stand alone libraries
+    * [ImmutableResourceBundle Resource bundles]
       * [CssResource]
         * [CssResourceCookbook]
       * [SoundResource]
       * [StyleInjector]
+    * [Validation]
     * [Logging]
-    * [ServerSideLocaleSelection]
-	* [GWTCanvas]
-	* [Decorators]
-  * [Widgets]
-    * [Tables]
+	  * [GWTCanvas]
+      * [ImageLoader]
+	  * [Decorators]
+  * Server side libraries
+    [ServerSideLocaleSelection locale selection]
+  * Widgets
+    * Tables 
       * [ScrollTable]
       * [PagingScrollTable]
       * [BulkTableRenderers]
@@ -20,16 +23,21 @@
       * [CollapsiblePanel]
       * [GlassPanel]
       * [FastTree]
-      * [LazyPanel]
     * Selection 
   	  * [SliderBar]
       * [Spinner]
 	  * [DropDownListBox]
-	* Status
+    * Status
   	  * [ProgressBar]
-	* Convenience
+	  * Convenience
       * [SimpleWidget]
-  * [FAQ]
+  * Infrastructure
+    * [MakingIncubatorBetter developer's guide]
+      * [Gen2DevelopersWidgetGuide gen2 widget guide]
+      * [WorkingWithEclipse eclipse setup]
+    * [HowToUseTheIncubator user's guide]
+    
+  * [FAQ's under develmenat]
     * [StubbingRPC]
     * [IntegratingWithSpring]
     * [ServerPushFAQ]

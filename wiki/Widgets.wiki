@@ -1,8 +1,0 @@
-#summary Overview of Incubator Widgets
-#labels Type-Widget
-
-= Introduction =
-The widgets package is meant for widgets that are candidates for a later GWT release.  All widgets are available using the  `Widgets' module file. To use it, include the following line into your module file:
-{{{<inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>}}}
-
-Note, new widgets are now being introduced in the gen2 package instead.

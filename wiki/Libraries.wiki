@@ -1,5 +1,0 @@
-#summary overview of Incubator libraries
-#labels Type-Library
-
-The libraries package is meant for libraries that are candidates for inclusion to GWT. 
- 
