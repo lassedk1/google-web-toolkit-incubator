@@ -1,6 +1,6 @@
 #summary DRAFT styling for gwt incubator widgets.
 = Introduction =
-This is a draft for styling conventions that should be used in GWT incubator. Over time, all the current incubator widgets will also move to these conventions.
+This is a draft for styling conventions that should be used in GWT incubator. This is an interim solution, however should be followed by all gen2 incubator widgets.
  
 = Users =
 All of these answers are relevant only to "new style" incubator widgets. In specific, all widgets deriving from the class `IncubatorWidget`

@@ -7,13 +7,13 @@
         * [CssResourceCookbook]
       * [SoundResource]
       * [StyleInjector]
-    * [Validation]
-    * [Logging]
-	  * [GWTCanvas]
+    * [Validation server and client form validation]
+    * [Logging client logging]
+	  * [GWTCanvas graphics]
       * [ImageLoader]
-	  * [Decorators]
+	  * [Decorators html decorators]
   * Server side libraries
-    [ServerSideLocaleSelection locale selection]
+    * [ServerSideLocaleSelection locale selection]
   * Widgets
     * Tables 
       * [ScrollTable]
@@ -26,18 +26,17 @@
     * Selection 
   	  * [SliderBar]
       * [Spinner]
-	  * [DropDownListBox]
+	    * [DropDownListBox]
     * Status
   	  * [ProgressBar]
 	  * Convenience
       * [SimpleWidget]
-  * Infrastructure
+  * gwt-incubator infrastructure 
     * [MakingIncubatorBetter developer's guide]
       * [Gen2DevelopersWidgetGuide gen2 widget guide]
       * [WorkingWithEclipse eclipse setup]
     * [HowToUseTheIncubator user's guide]
-    
-  * [FAQ's under develmenat]
+  * FAQ's under development
     * [StubbingRPC]
     * [IntegratingWithSpring]
     * [ServerPushFAQ]
