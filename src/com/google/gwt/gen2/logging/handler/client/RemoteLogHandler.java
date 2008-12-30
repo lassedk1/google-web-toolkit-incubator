@@ -22,13 +22,74 @@ import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.gen2.logging.shared.LogEvent;
 import com.google.gwt.gen2.logging.shared.LogHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+
+import java.io.Serializable;
 
 /**
  * Handler to publish messages over RPC.
  */
 public final class RemoteLogHandler implements LogHandler {
+
+  /**
+   * Provides a wrapper around the throwable thrown by the logging system.
+   */
+  public static class RemoteThrowable extends Throwable implements
+      Serializable, IsSerializable {
+
+    /**
+     * Constructor needed for serialization.
+     */
+    public RemoteThrowable() {
+    }
+
+    /**
+     * Creates a new remote throwable wrapped around the logged throwable.
+     * 
+     * @param throwable the throwable
+     */
+    public RemoteThrowable(Throwable throwable) {
+      super(throwable);
+    }
+  }
+
+  /**
+   * Logging service definition. Note, this interface may have more methods
+   * added to it over time.
+   */
+  public static interface Service extends RemoteService {
+    /**
+     * Publishes the given message.
+     * 
+     * @param message the message
+     * @param level the level
+     * @param category the category
+     * @param remoteThrowable wraps the throwable object that was logged
+     */
+    void publish(String message, Level level, String category,
+        RemoteThrowable remoteThrowable);
+  }
+
+  /**
+   * Logging service Async for remote logging. Note, this interface may have
+   * more methods added to it over time.
+   */
+  public static interface ServiceAsync {
+    /**
+     * Publishes the given message.
+     * 
+     * @param message the message
+     * @param level the level
+     * @param category the category
+     * @param remoteThrowable wraps the throwable that was logged
+     * @param callback the callback
+     */
+    void publish(String message, Level level, String category,
+        RemoteThrowable remoteThrowable, AsyncCallback<Object> callback);
+  }
+
   /**
    * Default callback for remote log handler.
    */
@@ -44,41 +105,6 @@ public final class RemoteLogHandler implements LogHandler {
     public void onSuccess(Object result) {
       Log.finest("Remote logging message acknowledged", CATEGORY);
     }
-  }
-
-  /**
-   * Logging service definition. Note, this interface may have more methods
-   * added to it over time.
-   */
-  public static interface Service extends RemoteService {
-    /**
-     * Publishes the given message.
-     * 
-     * @param message the message
-     * @param level the level
-     * @param category the category
-     * @param throwable the throwable
-     */
-    void publish(String message, Level level, String category,
-        Throwable throwable);
-  }
-
-  /**
-   * Logging service Async for remote logging. Note, this interface may have
-   * more methods added to it over time.
-   */
-  public static interface ServiceAsync {
-    /**
-     * Publishes the given message.
-     * 
-     * @param message the message
-     * @param level the level
-     * @param category the category
-     * @param throwable the throwable
-     * @param callback the callback
-     */
-    void publish(String message, Level level, String category,
-        Throwable throwable, AsyncCallback<Object> callback);
   }
 
   private static final String CATEGORY = "gwt.logging.RemoteLogHandler";
@@ -112,8 +138,12 @@ public final class RemoteLogHandler implements LogHandler {
     if (event.getCategory() == CATEGORY) {
       return;
     }
+    RemoteThrowable wrappedThrown = null;
+    if (event.getThrown() != null) {
+      wrappedThrown = createRemoteThrowable(event.getThrown());
+    }
     service.publish(event.getMessage(), event.getLevel(), event.getCategory(),
-        event.getThrown(), callback);
+        wrappedThrown, callback);
   }
 
   /**
@@ -123,5 +153,17 @@ public final class RemoteLogHandler implements LogHandler {
    */
   public void setCallBack(AsyncCallback<Object> callback) {
     this.callback = callback;
+  }
+
+  /**
+   * Creates the remote throwable object which wraps the actual logged
+   * throwable. Override this method to provide more specialized versions of the
+   * remote throwable instance.
+   * 
+   * @param thrown thrown exception
+   * @return the wrapped thrown exception
+   */
+  protected RemoteThrowable createRemoteThrowable(Throwable thrown) {
+    return new RemoteThrowable(thrown);
   }
 }

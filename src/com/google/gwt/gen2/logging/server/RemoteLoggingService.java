@@ -20,6 +20,7 @@ import com.google.gwt.gen2.logging.shared.Level;
 import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.gwt.gen2.logging.handler.client.RemoteLogHandler;
+import com.google.gwt.gen2.logging.handler.client.RemoteLogHandler.RemoteThrowable;
 
 /**
  * Remote logging implementation.
@@ -29,7 +30,7 @@ public class RemoteLoggingService extends RemoteServiceServlet implements
   private static String CATEGORY = "gwt.remote";
 
   public final void publish(String message, Level level, String category,
-      Throwable ex) {
+      RemoteThrowable ex) {
     try {
       if (category == null) {
         category = CATEGORY;
