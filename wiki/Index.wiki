@@ -1,21 +1,21 @@
 #summary Index of search terms for the GWT Incubator
-BulkTableRenderers
-CollapsiblePanel
-CssResource 
-Decorators 
-DropDownListBox
-FastTree
-GlassPanel
-GWTCanvas 
-ImmutableResourceBundle
-Logging 
-PagingScrollTable
-ProgressBar
-ScrollTable
-SimpleWidget
-SliderBar
-SoundResource
-Spinner
-StyleInjector
-TextResource
-Validation 
+  * BulkTableRenderers
+  * CollapsiblePanel
+  * CssResource 
+  * Decorators 
+  * DropDownListBox
+  * FastTree
+  * GlassPanel
+  * GWTCanvas 
+  * ImmutableResourceBundle
+  * Logging 
+  * PagingScrollTable
+  * ProgressBar
+  * ScrollTable
+  * SimpleWidget
+  * SliderBar
+  * SoundResource
+  * Spinner
+  * StyleInjector
+  * TextResource
+  * Validation 
