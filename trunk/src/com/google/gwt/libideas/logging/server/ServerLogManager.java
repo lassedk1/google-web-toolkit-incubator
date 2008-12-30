@@ -23,7 +23,10 @@ import com.google.gwt.libideas.logging.shared.impl.LogImpl;
 
 /**
  * A convenience class to enable shared code to use logging while on the server.
+ * 
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
+@Deprecated
 public class ServerLogManager extends Log {
 
   /**

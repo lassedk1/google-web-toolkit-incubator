@@ -22,7 +22,10 @@ import java.io.PrintStream;
 
 /**
  * Handler to print out to the error console. Only works in hosted mode.
+ * 
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
+@Deprecated
 public class PrintStreamLogHandler extends LogHandler {
 
   PrintStream stream;

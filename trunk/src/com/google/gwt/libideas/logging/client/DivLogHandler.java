@@ -38,7 +38,10 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Logger which outputs to a draggable floating <code>DIV</code>.
+ * 
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
+@Deprecated
 public class DivLogHandler extends LogHandler {
   // CHECKSTYLE_JAVADOC_OFF
 

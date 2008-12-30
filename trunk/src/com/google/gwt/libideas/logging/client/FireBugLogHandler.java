@@ -24,13 +24,13 @@ import com.google.gwt.libideas.logging.shared.Level;
 public class FireBugLogHandler extends LogHandler {
 
   public native boolean isSupported() /*-{
-    return ($wnd.console && $wnd.console.firebug) || false;
-    
-  }-*/;
+     return ($wnd.console && $wnd.console.firebug) || false;
+     
+   }-*/;
 
   native void log(String message) /*-{
-    $wnd.console.info(message); 
-  }-*/;
+     $wnd.console.info(message); 
+   }-*/;
 
   public void publish(String message, Level level, String category, Throwable e) {
     log(format(message, level, category, e));

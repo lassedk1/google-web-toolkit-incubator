@@ -26,7 +26,10 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * A very simple log handler meant to display simple text messages.
+ * 
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
+@Deprecated
 public class SimpleLogHandler extends PopupWidgetLogHandler<VerticalPanel> {
   private VerticalPanel contents;
 

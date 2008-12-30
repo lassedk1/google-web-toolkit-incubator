@@ -1,4 +1,4 @@
-//CHECKSTYLE_OFF
+// CHECKSTYLE_OFF
 /*
  * Copyright 2008 Fred Sauer
  * 
@@ -24,17 +24,20 @@ import com.google.gwt.libideas.logging.shared.Level;
 /**
  * Logger which sends output via <code>$wnd.console.log()</code> if
  * <code>$wnd.console.log</code> is a function.
+ * 
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
+@Deprecated
 public final class ConsoleLogHandler extends LogHandler {
   // CHECKSTYLE_JAVADOC_OFF
 
   public native boolean isSupported() /*-{
-    return $wnd.console != null && (!$wnd.console.firebug) && typeof($wnd.console.log) == 'function';
-  }-*/;
+     return $wnd.console != null && (!$wnd.console.firebug) && typeof($wnd.console.log) == 'function';
+   }-*/;
 
   native void log(String message) /*-{
-    $wnd.console.log(message);
-  }-*/;
+     $wnd.console.log(message);
+   }-*/;
 
   public void publish(String message, Level level, String category, Throwable e) {
     log(format(message, level, category, e));
