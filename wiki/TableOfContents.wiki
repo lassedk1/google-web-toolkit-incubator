@@ -6,11 +6,12 @@
       * [CssResourceCookbook]
     * [SoundResource]
     * [StyleInjector]
-  * [Validation server and client form validation]
-  * [Logging client logging]
-	* [GWTCanvas graphics]
+  * [Validation Form validation]
+  * [Logging Client logging]
+	* [GWTCanvas Graphics]
     * [ImageLoader]
-	* [Decorators html decorators]
+  * Widget utilities
+    * [Decorators html Decorators]
   * Server utilities
     * [ServerSideLocaleSelection locale selection]
   * Widgets
