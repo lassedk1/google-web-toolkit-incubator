@@ -29,7 +29,11 @@ import com.google.gwt.user.client.ui.Widget;
  * All top-level incubator widgets should extend {@link Gen2Widget}.
  * {@link Gen2Widget} will include all the extra handler and styling support
  * needed by gen2 widgets.
+ * 
+ * @deprecated gen2Widget's functionality has been subsumed by the 1.6 Widget
+ *             functionality
  */
+@Deprecated
 public abstract class Gen2Widget extends Widget implements HasHandlerManager {
 
   private HandlerManager handlerManager;

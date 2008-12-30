@@ -32,8 +32,8 @@ public class Gen2CssInjector {
     @Resource("com/google/gwt/gen2/widgetbase/public/DropDownListBox.css")
     CssResource dropDownListBoxCss();
 
-    @Resource("com/google/gwt/gen2/widgetbase/public/ToggleButton.css")
-    CssResource toggleButtonCss();
+    @Resource("com/google/gwt/gen2/widgetbase/public/Picker.css")
+    CssResource pickerCss();
   }
 
   static class DisabledMode extends Mode {
@@ -72,8 +72,8 @@ public class Gen2CssInjector {
    * If css dependency injection is enabled, adds the ToggleButton.css file
    * included under public/widget.
    */
-  public static void addToggleButtonDefault() {
-    inject(DEFAULT_CSS_FILES.toggleButtonCss());
+  public static void addPickerDefault() {
+    inject(DEFAULT_CSS_FILES.pickerCss());
   }
 
   /**

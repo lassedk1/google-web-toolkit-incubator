@@ -32,7 +32,9 @@ import com.google.gwt.libideas.resources.client.CssResource;
  * you are not prepared to have your build broken until you can add the
  * additional css style names.
  * 
+ * @deprecated this solution was too confusing for our users, so is being removed from consideration
  */
+@Deprecated
 public interface WidgetCss extends CssResource {
 
 }
