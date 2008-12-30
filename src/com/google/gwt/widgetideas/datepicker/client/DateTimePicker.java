@@ -25,7 +25,10 @@ import java.util.Date;
 /**
  * The {@link DateTimePicker} combines a {@link DatePicker} and a
  * {@link TimePicker}
+ * 
+ * @deprecated use com.google.gwt.gen2.picker.DateTimePicker instead instead
  */
+@Deprecated
 public class DateTimePicker extends Composite {
   private DatePicker datePicker;
   private TimePicker timePicker;
@@ -46,7 +49,9 @@ public class DateTimePicker extends Composite {
    * value
    * 
    * @param use24Hours
+   * @deprecated use the com.google.gwt.user.datepicker.client classes instead
    */
+  @Deprecated
   public DateTimePicker(boolean use24Hours) {
     this(new DatePicker(), new TimePicker(use24Hours));
   }
@@ -96,7 +101,7 @@ public class DateTimePicker extends Composite {
   public boolean isEnabled() {
     return timePicker.isEnabled();
   }
-  
+
   /**
    * Sets whether this widget is enabled.
    * 

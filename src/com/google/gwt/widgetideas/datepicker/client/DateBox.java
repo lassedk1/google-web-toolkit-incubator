@@ -43,7 +43,10 @@ import java.util.Date;
 
 /**
  * A simple date box.
+ * 
+ * @deprecated use the com.google.gwt.user.datepicker.client classes instead
  */
+@Deprecated
 public class DateBox extends Composite implements FiresKeyDownEvents,
     HasAnimation {
   private static class Styles {
@@ -60,8 +63,7 @@ public class DateBox extends Composite implements FiresKeyDownEvents,
 
   /**
    * Constructor.
-   */
-  public DateBox() {
+   @deprecated use the com.google.gwt.user.datepicker.client classes instead */ @Deprecated public DateBox() {
     this(new DatePicker());
   }
 
