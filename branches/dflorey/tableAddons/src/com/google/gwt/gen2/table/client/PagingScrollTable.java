@@ -51,6 +51,8 @@ import com.google.gwt.gen2.table.shared.ColumnFilterList;
 import com.google.gwt.gen2.table.shared.ColumnSortList;
 import com.google.gwt.gen2.table.shared.Request;
 import com.google.gwt.gen2.table.shared.Response;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
@@ -307,6 +309,23 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   private List<ColumnDefinition<RowType, ?>> visibleColumns = new ArrayList<ColumnDefinition<RowType, ?>>();
 
+  /**
+   * Construct a new {@link PagingScrollTable}.
+   * 
+   * @param tableModel the underlying table model
+   * @param dataTable the table used to display data
+   * @param headerTable the header table
+   * @param tableDefinition the column definitions
+   */
+  public PagingScrollTable(TableModel<RowType> tableModel, TableDefinition<RowType> tableDefinition) {
+    this(tableModel, tableDefinition, new DefatulScrollTableResources());
+  }
+
+  public PagingScrollTable(TableModel<RowType> tableModel, TableDefinition<RowType> tableDefinition, ScrollTableResources resources) {
+    this(tableModel, new FixedWidthGrid(), new FixedWidthFlexTable(), tableDefinition, resources);
+  }
+
+  
   /**
    * Construct a new {@link PagingScrollTable}.
    * 

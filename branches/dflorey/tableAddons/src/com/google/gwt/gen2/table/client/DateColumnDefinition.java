@@ -1,21 +1,20 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.gen2.datepicker.client.DateBox;
-import com.google.gwt.gen2.datepicker.client.DatePicker;
-import com.google.gwt.gen2.event.dom.client.KeyDownEvent;
-import com.google.gwt.gen2.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
 import com.google.gwt.gen2.table.shared.DateColumnFilterInfo;
 import com.google.gwt.gen2.table.shared.DateColumnFilterInfo.Operator;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.Messages;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.datepicker.client.DateBox;
 
 import java.util.Date;
 
@@ -34,8 +33,8 @@ public abstract class DateColumnDefinition<RowType> extends
     private PushButton operatorButton;
     private HorizontalPanel horizontalPanel = new HorizontalPanel();
 
-    private ClickListener clickListener = new ClickListener() {
-      public void onClick(Widget sender) {
+    private ClickHandler clickHandler = new ClickHandler() {
+      public void onClick(ClickEvent sender) {
         for (int i = 0; i < supportedOperators.length; i++) {
           if (operator == supportedOperators[i]) {
             if (i < supportedOperators.length - 1) {
@@ -55,13 +54,13 @@ public abstract class DateColumnDefinition<RowType> extends
           secondaryDateBox.setVisible(false);
         }
         setButtonText(((PushButton) operatorButton), operator);
-        Date primaryDate = primaryDateBox.getDatePicker().getDateShown();
-        Date secondaryDate = secondaryDateBox.getDatePicker().getDateShown();
+        Date primaryDate = primaryDateBox.getDatePicker().getValue();
+        Date secondaryDate = secondaryDateBox.getDatePicker().getValue();
         fireColumnFilterChangedEvent(primaryDate, secondaryDate);
       }
     };
-    private KeyDownHandler keyDownHandler = new KeyDownHandler() {
-      public void onKeyDown(KeyDownEvent event) {
+    private ValueChangeHandler<Date> valueChangeHandler = new ValueChangeHandler<Date>() {
+      public void onValueChange(ValueChangeEvent<Date> event) {
         fireColumnFilterChangedEvent();
       }
     };
@@ -107,18 +106,18 @@ public abstract class DateColumnDefinition<RowType> extends
      */
     public Widget createFilterWidget() {
       primaryDateBox = new DateBox();
-      primaryDateBox.setDateFormat(dateTimeFormat);
+      primaryDateBox.setFormat(new DateBox.DefaultFormat(dateTimeFormat));
       primaryDateBox.setWidth("100%");
       primaryDateBox.addStyleName("dateBox");
-      primaryDateBox.addKeyDownHandler(keyDownHandler);
+      primaryDateBox.addValueChangeHandler(valueChangeHandler);
       secondaryDateBox = new DateBox();
-      secondaryDateBox.setDateFormat(dateTimeFormat);
+      secondaryDateBox.setFormat(new DateBox.DefaultFormat(dateTimeFormat));
       secondaryDateBox.setWidth("100%");
       secondaryDateBox.addStyleName("dateBox");
-      secondaryDateBox.addKeyDownHandler(keyDownHandler);
+      secondaryDateBox.addValueChangeHandler(valueChangeHandler);
       operatorButton = new PushButton();
       setButtonText(operatorButton, operator);
-      operatorButton.addClickListener(clickListener);
+      operatorButton.addClickHandler(clickHandler);
       operatorButton.addStyleName("operatorButton");
       horizontalPanel.addStyleName("columnDateFilter");
       horizontalPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
@@ -129,25 +128,12 @@ public abstract class DateColumnDefinition<RowType> extends
       horizontalPanel.setCellWidth(primaryDateBox, "100%");
       secondaryDateBox.setVisible(false);
       horizontalPanel.setSpacing(2);
-      primaryDateBox.getTextBox().addChangeListener(new ChangeListener() {
-        public void onChange(Widget sender) {
-          String text = primaryDateBox.getText();
-          System.out.println("Date: " + text);
-        }
-      });
       return horizontalPanel;
     }
 
     private void fireColumnFilterChangedEvent() {
-      Date primaryDate = primaryDateBox.getDatePicker().getDateShown();
-      primaryDate = primaryDateBox.getDatePicker().getHighlightedDate();
-      Date secondaryDate = secondaryDateBox.getDatePicker().getHighlightedDate();
-      if (primaryDateBox.getText().trim().equals("")) {
-        primaryDate = null;
-      }
-      if (secondaryDateBox.getText().trim().equals("")) {
-        secondaryDate = null;
-      }
+      Date primaryDate = primaryDateBox.getValue();
+      Date secondaryDate = secondaryDateBox.getValue();
       fireColumnFilterChangedEvent(primaryDate, secondaryDate);
     }
 
@@ -229,8 +215,7 @@ public abstract class DateColumnDefinition<RowType> extends
      */
     public DateCellEditor(DateBox dateBox, DateTimeFormat dateTimeFormat) {
       super(dateBox);
-      dateBox.setDateFormat(dateTimeFormat);
-      DatePicker.injectDefaultCss();
+      dateBox.setFormat(new DateBox.DefaultFormat(dateTimeFormat));
     }
 
     @Override

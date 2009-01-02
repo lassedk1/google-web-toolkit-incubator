@@ -16,7 +16,6 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.gen2.demo.scrolltable.client.TreeTableDemo.Ancestor;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractRowView;
 import com.google.gwt.gen2.table.shared.ColumnFilterInfo;
 import com.google.gwt.gen2.table.shared.ColumnFilterList;
