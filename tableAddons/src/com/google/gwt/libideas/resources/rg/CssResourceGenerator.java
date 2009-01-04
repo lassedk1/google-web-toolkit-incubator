@@ -22,6 +22,7 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
+import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.NotFoundException;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
@@ -57,7 +58,9 @@ import com.google.gwt.libideas.resources.css.ast.CssVisitor;
 import com.google.gwt.libideas.resources.css.ast.HasNodes;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.DotPathValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.ExpressionValue;
+import com.google.gwt.libideas.resources.css.ast.CssProperty.IdentValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.ListValue;
+import com.google.gwt.libideas.resources.css.ast.CssProperty.NumberValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.StringValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.Value;
 import com.google.gwt.libideas.resources.ext.ResourceBundleRequirements;
@@ -582,20 +585,20 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       for (ListIterator<Value> i = values.listIterator(); i.hasNext();) {
         Value v = i.next();
 
-        if (!(v instanceof StringValue)) {
-          // Don't try to substitute into anything other than string values
+        if (!(v instanceof IdentValue)) {
+          // Don't try to substitute into anything other than idents
           continue;
         }
 
-        String value = ((StringValue) v).getValue();
+        String value = ((IdentValue) v).getIdent();
         CssDef def = substitutions.get(value);
 
         if (def == null) {
           continue;
-        } else if (def instanceof CssEval) {
-          i.set(new ExpressionValue(def.getValue()));
         } else if (def instanceof CssUrl) {
-          String functionName = def.getValue();
+          assert def.getValues().size() == 1;
+          assert def.getValues().get(0) instanceof IdentValue;
+          String functionName = ((IdentValue) def.getValues().get(0)).getIdent();
 
           // Find the method
           JMethod method = context.getResourceBundleType().findMethod(
@@ -619,7 +622,10 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
           i.set(new ExpressionValue(expression.toString()));
 
         } else {
-          i.set(new StringValue(def.getValue()));
+          i.remove();
+          for (Value defValue : def.getValues()) {
+            i.add(defValue);
+          }
         }
       }
 
@@ -636,6 +642,12 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
       'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', '0',
       '1', '2', '3', '4'};
+
+  /**
+   * This value is used by {@link #concatOp} to help create a more balanced AST
+   * tree by producing parenthetical expressions.
+   */
+  private static final int CONCAT_EXPRESSION_LIMIT = 20;
 
   public static void main(String[] args) {
     for (int i = 0; i < 1000; i++) {
@@ -772,6 +784,10 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
           && toImplement.getParameters().length == 0) {
         writeClassAssignment(sw, toImplement, replacementsWithPrefix.get(""));
 
+      } else if (toImplement.getReturnType().isPrimitive() != null
+          && toImplement.getParameters().length == 0) {
+        writeDefAssignment(logger, sw, toImplement, stylesheetMap.get(method));
+
       } else {
         logger.log(TreeLogger.ERROR, "Don't know how to implement method "
             + toImplement.getName());
@@ -782,9 +798,28 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     sw.println("public String getText() {");
     sw.indent();
 
+    boolean strict = method.getAnnotation(Strict.class) != null;
+    if (!strict) {
+      /*
+       * The developer may choose to force strict behavior onto the system. If
+       * the method does already have the @Strict annotation, print a warning.
+       */
+      try {
+        PropertyOracle propertyOracle = context.getGeneratorContext().getPropertyOracle();
+        String propertyValue = propertyOracle.getPropertyValue(logger,
+            "CssResource.forceStrict");
+        if (Boolean.valueOf(propertyValue)) {
+          logger.log(TreeLogger.WARN, "CssResource.forceStrict is true, but "
+              + method.getName() + "() is missing the @Strict annotation.");
+          strict = true;
+        }
+      } catch (BadPropertyValueException e) {
+        // Ignore
+      }
+    }
+
     String cssExpression = makeExpression(logger, context, cssResourceSubtype,
-        stylesheetMap.get(method), replacementsWithPrefix,
-        method.getAnnotation(Strict.class) != null);
+        stylesheetMap.get(method), replacementsWithPrefix, strict);
     sw.println("return " + cssExpression + ";");
     sw.outdent();
     sw.println("}");
@@ -892,7 +927,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
       for (JMethod method : type.getOverridableMethods()) {
         String name = method.getName();
-        if ("getName".equals(name) || "getText".equals(name)) {
+        if ("getName".equals(name) || "getText".equals(name)
+            || !stringType.equals(method.getReturnType())) {
           continue;
         }
 
@@ -999,6 +1035,26 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   }
 
   /**
+   * Check if number of concat expressions currently exceeds limit and either
+   * append '+' if the limit isn't reached or ') + (' if it is.
+   * 
+   * @return numExpressions + 1 or 0 if limit was exceeded.
+   */
+  private int concatOp(int numExpressions, StringBuilder b) {
+    /*
+     * TODO: Fix the compiler to better handle arbitrarily long concatenation
+     * expressions.
+     */
+    if (numExpressions >= CONCAT_EXPRESSION_LIMIT) {
+      b.append(") + (");
+      return 0;
+    }
+
+    b.append(" + ");
+    return numExpressions + 1;
+  }
+
+  /**
    * Determine if a type is derived from CssResource.
    */
   private boolean derivedFromCssResource(JClassType type) {
@@ -1020,80 +1076,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       }
     }
     return false;
-  }
-
-  /**
-   * Create a Java expression that evaluates to a string representation of the
-   * given node.
-   */
-  private <T extends CssNode & HasNodes> String makeExpression(
-      TreeLogger logger, ResourceContext context, JClassType cssResourceType,
-      T node) throws UnableToCompleteException {
-    // Generate the CSS template
-    DefaultTextOutput out = new DefaultTextOutput(!prettyOutput);
-    CssGenerationVisitor v = new CssGenerationVisitor(out);
-    v.accept(node);
-
-    // Generate the final Java expression
-    String template = out.toString();
-    StringBuilder b = new StringBuilder();
-    int start = 0;
-    for (Map.Entry<Integer, List<CssNode>> entry : v.getSubstitutionPositions().entrySet()) {
-      // Add the static section between start and the substitution point
-      b.append('"');
-      b.append(Generator.escape(template.substring(start, entry.getKey())));
-      b.append("\" + ");
-
-      // Add the nodes at the substitution point
-      for (CssNode x : entry.getValue()) {
-        TreeLogger loopLogger = logger.branch(TreeLogger.DEBUG,
-            "Performing substitution in node " + x.toString());
-
-        if (x instanceof CssIf) {
-          CssIf asIf = (CssIf) x;
-
-          // Generate the sub-expressions
-          String expression = makeExpression(loopLogger, context,
-              cssResourceType, new CollapsedNode(asIf));
-
-          String elseExpression;
-          if (asIf.getElseNodes().isEmpty()) {
-            // We'll treat an empty else block as an empty string
-            elseExpression = "\"\"";
-          } else {
-            elseExpression = makeExpression(loopLogger, context,
-                cssResourceType, new CollapsedNode(asIf.getElseNodes()));
-          }
-
-          // ((expr) ? "CSS" : "elseCSS") +
-          b.append("((" + asIf.getExpression() + ") ? " + expression + " : "
-              + elseExpression + ") + ");
-
-        } else if (x instanceof CssProperty) {
-          CssProperty property = (CssProperty) x;
-
-          validateValue(loopLogger, context.getResourceBundleType(),
-              property.getValues());
-
-          // (expr) +
-          b.append("(" + property.getValues().getExpression() + ") + ");
-
-        } else {
-          // This indicates that some magic node is slipping by our visitors
-          loopLogger.log(TreeLogger.ERROR, "Unhandled substitution "
-              + x.getClass());
-          throw new UnableToCompleteException();
-        }
-      }
-      start = entry.getKey();
-    }
-
-    // Add the remaining parts of the template
-    b.append('"');
-    b.append(Generator.escape(template.substring(start)));
-    b.append('"');
-
-    return b.toString();
   }
 
   /**
@@ -1140,6 +1122,96 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
           e.getCause() == null ? null : e);
       throw new UnableToCompleteException();
     }
+  }
+
+  /**
+   * Create a Java expression that evaluates to a string representation of the
+   * given node.
+   */
+  private <T extends CssNode & HasNodes> String makeExpression(
+      TreeLogger logger, ResourceContext context, JClassType cssResourceType,
+      T node) throws UnableToCompleteException {
+    // Generate the CSS template
+    DefaultTextOutput out = new DefaultTextOutput(!prettyOutput);
+    CssGenerationVisitor v = new CssGenerationVisitor(out);
+    v.accept(node);
+
+    // Generate the final Java expression
+    String template = out.toString();
+    StringBuilder b = new StringBuilder();
+    int start = 0;
+
+    /*
+     * Very large concatenation expressions using '+' cause the GWT compiler to
+     * overflow the stack due to deep AST nesting. The workaround for now is to
+     * force it to be more balanced using intermediate concatenation groupings.
+     * 
+     * This variable is used to track the number of subexpressions within the
+     * current parenthetical expression.
+     */
+    int numExpressions = 0;
+
+    b.append('(');
+    for (Map.Entry<Integer, List<CssNode>> entry : v.getSubstitutionPositions().entrySet()) {
+      // Add the static section between start and the substitution point
+      b.append('"');
+      b.append(Generator.escape(template.substring(start, entry.getKey())));
+      b.append('\"');
+      numExpressions = concatOp(numExpressions, b);
+
+      // Add the nodes at the substitution point
+      for (CssNode x : entry.getValue()) {
+        TreeLogger loopLogger = logger.branch(TreeLogger.DEBUG,
+            "Performing substitution in node " + x.toString());
+
+        if (x instanceof CssIf) {
+          CssIf asIf = (CssIf) x;
+
+          // Generate the sub-expressions
+          String expression = makeExpression(loopLogger, context,
+              cssResourceType, new CollapsedNode(asIf));
+
+          String elseExpression;
+          if (asIf.getElseNodes().isEmpty()) {
+            // We'll treat an empty else block as an empty string
+            elseExpression = "\"\"";
+          } else {
+            elseExpression = makeExpression(loopLogger, context,
+                cssResourceType, new CollapsedNode(asIf.getElseNodes()));
+          }
+
+          // ((expr) ? "CSS" : "elseCSS") +
+          b.append("((" + asIf.getExpression() + ") ? " + expression + " : "
+              + elseExpression + ") ");
+          numExpressions = concatOp(numExpressions, b);
+
+        } else if (x instanceof CssProperty) {
+          CssProperty property = (CssProperty) x;
+
+          validateValue(loopLogger, context.getResourceBundleType(),
+              property.getValues());
+
+          // (expr) +
+          b.append("(" + property.getValues().getExpression() + ") ");
+          numExpressions = concatOp(numExpressions, b);
+
+        } else {
+          // This indicates that some magic node is slipping by our visitors
+          loopLogger.log(TreeLogger.ERROR, "Unhandled substitution "
+              + x.getClass());
+          throw new UnableToCompleteException();
+        }
+      }
+      start = entry.getKey();
+    }
+
+    // Add the remaining parts of the template
+    b.append('"');
+    b.append(Generator.escape(template.substring(start)));
+    b.append('"');
+    b.append(')');
+
+    return b.toString();
   }
 
   /**
@@ -1195,5 +1267,62 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     sw.println("return \"" + replacement + "\";");
     sw.outdent();
     sw.println("}");
+  }
+
+  private void writeDefAssignment(TreeLogger logger, SourceWriter sw,
+      JMethod toImplement, CssStylesheet cssStylesheet)
+      throws UnableToCompleteException {
+    SubstitutionCollector collector = new SubstitutionCollector();
+    collector.accept(cssStylesheet);
+
+    String name = toImplement.getName();
+    // TODO: Annotation for override
+
+    CssDef def = collector.substitutions.get(name);
+    if (def == null) {
+      logger.log(TreeLogger.ERROR, "No @def rule for name " + name);
+      throw new UnableToCompleteException();
+    }
+
+    // TODO: Allow returning an array of values
+    if (def.getValues().size() != 1) {
+      logger.log(TreeLogger.ERROR, "@def rule " + name
+          + " must define exactly one value");
+      throw new UnableToCompleteException();
+    }
+
+    Value value = def.getValues().get(0);
+    assert value != null;
+
+    if (!(value instanceof NumberValue)) {
+      logger.log(TreeLogger.ERROR, "The define named " + name
+          + " does not define a numeric value");
+      throw new UnableToCompleteException();
+    }
+
+    NumberValue numbervalue = (NumberValue) value;
+
+    JPrimitiveType returnType = toImplement.getReturnType().isPrimitive();
+    assert returnType != null;
+
+    sw.print(toImplement.getReadableDeclaration(false, false, false, false,
+        true));
+    sw.println(" {");
+    sw.indent();
+    if (returnType == JPrimitiveType.INT || returnType == JPrimitiveType.LONG) {
+      sw.println("return " + Math.round(numbervalue.getValue()) + ";");
+    } else if (returnType == JPrimitiveType.FLOAT) {
+      sw.println("return " + numbervalue.getValue() + "F;");
+    } else if (returnType == JPrimitiveType.DOUBLE) {
+      sw.println("return " + numbervalue.getValue() + ";");
+    } else {
+      logger.log(TreeLogger.ERROR, returnType.getQualifiedSourceName()
+          + " is not a valid return type for @def accessors");
+      throw new UnableToCompleteException();
+    }
+    sw.outdent();
+    sw.println("}");
+
+    numbervalue.getValue();
   }
 }

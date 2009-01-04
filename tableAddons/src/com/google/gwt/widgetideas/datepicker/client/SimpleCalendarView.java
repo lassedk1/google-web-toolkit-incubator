@@ -30,8 +30,9 @@ import java.util.Date;
 
 /**
  * Simple calendar view.
- * 
+ * use the com.google.gwt.user.datepicker.client classes instead
  */
+@Deprecated
 @SuppressWarnings( {"deprecation"})
 public class SimpleCalendarView extends CalendarView<DatePicker> {
 
@@ -208,12 +209,13 @@ public class SimpleCalendarView extends CalendarView<DatePicker> {
 
   public void refresh() {
     firstDisplayed = getModel().getFirstDayOfCurrentFirstWeek();
-    
+
     if (firstDisplayed.getDate() == 1) {
-     // show one empty week if date is monday the first in month
-     // see http://code.google.com/p/google-web-toolkit-incubator/issues/detail?id=100
-     CalendarModel.shiftDays(firstDisplayed, -7);
-   }
+      // show one empty week if date is monday the first in month
+      // see
+      // http://code.google.com/p/google-web-toolkit-incubator/issues/detail?id=100
+      CalendarModel.shiftDays(firstDisplayed, -7);
+    }
 
     lastDisplayed.setTime(firstDisplayed.getTime());
 

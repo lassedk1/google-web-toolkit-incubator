@@ -90,15 +90,15 @@ public class LogImplWithManager extends LogImpl {
     return getManager().isLoggable(level);
   }
 
-  public boolean isLoggingMinimal() {
-    return false;
-  }
-
-  public boolean isLoggingSupported() {
+  public boolean isLoggingEnabled() {
     return true;
   }
 
-  public Iterator levelIterator() {
+  public boolean isLoggingProduction() {
+    return false;
+  }
+
+  public Iterator<Level> levelIterator() {
     return getManager().levelIterator();
   }
 

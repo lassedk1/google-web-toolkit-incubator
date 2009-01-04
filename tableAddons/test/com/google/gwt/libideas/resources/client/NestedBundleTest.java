@@ -17,6 +17,7 @@ package com.google.gwt.libideas.resources.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.libideas.client.LibTestBase;
+import com.google.gwt.libideas.resources.client.GwtCreateResource.ClassType;
 
 /**
  * Verify that nested bundles work correctly.
@@ -28,10 +29,30 @@ public class NestedBundleTest extends LibTestBase {
     TextResource hello();
 
     NestedBundle nested();
+
+    GwtCreateResource<NestedBundle> nestedCreate();
+
+    @ClassType(NestedBundle.class)
+    GwtCreateResource<Object> nestedCreateWithOverride();
   }
 
   public void testNestedBundle() {
     NestedBundle b = GWT.create(NestedBundle.class);
     assertSame(b.hello(), b.nested().hello());
+  }
+
+  public void testNestedCreate() {
+    NestedBundle b = GWT.create(NestedBundle.class);
+    NestedBundle q = b.nestedCreate().create();
+    NestedBundle r = b.nestedCreate().create();
+    assertNotSame(q, r);
+
+    assertSame(q.hello(), r.hello());
+  }
+
+  public void testNestedCreateOverride() {
+    NestedBundle b = GWT.create(NestedBundle.class);
+    Object o = b.nestedCreateWithOverride().create();
+    assertTrue(o instanceof NestedBundle);
   }
 }

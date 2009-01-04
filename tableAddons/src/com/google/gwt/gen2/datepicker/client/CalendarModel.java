@@ -29,7 +29,10 @@ public class CalendarModel {
 
   /**
    * The number of weeks normally displayed in a month.
+   * 
+   * @deprecated use the com.google.gwt.user.datepicker.client classes instead
    */
+  @Deprecated
   public static final int WEEKS_IN_MONTH = 6;
 
   /**

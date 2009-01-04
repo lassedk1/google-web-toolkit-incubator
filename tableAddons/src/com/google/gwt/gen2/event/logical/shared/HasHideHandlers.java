@@ -19,7 +19,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
 /**
  * An event source that implements this interface is a public source of
  * {@link HideEvent} events.
+ * 
+ * @deprecated use the com.google.gwt.event.logical.shared classes instead
  */
+@Deprecated
 public interface HasHideHandlers {
   /**
    * Adds a {@link HideEvent} handler.

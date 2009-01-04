@@ -22,7 +22,10 @@ import com.google.gwt.user.client.Event;
  * Base class for Key events. The native keyboard events are somewhat a mess
  * (http://www.quirksmode.org/js/keys.html), we do some trivial normalization
  * here, but do not attempt any complex patching, so user be warned.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public abstract class KeyEvent extends DomEvent {
 
   /**

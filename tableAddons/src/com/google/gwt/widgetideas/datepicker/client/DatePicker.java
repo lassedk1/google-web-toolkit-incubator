@@ -37,7 +37,10 @@ import java.util.Map;
 
 /**
  * Date picker.
+ * 
+ * @deprecated use  com.google.gwt.user.datepicker.client.DatePicker instead
  */
+@Deprecated
 public class DatePicker extends Composite implements FiresChangeEvents<Date>,
     FiresHighlightEvents<Date>, FiresRenderingEvents {
 
@@ -47,8 +50,7 @@ public class DatePicker extends Composite implements FiresChangeEvents<Date>,
   protected static class Styles {
     /**
      * Style for month selector.
-     */
-    public static final String MONTH_SELECTOR = "month-selector";
+     @deprecated use the com.google.gwt.user.datepicker.client classes instead */ @Deprecated public static final String MONTH_SELECTOR = "month-selector";
     /**
      * The month forward widget.
      */

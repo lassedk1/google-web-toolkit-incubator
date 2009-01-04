@@ -21,7 +21,9 @@ package com.google.gwt.gen2.event.shared;
  * Characteristic interface indicating that the given widget fires events via a
  * {@link HandlerManager}.
  * 
+ * @deprecated use the com.google.gwt.event.shared classes instead
  */
+@Deprecated
 public interface HasHandlerManager {
   /**
    * Gets this widget's handler manager.

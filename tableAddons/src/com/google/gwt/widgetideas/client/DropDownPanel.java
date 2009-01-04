@@ -16,157 +16,72 @@
 
 package com.google.gwt.widgetideas.client;
 
-import com.google.gwt.animation.client.Animation;
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.PopupListenerCollection;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.WindowResizeListener;
+import com.google.gwt.user.client.ui.PopupPanelImpl;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.impl.PopupImpl;
+
+import java.util.ArrayList;
 
 /**
  * A popup panel that can position itself relative to another widget.
  * 
  * @param <R> Relative widget type
  */
-public class DropDownPanel<R extends Widget> extends PopupPanel {
+// Direct copy of gen2 version, will be deprecated soon.
+public class DropDownPanel<R extends Widget> extends PopupPanelImpl {
+
   /**
-   * An {@link Animation} used to enlarge the popup into view.
+   * An animation used to enlarge the popup into view.
    */
-  private static class RollDownAnimation extends Animation {
-    private static final PopupImpl impl = GWT.create(PopupImpl.class);
+  private static class RollDownAnimation extends PopupAnimation {
 
-    /**
-     * The {@link DropDownPanel} being affected.
-     */
-    private DropDownPanel<? extends Widget> curPanel = null;
-
-    /**
-     * The offset height and width of the current {@link PopupPanel}.
-     */
-    private int offsetHeight, offsetWidth = -1;
-
-    /**
-     * A boolean indicating whether we are showing or hiding the popup.
-     */
-    private boolean showing = false;
-
-    @Override
-    public void onCancel() {
-      onComplete();
-    }
-
-    @Override
-    public void onComplete() {
-      if (!showing) {
-        RootPanel.get().remove(curPanel);
-        impl.onHide(curPanel.getElement());
-        PopupListenerCollection popupListeners = curPanel.getPopupListeners();
-        if (popupListeners != null) {
-          popupListeners.firePopupClosed(curPanel, curPanel.autoHiding);
-        }
-      }
-      impl.setClip(curPanel.getElement(), "rect(auto, auto, auto, auto)");
-      DOM.setStyleAttribute(curPanel.getElement(), "overflow", "visible");
-      curPanel = null;
-    }
-
-    public void onInstantaneousRun() {
-      if (showing) {
-        DOM.setStyleAttribute(curPanel.getElement(), "position", "absolute");
-        RootPanel.get().add(curPanel);
-        impl.onShow(curPanel.getElement());
-      } else {
-        RootPanel.get().remove(curPanel);
-        impl.onHide(curPanel.getElement());
-      }
-      DOM.setStyleAttribute(curPanel.getElement(), "overflow", "visible");
-      curPanel = null;
-    }
-
-    @Override
-    public void onStart() {
-      // Attach to the page
-      if (showing) {
-        // Set the position attribute, and then attach to the DOM. Otherwise,
-        // the PopupPanel will appear to 'jump' from its static/relative
-        // position to its absolute position (issue #1231).
-        DOM.setStyleAttribute(curPanel.getElement(), "position", "absolute");
-        impl.setClip(curPanel.getElement(), getRectString(0, 0, 0, 0));
-        RootPanel.get().add(curPanel);
-        impl.onShow(curPanel.getElement());
-      }
-      offsetHeight = curPanel.getOffsetHeight();
-      offsetWidth = curPanel.getOffsetWidth();
-      DOM.setStyleAttribute(curPanel.getElement(), "overflow", "hidden");
-      onUpdate(0.0);
+    public RollDownAnimation(PopupPanelImpl panel) {
+      super(panel);
     }
 
     @Override
     public void onUpdate(double progress) {
-      if (!showing) {
+      if (!isShowing()) {
         progress = 1.0 - progress;
       }
 
       // Determine the clipping size
       int top = 0;
       int left = 0;
-      int right = offsetWidth;
-      int bottom = (int) (progress * offsetHeight);
+      int right = getOffsetWidth();
+      int bottom = (int) (progress * getOffsetHeight());
 
       // Set the rect clipping
-      impl.setClip(curPanel.getElement(), getRectString(top, right, bottom,
-          left));
-    }
-
-    /**
-     * Open or close the content. This method always called immediately after
-     * the PopupPanel showing state has changed, so we base the animation on the
-     * current state.
-     * 
-     * @param panel the panel to open or close
-     */
-    public void setOpen(final DropDownPanel<? extends Widget> panel) {
-      // Immediately complete previous open/close animation
-      cancel();
-
-      // Determine if we need to animate
-      boolean animate = panel.isAnimationEnabled;
-
-      // Open the new item
-      showing = panel.showing;
-      curPanel = panel;
-      if (animate) {
-        run(200);
-      } else {
-        onInstantaneousRun();
-      }
-    }
-
-    /**
-     * @return a rect string
-     */
-    private String getRectString(int top, int right, int bottom, int left) {
-      return "rect(" + top + "px, " + right + "px, " + bottom + "px, " + left
-          + "px)";
+      clip(top, right, bottom, left);
     }
   }
 
-  private RollDownAnimation rollDownAnimation;
+  // Set of open panels so we can close them on window resize, because resizing
+  // the window is equivalent to the user clicking outside the widget.
+  private static ArrayList<DropDownPanel> openPanels;
 
-  private boolean isAnimationEnabled = false;
+  private static WindowResizeListener resizeListener = new WindowResizeListener() {
 
-  private boolean autoHiding, showing;
+    public void onWindowResized(int width, int height) {
+      for (DropDownPanel panel : openPanels) {
+        panel.hide();
+      }
+    }
+  };
 
   private R anchor;
 
+  /**
+   * Constructor.
+   */
   public DropDownPanel() {
     super(false);
+    setAnimation(new RollDownAnimation(this));
   }
 
   @Override
@@ -174,33 +89,27 @@ public class DropDownPanel<R extends Widget> extends PopupPanel {
     hide(false);
   }
 
-
+  @Override
   public void hide(boolean autohide) {
-    if (!showing) {
+    if (!isShowing()) {
       return;
     }
-    showing = false;
-    autoHiding = autohide;
-    anchor = null;
-    // Hide the popup
-    animate();
-  }
+    super.hide(autohide);
 
-  @Override
-  public boolean isAnimationEnabled() {
-    return isAnimationEnabled;
+    // Removes this from the list of open panels.
+    openPanels.remove(this);
   }
 
   @Override
   public boolean onEventPreview(Event event) {
-    Element target = DOM.eventGetTarget(event);
+    Element target = event.getTarget();
 
     boolean eventTargetsPopup = (target != null)
-        && DOM.isOrHasChild(getElement(), target);
+        && getElement().isOrHasChild(target);
 
     boolean eventTargetsAnchor = (target != null) && (anchor != null)
-        && DOM.isOrHasChild(anchor.getElement(), target);
-    
+        && anchor.getElement().isOrHasChild(target);
+
     int type = DOM.eventGetType(event);
     switch (type) {
       case Event.ONMOUSEDOWN:
@@ -208,26 +117,24 @@ public class DropDownPanel<R extends Widget> extends PopupPanel {
           hide(true);
           return true;
         }
-
         break;
     }
     return super.onEventPreview(event);
   }
 
   @Override
-  public void setAnimationEnabled(boolean enable) {
-    isAnimationEnabled = enable;
-  }
-
-  @Override
   public void show() {
-    if (showing) {
+    if (isShowing()) {
       return;
     }
-    showing = true;
-    DOM.addEventPreview(this);
+    super.show();
 
-    animate();
+    // Add this to the set of open panels.
+    if (openPanels == null) {
+      openPanels = new ArrayList();
+      Window.addWindowResizeListener(resizeListener);
+    }
+    openPanels.add(this);
   }
 
   /**
@@ -240,7 +147,6 @@ public class DropDownPanel<R extends Widget> extends PopupPanel {
    */
 
   public final void showRelativeTo(final R widget) {
-
     anchor = widget;
     // Set the position of the popup right before it is shown.
     setPopupPositionAndShow(new PositionCallback() {
@@ -253,7 +159,7 @@ public class DropDownPanel<R extends Widget> extends PopupPanel {
 
   /**
    * Positions the popup, called after the offset width and height of the drop
-   * down are known
+   * down are known.
    * 
    * @param relativeWidget the widget
    * @param offsetWidth the drop down's offset width
@@ -381,14 +287,4 @@ public class DropDownPanel<R extends Widget> extends PopupPanel {
     setPopupPosition(left, top);
   }
 
-  private void animate() {
-    if (rollDownAnimation == null) {
-      rollDownAnimation = new RollDownAnimation();
-    }
-    rollDownAnimation.setOpen(this);
-  }
-
-  private native PopupListenerCollection getPopupListeners()/*-{
-                  this.@com.google.gwt.user.client.ui.PopupPanel::popupListeners;
-                }-*/;
 }

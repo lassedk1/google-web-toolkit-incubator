@@ -32,12 +32,16 @@ import java.util.List;
 
 /**
  * {@link TimePicker} widget to enter the time part of a date using spinners
+ * 
+ * @deprecated use  com.google.gwt.gen2.picker.TimePicker instead
  */
+@Deprecated
 public class TimePicker extends Composite implements FiresChangeEvents<Date> {
   private class TimeSpinner extends ValueSpinner {
     private DateTimeFormat dateTimeFormat;
 
-    public TimeSpinner(Date date, DateTimeFormat dateTimeFormat, int step, ValueSpinnerResources styles, SpinnerResources images) {
+    public TimeSpinner(Date date, DateTimeFormat dateTimeFormat, int step,
+        ValueSpinnerResources styles, SpinnerResources images) {
       super(date.getTime(), styles, images);
       this.dateTimeFormat = dateTimeFormat;
       getSpinner().setMinStep(step);
@@ -85,8 +89,7 @@ public class TimePicker extends Composite implements FiresChangeEvents<Date> {
 
   /**
    * @param use24Hours if set to true the {@link TimePicker} will use 24h format
-   */
-  public TimePicker(boolean use24Hours) {
+   @deprecated use the com.google.gwt.user.datepicker.client classes instead */ @Deprecated public TimePicker(boolean use24Hours) {
     this(new Date(), use24Hours);
   }
 
@@ -99,6 +102,7 @@ public class TimePicker extends Composite implements FiresChangeEvents<Date> {
         ? DateTimeFormat.getFormat("HH") : DateTimeFormat.getFormat("hh"),
         DateTimeFormat.getFormat("mm"), DateTimeFormat.getFormat("ss"));
   }
+
   /**
    * @param date the date providing the initial time to display
    * @param amPmFormat the format to display AM/PM. Can be null to hide AM/PM
@@ -113,10 +117,10 @@ public class TimePicker extends Composite implements FiresChangeEvents<Date> {
   public TimePicker(Date date, DateTimeFormat amPmFormat,
       DateTimeFormat hoursFormat, DateTimeFormat minutesFormat,
       DateTimeFormat secondsFormat) {
-      this(date, amPmFormat, hoursFormat, minutesFormat, secondsFormat, null, null);
+    this(date, amPmFormat, hoursFormat, minutesFormat, secondsFormat, null,
+        null);
   }
-  
-    
+
   /**
    * @param date the date providing the initial time to display
    * @param amPmFormat the format to display AM/PM. Can be null to hide AM/PM
@@ -127,13 +131,14 @@ public class TimePicker extends Composite implements FiresChangeEvents<Date> {
    *          minutes field
    * @param secondsFormat the format to display the seconds. Can be null to
    *          seconds field
-   * @param styles styles to be used by this TimePicker instance          
-   * @param images images to be used by all nested Spinner widgets          
-   *          
+   * @param styles styles to be used by this TimePicker instance
+   * @param images images to be used by all nested Spinner widgets
+   * 
    */
   public TimePicker(Date date, DateTimeFormat amPmFormat,
       DateTimeFormat hoursFormat, DateTimeFormat minutesFormat,
-      DateTimeFormat secondsFormat, ValueSpinnerResources styles, SpinnerResources images) {
+      DateTimeFormat secondsFormat, ValueSpinnerResources styles,
+      SpinnerResources images) {
     this.dateInMillis = date.getTime();
     HorizontalPanel horizontalPanel = new HorizontalPanel();
     horizontalPanel.setStylePrimaryName("gwt-TimePicker");
@@ -176,7 +181,9 @@ public class TimePicker extends Composite implements FiresChangeEvents<Date> {
   /*
    * (non-Javadoc)
    * 
-   * @see com.google.gwt.widgetideas.client.event.FiresChangeEvents#addChangeHandler(com.google.gwt.widgetideas.client.event.ChangeHandler)
+   * @see
+   * com.google.gwt.widgetideas.client.event.FiresChangeEvents#addChangeHandler
+   * (com.google.gwt.widgetideas.client.event.ChangeHandler)
    */
   public void addChangeHandler(ChangeHandler<Date> changeHandler) {
     if (changeHandlers == null) {
@@ -202,7 +209,9 @@ public class TimePicker extends Composite implements FiresChangeEvents<Date> {
   /*
    * (non-Javadoc)
    * 
-   * @see com.google.gwt.widgetideas.client.event.FiresChangeEvents#removeChangeHandler(com.google.gwt.widgetideas.client.event.ChangeHandler)
+   * @see
+   * com.google.gwt.widgetideas.client.event.FiresChangeEvents#removeChangeHandler
+   * (com.google.gwt.widgetideas.client.event.ChangeHandler)
    */
   public void removeChangeHandler(ChangeHandler<Date> changeHandler) {
     if (changeHandlers != null) {

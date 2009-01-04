@@ -19,7 +19,9 @@ package com.google.gwt.gen2.event.logical.shared;
  * Represents an unhighlight event.
  * 
  * @param <Value> the value of the element unhighlighted
+ * @deprecated use the com.google.gwt.event.logical.shared classes instead
  */
+@Deprecated
 public class UnhighlightEvent<Value> extends ValueEvent<Value> {
   /**
    * Event type for {@link UnhighlightEvent}.

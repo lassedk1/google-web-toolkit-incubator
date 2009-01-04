@@ -24,8 +24,10 @@ import java.util.Date;
 
 /**
  * Model used to get calendar information.
+ * @deprecated use the com.google.gwt.user.datepicker.client classes instead
  */
 @SuppressWarnings("deprecation")
+@Deprecated
 public class CalendarModel {
 
   public static final int WEEKS_IN_MONTH = 6;
@@ -48,7 +50,9 @@ public class CalendarModel {
    * Is the year before the month?
    * 
    * @return is the year before the month
+   * @deprecated use the com.google.gwt.user.datepicker.client classes instead
    */
+  @Deprecated
   public static boolean computeYearBeforeMonth() {
     // Finding whether year is before month
     String[] dateFormats = intlConstants.dateFormats();
@@ -65,8 +69,7 @@ public class CalendarModel {
    * 
    * @param date the date
    * @return the copy
-   */
-  public static Date copy(Date date) {
+   @deprecated use the com.google.gwt.user.datepicker.client classes instead */ @Deprecated public static Date copy(Date date) {
     if (date == null) {
       return null;
     }

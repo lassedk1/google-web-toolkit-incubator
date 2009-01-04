@@ -271,6 +271,10 @@ public class CachedTableModel<RowType> extends MutableTableModel<RowType> {
     int startRow = request.getStartRow();
     int numRows = request.getNumRows();
     int lastRow = startRow + numRows - 1;
+    int totalNumRows = getRowCount();
+    if (totalNumRows != UNKNOWN_ROW_COUNT) {
+      lastRow = Math.min(lastRow, totalNumRows - 1);
+    }
     boolean fullyCached = true;
     for (int row = startRow; row <= lastRow; row++) {
       if (!rowValuesMap.containsKey(new Integer(row))) {
@@ -290,7 +294,6 @@ public class CachedTableModel<RowType> extends MutableTableModel<RowType> {
     int uncachedLastRow = lastRow + postCacheRows;
 
     // Check the upper bounds against the total number of rows
-    int totalNumRows = getRowCount();
     if (totalNumRows != UNKNOWN_ROW_COUNT) {
       lastRow = Math.min(totalNumRows - 1, lastRow);
       uncachedLastRow = Math.min(totalNumRows - 1, uncachedLastRow);

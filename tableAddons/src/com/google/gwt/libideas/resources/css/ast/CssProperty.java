@@ -51,6 +51,14 @@ public class CssProperty extends CssNode {
     public String getSuffix() {
       return suffix;
     }
+
+    /**
+     * For debugging only.
+     */
+    @Override
+    public String toString() {
+      return path + "()" + (suffix != null ? " " + suffix : "");
+    }
   }
 
   /**
@@ -65,6 +73,41 @@ public class CssProperty extends CssNode {
 
     public String getExpression() {
       return expression;
+    }
+
+    /**
+     * For debugging only.
+     */
+    @Override
+    public String toString() {
+      return expression;
+    }
+  }
+
+  /**
+   * Represents an identifier in the CSS source.
+   */
+  public static class IdentValue implements Value {
+    private final String ident;
+
+    public IdentValue(String ident) {
+      this.ident = ident;
+    }
+
+    public String getExpression() {
+      return '"' + Generator.escape(ident) + '"';
+    }
+
+    public String getIdent() {
+      return ident;
+    }
+
+    /**
+     * For debugging only.
+     */
+    @Override
+    public String toString() {
+      return ident;
     }
   }
 
@@ -96,10 +139,70 @@ public class CssProperty extends CssNode {
     public List<Value> getValues() {
       return values;
     }
+
+    /**
+     * For debugging only.
+     */
+    @Override
+    public String toString() {
+      return values.toString();
+    }
   }
 
   /**
-   * Represents one or more literal string values.
+   * Represents a numeric value, possibly with attached units.
+   */
+  public static class NumberValue implements Value {
+    private final String expression;
+    private final String units;
+    private final float value;
+
+    public NumberValue(float value) {
+      this(value, null);
+    }
+
+    public NumberValue(float value, String units) {
+      this.value = value;
+      this.units = units;
+
+      String s;
+      int i = (int) value;
+      if (i == value) {
+        s = String.valueOf(i);
+      } else {
+        s = String.valueOf(value);
+      }
+
+      if (units != null && value != 0) {
+        expression = '"' + s + Generator.escape(units) + '"';
+      } else {
+        expression = '"' + s + '"';
+      }
+    }
+
+    public String getExpression() {
+      return expression;
+    }
+
+    public String getUnits() {
+      return units;
+    }
+
+    public float getValue() {
+      return value;
+    }
+
+    /**
+     * For debugging only.
+     */
+    @Override
+    public String toString() {
+      return value + (units != null ? units : "");
+    }
+  }
+
+  /**
+   * Represents one or more unquoted string literals.
    */
   public static class StringValue implements Value {
     private final String value;
@@ -114,6 +217,14 @@ public class CssProperty extends CssNode {
 
     public String getValue() {
       return value;
+    }
+
+    /**
+     * For debugging only.
+     */
+    @Override
+    public String toString() {
+      return '"' + value + '"';
     }
   }
 

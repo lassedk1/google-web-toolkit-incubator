@@ -18,6 +18,7 @@ package com.google.gwt.gen2.table.client;
 import com.google.gwt.gen2.table.client.AbstractColumnDefinitionTest.CustomColumnDefinition;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorter;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorterCallback;
+import com.google.gwt.gen2.table.shared.Request;
 import com.google.gwt.gen2.table.event.client.PageChangeEvent;
 import com.google.gwt.gen2.table.event.client.PageChangeHandler;
 import com.google.gwt.gen2.table.event.client.PageCountChangeEvent;
@@ -107,12 +108,36 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
   }
 
   /**
+   * A custom {@link ListTableModel} used for testing.
+   */
+  private static class TestListTableModel extends ListTableModel {
+    /**
+     * The last {@link Request} that was received.
+     */
+    private Request lastRequest = null;
+
+    public TestListTableModel(List<List<Object>> rows) {
+      super(rows);
+    }
+
+    public Request getLastRequest() {
+      return lastRequest;
+    }
+
+    @Override
+    public void requestRows(Request request, Callback<List<Object>> callback) {
+      lastRequest = request;
+      super.requestRows(request, callback);
+    }
+  }
+
+  /**
    * Test absolute row index operations.
    */
+  @SuppressWarnings("deprecation")
   public void testAbsoluteRowIndex() {
     // Initialize the grid
     PagingScrollTable<List<Object>> table = getPagingScrollTable();
-    FixedWidthGrid grid = table.getDataTable();
     table.setPageSize(5);
 
     // First page with plenty of rows
@@ -121,6 +146,8 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
       table.gotoPage(0, true);
       assertEquals(0, table.getAbsoluteFirstRowIndex());
       assertEquals(4, table.getAbsoluteLastRowIndex());
+      assertEquals(0, table.getFirstRow());
+      assertEquals(4, table.getLastRow());
     }
 
     // Second page with plenty of rows
@@ -128,6 +155,8 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
       table.gotoPage(1, true);
       assertEquals(5, table.getAbsoluteFirstRowIndex());
       assertEquals(9, table.getAbsoluteLastRowIndex());
+      assertEquals(5, table.getFirstRow());
+      assertEquals(9, table.getLastRow());
     }
 
     // Second page with limited rows
@@ -135,6 +164,8 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
       table.setPageSize(15);
       assertEquals(15, table.getAbsoluteFirstRowIndex());
       assertEquals(24, table.getAbsoluteLastRowIndex());
+      assertEquals(15, table.getFirstRow());
+      assertEquals(24, table.getLastRow());
     }
 
     // First page with no page size
@@ -142,6 +173,8 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
       table.setPageSize(0);
       assertEquals(0, table.getAbsoluteFirstRowIndex());
       assertEquals(24, table.getAbsoluteLastRowIndex());
+      assertEquals(0, table.getFirstRow());
+      assertEquals(24, table.getLastRow());
     }
   }
 
@@ -454,6 +487,6 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
         columnList.add(row + ":" + column);
       }
     }
-    return new ListTableModel(rowList);
+    return new TestListTableModel(rowList);
   }
 }

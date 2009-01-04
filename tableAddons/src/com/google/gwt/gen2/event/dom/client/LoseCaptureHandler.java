@@ -19,7 +19,10 @@ import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
  * Handler interface for {@link LoseCaptureEvent} events.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public interface LoseCaptureHandler extends EventHandler {
 
   /**

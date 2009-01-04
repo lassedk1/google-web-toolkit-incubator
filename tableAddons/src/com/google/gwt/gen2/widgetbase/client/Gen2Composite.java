@@ -28,8 +28,10 @@ import com.google.gwt.user.client.ui.WidgetAdaptorImpl;
  * This is a clone of the gwt Composite class where the composite type is
  * parameterized.
  * 
+ * @deprecated functionality now moved to gwt 1.6
  * @param <WidgetType> the wrapped widget type
  */
+@Deprecated
 public abstract class Gen2Composite<WidgetType extends Widget> extends
     Gen2Widget {
 

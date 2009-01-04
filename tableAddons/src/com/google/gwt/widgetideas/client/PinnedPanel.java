@@ -44,7 +44,6 @@ import com.google.gwt.user.client.ui.Widget;
  * Planned enhancements: Allow panel to be collapsed in arbitrary direction.
  */
 
-
 /**
  * {@link PinnedPanel} creates a panel that is, by default, pinned in place.
  * When the pinned state it toggled, the contents of the panel will display only
@@ -55,7 +54,10 @@ import com.google.gwt.user.client.ui.Widget;
  * The default style name is gwt-PinnedPanel.
  * <p>
  * Planned enhancements: Allow panel to be collapsed in arbitrary direction.
+ * 
+ * @deprecated use {@link CollapsiblePanel} instead.
  */
+@Deprecated
 public class PinnedPanel extends Composite implements SourcesChangeEvents {
   /**
    * Hides the {@link PinnedPanel}.
@@ -66,8 +68,8 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
     }
 
     protected boolean processSizeChange(float shouldBe) {
-      currentOffshift =
-          (int) (maxOffshift * ((float) 1.0 - shouldBe)) - MIN_SLIDE_STEP;
+      currentOffshift = (int) (maxOffshift * ((float) 1.0 - shouldBe))
+          - MIN_SLIDE_STEP;
       currentOffshift = Math.max(currentOffshift, 0);
       impl.setPanelPos(currentOffshift);
       return currentOffshift > 0;
@@ -139,7 +141,7 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
    */
   private class DelayHide extends Timer {
 
-    public void activate() {    
+    public void activate() {
       state.currentState = State.WILL_HIDE;
       delayedHide.schedule(DELAY_MILLI);
     }
@@ -261,8 +263,7 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
   private SimplePanel hoverContainer;
   private ToggleButton pinnedToggle;
   private AbsolutePanel master;
-  private ChangeListenerCollection changeListeners =
-      new ChangeListenerCollection();
+  private ChangeListenerCollection changeListeners = new ChangeListenerCollection();
 
   /**
    * Constructor.
@@ -302,11 +303,11 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
                 delayedShow.cancel();
                 break;
               }
-             
+
               if (to == null || (!DOM.isOrHasChild(this.getElement(), to))) {
                 delayedHide.activate();
                 break;
-              }  
+              }
               break;
             case Event.ONMOUSEOVER:
               if ((state.shouldShow())) {
@@ -330,7 +331,7 @@ public class PinnedPanel extends Composite implements SourcesChangeEvents {
     initWidget(master);
     setStyleName(DEFAULT_STYLENAME);
     master.setWidth(width + "px");
- 
+
     // Create hovering container.
     hoverContainer = new SimplePanel();
     hoverContainer.setWidget(hoverBar);

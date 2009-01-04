@@ -69,6 +69,12 @@
   <define-property name="CssResource.enableMerge" values="true,false" />
   <set-property name="CssResource.enableMerge" value="true" />
 
+  <!-- This forces all CssResource accessor functions to have the @Strict -->
+  <!-- annotation. This is intended primarily for application developers and -->
+  <!-- the library test code. -->
+  <define-property name="CssResource.forceStrict" values="true,false" />
+  <set-property name="CssResource.forceStrict" value="false" />
+
   <!-- This allows the developer to use shorter obfuscated class names. -->
   <!-- Is is valid to extend this property to use a custom name. -->
   <define-property name="CssResource.globalPrefix" values="default, empty" />

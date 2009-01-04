@@ -16,35 +16,23 @@
 
 package com.google.gwt.gen2.commonwidget.client.impl;
 
-import com.google.gwt.gen2.widgetbase.client.WidgetCss;
+import com.google.gwt.libideas.resources.client.CssResource;
 
 /**
- * An impl class that provides basic functionally to support the standard
- * handling of css interface classes.
+ * An impl class that provides basic functionally to support supporting css
+ * resource as well as standard css.
  * 
- * Applications that care about Css size and performance should use css
- * resources.
  * 
  */
-public class StandardCssImpl implements WidgetCss {
+public class StandardCssImpl implements CssResource {
   private String baseName;
   private String widgetName;
 
-  /**
-   * Constructor.
-   * 
-   * @param baseStyleName2
-   */
   public StandardCssImpl(String widgetName, String baseName) {
     this.widgetName = widgetName;
     this.baseName = baseName;
   }
 
-  /**
-   * Gets the style name.
-   * 
-   * @return the style name.
-   */
   public String getBaseStyleName() {
     return baseName;
   }

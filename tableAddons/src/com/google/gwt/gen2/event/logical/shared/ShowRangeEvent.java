@@ -21,7 +21,9 @@ import com.google.gwt.gen2.event.shared.AbstractEvent;
  * Fired after an event source shows a range of values.
  * 
  * @param <Value> the type of value shown in the range
+ * @deprecated use the com.google.gwt.event.logical.shared classes instead
  */
+@Deprecated
 public class ShowRangeEvent<Value> extends AbstractEvent {
 
   /**

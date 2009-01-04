@@ -23,7 +23,9 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
  * {@link SelectionEvent} events.
  * 
  * @param <ValueType> The type of value being selected
+ * @deprecated use the com.google.gwt.event.logical.shared classes instead
  */
+@Deprecated
 public interface HasSelectionHandlers<ValueType> {
   /**
    * Adds a {@link SelectionEvent} handler.

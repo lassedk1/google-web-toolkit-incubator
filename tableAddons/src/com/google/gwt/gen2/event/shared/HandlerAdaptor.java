@@ -22,7 +22,10 @@ package com.google.gwt.gen2.event.shared;
  * commonly used are
  * {@link com.google.gwt.gen2.event.dom.client.HasAllKeyHandlers.Adaptor} and
  * {@link com.google.gwt.gen2.event.dom.client.HasAllMouseHandlers.Adaptor}.
+ * 
+ * @deprecated use the com.google.gwt.event.shared classes instead
  */
+@Deprecated
 public class HandlerAdaptor {
 
   /**

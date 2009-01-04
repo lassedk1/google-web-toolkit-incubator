@@ -19,7 +19,10 @@ import com.google.gwt.gen2.event.shared.EventHandler;
 
 /**
  * Handler interface for {@link KeyDownEvent} events.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public interface KeyDownHandler extends EventHandler {
   /**
    * Called when {@link KeyDownEvent} is fired.

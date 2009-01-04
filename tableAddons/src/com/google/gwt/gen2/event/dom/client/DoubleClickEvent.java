@@ -19,24 +19,28 @@ import com.google.gwt.user.client.Event;
 
 /**
  * Represents a native double click event.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public class DoubleClickEvent extends DomEvent {
 
   /**
-    Event type for double click events. Represents the meta-data associated with this event.
-  */
-  public static final Type<DoubleClickEvent, DoubleClickHandler> TYPE = new Type<DoubleClickEvent,DoubleClickHandler>(
+   * Event type for double click events. Represents the meta-data associated
+   * with this event.
+   */
+  public static final Type<DoubleClickEvent, DoubleClickHandler> TYPE = new Type<DoubleClickEvent, DoubleClickHandler>(
       Event.ONDBLCLICK) {
-     @Override
-     public void fire(DoubleClickHandler handler, DoubleClickEvent event) {
-       handler.onDoubleClick(event);
-     }
+    @Override
+    public void fire(DoubleClickHandler handler, DoubleClickEvent event) {
+      handler.onDoubleClick(event);
+    }
 
-     @Override     
+    @Override
     DoubleClickEvent wrap(Event nativeEvent) {
-       return new DoubleClickEvent(nativeEvent);
-     }
-   };
+      return new DoubleClickEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructor.
@@ -46,8 +50,8 @@ public class DoubleClickEvent extends DomEvent {
   public DoubleClickEvent(Event nativeEvent) {
     super(nativeEvent);
   }
-  
- @Override
+
+  @Override
   protected Type getType() {
     return TYPE;
   }

@@ -1,12 +1,24 @@
 /** Add css rules here for your application. */
 
+.gwt-SimpleLogHandler{
 
-/** Example rules used by the template application (remove for your app) */
-.pc-template-btn {
-  display: block;
-  font-size: 16pt
 }
 
-#pc-template-img {
-  margin-top: 20px;
-}
+.gwt-SimpleWidget {
+   border: 1px solid #ccc;
+   padding:10px;
+   width:200px;
+   background:#69e;
+ }  
+ .logContentPane{
+   width:200px;
+   height:300px;
+   background:white;
+   margin:10px;
+ }
+ 
+ .gwt-SimpleLogHandler{
+   background:#ccc;
+   border:1px solid black;
+   margin-left:10px;
+ }

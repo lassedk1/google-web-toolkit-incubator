@@ -29,8 +29,10 @@ import java.util.Date;
  * A simple {@link MonthSelector} used for the default date picker. Not part of
  * the public API as we wish to evolve it freely over time. Please copy though,
  * as we like it getting used.
+ * 
+ * @deprecated use the com.google.gwt.user.datepicker.client classes instead
  */
-
+@Deprecated
 public final class DefaultMonthSelector extends MonthSelector {
 
   private PushButton backwards;
