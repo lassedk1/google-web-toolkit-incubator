@@ -19,24 +19,28 @@ import com.google.gwt.user.client.Event;
 
 /**
  * Represents a native mouse out event.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public class MouseOutEvent extends MouseEvent {
 
   /**
-    Event type for mouse out events. Represents the meta-data associated with this event.
-  */
-  public static final Type<MouseOutEvent, MouseOutHandler> TYPE = new Type<MouseOutEvent,MouseOutHandler>(
+   * Event type for mouse out events. Represents the meta-data associated with
+   * this event.
+   */
+  public static final Type<MouseOutEvent, MouseOutHandler> TYPE = new Type<MouseOutEvent, MouseOutHandler>(
       Event.ONMOUSEOUT) {
-     @Override
-     public void fire(MouseOutHandler handler, MouseOutEvent event) {
-       handler.onMouseOut(event);
-     }
+    @Override
+    public void fire(MouseOutHandler handler, MouseOutEvent event) {
+      handler.onMouseOut(event);
+    }
 
-     @Override     
+    @Override
     MouseOutEvent wrap(Event nativeEvent) {
-       return new MouseOutEvent(nativeEvent);
-     }
-   };
+      return new MouseOutEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructor.
@@ -46,8 +50,8 @@ public class MouseOutEvent extends MouseEvent {
   public MouseOutEvent(Event nativeEvent) {
     super(nativeEvent);
   }
-  
- @Override
+
+  @Override
   protected Type getType() {
     return TYPE;
   }

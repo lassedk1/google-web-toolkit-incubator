@@ -300,6 +300,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   private RendererCallback tableRendererCallback = new RendererCallback() {
     public void onRendered() {
       maybeFillWidth();
+      resizeTablesVertically();
       fireEvent(new PageLoadEvent(currentPage));
     }
   };
@@ -366,7 +367,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     emptyTableWidgetWrapper.getElement().getStyle().setPropertyPx("border", 0);
     emptyTableWidgetWrapper.getElement().getStyle().setPropertyPx("margin", 0);
     emptyTableWidgetWrapper.getElement().getStyle().setPropertyPx("padding", 0);
-    insert(emptyTableWidgetWrapper, getElement(), 2, true);
+    insert(emptyTableWidgetWrapper, getAbsoluteElement(), 2, true);
     setEmptyTableWidgetVisible(false);
 
     // Listen to table model events
@@ -825,6 +826,24 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       return visibleColumns.get(colIndex);
     }
     return null;
+  }
+
+  /**
+   * @return the index of the first visible row
+   * @deprecated use {@link #getAbsoluteFirstRowIndex()} instead
+   */
+  @Deprecated
+  protected int getFirstRow() {
+    return getAbsoluteFirstRowIndex();
+  }
+
+  /**
+   * @return the index of the last visible row
+   * @deprecated use {@link #getAbsoluteLastRowIndex()} instead
+   */
+  @Deprecated
+  protected int getLastRow() {
+    return getAbsoluteLastRowIndex();
   }
 
   /**

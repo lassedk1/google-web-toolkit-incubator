@@ -21,7 +21,10 @@ import java.util.ArrayList;
 /**
  * This handler is used primarily for testing purposes. It stores all messages
  * received in an {@link ArrayList}.
+ * 
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
+@Deprecated
 public class ArrayListLogHandler extends LogHandler {
   private ArrayList messages = new ArrayList();
   private ArrayList categories = new ArrayList();

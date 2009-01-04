@@ -30,7 +30,9 @@ import java.util.HashMap;
  * underlying native browser event object as well as a subclass of
  * AbstractEvent.Key that understands GWT event bits used by sinkEvents().
  * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public abstract class DomEvent extends AbstractEvent {
 
   /**
@@ -88,12 +90,12 @@ public abstract class DomEvent extends AbstractEvent {
       }
 
       public final native DomEvent.Type get(String nativeEventType) /*-{
-        return this[nativeEventType];
-      }-*/;
+             return this[nativeEventType];
+           }-*/;
 
       public final native void put(String nativeEventType, DomEvent.Type key) /*-{
-        this[nativeEventType] = key;
-      }-*/;
+             this[nativeEventType] = key;
+           }-*/;
     }
 
     private KeyMap map;

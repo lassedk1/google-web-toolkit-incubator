@@ -19,24 +19,28 @@ import com.google.gwt.user.client.Event;
 
 /**
  * Represents a native blur event.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public class BlurEvent extends DomEvent {
 
   /**
-    Event type for blur events. Represents the meta-data associated with this event.
-  */
-  public static final Type<BlurEvent, BlurHandler> TYPE = new Type<BlurEvent,BlurHandler>(
+   * Event type for blur events. Represents the meta-data associated with this
+   * event.
+   */
+  public static final Type<BlurEvent, BlurHandler> TYPE = new Type<BlurEvent, BlurHandler>(
       Event.ONBLUR) {
-     @Override
-     public void fire(BlurHandler handler, BlurEvent event) {
-       handler.onBlur(event);
-     }
+    @Override
+    public void fire(BlurHandler handler, BlurEvent event) {
+      handler.onBlur(event);
+    }
 
-     @Override     
+    @Override
     BlurEvent wrap(Event nativeEvent) {
-       return new BlurEvent(nativeEvent);
-     }
-   };
+      return new BlurEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructor.
@@ -46,8 +50,8 @@ public class BlurEvent extends DomEvent {
   public BlurEvent(Event nativeEvent) {
     super(nativeEvent);
   }
-  
- @Override
+
+  @Override
   protected Type getType() {
     return TYPE;
   }

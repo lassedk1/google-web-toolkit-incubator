@@ -19,7 +19,10 @@ import com.google.gwt.gen2.event.shared.HandlerRegistration;
 /**
  * A widget that implements this interface is a public source of
  * {@link KeyUpEvent} events.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public interface HasKeyUpHandlers {
   /**
    * Adds a {@link KeyUpEvent} handler.

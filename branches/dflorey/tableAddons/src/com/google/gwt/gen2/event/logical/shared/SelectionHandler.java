@@ -22,7 +22,9 @@ import com.google.gwt.gen2.event.shared.EventHandler;
  * Handler for {@link SelectionEvent} events.
  * 
  * @param <Value> type of the selected value
+ * @deprecated use the com.google.gwt.event.logical.shared classes instead
  */
+@Deprecated
 public interface SelectionHandler<Value> extends EventHandler {
   /**
    * Fired once a value has been selected.

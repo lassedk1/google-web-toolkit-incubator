@@ -1,1 +1,0 @@
-Please ignore this directory unless you are testing the copy/paste eclipse-for-subeclipse configuration.

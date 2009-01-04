@@ -23,7 +23,10 @@ import java.util.Date;
 
 /**
  * Useful utilities for creating views of a calendar.
+ * 
+ * @deprecated use the com.google.gwt.user.datepicker.client classes instead
  */
+@Deprecated
 public class CalendarUtil {
 
   static final DateTimeConstants intlConstants;

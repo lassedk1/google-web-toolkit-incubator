@@ -19,24 +19,28 @@ import com.google.gwt.user.client.Event;
 
 /**
  * Represents a native mouse wheel event.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public class MouseWheelEvent extends MouseEvent {
 
   /**
-    Event type for mouse wheel events. Represents the meta-data associated with this event.
-  */
-  public static final Type<MouseWheelEvent, MouseWheelHandler> TYPE = new Type<MouseWheelEvent,MouseWheelHandler>(
+   * Event type for mouse wheel events. Represents the meta-data associated with
+   * this event.
+   */
+  public static final Type<MouseWheelEvent, MouseWheelHandler> TYPE = new Type<MouseWheelEvent, MouseWheelHandler>(
       Event.ONMOUSEWHEEL) {
-     @Override
-     public void fire(MouseWheelHandler handler, MouseWheelEvent event) {
-       handler.onMouseWheel(event);
-     }
+    @Override
+    public void fire(MouseWheelHandler handler, MouseWheelEvent event) {
+      handler.onMouseWheel(event);
+    }
 
-     @Override     
+    @Override
     MouseWheelEvent wrap(Event nativeEvent) {
-       return new MouseWheelEvent(nativeEvent);
-     }
-   };
+      return new MouseWheelEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructor.
@@ -46,8 +50,8 @@ public class MouseWheelEvent extends MouseEvent {
   public MouseWheelEvent(Event nativeEvent) {
     super(nativeEvent);
   }
-  
- @Override
+
+  @Override
   protected Type getType() {
     return TYPE;
   }

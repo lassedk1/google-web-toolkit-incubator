@@ -19,7 +19,10 @@ import com.google.gwt.gen2.event.shared.AbstractEvent;
 
 /**
  * Fired directly before an event source's contents are shown.
+ * 
+ * @deprecated use the com.google.gwt.event.logical.shared classes instead
  */
+@Deprecated
 public class BeforeShowEvent extends AbstractEvent {
 
   /**

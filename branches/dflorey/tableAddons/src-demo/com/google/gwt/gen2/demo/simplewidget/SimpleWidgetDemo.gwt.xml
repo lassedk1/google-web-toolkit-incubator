@@ -5,6 +5,7 @@
 	 
    <!-- Inherit the custom list box code   -->
   <inherits name='com.google.gwt.gen2.commonwidget.CommonWidget' />
+  <inherits name='com.google.gwt.gen2.logging.Logging' />
 
 
       <!-- Other module inherits                                      -->

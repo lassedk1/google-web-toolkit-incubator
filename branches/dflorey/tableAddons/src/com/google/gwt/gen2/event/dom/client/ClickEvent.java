@@ -19,24 +19,28 @@ import com.google.gwt.user.client.Event;
 
 /**
  * Represents a native click event.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public class ClickEvent extends DomEvent {
 
   /**
-    Event type for click events. Represents the meta-data associated with this event.
-  */
-  public static final Type<ClickEvent, ClickHandler> TYPE = new Type<ClickEvent,ClickHandler>(
+   * Event type for click events. Represents the meta-data associated with this
+   * event.
+   */
+  public static final Type<ClickEvent, ClickHandler> TYPE = new Type<ClickEvent, ClickHandler>(
       Event.ONCLICK) {
-     @Override
-     public void fire(ClickHandler handler, ClickEvent event) {
-       handler.onClick(event);
-     }
+    @Override
+    public void fire(ClickHandler handler, ClickEvent event) {
+      handler.onClick(event);
+    }
 
-     @Override     
+    @Override
     ClickEvent wrap(Event nativeEvent) {
-       return new ClickEvent(nativeEvent);
-     }
-   };
+      return new ClickEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructor.
@@ -46,8 +50,8 @@ public class ClickEvent extends DomEvent {
   public ClickEvent(Event nativeEvent) {
     super(nativeEvent);
   }
-  
- @Override
+
+  @Override
   protected Type getType() {
     return TYPE;
   }

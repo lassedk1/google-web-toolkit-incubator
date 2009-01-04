@@ -22,27 +22,36 @@ import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.gen2.logging.shared.LogEvent;
 import com.google.gwt.gen2.logging.shared.LogHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+
+import java.io.Serializable;
 
 /**
  * Handler to publish messages over RPC.
  */
 public final class RemoteLogHandler implements LogHandler {
-  /**
-   * Default callback for remote log handler.
-   */
-  class DefaultCallback implements AsyncCallback {
 
-    public void onFailure(Throwable caught) {
-      Log.removeLogHandler(RemoteLogHandler.this);
-      Log.severe(
-          "Remote logging failed,  remote handler is now removed as a valid handler",
-          CATEGORY, caught);
+  /**
+   * Provides a wrapper around the throwable thrown by the logging system.
+   */
+  public static class RemoteThrowable extends Throwable implements
+      Serializable, IsSerializable {
+
+    /**
+     * Constructor needed for serialization.
+     */
+    public RemoteThrowable() {
     }
 
-    public void onSuccess(Object result) {
-      Log.finest("Remote logging message acknowledged", CATEGORY);
+    /**
+     * Creates a new remote throwable wrapped around the logged throwable.
+     * 
+     * @param throwable the throwable
+     */
+    public RemoteThrowable(Throwable throwable) {
+      super(throwable);
     }
   }
 
@@ -57,10 +66,10 @@ public final class RemoteLogHandler implements LogHandler {
      * @param message the message
      * @param level the level
      * @param category the category
-     * @param throwable the throwable
+     * @param remoteThrowable wraps the throwable object that was logged
      */
     void publish(String message, Level level, String category,
-        Throwable throwable);
+        RemoteThrowable remoteThrowable);
   }
 
   /**
@@ -74,18 +83,35 @@ public final class RemoteLogHandler implements LogHandler {
      * @param message the message
      * @param level the level
      * @param category the category
-     * @param throwable the throwable
+     * @param remoteThrowable wraps the throwable that was logged
      * @param callback the callback
      */
     void publish(String message, Level level, String category,
-        Throwable throwable, AsyncCallback callback);
+        RemoteThrowable remoteThrowable, AsyncCallback<Object> callback);
+  }
+
+  /**
+   * Default callback for remote log handler.
+   */
+  class DefaultCallback implements AsyncCallback<Object> {
+
+    public void onFailure(Throwable caught) {
+      Log.removeLogHandler(RemoteLogHandler.this);
+      Log.severe(
+          "Remote logging failed,  remote handler is now removed as a valid handler",
+          CATEGORY, caught);
+    }
+
+    public void onSuccess(Object result) {
+      Log.finest("Remote logging message acknowledged", CATEGORY);
+    }
   }
 
   private static final String CATEGORY = "gwt.logging.RemoteLogHandler";
 
   private ServiceAsync service;
 
-  private AsyncCallback callback;
+  private AsyncCallback<Object> callback;
 
   /**
    * Constructor.
@@ -112,8 +138,12 @@ public final class RemoteLogHandler implements LogHandler {
     if (event.getCategory() == CATEGORY) {
       return;
     }
+    RemoteThrowable wrappedThrown = null;
+    if (event.getThrown() != null) {
+      wrappedThrown = createRemoteThrowable(event.getThrown());
+    }
     service.publish(event.getMessage(), event.getLevel(), event.getCategory(),
-        event.getThrown(), callback);
+        wrappedThrown, callback);
   }
 
   /**
@@ -121,7 +151,19 @@ public final class RemoteLogHandler implements LogHandler {
    * 
    * @param callback the callback
    */
-  public void setCallBack(AsyncCallback callback) {
+  public void setCallBack(AsyncCallback<Object> callback) {
     this.callback = callback;
+  }
+
+  /**
+   * Creates the remote throwable object which wraps the actual logged
+   * throwable. Override this method to provide more specialized versions of the
+   * remote throwable instance.
+   * 
+   * @param thrown thrown exception
+   * @return the wrapped thrown exception
+   */
+  protected RemoteThrowable createRemoteThrowable(Throwable thrown) {
+    return new RemoteThrowable(thrown);
   }
 }

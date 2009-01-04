@@ -322,6 +322,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
 
     // Make this a resizable widget
     ResizableWidgetCollection.get().add(this);
+    sinkEvents(Event.MOUSEEVENTS | Event.KEYEVENTS | Event.FOCUSEVENTS);
   }
 
   /**
@@ -418,7 +419,7 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
   public boolean isEnabled() {
     return enabled;
   }
-  
+
   /**
    * Listen for events that will move the knob.
    * 
@@ -612,16 +613,18 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
 
   /**
    * Sets whether this widget is enabled.
+   * 
    * @param enabled true to enable the widget, false to disable it
    */
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
-    if ( enabled ) {
+    if (enabled) {
       images.slider().applyTo(knobImage);
       DOM.setElementProperty(lineElement, "className", "gwt-SliderBar-line");
     } else {
       images.sliderDisabled().applyTo(knobImage);
-      DOM.setElementProperty(lineElement, "className", "gwt-SliderBar-line gwt-SliderBar-line-disabled");
+      DOM.setElementProperty(lineElement, "className",
+          "gwt-SliderBar-line gwt-SliderBar-line-disabled");
     }
     redraw();
   }
@@ -812,10 +815,11 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
           label = DOM.createDiv();
           DOM.setStyleAttribute(label, "position", "absolute");
           DOM.setStyleAttribute(label, "display", "none");
-          if ( enabled ) {
+          if (enabled) {
             DOM.setElementProperty(label, "className", "gwt-SliderBar-label");
           } else {
-            DOM.setElementProperty(label, "className", "gwt-SliderBar-label-disabled");
+            DOM.setElementProperty(label, "className",
+                "gwt-SliderBar-label-disabled");
           }
           DOM.appendChild(getElement(), label);
           labelElements.add(label);
@@ -876,10 +880,11 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
           DOM.appendChild(getElement(), tick);
           tickElements.add(tick);
         }
-        if ( enabled ) {
+        if (enabled) {
           DOM.setElementProperty(tick, "className", "gwt-SliderBar-tick");
         } else {
-          DOM.setElementProperty(tick, "className", "gwt-SliderBar-tick gwt-SliderBar-tick-disabled");
+          DOM.setElementProperty(tick, "className",
+              "gwt-SliderBar-tick gwt-SliderBar-tick-disabled");
         }
         // Position the tick and make it visible
         DOM.setStyleAttribute(tick, "visibility", "hidden");

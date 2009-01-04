@@ -21,7 +21,10 @@ import com.google.gwt.user.client.ui.KeyboardListener;
 
 /**
  * Key up and key down are both events based upon a given key code.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public abstract class KeyCodeEvent extends KeyEvent {
 
   /**

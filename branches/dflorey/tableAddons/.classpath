@@ -5,6 +5,7 @@
 	<classpathentry kind="src" path="test"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/gwt-incubator-resources"/>
-	<classpathentry kind="con" path="com.google.gwt.eclipse.plugin.GWT_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/gwt-user"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/gwt-dev-windows"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

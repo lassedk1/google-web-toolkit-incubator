@@ -17,21 +17,21 @@
 package com.google.gwt.libideas.logging.shared;
 
 /**
- * A <tt>Handler</tt> object takes log messages from Logger and publishes
- * them. It is a clone of the Java Logging API. The javadoc below are from the
- * Sun implementation.
+ * A <tt>Handler</tt> object takes log messages from Logger and publishes them.
+ * It is a clone of the Java Logging API. The javadoc below are from the Sun
+ * implementation.
  * 
  * All handler setup should be guarded by a call to Logger.isLoggingEnabled()
  * 
  * A <tt>Handler</tt> can be disabled by doing a <tt>setLevel(Level.OFF)</tt>
- * and can be re-enabled by doing a <tt>setLevel</tt> with an appropriate
- * level.
+ * and can be re-enabled by doing a <tt>setLevel</tt> with an appropriate level.
  * <p>
  * 
  * @version 1.17, 01/12/04
  * @since 1.4
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
-
+@Deprecated
 public abstract class LogHandler {
   private Level logLevel;
 
@@ -44,8 +44,7 @@ public abstract class LogHandler {
   /**
    * 
    * /** Get the log level specifying which messages will be logged by this
-   * <tt>Handler</tt>. Message levels lower than this level will be
-   * discarded.
+   * <tt>Handler</tt>. Message levels lower than this level will be discarded.
    * 
    * @return the level of messages being logged.
    */
@@ -85,8 +84,7 @@ public abstract class LogHandler {
 
   /**
    * Set the log level specifying which message levels will be logged by this
-   * <tt>Handler</tt>. Message levels lower than this value will be
-   * discarded.
+   * <tt>Handler</tt>. Message levels lower than this value will be discarded.
    * <p>
    * The intention is to allow developers to turn on voluminous logging, but to
    * limit the messages that are sent to certain <tt>Handlers</tt>.

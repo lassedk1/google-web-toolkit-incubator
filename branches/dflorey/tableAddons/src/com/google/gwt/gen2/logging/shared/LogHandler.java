@@ -16,7 +16,7 @@
 
 package com.google.gwt.gen2.logging.shared;
 
-import com.google.gwt.gen2.event.shared.EventHandler;
+import com.google.gwt.event.shared.EventHandler;
 
 /**
  * The handler for {@link LogEvent}.

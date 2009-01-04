@@ -145,7 +145,10 @@ public final class DefaultCalendarView extends CalendarView {
 
   /**
    * Constructor.
+   * 
+   * @deprecated use the com.google.gwt.user.datepicker.client classes instead
    */
+  @Deprecated
   public DefaultCalendarView() {
   }
 

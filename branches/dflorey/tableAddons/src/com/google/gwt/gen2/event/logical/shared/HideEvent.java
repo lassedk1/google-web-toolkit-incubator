@@ -19,7 +19,10 @@ import com.google.gwt.gen2.event.shared.AbstractEvent;
 
 /**
  * Fired after an event source has hidden its contents.
+ * 
+ * @deprecated use the com.google.gwt.event.logical.shared classes instead
  */
+@Deprecated
 public class HideEvent extends AbstractEvent {
 
   /**

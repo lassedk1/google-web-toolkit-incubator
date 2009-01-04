@@ -15,13 +15,28 @@
  */
 package com.google.gwt.libideas.resources.css.ast;
 
+import com.google.gwt.libideas.resources.css.ast.CssProperty.IdentValue;
+import com.google.gwt.libideas.resources.css.ast.CssProperty.Value;
+
+import java.util.Collections;
+import java.util.List;
+
 /**
  * A reference to a DataResource that results in a url expression being inserted
  * into the generated CSS.
  */
 public class CssUrl extends CssDef {
-  public CssUrl(String key, String value) {
-    super(key, value);
+  private final List<Value> values;
+
+  public CssUrl(String key, String functionPath) {
+    super(key);
+    Value functionValue = new IdentValue(functionPath);
+    values = Collections.singletonList(functionValue);
+  }
+
+  @Override
+  public List<Value> getValues() {
+    return values;
   }
 
   @Override

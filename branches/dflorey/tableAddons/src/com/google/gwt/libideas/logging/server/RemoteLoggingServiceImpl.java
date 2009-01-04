@@ -24,7 +24,9 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 /**
  * Remote logging implementation.
  * 
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
+@Deprecated
 public class RemoteLoggingServiceImpl extends RemoteServiceServlet implements
     RemoteLoggingService {
   {

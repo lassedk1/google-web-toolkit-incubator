@@ -24,7 +24,9 @@ import com.google.gwt.user.client.ui.Widget;
  * Shows a widget handler in a popup.
  * 
  * @param <T> type of popup contents
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
+@Deprecated
 public abstract class PopupWidgetLogHandler<T extends Widget> extends
     LogHandler {
 
@@ -53,7 +55,7 @@ public abstract class PopupWidgetLogHandler<T extends Widget> extends
   }
 
   public void showLog() {
-    
+
     if (getPopup().equals(getWidget().getParent())) {
       getPopup().show();
     }

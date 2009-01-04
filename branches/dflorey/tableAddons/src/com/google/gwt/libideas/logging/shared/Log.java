@@ -29,13 +29,15 @@ import java.util.Iterator;
  * 
  * If you wish to use this class in code that may not be run in a GWT
  * environment, you must instantiate on of the system logging adaptors available
- * from {@link  com.google.gwt.libideas.logging.server.SystemLogSystemLog}.
+ * from {@link com.google.gwt.libideas.logging.server.SystemLogSystemLog}.
+ * 
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
-
+@Deprecated
 public class Log {
   public static final String CATEGORY = "gwt.logging";
   private static LogImpl impl;
-  
+
   static {
     try {
       impl = GWT.create(LogImpl.class);

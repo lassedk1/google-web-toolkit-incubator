@@ -666,7 +666,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
       }
       curSelection.setSelection(false, fireEvents);
     }
-
+    
     curSelection = item;
 
     if (curSelection != null) {

@@ -20,6 +20,7 @@ import com.google.gwt.core.ext.PropertyOracle;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
+import com.google.gwt.core.ext.typeinfo.JPackage;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle.Resource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle.Transform;
 import com.google.gwt.libideas.resources.rebind.Transformer;
@@ -216,16 +217,15 @@ public final class ResourceGeneratorUtil {
     boolean error = false;
     int tagIndex = 0;
     for (String resource : resources) {
+      // Try to find the resource relative to the package.
+      URL resourceURL = tryFindResource(classLoader, getPathRelativeToPackage(
+          method.getEnclosingType().getPackage(), resource), locale);
 
-      // Make sure the name is either absolute or package-relative.
-      if (resource.indexOf("/") == -1) {
-        String pkgName = method.getEnclosingType().getPackage().getName();
-
-        // This construction handles the default package correctly, too.
-        resource = pkgName.replace('.', '/') + "/" + resource;
+      // If we didn't find the resource relative to the package, assume it is
+      // absolute.
+      if (resourceURL == null) {
+        resourceURL = tryFindResource(classLoader, resource, locale);
       }
-
-      URL resourceURL = tryFindResource(classLoader, resource, locale);
 
       if (resourceURL == null) {
         logger.log(TreeLogger.ERROR, "Resource " + resource
@@ -250,6 +250,17 @@ public final class ResourceGeneratorUtil {
      */
 
     return toReturn;
+  }
+
+  /**
+   * Converts a package relative path into an absolute path.
+   * 
+   * @param pkg the package
+   * @param path a path relative to the package
+   * @return an absolute path
+   */
+  private static String getPathRelativeToPackage(JPackage pkg, String path) {
+    return pkg.getName().replace('.', '/') + '/' + path;
   }
 
   /**

@@ -20,7 +20,9 @@ package com.google.gwt.gen2.event.shared;
  * longer be accessed once the {@link HandlerManager} which originally fired the
  * event finishes with it.
  * 
+ * @deprecated use the com.google.gwt.event.shared classes instead
  */
+@Deprecated
 public abstract class AbstractEvent {
   /**
    * Type class used to register events with the {@link HandlerManager}.

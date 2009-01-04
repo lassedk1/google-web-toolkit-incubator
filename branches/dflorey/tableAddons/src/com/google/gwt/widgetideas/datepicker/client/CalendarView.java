@@ -24,9 +24,11 @@ import java.util.Date;
  * 
  * @param <MyDatePicker> the date picker type used with this calendar view.
  * 
+ @deprecated use the com.google.gwt.user.datepicker.client classes instead
  */
-public abstract class CalendarView<MyDatePicker extends DatePicker>
-    extends DatePickerComponent<MyDatePicker> {
+@Deprecated
+public abstract class CalendarView<MyDatePicker extends DatePicker> extends
+    DatePickerComponent<MyDatePicker> {
 
   public CalendarView() {
   }
@@ -36,8 +38,7 @@ public abstract class CalendarView<MyDatePicker extends DatePicker>
    * 
    * @param date date that will have the supplied style added
    * @param styleName style name to add
-   */
-  public abstract void addDateStyle(Date date, String styleName);
+   @deprecated use the com.google.gwt.user.datepicker.client classes instead */ @Deprecated public abstract void addDateStyle(Date date, String styleName);
 
   public void addDateStyles(Iterable<Date> dates, String styleName) {
     for (Date date : dates) {

@@ -23,7 +23,9 @@ import java.util.Date;
  * {@link DatePicker}. Note, the calendar view only deals with the currently
  * visible dates and all state is flushed when the calendar view is refreshed.
  * 
+ * @deprecated use the com.google.gwt.user.datepicker.client classes instead
  */
+@Deprecated
 public abstract class CalendarView extends DatePickerComponent {
 
   /**

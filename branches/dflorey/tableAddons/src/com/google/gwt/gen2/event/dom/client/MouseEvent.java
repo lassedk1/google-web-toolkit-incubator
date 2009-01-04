@@ -22,7 +22,9 @@ import com.google.gwt.user.client.Event;
  * Abstract class representing mouse events.
  * 
  * @param <T> event handler type
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public abstract class MouseEvent<T extends EventHandler> extends DomEvent {
 
   /**

@@ -19,7 +19,9 @@ package com.google.gwt.gen2.event.logical.shared;
  * Fired when an event source changes its highlighted value.
  * 
  * @param <Value> the value highlighted
+ * @deprecated use the com.google.gwt.event.logical.shared classes instead
  */
+@Deprecated
 public class HighlightEvent<Value> extends ValueEvent<Value> {
   /**
    * Event type.

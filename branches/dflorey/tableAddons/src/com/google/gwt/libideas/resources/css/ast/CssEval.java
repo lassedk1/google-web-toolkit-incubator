@@ -15,12 +15,27 @@
  */
 package com.google.gwt.libideas.resources.css.ast;
 
+import com.google.gwt.libideas.resources.css.ast.CssProperty.ExpressionValue;
+import com.google.gwt.libideas.resources.css.ast.CssProperty.Value;
+
+import java.util.Collections;
+import java.util.List;
+
 /**
- * A definiton that is evaluated at runtime.
+ * A definition that is evaluated at runtime.
  */
 public class CssEval extends CssDef {
-  public CssEval(String key, String value) {
-    super(key, value);
+  private final List<Value> values;
+
+  public CssEval(String key, String expression) {
+    super(key);
+    Value value = new ExpressionValue(expression);
+    values = Collections.singletonList(value);
+  }
+
+  @Override
+  public List<Value> getValues() {
+    return values;
   }
 
   @Override

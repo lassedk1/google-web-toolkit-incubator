@@ -23,8 +23,10 @@ package com.google.gwt.libideas.logging.shared;
  * As an aside, the best first step of profiling most web applications is to run
  * your app using FireFox's firebug profiler. Only when that fails would you
  * need the {@link TimingLog}.
+ * 
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
-
+@Deprecated
 public class TimingLog {
   public static final String CATEGORY = "gwt.timing";
   private static long time;

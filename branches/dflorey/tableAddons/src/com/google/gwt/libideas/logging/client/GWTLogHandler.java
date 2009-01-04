@@ -22,7 +22,10 @@ import com.google.gwt.libideas.logging.shared.Level;
 
 /**
  * Logs messages to the hosted mode development shell logger.
+ * 
+ * @deprecated use the com.google.gwt.gen2.logging classes instead
  */
+@Deprecated
 public class GWTLogHandler extends LogHandler {
 
   public void publish(String message, Level level, String category, Throwable e) {

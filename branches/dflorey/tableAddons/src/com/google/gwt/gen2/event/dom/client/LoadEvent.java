@@ -19,24 +19,28 @@ import com.google.gwt.user.client.Event;
 
 /**
  * Represents a native load event.
+ * 
+ * @deprecated use the com.google.gwt.event.dom.client classes instead
  */
+@Deprecated
 public class LoadEvent extends DomEvent {
 
   /**
-    Event type for load events. Represents the meta-data associated with this event.
-  */
-  public static final Type<LoadEvent, LoadHandler> TYPE = new Type<LoadEvent,LoadHandler>(
+   * Event type for load events. Represents the meta-data associated with this
+   * event.
+   */
+  public static final Type<LoadEvent, LoadHandler> TYPE = new Type<LoadEvent, LoadHandler>(
       Event.ONLOAD) {
-     @Override
-     public void fire(LoadHandler handler, LoadEvent event) {
-       handler.onLoad(event);
-     }
+    @Override
+    public void fire(LoadHandler handler, LoadEvent event) {
+      handler.onLoad(event);
+    }
 
-     @Override     
+    @Override
     LoadEvent wrap(Event nativeEvent) {
-       return new LoadEvent(nativeEvent);
-     }
-   };
+      return new LoadEvent(nativeEvent);
+    }
+  };
 
   /**
    * Constructor.
@@ -46,8 +50,8 @@ public class LoadEvent extends DomEvent {
   public LoadEvent(Event nativeEvent) {
     super(nativeEvent);
   }
-  
- @Override
+
+  @Override
   protected Type getType() {
     return TYPE;
   }
