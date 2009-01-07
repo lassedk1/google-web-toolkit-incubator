@@ -58,6 +58,11 @@ public class LogEvent extends GwtEvent<LogHandler> {
     this.thrown = thrown;
   }
 
+  @Override
+  public Type<LogHandler> getAssociatedType() {
+    return TYPE;
+  }
+
   /**
    * Gets the category of the event. The category uses "." to denote
    * sub-categories.
@@ -163,11 +168,6 @@ public class LogEvent extends GwtEvent<LogHandler> {
   @Override
   protected void dispatch(LogHandler handler) {
     handler.onLog(this);
-  }
-
-  @Override
-  protected Type<LogHandler> getAssociatedType() {
-    return TYPE;
   }
 
 }
