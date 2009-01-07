@@ -165,6 +165,31 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
 		</zip>
 	</target>
 
+  <target name="apicheck" depends="build"
+    description="Checks API compatibility to the reference GWT incubator jar provided below">
+    <java failonerror="true" fork="true"
+          classname="com.google.gwt.tools.apichecker.ApiCompatibilityChecker">
+      <jvmarg line="-Xmx512m" />
+      <sysproperty key="gwt.devjar" value="${gwt.dev.jar}" />
+      <classpath>
+        <pathelement location="${project.bin}"/>
+        <pathelement location="${gwt.dev.jar}"/>
+        <pathelement location="${gwt.user.jar}"/>
+        <pathelement location="${gwt.home}/gwt-api-checker.jar"/>
+      </classpath>
+      <arg value="-gwtDevJar"/>
+      <arg file="${gwt.dev.jar}"/>
+      <arg value="-gwtUserJar"/>
+      <arg file="${gwt.user.jar}"/>
+      <arg value="-refJar"/>
+      <arg file="tools/api-checker/reference/gwt-incubator.jar"/>
+      <arg value="-configFile"/>
+      <arg file="tools/api-checker/config/incubator.conf"/>
+      <arg value="-logLevel"/>
+      <arg value="WARN"/>
+    </java>
+  </target>
+
 	<target name="clean" description="Cleans intermediate and output files">
 		<delete dir="${project.build}" />
 	</target>
