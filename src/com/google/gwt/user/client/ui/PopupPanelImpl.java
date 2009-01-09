@@ -22,8 +22,7 @@ import com.google.gwt.user.client.ui.impl.PopupImpl;
 /**
  * 
  * Adaptor for incubator's DropDownPanel so DropDownPanel can get access to the
- * popup fields it needs..
- * 
+ * popup fields it needs.
  * 
  */
 public class PopupPanelImpl extends PopupPanel {
@@ -90,16 +89,6 @@ public class PopupPanelImpl extends PopupPanel {
   public PopupPanelImpl(boolean autoHide) {
     super(autoHide);
   }
-
-  /**
-   * Is the {@link PopupPanelOverride} being shown?
-   * 
-   * @return whether the widget is being shown
-   */
-
-  protected native boolean isShowing()/*-{
-    return this.@com.google.gwt.user.client.ui.PopupPanel::showing;
-  }-*/;
 
   protected void setAnimation(PopupAnimation animation) {
     assert (this.isAttached() == false);
