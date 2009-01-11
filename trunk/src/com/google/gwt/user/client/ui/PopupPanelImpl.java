@@ -90,9 +90,14 @@ public class PopupPanelImpl extends PopupPanel {
     super(autoHide);
   }
 
+  //Temporary method until  the change to create a public isShowing method makes it into trunk.
+  public boolean isShowing(){
+    return super.isShowing();
+  }
+
+  
   protected void setAnimation(PopupAnimation animation) {
     assert (this.isAttached() == false);
     super.setAnimation(animation);
   }
-
 }
