@@ -17,6 +17,7 @@
 package com.google.gwt.gen2.widgetbase.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.gen2.logging.shared.Level;
 import com.google.gwt.libideas.client.StyleInjector;
 import com.google.gwt.libideas.resources.client.CssResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
@@ -35,7 +36,6 @@ public class Gen2CssInjector {
     @Resource("com/google/gwt/gen2/widgetbase/public/Picker.css")
     CssResource pickerCss();
   }
-
   static class DisabledMode extends Mode {
     @Override
     public void inject(CssResource res) {
@@ -57,6 +57,14 @@ public class Gen2CssInjector {
     }
   }
 
+  /**
+   * CSS resource for log handlers in handler.client.
+   */
+  static interface Resources extends ImmutableResourceBundle {
+    @Resource("com/google/gwt/gen2/widgetbase/public/LogHandlers.css")
+    CssResource css();
+  }
+
   static DefaultBundle DEFAULT_CSS_FILES = GWT.create(DefaultBundle.class);
 
   private static Mode m = GWT.create(Mode.class);
@@ -69,11 +77,48 @@ public class Gen2CssInjector {
   }
 
   /**
+   * Injects the default css used for the log handlers defined in this package.
+   */
+  public static void addLogHandlerDefault() {
+    if (Gen2CssInjector.isInjectionEnabled()) {
+      CssResource css = ((Resources) GWT.create(Resources.class)).css();
+      StyleInjector.injectStylesheet(css.getText());
+    }
+  }
+
+  /**
    * If css dependency injection is enabled, adds the ToggleButton.css file
    * included under public/widget.
    */
   public static void addPickerDefault() {
     inject(DEFAULT_CSS_FILES.pickerCss());
+  }
+
+  /**
+   * Gets the style name associated with all predefined levels. This interface
+   * is primarily used by widget log handlers to display log levels
+   * consistently.
+   * 
+   * <dl>
+   * <dt>Severe</dt>
+   * <dd>logSEVERE</dd>
+   * <dt>Config</dt>
+   * <dd>logCONFIG</dd>
+   * <dt>Fine</dt>
+   * <dd>logFINE</dd>
+   * <dt>. . .</dt>
+   * <dd></dd>
+   * </dl>
+   * 
+   * 
+   * In other words, uses "log" + name of level to calculate the level name.
+   * 
+   * @param level level
+   * 
+   * @return style name
+   */
+  public static String getStyle(Level level) {
+    return "log" + level.getName();
   }
 
   /**

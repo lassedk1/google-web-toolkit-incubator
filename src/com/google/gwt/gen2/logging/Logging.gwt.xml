@@ -1,8 +1,4 @@
 <module>
-
-	<!--  Sets up dependent code --> 
-	<inherits name='com.google.gwt.gen2.widgetbase.WidgetBase' />
-
 	<!--  Sets up source path -->
 	<source path="shared" />
 	<source path="impl/shared" />
@@ -30,7 +26,8 @@
 		<when-property-is name="gwt.logging" value="enabled" />
 	</replace-with>
 
-	<replace-with class="com.google.gwt.gen2.logging.impl.shared.LogImplProduction">
+	<replace-with
+		class="com.google.gwt.gen2.logging.impl.shared.LogImplProduction">
 		<when-type-is class="com.google.gwt.gen2.logging.impl.shared.LogImpl" />
 		<when-property-is name="gwt.logging" value="production" />
 	</replace-with>

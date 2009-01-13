@@ -16,24 +16,12 @@
 
 package com.google.gwt.gen2.logging.handler.client;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.logging.shared.Level;
-import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
-import com.google.gwt.libideas.client.StyleInjector;
-import com.google.gwt.libideas.resources.client.CssResource;
-import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 
 /**
  * Useful utilities for creating log handlers.
  */
 public class LogHandlerUtil {
-  /**
-   * CSS resource for log handlers in handler.client.
-   */
-  static interface Resources extends ImmutableResourceBundle {
-    @Resource("com/google/gwt/gen2/widgetbase/public/LogHandlers.css")
-    CssResource css();
-  }
 
   /**
    * Gets the style name associated with all predefined levels. This interface
@@ -60,16 +48,6 @@ public class LogHandlerUtil {
    */
   public static String getStyle(Level level) {
     return "log" + level.getName();
-  }
-
-  /**
-   * Injects the default css used for the log handlers defined in this package.
-   */
-  public static void injectDefaultCss() {
-    if (Gen2CssInjector.isInjectionEnabled()) {
-      CssResource css = ((Resources) GWT.create(Resources.class)).css();
-      StyleInjector.injectStylesheet(css.getText());
-    }
   }
 
   /**

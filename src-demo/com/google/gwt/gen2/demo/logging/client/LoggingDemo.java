@@ -19,17 +19,17 @@ package com.google.gwt.gen2.demo.logging.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
 import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
-import com.google.gwt.gen2.logging.handler.client.LogHandlerUtil;
+import com.google.gwt.gen2.logging.handler.client.GroupedLogHandler;
 import com.google.gwt.gen2.logging.handler.client.PopupLogHandler;
 import com.google.gwt.gen2.logging.handler.client.RemoteLogHandler;
 import com.google.gwt.gen2.logging.handler.client.SimpleLogHandler;
-import com.google.gwt.gen2.logging.handler.client.GroupedLogHandler;
 import com.google.gwt.gen2.logging.shared.Level;
 import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.gen2.logging.shared.LogFormatter;
 import com.google.gwt.gen2.logging.shared.LogHandler;
 import com.google.gwt.gen2.logging.shared.SmartLogHandler;
 import com.google.gwt.gen2.selection.client.DropDownListBox;
+import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -93,7 +93,7 @@ public class LoggingDemo implements EntryPoint {
    */
   public void onModuleLoad() {
     if (Log.isLoggingSupported() && !Log.isLoggingMinimal()) {
-      LogHandlerUtil.injectDefaultCss();
+      Gen2CssInjector.addLogHandlerDefault();
       DropDownListBox.injectDefaultCss();
       Log.setDefaultLevel(Level.ALL);
 
