@@ -591,7 +591,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         return;
       }
 
-      List<Value> values = x.getValues().getValues();
+      List<Value> values = new ArrayList<Value>(x.getValues().getValues());
 
       for (ListIterator<Value> i = values.listIterator(); i.hasNext();) {
         Value v = i.next();

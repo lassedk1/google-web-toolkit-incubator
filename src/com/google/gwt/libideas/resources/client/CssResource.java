@@ -41,14 +41,17 @@ import java.lang.annotation.Target;
  * Currently-supported rules:
  * 
  * <ul>
- * <li>{@code @def NAME literal-value; .myClass background: NAME;} Define a
- * static constant.</li>
+ * <li>{@code @def NAME replacement-expression; .myClass background: NAME;}
+ * Define a static constant. The replacement expression may be any CSS that
+ * would be valid in a property value context. A {@code @def} may refer to
+ * previously-defined rules, but no forward-references will be honored.</li>
  * <li>{@code @eval NAME Java-expression; .myClass background: NAME;} Define a
  * constant based on a Java expression.</li>
- * <li><code>{@literal @if} [!]property (list of values) {ruleBlock}</code> Include
- * or exclude CSS rules based on the value of a deferred-binding property. Also
- * {@code @elif} and {@code @else} follow the same pattern.</li>
- * <li><code>{@literal @if} Java-expression {ruleBlock}</code> Include or exclude
+ * <li><code>{@literal @if} [!]property list of values {ruleBlock}</code> Include or
+ * exclude CSS rules based on the value of a deferred-binding property. Also
+ * {@code @elif} and {@code @else} follow the same pattern.<br/>
+ * This might look like {@code @if user.agent ie6 safari ...}.</li>
+ * <li><code>{@literal @if} (Java-expression) {ruleBlock}</code> Include or exclude
  * CSS rules based on a boolean Java expression.</li>
  * <li>
  * <code>{@literal @}sprite .any .selector {gwt-image: "imageResourceFunction";}</code>
