@@ -18,6 +18,10 @@
 @eval RED com.google.gwt.libideas.resources.client.CSSResourceTest.red();
 @url BACKGROUND dataMethod;
 
+/* Check @def expansion */
+@def SPRITEWIDTH value("spriteMethod.getWidth", "px");
+@def SPRITESIZE SPRITEWIDTH value("spriteMethod.getHeight", "px");
+
 /*
  * We'll use the token FAIL to indicate text that should never be seen in the output.
  */
@@ -29,8 +33,8 @@
 }
 
 .affectedBySprite {
-    offset-left: "guard" value("spriteMethod.getWidth", "px") !important;
-    offset: value("spriteMethod.getWidth", "px") value("spriteMethod.getHeight", "px");
+    offset-left: "guard" SPRITEWIDTH !important;
+    offset: SPRITESIZE;
 }
 
 .blahA {
@@ -53,11 +57,11 @@ div[foo="bar"] {
 }
 
 /* Test structural modifications */
-@if false {
+@if (false) {
   div {
     runtime: FAIL;
   }
-} @elif true {
+} @elif (true) {
   div {
     runtime: PASSED;
   }
@@ -126,7 +130,7 @@ div {
 
 /* Make sure rules in @if and @media are respected */
 @media blah {
-  @if true {
+  @if (true) {
     .this-does-not-matter {
       after: merge;
     }
@@ -152,7 +156,7 @@ div {
 
 /* Make sure rules in @if and @media are respected */
 @media blah {
-  @if true {
+  @if (true) {
     .may-not-merge-or-combine-because-of-this {
       prevent: true;
     }

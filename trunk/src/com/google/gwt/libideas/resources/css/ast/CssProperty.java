@@ -52,6 +52,11 @@ public class CssProperty extends CssNode {
       return suffix;
     }
 
+    public String toCss() {
+      return "value(\"" + path + "\""
+          + (suffix == null ? "" : (", \"" + suffix + "\"")) + ")";
+    }
+
     /**
      * For debugging only.
      */
@@ -73,6 +78,10 @@ public class CssProperty extends CssNode {
 
     public String getExpression() {
       return expression;
+    }
+
+    public String toCss() {
+      return "/* Java expression */";
     }
 
     /**
@@ -99,6 +108,10 @@ public class CssProperty extends CssNode {
     }
 
     public String getIdent() {
+      return ident;
+    }
+
+    public String toCss() {
       return ident;
     }
 
@@ -138,6 +151,14 @@ public class CssProperty extends CssNode {
 
     public List<Value> getValues() {
       return values;
+    }
+
+    public String toCss() {
+      StringBuffer sb = new StringBuffer();
+      for (Value v : values) {
+        sb.append(" ").append(v.toCss());
+      }
+      return sb.substring(1);
     }
 
     /**
@@ -192,12 +213,16 @@ public class CssProperty extends CssNode {
       return value;
     }
 
+    public String toCss() {
+      return value + (units != null ? units : "");
+    }
+
     /**
      * For debugging only.
      */
     @Override
     public String toString() {
-      return value + (units != null ? units : "");
+      return toCss();
     }
   }
 
@@ -219,12 +244,16 @@ public class CssProperty extends CssNode {
       return value;
     }
 
+    public String toCss() {
+      return '"' + value + '"';
+    }
+
     /**
      * For debugging only.
      */
     @Override
     public String toString() {
-      return '"' + value + '"';
+      return toCss();
     }
   }
 
@@ -236,6 +265,11 @@ public class CssProperty extends CssNode {
      * Generate a Java expression whose execution results in the value.
      */
     String getExpression();
+
+    /**
+     * Generate a CSS expression that represents the Value.
+     */
+    String toCss();
   }
 
   private boolean important;

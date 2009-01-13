@@ -70,8 +70,11 @@ import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -150,7 +153,7 @@ public class GenerateCssAst {
     private static String join(Iterable<Value> elements, String separator) {
       StringBuilder b = new StringBuilder();
       for (Iterator<Value> i = elements.iterator(); i.hasNext();) {
-        b.append(((StringValue) i.next()).getValue());
+        b.append(i.next().toCss());
         if (i.hasNext()) {
           b.append(separator);
         }
@@ -172,6 +175,11 @@ public class GenerateCssAst {
      * Accumulates CSS properties as they are seen.
      */
     private HasProperties currentRule;
+
+    /**
+     * Records references to {@code @def} rules.
+     */
+    private final Map<String, CssDef> defs = new HashMap<String, CssDef>();
 
     /**
      * Used when parsing the contents of meta-styles.
@@ -298,7 +306,6 @@ public class GenerateCssAst {
       InputSource s = new InputSource();
       s.setCharacterStream(new StringReader(value));
       Parser parser = new Parser();
-      // parser.setDocumentHandler(this);
       parser.setErrorHandler(errors);
 
       List<Value> values = new ArrayList<Value>();
@@ -321,9 +328,31 @@ public class GenerateCssAst {
             "First lexical unit must be an identifier", null);
       }
 
-      CssDef def = new CssDef(((IdentValue) values.get(0)).getIdent());
+      IdentValue defName = (IdentValue) values.get(0);
+
+      /*
+       * Replace any references to previously-seen @def constructs. We do
+       * expansion up-front to prevent the need for cycle-detection later.
+       */
+      for (ListIterator<Value> it = values.listIterator(1); it.hasNext();) {
+        Value v = it.next();
+        if (v instanceof IdentValue) {
+          IdentValue maybeDefReference = (IdentValue) v;
+          CssDef previousDef = defs.get(maybeDefReference.getIdent());
+          if (previousDef != null) {
+            it.remove();
+            for (Value previousValue : previousDef.getValues()) {
+              it.add(previousValue);
+            }
+          }
+        }
+      }
+
+      CssDef def = new CssDef(defName.getIdent());
       def.getValues().addAll(values.subList(1, values.size()));
       addNode(def);
+
+      defs.put(defName.getIdent(), def);
     }
 
     /**
@@ -364,7 +393,7 @@ public class GenerateCssAst {
       }
 
       // Create the CssIf to hold the @else rules
-      String fakeElif = "@elif true " + atRule.substring(atRule.indexOf("{"));
+      String fakeElif = "@elif (true) " + atRule.substring(atRule.indexOf("{"));
       parseElif(fakeElif);
       CssIf elseIf = findLastIfInChain(currentParent.peek().getNodes());
 
@@ -392,34 +421,43 @@ public class GenerateCssAst {
     }
 
     void parseIf(String atRule) throws CSSException {
-      // TODO tighten this up
       String predicate = atRule.substring(3, atRule.indexOf('{') - 1).trim();
-      String[] predicateParts = predicate.split("\\s");
       String blockContents = atRule.substring(atRule.indexOf('{') + 1,
           atRule.length() - 1);
 
       CssIf cssIf = new CssIf();
-      switch (predicateParts.length) {
-        case 0:
-          throw new CSSException(CSSException.SAC_SYNTAX_ERR,
-              "Incorrect format for @if predicate", null);
-        case 1:
-          if (predicateParts[0].length() == 0) {
+
+      if (predicate.startsWith("(") && predicate.endsWith(")")) {
+        cssIf.setExpression(predicate);
+      } else {
+
+        String[] predicateParts = predicate.split("\\s");
+
+        switch (predicateParts.length) {
+          case 0:
             throw new CSSException(CSSException.SAC_SYNTAX_ERR,
                 "Incorrect format for @if predicate", null);
-          }
-          cssIf.setExpression(predicateParts[0]);
-          break;
-        default:
-          if (predicateParts[0].startsWith("!")) {
-            cssIf.setNegated(true);
-            cssIf.setProperty(predicateParts[0].substring(1));
-          } else {
-            cssIf.setProperty(predicateParts[0]);
-          }
-          String[] values = new String[predicateParts.length - 1];
-          System.arraycopy(predicateParts, 1, values, 0, values.length);
-          cssIf.setPropertyValues(values);
+          case 1:
+            if (predicateParts[0].length() == 0) {
+              throw new CSSException(CSSException.SAC_SYNTAX_ERR,
+                  "Incorrect format for @if predicate", null);
+            }
+            errors.log(
+                TreeLogger.WARN,
+                "Deprecated syntax for Java expression detected. Enclose the expression in parentheses");
+            cssIf.setExpression(predicateParts[0]);
+            break;
+          default:
+            if (predicateParts[0].startsWith("!")) {
+              cssIf.setNegated(true);
+              cssIf.setProperty(predicateParts[0].substring(1));
+            } else {
+              cssIf.setProperty(predicateParts[0]);
+            }
+            String[] values = new String[predicateParts.length - 1];
+            System.arraycopy(predicateParts, 1, values, 0, values.length);
+            cssIf.setPropertyValues(values);
+        }
       }
 
       pushParent(cssIf);
