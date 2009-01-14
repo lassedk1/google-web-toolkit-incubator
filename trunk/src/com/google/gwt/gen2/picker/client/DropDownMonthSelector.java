@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Isaac Truett.
+ * Copyright 2009 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -63,6 +63,35 @@ public class DropDownMonthSelector extends MonthSelector {
   }
 
   /**
+   * Sets the first year to display in the year drop down.
+   * 
+   * @param startYear
+   */
+  public void setStartYear(final int startYear) {
+    this.startYear = startYear;
+    setupYearList();
+  }
+
+  /**
+   * Sets the number of years to display in the year drop down.
+   * 
+   * @param yearsToDisplay
+   */
+  public void setYearsToDisplay(final int yearsToDisplay) {
+    this.yearsToDisplay = yearsToDisplay;
+    setupYearList();
+  }
+
+  /**
+   * @see com.google.gwt.user.datepicker.client.DatePickerComponent#addMonths(int)
+   */
+  @Override
+  protected void addMonths(int numMonths) {
+    getModel().shiftCurrentMonth(numMonths);
+    refreshAll();
+  }
+
+  /**
    * @see com.google.gwt.user.datepicker.client.DatePickerComponent#refresh()
    */
   @SuppressWarnings/* uses deprecated Date methods */( {"deprecation", "boxing"})
@@ -96,7 +125,7 @@ public class DropDownMonthSelector extends MonthSelector {
         MONTH_ABBREVIATION_FORMAT.format(getModel().getCurrentMonth()));
 
     monthList.addStyleName("gwt-DropDownMonthSelector-month");
-    
+
     monthAbbreviations = new String[12];
 
     for (int a = 0; a < 12; a++) {
@@ -154,26 +183,11 @@ public class DropDownMonthSelector extends MonthSelector {
     initWidget(grid);
   }
 
-  private void setupYearList() {
-    if (yearList == null) {
-      createYearList();
-    } else {
-      // TODO add removeItem() and clear() to DropDownListBox and remove this
-      // ugliness
-      createYearList();
-      grid.setWidget(0, 3, yearList);
-    }
-
-    for (int a = startYear; a < startYear + yearsToDisplay; a++) {
-      yearList.addItem(String.valueOf(a), a);
-    }
-  }
-
   private void createYearList() {
     yearList = new DropDownListBox<Integer>(
         String.valueOf(getModel().getCurrentMonth().getYear()
             + MAGIC_YEAR_CONSTANT));
-    
+
     yearList.addStyleName("gwt-DropDownMonthSelector-year");
 
     yearList.addSelectionHandler(new SelectionHandler<Integer>() {
@@ -188,32 +202,18 @@ public class DropDownMonthSelector extends MonthSelector {
     });
   }
 
-  /**
-   * @see com.google.gwt.user.datepicker.client.DatePickerComponent#addMonths(int)
-   */
-  @Override
-  protected void addMonths(int numMonths) {
-    getModel().shiftCurrentMonth(numMonths);
-    refreshAll();
-  }
+  private void setupYearList() {
+    if (yearList == null) {
+      createYearList();
+    } else {
+      // TODO add removeItem() and clear() to DropDownListBox and remove this
+      // ugliness
+      createYearList();
+      grid.setWidget(0, 3, yearList);
+    }
 
-  /**
-   * Sets the first year to display in the year drop down.
-   * 
-   * @param startYear
-   */
-  public void setStartYear(final int startYear) {
-    this.startYear = startYear;
-    setupYearList();
-  }
-
-  /**
-   * Sets the number of years to display in the year drop down.
-   * 
-   * @param yearsToDisplay
-   */
-  public void setYearsToDisplay(final int yearsToDisplay) {
-    this.yearsToDisplay = yearsToDisplay;
-    setupYearList();
+    for (int a = startYear; a < startYear + yearsToDisplay; a++) {
+      yearList.addItem(String.valueOf(a), a);
+    }
   }
 }

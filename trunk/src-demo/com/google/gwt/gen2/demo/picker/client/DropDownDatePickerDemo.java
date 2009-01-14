@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Isaac Truett.
+ * Copyright 2009 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.gwt.gen2.demo.picker.client;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -43,7 +42,8 @@ public class DropDownDatePickerDemo implements EntryPoint {
     startYearField.addChangeListener(new ChangeListener() {
       public void onChange(Widget sender) {
         // TODO pending resolution of GWT issue #3233
-        // startYearField.addValueChangeHandler(new ValueChangeHandler<String>() {
+        // startYearField.addValueChangeHandler(new ValueChangeHandler<String>()
+        // {
         // public void onValueChange(ValueChangeEvent<String> event) {
         try {
           // datePicker.setStartYear(Integer.parseInt(event.getValue()));
