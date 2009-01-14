@@ -1,4 +1,7 @@
 <module>
+  <!--  Ensures user is included first -->
+  <inherits name = "com.google.gwt.user.User"/>
+  
 	<!--  Sets up source path -->
 	<source path="shared" />
 	<source path="impl/shared" />
