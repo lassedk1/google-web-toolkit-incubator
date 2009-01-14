@@ -11,9 +11,10 @@
 	<!-- Needs the event support until the last of of gen2 widgets switch over -->
 	<inherits name='com.google.gwt.gen2.event.Event' />
 
-	<!--  Needed to pick up gwt style resources -->
-	<inherits name="com.google.gwt.gen2.widgetbase._Resources" />
 
+  <!-- Needs the event support until the last of of gen2 widgets switch over -->
+  <inherits name='com.google.gwt.gen2.logging.Logging' />
+   
 	<!-- Needed to support css infrastructure -->
 	<inherits name='com.google.gwt.libideas.StyleInjector' />
 	<inherits name='com.google.gwt.libideas.ImmutableResources' />
