@@ -40,6 +40,7 @@ public class GwtCompilerTask extends Task {
   private String src = "src";
   private String style = "PRETTY";
   private String vmMaxMemory = "512m";
+  private String vmStackSize = "256k";
 
   public Path createClasspath() {
     return command.createClasspath(getProject());
@@ -57,7 +58,11 @@ public class GwtCompilerTask extends Task {
         throw new BuildException("Required: either moduleName or moduleFile");
       } else {
         if (new File(moduleFile).exists()) {
-          moduleName = convertModuleFileToName(srcDir, moduleFile);
+          try {
+            moduleName = convertModuleFileToName(srcDir, moduleFile);
+          } catch (IOException e) {
+            throw new BuildException(e);
+          }
         } else {
           throw new BuildException("File not found: " + moduleFile);
         }
@@ -70,6 +75,7 @@ public class GwtCompilerTask extends Task {
     command.createArgument().setLine("-style " + style);
     command.createArgument().setValue(moduleName);
     command.createVmArgument().setValue("-Xmx" + vmMaxMemory);
+    command.createVmArgument().setValue("-Xss" + vmStackSize);
 
     log("Compiling " + moduleName, Project.MSG_INFO);
 
@@ -81,7 +87,14 @@ public class GwtCompilerTask extends Task {
     try {
       exe.setNewenvironment(true);
       exe.setVMLauncher(false);
-      exe.execute();
+
+      int code = exe.execute();
+
+      if (code != 0) {
+        throw new BuildException("GWTCompiler returned with status code "
+            + code + ". See previous error.");
+      }
+
       redirector.complete();
     } catch (IOException e) {
       throw new BuildException(e);
@@ -116,12 +129,16 @@ public class GwtCompilerTask extends Task {
     this.vmMaxMemory = vmMaxMemory;
   }
 
+  public void setVmStackSize(final String vmStackSize) {
+    this.vmStackSize = vmStackSize;
+  }
+
   private String convertModuleFileToName(final File srcDir,
-      final String moduleFile) {
+      final String moduleFile) throws IOException {
     log("Converting file name " + moduleFile
         + " to a module name relative to source root "
-        + srcDir.getAbsolutePath(), Project.MSG_DEBUG);
+        + srcDir.getCanonicalPath(), Project.MSG_DEBUG);
     return moduleFile.replace(File.separatorChar, '.').substring(
-        srcDir.getAbsolutePath().length() + 1, moduleFile.length() - 8);
+        srcDir.getCanonicalPath().length() + 1, moduleFile.length() - 8);
   }
 }
