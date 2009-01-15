@@ -487,7 +487,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         } else if (!seenLeft && v instanceof NumberValue) {
           seenLeft = true;
           NumberValue nv = (NumberValue) v;
-          if (nv.getUnits().equals("%")) {
+          if ("%".equals(nv.getUnits())) {
             float position = 100f - nv.getValue();
             it.set(new NumberValue(position, "%"));
             break;
