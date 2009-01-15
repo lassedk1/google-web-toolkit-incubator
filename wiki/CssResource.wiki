@@ -152,31 +152,26 @@ class MyResources extends ImmutableResourceBundle {
 }
 }}}
     * The identifier will be expanded to `url('some_url')`
-  * BiDi (_Open RFC_):
-    * Can this be accomplished using just the skinning support and some pre-cooked recipes?
-    * Perhaps a magic @if predicate
-{{{
-@if :rtl {
-  ... ...
-}
-
-@if !:rtl {
-  ... ...
-}
-}}}
-    * Perhaps a magic substitution property value
-{{{
-direction: auto;
-}}}
-    * Perhaps use 'special pseudo-classes'
-{{{
-.myClass:rtl{}
-div:rtl{} => generates =>
-  .myClass {
-    direction: <correct value>
-    text-align: <correct value>
+  * BiDi / RTL support (In progress):
+    * CssResource supports automatic transformations of CSS code into a right-to-left variant at compile time.
+    * The use of the RTL variant is keyed by `com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale().isRTL()`
+    * Transformations applied:
+      * The `left` and `right` properties are flipped.
+      * Any properties that have values `left` or `right` are flipped: `clear float text-align page-break-before page-break-after`
+      * The `background`/`background-position` property is flipped. Attachments expressed in percentage points are mirrored: 40% becomes 60%
+      * `margin padding border-color border-style` and `border-width` four-valued properties are flipped: `1px 2px 3px 4px` becomes `1px 4px 3px 2px`
+      * Any `xyz-right` or `xzy-right-abc` property is flipped to `xzy-left` or `xzy-left-abc`
+      * The `direction` property on a `body` selector will be flipped from `ltr` to `rtl`; on any other selectors, the `direction` property is unchanged
+      * When the cursor property has an `resize` value, it will be flipped: `ne-resize` becomes `nw-resize`
+    * Sections of CSS can be exempted from automatic flipping by enclosing it in a `@noflip` block:
+      {{{
+@noflip {
+  .selector {
+    left: 10;
   }
+}
 }}}
+    * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/test/com/google/gwt/libideas/resources/rg Current auto-RTL test cases]
   * Compile-time name checking (*Working*):
 {{{
 java:
