@@ -476,12 +476,9 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
       for (ListIterator<Value> it = values.listIterator(); it.hasNext();) {
         Value v = it.next();
-        if (isIdent(v, "left")) {
-          it.set(new IdentValue("right"));
-          seenLeft = true;
-
-        } else if (isIdent(v, "right")) {
-          it.set(new IdentValue("left"));
+        Value maybeFlipped = flipLeftRightIdentValue(v);
+        if (v != maybeFlipped) {
+          it.set(maybeFlipped);
           seenLeft = true;
 
         } else if (isIdent(v, "center")) {
@@ -580,15 +577,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     }
 
     Value propertyHandlerFloat(Value v) {
-      if (isIdent(v, "right")) {
-        return new IdentValue("left");
-
-      } else if (isIdent(v, "left")) {
-        return new IdentValue("right");
-
-      } else {
-        return v;
-      }
+      return flipLeftRightIdentValue(v);
     }
 
     void propertyHandlerMargin(List<Value> values) {
@@ -597,6 +586,28 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
     void propertyHandlerPadding(List<Value> values) {
       swapFour(values);
+    }
+
+    Value propertyHandlerPageBreakAfter(Value v) {
+      return flipLeftRightIdentValue(v);
+    }
+
+    Value propertyHandlerPageBreakBefore(Value v) {
+      return flipLeftRightIdentValue(v);
+    }
+
+    Value propertyHandlerTextAlign(Value v) {
+      return flipLeftRightIdentValue(v);
+    }
+
+    private Value flipLeftRightIdentValue(Value v) {
+      if (isIdent(v, "right")) {
+        return new IdentValue("left");
+
+      } else if (isIdent(v, "left")) {
+        return new IdentValue("right");
+      }
+      return v;
     }
 
     /**

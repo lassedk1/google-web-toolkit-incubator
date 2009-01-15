@@ -42,3 +42,15 @@
   float: right;
   clear: right;
 }
+
+.selector7 {
+  text-align: left;
+}
+
+.selector8 {
+  page-break-after: left;
+}
+
+.selector9 {
+  page-break-before: left;
+}
