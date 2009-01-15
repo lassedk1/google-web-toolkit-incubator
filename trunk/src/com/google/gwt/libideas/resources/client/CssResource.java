@@ -53,6 +53,9 @@ import java.lang.annotation.Target;
  * This might look like {@code @if user.agent ie6 safari ...}.</li>
  * <li><code>{@literal @if} (Java-expression) {ruleBlock}</code> Include or exclude
  * CSS rules based on a boolean Java expression.</li>
+ * <li><code>{@literal @noflip} { rules }</code> will suppress the automatic
+ * right-to-left transformation applied to the CSS when the module is compiled
+ * for an RTL language.</li>
  * <li>
  * <code>{@literal @}sprite .any .selector {gwt-image: "imageResourceFunction";}</code>
  * . The appearance, size, and height of the sprite will be affected by any
