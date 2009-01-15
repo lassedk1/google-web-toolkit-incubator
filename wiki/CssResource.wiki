@@ -56,6 +56,7 @@ border: small solid black;
   * The parse rules make it difficult to use delimiting tokens for substitutions
   * Redefining built-in sizes allows users to write plain CSS to draft a style and then tweak it.
   * Suggest that users use upper-case names, similar to static final members.
+  * Any legal property value or expression may be used with `@def`
 
 == Runtime substitution ==
 (*Working*)
@@ -68,8 +69,6 @@ div {
   * Provides runtime support for evaluating static methods when the stylesheet is injected.  Triggered / dynamic updates could be added in the future if we allow programmatic manipulation of the style elements.
     * If the user-defined function can be statically evaluated by the compiler, then the implementation of the specific CssResource should collapse to just a string literal.
   * This allows easy support for non-structural skinning changes.
-  * Generated implementations of CSSResources can do fast string slicing since offsets of substitutions are known at compile time.
-  * CSSResource.getText() or CSSResource.inject() necessary
 
 == Value function ==
 {{{
@@ -79,17 +78,14 @@ div {
 }}}
 
   * The `value()` function takes a sequence of dot-separated identifiers and an optional suffix.  The identifiers are interpreted as zero-arg method invocations, using the interface passed to GWT.create() as the root namespace.  By only allowing zero-arg methods, there's no need to attempt to perform type checking in the Generator.  The only validation necessary is to ensure that the sequence of methods exists.  There may be arbitrarily many identifiers in the chain.
+  * The `value()` function may be combined with `@def`
+    {{{
+@def SPRITE_WIDTH value('imageResource.getWidth', 'px')
 
-== Compile-time import ==
-(~~Not planned~~)
-{{{
-@import cssResourceFunctionName;
+.selector {
+  width: SPRITE_WIDTH;
+}
 }}}
-  * What does this mean?
-    * Is this a preprocessor-like #include?  If so, it is problematic to have an n:1 relationship?
-    * Is this like a Java static import where we just inherit metadata like @def or @url?
-  * To what extent is this actually necessary?  The point of the @import statement is to allow for source and deployment modularization.  Source modularization can be achieved by using multiple CssResource interfaces and we're only concerned with static resources in the Bundle.
-  * The @import statement will only work for other CssResources, not for URLs at runtime, since the `.gwt.xml` or StyleInjector can be used in those cases.
 
 == Structural changes ==
 (*Working*)
@@ -158,7 +154,7 @@ class MyResources extends ImmutableResourceBundle {
   * Any CSS selector can be specified for @sprite.
   * Support for IE6 isn't feasible in this format, because structural changes to the DOM are necessary to implement a "windowing" effect.  Once it's possible to distinguish ie6 and ie7 in user.agent, we could revisit support for ie6.  In the current implementation, the ie6 code won't render correctly, although is a purely cosmetic issue.
 
-== References to DataResources ==
+== References to Data Resources ==
 (*Working*)
 {{{
 @url myBackgroundUrl siblingDataResource;
@@ -216,7 +212,26 @@ css:
   * The function just returns the CSS class name, but verifies that the CSS class exists in the stylesheet.
     * _TODO_: Add an @external annotation to allow a "binding" to a site-wide css file
   * No typos.
-  * Possibility of using obfuscated names for programmatically-accessible class names. For obfuscation, we'll use a Adler32 checksum of the source css file expressed in base36 as a prefix (7 chars). The developer can override this with an annotation.
+  * For obfuscation, we'll use a Adler32 checksum of the source css file expressed in base36 as a prefix (7 chars). The developer can override this with the `CssResource.globalPrefix` deferred-binding property.
+    * `<set-property name="CssResource.globalPrefix" value="empty" />` can be used for minimal-length selector names, but this is only recommended when the GWT module has total control over the page.
+    * Instead a combination of `<extend-property>` and `<set-property>` can be used to prove a shorter, but probably unique, prefix.
+    * This will transition to `<set-configuration-property>` when moved into GWT trunk.
+
+= Unplanned use cases =
+
+These use cases are not planned, but remain here for the sake of completeness.
+
+== Compile-time import ==
+{{{
+@import cssResourceFunctionName;
+}}}
+  * What does this mean?
+    * Is this a preprocessor-like #include?  If so, it is problematic to have an n:1 relationship?
+    * Is this like a Java static import where we just inherit metadata like @def or @url?
+  * To what extent is this actually necessary?  The point of the @import statement is to allow for source and deployment modularization.  Source modularization can be achieved by using multiple CssResource interfaces and we're only concerned with static resources in the Bundle.
+  * The @import statement will only work for other CssResources, not for URLs at runtime, since the `.gwt.xml` or StyleInjector can be used in those cases.
+
+*Conclusion:* too confusing.  The modularity afforded by CSS's `@import` statement is inherent in the CssResource design.
 
 == Implementation fix-ups ==
 (~~Not planned~~):
@@ -226,6 +241,8 @@ css:
     div:focus { }
        Problematic -- focus/blur don't bubble
 }}}
+
+*Conclusion:* technically possible, but likely unaffordable at runtime.  The rendering engines that don't provide the wanted features in the first place likely don't provide the means to implement those missing features efficiently.
 
 =Optimizations=
 
@@ -316,7 +333,8 @@ Promotion of rules follows the previously-established rule of not promoting a ru
   * The deferred-binding property `CssResource.style` may be set to `pretty` which will disable class-name obfuscation as well as pretty-print the CSS content.  Combine this with a `ResourceBundle.enableInlining` value of `false` to produce a CSS expression which is amenable to client-side editing.
   * The deferred-binding property `CssResoure.enableMerge` can be set to `false` to disable modifications that re-order rules.  This should be considered a temporary measure until the merge logic has been fully vetted.
   * To allow for client-side tweaking of the effective (i.e. permutation-specific) style rules, you can store the value of CssResource.getText() into a TextArea.  Wire some UI action to pass the contents of the TextArea into `StyleInjector.setContents()` to overwrite the original, injected stylesheet.
-= Implementation Details =
+
+= Selector obfuscation details =
 == Scope ==
 Scoping of obfuscated class names is defined by the return type of the CssResource accessor method in the resource bundle.  Each distinct return type will return a wholly separate collection of values for String accessor methods.
 
@@ -498,6 +516,9 @@ interface Resources {
 }}}
 
 The `@Strict` annotation can be applied to a CssResource accessor function to make it a compile-time error to have any unobfuscated class selectors in the CSS file.  This additional level of restriction is recommended for library-oriented resource bundles in order to avoid inadvertently polluting the global CSS namespace.
+
+Strict scoping can be forced on for all CssResources by adding `<set-property name="CssResource.forceStrict" value="true" />` to the module XML file, however this is only recommended for use by applications or test modules and never in any module that will be redistributed.
+
 
 =Important open questions=
   * Can we manipulate style rules across browsers?
