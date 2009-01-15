@@ -47,6 +47,7 @@ import com.google.gwt.libideas.resources.css.ast.CssEval;
 import com.google.gwt.libideas.resources.css.ast.CssIf;
 import com.google.gwt.libideas.resources.css.ast.CssMediaRule;
 import com.google.gwt.libideas.resources.css.ast.CssModVisitor;
+import com.google.gwt.libideas.resources.css.ast.CssNoFlip;
 import com.google.gwt.libideas.resources.css.ast.CssNode;
 import com.google.gwt.libideas.resources.css.ast.CssProperty;
 import com.google.gwt.libideas.resources.css.ast.CssRule;
@@ -69,9 +70,12 @@ import com.google.gwt.libideas.resources.ext.ResourceGeneratorUtil;
 import com.google.gwt.libideas.resources.rebind.StringSourceWriter;
 import com.google.gwt.user.rebind.SourceWriter;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -91,7 +95,7 @@ import java.util.zip.Adler32;
  * Provides implementations of CSSResources.
  */
 public class CssResourceGenerator extends AbstractResourceGenerator {
-  private static class ClassRenamer extends CssVisitor {
+  static class ClassRenamer extends CssVisitor {
     private final Map<String, Map<JMethod, String>> classReplacementsWithPrefix;
     private final Pattern classSelectorPattern = Pattern.compile("\\.([^ :>+#.]*)");
     private final TreeLogger logger;
@@ -196,7 +200,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
    * node's children. Any modifications made to the node list of the
    * CollapsedNode will be reflected in the original node.
    */
-  private static class CollapsedNode extends CssNode implements HasNodes {
+  static class CollapsedNode extends CssNode implements HasNodes {
 
     private final List<CssNode> nodes;
 
@@ -220,7 +224,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   /**
    * Statically evaluates {@literal @if} rules.
    */
-  private static class IfEvaluator extends CssModVisitor {
+  static class IfEvaluator extends CssModVisitor {
     private final TreeLogger logger;
     private final PropertyOracle oracle;
 
@@ -265,7 +269,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     }
   }
 
-  private static class JClassOrderComparator implements Comparator<JClassType> {
+  static class JClassOrderComparator implements Comparator<JClassType> {
     public int compare(JClassType o1, JClassType o2) {
       return o1.getQualifiedSourceName().compareTo(o2.getQualifiedSourceName());
     }
@@ -274,7 +278,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   /**
    * Merges rules that have matching selectors.
    */
-  private static class MergeIdenticalSelectorsVisitor extends CssModVisitor {
+  static class MergeIdenticalSelectorsVisitor extends CssModVisitor {
     private final Map<String, CssRule> canonicalRules = new HashMap<String, CssRule>();
     private final List<CssRule> rulesInOrder = new ArrayList<CssRule>();
 
@@ -335,7 +339,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   /**
    * Merges rules that have identical content.
    */
-  private static class MergeRulesByContentVisitor extends CssModVisitor {
+  static class MergeRulesByContentVisitor extends CssModVisitor {
     private Map<String, CssRule> rulesByContents = new HashMap<String, CssRule>();
     private final List<CssRule> rulesInOrder = new ArrayList<CssRule>();
 
@@ -394,7 +398,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     }
   }
 
-  private static class RequirementsCollector extends CssVisitor {
+  static class RequirementsCollector extends CssVisitor {
     private final TreeLogger logger;
     private final ResourceBundleRequirements requirements;
 
@@ -420,10 +424,251 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     }
   }
 
+  static class RtlVisitor extends CssModVisitor {
+    /**
+     * Records if we're currently visiting a CssRule whose only selector is
+     * "body".
+     */
+    boolean inBodyRule;
+
+    @Override
+    public void endVisit(CssProperty x, Context ctx) {
+      String name = x.getName();
+      List<Value> values = x.getValues().getValues();
+
+      if (name.equalsIgnoreCase("left")) {
+        x.setName("right");
+      } else if (name.equalsIgnoreCase("right")) {
+        x.setName("left");
+      } else if (name.endsWith("-left")) {
+        int len = name.length();
+        x.setName(name.substring(0, len - 4) + "right");
+      } else if (name.endsWith("-right")) {
+        int len = name.length();
+        x.setName(name.substring(0, len - 5) + "left");
+      } else if (name.contains("-right-")) {
+        x.setName(name.replace("-right-", "-left-"));
+      } else if (name.contains("-left-")) {
+        x.setName(name.replace("-left-", "-right-"));
+      } else {
+        invokePropertyHandler(x.getName(), values);
+      }
+    }
+
+    @Override
+    public boolean visit(CssNoFlip x, Context ctx) {
+      return false;
+    }
+
+    @Override
+    public boolean visit(CssRule x, Context ctx) {
+      inBodyRule = x.getSelectors().size() == 1
+          && x.getSelectors().get(0).getSelector().equals("body");
+      return true;
+    }
+
+    void propertyHandlerBackground(List<Value> values) {
+      /*
+       * The first numeric value will be treated as the left position only if we
+       * havn't seen any value that could potentially be the left value.
+       */
+      boolean seenLeft = false;
+
+      for (ListIterator<Value> it = values.listIterator(); it.hasNext();) {
+        Value v = it.next();
+        if (isIdent(v, "left")) {
+          it.set(new IdentValue("right"));
+          seenLeft = true;
+
+        } else if (isIdent(v, "right")) {
+          it.set(new IdentValue("left"));
+          seenLeft = true;
+
+        } else if (isIdent(v, "center")) {
+          seenLeft = true;
+
+        } else if (!seenLeft && v instanceof NumberValue) {
+          seenLeft = true;
+          NumberValue nv = (NumberValue) v;
+          if (nv.getUnits().equals("%")) {
+            float position = 100f - nv.getValue();
+            it.set(new NumberValue(position, "%"));
+            break;
+          }
+        }
+      }
+    }
+
+    void propertyHandlerBackgroundPosition(List<Value> values) {
+      propertyHandlerBackground(values);
+    }
+
+    Value propertyHandlerBackgroundPositionX(Value v) {
+      ArrayList<Value> list = new ArrayList<Value>(1);
+      list.add(v);
+      propertyHandlerBackground(list);
+      return list.get(0);
+    }
+
+    /**
+     * Note there should be no propertyHandlerBorder(). The CSS spec states that
+     * the border property must set all values at once.
+     */
+    void propertyHandlerBorderColor(List<Value> values) {
+      swapFour(values);
+    }
+
+    void propertyHandlerBorderStyle(List<Value> values) {
+      swapFour(values);
+    }
+
+    void propertyHandlerBorderWidth(List<Value> values) {
+      swapFour(values);
+    }
+
+    Value propertyHandlerClear(Value v) {
+      return propertyHandlerFloat(v);
+    }
+
+    Value propertyHandlerCursor(Value v) {
+      if (!(v instanceof IdentValue)) {
+        return v;
+      }
+
+      String ident = ((IdentValue) v).getIdent().toLowerCase();
+      if (!ident.endsWith("-resize")) {
+        return v;
+      }
+
+      StringBuffer newIdent = new StringBuffer();
+
+      if (ident.length() == 9) {
+        if (ident.charAt(0) == 'n') {
+          newIdent.append('n');
+          ident = ident.substring(1);
+        } else if (ident.charAt(0) == 's') {
+          newIdent.append('s');
+          ident = ident.substring(1);
+        } else {
+          return v;
+        }
+      }
+
+      if (ident.length() == 8) {
+        if (ident.charAt(0) == 'e') {
+          newIdent.append("w-resize");
+        } else if (ident.charAt(0) == 'w') {
+          newIdent.append("e-resize");
+        } else {
+          return v;
+        }
+        return new IdentValue(newIdent.toString());
+      } else {
+        return v;
+      }
+    }
+
+    Value propertyHandlerDirection(Value v) {
+      if (inBodyRule) {
+        if (isIdent(v, "ltr")) {
+          return new IdentValue("rtl");
+        } else if (isIdent(v, "rtl")) {
+          return new IdentValue("ltr");
+        }
+      }
+      return v;
+    }
+
+    Value propertyHandlerFloat(Value v) {
+      if (isIdent(v, "right")) {
+        return new IdentValue("left");
+
+      } else if (isIdent(v, "left")) {
+        return new IdentValue("right");
+
+      } else {
+        return v;
+      }
+    }
+
+    void propertyHandlerMargin(List<Value> values) {
+      swapFour(values);
+    }
+
+    void propertyHandlerPadding(List<Value> values) {
+      swapFour(values);
+    }
+
+    /**
+     * Reflectively invokes a propertyHandler method for the named property.
+     * Dashed names are transformed into camel-case names; only letters
+     * following a dash will be capitalized when looking for a method to prevent
+     * <code>fooBar<code> and <code>foo-bar</code> from colliding.
+     */
+    private void invokePropertyHandler(String name, List<Value> values) {
+      // See if we have a property-handler function
+      try {
+        String[] parts = name.toLowerCase().split("-");
+        StringBuffer methodName = new StringBuffer("propertyHandler");
+        for (String part : parts) {
+          methodName.append(Character.toUpperCase(part.charAt(0)));
+          methodName.append(part, 1, part.length());
+        }
+
+        try {
+          // Single-arg for simplicity
+          Method m = getClass().getDeclaredMethod(methodName.toString(),
+              Value.class);
+          assert Value.class.isAssignableFrom(m.getReturnType());
+          Value newValue = (Value) m.invoke(this, values.get(0));
+          values.set(0, newValue);
+        } catch (NoSuchMethodException e) {
+          // OK
+        }
+
+        try {
+          // Or the whole List for completeness
+          Method m = getClass().getDeclaredMethod(methodName.toString(),
+              List.class);
+          m.invoke(this, values);
+        } catch (NoSuchMethodException e) {
+          // OK
+        }
+
+      } catch (SecurityException e) {
+        throw new CssCompilerException(
+            "Unable to invoke property handler function for " + name, e);
+      } catch (IllegalArgumentException e) {
+        throw new CssCompilerException(
+            "Unable to invoke property handler function for " + name, e);
+      } catch (IllegalAccessException e) {
+        throw new CssCompilerException(
+            "Unable to invoke property handler function for " + name, e);
+      } catch (InvocationTargetException e) {
+        throw new CssCompilerException(
+            "Unable to invoke property handler function for " + name, e);
+      }
+    }
+
+    private boolean isIdent(Value value, String query) {
+      return value instanceof IdentValue
+          && ((IdentValue) value).getIdent().equalsIgnoreCase(query);
+    }
+
+    /**
+     * Swaps the second and fourth values in a list of four values.
+     */
+    private void swapFour(List<Value> values) {
+      if (values.size() == 4) {
+        Collections.swap(values, 1, 3);
+      }
+    }
+  }
+
   /**
    * Splits rules with compound selectors into multiple rules.
    */
-  private static class SplitRulesVisitor extends CssModVisitor {
+  static class SplitRulesVisitor extends CssModVisitor {
     @Override
     public void endVisit(CssRule x, Context ctx) {
       if (x.getSelectors().size() == 1) {
@@ -447,7 +692,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
    * ImageResource processing framework by requiring the sprite to be defined in
    * terms of an ImageResource.
    */
-  private static class Spriter extends CssModVisitor {
+  static class Spriter extends CssModVisitor {
     private final ResourceContext context;
     private final TreeLogger logger;
 
@@ -550,7 +795,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     }
   }
 
-  private static class SubstitutionCollector extends CssVisitor {
+  static class SubstitutionCollector extends CssVisitor {
     private final Map<String, CssDef> substitutions = new HashMap<String, CssDef>();
 
     @Override
@@ -572,7 +817,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   /**
    * Substitute symbolic replacements into string values.
    */
-  private static class SubstitutionReplacer extends CssVisitor {
+  static class SubstitutionReplacer extends CssVisitor {
     private final ResourceContext context;
     private final TreeLogger logger;
     private final Map<String, CssDef> substitutions;
@@ -713,6 +958,117 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     return false;
   }
 
+  /**
+   * Create a Java expression that evaluates to a string representation of the
+   * given node. Visible only for testing.
+   */
+  static <T extends CssNode & HasNodes> String makeExpression(
+      TreeLogger logger, ResourceContext context, JClassType cssResourceType,
+      T node, boolean prettyOutput) throws UnableToCompleteException {
+    // Generate the CSS template
+    DefaultTextOutput out = new DefaultTextOutput(!prettyOutput);
+    CssGenerationVisitor v = new CssGenerationVisitor(out);
+    v.accept(node);
+
+    // Generate the final Java expression
+    String template = out.toString();
+    StringBuilder b = new StringBuilder();
+    int start = 0;
+
+    /*
+     * Very large concatenation expressions using '+' cause the GWT compiler to
+     * overflow the stack due to deep AST nesting. The workaround for now is to
+     * force it to be more balanced using intermediate concatenation groupings.
+     * 
+     * This variable is used to track the number of subexpressions within the
+     * current parenthetical expression.
+     */
+    int numExpressions = 0;
+
+    b.append('(');
+    for (Map.Entry<Integer, List<CssNode>> entry : v.getSubstitutionPositions().entrySet()) {
+      // Add the static section between start and the substitution point
+      b.append('"');
+      b.append(Generator.escape(template.substring(start, entry.getKey())));
+      b.append('\"');
+      numExpressions = concatOp(numExpressions, b);
+
+      // Add the nodes at the substitution point
+      for (CssNode x : entry.getValue()) {
+        TreeLogger loopLogger = logger.branch(TreeLogger.DEBUG,
+            "Performing substitution in node " + x.toString());
+
+        if (x instanceof CssIf) {
+          CssIf asIf = (CssIf) x;
+
+          // Generate the sub-expressions
+          String expression = makeExpression(loopLogger, context,
+              cssResourceType, new CollapsedNode(asIf), prettyOutput);
+
+          String elseExpression;
+          if (asIf.getElseNodes().isEmpty()) {
+            // We'll treat an empty else block as an empty string
+            elseExpression = "\"\"";
+          } else {
+            elseExpression = makeExpression(loopLogger, context,
+                cssResourceType, new CollapsedNode(asIf.getElseNodes()),
+                prettyOutput);
+          }
+
+          // ((expr) ? "CSS" : "elseCSS") +
+          b.append("((" + asIf.getExpression() + ") ? " + expression + " : "
+              + elseExpression + ") ");
+          numExpressions = concatOp(numExpressions, b);
+
+        } else if (x instanceof CssProperty) {
+          CssProperty property = (CssProperty) x;
+
+          validateValue(loopLogger, context.getResourceBundleType(),
+              property.getValues());
+
+          // (expr) +
+          b.append("(" + property.getValues().getExpression() + ") ");
+          numExpressions = concatOp(numExpressions, b);
+
+        } else {
+          // This indicates that some magic node is slipping by our visitors
+          loopLogger.log(TreeLogger.ERROR, "Unhandled substitution "
+              + x.getClass());
+          throw new UnableToCompleteException();
+        }
+      }
+      start = entry.getKey();
+    }
+
+    // Add the remaining parts of the template
+    b.append('"');
+    b.append(Generator.escape(template.substring(start)));
+    b.append('"');
+    b.append(')');
+
+    return b.toString();
+  }
+
+  /**
+   * Check if number of concat expressions currently exceeds limit and either
+   * append '+' if the limit isn't reached or ') + (' if it is.
+   * 
+   * @return numExpressions + 1 or 0 if limit was exceeded.
+   */
+  private static int concatOp(int numExpressions, StringBuilder b) {
+    /*
+     * TODO: Fix the compiler to better handle arbitrarily long concatenation
+     * expressions.
+     */
+    if (numExpressions >= CONCAT_EXPRESSION_LIMIT) {
+      b.append(") + (");
+      return 0;
+    }
+
+    b.append(" + ");
+    return numExpressions + 1;
+  }
+
   private static String makeIdent(long id) {
     assert id >= 0;
 
@@ -730,14 +1086,56 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     return b.toString();
   }
 
+  /**
+   * This function validates any context-sensitive Values.
+   */
+  private static void validateValue(TreeLogger logger,
+      JClassType resourceBundleType, Value value)
+      throws UnableToCompleteException {
+    if (value instanceof DotPathValue) {
+      DotPathValue dot = (DotPathValue) value;
+      String[] elements = dot.getPath().split("\\.");
+      if (elements.length == 0) {
+        logger.log(TreeLogger.ERROR, "value() functions must specify a path");
+        throw new UnableToCompleteException();
+      }
+
+      JType currentType = resourceBundleType;
+      for (Iterator<String> i = Arrays.asList(elements).iterator(); i.hasNext();) {
+        String pathElement = i.next();
+
+        JClassType referenceType = currentType.isClassOrInterface();
+        if (referenceType == null) {
+          logger.log(TreeLogger.ERROR, "Cannot resolve member " + pathElement
+              + " on non-reference type "
+              + currentType.getQualifiedSourceName());
+          throw new UnableToCompleteException();
+        }
+
+        try {
+          JMethod m = referenceType.getMethod(pathElement, new JType[0]);
+          currentType = m.getReturnType();
+        } catch (NotFoundException e) {
+          logger.log(TreeLogger.ERROR, "Could not find no-arg method named "
+              + pathElement + " in type "
+              + currentType.getQualifiedSourceName());
+          throw new UnableToCompleteException();
+        }
+      }
+    }
+  }
+
   private String classPrefix;
   private JClassType cssResourceType;
   private JClassType elementType;
   private boolean enableMerge;
   private boolean prettyOutput;
   private Map<JClassType, Map<JMethod, String>> replacementsByClassAndMethod;
+
   private Map<JMethod, String> replacementsForSharedMethods;
+
   private Map<JMethod, CssStylesheet> stylesheetMap;
+
   private JClassType stringType;
 
   @Override
@@ -1046,26 +1444,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   }
 
   /**
-   * Check if number of concat expressions currently exceeds limit and either
-   * append '+' if the limit isn't reached or ') + (' if it is.
-   * 
-   * @return numExpressions + 1 or 0 if limit was exceeded.
-   */
-  private int concatOp(int numExpressions, StringBuilder b) {
-    /*
-     * TODO: Fix the compiler to better handle arbitrarily long concatenation
-     * expressions.
-     */
-    if (numExpressions >= CONCAT_EXPRESSION_LIMIT) {
-      b.append(") + (");
-      return 0;
-    }
-
-    b.append(" + ");
-    return numExpressions + 1;
-  }
-
-  /**
    * Determine if a type is derived from CssResource.
    */
   private boolean derivedFromCssResource(JClassType type) {
@@ -1124,7 +1502,16 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         (new MergeRulesByContentVisitor()).accept(sheet);
       }
 
-      return makeExpression(logger, context, cssResourceType, sheet);
+      String standard = makeExpression(logger, context, cssResourceType, sheet,
+          prettyOutput);
+
+      (new RtlVisitor()).accept(sheet);
+
+      String reversed = makeExpression(logger, context, cssResourceType, sheet,
+          prettyOutput);
+
+      return "com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale().isRTL() ? ("
+          + reversed + ") : (" + standard + ")";
 
     } catch (CssCompilerException e) {
       // Take this as a sign that one of the visitors was unhappy, but only
@@ -1132,134 +1519,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       logger.log(TreeLogger.ERROR, "Unable to process CSS",
           e.getCause() == null ? null : e);
       throw new UnableToCompleteException();
-    }
-  }
-
-  /**
-   * Create a Java expression that evaluates to a string representation of the
-   * given node.
-   */
-  private <T extends CssNode & HasNodes> String makeExpression(
-      TreeLogger logger, ResourceContext context, JClassType cssResourceType,
-      T node) throws UnableToCompleteException {
-    // Generate the CSS template
-    DefaultTextOutput out = new DefaultTextOutput(!prettyOutput);
-    CssGenerationVisitor v = new CssGenerationVisitor(out);
-    v.accept(node);
-
-    // Generate the final Java expression
-    String template = out.toString();
-    StringBuilder b = new StringBuilder();
-    int start = 0;
-
-    /*
-     * Very large concatenation expressions using '+' cause the GWT compiler to
-     * overflow the stack due to deep AST nesting. The workaround for now is to
-     * force it to be more balanced using intermediate concatenation groupings.
-     * 
-     * This variable is used to track the number of subexpressions within the
-     * current parenthetical expression.
-     */
-    int numExpressions = 0;
-
-    b.append('(');
-    for (Map.Entry<Integer, List<CssNode>> entry : v.getSubstitutionPositions().entrySet()) {
-      // Add the static section between start and the substitution point
-      b.append('"');
-      b.append(Generator.escape(template.substring(start, entry.getKey())));
-      b.append('\"');
-      numExpressions = concatOp(numExpressions, b);
-
-      // Add the nodes at the substitution point
-      for (CssNode x : entry.getValue()) {
-        TreeLogger loopLogger = logger.branch(TreeLogger.DEBUG,
-            "Performing substitution in node " + x.toString());
-
-        if (x instanceof CssIf) {
-          CssIf asIf = (CssIf) x;
-
-          // Generate the sub-expressions
-          String expression = makeExpression(loopLogger, context,
-              cssResourceType, new CollapsedNode(asIf));
-
-          String elseExpression;
-          if (asIf.getElseNodes().isEmpty()) {
-            // We'll treat an empty else block as an empty string
-            elseExpression = "\"\"";
-          } else {
-            elseExpression = makeExpression(loopLogger, context,
-                cssResourceType, new CollapsedNode(asIf.getElseNodes()));
-          }
-
-          // ((expr) ? "CSS" : "elseCSS") +
-          b.append("((" + asIf.getExpression() + ") ? " + expression + " : "
-              + elseExpression + ") ");
-          numExpressions = concatOp(numExpressions, b);
-
-        } else if (x instanceof CssProperty) {
-          CssProperty property = (CssProperty) x;
-
-          validateValue(loopLogger, context.getResourceBundleType(),
-              property.getValues());
-
-          // (expr) +
-          b.append("(" + property.getValues().getExpression() + ") ");
-          numExpressions = concatOp(numExpressions, b);
-
-        } else {
-          // This indicates that some magic node is slipping by our visitors
-          loopLogger.log(TreeLogger.ERROR, "Unhandled substitution "
-              + x.getClass());
-          throw new UnableToCompleteException();
-        }
-      }
-      start = entry.getKey();
-    }
-
-    // Add the remaining parts of the template
-    b.append('"');
-    b.append(Generator.escape(template.substring(start)));
-    b.append('"');
-    b.append(')');
-
-    return b.toString();
-  }
-
-  /**
-   * This function validates any context-sensitive Values.
-   */
-  private void validateValue(TreeLogger logger, JClassType resourceBundleType,
-      Value value) throws UnableToCompleteException {
-    if (value instanceof DotPathValue) {
-      DotPathValue dot = (DotPathValue) value;
-      String[] elements = dot.getPath().split("\\.");
-      if (elements.length == 0) {
-        logger.log(TreeLogger.ERROR, "value() functions must specify a path");
-        throw new UnableToCompleteException();
-      }
-
-      JType currentType = resourceBundleType;
-      for (Iterator<String> i = Arrays.asList(elements).iterator(); i.hasNext();) {
-        String pathElement = i.next();
-
-        JClassType referenceType = currentType.isClassOrInterface();
-        if (referenceType == null) {
-          logger.log(TreeLogger.ERROR, "Cannot resolve member " + pathElement
-              + " on non-reference type "
-              + currentType.getQualifiedSourceName());
-          throw new UnableToCompleteException();
-        }
-
-        try {
-          JMethod m = referenceType.getMethod(pathElement, new JType[0]);
-          currentType = m.getReturnType();
-        } catch (NotFoundException e) {
-          logger.log(TreeLogger.ERROR, "Could not find no-arg method named "
-              + pathElement + " in type "
-              + currentType.getQualifiedSourceName());
-          throw new UnableToCompleteException();
-        }
-      }
     }
   }
 

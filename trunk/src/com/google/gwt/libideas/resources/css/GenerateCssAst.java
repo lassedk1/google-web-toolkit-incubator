@@ -21,6 +21,7 @@ import com.google.gwt.libideas.resources.css.ast.CssDef;
 import com.google.gwt.libideas.resources.css.ast.CssEval;
 import com.google.gwt.libideas.resources.css.ast.CssIf;
 import com.google.gwt.libideas.resources.css.ast.CssMediaRule;
+import com.google.gwt.libideas.resources.css.ast.CssNoFlip;
 import com.google.gwt.libideas.resources.css.ast.CssNode;
 import com.google.gwt.libideas.resources.css.ast.CssPageRule;
 import com.google.gwt.libideas.resources.css.ast.CssProperty;
@@ -460,26 +461,14 @@ public class GenerateCssAst {
         }
       }
 
-      pushParent(cssIf);
+      parseInnerStylesheet("@if", cssIf, blockContents);
+    }
 
-      // parse the inner text
-      InputSource s = new InputSource();
-      s.setCharacterStream(new StringReader(blockContents));
-      Parser parser = new Parser();
-      parser.setDocumentHandler(this);
-      parser.setErrorHandler(errors);
+    void parseNoflip(String atRule) throws CSSException {
+      String blockContents = atRule.substring(atRule.indexOf('{') + 1,
+          atRule.length() - 1);
 
-      try {
-        parser.parseStyleSheet(s);
-      } catch (IOException e) {
-        throw new CSSException(CSSException.SAC_SYNTAX_ERR,
-            "Unable to parse @if", e);
-      }
-
-      if (currentParent.pop() != cssIf) {
-        // This is a coding error
-        throw new RuntimeException("Incorrect element popped");
-      }
+      parseInnerStylesheet("@noflip", new CssNoFlip(), blockContents);
     }
 
     void parseSprite(String atRule) throws CSSException {
@@ -670,6 +659,30 @@ public class GenerateCssAst {
         return s.substring(1, s.length() - 1);
       }
       return s;
+    }
+
+    private <T extends CssNode & HasNodes> void parseInnerStylesheet(
+        String tagName, T parent, String blockContents) {
+      pushParent(parent);
+
+      // parse the inner text
+      InputSource s = new InputSource();
+      s.setCharacterStream(new StringReader(blockContents));
+      Parser parser = new Parser();
+      parser.setDocumentHandler(this);
+      parser.setErrorHandler(errors);
+
+      try {
+        parser.parseStyleSheet(s);
+      } catch (IOException e) {
+        throw new CSSException(CSSException.SAC_SYNTAX_ERR, "Unable to parse "
+            + tagName, e);
+      }
+
+      if (currentParent.pop() != parent) {
+        // This is a coding error
+        throw new RuntimeException("Incorrect element popped");
+      }
     }
 
     /**
