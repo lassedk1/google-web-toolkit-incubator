@@ -1,6 +1,8 @@
 #summary Compile-time CSS processing
 #labels Phase-Implementation,Type-Library
 
+<wiki:toc>
+
 See also the CssResourceCookbook
 
 =Goals=
@@ -44,43 +46,53 @@ See also the CssResourceCookbook
 
 =Use Cases=
 
-  * Constants (*Working*):
+== Constants ==
+(*Working*)
 {{{
 @def small 1px;
 @def black #000;
 border: small solid black;
 }}}
-    * The parse rules make it difficult to use delimiting tokens for substitutions
-    * Redefining built-in sizes allows users to write plain CSS to draft a style and then tweak it.
-    * Suggest that users use upper-case names, similar to static final members.
-  * Runtime substitution (*Working*)
+  * The parse rules make it difficult to use delimiting tokens for substitutions
+  * Redefining built-in sizes allows users to write plain CSS to draft a style and then tweak it.
+  * Suggest that users use upper-case names, similar to static final members.
+
+== Runtime substitution ==
+(*Working*)
 {{{
 @eval userBackground com.module.UserPreferences.getUserBackground();
 div {
   background: userBackground;
 }
+}}}
+  * Provides runtime support for evaluating static methods when the stylesheet is injected.  Triggered / dynamic updates could be added in the future if we allow programmatic manipulation of the style elements.
+    * If the user-defined function can be statically evaluated by the compiler, then the implementation of the specific CssResource should collapse to just a string literal.
+  * This allows easy support for non-structural skinning changes.
+  * Generated implementations of CSSResources can do fast string slicing since offsets of substitutions are known at compile time.
+  * CSSResource.getText() or CSSResource.inject() necessary
 
-otherDiv {
+== Value function ==
+{{{
+.myDiv {
   offset-left: value('imageResource.getWidth', 'px');
 }
 }}}
-    * Provides runtime support for evaluating static methods when the stylesheet is injected.  Triggered / dynamic updates could be added in the future if we allow programmatic manipulation of the style elements.
-      * If the user-defined function can be statically evaluated by the compiler, then the implementation of the specific CssResource should collapse to just a string literal.
-    * This allows easy support for non-structural skinning changes.
-    * Generated implementations of CSSResources can do fast string slicing since offsets of substitutions are known at compile time.
-    * Allow an @import statement for unqualified names?
-    * CSSResource.getText() or CSSResource.inject() necessary
-    * The `value()` function takes a sequence of dot-separated identifiers and an optional suffix.  The identifiers are interpreted as zero-arg method invocations, using the interface passed to GWT.create() as the root namespace.  By only allowing zero-arg methods, there's no need to attempt to perform type checking in the Generator.  The only validation necessary is to ensure that the sequence of methods exists.  There may be arbitrarily many identifiers in the chain.
-  * Compile-time import (~~Not planned~~)
+
+  * The `value()` function takes a sequence of dot-separated identifiers and an optional suffix.  The identifiers are interpreted as zero-arg method invocations, using the interface passed to GWT.create() as the root namespace.  By only allowing zero-arg methods, there's no need to attempt to perform type checking in the Generator.  The only validation necessary is to ensure that the sequence of methods exists.  There may be arbitrarily many identifiers in the chain.
+
+== Compile-time import ==
+(~~Not planned~~)
 {{{
 @import cssResourceFunctionName;
 }}}
-    * What does this mean?
-      * Is this a preprocessor-like #include?  If so, it is problematic to have an n:1 relationship?
-      * Is this like a Java static import where we just inherit metadata like @def or @url?
-    * To what extent is this actually necessary?  The point of the @import statement is to allow for source and deployment modularization.  Source modularization can be achieved by using multiple CssResource interfaces and we're only concerned with static resources in the Bundle.
-    * The @import statement will only work for other CssResources, not for URLs at runtime, since the `.gwt.xml` or StyleInjector can be used in those cases.
-  * Runtime structural changes (*Working*)
+  * What does this mean?
+    * Is this a preprocessor-like #include?  If so, it is problematic to have an n:1 relationship?
+    * Is this like a Java static import where we just inherit metadata like @def or @url?
+  * To what extent is this actually necessary?  The point of the @import statement is to allow for source and deployment modularization.  Source modularization can be achieved by using multiple CssResource interfaces and we're only concerned with static resources in the Bundle.
+  * The @import statement will only work for other CssResources, not for URLs at runtime, since the `.gwt.xml` or StyleInjector can be used in those cases.
+
+== Structural changes ==
+(*Working*)
 {{{
 /* Runtime evaluation in a static context */
 @if com.module.Foo.staticBooleanFunction() {
@@ -105,12 +117,14 @@ otherDiv {
 } @else {
 }
 }}}
-    * This allows for more advanced skinning / theming / browser quirk handling by allowing for structural changes in the CSS.
-    * The contents of an @if block can be anything that would be a top-level rule in a CSS stylesheet.
-    * @if blocks can be arbitrarily nested.
-    * What does it mean to have an @def or @eval in an @if block?  Easy to make this work for property-based @if statements; would have to generate pretty gnarly runtime code to handle the expression-based @if statement.  Could have block-level scoping; but this seems like a dubious use-case.
-    * If the function in the first form can be statically evaluated by the compiler in a permutation, there is no runtime cost.  The second form will never have a runtime cost because it is evaluated during compilation.
-  * CSS Image Sprites (*Working*):
+  * This allows for more advanced skinning / theming / browser quirk handling by allowing for structural changes in the CSS.
+  * The contents of an @if block can be anything that would be a top-level rule in a CSS stylesheet.
+  * @if blocks can be arbitrarily nested.
+  * What does it mean to have an @def or @eval in an @if block?  Easy to make this work for property-based @if statements; would have to generate pretty gnarly runtime code to handle the expression-based @if statement.  Could have block-level scoping; but this seems like a dubious use-case.
+  * If the function in the first form can be statically evaluated by the compiler in a permutation, there is no runtime cost.  The second form will never have a runtime cost because it is evaluated during compilation.
+
+== CSS Image Sprites ==
+(*Working*):
 {{{
 @sprite .mySpriteClass {gwt-image: "imageAccessor"; other: property;} => generates =>
   .mySpriteClass {
@@ -138,41 +152,48 @@ class MyResources extends ImmutableResourceBundle {
   ImageResource repeatingImage();
 }
 }}}
-    * @sprite is sensitive to the FooBundle in which the CSSResource is declared; a sibling ImageResource method named in the @sprite declaration will be used to compose the background sprite.
-    * @sprite entries will be expanded to static CSS rules, possibly with data: urls.
-    * The expansion is sensitive to any RepeatStyle value defined on the ImageResource accessor function.  The appropriate `repeat-x` or `repeat-y` properties will be added to the @sprite selector.
-    * Any CSS selector can be specified for @sprite.
-    * Support for IE6 isn't feasible in this format, because structural changes to the DOM are necessary to implement a "windowing" effect.  Once it's possible to distinguish ie6 and ie7 in user.agent, we could revisit support for ie6.  In the current implementation, the ie6 code won't render correctly, although is a purely cosmetic issue.
-  * References to DataResources (*Working*)
+  * @sprite is sensitive to the FooBundle in which the CSSResource is declared; a sibling ImageResource method named in the @sprite declaration will be used to compose the background sprite.
+  * @sprite entries will be expanded to static CSS rules, possibly with data: urls.
+  * The expansion is sensitive to any RepeatStyle value defined on the ImageResource accessor function.  The appropriate `repeat-x` or `repeat-y` properties will be added to the @sprite selector.
+  * Any CSS selector can be specified for @sprite.
+  * Support for IE6 isn't feasible in this format, because structural changes to the DOM are necessary to implement a "windowing" effect.  Once it's possible to distinguish ie6 and ie7 in user.agent, we could revisit support for ie6.  In the current implementation, the ie6 code won't render correctly, although is a purely cosmetic issue.
+
+== References to DataResources ==
+(*Working*)
 {{{
 @url myBackgroundUrl siblingDataResource;
 
 .myClass {
+  /* This is a simple demo, but @sprite is better */
   background: myBackgroundUrl repeat-x;
 }
 }}}
-    * The identifier will be expanded to `url('some_url')`
-  * BiDi / RTL support (In progress):
-    * CssResource supports automatic transformations of CSS code into a right-to-left variant at compile time.
-    * The use of the RTL variant is keyed by `com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale().isRTL()`
-    * Transformations applied:
-      * The `left` and `right` properties are flipped.
-      * Any properties that have values `left` or `right` are flipped: `clear float text-align page-break-before page-break-after`
-      * The `background`/`background-position` property is flipped. Attachments expressed in percentage points are mirrored: 40% becomes 60%
-      * `margin padding border-color border-style` and `border-width` four-valued properties are flipped: `1px 2px 3px 4px` becomes `1px 4px 3px 2px`
-      * Any `xyz-right` or `xzy-right-abc` property is flipped to `xzy-left` or `xzy-left-abc`
-      * The `direction` property on a `body` selector will be flipped from `ltr` to `rtl`; on any other selectors, the `direction` property is unchanged
-      * When the cursor property has an `resize` value, it will be flipped: `ne-resize` becomes `nw-resize`
-    * Sections of CSS can be exempted from automatic flipping by enclosing it in a `@noflip` block:
-      {{{
+  * The identifier will be expanded to `url('some_url')`
+
+== RTL support ==
+(In progress):
+  * CssResource supports automatic transformations of CSS code into a right-to-left variant at compile time.
+  * The use of the RTL variant is keyed by `com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale().isRTL()`
+  * Transformations applied:
+    * The `left` and `right` properties are flipped.
+    * Any properties that have values `left` or `right` are flipped: `clear float text-align page-break-before page-break-after`
+    * The `background`/`background-position` property is flipped. Attachments expressed in percentage points are mirrored: 40% becomes 60%
+    * `margin padding border-color border-style` and `border-width` four-valued properties are flipped: `1px 2px 3px 4px` becomes `1px 4px 3px 2px`
+    * Any `xyz-right` or `xzy-right-abc` property is flipped to `xzy-left` or `xzy-left-abc`
+    * The `direction` property on a `body` selector will be flipped from `ltr` to `rtl`; on any other selectors, the `direction` property is unchanged
+    * When the cursor property has an `resize` value, it will be flipped: `ne-resize` becomes `nw-resize`
+  * Sections of CSS can be exempted from automatic flipping by enclosing it in a `@noflip` block:
+    {{{
 @noflip {
   .selector {
     left: 10;
   }
 }
 }}}
-    * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/test/com/google/gwt/libideas/resources/rg Current auto-RTL test cases]
-  * Compile-time name checking (*Working*):
+  * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/test/com/google/gwt/libideas/resources/rg Current auto-RTL test cases]
+
+== Selector obfuscation ==
+(*Working*):
 {{{
 java:
     class Resources {
@@ -192,11 +213,13 @@ css:
     }
     .hookClass{} /* Empty and stripped, but left for future expansion */
 }}}
-    * The function just returns the CSS class name, but verifies that the CSS class exists in the stylesheet.
-      * _TODO_: Add an @external annotation to allow a "binding" to a site-wide css file
-    * No typos.
-    * Possibility of using obfuscated names for programmatically-accessible class names. For obfuscation, we'll use a Adler32 checksum of the source css file expressed in base36 as a prefix (7 chars). The developer can override this with an annotation.
-  * Implementation fix-ups (~~Not planned~~):
+  * The function just returns the CSS class name, but verifies that the CSS class exists in the stylesheet.
+    * _TODO_: Add an @external annotation to allow a "binding" to a site-wide css file
+  * No typos.
+  * Possibility of using obfuscated names for programmatically-accessible class names. For obfuscation, we'll use a Adler32 checksum of the source css file expressed in base36 as a prefix (7 chars). The developer can override this with an annotation.
+
+== Implementation fix-ups ==
+(~~Not planned~~):
 {{{
     div:hover { }
        Could use top-level event handler to fake on IE
