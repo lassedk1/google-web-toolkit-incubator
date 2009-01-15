@@ -44,6 +44,11 @@
   background: url("chess.png") gray 40% repeat fixed;
 }
 
+/* Reported NPE bug */
+.selector8 {
+    background-position: 0 0;
+}
+
 /* Tests below here should be unchanged */
 
 .selector10 {
