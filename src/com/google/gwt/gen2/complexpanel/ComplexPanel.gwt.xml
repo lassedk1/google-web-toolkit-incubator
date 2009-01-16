@@ -1,0 +1,7 @@
+<module>
+  <inherits name='com.google.gwt.gen2.widgetbase.WidgetBase' />
+  <inherits name='com.google.gwt.gen2.commonwidget.CommonWidget' />
+  <inherits name='com.google.gwt.gen2.commonevent.CommonEvent' />
+  <source path="client" />
+  <source path="shared" />
+</module>

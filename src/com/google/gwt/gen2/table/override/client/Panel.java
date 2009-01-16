@@ -21,6 +21,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.WidgetAdaptorImpl;
+import com.google.gwt.user.client.ui.WidgetCollection;
 
 import java.util.Iterator;
 
