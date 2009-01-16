@@ -1,0 +1,18 @@
+<module>
+
+  <!-- Inherit the complex panel code   -->
+  <inherits name='com.google.gwt.gen2.complexpanel.ComplexPanel' />
+  
+  <!-- Inherit the core Web Toolkit stuff.                  -->
+  <inherits name='com.google.gwt.user.User' />
+
+  <!--  Inherit style injection -->
+  <inherits name='com.google.gwt.widgetideas.WidgetIdeas' />
+  <inherits name='com.google.gwt.libideas.LibIdeas' />
+    
+  <!-- Specify the app entry point class.                   -->
+  <entry-point
+    class='com.google.gwt.gen2.demo.fasttree.client.FastTreeDemo' />
+  <stylesheet src='FastTreeDemo.css' />  
+  
+</module>
