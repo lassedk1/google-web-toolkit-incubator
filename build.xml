@@ -23,21 +23,12 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
 
 	<property name="project.build.properties" value="${project.root}/build.properties" />
 
+        <property environment="env" />
+
 	<property file="${project.build.properties}" />
 
 	<!-- Also check for global-incubator.properties in the directory above -->
 	<property file="${project.root}/../global-incubator.properties" />
-
-	<property environment="env" />
-
-	<!--
-    Check for gwt.home.
-    -->
-
-	<condition property="gwt.home" value="${env.GWT_HOME}">
-		<isset property="env.GWT_HOME" />
-	</condition>
-
 
 	<!-- import common config -->
 	<import file="${project.root}/common.ant.xml" />
