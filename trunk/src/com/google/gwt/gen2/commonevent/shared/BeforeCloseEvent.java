@@ -71,7 +71,7 @@ public class BeforeCloseEvent<T> extends GwtEvent<BeforeCloseHandler<T>> {
   // wild carded, yet the "real" type should use our I param.
   @SuppressWarnings("unchecked")
   @Override
-  protected Type<BeforeCloseHandler<T>> getAssociatedType() {
+  public final Type<BeforeCloseHandler<T>> getAssociatedType() {
     return (Type) TYPE;
   }
   

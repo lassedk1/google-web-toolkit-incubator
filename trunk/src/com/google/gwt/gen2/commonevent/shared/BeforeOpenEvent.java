@@ -81,7 +81,7 @@ public class BeforeOpenEvent<T> extends GwtEvent<BeforeOpenHandler<T>> {
   // wild carded, yet the "real" type should use our I param.
   @SuppressWarnings("unchecked")
   @Override
-  protected Type<BeforeOpenHandler<T>> getAssociatedType() {
+  public final Type<BeforeOpenHandler<T>> getAssociatedType() {
     return (Type) TYPE;
   }
 
