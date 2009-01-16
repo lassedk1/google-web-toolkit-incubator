@@ -398,62 +398,50 @@ public class FastTree
     StandardCss.injectCss();
   }
   
-  @Override
   public HandlerRegistration addOpenHandler(OpenHandler<FastTreeItem> handler) {
     return addHandler(handler, OpenEvent.getType());
   }
 
-  @Override
   public HandlerRegistration addClickHandler(ClickHandler handler) {
     return addHandler(handler, ClickEvent.getType());
   }
 
-  @Override
   public HandlerRegistration addMouseDownHandler(MouseDownHandler handler) {
     return addDomHandler(handler, MouseDownEvent.getType());
   }
 
-  @Override
   public HandlerRegistration addSelectionHandler(SelectionHandler<FastTreeItem> handler) {
     return addHandler(handler, SelectionEvent.getType());
   }
 
-  @Override
   public HandlerRegistration addFocusHandler(FocusHandler handler) {
     return addHandler(handler, FocusEvent.getType());
   }
 
-  @Override
   public HandlerRegistration addKeyDownHandler(KeyDownHandler handler) {
     return addHandler(handler, KeyDownEvent.getType()); 
   }
 
-  @Override
   public HandlerRegistration addKeyPressHandler(KeyPressHandler handler) {
     return addHandler(handler, KeyPressEvent.getType()); 
   }
 
-  @Override
   public HandlerRegistration addKeyUpHandler(KeyUpHandler handler) {
     return addHandler(handler, KeyUpEvent.getType()); 
   }
 
-  @Override
   public HandlerRegistration addBeforeOpenHandler(BeforeOpenHandler<FastTreeItem> handler) {
     return addHandler(handler, BeforeOpenEvent.getType());
   }
 
-  @Override
   public HandlerRegistration addCloseHandler(CloseHandler<FastTreeItem> handler) {
     return addHandler(handler, CloseEvent.getType());
   }
 
-  @Override
   public HandlerRegistration addBeforeCloseHandler(BeforeCloseHandler<FastTreeItem> handler) {
     return addHandler(handler, BeforeCloseEvent.getType());
   }
 
-  @Override
   public HandlerRegistration addBeforeSelectionHandler(BeforeSelectionHandler<FastTreeItem> handler) {
     return addHandler(handler, BeforeSelectionEvent.getType());
   } 
