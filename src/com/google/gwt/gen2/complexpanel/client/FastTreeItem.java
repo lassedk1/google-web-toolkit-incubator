@@ -122,7 +122,6 @@ public class FastTreeItem extends UIObject
       return " " + styleName;
     }
 
-    @Override
     public String leaf_default() {
       return pad(STYLENAME_LEAF_DEFAULT);
     }    
