@@ -50,7 +50,6 @@ public class FastTreeDemo implements EntryPoint {
     p.add(basicTree(), "Basic tree");
     p.add(lazyTree(), "Lazy tree");
     p.add(verboseTree(), "Verbose tree");
-//    p.add(profileTree(), "Profiling tree");
     p.add(crazyTree(), "Crazy tree");
     return p;
   }
@@ -116,28 +115,24 @@ public class FastTreeDemo implements EntryPoint {
     verboseTreeItem(tree, 10);
     tree.addOpenHandler(new OpenHandler<FastTreeItem>() {
 
-      @Override
       public void onOpen(OpenEvent<FastTreeItem> event) {
         Window.alert("Opened " + event.getTarget().getHTML());
       }      
     });
     tree.addCloseHandler(new CloseHandler<FastTreeItem>() {
 
-        @Override
         public void onClose(CloseEvent<FastTreeItem> event) {
           Window.alert("Close " + event.getTarget().getHTML());          
         }
       });
     tree.addSelectionHandler(new SelectionHandler<FastTreeItem>() {
 
-        @Override
         public void onSelection(SelectionEvent<FastTreeItem> event) {
           Window.alert("You selected " + event.getSelectedItem().getHTML());
         }
       });
     tree.addBeforeOpenHandler(new BeforeOpenHandler<FastTreeItem>() {
 
-      @Override
       public void onBeforeOpen(BeforeOpenEvent<FastTreeItem> event) {
         if (Window.confirm("Would you like to change the name of the item before opening it?")) {
           event.getTarget().setHTML("Name changed before open.");
@@ -146,7 +141,6 @@ public class FastTreeDemo implements EntryPoint {
     });
     tree.addBeforeCloseHandler(new BeforeCloseHandler<FastTreeItem>() {
 
-        @Override
         public void onBeforeClose(BeforeCloseEvent<FastTreeItem> event) {
           if (Window.confirm("Would you like to change the name of the item before closing it?")) {
             event.getTarget().setHTML("Name changed before close.");
@@ -178,7 +172,6 @@ public class FastTreeDemo implements EntryPoint {
     }
     tree.addOpenHandler(new OpenHandler<FastTreeItem>() {
 
-      @Override
       public void onOpen(OpenEvent<FastTreeItem> event) {
         if (!event.getTarget().isLeafNode()) {
           if (Window.confirm("Would you like me to become a leaf?")) {
