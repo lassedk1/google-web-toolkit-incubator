@@ -186,6 +186,12 @@ class MyResources extends ImmutableResourceBundle {
   }
 }
 }}}
+  * `ImageResources` can be automatically flipped in RTL contexts via the use of the `@ImageOptions` annotation:
+    {{{
+@Resource("icon128.png")
+@ImageOptions(flipRtl = true)
+ImageResource logo();
+}}}
   * [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/test/com/google/gwt/libideas/resources/rg Current auto-RTL test cases]
 
 == Selector obfuscation ==
