@@ -32,19 +32,26 @@ import com.google.gwt.libideas.resources.rg.ImageBundleBuilder.Arranger;
 import com.google.gwt.libideas.resources.rg.ImageBundleBuilder.ImageRect;
 import com.google.gwt.user.rebind.SourceWriter;
 
+import java.awt.geom.AffineTransform;
 import java.net.URL;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Builds an image strip for all ImageResources defined within an
  * ImmutableResourceBundle.
  */
 public final class ImageResourceGenerator extends AbstractResourceGenerator {
-  private Map<RepeatStyle, ImageBundleBuilder> builders;
-  private Map<String, String> externalLocationExpressions;
-  private Map<String, ImageRect> externalImageRects;
-  private Map<RepeatStyle, String> imageResourceBundleUrlIdents;
+  private Map<String, ImageRect> imageRectsByName;
+  private Map<ImageRect, ImageBundleBuilder> buildersByImageRect;
+  private Map<RepeatStyle, ImageBundleBuilder> buildersByRepeatStyle;
+  private Map<ImageBundleBuilder, String[]> urlsByBuilder;
+  private Map<ImageRect, String[]> urlsByExternalImageRect;
+  private Map<ImageRect, ImageBundleBuilder> rtlImages;
 
   @Override
   public String createAssignment(TreeLogger logger, ResourceContext context,
@@ -56,22 +63,27 @@ public final class ImageResourceGenerator extends AbstractResourceGenerator {
     sw.indent();
     sw.println('"' + name + "\",");
 
-    ImageBundleBuilder.ImageRect rect;
-    if (!externalImageRects.containsKey(name)) {
-      // This is a reference to a field
-      sw.println(imageResourceBundleUrlIdents.get(getRepeatStyle(method)) + ",");
-      rect = getBuilder(method).getMapping(method.getName());
+    ImageRect rect = imageRectsByName.get(name);
+    assert rect != null : "No ImageRect ever computed for " + name;
+
+    String[] urlExpressions;
+    {
+      ImageBundleBuilder builder = buildersByImageRect.get(rect);
+      if (builder == null) {
+        urlExpressions = urlsByExternalImageRect.get(rect);
+      } else {
+        urlExpressions = urlsByBuilder.get(builder);
+      }
+    }
+    assert urlExpressions != null : "No URL expression for " + name;
+    assert urlExpressions.length == 2;
+
+    if (urlExpressions[1] == null) {
+      sw.println(urlExpressions[0] + ",");
     } else {
-      sw.println(externalLocationExpressions.get(name).toString() + ", ");
-      rect = externalImageRects.get(name);
+      sw.println("com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale().isRTL() ?"
+          + urlExpressions[1] + " : " + urlExpressions[0] + ",");
     }
-
-    if (rect == null) {
-      logger.log(TreeLogger.ERROR, "No ImageRect ever computed for " + name,
-          null);
-      throw new UnableToCompleteException();
-    }
-
     sw.println(rect.getLeft() + ", " + rect.getTop() + ", " + rect.getWidth()
         + ", " + rect.getHeight());
 
@@ -84,7 +96,14 @@ public final class ImageResourceGenerator extends AbstractResourceGenerator {
   @Override
   public void createFields(TreeLogger logger, ResourceContext context,
       ResourceBundleFields fields) throws UnableToCompleteException {
-    for (Map.Entry<RepeatStyle, ImageBundleBuilder> entry : builders.entrySet()) {
+
+    TypeOracle typeOracle = context.getGeneratorContext().getTypeOracle();
+    JClassType stringType = typeOracle.findType(String.class.getName());
+    assert stringType != null;
+
+    Map<ImageBundleBuilder, String> prettyNames = new IdentityHashMap<ImageBundleBuilder, String>();
+
+    for (Map.Entry<RepeatStyle, ImageBundleBuilder> entry : buildersByRepeatStyle.entrySet()) {
       RepeatStyle repeatStyle = entry.getKey();
       ImageBundleBuilder builder = entry.getValue();
       Arranger arranger;
@@ -114,22 +133,64 @@ public final class ImageResourceGenerator extends AbstractResourceGenerator {
         continue;
       }
 
-      TypeOracle typeOracle = context.getGeneratorContext().getTypeOracle();
-      JClassType stringType = typeOracle.findType(String.class.getName());
-      assert stringType != null;
+      String prettyName = "imageResourceBundleUrl" + repeatStyle;
+      prettyNames.put(builder, prettyName);
+      String fieldName = fields.define(stringType, prettyName,
+          bundleUrlExpression, true, true);
+      String[] strings = {fieldName, null};
+      urlsByBuilder.put(builder, strings);
+    }
 
-      imageResourceBundleUrlIdents.put(repeatStyle, fields.define(stringType,
-          "imageResourceBundleUrl" + repeatStyle, bundleUrlExpression, true,
-          true));
+    if (rtlImages.size() > 0) {
+      Set<ImageBundleBuilder> rtlBuilders = new HashSet<ImageBundleBuilder>();
+
+      for (Map.Entry<ImageRect, ImageBundleBuilder> entry : rtlImages.entrySet()) {
+        ImageRect rtlImage = entry.getKey();
+
+        AffineTransform tx = new AffineTransform();
+        tx.setTransform(-1, 0, 0, 1, rtlImage.getWidth(), 0);
+
+        rtlImage.setTransform(tx);
+
+        if (buildersByImageRect.containsKey(rtlImage)) {
+          rtlBuilders.add(buildersByImageRect.get(rtlImage));
+        } else {
+          String[] strings = urlsByExternalImageRect.get(rtlImage);
+          assert strings != null;
+          byte[] imageBytes = ImageBundleBuilder.toPng(logger, rtlImage);
+          strings[1] = context.deploy(rtlImage.getName() + "_rtl.png",
+              "image/png", imageBytes, false);
+        }
+      }
+
+      for (ImageBundleBuilder builder : rtlBuilders) {
+        String bundleUrlExpression = builder.writeBundledImage(logger.branch(
+            TreeLogger.DEBUG, "Writing image strip", null), context,
+            new ImageBundleBuilder.IdentityArranger());
+
+        if (bundleUrlExpression == null) {
+          continue;
+        }
+
+        String prettyName = prettyNames.get(builder);
+        String[] strings = urlsByBuilder.get(builder);
+        assert strings != null;
+
+        strings[1] = fields.define(stringType, prettyName + "_rtl",
+            bundleUrlExpression, true, true);
+      }
     }
   }
 
   @Override
   public void init(TreeLogger logger, ResourceContext context) {
-    builders = new HashMap<RepeatStyle, ImageBundleBuilder>();
-    externalLocationExpressions = new HashMap<String, String>();
-    externalImageRects = new HashMap<String, ImageRect>();
-    imageResourceBundleUrlIdents = new HashMap<RepeatStyle, String>();
+    imageRectsByName = new HashMap<String, ImageRect>();
+    buildersByImageRect = new IdentityHashMap<ImageRect, ImageBundleBuilder>();
+    buildersByRepeatStyle = new EnumMap<RepeatStyle, ImageBundleBuilder>(
+        RepeatStyle.class);
+    rtlImages = new IdentityHashMap<ImageRect, ImageBundleBuilder>();
+    urlsByBuilder = new IdentityHashMap<ImageBundleBuilder, String[]>();
+    urlsByExternalImageRect = new IdentityHashMap<ImageRect, String[]>();
   }
 
   @Override
@@ -148,31 +209,50 @@ public final class ImageResourceGenerator extends AbstractResourceGenerator {
     URL resource = resources[0];
     String name = method.getName();
 
+    ImageRect rect;
     try {
-      builder.assimilate(logger, name, resource);
+      rect = builder.assimilate(logger, name, resource);
       if (context.supportsDataUrls()
           || getRepeatStyle(method) == RepeatStyle.Both) {
         // Just use the calculated meta-data
-        ImageRect r = builder.removeMapping(name);
-        r.setPosition(0, 0);
-        throw new UnsuitableForStripException(r);
+        builder.removeMapping(name);
+        rect.setPosition(0, 0);
+        throw new UnsuitableForStripException(rect);
       }
+      buildersByImageRect.put(rect, builder);
     } catch (UnsuitableForStripException e) {
       // Add the image to the output as a separate resource
-      String urlExpression = context.deploy(resource, false);
-      externalLocationExpressions.put(name, urlExpression);
-      externalImageRects.put(name, e.getImageRect());
+      rect = e.getImageRect();
+      byte[] imageBytes = ImageBundleBuilder.toPng(logger, rect);
+      String urlExpression = context.deploy(rect.getName() + ".png",
+          "image/png", imageBytes, false);
+      urlsByExternalImageRect.put(rect, new String[] {urlExpression, null});
+    }
+
+    imageRectsByName.put(name, rect);
+
+    if (getFlipRtl(method)) {
+      rtlImages.put(rect, null);
     }
   }
 
   private ImageBundleBuilder getBuilder(JMethod method) {
     RepeatStyle repeatStyle = getRepeatStyle(method);
-    ImageBundleBuilder builder = builders.get(repeatStyle);
+    ImageBundleBuilder builder = buildersByRepeatStyle.get(repeatStyle);
     if (builder == null) {
       builder = new ImageBundleBuilder();
-      builders.put(repeatStyle, builder);
+      buildersByRepeatStyle.put(repeatStyle, builder);
     }
     return builder;
+  }
+
+  private boolean getFlipRtl(JMethod method) {
+    ImageOptions options = method.getAnnotation(ImageOptions.class);
+    if (options == null) {
+      return false;
+    } else {
+      return options.flipRtl();
+    }
   }
 
   private RepeatStyle getRepeatStyle(JMethod method) {
