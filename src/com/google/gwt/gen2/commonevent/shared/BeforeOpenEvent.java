@@ -17,7 +17,6 @@ package com.google.gwt.gen2.commonevent.shared;
 
 import com.google.gwt.event.logical.shared.HasHandlers;
 import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerManager;
 
 /**
  * Represents an event that should fire after open.
@@ -40,11 +39,8 @@ public class BeforeOpenEvent<T> extends GwtEvent<BeforeOpenHandler<T>> {
   public static <T, S extends HasBeforeOpenHandlers<T> & HasHandlers> void fire(
       S source, T target, boolean isFirstTime) {
     if (TYPE != null) {
-      HandlerManager handlers = source.getHandlers();
-      if (handlers != null) {
-        BeforeOpenEvent<T> event = new BeforeOpenEvent<T>(target, isFirstTime);
-        handlers.fireEvent(event);        
-      }
+      BeforeOpenEvent<T> event = new BeforeOpenEvent<T>(target, isFirstTime);
+      source.fireEvent(event);        
     }
   }
   
