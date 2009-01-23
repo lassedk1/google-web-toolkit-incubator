@@ -135,17 +135,10 @@ public class CSSResourceTest extends LibTestBase {
     return "orange";
   }
 
-  public void testConcatenatedResource() {
-    ConcatenatedResources r = GWT.create(ConcatenatedResources.class);
-    String text = r.css().getText();
-    assertTrue(text.contains(".partA"));
-    assertTrue(text.contains(".partB"));
-  }
-
-  public void testCSS() {
+  public void cssTest() {
     MyCssResourceWithSprite css = Resources.INSTANCE.css();
     String text = css.getText();
-    System.out.println(text);
+    report(text);
 
     // Check the sprite
     assertTrue(text.contains("height:16px"));
@@ -200,6 +193,17 @@ public class CSSResourceTest extends LibTestBase {
     assertTrue(text.indexOf("prevent:true") < text.indexOf("may-not-combine2"));
   }
 
+  public void report(String s) {
+    // Can be filled in if debugging.
+  }
+
+  public void testConcatenatedResource() {
+    ConcatenatedResources r = GWT.create(ConcatenatedResources.class);
+    String text = r.css().getText();
+    assertTrue(text.contains(".partA"));
+    assertTrue(text.contains(".partB"));
+  }
+
   public void testDefines() {
     Resources r = GWT.create(Resources.class);
     CssWithDefines defines = r.defines();
@@ -228,7 +232,7 @@ public class CSSResourceTest extends LibTestBase {
     assertFalse(r1.a().unsharedClass().equals(r2.b().unsharedClass()));
 
     String text = r1.descendants().getText();
-    System.out.println(text);
+    report(text);
     assertTrue(text.contains("." + r1.a().local() + " ." + r1.b().local()));
   }
 
@@ -241,8 +245,8 @@ public class CSSResourceTest extends LibTestBase {
     String a = r.a().getText();
     String b = r.b().getText();
 
-    System.out.println(a);
-    System.out.println(b);
+    report(a);
+    report(b);
 
     assertTrue(a.contains(".other"));
     assertTrue(b.contains(".other"));
