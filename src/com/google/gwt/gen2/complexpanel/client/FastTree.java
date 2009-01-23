@@ -74,27 +74,27 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class FastTree 
-    extends Panel 
-    implements HasClickHandlers, HasMouseDownHandlers,
-               HasSelectionHandlers<FastTreeItem>, HasFocusHandlers, 
-               HasFastTreeItems, HasKeyDownHandlers, HasKeyPressHandlers,
-               HasKeyUpHandlers, HasFastTreeItemHandlers {
-  
+/**
+ * Fast tree implementation.
+ */
+public class FastTree extends Panel implements HasClickHandlers,
+    HasMouseDownHandlers, HasSelectionHandlers<FastTreeItem>, HasFocusHandlers,
+    HasFastTreeItems, HasKeyDownHandlers, HasKeyPressHandlers,
+    HasKeyUpHandlers, HasFastTreeItemHandlers {
   /**
-   * Interface used to allow the widget access to css style names. 
-   * <p/> 
+   * Interface used to allow the widget access to css style names.
+   * <p/>
    * The class names indicate the default gwt names for these styles.
    */
   static interface Css extends WidgetCss {
-    
+
     @ClassName(STYLENAME_DEFAULT)
     String fastTree();
 
     @ClassName(STYLENAME_SELECTION)
     String selectionBar();
   }
-  
+
   static class StandardCss extends StandardCssImpl implements Css {
 
     /**
@@ -105,41 +105,29 @@ public class FastTree
       static final String PUBLIC_PATH = "com/google/gwt/gen2/widgetbase/public/";
       static final String CSS_PATH = PUBLIC_PATH;
       static final String IMAGE_PATH = PUBLIC_PATH;
-      
+
       @Resource(CSS_PATH + "FastTree.css")
       FastTree.Css fastTreeCss();
-      
+
+      @Resource(IMAGE_PATH + "selectionBar.gif")
+      DataResource selectionBar();
+
+      @Resource(IMAGE_PATH + "treeClosed.gif")
+      DataResource treeClosed();
+
       @Resource(IMAGE_PATH + "treeOpen.gif")
       DataResource treeOpen();
-      
-      @Resource(IMAGE_PATH + "treeClosed.gif")
-      DataResource treeClosed();      
-      
-      @Resource(IMAGE_PATH + "selectionBar.gif")
-      DataResource selectionBar();  
     }
-    
+
     static FastTree.Css DEFAULT_CSS;
-    
-    public StandardCss(String styleName) {
-      super(styleName, "gwt-FastTree");
-    }
 
-    public String fastTree() {
-      return getWidgetStyleName();
-    }
-
-    public String selectionBar() {
-      return " selection-bar";
-    }   
-    
     static Css ensureDefaultCss() {
       if (DEFAULT_CSS == null) {
         DEFAULT_CSS = createCss(STYLENAME_DEFAULT);
       }
       return DEFAULT_CSS;
     }
-    
+
     /**
      * Inject the default css for this widget.
      */
@@ -150,10 +138,42 @@ public class FastTree
         DEFAULT_CSS = css;
       }
     }
+
+    public StandardCss(String styleName) {
+      super(styleName, "gwt-FastTree");
+    }
+
+    public String fastTree() {
+      return getWidgetStyleName();
+    }
+
+    public String selectionBar() {
+      return " selection-bar";
+    }
   }
-  
+
+  private static FocusImpl impl = FocusImpl.getFocusImplForPanel();
+
   static final String STYLENAME_DEFAULT = "gwt-FastTree";
   private static final String STYLENAME_SELECTION = "selection-bar";
+
+  /**
+   * Creates a {@link Css} instance with the given style name. Note, only the
+   * primary style name changes.
+   * 
+   * @param styleName style name for the widget
+   * @return the standard css
+   */
+  public static Css createCss(String styleName) {
+    return new StandardCss(styleName);
+  }
+
+  /**
+   * Injects the default styles as a css resource.
+   */
+  public static void injectDefaultCss() {
+    StandardCss.injectCss();
+  }
 
   /**
    * Map of TreeItem.widget -> TreeItem.
@@ -162,25 +182,26 @@ public class FastTree
   private FastTreeItem curSelection;
   private final Element focusable;
   private final FastTreeItem root;
-  private static FocusImpl impl = FocusImpl.getFocusImplForPanel();
+
   private Event keyDown;
+
   private Event lastKeyDown;
-  
+
   /**
    * Constructs a tree.
    */
   public FastTree() {
     this(StandardCss.ensureDefaultCss());
   }
-  
+
   FastTree(Css css) {
     setElement(DOM.createDiv());
 
     focusable = createFocusElement();
     setStyleName(focusable, css.selectionBar());
-    
+
     sinkEvents(Event.ONMOUSEDOWN | Event.ONCLICK | Event.KEYEVENTS);
-    
+
     // The 'root' item is invisible and serves only as a container
     // for all top-level items.
     root = buildRootItem();
@@ -188,9 +209,9 @@ public class FastTree
 
     setStyleName(css.fastTree());
     moveSelectionBar(curSelection);
-    
+
     // Add accessibility role to tree.
-    Accessibility.setRole(getElement(), Accessibility.ROLE_TREE);    
+    Accessibility.setRole(getElement(), Accessibility.ROLE_TREE);
     Accessibility.setRole(focusable, Accessibility.ROLE_TREEITEM);
   }
 
@@ -203,6 +224,33 @@ public class FastTree
   @Override
   public void add(Widget widget) {
     addItem(widget);
+  }
+
+  public HandlerRegistration addBeforeCloseHandler(
+      BeforeCloseHandler<FastTreeItem> handler) {
+    return addHandler(handler, BeforeCloseEvent.getType());
+  }
+
+  public HandlerRegistration addBeforeOpenHandler(
+      BeforeOpenHandler<FastTreeItem> handler) {
+    return addHandler(handler, BeforeOpenEvent.getType());
+  }
+
+  public HandlerRegistration addBeforeSelectionHandler(
+      BeforeSelectionHandler<FastTreeItem> handler) {
+    return addHandler(handler, BeforeSelectionEvent.getType());
+  }
+
+  public HandlerRegistration addClickHandler(ClickHandler handler) {
+    return addHandler(handler, ClickEvent.getType());
+  }
+
+  public HandlerRegistration addCloseHandler(CloseHandler<FastTreeItem> handler) {
+    return addHandler(handler, CloseEvent.getType());
+  }
+
+  public HandlerRegistration addFocusHandler(FocusHandler handler) {
+    return addHandler(handler, FocusEvent.getType());
   }
 
   /**
@@ -233,6 +281,31 @@ public class FastTree
    */
   public FastTreeItem addItem(Widget widget) {
     return root.addItem(widget);
+  }
+
+  public HandlerRegistration addKeyDownHandler(KeyDownHandler handler) {
+    return addHandler(handler, KeyDownEvent.getType());
+  }
+
+  public HandlerRegistration addKeyPressHandler(KeyPressHandler handler) {
+    return addHandler(handler, KeyPressEvent.getType());
+  }
+
+  public HandlerRegistration addKeyUpHandler(KeyUpHandler handler) {
+    return addHandler(handler, KeyUpEvent.getType());
+  }
+
+  public HandlerRegistration addMouseDownHandler(MouseDownHandler handler) {
+    return addDomHandler(handler, MouseDownEvent.getType());
+  }
+
+  public HandlerRegistration addOpenHandler(OpenHandler<FastTreeItem> handler) {
+    return addHandler(handler, OpenEvent.getType());
+  }
+
+  public HandlerRegistration addSelectionHandler(
+      SelectionHandler<FastTreeItem> handler) {
+    return addHandler(handler, SelectionEvent.getType());
   }
 
   /**
@@ -304,7 +377,7 @@ public class FastTree
   }
 
   public int getTabIndex() {
-   return impl.getTabIndex(focusable);
+    return impl.getTabIndex(focusable);
   }
 
   public Iterator<Widget> iterator() {
@@ -331,12 +404,12 @@ public class FastTree
         return;
       case Event.ONMOUSEDOWN:
         boolean left = e.getButton() == Event.BUTTON_LEFT;
-        
+
         if (left && !hasModifiers(e)) {
           elementClicked(root, e);
         }
         return;
-      
+
       case Event.ONKEYDOWN:
         keyDown = e;
         // Intentional fallthrough.
@@ -380,72 +453,6 @@ public class FastTree
     super.onBrowserEvent(e);
   }
 
-  /**
-   * Creates a {@link Css} instance with the given style name. Note, only the
-   * primary style name changes.
-   * 
-   * @param styleName style name for the widget
-   * @return the standard css
-   */
-  public static Css createCss(String styleName) {
-    return new StandardCss(styleName);
-  }
-  
-  /**
-   * Injects the default styles as a css resource.
-   */
-  public static void injectDefaultCss() {
-    StandardCss.injectCss();
-  }
-  
-  public HandlerRegistration addOpenHandler(OpenHandler<FastTreeItem> handler) {
-    return addHandler(handler, OpenEvent.getType());
-  }
-
-  public HandlerRegistration addClickHandler(ClickHandler handler) {
-    return addHandler(handler, ClickEvent.getType());
-  }
-
-  public HandlerRegistration addMouseDownHandler(MouseDownHandler handler) {
-    return addDomHandler(handler, MouseDownEvent.getType());
-  }
-
-  public HandlerRegistration addSelectionHandler(SelectionHandler<FastTreeItem> handler) {
-    return addHandler(handler, SelectionEvent.getType());
-  }
-
-  public HandlerRegistration addFocusHandler(FocusHandler handler) {
-    return addHandler(handler, FocusEvent.getType());
-  }
-
-  public HandlerRegistration addKeyDownHandler(KeyDownHandler handler) {
-    return addHandler(handler, KeyDownEvent.getType()); 
-  }
-
-  public HandlerRegistration addKeyPressHandler(KeyPressHandler handler) {
-    return addHandler(handler, KeyPressEvent.getType()); 
-  }
-
-  public HandlerRegistration addKeyUpHandler(KeyUpHandler handler) {
-    return addHandler(handler, KeyUpEvent.getType()); 
-  }
-
-  public HandlerRegistration addBeforeOpenHandler(BeforeOpenHandler<FastTreeItem> handler) {
-    return addHandler(handler, BeforeOpenEvent.getType());
-  }
-
-  public HandlerRegistration addCloseHandler(CloseHandler<FastTreeItem> handler) {
-    return addHandler(handler, CloseEvent.getType());
-  }
-
-  public HandlerRegistration addBeforeCloseHandler(BeforeCloseHandler<FastTreeItem> handler) {
-    return addHandler(handler, BeforeCloseEvent.getType());
-  }
-
-  public HandlerRegistration addBeforeSelectionHandler(BeforeSelectionHandler<FastTreeItem> handler) {
-    return addHandler(handler, BeforeSelectionEvent.getType());
-  } 
-  
   @Override
   public boolean remove(Widget w) {
     // Validate.
@@ -481,7 +488,7 @@ public class FastTree
    * Selects a specified item.
    * 
    * @param item the item to be selected, or <code>null</code> to deselect all
-   *        items
+   *          items
    */
   public void setSelectedItem(FastTreeItem item) {
     setSelectedItem(item, true);
@@ -491,7 +498,7 @@ public class FastTree
    * Selects a specified item.
    * 
    * @param item the item to be selected, or <code>null</code> to deselect all
-   *        items
+   *          items
    * @param fireEvents <code>true</code> to allow selection events to be fired
    */
   public void setSelectedItem(FastTreeItem item, boolean fireEvents) {
@@ -519,7 +526,7 @@ public class FastTree
   protected FastTreeItem getRoot() {
     return root;
   }
-  
+
   protected void keyboardNavigation(Event e) {
     // If nothing's selected, select the first item.
     if (curSelection == null) {
@@ -586,7 +593,7 @@ public class FastTree
       moveSelectionBar(getSelectedItem());
     }
   }
-  
+
   protected void onSelection(FastTreeItem item, boolean fireEvents,
       boolean moveFocus) {
     // 'root' isn't a real item, so don't let it be selected
@@ -636,6 +643,15 @@ public class FastTree
   }
 
   /**
+   * Supply a decorator for the fast tree.
+   * 
+   * @return a decorator
+   */
+  protected Decorator supplyFastTreeDecorator() {
+    return Decorator.DEFAULT;
+  }
+
+  /**
    * Supply a decorator for the tree items.
    * 
    * @return a decorator
@@ -644,19 +660,44 @@ public class FastTree
     return Decorator.DEFAULT;
   }
 
-  /**
-   * Supply a decorator for the fast tree.
-   * 
-   * @return a decorator
-   */
-  protected Decorator supplyFastTreeDecorator() {
-    return Decorator.DEFAULT;
-  }
-  
   void adopt(Widget widget, FastTreeItem treeItem) {
     assert (!childWidgets.containsKey(widget));
     childWidgets.put(widget, treeItem);
     super.adopt(widget);
+  }
+
+  /**
+   * Called after the tree item is closed.
+   */
+
+  void afterClose(FastTreeItem fastTreeItem) {
+    CloseEvent.fire(this, fastTreeItem);
+  }
+
+  /**
+   * Called after the tree item is opened.
+   */
+  void afterOpen(FastTreeItem fastTreeItem) {
+    OpenEvent.fire(this, fastTreeItem);
+  }
+
+  /**
+   * Called before the tree item is closed.
+   */
+
+  void beforeClose(FastTreeItem fastTreeItem) {
+    BeforeCloseEvent.fire(this, fastTreeItem);
+  }
+
+  /**
+   * Called before the tree item is opened.
+   */
+  void beforeOpen(FastTreeItem fastTreeItem, boolean isFirstTime) {
+    BeforeOpenEvent.fire(this, fastTreeItem, isFirstTime);
+  }
+
+  void beforeSelected(FastTreeItem fastTreeItem) {
+    BeforeSelectionEvent.fire(this, fastTreeItem);
   }
 
   /*
@@ -666,111 +707,73 @@ public class FastTree
     return childWidgets;
   }
 
+  /**
+   * Called when a tree item is selected.
+   */
+
+  void onSelected(FastTreeItem fastTreeItem) {
+    SelectionEvent.fire(this, fastTreeItem);
+  }
+
   void treeOrphan(Widget widget) {
     super.orphan(widget);
 
     // Logical detach.
     childWidgets.remove(widget);
   }
-  
+
   /**
-   * Called before the tree item is opened.
+   * Helper to build the root item.
    */
-  void beforeOpen(FastTreeItem fastTreeItem, boolean isFirstTime) {
-    BeforeOpenEvent.fire(this, fastTreeItem, isFirstTime);
-  }
-  
-  /**
-   * Called after the tree item is opened.
-   */
-  void afterOpen(FastTreeItem fastTreeItem) {
-    OpenEvent.fire(this, fastTreeItem);    
-  }
-  
-  /**
-   * Called before the tree item is closed.
-   */
-  
-  void beforeClose(FastTreeItem fastTreeItem) {
-    BeforeCloseEvent.fire(this, fastTreeItem);
-  }
-  
-  /**
-   * Called after the tree item is closed.
-   */
-  
-  void afterClose(FastTreeItem fastTreeItem) {
-    CloseEvent.fire(this, fastTreeItem);
-  }
-  
-  /**
-   * Called when a tree item is selected.
-   */
-  
-  void onSelected(FastTreeItem fastTreeItem) {
-    SelectionEvent.fire(this, fastTreeItem);
-  }
-  
-  void beforeSelected(FastTreeItem fastTreeItem) {
-    BeforeSelectionEvent.fire(this, fastTreeItem);
+  private FastTreeItem buildRootItem() {
+    return new FastTreeItem() {
+      @Override
+      public void addItem(FastTreeItem item) {
+        super.addItem(item);
+
+        DOM.appendChild(FastTree.this.getElement(), item.getElement());
+
+        // Explicitly set top-level items' parents to null.
+        item.setParentItem(null);
+
+        // Use no margin on top-most items.
+        DOM.setIntStyleAttribute(item.getElement(), "margin", 0);
+      }
+
+      @Override
+      public void removeItem(FastTreeItem item) {
+        if (!getChildren().contains(item)) {
+          return;
+        }
+
+        // Update Item state.
+        item.clearTree();
+        item.setParentItem(null);
+        getChildren().remove(item);
+
+        DOM.removeChild(FastTree.this.getElement(), item.getElement());
+      }
+    };
   }
 
-  private boolean hasModifiers(Event event) {
-    boolean alt = event.getAltKey();
-    boolean ctrl = event.getCtrlKey();
-    boolean meta = event.getMetaKey();
-    boolean shift = event.getShiftKey();
-
-    return alt || ctrl || meta || shift;
+  private void clickedOnFocus(Element e) {
+    // An element was clicked on that is not focusable, so we use the hidden
+    // focusable to not shift focus.
+    moveElementOverTarget(focusable, e);
+    impl.focus(focusable);
   }
-  
+
   /**
    * Collects parents going up the element tree, terminated at the tree root.
    */
-  private void collectElementChain(ArrayList<Element> chain, Element hRoot, Element hElem) {
+  private void collectElementChain(ArrayList<Element> chain, Element hRoot,
+      Element hElem) {
     if ((hElem == null) || hElem.equals(hRoot)) {
       return;
     }
 
     collectElementChain(chain, hRoot, DOM.getParent(hElem));
     chain.add(hElem);
-  }
-
-  /**
-   * Disables the selection text on IE.
-   */
-  private native void disableSelection(Element element)
-  /*-{
-    element.onselectstart = function() {
-      return false;
-    };  
-  }-*/;
-
-  private FastTreeItem findDeepestOpenChild(FastTreeItem item) {
-    if (!item.isOpen()) {
-      return item;
-    }
-    return findDeepestOpenChild(item.getChild(item.getChildCount() - 1));
-  }
-
-  private FastTreeItem findItemByChain(ArrayList<Element> chain, int index, FastTreeItem root) {
-    if (index == chain.size()) {
-      return root;
-    }
-
-    Element hCurElem = chain.get(index);
-    for (int i = 0, n = root.getChildCount(); i < n; ++i) {
-      FastTreeItem child = root.getChild(i);
-      if (child.getElement().equals(hCurElem)) {
-        FastTreeItem retItem = findItemByChain(chain, index + 1, root.getChild(i));
-        if (retItem == null) {
-          return child;
-        }
-        return retItem;
-      }
-    }
-
-    return findItemByChain(chain, index + 1, root);
   }
 
   private Element createFocusElement() {
@@ -783,37 +786,16 @@ public class FastTree
     return e;
   }
 
-  private void moveElementOverTarget(Element movable, Element target) {
-    int containerTop = getAbsoluteTop();
-
-    int top = DOM.getAbsoluteTop(target) - containerTop;
-    int height = DOM.getElementPropertyInt(target, "offsetHeight");
-
-    // Set the element's position and size to exactly underlap the
-    // item's content element.
-    DOM.setStyleAttribute(movable, "height", height + "px");
-    DOM.setStyleAttribute(movable, "top", top + "px");
-  }
-
-  private native boolean shouldTreeDelegateFocusToElement(Element elem)
+  /**
+   * Disables the selection text on IE.
+   */
+  private native void disableSelection(Element element)
   /*-{
-    var name = elem.nodeName;
-    return ((name == "SELECT") ||
-       (name == "INPUT")  ||
-       (name == "TEXTAREA") ||
-       (name == "OPTION") ||
-       (name == "BUTTON") ||
-       (name == "LABEL") 
-    );
+    element.onselectstart = function() {
+      return false;
+    };
   }-*/;
 
-  private void clickedOnFocus(Element e) {
-    // An element was clicked on that is not focusable, so we use the hidden
-    // focusable to not shift focus.
-    moveElementOverTarget(focusable, e);
-    impl.focus(focusable);
-  }
-  
   private boolean elementClicked(FastTreeItem root, Event event) {
     Element target = DOM.eventGetTarget(event);
     ArrayList<Element> chain = new ArrayList<Element>();
@@ -833,7 +815,57 @@ public class FastTree
     }
     return false;
   }
-  
+
+  private FastTreeItem findDeepestOpenChild(FastTreeItem item) {
+    if (!item.isOpen()) {
+      return item;
+    }
+    return findDeepestOpenChild(item.getChild(item.getChildCount() - 1));
+  }
+
+  private FastTreeItem findItemByChain(ArrayList<Element> chain, int index,
+      FastTreeItem root) {
+    if (index == chain.size()) {
+      return root;
+    }
+
+    Element hCurElem = chain.get(index);
+    for (int i = 0, n = root.getChildCount(); i < n; ++i) {
+      FastTreeItem child = root.getChild(i);
+      if (child.getElement().equals(hCurElem)) {
+        FastTreeItem retItem = findItemByChain(chain, index + 1,
+            root.getChild(i));
+        if (retItem == null) {
+          return child;
+        }
+        return retItem;
+      }
+    }
+
+    return findItemByChain(chain, index + 1, root);
+  }
+
+  private boolean hasModifiers(Event event) {
+    boolean alt = event.getAltKey();
+    boolean ctrl = event.getCtrlKey();
+    boolean meta = event.getMetaKey();
+    boolean shift = event.getShiftKey();
+
+    return alt || ctrl || meta || shift;
+  }
+
+  private void moveElementOverTarget(Element movable, Element target) {
+    int containerTop = getAbsoluteTop();
+
+    int top = DOM.getAbsoluteTop(target) - containerTop;
+    int height = DOM.getElementPropertyInt(target, "offsetHeight");
+
+    // Set the element's position and size to exactly underlap the
+    // item's content element.
+    DOM.setStyleAttribute(movable, "height", height + "px");
+    DOM.setStyleAttribute(movable, "top", top + "px");
+  }
+
   /**
    * Move the tree focus to the specified selected item.
    * 
@@ -851,50 +883,10 @@ public class FastTree
 
       impl.focus(focusable);
     }
-    
+
     // Update ARIA attributes to reflect the information from the
     // newly-selected item.
     updateAriaAttributes(selection);
-  }
-  
-  private void updateAriaAttributes(FastTreeItem selection) {
-    
-    // Set the 'aria-level' state. To do this, we need to compute the level of
-    // the currently selected item.
-
-    // We initialize itemLevel to -1 because the level value is zero-based.
-    // Note that the root node is not a part of the TreeItem hierarchy, and we
-    // do not consider the root node to have a designated level. The level of
-    // the root's children is level 0, its children's children is level 1, etc.
-    int curSelectionLevel = -1;
-    FastTreeItem tmpItem = selection;
-
-    while (tmpItem != null) {
-      tmpItem = tmpItem.getParentItem();
-      ++curSelectionLevel;
-    }
-
-    Element selectionContentElement = selection.getContentElement();
-    Accessibility.setState(selectionContentElement, Accessibility.STATE_LEVEL,
-        String.valueOf(curSelectionLevel + 1));
-    
-    // Set the 'aria-setsize' and 'aria-posinset' states. To do this, we need to
-    // compute the the number of siblings that the currently selected item has,
-    // and the item's position among its siblings.
-
-    FastTreeItem curSelectionParent = selection.getParentItem();
-    if (curSelectionParent == null) {
-      curSelectionParent = root;
-    }
-
-    Accessibility.setState(selectionContentElement,
-        Accessibility.STATE_SETSIZE,
-        String.valueOf(curSelectionParent.getChildCount()));
-
-    int selectionIndex = curSelectionParent.getChildIndex(selection);
-
-    Accessibility.setState(selectionContentElement,
-        Accessibility.STATE_POSINSET, String.valueOf(selectionIndex + 1));
   }
 
   /**
@@ -938,38 +930,56 @@ public class FastTree
       onSelection(parent, true, true);
     }
   }
-  
-  /**
-   * Helper to build the root item.
-   */
-  private FastTreeItem buildRootItem() {
-    return new FastTreeItem() {
-      @Override
-      public void addItem(FastTreeItem item) {
-        super.addItem(item);
 
-        DOM.appendChild(FastTree.this.getElement(), item.getElement());
+  private native boolean shouldTreeDelegateFocusToElement(Element elem)
+  /*-{
+    var name = elem.nodeName;
+    return ((name == "SELECT") ||
+       (name == "INPUT")  ||
+       (name == "TEXTAREA") ||
+       (name == "OPTION") ||
+       (name == "BUTTON") ||
+       (name == "LABEL") 
+    );
+  }-*/;
 
-        // Explicitly set top-level items' parents to null.
-        item.setParentItem(null);
+  private void updateAriaAttributes(FastTreeItem selection) {
 
-        // Use no margin on top-most items.
-        DOM.setIntStyleAttribute(item.getElement(), "margin", 0);
-      }
+    // Set the 'aria-level' state. To do this, we need to compute the level of
+    // the currently selected item.
 
-      @Override
-      public void removeItem(FastTreeItem item) {
-        if (!getChildren().contains(item)) {
-          return;
-        }
+    // We initialize itemLevel to -1 because the level value is zero-based.
+    // Note that the root node is not a part of the TreeItem hierarchy, and we
+    // do not consider the root node to have a designated level. The level of
+    // the root's children is level 0, its children's children is level 1, etc.
+    int curSelectionLevel = -1;
+    FastTreeItem tmpItem = selection;
 
-        // Update Item state.
-        item.clearTree();
-        item.setParentItem(null);
-        getChildren().remove(item);
+    while (tmpItem != null) {
+      tmpItem = tmpItem.getParentItem();
+      ++curSelectionLevel;
+    }
 
-        DOM.removeChild(FastTree.this.getElement(), item.getElement());
-      }
-    };
+    Element selectionContentElement = selection.getContentElement();
+    Accessibility.setState(selectionContentElement, Accessibility.STATE_LEVEL,
+        String.valueOf(curSelectionLevel + 1));
+
+    // Set the 'aria-setsize' and 'aria-posinset' states. To do this, we need to
+    // compute the the number of siblings that the currently selected item has,
+    // and the item's position among its siblings.
+
+    FastTreeItem curSelectionParent = selection.getParentItem();
+    if (curSelectionParent == null) {
+      curSelectionParent = root;
+    }
+
+    Accessibility.setState(selectionContentElement,
+        Accessibility.STATE_SETSIZE,
+        String.valueOf(curSelectionParent.getChildCount()));
+
+    int selectionIndex = curSelectionParent.getChildIndex(selection);
+
+    Accessibility.setState(selectionContentElement,
+        Accessibility.STATE_POSINSET, String.valueOf(selectionIndex + 1));
   }
 }
