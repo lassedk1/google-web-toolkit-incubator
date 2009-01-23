@@ -24,10 +24,14 @@ import com.google.gwt.event.shared.GwtEvent;
  * @param <T> the type being closed
  */
 public class BeforeCloseEvent<T> extends GwtEvent<BeforeCloseHandler<T>> {
-  
   /**
-   * Fires an beforeClose event on all registered handlers in the handler manager.
-   * If no such handlers exist, this method will do nothing.
+   * Handler type.
+   */
+  private static Type<BeforeCloseHandler<?>> TYPE;
+
+  /**
+   * Fires an beforeClose event on all registered handlers in the handler
+   * manager. If no such handlers exist, this method will do nothing.
    * 
    * @param <T> the target type
    * @param <S> The event source
@@ -41,26 +45,23 @@ public class BeforeCloseEvent<T> extends GwtEvent<BeforeCloseHandler<T>> {
       source.fireEvent(event);
     }
   }
-  
+
   public static Type<BeforeCloseHandler<?>> getType() {
     if (TYPE == null) {
       TYPE = new Type<BeforeCloseHandler<?>>();
     }
     return TYPE;
   }
-  
+
+  private final T target;
+
   /**
-   * Gets the target.
+   * Creates a new before close event.
    * 
-   * @return the target
+   * @param target the ui object being closed
    */
-  public T getTarget() {
-    return target;
-  }
-  
-  @Override
-  protected void dispatch(BeforeCloseHandler<T> handler) {
-    handler.onBeforeClose(this);
+  protected BeforeCloseEvent(T target) {
+    this.target = target;
   }
 
   // Because of type erasure, our static type is
@@ -70,20 +71,18 @@ public class BeforeCloseEvent<T> extends GwtEvent<BeforeCloseHandler<T>> {
   public final Type<BeforeCloseHandler<T>> getAssociatedType() {
     return (Type) TYPE;
   }
-  
+
   /**
-   * Creates a new before close event.
+   * Gets the target.
    * 
-   * @param target the ui object being closed
+   * @return the target
    */
-  protected BeforeCloseEvent(T target) {
-    this.target = target;
+  public T getTarget() {
+    return target;
   }
-  
-  private final T target;
-  
-  /**
-   * Handler type.
-   */
-  private static Type<BeforeCloseHandler<?>> TYPE;
+
+  @Override
+  protected void dispatch(BeforeCloseHandler<T> handler) {
+    handler.onBeforeClose(this);
+  }
 }

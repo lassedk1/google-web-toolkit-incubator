@@ -19,13 +19,16 @@ import com.google.gwt.event.logical.shared.HasHandlers;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
- * Represents an event that should fire after open.
- * When a tree item receives a request to open for the first time the
- * isFirstTime flag will be set.
+ * Represents an event that should fire after open. When a tree item receives a
+ * request to open for the first time the isFirstTime flag will be set.
  * 
  * @param <T> the type being opened
  */
 public class BeforeOpenEvent<T> extends GwtEvent<BeforeOpenHandler<T>> {
+  /**
+   * Handler type.
+   */
+  private static Type<BeforeOpenHandler<?>> TYPE;
 
   /**
    * Fires a beforeOpen event on all registered handlers in the handler manager.
@@ -40,37 +43,33 @@ public class BeforeOpenEvent<T> extends GwtEvent<BeforeOpenHandler<T>> {
       S source, T target, boolean isFirstTime) {
     if (TYPE != null) {
       BeforeOpenEvent<T> event = new BeforeOpenEvent<T>(target, isFirstTime);
-      source.fireEvent(event);        
+      source.fireEvent(event);
     }
   }
-  
+
   public static Type<BeforeOpenHandler<?>> getType() {
     if (TYPE == null) {
       TYPE = new Type<BeforeOpenHandler<?>>();
     }
     return TYPE;
   }
-  
+
+  private final T target;
+
   /**
-   * Gets the target.
-   * 
-   * @return the target
+   * Flag to keep track of the first time @FastTreeItem has been opened.
    */
-  public T getTarget() {
-    return target;
-  }
-  
-  public void setFirstTime(boolean isFirstTime) {
+  private boolean isFirstTime;
+
+  /**
+   * Creates a new before open event.
+   * 
+   * @param target the ui object being opened
+   * @param isFirstTime
+   */
+  protected BeforeOpenEvent(T target, boolean isFirstTime) {
+    this.target = target;
     this.isFirstTime = isFirstTime;
-  }
-
-  public boolean isFirstTime() {
-    return isFirstTime;
-  }
-
-  @Override
-  protected void dispatch(BeforeOpenHandler<T> handler) {
-    handler.onBeforeOpen(this);
   }
 
   // Because of type erasure, our static type is
@@ -82,25 +81,24 @@ public class BeforeOpenEvent<T> extends GwtEvent<BeforeOpenHandler<T>> {
   }
 
   /**
-   * Creates a new before open event.
+   * Gets the target.
    * 
-   * @param target the ui object being opened
-   * @param isFirstTime 
+   * @return the target
    */
-  protected BeforeOpenEvent(T target, boolean isFirstTime) {
-    this.target = target;
+  public T getTarget() {
+    return target;
+  }
+
+  public boolean isFirstTime() {
+    return isFirstTime;
+  }
+
+  public void setFirstTime(boolean isFirstTime) {
     this.isFirstTime = isFirstTime;
   }
-  
-  private final T target;
-  
-  /**
-   * Handler type.
-   */
-  private static Type<BeforeOpenHandler<?>> TYPE;
-  
-  /**
-   * Flag to keep track of the first time @FastTreeItem has been opened.
-   */
-  private boolean isFirstTime;
+
+  @Override
+  protected void dispatch(BeforeOpenHandler<T> handler) {
+    handler.onBeforeOpen(this);
+  }
 }
