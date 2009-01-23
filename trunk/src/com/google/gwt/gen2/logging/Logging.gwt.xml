@@ -1,12 +1,15 @@
 <module>
-  <!--  Ensures user is included first -->
-  <inherits name = "com.google.gwt.user.User"/>
-  
+	<!--  Ensures user is included first -->
+	<inherits name="com.google.gwt.user.User" />
+
 	<!--  Sets up source path -->
 	<source path="shared" />
+	<source path="client" />
 	<source path="impl/shared" />
 	<source path="impl/client" />
 	<source path="handler/client" />
+	<source path="handler/shared" />
+
 	<super-source path="translatable" />
 
 	<!--  Sets up remote logging path -->
