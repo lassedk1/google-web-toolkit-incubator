@@ -21,7 +21,6 @@ import com.google.gwt.gen2.logging.handler.shared.ListLogHandler;
 import junit.framework.TestCase;
 
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 /**
  * We test logging using junit as it is much faster that way.
@@ -34,8 +33,9 @@ public class LogServerTest extends TestCase {
    */
   public void testJavaLogging() {
     // For now, (visual test)
-    Logger.getLogger("gwt").getParent().getHandlers()[0].setLevel(java.util.logging.Level.ALL);
-    Logger.getLogger("gwt").setLevel(java.util.logging.Level.ALL);
+    // TODO (ecc): Remove Logger reference or move this test out of shared
+    // Logger.getLogger("gwt").getParent().getHandlers()[0].setLevel(java.util.logging.Level.ALL);
+    // Logger.getLogger("gwt").setLevel(java.util.logging.Level.ALL);
 
     int count = 0;
     // Basic Test.
