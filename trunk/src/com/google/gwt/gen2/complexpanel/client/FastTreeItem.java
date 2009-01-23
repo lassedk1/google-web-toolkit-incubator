@@ -27,66 +27,40 @@ import com.google.gwt.widgetideas.client.overrides.DOMHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FastTreeItem extends UIObject 
-    implements HasFastTreeItems, HasHTML {
+/**
+ * Fast tree item.
+ */
+public class FastTreeItem extends UIObject implements HasFastTreeItems, HasHTML {
 
-  enum TreeNodeState {
-    TREE_NODE_LEAF, 
-    TREE_NODE_INTERIOR_NEVER_OPENED,
-    TREE_NODE_INTERIOR_OPEN,
-    TREE_NODE_INTERIOR_CLOSED
-  }
-  
-  private static final String STYLENAME_SELECTED = "selected";
-  private static final String STYLENAME_CHILDREN = "children";
-  private static final String STYLENAME_LEAF = "gwt-FastTreeItem-leaf";
-  private static final String STYLENAME_LEAF_DEFAULT = "gwt-FastTreeItem " + STYLENAME_LEAF;
-  private static final String STYLENAME_OPEN = "open";
-  private static final String STYLENAME_CLOSED = "closed";
-  private static final String STYLENAME_CONTENT = "treeItemContent";
-  
   /**
-   * Interface used to allow the widget access to css style names. 
-   * <p/> 
+   * Interface used to allow the widget access to css style names.
+   * <p/>
    * The class names indicate the default gwt names for these styles.
    */
   public static interface Css extends FastTree.Css {
-    
-    String selected();
-    
+
     String children();
-    
+
+    String closed();
+
+    @ClassName(STYLENAME_CONTENT)
+    String content();
+
     @ClassName(STYLENAME_LEAF)
     String leaf();
-    
-    String leaf_default();
-    
+
+    String leafDefault();
+
     String open();
-    
-    String closed();
-    
-    @ClassName(STYLENAME_CONTENT)
-    String content();   
+
+    String selected();
   }
-  
+
   /**
    * Creates the standard css instance used for this widget and groups all the
    * css processing under it.
    */
   static class StandardCss extends FastTree.StandardCss implements Css {
-    
-    public StandardCss(String styleName) {
-      super(styleName);
-    }
-    
-    public static Css DEFAULT_TREEITEM_CSS;
-    
-    static Css ensureDefaultCss() {
-      if (DEFAULT_TREEITEM_CSS == null) {
-        DEFAULT_TREEITEM_CSS = new StandardCss(FastTree.STYLENAME_DEFAULT);
-      }
-      return DEFAULT_TREEITEM_CSS;
-    }
 
     /**
      * CSS resource.
@@ -94,38 +68,65 @@ public class FastTreeItem extends UIObject
     public static interface Resources extends FastTree.StandardCss.Resources {
     }
 
+    public static Css DEFAULT_TREEITEM_CSS;
+
+    static Css ensureDefaultCss() {
+      if (DEFAULT_TREEITEM_CSS == null) {
+        DEFAULT_TREEITEM_CSS = new StandardCss(FastTree.STYLENAME_DEFAULT);
+      }
+      return DEFAULT_TREEITEM_CSS;
+    }
+
+    public StandardCss(String styleName) {
+      super(styleName);
+    }
+
+    public String children() {
+      return pad(STYLENAME_CHILDREN);
+    }
+
     public String closed() {
       return pad(STYLENAME_CLOSED);
     }
 
-    public String open() {
-      return pad(STYLENAME_OPEN);
-    }
-    
-    public String selected() {
-      return pad(STYLENAME_SELECTED);
+    public String content() {
+      return pad(STYLENAME_CONTENT);
     }
 
     public String leaf() {
       return pad(STYLENAME_LEAF);
     }
-    
-    public String content() {
-      return pad(STYLENAME_CONTENT);
+
+    public String leafDefault() {
+      return pad(STYLENAME_LEAF_DEFAULT);
     }
-    
-    public String children() {
-      return pad(STYLENAME_CHILDREN);
+
+    public String open() {
+      return pad(STYLENAME_OPEN);
     }
-    
+
+    public String selected() {
+      return pad(STYLENAME_SELECTED);
+    }
+
     private String pad(String styleName) {
       return " " + styleName;
     }
-
-    public String leaf_default() {
-      return pad(STYLENAME_LEAF_DEFAULT);
-    }    
   }
+  enum TreeNodeState {
+    TREE_NODE_LEAF, TREE_NODE_INTERIOR_NEVER_OPENED, TREE_NODE_INTERIOR_OPEN, TREE_NODE_INTERIOR_CLOSED
+  }
+
+  private static final String STYLENAME_SELECTED = "selected";
+  private static final String STYLENAME_CHILDREN = "children";
+  private static final String STYLENAME_LEAF = "gwt-FastTreeItem-leaf";
+  private static final String STYLENAME_LEAF_DEFAULT = "gwt-FastTreeItem "
+      + STYLENAME_LEAF;
+  private static final String STYLENAME_OPEN = "open";
+
+  private static final String STYLENAME_CLOSED = "closed";
+
+  private static final String STYLENAME_CONTENT = "treeItemContent";
 
   /**
    * The base tree item element that will be cloned.
@@ -242,17 +243,17 @@ public class FastTreeItem extends UIObject
       convertElementToInteriorNode(control);
     }
   }
-  
+
   public void becomeLeaf() {
     becomeLeaf(true);
   }
-  
+
   /**
    * @param removeChildNodes
    */
   public void becomeLeaf(boolean removeChildNodes) {
     if (!isLeafNode()) {
-      
+
       // remove child nodes
       if (removeChildNodes) {
         if (isOpen()) {
@@ -264,14 +265,14 @@ public class FastTreeItem extends UIObject
           children = null;
         }
       }
-      
+
       // clear element
       getElement().setInnerHTML("");
-      
+
       // set leaf state
-      state = TreeNodeState.TREE_NODE_LEAF;     
+      state = TreeNodeState.TREE_NODE_LEAF;
       DOM.appendChild(getElement(), contentElement);
-      setStyleName(getElement(), css.leaf_default());
+      setStyleName(getElement(), css.leafDefault());
     }
   }
 
@@ -505,8 +506,30 @@ public class FastTreeItem extends UIObject
     DOM.setInnerText(getElementToAttach(), text);
   }
 
+  public void setTree(FastTree newTree) {
+    if (this.tree == newTree) {
+      return;
+    }
+
+    // Early out.
+    if (this.tree != null) {
+      throw new IllegalStateException(
+          "Each Tree Item must be removed from its current tree before being added to another.");
+    }
+    this.tree = newTree;
+
+    if (widget != null) {
+      // Add my widget to the new tree.
+      newTree.adopt(widget, this);
+    }
+
+    for (int i = 0, n = getChildCount(); i < n; ++i) {
+      children.get(i).setTree(newTree);
+    }
+  }
+
   public void setWidget(Widget widget) {
-    
+
     // Physical detach old from self.
     // Clear out any existing content before adding a widget.
     DOM.setInnerHTML(getElementToAttach(), "");
@@ -528,7 +551,44 @@ public class FastTreeItem extends UIObject
       return null;
     }
   }
-  
+
+  /**
+   * Called after the tree item is closed.
+   */
+  void afterClose() {
+    tree.afterClose(this);
+  }
+
+  /**
+   * Called after the tree item is opened.
+   */
+  void afterOpen() {
+    tree.afterOpen(this);
+  }
+
+  /**
+   * Called before the tree item is closed.
+   */
+  void beforeClose() {
+    tree.beforeClose(this);
+  }
+
+  /**
+   * Called before the tree item is opened.
+   */
+  boolean beforeOpen(boolean isFirstTime) {
+    tree.beforeOpen(this, isFirstTime);
+    return isFirstTime;
+  }
+
+  /**
+   * Called when tree item is being unselected. Returning <code>false</code>
+   * cancels the unselection.
+   */
+  boolean beforeSelectionLost() {
+    return true;
+  }
+
   void clearTree() {
     if (tree != null) {
       if (widget != null) {
@@ -549,12 +609,12 @@ public class FastTreeItem extends UIObject
   }
 
   void convertElementToInteriorNode(Element control) {
-    
+
     // remove dependent style name
     setStyleName(getElement(), getStylePrimaryName() + "-leaf", false);
     DOM.appendChild(getElement(), control);
   }
-  
+
   Element createLeafElement() {
     Element elem = DOMHelper.clone(TREE_LEAF, true);
     contentElement = DOMHelper.rawFirstChild(elem);
@@ -587,6 +647,13 @@ public class FastTreeItem extends UIObject
     return contentElement;
   }
 
+  /**
+   * Called when a tree item is selected.
+   */
+  void onSelected() {
+    tree.onSelected(this);
+  }
+
   void setParentItem(FastTreeItem parent) {
     this.parent = parent;
   }
@@ -595,35 +662,13 @@ public class FastTreeItem extends UIObject
    * Selects or deselects this item.
    * 
    * @param selected {@code true} to select the item, {@code false} to deselect
-   *        it.
+   *          it.
    */
   void setSelection(boolean selected, boolean fireEvents) {
     tree.beforeSelected(this);
     setStyleName(getControlElement(), css.selected(), selected);
     if (selected && fireEvents) {
       onSelected();
-    }
-  }
-
-  public void setTree(FastTree newTree) {
-    if (this.tree == newTree) {
-      return;
-    }
-
-    // Early out.
-    if (this.tree != null) {
-      throw new IllegalStateException(
-          "Each Tree Item must be removed from its current tree before being added to another.");
-    }
-    this.tree = newTree;
-
-    if (widget != null) {
-      // Add my widget to the new tree.
-      newTree.adopt(widget, this);
-    }
-
-    for (int i = 0, n = getChildCount(); i < n; ++i) {
-      children.get(i).setTree(newTree);
     }
   }
 
@@ -673,7 +718,7 @@ public class FastTreeItem extends UIObject
       widget = null;
     }
   }
-  
+
   private void showClosedImage() {
     setStyleName(getControlElement(), css.open(), false);
     setStyleName(getControlElement(), css.closed(), true);
@@ -683,48 +728,4 @@ public class FastTreeItem extends UIObject
     setStyleName(getControlElement(), css.closed(), false);
     setStyleName(getControlElement(), css.open(), true);
   }
-  
-  /**
-   * Called after the tree item is closed.
-   */
-  void afterClose() {
-    tree.afterClose(this);
-  }
-
-  /**
-   * Called after the tree item is opened.
-   */
-  void afterOpen() {
-    tree.afterOpen(this);
-  }
-
-  /**
-   * Called before the tree item is closed.
-   */
-  void beforeClose() {
-    tree.beforeClose(this);
-  }
-
-  /**
-   * Called before the tree item is opened.
-   */
-  boolean beforeOpen(boolean isFirstTime) {
-    tree.beforeOpen(this, isFirstTime);
-    return isFirstTime;
-  }
-
-  /**
-   * Called when tree item is being unselected. Returning <code>false</code>
-   * cancels the unselection.
-   */
-  boolean beforeSelectionLost() {
-    return true;
-  }
-
-  /**
-   * Called when a tree item is selected.
-   */
-  void onSelected() {
-    tree.onSelected(this);
-  } 
 }
