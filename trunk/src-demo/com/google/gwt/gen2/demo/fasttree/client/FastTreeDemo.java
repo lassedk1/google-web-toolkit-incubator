@@ -16,11 +16,20 @@
 package com.google.gwt.gen2.demo.fasttree.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.logical.shared.OpenEvent;
+import com.google.gwt.event.logical.shared.OpenHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.gen2.commonevent.shared.BeforeCloseEvent;
+import com.google.gwt.gen2.commonevent.shared.BeforeCloseHandler;
 import com.google.gwt.gen2.commonevent.shared.BeforeOpenEvent;
 import com.google.gwt.gen2.commonevent.shared.BeforeOpenHandler;
 import com.google.gwt.gen2.complexpanel.client.FastTree;
 import com.google.gwt.gen2.complexpanel.client.FastTreeItem;
 import com.google.gwt.gen2.complexpanel.client.HasFastTreeItems;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -30,8 +39,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Demo for the new fast tree.
- * 
+ * Fast tree demo.
  */
 public class FastTreeDemo implements EntryPoint {
 
@@ -95,14 +103,67 @@ public class FastTreeDemo implements EntryPoint {
     return t;
   }
 
-  private void lazyCreateChild(final HasFastTreeItems parent, final int index,
-      final int children) {
+  protected Widget verboseTree() {
+    FastTree tree = new FastTree();
+    verboseTreeItem(tree, 10);
+    tree.addOpenHandler(new OpenHandler<FastTreeItem>() {
 
-    final FastTreeItem item = new FastTreeItem("child" + index + " ("
-        + children + " children)");
+      public void onOpen(OpenEvent<FastTreeItem> event) {
+        Window.alert("Opened " + event.getTarget().getHTML());
+      }
+    });
+    tree.addCloseHandler(new CloseHandler<FastTreeItem>() {
 
-    item.becomeInteriorNode();
-    parent.addItem(item);
+      public void onClose(CloseEvent<FastTreeItem> event) {
+        Window.alert("Close " + event.getTarget().getHTML());
+      }
+    });
+    tree.addSelectionHandler(new SelectionHandler<FastTreeItem>() {
+
+      public void onSelection(SelectionEvent<FastTreeItem> event) {
+        Window.alert("You selected " + event.getSelectedItem().getHTML());
+      }
+    });
+    tree.addBeforeOpenHandler(new BeforeOpenHandler<FastTreeItem>() {
+
+      public void onBeforeOpen(BeforeOpenEvent<FastTreeItem> event) {
+        if (Window.confirm("Would you like to change the name of the item before opening it?")) {
+          event.getTarget().setHTML("Name changed before open.");
+        }
+      }
+    });
+    tree.addBeforeCloseHandler(new BeforeCloseHandler<FastTreeItem>() {
+
+      public void onBeforeClose(BeforeCloseEvent<FastTreeItem> event) {
+        if (Window.confirm("Would you like to change the name of the item before closing it?")) {
+          event.getTarget().setHTML("Name changed before close.");
+        }
+      }
+    });
+    return tree;
+  }
+
+  private Widget crazyTree() {
+    FastTree tree = new FastTree();
+    FastTreeItem a = tree.addItem("I am root");
+    a.addItem("I am root's child");
+    FastTreeItem aXb = a.addItem("Root to become leaf.");
+    aXb.addItem("a grand child");
+    for (int i = 0; i < 10; i++) {
+      aXb.addItem("grand child " + i);
+    }
+    tree.addOpenHandler(new OpenHandler<FastTreeItem>() {
+
+      public void onOpen(OpenEvent<FastTreeItem> event) {
+        if (!event.getTarget().isLeafNode()) {
+          if (Window.confirm("Would you like me to become a leaf?")) {
+            event.getTarget().becomeLeaf();
+          }
+        }
+      }
+    });
+
+    return tree;
   }
 
   private void lazyCreateChild(final HasFastTreeItems parent, final int index,
