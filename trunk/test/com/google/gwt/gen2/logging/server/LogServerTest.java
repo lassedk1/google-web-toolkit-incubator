@@ -14,9 +14,12 @@
  * the License.
  */
 
-package com.google.gwt.gen2.logging.shared;
+package com.google.gwt.gen2.logging.server;
 
 import com.google.gwt.gen2.logging.handler.shared.ListLogHandler;
+import com.google.gwt.gen2.logging.shared.Level;
+import com.google.gwt.gen2.logging.shared.Log;
+import com.google.gwt.gen2.logging.shared.SmartLogHandler;
 
 import junit.framework.TestCase;
 

@@ -20,6 +20,8 @@ import com.google.gwt.gen2.commonwidget.client.DecoratorTest;
 import com.google.gwt.gen2.event.dom.client.EventsTest;
 import com.google.gwt.gen2.event.dom.client.GWTEventsTest;
 import com.google.gwt.gen2.event.shared.JSHanderRegistryTest;
+import com.google.gwt.gen2.logging.client.LogClientTest;
+import com.google.gwt.gen2.logging.server.LogServerTest;
 import com.google.gwt.gen2.selection.client.DropDownListBoxTest;
 
 import junit.framework.Test;
@@ -38,6 +40,8 @@ public class Gen2Suite {
     suite.addTestSuite(JSHanderRegistryTest.class);
     suite.addTestSuite(DropDownListBoxTest.class);
     suite.addTestSuite(DecoratorTest.class);
+    suite.addTestSuite(LogServerTest.class);
+    suite.addTestSuite(LogClientTest.class);
     return suite;
   }
 }
