@@ -16,6 +16,11 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.gen2.table.event.client.PageChangeEvent;
 import com.google.gwt.gen2.table.event.client.PageChangeHandler;
 import com.google.gwt.gen2.table.event.client.PageCountChangeEvent;
@@ -25,14 +30,12 @@ import com.google.gwt.gen2.table.event.client.PageLoadHandler;
 import com.google.gwt.gen2.table.event.client.PagingFailureEvent;
 import com.google.gwt.gen2.table.event.client.PagingFailureHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ImageBundle;
-import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
@@ -257,24 +260,28 @@ public class PagingOptions extends Composite {
     curPageBox.setTextAlignment(TextBoxBase.ALIGN_RIGHT);
 
     // Disallow non-numeric pages
-    KeyboardListenerAdapter listener = new KeyboardListenerAdapter() {
-      @Override
-      public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-        if (keyCode == (char) KEY_ENTER) {
+    KeyPressHandler handler = new KeyPressHandler() {
+      public void onKeyPress(KeyPressEvent event) {
+        char charCode = event.getCharCode();
+        if (charCode == KeyCodes.KEY_ENTER) {
           PagingOptions.this.table.gotoPage(getPagingBoxValue(), false);
-        } else if ((!Character.isDigit(keyCode)) && (keyCode != (char) KEY_TAB)
-            && (keyCode != (char) KEY_BACKSPACE)
-            && (keyCode != (char) KEY_DELETE) && (keyCode != (char) KEY_ENTER)
-            && (keyCode != (char) KEY_HOME) && (keyCode != (char) KEY_END)
-            && (keyCode != (char) KEY_LEFT) && (keyCode != (char) KEY_UP)
-            && (keyCode != (char) KEY_RIGHT) && (keyCode != (char) KEY_DOWN)) {
-          ((TextBox) sender).cancelKey();
+        } else if (!Character.isDigit(charCode)
+            && (charCode != KeyCodes.KEY_TAB)
+            && (charCode != KeyCodes.KEY_BACKSPACE)
+            && (charCode != KeyCodes.KEY_DELETE)
+            && (charCode != KeyCodes.KEY_ENTER)
+            && (charCode != KeyCodes.KEY_HOME)
+            && (charCode != KeyCodes.KEY_END)
+            && (charCode != KeyCodes.KEY_LEFT) && (charCode != KeyCodes.KEY_UP)
+            && (charCode != KeyCodes.KEY_RIGHT)
+            && (charCode != KeyCodes.KEY_DOWN)) {
+          curPageBox.cancelKey();
         }
       }
     };
 
-    // Add the listener
-    curPageBox.addKeyboardListener(listener);
+    // Add the handler
+    curPageBox.addKeyPressHandler(handler);
   }
 
   /**
@@ -294,25 +301,26 @@ public class PagingOptions extends Composite {
     lastImage.addStyleName(STYLENAME_PREFIX + "LastPage");
 
     // Create the listener
-    ClickListener listener = new ClickListener() {
-      public void onClick(Widget sender) {
-        if (sender == firstImage) {
+    ClickHandler handler = new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        Object source = event.getSource();
+        if (source == firstImage) {
           table.gotoFirstPage();
-        } else if (sender == lastImage) {
+        } else if (source == lastImage) {
           table.gotoLastPage();
-        } else if (sender == nextImage) {
+        } else if (source == nextImage) {
           table.gotoNextPage();
-        } else if (sender == prevImage) {
+        } else if (source == prevImage) {
           table.gotoPreviousPage();
         }
       }
     };
 
     // Add the listener to each image
-    firstImage.addClickListener(listener);
-    prevImage.addClickListener(listener);
-    nextImage.addClickListener(listener);
-    lastImage.addClickListener(listener);
+    firstImage.addClickHandler(handler);
+    prevImage.addClickHandler(handler);
+    nextImage.addClickHandler(handler);
+    lastImage.addClickHandler(handler);
   }
 
   /**

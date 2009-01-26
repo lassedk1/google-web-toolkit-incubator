@@ -16,12 +16,12 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.table.override.client.HTMLTable;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.ImageBundle;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -33,11 +33,14 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
  * An abstract representation of an editor used to edit the contents of a cell.
  * 
  * <h3>CSS Style Rules</h3>
- * <ul class="css">
- * <li> .gwt-InlineCellEditor { applied to the entire widget } </li>
- * <li> .gwt-InlineCellEditor .accept { applied to the accept image } </li>
- * <li> .gwt-InlineCellEditor .cancel { applied to the cancel image } </li>
- * </ul>
+ * <dl>
+ * <dt>.gwt-InlineCellEditor</dt>
+ * <dd>applied to the entire widget</dd>
+ * <dt>.gwt-InlineCellEditor .accept</dt>
+ * <dd>applied to the accept image</dd>
+ * <dt>.gwt-InlineCellEditor .cancel</dt>
+ * <dd>applied to the cancel image</dd>
+ * </dl>
  * 
  * @param <ColType> the data type of the column
  */
@@ -67,21 +70,9 @@ public abstract class InlineCellEditor<ColType> extends PopupPanel implements
    * amount of machinery to receive clicks for delegation to the parent.
    */
   private static final class ClickDecoratorPanel extends SimplePanel {
-    private ClickListener delegate;
-
-    public ClickDecoratorPanel(Widget child, ClickListener delegate) {
-      this.delegate = delegate;
+    public ClickDecoratorPanel(Widget child, ClickHandler delegate) {
       setWidget(child);
-      sinkEvents(Event.ONCLICK);
-    }
-
-    @Override
-    public void onBrowserEvent(Event event) {
-      // No need for call to super.
-      switch (DOM.eventGetType(event)) {
-        case Event.ONCLICK:
-          delegate.onClick(this);
-      }
+      addDomHandler(delegate, ClickEvent.getType());
     }
   }
 
@@ -93,8 +84,8 @@ public abstract class InlineCellEditor<ColType> extends PopupPanel implements
   /**
    * The click listener used to accept.
    */
-  private ClickListener cancelListener = new ClickListener() {
-    public void onClick(Widget sender) {
+  private ClickHandler cancelHandler = new ClickHandler() {
+    public void onClick(ClickEvent event) {
       cancel();
     }
   };
@@ -102,8 +93,8 @@ public abstract class InlineCellEditor<ColType> extends PopupPanel implements
   /**
    * The click listener used to accept.
    */
-  private ClickListener acceptListener = new ClickListener() {
-    public void onClick(Widget sender) {
+  private ClickHandler acceptHandler = new ClickHandler() {
+    public void onClick(ClickEvent event) {
       accept();
     }
   };
@@ -320,7 +311,7 @@ public abstract class InlineCellEditor<ColType> extends PopupPanel implements
    * @param w the widget
    */
   protected void setAcceptWidget(Widget w) {
-    ClickDecoratorPanel clickPanel = new ClickDecoratorPanel(w, acceptListener);
+    ClickDecoratorPanel clickPanel = new ClickDecoratorPanel(w, acceptHandler);
     clickPanel.setStyleName("accept");
     layoutTable.setWidget(1, 1, clickPanel);
   }
@@ -331,7 +322,7 @@ public abstract class InlineCellEditor<ColType> extends PopupPanel implements
    * @param w the widget
    */
   protected void setCancelWidget(Widget w) {
-    ClickDecoratorPanel clickPanel = new ClickDecoratorPanel(w, cancelListener);
+    ClickDecoratorPanel clickPanel = new ClickDecoratorPanel(w, cancelHandler);
     clickPanel.setStyleName("cancel");
     layoutTable.setWidget(1, 2, clickPanel);
   }
