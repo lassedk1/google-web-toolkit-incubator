@@ -227,7 +227,7 @@ public class CssProperty extends CssNode {
   }
 
   /**
-   * Represents one or more unquoted string literals.
+   * Represents one or more quoted string literals.
    */
   public static class StringValue implements Value {
     private final String value;

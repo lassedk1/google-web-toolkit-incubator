@@ -77,6 +77,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Generates a CssStylesheet from the contents of a URL.
@@ -694,6 +696,15 @@ public class GenerateCssAst {
       currentParent.push(newParent);
     }
 
+    /**
+     * Used when evaluating literal() rules.
+     */
+    private String unescapeLiteral(String s) {
+      s = s.replaceAll(Pattern.quote("\\\""), "\"");
+      s = s.replaceAll(Pattern.quote("\\\\"), Matcher.quoteReplacement("\\"));
+      return s;
+    }
+
     private String valueOf(Condition condition) {
       if (condition instanceof AttributeCondition) {
         AttributeCondition c = (AttributeCondition) condition;
@@ -746,7 +757,7 @@ public class GenerateCssAst {
         case LexicalUnit.SAC_ATTR:
           return new StringValue("attr(" + value.getStringValue() + ")");
         case LexicalUnit.SAC_IDENT:
-          return new IdentValue(value.getStringValue());
+          return new IdentValue(escapeIdent(value.getStringValue()));
         case LexicalUnit.SAC_STRING_VALUE:
           return new StringValue(
               '"' + escapeValue(value.getStringValue(), true) + '"');
@@ -799,6 +810,29 @@ public class GenerateCssAst {
                 ? maybeUnquote(((StringValue) params.get(2)).getValue()) : "";
 
             return new DotPathValue(dotPath, suffix);
+          } else if (value.getFunctionName().equals(LITERAL_FUNCTION_NAME)) {
+            // This is a call to value()
+            List<Value> params = new ArrayList<Value>();
+            extractValueOf(params, value.getParameters());
+
+            if (params.size() != 1) {
+              throw new CSSException(CSSException.SAC_SYNTAX_ERR,
+                  "Incorrect number of parameters to " + LITERAL_FUNCTION_NAME,
+                  null);
+            }
+
+            Value expression = params.get(0);
+            if (!(expression instanceof StringValue)) {
+              throw new CSSException(CSSException.SAC_SYNTAX_ERR,
+                  "The single argument to " + LITERAL_FUNCTION_NAME
+                      + " must be a string value", null);
+            }
+
+            String s = maybeUnquote(((StringValue) expression).getValue());
+            s = unescapeLiteral(s);
+
+            return new IdentValue(s);
+
           } else {
             // Just return a String representation of the original value
             List<Value> parameters = new ArrayList<Value>();
@@ -901,6 +935,7 @@ public class GenerateCssAst {
     }
   }
 
+  private static final String LITERAL_FUNCTION_NAME = "literal";
   private static final String VALUE_FUNCTION_NAME = "value";
 
   /**
