@@ -15,13 +15,14 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client.option.highlight;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.CustomForm;
 import com.google.gwt.gen2.table.client.SelectionGrid;
 import com.google.gwt.gen2.table.client.SelectionGrid.SelectionPolicy;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -68,8 +69,8 @@ public class RowSelectionPolicyOption extends AbstractOption {
 
     // Add button to change policy
     {
-      Button button = new Button("Set Selection Policy", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Set Selection Policy", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           SelectionGrid grid = ScrollTableDemo.get().getDataTable();
           switch (policyBox.getSelectedIndex()) {
             case 0:
@@ -92,8 +93,8 @@ public class RowSelectionPolicyOption extends AbstractOption {
 
     // Add button to change status
     {
-      Button button = new Button("Toggle Status", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Toggle Status", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           SelectionGrid grid = ScrollTableDemo.get().getDataTable();
           grid.setSelectionEnabled(!grid.isSelectionEnabled());
           refreshPolicy();

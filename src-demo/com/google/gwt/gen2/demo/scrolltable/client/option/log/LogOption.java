@@ -16,6 +16,8 @@
 package com.google.gwt.gen2.demo.scrolltable.client.option.log;
 
 import com.google.gwt.core.client.Duration;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.PagingScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.StudentPagingScrollTable;
@@ -43,7 +45,6 @@ import com.google.gwt.gen2.table.event.client.TableEvent.Row;
 import com.google.gwt.gen2.table.override.client.FlexTable;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -97,8 +98,8 @@ public class LogOption extends AbstractOption {
     layout.getFlexCellFormatter().setColSpan(0, 0, 2);
 
     // Add a clear button
-    Button clearButton = new Button("Clear Log", new ClickListener() {
-      public void onClick(Widget sender) {
+    Button clearButton = new Button("Clear Log", new ClickHandler() {
+      public void onClick(ClickEvent event) {
         logLabel.setHTML("");
         lineCount = 0;
       }

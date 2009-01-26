@@ -15,12 +15,13 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client.option.sort;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.CustomForm;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -52,8 +53,8 @@ public class SwapRowsOption extends AbstractOption {
 
     // Add button to swap rows
     {
-      Button button = new Button("Swap Rows", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Swap Rows", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           try {
             int row1 = Integer.parseInt(rowBox1.getText());
             int row2 = Integer.parseInt(rowBox2.getText());
@@ -72,8 +73,8 @@ public class SwapRowsOption extends AbstractOption {
 
     // Add button to reverse all rows
     {
-      Button button = new Button("Reverse All Rows", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Reverse All Rows", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           ScrollTableDemo.get().getDataTable().reverseRows();
         }
       });
