@@ -172,6 +172,9 @@ public class CSSResourceTest extends LibTestBase {
     assertTrue(text.contains(".ns\\:tag:pseudo"));
     assertTrue(text.contains("\"Hello world\""));
 
+    // Check invalid CSS values
+    assertTrue(text.contains("top:expression(document.compatMode==\"CSS1Compat\" ? documentElement.scrollTop:document.body.scrollTop \\ 2);"));
+
     // Check data URL expansion
     assertTrue(text.contains(Resources.INSTANCE.dataMethod().getUrl()));
 

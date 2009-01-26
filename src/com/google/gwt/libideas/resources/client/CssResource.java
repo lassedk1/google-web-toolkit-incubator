@@ -63,12 +63,16 @@ import java.lang.annotation.Target;
  * {@link ImageResource} accessor function. Additional properties may be
  * specified in the rule block.</li>
  * <li>{@code @url NAME siblingDataResource; .myClass background: NAME
- * repeat-x;} Use a DataResource to generate a <code>url('...'}</code> value.</li>
+ * repeat-x;} Use a {@link DataResource} to generate a <code>url('...'}</code> value.</li>
  * </ul>
  * 
  * <p>
  * Currently-supported CSS functions:
+ * 
  * <ul>
+ * <li>{@code literal("expression")} substitutes a property value that does not
+ * conform to CSS2 parsing rules. The escape sequences {@code \"} and {@code \\}
+ * will be replaced with {@code "} and {@code \} respectively.
  * <li>{@code value("bundleFunction.someFunction[.other[...]]" [, "suffix"])}
  * substitute the value of a sequence of named zero-arg function invocations. An
  * optional suffix will be appended to the return value of the function. The

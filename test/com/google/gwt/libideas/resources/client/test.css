@@ -101,10 +101,15 @@ div[foo="bar"] {
 /* Test unusual tag, class, and property names and values */
 div {
   \-some-wacky-extension : boo;
+  another-extension: \-bar;
 }
 
 div {
   filter: "alpha(opacity = 30)";
+}
+
+div-with-literal {
+  top: literal("expression(document.compatMode==\"CSS1Compat\" ? documentElement.scrollTop:document.body.scrollTop \\ 2)");
 }
 
 .ns\:tag {
