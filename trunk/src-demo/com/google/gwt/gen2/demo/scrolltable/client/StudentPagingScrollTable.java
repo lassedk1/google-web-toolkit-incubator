@@ -15,6 +15,8 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.StudentColumnDefinition.Group;
 import com.google.gwt.gen2.demo.scrolltable.shared.Student;
 import com.google.gwt.gen2.table.client.ColumnDefinition;
@@ -25,9 +27,7 @@ import com.google.gwt.gen2.table.client.TableDefinition;
 import com.google.gwt.gen2.table.client.TableModel;
 import com.google.gwt.gen2.table.override.client.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Iterator;
 import java.util.List;
@@ -61,9 +61,9 @@ public class StudentPagingScrollTable extends PagingScrollTable<Student> {
     super(tableModel, dataTable, headerTable, tableDefinition);
 
     // Setup the selectAll checkbox
-    selectAllCheckBox.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
-        if (selectAllCheckBox.isChecked()) {
+    selectAllCheckBox.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        if (selectAllCheckBox.getValue()) {
           getDataTable().selectAllRows();
         } else {
           getDataTable().deselectAllRows();

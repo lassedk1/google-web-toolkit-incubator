@@ -15,11 +15,12 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client.option.setup;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.CustomForm;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.ResizableWidgetCollection;
@@ -57,8 +58,8 @@ public class ResizeCheckingOption extends AbstractOption {
 
     // Add button to change status
     {
-      Button button = new Button("Toggle Resize Checking", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Toggle Resize Checking", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           ResizableWidgetCollection.get().setResizeCheckingEnabled(
               !ResizableWidgetCollection.get().isResizeCheckingEnabled());
           refreshStatus();
@@ -69,8 +70,8 @@ public class ResizeCheckingOption extends AbstractOption {
 
     // Add a button to resize the table now
     {
-      Button button = new Button("Redraw Now", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Redraw Now", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           ScrollTableDemo.get().getScrollTable().redraw();
         }
       });

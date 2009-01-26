@@ -15,12 +15,13 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client.option.column;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.CustomForm;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -53,8 +54,8 @@ public class CellPaddingAndSpacingOption extends AbstractOption {
     // Add button to set padding and spacing
     {
       Button button = new Button("Set Padding and Spacing",
-          new ClickListener() {
-            public void onClick(Widget sender) {
+          new ClickHandler() {
+            public void onClick(ClickEvent event) {
               try {
                 int padding = Integer.parseInt(paddingBox.getText());
                 int spacing = Integer.parseInt(spacingBox.getText());

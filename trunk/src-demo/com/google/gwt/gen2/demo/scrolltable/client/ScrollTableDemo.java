@@ -16,6 +16,10 @@
 package com.google.gwt.gen2.demo.scrolltable.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.column.CellPaddingAndSpacingOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.column.ColumnResizePolicyOption;
@@ -45,7 +49,6 @@ import com.google.gwt.gen2.table.override.client.FlexTable;
 import com.google.gwt.gen2.table.override.client.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
@@ -54,7 +57,6 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.HashMap;
@@ -197,15 +199,12 @@ public class ScrollTableDemo implements EntryPoint {
       Tree menu = new Tree();
 
       // Attach a tree listener
-      menu.addTreeListener(new TreeListener() {
-        public void onTreeItemSelected(TreeItem item) {
-          Widget option = optionMap.get(item);
+      menu.addSelectionHandler(new SelectionHandler<TreeItem>() {
+        public void onSelection(SelectionEvent<TreeItem> event) {
+          Widget option = optionMap.get(event.getSelectedItem());
           if (option != null) {
             optionWrapper.setWidget(option);
           }
-        }
-
-        public void onTreeItemStateChanged(TreeItem item) {
         }
       });
 
@@ -287,9 +286,9 @@ public class ScrollTableDemo implements EntryPoint {
 
     // Create the select all checkbox
     final CheckBox selectAll = new CheckBox();
-    selectAll.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
-        if (selectAll.isChecked()) {
+    selectAll.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        if (selectAll.getValue()) {
           getDataTable().selectAllRows();
         } else {
           getDataTable().deselectAllRows();

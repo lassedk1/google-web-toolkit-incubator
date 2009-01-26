@@ -15,11 +15,12 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client.option.setup;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.CustomForm;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -50,8 +51,8 @@ public class TableSizeOption extends AbstractOption {
 
     // Add button to change status
     {
-      Button button = new Button("Set Table Size", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Set Table Size", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           String height = heightBox.getText();
           String width = widthBox.getText();
           ScrollTableDemo.get().getScrollTable().setSize(width, height);

@@ -15,11 +15,12 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client.option.paging;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.PagingScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.table.override.client.FlexTable;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -51,8 +52,8 @@ public class ModeSelectionOption extends AbstractOption {
     // Error Mode
     {
       final int rowCount = layout.getRowCount();
-      Button button = new Button("Toggle Error Mode", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Toggle Error Mode", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           if (PagingScrollTableDemo.get().getTableModel().isErrorModeEnabled()) {
             PagingScrollTableDemo.get().getTableModel().setErrorModeEnabled(
                 false);
@@ -74,8 +75,8 @@ public class ModeSelectionOption extends AbstractOption {
     // RPC Mode
     {
       final int rowCount = layout.getRowCount();
-      Button button = new Button("Toggle RPC Mode", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Toggle RPC Mode", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           if (PagingScrollTableDemo.get().getTableModel().isRPCModeEnabled()) {
             PagingScrollTableDemo.get().getTableModel().setRPCModeEnabled(false);
             layout.setText(rowCount, 1, "disabled");
@@ -95,8 +96,8 @@ public class ModeSelectionOption extends AbstractOption {
     // Zero Mode
     {
       final int rowCount = layout.getRowCount();
-      Button button = new Button("Toggle Zero Mode", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Toggle Zero Mode", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           if (PagingScrollTableDemo.get().getTableModel().isZeroModeEnabled()) {
             PagingScrollTableDemo.get().getTableModel().setZeroModeEnabled(
                 false);
