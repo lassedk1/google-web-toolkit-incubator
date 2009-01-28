@@ -30,7 +30,7 @@ public class CssProperty extends CssNode {
   /**
    * Represents a sequence of no-arg method invocations.
    */
-  public static class DotPathValue implements Value {
+  public static class DotPathValue extends Value {
     private final String path;
     private final String suffix;
 
@@ -52,24 +52,21 @@ public class CssProperty extends CssNode {
       return suffix;
     }
 
+    @Override
+    public DotPathValue isDotPathValue() {
+      return this;
+    }
+
     public String toCss() {
       return "value(\"" + path + "\""
           + (suffix == null ? "" : (", \"" + suffix + "\"")) + ")";
-    }
-
-    /**
-     * For debugging only.
-     */
-    @Override
-    public String toString() {
-      return path + "()" + (suffix != null ? " " + suffix : "");
     }
   }
 
   /**
    * Represents a literal Java expression.
    */
-  public static class ExpressionValue implements Value {
+  public static class ExpressionValue extends Value {
     private final String expression;
 
     public ExpressionValue(String expression) {
@@ -78,6 +75,11 @@ public class CssProperty extends CssNode {
 
     public String getExpression() {
       return expression;
+    }
+
+    @Override
+    public ExpressionValue isExpressionValue() {
+      return this;
     }
 
     public String toCss() {
@@ -96,7 +98,7 @@ public class CssProperty extends CssNode {
   /**
    * Represents an identifier in the CSS source.
    */
-  public static class IdentValue implements Value {
+  public static class IdentValue extends Value {
     private final String ident;
 
     public IdentValue(String ident) {
@@ -111,15 +113,12 @@ public class CssProperty extends CssNode {
       return ident;
     }
 
-    public String toCss() {
-      return ident;
+    @Override
+    public IdentValue isIdentValue() {
+      return this;
     }
 
-    /**
-     * For debugging only.
-     */
-    @Override
-    public String toString() {
+    public String toCss() {
       return ident;
     }
   }
@@ -127,7 +126,7 @@ public class CssProperty extends CssNode {
   /**
    * Represents a space-separated list of Values.
    */
-  public static class ListValue implements Value {
+  public static class ListValue extends Value {
     private final List<Value> values;
 
     public ListValue(List<Value> values) {
@@ -153,27 +152,24 @@ public class CssProperty extends CssNode {
       return values;
     }
 
+    @Override
+    public ListValue isListValue() {
+      return this;
+    }
+
     public String toCss() {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       for (Value v : values) {
         sb.append(" ").append(v.toCss());
       }
       return sb.substring(1);
-    }
-
-    /**
-     * For debugging only.
-     */
-    @Override
-    public String toString() {
-      return values.toString();
     }
   }
 
   /**
    * Represents a numeric value, possibly with attached units.
    */
-  public static class NumberValue implements Value {
+  public static class NumberValue extends Value {
     private final String expression;
     private final String units;
     private final float value;
@@ -213,23 +209,20 @@ public class CssProperty extends CssNode {
       return value;
     }
 
-    public String toCss() {
-      return value + (units != null ? units : "");
+    @Override
+    public NumberValue isNumberValue() {
+      return this;
     }
 
-    /**
-     * For debugging only.
-     */
-    @Override
-    public String toString() {
-      return toCss();
+    public String toCss() {
+      return value + (units != null ? units : "");
     }
   }
 
   /**
    * Represents one or more quoted string literals.
    */
-  public static class StringValue implements Value {
+  public static class StringValue extends Value {
     private final String value;
 
     public StringValue(String value) {
@@ -244,9 +237,53 @@ public class CssProperty extends CssNode {
       return value;
     }
 
+    @Override
+    public StringValue isStringValue() {
+      return this;
+    }
+
     public String toCss() {
       return '"' + value + '"';
     }
+  }
+
+  /**
+   * An abstract encapsulation of property values in GWT CSS.
+   */
+  public abstract static class Value {
+    /**
+     * Generate a Java expression whose execution results in the value.
+     */
+    public abstract String getExpression();
+
+    public DotPathValue isDotPathValue() {
+      return null;
+    }
+
+    public ExpressionValue isExpressionValue() {
+      return null;
+    }
+
+    public IdentValue isIdentValue() {
+      return null;
+    }
+
+    public ListValue isListValue() {
+      return null;
+    }
+
+    public NumberValue isNumberValue() {
+      return null;
+    }
+
+    public StringValue isStringValue() {
+      return null;
+    }
+
+    /**
+     * Generate a CSS expression that represents the Value.
+     */
+    public abstract String toCss();
 
     /**
      * For debugging only.
@@ -255,21 +292,6 @@ public class CssProperty extends CssNode {
     public String toString() {
       return toCss();
     }
-  }
-
-  /**
-   * An abstract encapsulation of property values in GWT CSS.
-   */
-  public interface Value {
-    /**
-     * Generate a Java expression whose execution results in the value.
-     */
-    String getExpression();
-
-    /**
-     * Generate a CSS expression that represents the Value.
-     */
-    String toCss();
   }
 
   private boolean important;
@@ -304,9 +326,8 @@ public class CssProperty extends CssNode {
   }
 
   public void setValue(Value value) {
-    if (value instanceof ListValue) {
-      this.value = (ListValue) value;
-    } else {
+    this.value = value.isListValue();
+    if (this.value == null) {
       this.value = new ListValue(value);
     }
   }

@@ -313,21 +313,20 @@ public class GenerateCssAst {
             null);
       }
 
-      if (!(values.get(0) instanceof IdentValue)) {
+      IdentValue defName = values.get(0).isIdentValue();
+
+      if (defName == null) {
         throw new CSSException(CSSException.SAC_SYNTAX_ERR,
             "First lexical unit must be an identifier", null);
       }
-
-      IdentValue defName = (IdentValue) values.get(0);
 
       /*
        * Replace any references to previously-seen @def constructs. We do
        * expansion up-front to prevent the need for cycle-detection later.
        */
       for (ListIterator<Value> it = values.listIterator(1); it.hasNext();) {
-        Value v = it.next();
-        if (v instanceof IdentValue) {
-          IdentValue maybeDefReference = (IdentValue) v;
+        IdentValue maybeDefReference = it.next().isIdentValue();
+        if (maybeDefReference != null) {
           CssDef previousDef = defs.get(maybeDefReference.getIdent());
           if (previousDef != null) {
             it.remove();

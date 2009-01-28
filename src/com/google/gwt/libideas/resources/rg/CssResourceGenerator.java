@@ -31,6 +31,7 @@ import com.google.gwt.dev.util.Util;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.libideas.resources.client.CssResource;
 import com.google.gwt.libideas.resources.client.DataResource;
+import com.google.gwt.libideas.resources.client.ImageResource;
 import com.google.gwt.libideas.resources.client.CssResource.ClassName;
 import com.google.gwt.libideas.resources.client.CssResource.Import;
 import com.google.gwt.libideas.resources.client.CssResource.ImportedWithPrefix;
@@ -429,7 +430,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
      * Records if we're currently visiting a CssRule whose only selector is
      * "body".
      */
-    boolean inBodyRule;
+    private boolean inBodyRule;
 
     @Override
     public void endVisit(CssProperty x, Context ctx) {
@@ -477,6 +478,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       for (ListIterator<Value> it = values.listIterator(); it.hasNext();) {
         Value v = it.next();
         Value maybeFlipped = flipLeftRightIdentValue(v);
+        NumberValue nv = v.isNumberValue();
         if (v != maybeFlipped) {
           it.set(maybeFlipped);
           seenLeft = true;
@@ -484,9 +486,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         } else if (isIdent(v, "center")) {
           seenLeft = true;
 
-        } else if (!seenLeft && v instanceof NumberValue) {
+        } else if (!seenLeft && (nv != null)) {
           seenLeft = true;
-          NumberValue nv = (NumberValue) v;
           if ("%".equals(nv.getUnits())) {
             float position = 100f - nv.getValue();
             it.set(new NumberValue(position, "%"));
@@ -528,11 +529,12 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     }
 
     Value propertyHandlerCursor(Value v) {
-      if (!(v instanceof IdentValue)) {
+      IdentValue identValue = v.isIdentValue();
+      if (identValue == null) {
         return v;
       }
 
-      String ident = ((IdentValue) v).getIdent().toLowerCase();
+      String ident = identValue.getIdent().toLowerCase();
       if (!ident.endsWith("-resize")) {
         return v;
       }
@@ -662,8 +664,8 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     }
 
     private boolean isIdent(Value value, String query) {
-      return value instanceof IdentValue
-          && ((IdentValue) value).getIdent().equalsIgnoreCase(query);
+      IdentValue v = value.isIdentValue();
+      return v != null && v.getIdent().equalsIgnoreCase(query);
     }
 
     /**
@@ -743,6 +745,18 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         logger.log(TreeLogger.ERROR, "Unable to find ImageResource method "
             + functionName + " in " + bundleType.getQualifiedSourceName());
         throw new CssCompilerException("Cannot find image function");
+      }
+
+      JClassType imageResourceType = context.getGeneratorContext().getTypeOracle().findType(
+          ImageResource.class.getName());
+      assert imageResourceType != null;
+
+      if (!imageResourceType.isAssignableFrom(imageMethod.getReturnType().isClassOrInterface())) {
+        logger.log(TreeLogger.ERROR, "The return type of " + functionName
+            + " is not assignable to "
+            + imageResourceType.getSimpleSourceName());
+        throw new CssCompilerException("Incorrect return type for "
+            + CssSprite.IMAGE_PROPERTY_NAME + " method");
       }
 
       ImageOptions options = imageMethod.getAnnotation(ImageOptions.class);
@@ -850,22 +864,22 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       List<Value> values = new ArrayList<Value>(x.getValues().getValues());
 
       for (ListIterator<Value> i = values.listIterator(); i.hasNext();) {
-        Value v = i.next();
+        IdentValue v = i.next().isIdentValue();
 
-        if (!(v instanceof IdentValue)) {
+        if (v == null) {
           // Don't try to substitute into anything other than idents
           continue;
         }
 
-        String value = ((IdentValue) v).getIdent();
+        String value = v.getIdent();
         CssDef def = substitutions.get(value);
 
         if (def == null) {
           continue;
         } else if (def instanceof CssUrl) {
           assert def.getValues().size() == 1;
-          assert def.getValues().get(0) instanceof IdentValue;
-          String functionName = ((IdentValue) def.getValues().get(0)).getIdent();
+          assert def.getValues().get(0).isIdentValue() != null;
+          String functionName = def.getValues().get(0).isIdentValue().getIdent();
 
           // Find the method
           JMethod method = context.getResourceBundleType().findMethod(
@@ -1103,8 +1117,17 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   private static void validateValue(TreeLogger logger,
       JClassType resourceBundleType, Value value)
       throws UnableToCompleteException {
-    if (value instanceof DotPathValue) {
-      DotPathValue dot = (DotPathValue) value;
+
+    ListValue list = value.isListValue();
+    if (list != null) {
+      for (Value v : list.getValues()) {
+        validateValue(logger, resourceBundleType, v);
+      }
+      return;
+    }
+
+    DotPathValue dot = value.isDotPathValue();
+    if (dot != null) {
       String[] elements = dot.getPath().split("\\.");
       if (elements.length == 0) {
         logger.log(TreeLogger.ERROR, "value() functions must specify a path");
@@ -1133,6 +1156,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
           throw new UnableToCompleteException();
         }
       }
+      return;
     }
   }
 
@@ -1572,16 +1596,13 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       throw new UnableToCompleteException();
     }
 
-    Value value = def.getValues().get(0);
-    assert value != null;
+    NumberValue numberValue = def.getValues().get(0).isNumberValue();
 
-    if (!(value instanceof NumberValue)) {
+    if (numberValue == null) {
       logger.log(TreeLogger.ERROR, "The define named " + name
           + " does not define a numeric value");
       throw new UnableToCompleteException();
     }
-
-    NumberValue numbervalue = (NumberValue) value;
 
     JPrimitiveType returnType = toImplement.getReturnType().isPrimitive();
     assert returnType != null;
@@ -1591,11 +1612,11 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     sw.println(" {");
     sw.indent();
     if (returnType == JPrimitiveType.INT || returnType == JPrimitiveType.LONG) {
-      sw.println("return " + Math.round(numbervalue.getValue()) + ";");
+      sw.println("return " + Math.round(numberValue.getValue()) + ";");
     } else if (returnType == JPrimitiveType.FLOAT) {
-      sw.println("return " + numbervalue.getValue() + "F;");
+      sw.println("return " + numberValue.getValue() + "F;");
     } else if (returnType == JPrimitiveType.DOUBLE) {
-      sw.println("return " + numbervalue.getValue() + ";");
+      sw.println("return " + numberValue.getValue() + ";");
     } else {
       logger.log(TreeLogger.ERROR, returnType.getQualifiedSourceName()
           + " is not a valid return type for @def accessors");
@@ -1604,6 +1625,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     sw.outdent();
     sw.println("}");
 
-    numbervalue.getValue();
+    numberValue.getValue();
   }
 }
