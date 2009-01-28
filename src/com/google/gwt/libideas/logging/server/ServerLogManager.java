@@ -31,8 +31,7 @@ public class ServerLogManager extends Log {
 
   /**
    * Make sure that the ServerLogManager is initialized.
-   */
-  public static void init() {
+   @deprecated use the com.google.gwt.gen2.logging classes instead */ @Deprecated public static void init() {
     if (Log.getLogImpl() == null) {
       useJavaLogging();
     }
@@ -41,16 +40,14 @@ public class ServerLogManager extends Log {
   /**
    * A basic implementation of server logging. Here you can add ArrayList and
    * System handlers.
-   */
-  public static void useBasicLogging() {
+   @deprecated use the com.google.gwt.gen2.logging classes instead */ @Deprecated public static void useBasicLogging() {
     Log.initLogImpl(new LogImplBasic());
   }
 
   /**
    * Adaptor to use java logging. Each category is mapped to a logger. All such
    * loggers are children of the gwt logger.
-   */
-  public static void useJavaLogging() {
+   @deprecated use the com.google.gwt.gen2.logging classes instead */ @Deprecated public static void useJavaLogging() {
     Log.initLogImpl(new LogImplJavaLogging());
   }
 
