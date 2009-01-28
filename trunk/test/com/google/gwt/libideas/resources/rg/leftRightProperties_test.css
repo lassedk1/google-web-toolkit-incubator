@@ -54,3 +54,8 @@
 .selector9 {
   page-break-before: left;
 }
+
+/* This is CSS3 syntax */
+.selector10 {
+  background: left 5px top 10px;
+}

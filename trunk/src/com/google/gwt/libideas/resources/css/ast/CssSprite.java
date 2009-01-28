@@ -181,9 +181,11 @@ public class CssSprite extends CssRule {
   }
 
   private void setImageProperty(Value value) {
+    StringValue stringValue;
+    ListValue listValue;
 
-    if (value instanceof StringValue) {
-      resourceFunction = ((StringValue) value).getValue();
+    if ((stringValue = value.isStringValue()) != null) {
+      resourceFunction = stringValue.getValue();
 
       // Allow the user to use both raw idents and quoted strings
       if (resourceFunction.startsWith("\"")) {
@@ -191,9 +193,8 @@ public class CssSprite extends CssRule {
             resourceFunction.length() - 1);
       }
 
-    } else if (value instanceof ListValue) {
-      ListValue list = (ListValue) value;
-      List<Value> values = list.getValues();
+    } else if ((listValue = value.isListValue()) != null) {
+      List<Value> values = listValue.getValues();
       if (values.size() == 1) {
         setImageProperty(values.get(0));
       }
