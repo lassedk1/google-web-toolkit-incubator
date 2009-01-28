@@ -27,7 +27,10 @@ import java.util.Iterator;
 /**
  * Abstract base class for all panels, which are widgets that can contain other
  * widgets.
+ * 
+ * @deprecated as of Jan 26 2009,  No longer needed as events have graduated to gwt.
  */
+@Deprecated
 public abstract class Panel extends Gen2Widget implements HasWidgets {
 
   /**
