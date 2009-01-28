@@ -15,7 +15,6 @@
  */
 package com.google.gwt.gen2.commonevent.shared;
 
-import com.google.gwt.event.logical.shared.HasHandlers;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
@@ -39,12 +38,24 @@ public class BeforeOpenEvent<T> extends GwtEvent<BeforeOpenHandler<T>> {
    * @param source the source of the handlers
    * @param target the target
    */
-  public static <T, S extends HasBeforeOpenHandlers<T> & HasHandlers> void fire(
-      S source, T target, boolean isFirstTime) {
+  public static <T, S extends HasBeforeOpenHandlers<T>> void fire(S source,
+      T target, boolean isFirstTime) {
     if (TYPE != null) {
       BeforeOpenEvent<T> event = new BeforeOpenEvent<T>(target, isFirstTime);
       source.fireEvent(event);
     }
+  }
+
+  /**
+   * Fires a beforeOpen event on all registered handlers in the handler source.
+   * If no such handlers exist, this method will do nothing.
+   * 
+   * @param <T> the target and event type
+   * @param source the source of the handlers
+   */
+  public static <T extends HasBeforeOpenHandlers<T>> void fire(T source,
+      boolean isFirstTime) {
+    fire(source, source, isFirstTime);
   }
 
   public static Type<BeforeOpenHandler<?>> getType() {
