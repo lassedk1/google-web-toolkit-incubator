@@ -167,7 +167,7 @@ class MyResources extends ImmutableResourceBundle {
   * The identifier will be expanded to `url('some_url')`
 
 == RTL support ==
-(In progress):
+(*Working*)
   * CssResource supports automatic transformations of CSS code into a right-to-left variant at compile time.
   * The use of the RTL variant is keyed by `com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale().isRTL()`
   * Transformations applied:
@@ -184,6 +184,20 @@ class MyResources extends ImmutableResourceBundle {
   .selector {
     left: 10;
   }
+}
+}}}
+  * A `background` property value that uses pixel-based offsets, such as `background-position: 4px 10px;` will not be transformed automatically.
+    * The four-valued CSS3 `background-position` property will be automatically flipped by the RTL support
+      {{{
+background-position: left 4px top 10px;
+}}}
+    * For CSS2 browsers, it will be necessary to use an `@sprite` rule:
+      {{{
+@sprite .bgImage {
+  gwt-image: 'background-image';
+  position: absolute;
+  left: 4px;
+  top: 10px;
 }
 }}}
   * `ImageResources` can be automatically flipped in RTL contexts via the use of the `@ImageOptions` annotation:
