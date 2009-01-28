@@ -8,7 +8,7 @@
 	<!-- Inherit the logging system -->
 	<inherits name='com.google.gwt.gen2.logging.Logging' />
 
-	<!-- Inherit the logging system -->
+	<!-- Inherit the selection system -->
 	<inherits name='com.google.gwt.gen2.selection.Selection' />
 
 	<!-- Logging demo stylesheet -->
