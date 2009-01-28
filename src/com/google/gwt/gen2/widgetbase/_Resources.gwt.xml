@@ -18,5 +18,5 @@ the License.
 <!-- file does not inject a style sheet into the application.              -->
 <module>
     <!-- get gwt standard                                    -->
-    <inherits name="com.google.gwt.user.theme.standard.Standard"/>
+    <inherits name="com.google.gwt.user.theme.standard.StandardResources"/>
 </module>
