@@ -1,7 +1,7 @@
 #summary Compile-time CSS processing
 #labels Phase-Implementation,Type-Library
 
-<wiki:toc>
+<wiki:toc max_depth="2">
 
 See also the CssResourceCookbook
 
@@ -87,7 +87,7 @@ div {
 }
 }}}
 
-== Structural changes ==
+== Conditional CSS ==
 (*Working*)
 {{{
 /* Runtime evaluation in a static context */
@@ -119,7 +119,7 @@ div {
   * What does it mean to have an @def or @eval in an @if block?  Easy to make this work for property-based @if statements; would have to generate pretty gnarly runtime code to handle the expression-based @if statement.  Could have block-level scoping; but this seems like a dubious use-case.
   * If the function in the first form can be statically evaluated by the compiler in a permutation, there is no runtime cost.  The second form will never have a runtime cost because it is evaluated during compilation.
 
-== CSS Image Sprites ==
+== Image Sprites ==
 (*Working*):
 {{{
 @sprite .mySpriteClass {gwt-image: "imageAccessor"; other: property;} => generates =>
@@ -157,11 +157,10 @@ class MyResources extends ImmutableResourceBundle {
 == References to Data Resources ==
 (*Working*)
 {{{
-@url myBackgroundUrl siblingDataResource;
+@url myCursorUrl fancyCursorResource;
 
 .myClass {
-  /* This is a simple demo, but @sprite is better */
-  background: myBackgroundUrl repeat-x;
+  cursor: myCursorUrl, pointer;
 }
 }}}
   * The identifier will be expanded to `url('some_url')`
