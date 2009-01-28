@@ -16,6 +16,7 @@
 package com.google.gwt.gen2.commonevent.shared;
 
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.shared.HasHandlers;
 
 /**
  * A widget that implements this interface is a public source of
@@ -23,7 +24,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
  * 
  * @param <T> the type being opened
  */
-public interface HasBeforeOpenHandlers<T> {
+public interface HasBeforeOpenHandlers<T> extends HasHandlers {
 
   /**
    * Adds a {@link BeforeOpenEvent} handler.
