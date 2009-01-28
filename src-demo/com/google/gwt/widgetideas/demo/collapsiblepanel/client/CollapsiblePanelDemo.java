@@ -135,8 +135,7 @@ public class CollapsiblePanelDemo implements EntryPoint {
 
     panel.setCellHorizontalAlignment(controlButton,
         HasHorizontalAlignment.ALIGN_LEFT);
-
-    panel.add(controlButton);
+ 
     panel.add(controlButton);
     panel.setCellWidth(controlButton, "1px");
     panel.setCellHorizontalAlignment(controlButton,
