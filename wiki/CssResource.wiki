@@ -44,7 +44,7 @@ See also the CssResourceCookbook
   1 At runtime, call `CssResource.getText()` to retrieve the contents of the stylesheet 
     * This will typically be combined with StyleInjector
 
-=Use Cases=
+=Features=
 
 == Constants ==
 (*Working*)
@@ -57,6 +57,13 @@ border: small solid black;
   * Redefining built-in sizes allows users to write plain CSS to draft a style and then tweak it.
   * Suggest that users use upper-case names, similar to static final members.
   * Any legal property value or expression may be used with `@def`
+  * `@def` rules that define a single numeric value may be accessed in a manner similar to obfuscated class names by defining an accessor method on the CssResource type that returns a primitive numeric value.
+    {{{
+interface MyResources extends CssResource {
+  int small();
+}
+}}}
+    * Calling `small()` would return the value `1`.
 
 == Runtime substitution ==
 (*Working*)
@@ -91,7 +98,7 @@ div {
 (*Working*)
 {{{
 /* Runtime evaluation in a static context */
-@if com.module.Foo.staticBooleanFunction() {
+@if (com.module.Foo.staticBooleanFunction()) {
   ... css rules ...
 }
 
@@ -108,8 +115,8 @@ div {
 }
 
 /* Chaining is also supported */
-@if true {
-} @elif false {
+@if (true) {
+} @elif (false) {
 } @else {
 }
 }}}
