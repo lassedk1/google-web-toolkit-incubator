@@ -3,7 +3,7 @@
   
 ||Demo:|| [http://collectionofdemos.appspot.com/demo/com.google.gwt.gen2.demo.scrolltable.ScrollTableDemo/ScrollTableDemo.html live demo]||
 ||Java doc: || [http://collectionofdemos.appspot.com/javadoc/com/google/gwt/gen2/table/client/ScrollTable.html  java doc]||
-||Module:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/table/Table.gwt.xml Selection]||
+||Module:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/table/Table.gwt.xml Table]||
  
 *NOTE*: This documentation is not yet finished
 
