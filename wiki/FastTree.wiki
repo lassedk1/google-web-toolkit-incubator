@@ -6,7 +6,7 @@ Powerful applications often end up with very large trees in them. The original G
 == Summary Table ==
 
 || *Field* || * Location * ||
-|| Demo || http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/FastTree/FastTreeDemo.html || 
+|| Demo || http://collectionofdemos.appspot.com/demo/com.google.gwt.demos.fasttree.FastTreeDemo/FastTreeDemo.html || 
 || Sample Code || [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/demos/fasttree/client/FastTreeDemo.java demo code] ||
 || Module || `com.google.gwt.widgetideas.BasicWidget` ||
 || Source starting point || http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/widgetideas/client/FastTree.java ||
