@@ -1,4 +1,4 @@
-#summary New Widget - Sliding knob over a range of values
+#summary Sliding knob over a range of values
 #labels Type-Widget
 
 = Introduction =
