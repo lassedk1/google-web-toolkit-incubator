@@ -49,6 +49,14 @@ public class ScrollTableTest extends AbstractScrollTableTest {
       table.setPreferredColumnWidth(0, 75);
       assertEquals(75, table.getPreferredColumnWidth(0));
     }
+
+    // truncation
+    {
+      table.setColumnTruncatable(0, false);
+      assertFalse(table.isColumnTruncatable(0));
+      table.setColumnTruncatable(0, true);
+      assertTrue(table.isColumnTruncatable(0));
+    }
   }
 
   public void testSorting() {

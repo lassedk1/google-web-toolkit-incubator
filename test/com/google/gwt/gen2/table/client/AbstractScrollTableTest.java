@@ -100,6 +100,10 @@ public abstract class AbstractScrollTableTest extends Gen2TestBase {
     assertTrue(table.isColumnSortable(0));
     assertTrue(table.isColumnSortable(1000));
 
+    // Column truncatable
+    assertTrue(table.isColumnTruncatable(0));
+    assertTrue(table.isColumnTruncatable(1000));
+
     // SortPolicy
     table.setSortPolicy(SortPolicy.DISABLED);
     assertEquals(SortPolicy.DISABLED, table.getSortPolicy());

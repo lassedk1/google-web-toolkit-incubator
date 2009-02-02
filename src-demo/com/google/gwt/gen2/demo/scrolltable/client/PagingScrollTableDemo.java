@@ -120,8 +120,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
    */
   @Override
   public void onModuleLoad() {
-    super.onModuleLoad();
     instance = this;
+    super.onModuleLoad();
 
     // Create an paging options
     PagingOptions pagingOptions = new PagingOptions(getPagingScrollTable());
@@ -232,6 +232,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       columnDef.setMinimumColumnWidth(50);
       columnDef.setPreferredColumnWidth(100);
       columnDef.setColumnSortable(true);
+      columnDef.setColumnTruncatable(false);
       tableDefinition.addColumnDefinition(columnDef);
     }
 
@@ -252,6 +253,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       columnDef.setMinimumColumnWidth(50);
       columnDef.setPreferredColumnWidth(100);
       columnDef.setColumnSortable(true);
+      columnDef.setColumnTruncatable(false);
       tableDefinition.addColumnDefinition(columnDef);
     }
 
@@ -431,6 +433,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       columnDef.setPreferredColumnWidth(180);
       columnDef.setMaximumColumnWidth(250);
       columnDef.setColumnSortable(true);
+      columnDef.setColumnTruncatable(false);
       tableDefinition.addColumnDefinition(columnDef);
 
       // Setup the cell editor
@@ -476,6 +479,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       columnDef.setMinimumColumnWidth(35);
       columnDef.setMaximumColumnWidth(35);
       columnDef.setColumnSortable(true);
+      columnDef.setColumnTruncatable(false);
       tableDefinition.addColumnDefinition(columnDef);
     }
 
@@ -528,6 +532,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       columnDef.setMinimumColumnWidth(35);
       columnDef.setMaximumColumnWidth(35);
       columnDef.setColumnSortable(true);
+      columnDef.setColumnTruncatable(false);
       tableDefinition.addColumnDefinition(columnDef);
     }
 
@@ -547,6 +552,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       };
       columnDef.setCellRenderer(intCellRenderer);
       columnDef.setPreferredColumnWidth(55);
+      columnDef.setColumnTruncatable(false);
       tableDefinition.addColumnDefinition(columnDef);
     }
 
@@ -566,6 +572,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       };
       columnDef.setCellRenderer(intCellRenderer);
       columnDef.setPreferredColumnWidth(45);
+      columnDef.setColumnTruncatable(false);
       tableDefinition.addColumnDefinition(columnDef);
     }
 
