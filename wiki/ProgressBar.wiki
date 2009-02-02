@@ -1,4 +1,4 @@
-#summary New Widget - A Widget that displays progress over a range
+#summary A Widget that displays progress over a range
 #labels Type-Widget
 
 = Introduction =
