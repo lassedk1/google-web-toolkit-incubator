@@ -13,6 +13,12 @@ One of the most important things to remember is that gwt-incubator should be com
      {{{~/gwt-incubator$ svn checkout http://google-web-toolkit.googlecode.com/svn/tools/ tools}}}
    # Check out the Incubator source:
      {{{~/gwt-incubator$ svn checkout http://google-web-toolkit-incubator.googlecode.com/svn/trunk/ trunk-read-only }}}
+   # For those of you on a windows platform, we highly recommend the [http://downloads.sourceforge.net/tortoisesvn/TortoiseSVN-1.5.7.15182-win32-svn-1.5.5.msi?download tortoise svn client]. In which case you want:
+{{{
+  URL of repository: http://google-web-toolkit-incubator.googlecode.com/svn/trunk
+  Checkout directory: c:\gwt-incubator\trunk (sample path)
+}}}
+
 
 === Build and test with ant ===
 
