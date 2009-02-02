@@ -78,6 +78,11 @@ public class LogOption extends AbstractOption {
    */
   private Duration pageLoadDuration = null;
 
+  public LogOption() {
+    // The log should initialize immediately
+    initialize();
+  }
+
   @Override
   protected String getDescription() {
     return "";
@@ -196,23 +201,25 @@ public class LogOption extends AbstractOption {
     });
 
     // Paging specific options
-    StudentPagingScrollTable pagingScrollTable = PagingScrollTableDemo.get().getPagingScrollTable();
-    if (pagingScrollTable != null) {
-      pagingScrollTable.addPageChangeHandler(new PageChangeHandler() {
-        public void onPageChange(PageChangeEvent event) {
-          pageLoadDuration = new Duration();
-        }
-      });
+    if (PagingScrollTableDemo.get() != null) {
+      StudentPagingScrollTable pagingScrollTable = PagingScrollTableDemo.get().getPagingScrollTable();
+      if (pagingScrollTable != null) {
+        pagingScrollTable.addPageChangeHandler(new PageChangeHandler() {
+          public void onPageChange(PageChangeEvent event) {
+            pageLoadDuration = new Duration();
+          }
+        });
 
-      pagingScrollTable.addPageLoadHandler(new PageLoadHandler() {
-        public void onPageLoad(PageLoadEvent event) {
-          // Convert to 1 based index
-          int page = event.getPage() + 1;
-          int duration = pageLoadDuration.elapsedMillis();
-          String text = "Page " + page + " loaded in " + duration + "ms";
-          addLogEntry(text, "black");
-        }
-      });
+        pagingScrollTable.addPageLoadHandler(new PageLoadHandler() {
+          public void onPageLoad(PageLoadEvent event) {
+            // Convert to 1 based index
+            int page = event.getPage() + 1;
+            int duration = pageLoadDuration.elapsedMillis();
+            String text = "Page " + page + " loaded in " + duration + "ms";
+            addLogEntry(text, "black");
+          }
+        });
+      }
     }
 
     return layout;

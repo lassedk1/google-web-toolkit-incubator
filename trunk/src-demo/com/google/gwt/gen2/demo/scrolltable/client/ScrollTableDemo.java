@@ -193,12 +193,25 @@ public class ScrollTableDemo implements EntryPoint {
     final FlexCellFormatter formatter = layout.getFlexCellFormatter();
     RootPanel.get().add(layout);
 
+    // Initialize the tables
+    {
+      // Create the tables
+      FixedWidthFlexTable headerTable = createHeaderTable();
+      FixedWidthFlexTable footerTable = createFooterTable();
+      FixedWidthGrid dataTable = createDataTable();
+      scrollTable = createScrollTable(headerTable, dataTable, footerTable);
+      scrollTable.setHeight("400px");
+
+      // Add the scroll table to the layout
+      layout.setWidget(0, 1, scrollTable);
+      formatter.setWidth(0, 1, "100%");
+      formatter.setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_TOP);
+    }
+
     // Initialize the options menu
     {
-      // Create the options menu
-      Tree menu = new Tree();
-
       // Attach a tree listener
+      Tree menu = new Tree();
       menu.addSelectionHandler(new SelectionHandler<TreeItem>() {
         public void onSelection(SelectionEvent<TreeItem> event) {
           Widget option = optionMap.get(event.getSelectedItem());
@@ -220,21 +233,6 @@ public class ScrollTableDemo implements EntryPoint {
 
       // Initialize the options in the menu
       initOptions(menu);
-    }
-
-    // Initialize the tables
-    {
-      // Create the tables
-      FixedWidthFlexTable headerTable = createHeaderTable();
-      FixedWidthFlexTable footerTable = createFooterTable();
-      FixedWidthGrid dataTable = createDataTable();
-      scrollTable = createScrollTable(headerTable, dataTable, footerTable);
-      scrollTable.setHeight("400px");
-
-      // Add the scroll table to the layout
-      layout.setWidget(0, 1, scrollTable);
-      formatter.setWidth(0, 1, "100%");
-      formatter.setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_TOP);
     }
 
     // Initialize the options area
@@ -348,10 +346,12 @@ public class ScrollTableDemo implements EntryPoint {
     // first name
     theScrollTable.setMinimumColumnWidth(0, 50);
     theScrollTable.setPreferredColumnWidth(0, 100);
+    theScrollTable.setColumnTruncatable(0, false);
 
     // last name
     theScrollTable.setMinimumColumnWidth(1, 50);
     theScrollTable.setPreferredColumnWidth(1, 100);
+    theScrollTable.setColumnTruncatable(1, false);
 
     // age
     theScrollTable.setMinimumColumnWidth(2, 35);
@@ -382,15 +382,19 @@ public class ScrollTableDemo implements EntryPoint {
 
     // year
     theScrollTable.setPreferredColumnWidth(8, 25);
+    theScrollTable.setColumnTruncatable(8, false);
 
     // gpa
     theScrollTable.setPreferredColumnWidth(9, 35);
+    theScrollTable.setColumnTruncatable(9, false);
 
     // id
     theScrollTable.setPreferredColumnWidth(10, 55);
+    theScrollTable.setColumnTruncatable(10, false);
 
     // pin
     theScrollTable.setPreferredColumnWidth(11, 45);
+    theScrollTable.setColumnTruncatable(11, false);
 
     return theScrollTable;
   }

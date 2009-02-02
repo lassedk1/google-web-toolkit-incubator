@@ -34,7 +34,8 @@ public class SortableGridTest extends SelectionGridTest {
 
     public void assertAscending(boolean ascending) {
       assertNotNull(lastEvent);
-      assertEquals(ascending, lastEvent.getColumnSortList().isPrimaryAscending());
+      assertEquals(ascending,
+          lastEvent.getColumnSortList().isPrimaryAscending());
     }
 
     public void assertColumnIndex(int colIndex) {
@@ -127,7 +128,6 @@ public class SortableGridTest extends SelectionGridTest {
   public void testColumnSortHandler() {
     // Initialize the grid
     SortableGrid testGrid = getSortableGrid();
-    ColumnSortList sortList = testGrid.getColumnSortList();
 
     // Create some listeners
     TestColumnSortHandler csh = new TestColumnSortHandler();

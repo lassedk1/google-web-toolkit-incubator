@@ -15,6 +15,8 @@
  */
 package com.google.gwt.gen2.table.client;
 
+import com.google.gwt.user.client.ui.RootPanel;
+
 /**
  * Tests methods used for all {@link FixedWidthGrid} class.
  */
@@ -81,6 +83,23 @@ public class FixedWidthGridTest extends SortableGridTest {
 
     assertEquals(10, testGrid.getColumnCount());
     assertEquals(10, testGrid.getGhostColumnCount());
+  }
+
+  public void testIdealColumnWidth() {
+    // Initialize the grid
+    FixedWidthGrid testGrid = getFixedWidthGrid();
+
+    // When not attached, the ideal width should be -1
+    assertEquals(-1, testGrid.getIdealColumnWidth(0));
+
+    // Out of bounds indexes should
+    RootPanel.get().add(testGrid);
+    assertEquals(-1, testGrid.getIdealColumnWidth(11));
+
+    // Ideal width should be greater than 0
+    assertTrue(testGrid.getIdealColumnWidth(0) > 0);
+
+    RootPanel.get().remove(testGrid);
   }
 
   /**

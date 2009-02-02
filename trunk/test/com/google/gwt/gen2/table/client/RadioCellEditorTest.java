@@ -52,7 +52,7 @@ public class RadioCellEditorTest extends InlineCellEditorTest {
       assertNull(editor.getValue());
       editor.setValue(cellValue);
       assertEquals(cellValue, editor.getValue());
-      assertTrue(radio.isChecked());
+      assertTrue(radio.getValue());
     }
 
     // Add another button
@@ -62,7 +62,7 @@ public class RadioCellEditorTest extends InlineCellEditorTest {
       editor.addRadioButton(radio, cellValue);
       editor.setValue(cellValue);
       assertEquals(cellValue, editor.getValue());
-      assertTrue(radio.isChecked());
+      assertTrue(radio.getValue());
 
       // Remove the new button
       editor.removeRadioButton(radio);

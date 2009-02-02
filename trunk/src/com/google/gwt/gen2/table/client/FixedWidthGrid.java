@@ -22,6 +22,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -210,6 +211,11 @@ public class FixedWidthGrid extends SortableGrid {
   private Element ghostRow = null;
 
   /**
+   * The ideal widths of all columns (that are available).
+   */
+  private int[] idealWidths;
+
+  /**
    * Constructor.
    */
   public FixedWidthGrid() {
@@ -246,6 +252,12 @@ public class FixedWidthGrid extends SortableGrid {
     resize(rows, columns);
   }
 
+  @Override
+  public void clear() {
+    super.clear();
+    clearIdealWidths();
+  }
+
   /**
    * Return the column width for a given column index. If a width has not been
    * assigned, the default width is returned.
@@ -262,10 +274,54 @@ public class FixedWidthGrid extends SortableGrid {
     }
   }
 
+  /**
+   * <p>
+   * Calculate the ideal width required to tightly wrap the specified column. If
+   * the ideal column width cannot be calculated (eg. if the table is not
+   * attached), -1 is returned.
+   * </p>
+   * <p>
+   * Note that this method requires an expensive operation whenever the content
+   * of the table is changed, so you should only call it after you've completely
+   * modified the contents of your table.
+   * </p>
+   * 
+   * @return the ideal column width, or -1 if it is not applicable
+   */
+  public int getIdealColumnWidth(int column) {
+    maybeRecalculateIdealColumnWidths();
+    if (idealWidths.length > column) {
+      return idealWidths[column];
+    }
+    return -1;
+  }
+
+  @Override
+  public boolean remove(Widget widget) {
+    if (super.remove(widget)) {
+      clearIdealWidths();
+      return true;
+    }
+    return false;
+  }
+
+  @Override
+  public void removeRow(int row) {
+    super.removeRow(row);
+    clearIdealWidths();
+  }
+
   @Override
   public void resizeColumns(int columns) {
     super.resizeColumns(columns);
     updateGhostRow();
+    clearIdealWidths();
+  }
+
+  @Override
+  public void resizeRows(int rows) {
+    super.resizeRows(rows);
+    clearIdealWidths();
   }
 
   @Override
@@ -322,6 +378,12 @@ public class FixedWidthGrid extends SortableGrid {
   }
 
   @Override
+  public void setHTML(int row, int column, String html) {
+    super.setHTML(row, column, html);
+    clearIdealWidths();
+  }
+
+  @Override
   public void setSelectionPolicy(SelectionPolicy selectionPolicy) {
     // Update the input column in the ghost row
     if (selectionPolicy.hasInputColumn()
@@ -341,6 +403,18 @@ public class FixedWidthGrid extends SortableGrid {
     } else {
       super.setSelectionPolicy(selectionPolicy);
     }
+  }
+
+  @Override
+  public void setText(int row, int column, String text) {
+    super.setText(row, column, text);
+    clearIdealWidths();
+  }
+
+  @Override
+  public void setWidget(int row, int column, Widget widget) {
+    super.setWidget(row, column, widget);
+    clearIdealWidths();
   }
 
   @Override
@@ -408,6 +482,45 @@ public class FixedWidthGrid extends SortableGrid {
     return rowIndex - 1;
   }
 
+  @Override
+  protected boolean internalClearCell(Element td, boolean clearInnerHTML) {
+    clearIdealWidths();
+    return super.internalClearCell(td, clearInnerHTML);
+  }
+
+  @Override
+  protected void onAttach() {
+    super.onAttach();
+    clearIdealWidths();
+  }
+
+  /**
+   * Recalculate the ideal column widths of each column in the data table.
+   */
+  protected void recalculateIdealColumnWidths() {
+    // We need at least one cell to do any calculations
+    int columnCount = getColumnCount();
+    if (!isAttached() || getRowCount() == 0 || columnCount < 0) {
+      idealWidths = new int[0];
+      return;
+    }
+
+    // Let the table layout naturally
+    final Element tableElem = getElement();
+    tableElem.getStyle().setProperty("tableLayout", "");
+
+    // Determine the width of each column
+    FixedWidthGridCellFormatter formatter = getFixedWidthGridCellFormatter();
+    idealWidths = new int[columnCount];
+    for (int i = 0; i < columnCount; i++) {
+      Element td = formatter.getRawElement(0, i);
+      idealWidths[i] = td.getPropertyInt("clientWidth");
+    }
+
+    // Reset the table layout to fixed
+    tableElem.getStyle().setProperty("tableLayout", "fixed");
+  }
+
   /**
    * Sets the ghost row variable. This does not change the underlying structure
    * of the table.
@@ -453,6 +566,13 @@ public class FixedWidthGrid extends SortableGrid {
   }
 
   /**
+   * Clear the idealWidths field when the ideal widths change.
+   */
+  void clearIdealWidths() {
+    idealWidths = null;
+  }
+
+  /**
    * @return a cell to use in the ghost row
    */
   private Element createGhostCell() {
@@ -478,5 +598,15 @@ public class FixedWidthGrid extends SortableGrid {
       column++;
     }
     return DOM.getChild(ghostRow, column);
+  }
+
+  /**
+   * Recalculate the ideal column widths of each column in the data table if
+   * they have changed since the last calculation.
+   */
+  private void maybeRecalculateIdealColumnWidths() {
+    if (idealWidths == null) {
+      recalculateIdealColumnWidths();
+    }
   }
 }

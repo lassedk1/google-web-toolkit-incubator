@@ -17,11 +17,39 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.base.client.Gen2TestBase;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
+import com.google.gwt.gen2.table.client.property.ColumnProperty;
 
 /**
  * Tests for {@link AbstractColumnDefinition}.
  */
 public class AbstractColumnDefinitionTest extends Gen2TestBase {
+  /**
+   * A property used for testing.
+   */
+  private static class CustomProperty extends ColumnProperty {
+    public static final Type<CustomProperty> TYPE = new Type<CustomProperty>() {
+      private CustomProperty instance;
+
+      @Override
+      public CustomProperty getDefault() {
+        if (instance == null) {
+          instance = new CustomProperty(null);
+        }
+        return instance;
+      }
+    };
+
+    private String value;
+
+    public CustomProperty(String value) {
+      this.value = value;
+    }
+
+    public String getValue() {
+      return value;
+    }
+  }
+
   /**
    * A custom {@link CellRenderer} that prints all cells in the form "cell r:c"
    * where 'r' is the row index and 'c' is the cell index.
@@ -128,6 +156,15 @@ public class AbstractColumnDefinitionTest extends Gen2TestBase {
       assertFalse(colDef.isColumnSortable());
     }
 
+    // truncatable
+    {
+      AbstractColumnDefinition<Object, Object> colDef = new CustomColumnDefinition<Object, Object>();
+      colDef.setColumnTruncatable(true);
+      assertTrue(colDef.isColumnTruncatable());
+      colDef.setColumnTruncatable(false);
+      assertFalse(colDef.isColumnTruncatable());
+    }
+
     // column width
     {
       AbstractColumnDefinition<Object, Object> colDef = new CustomColumnDefinition<Object, Object>();
@@ -137,6 +174,31 @@ public class AbstractColumnDefinitionTest extends Gen2TestBase {
       assertEquals(50, colDef.getMinimumColumnWidth());
       colDef.setPreferredColumnWidth(75);
       assertEquals(75, colDef.getPreferredColumnWidth());
+    }
+  }
+
+  public void testProperties() {
+    AbstractColumnDefinition<Object, Object> colDef = new CustomColumnDefinition<Object, Object>();
+    CustomProperty prop = new CustomProperty("test");
+
+    // Retrieve a non existent property (the default value)
+    {
+      assertNull(colDef.getColumnProperty(CustomProperty.TYPE).getValue());
+    }
+
+    // Set and retrieve a property
+    {
+      colDef.setColumnProperty(CustomProperty.TYPE, prop);
+      assertEquals("test",
+          colDef.getColumnProperty(CustomProperty.TYPE).getValue());
+    }
+
+    // Remove a property
+    {
+      colDef.removeColumnProperty(CustomProperty.TYPE);
+
+      // Should reset to the default value
+      assertNull(colDef.getColumnProperty(CustomProperty.TYPE).getValue());
     }
   }
 }

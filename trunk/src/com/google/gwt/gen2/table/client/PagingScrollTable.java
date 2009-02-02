@@ -26,6 +26,11 @@ import com.google.gwt.gen2.table.client.TableModel.Callback;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
 import com.google.gwt.gen2.table.client.TableModelHelper.Request;
 import com.google.gwt.gen2.table.client.TableModelHelper.Response;
+import com.google.gwt.gen2.table.client.property.MaximumWidthProperty;
+import com.google.gwt.gen2.table.client.property.MinimumWidthProperty;
+import com.google.gwt.gen2.table.client.property.PreferredWidthProperty;
+import com.google.gwt.gen2.table.client.property.SortableProperty;
+import com.google.gwt.gen2.table.client.property.TruncationProperty;
 import com.google.gwt.gen2.table.event.client.HasPageChangeHandlers;
 import com.google.gwt.gen2.table.event.client.HasPageCountChangeHandlers;
 import com.google.gwt.gen2.table.event.client.HasPageLoadHandlers;
@@ -62,7 +67,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * A {@link ScrollTable} that acts as a view for an underlying
+ * An {@link AbstractScrollTable} that acts as a view for an underlying
  * {@link MutableTableModel}.
  * 
  * @param <RowType> the data type of the row values
@@ -281,6 +286,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   private RendererCallback tableRendererCallback = new RendererCallback() {
     public void onRendered() {
+      getDataTable().clearIdealWidths();
       maybeFillWidth();
       resizeTablesVertically();
       fireEvent(new PageLoadEvent(currentPage));
@@ -448,7 +454,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     if (colDef == null) {
       return -1;
     }
-    return colDef.getMaximumColumnWidth();
+    return colDef.getColumnProperty(MaximumWidthProperty.TYPE).getMaximumColumnWidth();
   }
 
   @Override
@@ -457,8 +463,8 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     if (colDef == null) {
       return FixedWidthGrid.MIN_COLUMN_WIDTH;
     }
-    return Math.max(FixedWidthGrid.MIN_COLUMN_WIDTH,
-        colDef.getMinimumColumnWidth());
+    int minWidth = colDef.getColumnProperty(MinimumWidthProperty.TYPE).getMinimumColumnWidth();
+    return Math.max(FixedWidthGrid.MIN_COLUMN_WIDTH, minWidth);
   }
 
   /**
@@ -489,7 +495,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     if (colDef == null) {
       return FixedWidthGrid.DEFAULT_COLUMN_WIDTH;
     }
-    return colDef.getPreferredColumnWidth();
+    return colDef.getColumnProperty(PreferredWidthProperty.TYPE).getPreferredColumnWidth();
   }
 
   /**
@@ -594,7 +600,19 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     if (colDef == null) {
       return true;
     }
-    return getSortPolicy() != SortPolicy.DISABLED && colDef.isColumnSortable();
+    if (getSortPolicy() == SortPolicy.DISABLED) {
+      return false;
+    }
+    return colDef.getColumnProperty(SortableProperty.TYPE).isColumnSortable();
+  }
+
+  @Override
+  public boolean isColumnTruncatable(int column) {
+    ColumnDefinition<RowType, ?> colDef = getColumnDefinition(column);
+    if (colDef == null) {
+      return true;
+    }
+    return colDef.getColumnProperty(TruncationProperty.TYPE).isColumnTruncatable();
   }
 
   /**

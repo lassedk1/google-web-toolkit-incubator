@@ -69,23 +69,22 @@ import java.util.List;
  * 
  * <h3>CSS Style Rules</h3>
  * 
- * <ul class="css">
- * 
- * <li>.gwt-ScrollTable { applied to the entire widget }</li>
- * 
- * <li>.gwt-ScrollTable .headerTable { applied to the header table }</li>
- * 
- * <li>.gwt-ScrollTable .dataTable { applied to the data table }</li>
- * 
- * <li>.gwt-ScrollTable .footerTable { applied to the footer table }</li>
- * 
- * <li>.gwt-ScrollTable .headerWrapper { wrapper around the header table }</li>
- * 
- * <li>.gwt-ScrollTable .dataWrapper { wrapper around the data table }</li>
- * 
- * <li>.gwt-ScrollTable .footerWrapper { wrapper around the footer table }</li>
- * 
- * </ul>
+ * <dl>
+ * <dt>.gwt-ScrollTable</dt>
+ * <dd>applied to the entire widget</dd>
+ * <dt>.gwt-ScrollTable .headerTable</dt>
+ * <dd>applied to the header table</dd>
+ * <dt>.gwt-ScrollTable .dataTable</dt>
+ * <dd>applied to the data table</dd>
+ * <dt>.gwt-ScrollTable .footerTable</dt>
+ * <dd>applied to the footer table</dd>
+ * <dt>.gwt-ScrollTable .headerWrapper</dt>
+ * <dd>wrapper around the header table</dd>
+ * <dt>.gwt-ScrollTable .dataWrapper</dt>
+ * <dd>wrapper around the data table</dd>
+ * <dt>.gwt-ScrollTable .footerWrapper</dt>
+ * <dd>wrapper around the footer table</dd>
+ * </dl>
  */
 public abstract class AbstractScrollTable extends ComplexPanel implements
     ResizableWidget, HasScrollHandlers {
@@ -862,7 +861,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
         diff = clientWidth - dataTable.getElement().getScrollWidth();
       }
     }
-    if (diff == 0 || numColumns <= 0) {
+    if (numColumns <= 0) {
       return;
     }
 
@@ -982,6 +981,16 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    */
   public abstract boolean isColumnSortable(int column);
 
+  /**
+   * Returns true if the specified column can be truncated. If it cannot be
+   * truncated, its minimum width will be adjusted to ensure the cell content is
+   * visible.
+   * 
+   * @param column the column index
+   * @return true if the column is truncatable, false if it is not
+   */
+  public abstract boolean isColumnTruncatable(int column);
+
   @Override
   public void onBrowserEvent(Event event) {
     Element target = DOM.eventGetTarget(event);
@@ -1092,8 +1101,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
-   * Redraw the table. This is a relatively cheap operation and should be called
-   * after modifying the header or footer sections.
+   * Redraw the table.
    */
   public void redraw() {
     if (!isAttached()) {
@@ -1120,21 +1128,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * Reset the widths of all columns to their preferred sizes.
    */
   public void resetColumnWidths() {
-    // Calculate the new column widths
-    int numColumns = dataTable.getColumnCount();
-    int totalWidth = 0;
-    List<ColumnWidthInfo> colWidthInfos = getColumnWidthInfo(0, numColumns);
-    for (ColumnWidthInfo info : colWidthInfos) {
-      totalWidth += info.getCurrentWidth();
-      info.setCurrentWidth(0);
-    }
-    columnResizer.distributeWidth(colWidthInfos, totalWidth);
-
-    // Set the new column widths
-    applyNewColumnWidths(0, colWidthInfos, false);
-
-    // Rescroll the tables
-    scrollTables(false);
+    resetColumnWidths(false);
   }
 
   /**
@@ -1387,15 +1381,18 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * {@link ResizePolicy} requires it.
    */
   protected void maybeFillWidth() {
-    if (!fillWidthPending && isAttached()
-        && resizePolicy == ResizePolicy.FILL_WIDTH) {
-      fillWidthPending = true;
-      DeferredCommand.addCommand(new Command() {
-        public void execute() {
-          fillWidthPending = false;
-          fillWidth();
-        }
-      });
+    if (!fillWidthPending && isAttached()) {
+      if (resizePolicy == ResizePolicy.FILL_WIDTH) {
+        fillWidthPending = true;
+        DeferredCommand.addCommand(new Command() {
+          public void execute() {
+            fillWidthPending = false;
+            fillWidth();
+          }
+        });
+      } else {
+        resetColumnWidths(true);
+      }
     }
   }
 
@@ -1559,6 +1556,14 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     int maxWidth = getMaximumColumnWidth(column);
     int preferredWidth = getPreferredColumnWidth(column);
     int curWidth = getColumnWidth(column);
+
+    // Adjust the widths if the columns are not truncatable, up to maxWidth
+    if (!isColumnTruncatable(column)) {
+      int idealWidth = getDataTable().getIdealColumnWidth(column);
+      idealWidth = Math.min(idealWidth, maxWidth);
+      minWidth = Math.max(minWidth, idealWidth);
+    }
+
     return new ColumnWidthInfo(minWidth, maxWidth, preferredWidth, curWidth);
   }
 
@@ -1615,6 +1620,36 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       int footerWidth = footerTable.getOffsetWidth();
       footerSpacer.getStyle().setPropertyPx("left", footerWidth);
     }
+  }
+
+  /**
+   * Reset the widths of all columns, either to their preferred sizes or just
+   * ensure that they are within their min/max boundaries.
+   * 
+   * @param boundsOnly true to only ensure the widths are within the bounds
+   */
+  private void resetColumnWidths(boolean boundsOnly) {
+    // Calculate the new column widths
+    int numColumns = dataTable.getColumnCount();
+    int totalWidth = 0;
+    List<ColumnWidthInfo> colWidthInfos = getColumnWidthInfo(0, numColumns);
+
+    // If we are reseting to original widths, set all widths to 0
+    if (!boundsOnly) {
+      for (ColumnWidthInfo info : colWidthInfos) {
+        totalWidth += info.getCurrentWidth();
+        info.setCurrentWidth(0);
+      }
+    }
+
+    // Run the resize algorithm
+    columnResizer.distributeWidth(colWidthInfos, totalWidth);
+
+    // Set the new column widths
+    applyNewColumnWidths(0, colWidthInfos, false);
+
+    // Rescroll the tables
+    scrollTables(false);
   }
 
   /**

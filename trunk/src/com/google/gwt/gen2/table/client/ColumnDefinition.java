@@ -15,6 +15,8 @@
  */
 package com.google.gwt.gen2.table.client;
 
+import com.google.gwt.gen2.table.client.property.ColumnProperty;
+
 /**
  * A definition of a column in a table.
  * 
@@ -47,12 +49,33 @@ public interface ColumnDefinition<RowType, ColType> {
   ColType getCellValue(RowType rowValue);
 
   /**
+   * <p>
+   * Get the {@link ColumnProperty} associated with the specified
+   * {@link ColumnProperty.Type}. If the property is not defined, the default
+   * value will be returned.
+   * </p>
+   * <p>
+   * This method should never return null. Instead, it should return the default
+   * property from {@link ColumnProperty.Type#getDefault()}.
+   * </p>
+   * 
+   * @param <P> the column property type
+   * @param type the {@link ColumnProperty} type
+   * @return the property, or the default value if the property is not defined
+   */
+  <P extends ColumnProperty> P getColumnProperty(ColumnProperty.Type<P> type);
+
+  /**
    * Get the maximum width of the column. A return value of -1 indicates that
    * the column has no maximum width, but the consumer of the data may impose
    * one anyway.
    * 
    * @return the maximum allowable width of the column
+   * @deprecated use {@link #getColumnProperty(ColumnProperty.Type)} with the
+   *             {@link com.google.gwt.gen2.table.client.property.MaximumWidthProperty}
+   *             instead
    */
+  @Deprecated
   int getMaximumColumnWidth();
 
   /**
@@ -61,7 +84,11 @@ public interface ColumnDefinition<RowType, ColType> {
    * one anyway.
    * 
    * @return the minimum allowable width of the column
+   * @deprecated use {@link #getColumnProperty(ColumnProperty.Type)} with the
+   *             {@link com.google.gwt.gen2.table.client.property.MinimumWidthProperty}
+   *             instead
    */
+  @Deprecated
   int getMinimumColumnWidth();
 
   /**
@@ -71,14 +98,22 @@ public interface ColumnDefinition<RowType, ColType> {
    * weight relative to the preferred widths of other ColumnDefinitions.
    * 
    * @return the preferred width of the column
+   * @deprecated use {@link #getColumnProperty(ColumnProperty.Type)} with the
+   *             {@link com.google.gwt.gen2.table.client.property.PreferredWidthProperty}
+   *             instead
    */
+  @Deprecated
   int getPreferredColumnWidth();
 
   /**
    * Returns true if the column is sortable, false if it is not.
    * 
    * @return true if the column is sortable, false if it is not sortable
+   * @deprecated use {@link #getColumnProperty(ColumnProperty.Type)} with the
+   *             {@link com.google.gwt.gen2.table.client.property.SortableProperty}
+   *             instead
    */
+  @Deprecated
   boolean isColumnSortable();
 
   /**
