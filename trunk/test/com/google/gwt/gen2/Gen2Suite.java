@@ -17,7 +17,6 @@
 package com.google.gwt.gen2;
 
 import com.google.gwt.gen2.commonwidget.client.DecoratorTest;
-import com.google.gwt.gen2.event.dom.client.EventsTest;
 import com.google.gwt.gen2.event.dom.client.GWTEventsTest;
 import com.google.gwt.gen2.event.shared.JSHanderRegistryTest;
 import com.google.gwt.gen2.logging.client.LogClientTest;
@@ -34,8 +33,7 @@ public class Gen2Suite {
   /** These tests should eventually be refactored into their own sub-suites. */
   public static Test suite() {
     TestSuite suite = new TestSuite("Tests for gen2 widgets and libraries.");
-    // Widget Tests.
-    suite.addTestSuite(EventsTest.class);
+    // Widget Tests. 
     suite.addTestSuite(GWTEventsTest.class);
     suite.addTestSuite(JSHanderRegistryTest.class);
     suite.addTestSuite(DropDownListBoxTest.class);
