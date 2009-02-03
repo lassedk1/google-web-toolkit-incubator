@@ -29,7 +29,6 @@ import com.google.gwt.gen2.commonevent.shared.BeforeOpenHandler;
 import com.google.gwt.gen2.commonevent.shared.HasBeforeOpenHandlers;
 import com.google.gwt.gen2.commonwidget.client.DecoratorPanel;
 import com.google.gwt.gen2.commonwidget.client.DropDownPanel;
-import com.google.gwt.gen2.selection.client.CustomListBox.ItemList;
 import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -38,6 +37,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.datepicker.client.Item;
 
 /**
  * A custom list box that is shown/hidden depending upon the state of a supplied
@@ -47,12 +47,12 @@ import com.google.gwt.user.client.ui.ToggleButton;
  */
 public class DropDownListBox<V> extends CustomListBox<V> implements
     HasAnimation, HasBeforeOpenHandlers<DropDownListBox<V>>, HasValue<V> {
-  class MyHandlers implements SelectionHandler<ItemList.Item> {
-    public void onSelection(SelectionEvent<ItemList.Item> event) {
+  class MyHandlers implements SelectionHandler<Item<V>> {
+    public void onSelection(SelectionEvent<Item<V>> event) {
       // Two items are allowed to have the value, so even if the values are the
       // same, we must do all the update work unless we also want to cache the
       // current cell.
-      ItemList.Item item = event.getSelectedItem();
+      Item<V> item = event.getSelectedItem();
       String displayText = item == null ? null : item.getDisplayText();
       updateButtonText(displayText);
       hideItems();

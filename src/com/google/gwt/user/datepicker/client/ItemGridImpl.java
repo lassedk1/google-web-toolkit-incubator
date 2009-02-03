@@ -29,7 +29,7 @@ import java.util.HashMap;
  * @param <V> the type of values contained in this cell grid
  */
 public abstract class ItemGridImpl<V> extends CellGridImpl<V> implements
-    HasSelectionHandlers<ItemGridImpl<V>.Item> {
+    HasSelectionHandlers<Item<V>> {
 
   /**
    * Css styles for the item grid.
@@ -53,11 +53,11 @@ public abstract class ItemGridImpl<V> extends CellGridImpl<V> implements
   /**
    * Cell with associated value and css styles.
    */
-  public class Item extends Cell {
+  private class ItemImpl extends Cell implements Item<V> {
     private String displayText;
     private boolean firstInGroup;
 
-    public Item(Element element, V value, String displayText,
+    public ItemImpl(Element element, V value, String displayText,
         boolean firstInGroup) {
       super(element, value);
       this.firstInGroup = firstInGroup;
@@ -90,7 +90,7 @@ public abstract class ItemGridImpl<V> extends CellGridImpl<V> implements
     }
   }
 
-  private HashMap<V, Item> valueToItem = new HashMap<V, Item>();
+  private HashMap<V, ItemImpl> valueToItem = new HashMap<V, ItemImpl>();
   private final Css css;
 
   public ItemGridImpl(Css css) {
@@ -99,11 +99,16 @@ public abstract class ItemGridImpl<V> extends CellGridImpl<V> implements
   }
 
   public HandlerRegistration addSelectionHandler(
-      SelectionHandler<ItemGridImpl<V>.Item> handler) {
+      SelectionHandler<Item<V>> handler) {
     return addHandler(handler, SelectionEvent.getType());
   }
 
-  protected Item getItemFromValue(V value) {
+  protected Item<V> addItem(Element element, V value, String displayText,
+      boolean firstInGroup) {
+    return new ItemImpl(element, value, displayText, firstInGroup);
+  }
+
+  protected Item<V> getItemFromValue(V value) {
     return valueToItem.get(value);
   }
 
@@ -112,7 +117,11 @@ public abstract class ItemGridImpl<V> extends CellGridImpl<V> implements
       com.google.gwt.user.datepicker.client.CellGridImpl<V>.Cell lastSelected,
       com.google.gwt.user.datepicker.client.CellGridImpl<V>.Cell cell) {
     if (cell != null) {
-      SelectionEvent.fire(this, (Item) cell);
+      SelectionEvent.fire(this, (ItemImpl) cell);
     }
+  }
+
+  protected void setSelected(Item<V> item) {
+    super.setSelected((ItemImpl) item);
   }
 }
