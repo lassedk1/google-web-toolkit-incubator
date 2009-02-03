@@ -24,7 +24,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.UIObject;
 
 /**
- * A UIDecorator is used to allow subclasses to customize the html wrappers used
+ * A decorator is used to allow subclasses to customize the html wrappers used
  * in their super classes.
  */
 public class Decorator {
@@ -69,8 +69,7 @@ public class Decorator {
     Element e = DOM.createDiv();
     e.setClassName(className);
     return new Decorator(e, e);
-  }
-
+  } 
   private Element templateRoot;
 
   private String decoratorId = DOM.createUniqueId();
@@ -80,7 +79,6 @@ public class Decorator {
    * 
    * @param templateRoot root
    * @param templateAttach to attach
-   * @return
    */
   public Decorator(Element templateRoot, Element templateAttach) {
     setTemplateElements(templateRoot, templateAttach);

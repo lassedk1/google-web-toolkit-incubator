@@ -1,7 +1,6 @@
 <module>
 	<!-- Inherit the core Web Toolkit stuff.                  -->
 	<inherits name="com.google.gwt.user.User" />
-
 	<inherits name='com.google.gwt.gen2.picker.Picker' />
 
 	<!-- Specify the app entry point class.                   -->
@@ -9,6 +8,11 @@
 		class="com.google.gwt.gen2.demo.picker.client.DropDownDatePickerDemo" />
 	<stylesheet src="DropDownDatePickerDemo.css" />
 
+	<!-- Inherit default gwt style sheet -->
+	<inherits name="com.google.gwt.user.theme.standard.Standard" />
+
 	<!-- used to debug this widget's css -->
-	<inherits name="com.google.gwt.gen2.widgetbase.Css_debug" />
+	<!--
+		<inherits name="com.google.gwt.gen2.widgetbase.Css_debug" />
+	-->
 </module>

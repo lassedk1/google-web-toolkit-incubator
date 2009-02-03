@@ -17,12 +17,13 @@ package com.google.gwt.gen2.picker.client;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
-import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.gen2.selection.client.DropDownListBox;
 import com.google.gwt.gen2.table.override.client.Grid;
 import com.google.gwt.gen2.table.override.client.HTMLTable.CellFormatter;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.datepicker.client.MonthSelector;
 
@@ -102,7 +103,6 @@ public class DropDownMonthSelector extends MonthSelector {
     if (monthList.getValue() == null
         || !monthList.getValue().equals(selectedMonth)) {
       monthList.setValue(selectedMonth);
-      monthList.getButton().setHTML(monthAbbreviations[selectedMonth]);
     }
 
     final int adjustedSelectedYear = getModel().getCurrentMonth().getYear()
@@ -111,7 +111,6 @@ public class DropDownMonthSelector extends MonthSelector {
     if (yearList.getValue() == null
         || !yearList.getValue().equals(adjustedSelectedYear)) {
       yearList.setValue(adjustedSelectedYear);
-      yearList.getButton().setHTML(String.valueOf(adjustedSelectedYear));
     }
   }
 
@@ -121,32 +120,7 @@ public class DropDownMonthSelector extends MonthSelector {
   @SuppressWarnings/* uses deprecated Date methods */( {"deprecation", "boxing"})
   @Override
   protected void setup() {
-    monthList = new DropDownListBox<Integer>(
-        MONTH_ABBREVIATION_FORMAT.format(getModel().getCurrentMonth()));
-
-    monthList.addStyleName("gwt-DropDownMonthSelector-month");
-
-    monthAbbreviations = new String[12];
-
-    for (int a = 0; a < 12; a++) {
-      Date month = new Date(1, a, 1);
-      monthAbbreviations[a] = MONTH_ABBREVIATION_FORMAT.format(month);
-      monthList.addItem(monthAbbreviations[a], a,
-          MONTH_NAME_FORMAT.format(month));
-    }
-
-    monthList.addSelectionHandler(new SelectionHandler<Integer>() {
-      public void onSelection(SelectionEvent<Integer> event) {
-        if (monthList.getValue() == null
-            || !monthList.getValue().equals(
-                getModel().getCurrentMonth().getMonth())) {
-          addMonths(event.getNewValue()
-              - getModel().getCurrentMonth().getMonth());
-          monthList.getButton().setHTML(monthAbbreviations[event.getNewValue()]);
-        }
-      }
-    });
-
+    setupMonthList();
     setupYearList();
 
     // Set up backwards.
@@ -158,11 +132,11 @@ public class DropDownMonthSelector extends MonthSelector {
     });
 
     backwards.getUpFace().setHTML("&laquo;");
-    backwards.setStyleName("gwt-DatePickerBackwardButton");
+    backwards.setStyleName("datePickerPreviousButton");
 
     forwards = new PushButton();
     forwards.getUpFace().setHTML("&raquo;");
-    forwards.setStyleName("gwt-DatePickerForwardButton");
+    forwards.setStyleName("datePickerNextButton");
     forwards.addClickHandler(new ClickHandler() {
       public void onClick(final ClickEvent event) {
         addMonths(+1);
@@ -177,26 +151,54 @@ public class DropDownMonthSelector extends MonthSelector {
     grid.setWidget(0, 4, forwards);
 
     CellFormatter formatter = grid.getCellFormatter();
-    formatter.setStyleName(0, 1, "gwt-DatePickerMonth");
-    formatter.setStyleName(0, 3, "gwt-DatePickerMonth");
-    grid.setStyleName("gwt-DatePickerDays");
+    formatter.setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_LEFT);
+    formatter.setHorizontalAlignment(0, 4, HasHorizontalAlignment.ALIGN_RIGHT);
+    grid.setStyleName("datePickerMonthSelector");
     initWidget(grid);
   }
 
+  private void setupMonthList() {
+    monthList = new DropDownListBox<Integer>(
+        MONTH_ABBREVIATION_FORMAT.format(getModel().getCurrentMonth()));
+
+    monthList.setStylePrimaryName("datePickerMonth");
+    monthList.getButton().setStylePrimaryName("datePickerMonthButton");
+
+    monthAbbreviations = new String[12];
+
+    for (int a = 0; a < 12; a++) {
+      Date month = new Date(1, a, 1);
+      monthAbbreviations[a] = MONTH_ABBREVIATION_FORMAT.format(month);
+      monthList.addItem(monthAbbreviations[a], a,
+          MONTH_NAME_FORMAT.format(month), monthAbbreviations[a]);
+    }
+
+    monthList.addValueChangeHandler(new ValueChangeHandler<Integer>() {
+      public void onValueChange(ValueChangeEvent<Integer> event) {
+        if (monthList.getValue() == null
+            || !monthList.getValue().equals(
+                getModel().getCurrentMonth().getMonth())) {
+          addMonths(event.getValue() - getModel().getCurrentMonth().getMonth());
+        }
+      }
+    });
+  }
+
+  @SuppressWarnings("deprecation")
   private void createYearList() {
     yearList = new DropDownListBox<Integer>(
         String.valueOf(getModel().getCurrentMonth().getYear()
             + MAGIC_YEAR_CONSTANT));
 
-    yearList.addStyleName("gwt-DropDownMonthSelector-year");
+    yearList.setStylePrimaryName("datePickerYear");
+    yearList.getButton().setStylePrimaryName("datePickerYearButton");
 
-    yearList.addSelectionHandler(new SelectionHandler<Integer>() {
-      public void onSelection(SelectionEvent<Integer> event) {
+    yearList.addValueChangeHandler(new ValueChangeHandler<Integer>() {
+      public void onValueChange(ValueChangeEvent<Integer> event) {
         if (yearList.getValue() == null
             || !yearList.getValue().equals(
                 getModel().getCurrentMonth().getYear() + MAGIC_YEAR_CONSTANT)) {
-          addMonths((event.getNewValue() - MAGIC_YEAR_CONSTANT - getModel().getCurrentMonth().getYear()) * 12);
-          yearList.getButton().setHTML(String.valueOf(event.getNewValue()));
+          addMonths((event.getValue() - MAGIC_YEAR_CONSTANT - getModel().getCurrentMonth().getYear()) * 12);
         }
       }
     });

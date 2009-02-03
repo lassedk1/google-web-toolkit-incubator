@@ -17,36 +17,38 @@
 package com.google.gwt.gen2.commonwidget.client;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.gen2.widgetbase.client.Gen2PanelComposite;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * A {@link SimplePanel} which wraps its child element in the supplied
- * decorator.
+ * A panel which wraps its child element in the supplied decorator.
  */
-public class DecoratorPanel extends Gen2PanelComposite {
+public class DecoratorPanel extends SimplePanel {
+  final Element container;
+  final Element elem;
+
   /**
-   * Constructor.
+   * Creates a new decorator panel.
    */
-  public DecoratorPanel(Widget widget, Decorator decorator) {
-    this(decorator);
-    add(widget);
+  public DecoratorPanel(Decorator decorator) {
+    super(null);
+    container = DOM.createDiv();
+    elem = decorator.wrapElement(container);
+    setElement(elem);
   }
 
   /**
-   * Constructor.
+   * Creates a new decorator panel.
    */
-  public DecoratorPanel(Decorator decorator) {
-    final Element container = DOM.createDiv();
-    final Element elem = decorator.wrapElement(container);
-    initWidget(new SimplePanel(elem) {
-      @Override
-      protected com.google.gwt.user.client.Element getContainerElement() {
-        return (com.google.gwt.user.client.Element) container;
-      }
-    });
+  public DecoratorPanel(Widget widget, Decorator decorator) {
+    this(decorator);
+    setWidget(widget);
+  }
+
+  @Override
+  protected com.google.gwt.user.client.Element getContainerElement() {
+    return (com.google.gwt.user.client.Element) container;
   }
 
 }

@@ -17,22 +17,21 @@
 package com.google.gwt.gen2.demo.dropdownlistbox.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.gen2.commonwidget.client.Decorator;
-import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
-import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
+import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.gen2.selection.client.DropDownListBox;
 import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
-import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Custom List Box sample.
@@ -47,7 +46,7 @@ public class DropDownListBoxDemo implements EntryPoint {
   /**
    * A custom list box wrapped with one level of divs.
    */
-  static class WrappedDropDownListBox extends DropDownListBox {
+  static class WrappedDropDownListBox extends DropDownListBox<String> {
 
     private static Decorator DIV_WRAPPER = Decorator.createDivDecorator("demo-decorator");
 
@@ -61,25 +60,24 @@ public class DropDownListBoxDemo implements EntryPoint {
     }
 
     @Override
-    protected Decorator supplyListBoxDecorator() {
+    protected Decorator supplyItemListDecorator() {
       return DIV_WRAPPER;
     }
   }
 
-  private final class Stepper extends Composite implements ClickListener {
+  private final class Stepper extends Composite implements ClickHandler {
     boolean katieWasChosen = true;
 
-    final SelectionHandler selectionHandler = new SelectionHandler<String>() {
-      public void onSelection(SelectionEvent<String> event) {
-        check(currentValue, event.getOldValue(), null);
-        currentValue = event.getNewValue();
+    final ValueChangeHandler<String> valueChangeHandler = new ValueChangeHandler<String>() {
+      public void onValueChange(ValueChangeEvent<String> event) {
+        currentValue = event.getValue();
       }
     };
     boolean wrapped = false;
     private final VerticalPanel panel = new VerticalPanel();
     private final HTML lastActionLabel = new HTML();
     private final HTML transientLabel = new HTML();
-    private DropDownListBox customBox;
+    private DropDownListBox<String> customBox;
     private final Button action = new Button();
 
     private String lastActionStored = "";
@@ -88,36 +86,37 @@ public class DropDownListBoxDemo implements EntryPoint {
 
     private int state;
 
-    private Stepper(DropDownListBox customBox) {
-      this.customBox = customBox;
+    private Stepper(DropDownListBox<String> dropDownBox) {
+      this.customBox = dropDownBox;
       panel.add(action);
       panel.add(lastActionLabel);
       panel.add(transientLabel);
       initWidget(panel);
       setStyleName("gwt-Stepper");
-      action.addClickListener(this);
+      action.addClickHandler(this);
 
-      customBox.addSelectionHandler(selectionHandler);
+      dropDownBox.addValueChangeHandler(valueChangeHandler);
 
       // Do initial setup.
       state = -1;
       onClick(null);
     }
 
-    public void onClick(Widget sender) {
+    public void onClick(ClickEvent event) {
       String nextAction = "finished";
       String lastAction = null;
+
       transientLabel.setText("");
       switch (state) {
         case -1:
           nextAction = "click to choose Abby";
           break;
         case 0:
-          customBox.setValue("Abigail Crutcher");
-          customBox.showItems();
-          lastAction = "current value is Abby. ";
+          customBox.setValue("Abigail Crutcher", true);
+          customBox.showItemList();
+          lastAction = "List should show Abby selected";
           check("Abigail Crutcher", currentValue,
-              "Current value should be Abby");
+              "Current value should be Abigail Crutcher it is:" + currentValue);
           nextAction = "click to choose Henry";
           break;
         case 1:
@@ -127,21 +126,18 @@ public class DropDownListBoxDemo implements EntryPoint {
           break;
         case 2:
           if (!"Kaitlyn Crutcher".equals(currentValue)) {
-            Window.alert("Uh oh, Katie was not chosen. Instead we have:"
-                + customBox.getValue());
             katieWasChosen = false;
-            lastAction = "Katie was not succesfully chosen";
+            lastAction = "<b>Katie was not succesfully chosen</b>";
           } else {
             lastAction = "Current item is Katie, as expected";
           }
-
           nextAction = "Add a seperator and another item";
           break;
         case 3:
           customBox.addSeparator();
           customBox.addItem("Helen", "Helen Chapman", "My mother",
               "Mom's selected");
-          customBox.showItems();
+          customBox.showItemList();
           lastAction = "Four items should now be displayed. ";
           nextAction = "Manual: test keyboard support";
           customBox.getButton().setTabIndex(0);
@@ -157,7 +153,7 @@ public class DropDownListBoxDemo implements EntryPoint {
             wrapped = true;
             customBox = new WrappedDropDownListBox("wrapped family");
             fillInBox(customBox);
-            customBox.addSelectionHandler(selectionHandler);
+            customBox.addValueChangeHandler(valueChangeHandler);
 
             customBox.setAnimationEnabled(true);
             currentValue = null;
@@ -203,31 +199,35 @@ public class DropDownListBoxDemo implements EntryPoint {
     }
   }
 
-  SimplePanel hook = new SimplePanel();
+  HorizontalPanel hook = new HorizontalPanel();
 
   /**
    * This is the entry point method.
    */
   public void onModuleLoad() {
     Window.setTitle("Loading...");
-    HorizontalPanel tests = new HorizontalPanel();
-    RootPanel.get().add(tests);
+
     VerticalPanel p = new VerticalPanel();
-    tests.add(p);
+    RootPanel.get().add(p);
+
+    p.setStyleName("demo-pane");
+    p.setHeight("100%");
+
     final DropDownListBox<String> customBox = new DropDownListBox<String>(
         "My family");
     fillInBox(customBox);
     p.add(hook);
-    p.setCellHeight(customBox, "100px");
+    hook.setHeight("200px");
     p.add(new Stepper(customBox));
     Window.setTitle("DropDownListBox demo");
   }
 
-  void fillInBox(DropDownListBox customBox) {
-    customBox.addItem("Abby", "Abigail Crutcher", "My baby");
-    customBox.addItem("Katie", "Kaitlyn Crutcher", "My first born");
-    customBox.addItem("Henry", "Henry Crutcher", "My husband", null);
-    hook.setWidget(customBox);
+  void fillInBox(DropDownListBox<String> box) {
+    box.addItem("Abby", "Abigail Crutcher", "My baby");
+    box.addItem("Katie Bear", "Kaitlyn Crutcher", "My first born");
+    box.addItem("Henry", "Henry Crutcher", "My husband", null);
+    hook.clear();
+    hook.add(box);
   }
 
 }
