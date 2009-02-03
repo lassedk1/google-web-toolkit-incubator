@@ -49,7 +49,7 @@ abstract class CustomListBox<V> extends Composite {
       assert (value != null);
       Element e = itemList.addHtml(supplyItemDecorator().wrapHTML(html));
       e.setTitle(tooltip);
-      new Item(e, value, displayText, firstInGroup);
+      addItem(e, value, displayText, firstInGroup);
       firstInGroup = false;
     }
 
