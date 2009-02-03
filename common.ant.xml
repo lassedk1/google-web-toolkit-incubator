@@ -166,6 +166,7 @@
     <attribute name="test.out" default="" />
     <attribute name="test.reports" default="@{test.out}/reports" />
     <attribute name="test.cases" default="" />
+    <attribute name="test.heap" default="512M" />
 
     <element name="extraclasspaths" optional="true" />
     <sequential>
@@ -184,7 +185,8 @@
              failureproperty="junit.failure"
              tempdir="@{test.out}">
         <jvmarg line="${junit.platform.args}" />
-        <jvmarg line="-Xmx512m -Xss1m" />
+        
+        <jvmarg line="-Xmx@{test.heap} -Xss1m" />
         <sysproperty key="gwt.args" value="${junit.notheadless.arg} @{test.args}" />
         <sysproperty key="java.awt.headless" value="${junit.headless}" />
         <classpath>
