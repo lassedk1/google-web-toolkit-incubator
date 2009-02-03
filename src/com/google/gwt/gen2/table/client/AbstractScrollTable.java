@@ -22,6 +22,7 @@ import com.google.gwt.gen2.event.dom.client.ScrollHandler;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.table.client.ColumnResizer.ColumnWidthInfo;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
+import com.google.gwt.gen2.table.client.property.MaximumWidthProperty;
 import com.google.gwt.gen2.table.event.client.ColumnSortEvent;
 import com.google.gwt.gen2.table.event.client.ColumnSortHandler;
 import com.google.gwt.gen2.table.override.client.ComplexPanel;
@@ -932,7 +933,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * Get the absolute maximum width of a column.
    * 
    * @param column the column index
-   * @return the maximum allowable width of the column, or -1 if there is none
+   * @return the maximum allowable width of the column
    */
   public abstract int getMaximumColumnWidth(int column);
 
@@ -1560,7 +1561,9 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     // Adjust the widths if the columns are not truncatable, up to maxWidth
     if (!isColumnTruncatable(column)) {
       int idealWidth = getDataTable().getIdealColumnWidth(column);
-      idealWidth = Math.min(idealWidth, maxWidth);
+      if (maxWidth != MaximumWidthProperty.NO_MAXIMUM_WIDTH) {
+        idealWidth = Math.min(idealWidth, maxWidth);
+      }
       minWidth = Math.max(minWidth, idealWidth);
     }
 

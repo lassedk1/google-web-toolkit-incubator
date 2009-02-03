@@ -19,7 +19,7 @@ package com.google.gwt.gen2.table.client.property;
  * A {@link ColumnProperty} that describes whether or not the contents of the
  * column can be sorted.
  */
-public abstract class SortableProperty extends ColumnProperty {
+public class SortableProperty extends ColumnProperty {
   /**
    * Property type.
    */
@@ -29,21 +29,29 @@ public abstract class SortableProperty extends ColumnProperty {
     @Override
     public SortableProperty getDefault() {
       if (instance == null) {
-        instance = new SortableProperty() {
-          @Override
-          public boolean isColumnSortable() {
-            return true;
-          }
-        };
+        instance = new SortableProperty(true);
       }
       return instance;
     }
   };
+
+  private boolean isSortable;
+
+  /**
+   * Construct a new {@link SortableProperty}.
+   * 
+   * @param isSortable true if the column is sortable, false if not
+   */
+  public SortableProperty(boolean isSortable) {
+    this.isSortable = isSortable;
+  }
 
   /**
    * Returns true if the column is sortable, false if it is not.
    * 
    * @return true if the column is sortable, false if it is not sortable
    */
-  public abstract boolean isColumnSortable();
+  public boolean isColumnSortable() {
+    return isSortable;
+  }
 }

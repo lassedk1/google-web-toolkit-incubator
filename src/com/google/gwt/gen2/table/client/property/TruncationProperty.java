@@ -19,7 +19,7 @@ package com.google.gwt.gen2.table.client.property;
  * A {@link ColumnProperty} that describes whether or not the contents of the
  * column can be truncated.
  */
-public abstract class TruncationProperty extends ColumnProperty {
+public class TruncationProperty extends ColumnProperty {
   /**
    * Property type.
    */
@@ -29,21 +29,29 @@ public abstract class TruncationProperty extends ColumnProperty {
     @Override
     public TruncationProperty getDefault() {
       if (instance == null) {
-        instance = new TruncationProperty() {
-          @Override
-          public boolean isColumnTruncatable() {
-            return true;
-          }
-        };
+        instance = new TruncationProperty(true);
       }
       return instance;
     }
   };
+
+  private boolean isTruncatable;
+
+  /**
+   * Construct a new {@link TruncationProperty}.
+   * 
+   * @param isTruncatable true if the column is truncatable, false if not
+   */
+  public TruncationProperty(boolean isTruncatable) {
+    this.isTruncatable = isTruncatable;
+  }
 
   /**
    * Returns true if the specified column can be truncated.
    * 
    * @return true if the column is truncatable, false if it is not
    */
-  public abstract boolean isColumnTruncatable();
+  public boolean isColumnTruncatable() {
+    return isTruncatable;
+  }
 }
