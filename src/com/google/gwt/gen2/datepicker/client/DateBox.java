@@ -83,7 +83,7 @@ public class DateBox extends Gen2Composite implements HasKeyDownHandlers,
 
   private static final DateTimeFormat DEFAULT_FORMATTER = DateTimeFormat.getMediumDateFormat();
   private boolean dirtyText = false;
-  private DropDownPanel<DateBox> popup = new DropDownPanel<DateBox>();
+  private DropDownPanel popup = new DropDownPanel();
   private TextBox box = new TextBox();
   private DatePicker picker;
   private DateTimeFormat dateFormatter;

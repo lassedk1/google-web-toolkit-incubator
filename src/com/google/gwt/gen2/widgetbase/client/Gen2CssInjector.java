@@ -30,13 +30,25 @@ public class Gen2CssInjector {
    * CSS resources for all gen2 widgets.
    */
   static interface DefaultBundle extends ImmutableResourceBundle {
+    @Resource("com/google/gwt/gen2/widgetbase/public/DropDownDatePicker.css")
+    CssResource dropDownDatePicker();
+
     @Resource("com/google/gwt/gen2/widgetbase/public/DropDownListBox.css")
     CssResource dropDownListBoxCss();
+
+    @Resource("com/google/gwt/gen2/widgetbase/public/LogHandlers.css")
+    CssResource logHandlers();
 
     @Resource("com/google/gwt/gen2/widgetbase/public/Picker.css")
     CssResource pickerCss();
   }
+
   static class DisabledMode extends Mode {
+    @Override
+    public DefaultBundle createDefaultBundle() {
+      return null;
+    }
+
     @Override
     public void inject(CssResource res) {
     }
@@ -48,6 +60,10 @@ public class Gen2CssInjector {
   }
 
   static class Mode {
+    public DefaultBundle createDefaultBundle() {
+      return GWT.create(DefaultBundle.class);
+    }
+
     public void inject(CssResource res) {
       StyleInjector.injectStylesheet(res.getText());
     }
@@ -57,23 +73,29 @@ public class Gen2CssInjector {
     }
   }
 
-  /**
-   * CSS resource for log handlers in handler.client.
-   */
-  static interface Resources extends ImmutableResourceBundle {
-    @Resource("com/google/gwt/gen2/widgetbase/public/LogHandlers.css")
-    CssResource css();
-  }
-
-  static DefaultBundle DEFAULT_CSS_FILES = GWT.create(DefaultBundle.class);
-
   private static Mode m = GWT.create(Mode.class);
 
+  private static DefaultBundle DEFAULT_CSS_FILES = m.createDefaultBundle();
+
   /**
-   * If css dependency injection is enabled, adds the DropDownListBox.css file.
+   * If css dependency injection is enabled, adds the default dependencies for
+   * DropDownDatePicker.
+   */
+  public static void addDropDownDatePickerDefault() {
+    if (Gen2CssInjector.isInjectionEnabled()) {
+      inject(DEFAULT_CSS_FILES.dropDownDatePicker());
+      inject(DEFAULT_CSS_FILES.dropDownListBoxCss());
+    }
+  }
+
+  /**
+   * If css dependency injection is enabled, adds the DropDownListBox
+   * dependencies.
    */
   public static void addDropDownListBoxDefault() {
-    inject(DEFAULT_CSS_FILES.dropDownListBoxCss());
+    if (Gen2CssInjector.isInjectionEnabled()) {
+      inject(DEFAULT_CSS_FILES.dropDownListBoxCss());
+    }
   }
 
   /**
@@ -81,8 +103,7 @@ public class Gen2CssInjector {
    */
   public static void addLogHandlerDefault() {
     if (Gen2CssInjector.isInjectionEnabled()) {
-      CssResource css = ((Resources) GWT.create(Resources.class)).css();
-      StyleInjector.injectStylesheet(css.getText());
+      inject(DEFAULT_CSS_FILES.logHandlers());
     }
   }
 
@@ -91,7 +112,9 @@ public class Gen2CssInjector {
    * included under public/widget.
    */
   public static void addPickerDefault() {
-    inject(DEFAULT_CSS_FILES.pickerCss());
+    if (Gen2CssInjector.isInjectionEnabled()) {
+      inject(DEFAULT_CSS_FILES.pickerCss());
+    }
   }
 
   /**

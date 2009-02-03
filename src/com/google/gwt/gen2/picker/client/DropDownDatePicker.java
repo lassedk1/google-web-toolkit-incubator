@@ -14,16 +14,25 @@
  * the License.
  */
 package com.google.gwt.gen2.picker.client;
- 
+
+import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
 import com.google.gwt.user.datepicker.client.CalendarModel;
 import com.google.gwt.user.datepicker.client.DatePicker;
 import com.google.gwt.user.datepicker.client.DefaultCalendarView;
 
 /**
- * A {@link DatePicker} that uses {@link DropDownListBox} for selecting month
- * and year.
+ * A {@link DatePicker} that uses
+ * {@link com.google.gwt.gen2.selection.client.DropDownListBox} for selecting
+ * month and year.
  */
 public class DropDownDatePicker extends DatePicker {
+  /**
+   * Injects the default styles as a css resource.
+   */
+  public static void injectDefaultCss() {
+    Gen2CssInjector.addDropDownDatePickerDefault();
+  }
+
   /**
    * Creates a new <code>DropDownDatePicker</code>.
    */
@@ -34,8 +43,8 @@ public class DropDownDatePicker extends DatePicker {
   /**
    * Creates a new <code>DropDownDatePicker</code>.
    * 
-   * @param startYear
-   * @param yearsToDisplay
+   * @param startYear the start year
+   * @param yearsToDisplay how many years to display
    */
   public DropDownDatePicker(int startYear, int yearsToDisplay) {
     super(new DropDownMonthSelector(startYear, yearsToDisplay),

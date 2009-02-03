@@ -16,5 +16,5 @@
   <stylesheet src='DropDownListBoxDemo.css' />
 
   <!-- used to debug this widget's css -->
-  <!--  <inherits name='com.google.gwt.gen2.widgetbase.DebugCss' /> -->
+ <inherits name='com.google.gwt.gen2.widgetbase.Css_debug' />  
 </module>

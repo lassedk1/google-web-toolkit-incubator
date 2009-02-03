@@ -24,4 +24,6 @@
 	<stylesheet src="LogHandlers.css" />
 	<stylesheet src="DropDownListBox.css" />
 	<stylesheet src="Picker.css" />
+	<stylesheet src="DropDownDatePicker.css" />
+
 </module>

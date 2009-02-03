@@ -17,10 +17,10 @@
 package com.google.gwt.gen2.selection.client;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.gen2.base.client.Gen2TestBase;
 import com.google.gwt.gen2.commonwidget.client.Decorator;
-import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
-import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.DOM;
 
 /**
@@ -51,62 +51,58 @@ public class DropDownListBoxTest extends Gen2TestBase {
     }
   }
 
-  Object oldValue;
-  Object newValue;
-  final SelectionHandler updateHandler = new SelectionHandler<String>() {
-    public void onSelection(SelectionEvent<String> event) {
-      oldValue = event.getOldValue();
-      newValue = event.getNewValue();
+  Object value;
+  final ValueChangeHandler<String> updateHandler = new ValueChangeHandler<String>() {
+    public void onValueChange(ValueChangeEvent<String> event) {
+      value = event.getValue();
     }
   };
 
-  public void testCustomListBox() {
+  public void testDropDownListBox() {
     globalHelper(createBox());
   }
 
-  public void testWrappedCustomListBox() {
+  public void testWrappedDropDownListBox() {
     globalHelper(createWrappedBox());
   }
 
-  private void globalHelper(CustomListBox customBox) {
-    basicHelper(customBox);
-    customBox.setSelectedValue(null);
-    updateHelper(customBox);
+  private void globalHelper(DropDownListBox box) {
+    basicHelper(box);
+    box.setValue(null);
+    updateHelper(box);
   }
 
-  private void basicHelper(CustomListBox customBox) {
-    assertNull(customBox.getLastSelectedValue());
+  private void basicHelper(DropDownListBox box) {
+    assertNull(box.getValue());
   }
 
-  private void updateHelper(CustomListBox customBox) {
-    customBox.setSelectedValue("Abigail Crutcher");
-    assertEquals(null, oldValue);
-    assertEquals("Abigail Crutcher", newValue);
-    customBox.setSelectedValue("Henry Crutcher");
-    assertEquals("Abigail Crutcher", oldValue);
-    assertEquals("Henry Crutcher", newValue);
-    customBox.addSeparator();
-    customBox.addItem("Helen", "Helen Chapman", "My mother");
-    customBox.setSelectedValue("Helen Chapman");
-    assertEquals("Henry Crutcher", oldValue);
-    assertEquals("Helen Chapman", newValue);
+  private void updateHelper(DropDownListBox box) {
+    box.setValue("Abigail Crutcher", true);
+
+    assertEquals("Abigail Crutcher", value);
+    box.setValue("Henry Crutcher", true);
+    assertEquals("Henry Crutcher", value);
+    box.addSeparator();
+    box.addItem("Helen", "Helen Chapman", "My mother");
+    box.setValue("Helen Chapman", true);
+    assertEquals("Helen Chapman", value);
   }
 
-  private CustomListBox createWrappedBox() {
+  private DropDownListBox createWrappedBox() {
     return fillInBox(new WrappedListBox());
   }
 
-  private CustomListBox createBox() {
+  private DropDownListBox createBox() {
     return fillInBox(new DropDownListBox<String>());
   }
 
-  CustomListBox fillInBox(DropDownListBox<String> customBox) {
-    customBox.addItem("Abby", "Abigail Crutcher", "My baby");
-    customBox.addItem("Katie", "Kaitlyn Crutcher", "My first born");
-    customBox.addItem("Henry", "Henry Crutcher", "My husband", "henry");
+  DropDownListBox fillInBox(DropDownListBox<String> box) {
+    box.addItem("Abby", "Abigail Crutcher", "My baby");
+    box.addItem("Katie", "Kaitlyn Crutcher", "My first born");
+    box.addItem("Henry", "Henry Crutcher", "My husband", "henry");
 
-    customBox.addSelectionHandler(updateHandler);
-    return customBox;
+    box.addValueChangeHandler(updateHandler);
+    return box;
   }
 
 }

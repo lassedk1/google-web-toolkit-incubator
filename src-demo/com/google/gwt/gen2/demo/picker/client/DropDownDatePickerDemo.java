@@ -16,6 +16,7 @@
 package com.google.gwt.gen2.demo.picker.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.gen2.picker.client.DropDownDatePicker;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.Label;
@@ -32,6 +33,7 @@ public class DropDownDatePickerDemo implements EntryPoint {
    */
   @SuppressWarnings/* TODO pending resolution of GWT issue #3233 */("deprecation")
   public void onModuleLoad() {
+    DropDownDatePicker.injectDefaultCss();
     final DropDownDatePicker datePicker = new DropDownDatePicker();
     final TextBox startYearField = new TextBox();
     final TextBox yearsToDisplayField = new TextBox();
@@ -49,8 +51,8 @@ public class DropDownDatePickerDemo implements EntryPoint {
           // datePicker.setStartYear(Integer.parseInt(event.getValue()));
           datePicker.setStartYear(Integer.parseInt(startYearField.getValue()));
         } catch (NumberFormatException e) {
-          // System.out.println("Invalid number:" + event.getValue());
-          System.out.println("Invalid number:" + startYearField.getValue());
+         
+          Log.warning("Invalid number:" + startYearField.getValue());
         }
       }
     });
@@ -75,7 +77,6 @@ public class DropDownDatePickerDemo implements EntryPoint {
     RootPanel.get().add(startYearField);
     RootPanel.get().add(new Label("Number of years in list:"));
     RootPanel.get().add(yearsToDisplayField);
-
     RootPanel.get().add(datePicker);
   }
 }

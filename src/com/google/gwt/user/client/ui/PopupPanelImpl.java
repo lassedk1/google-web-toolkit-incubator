@@ -23,7 +23,11 @@ import com.google.gwt.user.client.ui.impl.PopupImpl;
  * 
  * Adaptor for incubator's DropDownPanel so DropDownPanel can get access to the
  * popup fields it needs..
+ * 
+ * @deprecated as of Feb 2, 2009 DropDownAnimation moved into gwt 1.6 and this
+ *             single class has caused more build-breaks then any other
  */
+@Deprecated
 public class PopupPanelImpl extends PopupPanel {
 
   /**
@@ -98,7 +102,7 @@ public class PopupPanelImpl extends PopupPanel {
   public native boolean isShowing()/*-{
     return this.@com.google.gwt.user.client.ui.PopupPanel::showing;
   }-*/;
-  
+
   protected void setAnimation(PopupAnimation animation) {
     assert (this.isAttached() == false);
     super.setAnimation(animation);
