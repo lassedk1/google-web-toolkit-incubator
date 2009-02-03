@@ -18,7 +18,12 @@ package com.google.gwt.gen2.table.client.property;
 /**
  * A {@link ColumnProperty} that provides the minimum width of a column.
  */
-public abstract class MinimumWidthProperty extends ColumnProperty {
+public class MinimumWidthProperty extends ColumnProperty {
+  /**
+   * The return value when no minimum width is specified.
+   */
+  public static final int NO_MINIMUM_WIDTH = -1;
+
   /**
    * Property type.
    */
@@ -28,23 +33,31 @@ public abstract class MinimumWidthProperty extends ColumnProperty {
     @Override
     public MinimumWidthProperty getDefault() {
       if (instance == null) {
-        instance = new MinimumWidthProperty() {
-          @Override
-          public int getMinimumColumnWidth() {
-            return -1;
-          }
-        };
+        instance = new MinimumWidthProperty(NO_MINIMUM_WIDTH);
       }
       return instance;
     }
   };
 
+  private int minWidth;
+
   /**
-   * Get the minimum width of the column. A return value of -1 indicates that
-   * the column has no minimum width, but the consumer of the data may impose
-   * one anyway.
+   * Construct a new {@link MinimumWidthProperty}.
+   * 
+   * @param minWidth the minimum column width
+   */
+  public MinimumWidthProperty(int minWidth) {
+    this.minWidth = minWidth;
+  }
+
+  /**
+   * Get the minimum width of the column. A return value of
+   * {@link #NO_MINIMUM_WIDTH} indicates that the column has no minimum width,
+   * but the consumer of the data may impose one anyway.
    * 
    * @return the minimum allowable width of the column
    */
-  public abstract int getMinimumColumnWidth();
+  public int getMinimumColumnWidth() {
+    return minWidth;
+  }
 }

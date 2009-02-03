@@ -170,13 +170,8 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
    * 
    * @param sortable true to make sortable, false to make unsortable
    */
-  public void setColumnSortable(final boolean sortable) {
-    setColumnProperty(SortableProperty.TYPE, new SortableProperty() {
-      @Override
-      public boolean isColumnSortable() {
-        return sortable;
-      }
-    });
+  public void setColumnSortable(boolean sortable) {
+    setColumnProperty(SortableProperty.TYPE, new SortableProperty(sortable));
   }
 
   /**
@@ -184,13 +179,9 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
    * 
    * @param truncatable true to make truncatable, false to make non truncatable
    */
-  public void setColumnTruncatable(final boolean truncatable) {
-    setColumnProperty(TruncationProperty.TYPE, new TruncationProperty() {
-      @Override
-      public boolean isColumnTruncatable() {
-        return truncatable;
-      }
-    });
+  public void setColumnTruncatable(boolean truncatable) {
+    setColumnProperty(TruncationProperty.TYPE, new TruncationProperty(
+        truncatable));
   }
 
   /**
@@ -198,13 +189,9 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
    * 
    * @param maxWidth the max width
    */
-  public void setMaximumColumnWidth(final int maxWidth) {
-    setColumnProperty(MaximumWidthProperty.TYPE, new MaximumWidthProperty() {
-      @Override
-      public int getMaximumColumnWidth() {
-        return maxWidth;
-      }
-    });
+  public void setMaximumColumnWidth(int maxWidth) {
+    setColumnProperty(MaximumWidthProperty.TYPE, new MaximumWidthProperty(
+        maxWidth));
   }
 
   /**
@@ -212,13 +199,9 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
    * 
    * @param minWidth the min width
    */
-  public void setMinimumColumnWidth(final int minWidth) {
-    setColumnProperty(MinimumWidthProperty.TYPE, new MinimumWidthProperty() {
-      @Override
-      public int getMinimumColumnWidth() {
-        return minWidth;
-      }
-    });
+  public void setMinimumColumnWidth(int minWidth) {
+    setColumnProperty(MinimumWidthProperty.TYPE, new MinimumWidthProperty(
+        minWidth));
   }
 
   /**
@@ -227,13 +210,8 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
    * @param preferredWidth the preferred width
    * @see #getPreferredColumnWidth()
    */
-  public void setPreferredColumnWidth(final int preferredWidth) {
-    setColumnProperty(PreferredWidthProperty.TYPE,
-        new PreferredWidthProperty() {
-          @Override
-          public int getPreferredColumnWidth() {
-            return preferredWidth;
-          }
-        });
+  public void setPreferredColumnWidth(int preferredWidth) {
+    setColumnProperty(PreferredWidthProperty.TYPE, new PreferredWidthProperty(
+        preferredWidth));
   }
 }

@@ -18,7 +18,7 @@ package com.google.gwt.gen2.table.client.property;
 /**
  * A {@link ColumnProperty} that provides the preferred width of a column.
  */
-public abstract class PreferredWidthProperty extends ColumnProperty {
+public class PreferredWidthProperty extends ColumnProperty {
   /**
    * Property type.
    */
@@ -28,17 +28,23 @@ public abstract class PreferredWidthProperty extends ColumnProperty {
     @Override
     public PreferredWidthProperty getDefault() {
       if (instance == null) {
-        instance = new PreferredWidthProperty() {
-          @Override
-          public int getPreferredColumnWidth() {
-            return 80;
-          }
-        };
+        instance = new PreferredWidthProperty(80);
       }
       return instance;
     }
   };
 
+  private int preferredWidth;
+
+  /**
+   * Construct a new {@link PreferredWidthProperty}.
+   * 
+   * @param preferredWidth the preferred column width
+   */
+  public PreferredWidthProperty(int preferredWidth) {
+    this.preferredWidth = preferredWidth;
+  }
+  
   /**
    * Returns the preferred width of the column in pixels. Views should respect
    * the preferred column width and attempt to size the column to its preferred
@@ -47,5 +53,7 @@ public abstract class PreferredWidthProperty extends ColumnProperty {
    * 
    * @return the preferred width of the column
    */
-  public abstract int getPreferredColumnWidth();
+  public int getPreferredColumnWidth() {
+    return preferredWidth;
+  }
 }
