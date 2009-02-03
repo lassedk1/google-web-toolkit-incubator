@@ -184,7 +184,7 @@
              failureproperty="junit.failure"
              tempdir="@{test.out}">
         <jvmarg line="${junit.platform.args}" />
-        <jvmarg line="-Xmx512m" />
+        <jvmarg line="-Xmx512m -Xss1m" />
         <sysproperty key="gwt.args" value="${junit.notheadless.arg} @{test.args}" />
         <sysproperty key="java.awt.headless" value="${junit.headless}" />
         <classpath>
