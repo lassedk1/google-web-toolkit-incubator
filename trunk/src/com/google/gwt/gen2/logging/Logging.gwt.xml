@@ -1,7 +1,7 @@
 <module>
 	<!--  Ensures user is included first -->
-	<inherits name="com.google.gwt.logging.LoggingBase" />
-	<inherits name="com.google.gwt.logging.handler.LogHandler" />
+	<inherits name="com.google.gwt.gen2.logging.LoggingBase" />
+	<inherits name="com.google.gwt.gen2.logging.handler.LogHandler" />
 	<source path="impl/client" />
 
 	<!--
