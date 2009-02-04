@@ -50,90 +50,113 @@ public class LogImplWithManager extends LogImpl {
     return AvoidLogClInit.manager;
   }
 
+  @Override
   public void addLogHandler(LogHandler handler) {
     getManager().addLogHandler(handler);
   }
 
+  @Override
   public void clearLogHandlers() {
     getManager().clearLogHandlers();
   }
 
+  @Override
   public void config(String msg, String category) {
     getManager().config(msg, category);
   }
 
+  @Override
   public void fine(String msg, String category) {
     getManager().fine(msg, category);
   }
 
+  @Override
   public void finer(String msg, String category) {
     getManager().finer(msg, category);
   }
 
+  @Override
   public void finest(String msg, String category) {
     getManager().finest(msg, category);
   }
 
+  @Override
   public Level getDefaultLevel() {
     return getManager().getLevel();
   }
 
+  @Override
   public void info(String msg, String category) {
     getManager().info(msg, category);
   }
 
   @Override
   public void init() {
+    initializeLevels();
+    addDefaultLogHandler();
   }
 
+  @Override
   public boolean isLoggable(Level level) {
     return getManager().isLoggable(level);
   }
 
+  @Override
   public boolean isLoggingEnabled() {
     return true;
   }
 
+  @Override
   public boolean isLoggingProduction() {
     return false;
   }
 
+  @Override
   public Iterator<Level> levelIterator() {
     return getManager().levelIterator();
   }
 
+  @Override
   public void log(String msg, Level level, String category, Throwable t) {
     getManager().log(level, msg, category, t);
   }
 
+  @Override
   public Level parse(String levelName) {
     return getManager().parse(levelName);
   }
 
+  @Override
   public void registerLevel(Level level) {
     getManager().registerLevel(level);
   }
 
+  @Override
   public void removeLogHandler(LogHandler handler) {
     getManager().removeLogHandler(handler);
   }
 
+  @Override
   public void setDefaultLevel(Level level) {
     getManager().setDefaultLevel(level);
   }
 
+  @Override
   public void setLevel(String category, Level level) {
     getManager().setLevel(category, level);
   }
 
+  @Override
   public void severe(String msg, String category, Throwable t) {
     getManager().severe(msg, category, t);
   }
 
+  @Override
   public String toString() {
     return getManager().toString();
   }
 
+  @Override
   public void warning(String msg, String category, Throwable t) {
     getManager().warning(msg, category, t);
   }

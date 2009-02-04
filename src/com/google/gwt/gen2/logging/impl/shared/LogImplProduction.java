@@ -26,18 +26,23 @@ import com.google.gwt.core.client.GWT;
  */
 public class LogImplProduction extends LogImplWithManager {
 
+  @Override
   public void config(String msg, String category) {
   }
 
+  @Override
   public void fine(String msg, String category) {
   }
 
+  @Override
   public void finer(String msg, String category) {
   }
 
+  @Override
   public void finest(String msg, String category) {
   }
 
+  @Override
   public void info(String msg, String category) {
   }
 
@@ -49,14 +54,17 @@ public class LogImplProduction extends LogImplWithManager {
     }
   }
 
+  @Override
   public boolean isLoggingEnabled() {
     return true;
   }
 
+  @Override
   public boolean isLoggingProduction() {
     return true;
   }
 
+  @Override
   public void warning(String msg, String category, Throwable t) {
   }
 

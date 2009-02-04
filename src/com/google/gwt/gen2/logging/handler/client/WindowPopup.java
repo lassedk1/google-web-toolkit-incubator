@@ -19,9 +19,10 @@ package com.google.gwt.gen2.logging.handler.client;
 
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.WindowCloseListener;
 
 /**
  * Popup window used for logging. Note, currently only tested for IE.
@@ -67,13 +68,10 @@ class WindowPopup {
 
   private boolean ready = false;
 
-  private final WindowCloseListener windowCloseListener = new WindowCloseListener() {
-    public void onWindowClosed() {
-      closeWindowIfOpen();
-    }
+  private final CloseHandler<Window> closeHandler = new CloseHandler<Window>() {
 
-    public String onWindowClosing() {
-      return null;
+    public void onClose(CloseEvent<Window> event) {
+      closeWindowIfOpen();
     }
   };
 
@@ -83,7 +81,7 @@ class WindowPopup {
    * Default constructor.
    */
   public WindowPopup() {
-    Window.addWindowCloseListener(windowCloseListener);
+    Window.addCloseHandler(closeHandler);
   }
 
   /**
