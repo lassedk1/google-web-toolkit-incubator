@@ -17,6 +17,7 @@
 package com.google.gwt.gen2.logging.handler.client;
 
 import com.google.gwt.gen2.logging.shared.Level;
+import com.google.gwt.gen2.logging.shared.LogFormatter;
 
 /**
  * Useful utilities for creating log handlers.
@@ -28,26 +29,17 @@ public class LogHandlerUtil {
    * is primarily used by widget log handlers to display log levels
    * consistently.
    * 
-   * <dl>
-   * <dt>Severe</dt>
-   * <dd>logSEVERE</dd>
-   * <dt>Config</dt>
-   * <dd>logCONFIG</dd>
-   * <dt>Fine</dt>
-   * <dd>logFINE</dd>
-   * <dt>. . .</dt>
-   * <dd></dd>
-   * </dl>
-   * 
    * 
    * In other words, uses "log" + name of level to calculate the level name.
    * 
    * @param level level
    * 
    * @return style name
+   * @deprecated as of Feb 2 2009, moved to LogFormatter.
    */
+  @Deprecated
   public static String getStyle(Level level) {
-    return "log" + level.getName();
+    return LogFormatter.getStyle(level);
   }
 
   /**
