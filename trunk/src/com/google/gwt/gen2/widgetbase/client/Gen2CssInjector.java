@@ -34,13 +34,16 @@ public class Gen2CssInjector {
     CssResource dropDownDatePicker();
 
     @Resource("com/google/gwt/gen2/widgetbase/public/DropDownListBox.css")
-    CssResource dropDownListBoxCss();
+    CssResource dropDownListBox();
+
+    @Resource("com/google/gwt/gen2/widgetbase/public/FastTree.css")
+    CssResource fastTree();
 
     @Resource("com/google/gwt/gen2/widgetbase/public/LogHandlers.css")
     CssResource logHandlers();
-
+ 
     @Resource("com/google/gwt/gen2/widgetbase/public/Picker.css")
-    CssResource pickerCss();
+    CssResource picker();
   }
 
   static class DisabledMode extends Mode {
@@ -84,7 +87,7 @@ public class Gen2CssInjector {
   public static void addDropDownDatePickerDefault() {
     if (Gen2CssInjector.isInjectionEnabled()) {
       inject(DEFAULT_CSS_FILES.dropDownDatePicker());
-      inject(DEFAULT_CSS_FILES.dropDownListBoxCss());
+      inject(DEFAULT_CSS_FILES.dropDownListBox());
     }
   }
 
@@ -94,16 +97,7 @@ public class Gen2CssInjector {
    */
   public static void addDropDownListBoxDefault() {
     if (Gen2CssInjector.isInjectionEnabled()) {
-      inject(DEFAULT_CSS_FILES.dropDownListBoxCss());
-    }
-  }
-
-  /**
-   * Injects the default css used for the log handlers defined in this package.
-   */
-  public static void addLogHandlerDefault() {
-    if (Gen2CssInjector.isInjectionEnabled()) {
-      inject(DEFAULT_CSS_FILES.logHandlers());
+      inject(DEFAULT_CSS_FILES.dropDownListBox());
     }
   }
 
@@ -111,9 +105,28 @@ public class Gen2CssInjector {
    * If css dependency injection is enabled, adds the ToggleButton.css file
    * included under public/widget.
    */
+  public static void addFastTreeDefault() {
+    inject(DEFAULT_CSS_FILES.fastTree());
+  }
+
+  /**
+   * Injects the default css used for the log handlers defined in this package.
+   */
+  public static void addLogHandlerDefault() {
+    if (Gen2CssInjector.isInjectionEnabled()) {
+      inject(DEFAULT_CSS_FILES.dropDownListBox());
+      inject(DEFAULT_CSS_FILES.logHandlers());
+    }
+  }
+  
+
+  /**
+   * If css dependency injection is enabled, adds the ToggleButton.css file
+   * included under public/widget.
+   */
   public static void addPickerDefault() {
     if (Gen2CssInjector.isInjectionEnabled()) {
-      inject(DEFAULT_CSS_FILES.pickerCss());
+      inject(DEFAULT_CSS_FILES.picker());
     }
   }
 

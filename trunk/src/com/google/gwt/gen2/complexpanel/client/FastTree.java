@@ -15,7 +15,6 @@
  */
 package com.google.gwt.gen2.complexpanel.client;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -51,15 +50,11 @@ import com.google.gwt.gen2.commonevent.shared.BeforeOpenHandler;
 import com.google.gwt.gen2.commonwidget.client.Decorator;
 import com.google.gwt.gen2.commonwidget.client.impl.StandardCssImpl;
 import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
-import com.google.gwt.gen2.widgetbase.client.WidgetCss;
-import com.google.gwt.libideas.client.StyleInjector;
-import com.google.gwt.libideas.resources.client.DataResource;
-import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Accessibility;
-import com.google.gwt.user.client.ui.HasFocus;
+import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
@@ -86,38 +81,14 @@ public class FastTree extends Panel implements HasClickHandlers,
    * <p/>
    * The class names indicate the default gwt names for these styles.
    */
-  static interface Css extends WidgetCss {
+  static interface Css {
 
-    @ClassName(STYLENAME_DEFAULT)
     String fastTree();
 
-    @ClassName(STYLENAME_SELECTION)
     String selectionBar();
   }
 
   static class StandardCss extends StandardCssImpl implements Css {
-
-    /**
-     * CSS resource.
-     */
-    static interface Resources extends ImmutableResourceBundle {
-
-      static final String PUBLIC_PATH = "com/google/gwt/gen2/widgetbase/public/";
-      static final String CSS_PATH = PUBLIC_PATH;
-      static final String IMAGE_PATH = PUBLIC_PATH;
-
-      @Resource(CSS_PATH + "FastTree.css")
-      FastTree.Css fastTreeCss();
-
-      @Resource(IMAGE_PATH + "selectionBar.gif")
-      DataResource selectionBar();
-
-      @Resource(IMAGE_PATH + "treeClosed.gif")
-      DataResource treeClosed();
-
-      @Resource(IMAGE_PATH + "treeOpen.gif")
-      DataResource treeOpen();
-    }
 
     static FastTree.Css DEFAULT_CSS;
 
@@ -126,17 +97,6 @@ public class FastTree extends Panel implements HasClickHandlers,
         DEFAULT_CSS = createCss(STYLENAME_DEFAULT);
       }
       return DEFAULT_CSS;
-    }
-
-    /**
-     * Inject the default css for this widget.
-     */
-    static void injectCss() {
-      if (Gen2CssInjector.isInjectionEnabled()) {
-        FastTree.Css css = ((Resources) GWT.create(Resources.class)).fastTreeCss();
-        StyleInjector.injectStylesheet(css.getText());
-        DEFAULT_CSS = css;
-      }
     }
 
     public StandardCss(String styleName) {
@@ -155,7 +115,6 @@ public class FastTree extends Panel implements HasClickHandlers,
   private static FocusImpl impl = FocusImpl.getFocusImplForPanel();
 
   static final String STYLENAME_DEFAULT = "gwt-FastTree";
-  private static final String STYLENAME_SELECTION = "selection-bar";
 
   /**
    * Creates a {@link Css} instance with the given style name. Note, only the
@@ -172,7 +131,7 @@ public class FastTree extends Panel implements HasClickHandlers,
    * Injects the default styles as a css resource.
    */
   public static void injectDefaultCss() {
-    StandardCss.injectCss();
+    Gen2CssInjector.addFastTreeDefault();
   }
 
   /**
@@ -453,6 +412,7 @@ public class FastTree extends Panel implements HasClickHandlers,
     super.onBrowserEvent(e);
   }
 
+  
   @Override
   public boolean remove(Widget w) {
     // Validate.
@@ -874,7 +834,7 @@ public class FastTree extends Panel implements HasClickHandlers,
   private void moveFocus(FastTreeItem selection) {
     moveSelectionBar(selection);
     DOM.scrollIntoView(focusable);
-    HasFocus focusableWidget = selection.getFocusableWidget();
+    Focusable focusableWidget = selection.getFocusable();
     if (focusableWidget != null) {
       focusableWidget.setFocus(true);
     } else {

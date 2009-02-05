@@ -18,7 +18,7 @@ package com.google.gwt.gen2.complexpanel.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.ui.HasFocus;
+import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HasHTML;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
@@ -37,16 +37,14 @@ public class FastTreeItem extends UIObject implements HasFastTreeItems, HasHTML 
    * <p/>
    * The class names indicate the default gwt names for these styles.
    */
-  public static interface Css extends FastTree.Css {
+  static interface Css extends FastTree.Css {
 
     String children();
 
     String closed();
 
-    @ClassName(STYLENAME_CONTENT)
     String content();
 
-    @ClassName(STYLENAME_LEAF)
     String leaf();
 
     String leafDefault();
@@ -61,12 +59,6 @@ public class FastTreeItem extends UIObject implements HasFastTreeItems, HasHTML 
    * css processing under it.
    */
   static class StandardCss extends FastTree.StandardCss implements Css {
-
-    /**
-     * CSS resource.
-     */
-    public static interface Resources extends FastTree.StandardCss.Resources {
-    }
 
     public static Css DEFAULT_TREEITEM_CSS;
 
@@ -543,10 +535,10 @@ public class FastTreeItem extends UIObject implements HasFastTreeItems, HasHTML 
    * 
    * @return widget to be focused.
    */
-  protected HasFocus getFocusableWidget() {
+  protected Focusable getFocusable() {
     Widget w = getWidget();
-    if (w instanceof HasFocus) {
-      return (HasFocus) w;
+    if (w instanceof Focusable) {
+      return (Focusable) w;
     } else {
       return null;
     }
