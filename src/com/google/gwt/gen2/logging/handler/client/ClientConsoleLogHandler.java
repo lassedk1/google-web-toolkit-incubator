@@ -91,7 +91,7 @@ public class ClientConsoleLogHandler extends SmartLogHandler implements
   static class Firebug implements Impl {
     public void init(ClientConsoleLogHandler handler) {
       if (!isSupported()) {
-        handler.setLogHandler(new Console());
+        handler.setLogHandler(new Null());
       }
     }
 

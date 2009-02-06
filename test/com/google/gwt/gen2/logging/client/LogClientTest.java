@@ -29,6 +29,17 @@ import java.util.Iterator;
  */
 public class LogClientTest extends Gen2TestBase {
 
+  public void testDefaultLogger() {
+    // Test that any log message works.
+    Log.severe("I am a test log message, please ignore me");
+
+    // Test that printing an exception does not cause problems
+    Log.severe("I am still a test log message, now with a stack trace:"
+        + new NullPointerException().toString());
+    // Test that a log message escapes html correctly.
+    Log.severe("<I am not html>!@#$%^&*()_+");
+  }
+
   public void testBasicLogger() {
     Log.clearLogHandlers();
     Log.setDefaultLevel(Level.INFO);
