@@ -16,10 +16,10 @@ Set to the directory containing the gwt jars you want to use.
 Set to your gwt tools directory.
  
 = Step three =
-Import the `gwt-incubator-resources` project from the eclipse directory at the root of your subversion client. You'll need the one appropriate for you computer. 
+Import the `gwt-incubator-resources` project from the eclipse directory at the root of your subversion workspace. You'll need the one appropriate for you computer. 
 
 For example, a windows developer will choose `eclipse\incubator-resources-windows` when Eclipse prompts to "Select root directory".
 
 = Step four =
 
-Import the `gwt-incubator` project from your project root--*not* from the eclipse directory.
+Import the `gwt-incubator` project from your subversion workspace root--*not* from the eclipse directory.
