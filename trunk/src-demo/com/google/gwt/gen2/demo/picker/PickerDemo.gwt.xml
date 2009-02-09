@@ -11,7 +11,10 @@
 		class='com.google.gwt.gen2.demo.picker.client.PickerDemo' />
 	<stylesheet src='PickerDemo.css' />
 
+  <!-- Inherit default gwt style sheet -->
+  <inherits name="com.google.gwt.user.theme.standard.Standard" />
+
 	<!-- used to debug this widget's css -->
-	<inherits name='com.google.gwt.gen2.widgetbase.Css_debug' />
+	<!-- <inherits name='com.google.gwt.gen2.widgetbase.Css_debug' /> -->
 
 </module>
