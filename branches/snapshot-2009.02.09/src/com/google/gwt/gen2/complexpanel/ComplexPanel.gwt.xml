@@ -1,0 +1,9 @@
+<module>
+  <inherits name='com.google.gwt.gen2.widgetbase.WidgetBase' />
+  <inherits name='com.google.gwt.gen2.commonwidget.CommonWidget' />
+  <inherits name='com.google.gwt.gen2.commonevent.CommonEvent' />
+  <!-- This dependency should be removed as soon as we can, as we do not want gen2 widgets dependent upon widgetideas --> 
+  <inherits name='com.google.gwt.widgetideas.WidgetIdeas' />
+  <source path="client" />
+  <source path="shared" />
+</module>
