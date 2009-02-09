@@ -68,7 +68,7 @@ public class Color {
    * @param b blue value 0-255
    * @param a alpha channel value 0-1
    */
-  public Color(int r, int b, int g, float a) {
+  public Color(int r, int g, int b, float a) {
     this.colorStr = "rgba(" + r + "," + g + "," + b + "," + a + ")";
   }
   
