@@ -46,6 +46,19 @@ import java.util.ArrayList;
  */
 public class FastTreeDemo implements EntryPoint {
 
+  private class StubbornTree extends FastTree {
+
+    @Override
+    protected boolean processElementClicked(FastTreeItem item) {
+      if (item.getChildCount() <= 1) {
+        Window.alert("sorry, i can't do that right now.  The selected element has 1 or less children.");
+        return false;
+      } else {
+        return true;
+      }
+    }
+  }
+
   public StackPanel createDemo() {
     FastTree.addDefaultCSS();
 
@@ -177,12 +190,6 @@ public class FastTreeDemo implements EntryPoint {
         HasAlignment.ALIGN_TOP);
     return table;
   }
-
-  protected Widget verboseTree() {
-    FastTree tree = new FastTree();
-    verboseTreeItem(tree, 10);
-    return tree;
-  }
   
   protected Widget stubbornTree() {
     StubbornTree t = new StubbornTree();
@@ -202,6 +209,12 @@ public class FastTreeDemo implements EntryPoint {
     }
     widgetBranch.addItem("A ListBox parent").addItem(lb);
     return t;
+  }
+
+  protected Widget verboseTree() {
+    FastTree tree = new FastTree();
+    verboseTreeItem(tree, 10);
+    return tree;
   }
 
   private void lazyCreateChild(final HasFastTreeItems parent, final int index,
@@ -325,19 +338,5 @@ public class FastTreeDemo implements EntryPoint {
       parent.addItem(item);
       verboseTreeItem(item, children - (i + 1));
     }
-  }
-
-  private class StubbornTree extends FastTree {
-
-    @Override
-    protected boolean processElementClicked(FastTreeItem item) {
-      if (item.getChildCount() <= 1) {
-        Window.alert("sorry, i can't do that right now.  The selected element has 1 or less children.");
-        return false;
-      } else {
-        return true;
-      }
-    }
-    
   }
 }
