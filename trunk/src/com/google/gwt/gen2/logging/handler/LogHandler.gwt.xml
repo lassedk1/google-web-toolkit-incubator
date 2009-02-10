@@ -1,6 +1,6 @@
 <module>
 	<!--  Ensures user is included first -->
-	<inherits name="com.google.gwt.user.User" />
+	<inherits name="com.google.gwt.user.User" /> 
 
   <!-- Include gwt-incubator common widget code -->
   <inherits name="com.google.gwt.gen2.commonwidget.CommonWidget" />
@@ -13,51 +13,4 @@
 	<servlet path='/logging'
 		class='com.google.gwt.gen2.logging.server.RemoteLoggingService' />
 
-	<!--
-		Sets default client log handler. Extensions of the logging system can
-		use a different default client log handler.
-	-->
-	<replace-with
-		class="com.google.gwt.gen2.logging.handler.client.ClientConsoleLogHandler">
-		<when-type-is
-			class="com.google.gwt.gen2.logging.shared.DefaultClientLogHandler" />
-	</replace-with>
-
-
-	<!-- 
-    Bindings for ClientConsoleLogHandler.
-  -->
-	<replace-with
-		class="com.google.gwt.gen2.logging.handler.client.ClientConsoleLogHandler.Console">
-		<when-type-is
-			class="com.google.gwt.gen2.logging.handler.client.ClientConsoleLogHandler.Impl" />
-		<any>
-			<when-property-is name="user.agent" value="opera" />
-			<when-property-is name="user.agent" value="safari" />
-		</any>
-	</replace-with>
-
-	<replace-with
-		class="com.google.gwt.gen2.logging.handler.client.ClientConsoleLogHandler.Popup">
-		<when-type-is
-			class="com.google.gwt.gen2.logging.handler.client.ClientConsoleLogHandler.Impl" />
-		<when-property-is name="user.agent" value="ie6" />
-	</replace-with>
-
-	<replace-with
-		class="com.google.gwt.gen2.logging.handler.client.ClientConsoleLogHandler.Opera">
-		<when-type-is
-			class="com.google.gwt.gen2.logging.handler.client.ClientConsoleLogHandler.Impl" />
-		<when-property-is name="user.agent" value="opera" />
-	</replace-with>
-
-	<replace-with
-		class="com.google.gwt.gen2.logging.handler.client.ClientConsoleLogHandler.Firebug">
-		<when-type-is
-			class="com.google.gwt.gen2.logging.handler.client.ClientConsoleLogHandler.Impl" />
-		<any>
-			<when-property-is name="user.agent" value="gecko1_8" />
-			<when-property-is name="user.agent" value="gecko" />
-		</any>
-	</replace-with>
 </module>

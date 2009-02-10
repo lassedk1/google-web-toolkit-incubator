@@ -1,15 +1,5 @@
 <module>
 	<!--  Ensures user is included first -->
-	<inherits name="com.google.gwt.gen2.logging.LoggingBase" />
 	<inherits name="com.google.gwt.gen2.logging.handler.LogHandler" />
-	<source path="impl/client" />
-
-	<!--
-      Bindings for LogImplEnabled.
-  -->
-	<replace-with class="com.google.gwt.gen2.logging.impl.client.LogImplEnabled">
-		<when-type-is class="com.google.gwt.gen2.logging.impl.shared.LogImpl" />
-		<when-property-is name="gwt.logging" value="enabled" />
-	</replace-with>
-
+    <inherits name="com.google.gwt.gen2.logging.CoreLogging" />
 </module>
