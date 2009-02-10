@@ -6,5 +6,5 @@ Copies:
 /branches/snapshot-2009.02.09/ was created (r1484) as a straight copy from /trunk/@1483
 
 Merges:
-/trunk/@1484:1497 was merged (rXXXX) into this branch.
+/trunk/@1484:1497 was merged (r1498) into this branch.
 
