@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.gen2.logging.handler.client;
+package com.google.gwt.gen2.logging.impl.client;
 
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -26,10 +26,7 @@ import com.google.gwt.user.client.Window;
 
 /**
  * Popup window used for logging. Note, currently only tested for IE.
- * 
- * @deprecated part of ClientConsoleLogHandler, will be removed with it.
  */
-@Deprecated
 class WindowPopup {
 
   private static native void clear(JavaScriptObject w)
