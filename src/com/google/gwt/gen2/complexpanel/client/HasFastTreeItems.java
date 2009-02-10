@@ -21,6 +21,10 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * A widget that implements this interface contains {@link FastTreeItem}
  * children and can add and remove them.
+ * 
+ * Note: This interface is NOT intended to be implemented by any classes other
+ * then FastTree and FastTreeItem, even for testing, as methods will be added to
+ * it over time.
  */
 public interface HasFastTreeItems {
 
