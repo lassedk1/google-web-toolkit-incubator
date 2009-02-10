@@ -1,17 +1,24 @@
 <html>
-	<head>
-		<script>
-function writeDemoLink(moduleFilePath) {
-	var moduleName = moduleFilePath.substring(0, moduleFilePath.length - 8).replace(/\//g, '.');
-	var htmlFileName = moduleName.replace(/.*\./, '');
-	document.getElementById('demoList').innerHTML += '<a href="javascript:" onclick="frames[\'demoFrame\'].location.href=\'' + moduleName + '/' + htmlFileName + '.html\'' + '">' + htmlFileName + '</a><br>';
-}
-		</script>
-		<title>
-	</head>
-	<body>
-		<h3>GWT Incubator Demos</h3>
-		<div id="demoList" style="float:left;width:19%"></div>
-		<iframe style="height:90%;width:80%;" id="demoFrame" name="demoFrame"></iframe>
-	</body>
+  <head>
+    <script>
+  function clickLink(moduleName,htmlFileName){
+    var href =  moduleName + '/' + htmlFileName + '.html';
+    frames['demoFrame'].location.href=href;
+    document.getElementById('demoLink').innerHTML = '<a href="' + href + '"/>' + "Direct link to " + moduleName + "</a>";
+  }
+
+  function writeDemoLink(moduleFilePath) {
+    var moduleName = moduleFilePath.substring(0, moduleFilePath.length - 8).replace(/\//g, '.');
+    var htmlFileName = moduleName.replace(/.*\./, '');
+    document.getElementById('demoList').innerHTML += 
+    '<a href="javascript:" onclick=\'clickLink("' + moduleName +'","' + htmlFileName + '")\'>' + htmlFileName + '<\a><br>' 
+   }
+    </script>
+   </head>
+  <body>
+    <h3>GWT Incubator Demos</h3>
+    <div id="demoList" style="float:left;width:19%"></div>
+    <iframe style="height:90%;width:80%;" id="demoFrame" name="demoFrame"></iframe>
+    <div id="demoLink" style="float:left;width:19%;white-space:nowrap"></div>
+  </body>
 </html>

@@ -58,7 +58,7 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
   <property name="demo.src.dir" value="${project.root}/src-demo" />
   <property name="demo.out.dir" value="${project.out}/compiled-demos" />
   <property name="demo.js.style" value="OBFUSCATED" />
-
+  <property name="demo.filter" value="**/*.gwt.xml" />
 
   <!--As the ant task selector puts tasks in the order given by the build file,
     we have sorted all common public tasks first-->
@@ -82,6 +82,7 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
       </fileset>
     </jar>
   </target>
+
   <target name="help" description="Short description of incubator properties and tasks">
     <echo>
             Incubator properties
@@ -113,7 +114,7 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
             
             Incubator tasks
             The incubator tasks are self-documenting. The list of public ones are
-            build,help,dist,clean,all,test, test.hosted,test.web,test.remoteweb
+            build,help,dist,clean,all,test, test.hosted,test.web,test.remoteweb, test.selenium, build.demos.
         </echo>
   </target>
 
@@ -191,6 +192,7 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
       <arg value="WARN" />
     </java>
   </target>
+
 
   <target name="clean" description="Cleans intermediate and output files">
     <delete dir="${project.build}" />
@@ -376,6 +378,9 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
 
   </target>
 
+
+  <!-- Building the demos -->
+
   <target name="gwtc">
     <taskdef name="gwtc" classname="com.google.ant.GwtCompilerTask">
       <classpath>
@@ -387,10 +392,11 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
     <property name="gwtc.vm.maxMemory" value="512m" />
 
     <gwtc src="${gwtc.src.dir}"
-          out="${gwtc.out.dir}"
+          war="${gwtc.out.dir}"
           moduleFile="${gwtc.module.file}"
           style="${gwtc.js.style}"
-          vmMaxMemory="${gwtc.vm.maxMemory}">
+          vmMaxMemory="${gwtc.vm.maxMemory}"
+          vmStackSize="${java.stackSize}">
       <classpath>
         <path path="${gwtc.src.dir}" />
         <path path="${project.jar}" />
@@ -402,7 +408,7 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
     </gwtc>
   </target>
 
-  <target name="build.demo.helper" depends="build">
+  <target name="build.demo.helper" depends="gwtc">
     <concat destfile="${gwtc.out.dir}/index.html" append="true">
       <filterchain>
         <replaceregex flags="g" pattern="\\" replace="/" />
@@ -419,7 +425,6 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
   <target name="build.demos" depends="build, clean.demos, build.demos.body" />
 
   <target name="build.demos.body">
-    <property name="demo.filter" value="**/*.gwt.xml" />
     <delete dir="${demo.out.dir}" />
     <copy file="demoindex.template" tofile="${demo.out.dir}/index.html" />
     <foreach target="build.demo.helper" param="gwtc.module.file">
