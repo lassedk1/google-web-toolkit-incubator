@@ -14,9 +14,9 @@
  * the License.
  */
 
-package com.google.gwt.gen2.logging.handler.client;
+package com.google.gwt.gen2.logging.impl.client;
 
-import com.google.gwt.core.client.GWT; 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.logging.shared.DefaultClientLogHandler;
 import com.google.gwt.gen2.logging.shared.Level;
 import com.google.gwt.gen2.logging.shared.LogEvent;
@@ -42,12 +42,12 @@ import com.google.gwt.gen2.logging.shared.SmartLogHandler;
  * <dd>window.opera.postError</dd>
  * </dl>
  * 
- * @deprecated as of feb 09, users should not directly use or modify
- *             ClientConsoleLogHandler themselves.
+ * @deprecated as of feb 09, users should not directly use or modify ClientConsoleLogHandler
+ *              themselves, so moving the code into an impl class instead.
  */
 
 @Deprecated
-public class ClientConsoleLogHandler extends SmartLogHandler implements
+public class ClientConsoleLogHandlerImpl extends SmartLogHandler implements
     DefaultClientLogHandler {
 
   /**
@@ -71,7 +71,7 @@ public class ClientConsoleLogHandler extends SmartLogHandler implements
    * to the null logger in unusual cases.
    */
   static class Console implements Impl {
-    public void init(ClientConsoleLogHandler handler) {
+    public void init(ClientConsoleLogHandlerImpl handler) {
       if (!isSupported()) {
         handler.setLogHandler(new Null());
       }
@@ -94,7 +94,7 @@ public class ClientConsoleLogHandler extends SmartLogHandler implements
    * Firebug console.
    */
   static class Firebug implements Impl {
-    public void init(ClientConsoleLogHandler handler) {
+    public void init(ClientConsoleLogHandlerImpl handler) {
       if (!isSupported()) {
         handler.setLogHandler(new Null());
       }
@@ -137,14 +137,14 @@ public class ClientConsoleLogHandler extends SmartLogHandler implements
   }
 
   static interface Impl extends LogHandler {
-    void init(ClientConsoleLogHandler handler);
+    void init(ClientConsoleLogHandlerImpl handler);
   }
 
   /**
    * Null console logger.
    */
   static class Null implements Impl {
-    public void init(ClientConsoleLogHandler handler) {
+    public void init(ClientConsoleLogHandlerImpl handler) {
     }
 
     public void onLog(LogEvent event) {
@@ -155,7 +155,7 @@ public class ClientConsoleLogHandler extends SmartLogHandler implements
    * Opera implementation using <code>postError</code>.
    */
   static class Opera implements Impl {
-    public void init(ClientConsoleLogHandler handler) {
+    public void init(ClientConsoleLogHandlerImpl handler) {
     }
 
     public void onLog(LogEvent event) {
@@ -176,7 +176,7 @@ public class ClientConsoleLogHandler extends SmartLogHandler implements
     WindowPopup window = new WindowPopup();
     int counter = 0;
 
-    public void init(ClientConsoleLogHandler handler) {
+    public void init(ClientConsoleLogHandlerImpl handler) {
     }
 
     public void onLog(LogEvent event) {
@@ -195,7 +195,7 @@ public class ClientConsoleLogHandler extends SmartLogHandler implements
   /**
    * Constructor.
    */
-  public ClientConsoleLogHandler() {
+  public ClientConsoleLogHandlerImpl() {
     // Do nothing, we do not want to the work of setting up the loggers until we
     // have to.
   }

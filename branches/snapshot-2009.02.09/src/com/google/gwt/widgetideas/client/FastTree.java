@@ -651,9 +651,6 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
 
   protected void onSelection(FastTreeItem item, boolean fireEvents,
       boolean moveFocus) {
-    if (!processElementClicked(item)) {
-      return;
-    }
     // 'root' isn't a real item, so don't let it be selected
     // (some cases in the keyboard handler will try to do this)
     if (item == root) {
@@ -778,7 +775,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         item.setState(!item.isOpen(), true);
         moveSelectionBar(curSelection);
         disableSelection(target);
-      } else {
+      } else if (processElementClicked(item)) {
         onSelection(item, true, !shouldTreeDelegateFocusToElement(target));
       }
     }

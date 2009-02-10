@@ -63,7 +63,7 @@ public class FastTreeDemo implements EntryPoint {
   public void onModuleLoad() {
     RootPanel.get().add(new FastTreeDemo().createDemo());
   }
-
+  
   protected Widget basicTree() {
     FastTree t = new FastTree();
     FastTreeItem a = t.addItem("A root tree item");
@@ -166,6 +166,7 @@ public class FastTreeDemo implements EntryPoint {
     return tree;
   }
 
+  
   private void lazyCreateChild(final HasFastTreeItems parent, final int index,
       final int children) {
 

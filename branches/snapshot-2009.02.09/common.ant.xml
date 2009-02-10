@@ -84,7 +84,7 @@
 
   <fail unless="gwt.home"
         message="can't find gwt home, please set gwt.home property (ant -Dgwt.home=...) or define the GWT_HOME environment variable" />
- 
+
   <available file="${gwt.user.jar}" type="file" property="gwt.user.exists" />
   <fail unless="gwt.user.exists"
         message="gwt user jar does not appear to exist, check your gwt home directory '${gwt.home}'" />
@@ -98,6 +98,8 @@
   <property name="javac.target" value="1.5" />
   <property name="javac.nowarn" value="true" />
 
+  <!-- Java properties used to run java -->
+  <property name="java.stackSize" value="1m" />
 
 
   <!--########################## 
@@ -185,8 +187,8 @@
              failureproperty="junit.failure"
              tempdir="@{test.out}">
         <jvmarg line="${junit.platform.args}" />
-        
-        <jvmarg line="-Xmx@{test.heap} -Xss1m" />
+
+        <jvmarg line="-Xmx@{test.heap} -Xss${java.stackSize}" />
         <sysproperty key="gwt.args" value="${junit.notheadless.arg} @{test.args}" />
         <sysproperty key="java.awt.headless" value="${junit.headless}" />
         <classpath>
