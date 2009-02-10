@@ -17,16 +17,4 @@
 			class="com.google.gwt.gen2.logging.shared.DefaultClientLogHandler" />
 	</replace-with>
 
-	<!--  Sets default log impl.  -->
-
-	<!--
-      Bindings for LogImplEnabled.
-  -->
-	<replace-with
-		class="com.google.gwt.gen2.logging.impl.shared.LogImplWithManager">
-		<when-type-is class="com.google.gwt.gen2.logging.impl.shared.LogImpl" />
-		<when-property-is name="gwt.logging" value="enabled" />
-	</replace-with>
-
-
 </module>

@@ -15,8 +15,6 @@
  */
 package com.google.ant;
 
-import com.google.gwt.dev.GWTCompiler;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
@@ -36,7 +34,7 @@ public class GwtCompilerTask extends Task {
   private String logLevel = "WARN";
   private String moduleFile;
   private String moduleName;
-  private String out = "www";
+  private String war = "www";
   private String src = "src";
   private String style = "PRETTY";
   private String vmMaxMemory = "512m";
@@ -69,9 +67,9 @@ public class GwtCompilerTask extends Task {
       }
     }
 
-    command.setClassname(GWTCompiler.class.getCanonicalName());
+    command.setClassname(com.google.gwt.dev.Compiler.class.getCanonicalName());
     command.createArgument().setLine("-logLevel " + logLevel);
-    command.createArgument().setLine("-out " + out);
+    command.createArgument().setLine("-war " + war);
     command.createArgument().setLine("-style " + style);
     command.createArgument().setValue(moduleName);
     command.createVmArgument().setValue("-Xmx" + vmMaxMemory);
@@ -91,7 +89,7 @@ public class GwtCompilerTask extends Task {
       int code = exe.execute();
 
       if (code != 0) {
-        throw new BuildException("GWTCompiler returned with status code "
+        throw new BuildException("gwt Compiler returned with status code "
             + code + ". See previous error.");
       }
 
@@ -113,10 +111,6 @@ public class GwtCompilerTask extends Task {
     this.moduleName = moduleName;
   }
 
-  public void setOut(final String out) {
-    this.out = out;
-  }
-
   public void setSrc(final String src) {
     this.src = src;
   }
@@ -131,6 +125,10 @@ public class GwtCompilerTask extends Task {
 
   public void setVmStackSize(final String vmStackSize) {
     this.vmStackSize = vmStackSize;
+  }
+
+  public void setWar(final String war) {
+    this.war = war;
   }
 
   private String convertModuleFileToName(final File srcDir,
