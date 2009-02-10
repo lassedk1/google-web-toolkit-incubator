@@ -17,18 +17,21 @@ package com.google.gwt.gen2.complexpanel.client;
 
 import com.google.gwt.event.logical.shared.HasBeforeSelectionHandlers;
 import com.google.gwt.event.logical.shared.HasCloseHandlers;
-import com.google.gwt.event.logical.shared.HasHandlers;
 import com.google.gwt.event.logical.shared.HasOpenHandlers;
 import com.google.gwt.event.logical.shared.HasSelectionHandlers;
 import com.google.gwt.gen2.commonevent.shared.HasBeforeCloseHandlers;
 import com.google.gwt.gen2.commonevent.shared.HasBeforeOpenHandlers;
 
 /**
- * Represents a convenience interface for all FastTreeItem events. 
+ * Represents a convenience interface for all FastTreeItem events.
+ * 
+ * @deprecated as of feb 10th, this interface is probably going to be removed in
+ *             the near future.
  */
-public interface HasFastTreeItemHandlers extends HasHandlers,
-  HasOpenHandlers<FastTreeItem>, HasBeforeOpenHandlers<FastTreeItem>,
-  HasCloseHandlers<FastTreeItem>, HasBeforeCloseHandlers<FastTreeItem>,
-  HasSelectionHandlers<FastTreeItem>, HasBeforeSelectionHandlers<FastTreeItem> {
-  
+@Deprecated
+public interface HasFastTreeItemHandlers extends HasOpenHandlers<FastTreeItem>,
+    HasBeforeOpenHandlers<FastTreeItem>, HasCloseHandlers<FastTreeItem>,
+    HasBeforeCloseHandlers<FastTreeItem>, HasSelectionHandlers<FastTreeItem>,
+    HasBeforeSelectionHandlers<FastTreeItem> {
+
 }

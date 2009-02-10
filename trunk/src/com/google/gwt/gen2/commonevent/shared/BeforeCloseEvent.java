@@ -15,7 +15,6 @@
  */
 package com.google.gwt.gen2.commonevent.shared;
 
-import com.google.gwt.event.logical.shared.HasHandlers;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
@@ -38,8 +37,8 @@ public class BeforeCloseEvent<T> extends GwtEvent<BeforeCloseHandler<T>> {
    * @param source the source of the handlers
    * @param target the target
    */
-  public static <T, S extends HasBeforeCloseHandlers<T> & HasHandlers> void fire(
-      S source, T target) {
+  public static <T, S extends HasBeforeCloseHandlers<T>> void fire(S source,
+      T target) {
     if (TYPE != null) {
       BeforeCloseEvent<T> event = new BeforeCloseEvent<T>(target);
       source.fireEvent(event);
