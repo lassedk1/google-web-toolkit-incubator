@@ -7,7 +7,7 @@
 The ScrollTable Widget is a three part table consisting of a fixed header table, a fixed footer table (optional), and a scrollable data grid.
 
 Example:
-[http://google-web-toolkit-incubator.googlecode.com/svn/trunk/demo/ScrollTable/index.html]
+[http://code.google.com/p/google-web-toolkit-incubator/source/browse/trunk/src-demo/com/google/gwt/gen2/demo/scrolltable/client/ScrollTableDemo.java]
 
 
 
