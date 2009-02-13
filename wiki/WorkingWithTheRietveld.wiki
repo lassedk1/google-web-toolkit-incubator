@@ -1,0 +1,12 @@
+#summary details how to work with the gwt-incubator code review system.
+
+= Submitting a code review =
+
+ # Go to http://gwt-code-reviews.appspot.com/ and sign in
+ # At the top of the page, you should see a "create issue" link, click there.
+ # Fill in subject, description as you like.
+ # Set SVN base to gwt-incubator
+ # Leave Base Blank
+ # Chose a reviewer, and set the CC to "google-web-toolkit-contributors" <Google-Web-Toolkit-Contributors@googlegroups.com>
+ # Click browse.. select your patch (which should be relative to gwt-incubator trunks) upload it.
+ # Click select issue.
