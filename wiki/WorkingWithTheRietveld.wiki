@@ -8,5 +8,5 @@
  # Set SVN base to gwt-incubator
  # Leave Base Blank
  # Chose a reviewer, and set the CC to "google-web-toolkit-contributors" <Google-Web-Toolkit-Contributors@googlegroups.com>
- # Click browse.. select your patch (which should be relative to gwt-incubator trunks) upload it.
- # Click select issue.
+ # Click browse.. select your patch (which should be relative to gwt-incubator trunks and should be either a .diff or a .patch file) upload it.
+ # Click create issue.
