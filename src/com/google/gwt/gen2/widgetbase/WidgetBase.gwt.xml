@@ -27,7 +27,7 @@
 	<!-- Source path -->
 	<source path="client" />
 
-	<!--  Comment in to test RTL Mode -->
+	<!-- Remove comment to test RTL Mode -->
 	<!--
 		<extend-property name="locale" values="ar" /> <set-property
 		name="locale" value="ar" />
