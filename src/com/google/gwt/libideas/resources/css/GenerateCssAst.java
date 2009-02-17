@@ -643,7 +643,7 @@ public class GenerateCssAst {
    *          <code>(INT COMMA INT COMMA INT)</code>
    * @return the minimal hex expression for the RGB color values
    */
-  private static StringValue colorValue(LexicalUnit colors) {
+  private static Value colorValue(LexicalUnit colors) {
     LexicalUnit red = colors;
     assert red.getLexicalUnitType() == LexicalUnit.SAC_INTEGER;
     LexicalUnit green = red.getNextLexicalUnit().getNextLexicalUnit();
@@ -678,7 +678,7 @@ public class GenerateCssAst {
       sb = sb.substring(1);
     }
 
-    return new StringValue("#" + sr + sg + sb);
+    return new IdentValue("#" + sr + sg + sb);
   }
 
   private static String escapeIdent(String selector) {
@@ -699,39 +699,6 @@ public class GenerateCssAst {
       }
     }
     return toReturn.toString();
-  }
-
-  private static String escapeValue(String s, boolean inDoubleQuotes) {
-    StringBuilder b = new StringBuilder();
-    for (char c : s.toCharArray()) {
-      if (Character.isISOControl(c)) {
-        b.append('\\').append(Integer.toHexString(c).toUpperCase()).append(" ");
-      } else {
-        switch (c) {
-          case '\'':
-            // Special case a single quote in a pair of double quotes
-            if (inDoubleQuotes) {
-              b.append(c);
-            } else {
-              b.append("\\'");
-            }
-            break;
-
-          case '"':
-            b.append("\\\"");
-            break;
-
-          case '\\':
-            b.append("\\\\");
-            break;
-
-          default:
-            b.append(c);
-        }
-      }
-    }
-
-    return b.toString();
   }
 
   /**
@@ -853,12 +820,11 @@ public class GenerateCssAst {
   private static Value valueOf(LexicalUnit value) {
     switch (value.getLexicalUnitType()) {
       case LexicalUnit.SAC_ATTR:
-        return new StringValue("attr(" + value.getStringValue() + ")");
+        return new IdentValue("attr(" + value.getStringValue() + ")");
       case LexicalUnit.SAC_IDENT:
         return new IdentValue(escapeIdent(value.getStringValue()));
       case LexicalUnit.SAC_STRING_VALUE:
-        return new StringValue(
-            '"' + escapeValue(value.getStringValue(), true) + '"');
+        return new StringValue(value.getStringValue());
       case LexicalUnit.SAC_RGBCOLOR:
         // flute models the commas as operators so no separator needed
         return colorValue(value.getParameters());
@@ -885,9 +851,9 @@ public class GenerateCssAst {
         return new NumberValue(value.getFloatValue(),
             value.getDimensionUnitText());
       case LexicalUnit.SAC_URI:
-        return new StringValue("url(" + value.getStringValue() + ")");
+        return new IdentValue("url(" + value.getStringValue() + ")");
       case LexicalUnit.SAC_OPERATOR_COMMA:
-        return new StringValue(",");
+        return new IdentValue(",");
       case LexicalUnit.SAC_COUNTER_FUNCTION:
       case LexicalUnit.SAC_COUNTERS_FUNCTION:
       case LexicalUnit.SAC_FUNCTION: {
@@ -935,39 +901,39 @@ public class GenerateCssAst {
           // Just return a String representation of the original value
           List<Value> parameters = new ArrayList<Value>();
           extractValueOf(parameters, value.getParameters());
-          return new StringValue(value.getFunctionName() + "("
+          return new IdentValue(value.getFunctionName() + "("
               + join(parameters, "") + ")");
         }
       }
       case LexicalUnit.SAC_INHERIT:
-        return new StringValue("inherit");
+        return new IdentValue("inherit");
       case LexicalUnit.SAC_OPERATOR_EXP:
-        return new StringValue("^");
+        return new IdentValue("^");
       case LexicalUnit.SAC_OPERATOR_GE:
-        return new StringValue(">=");
+        return new IdentValue(">=");
       case LexicalUnit.SAC_OPERATOR_GT:
-        return new StringValue(">");
+        return new IdentValue(">");
       case LexicalUnit.SAC_OPERATOR_LE:
-        return new StringValue("<=");
+        return new IdentValue("<=");
       case LexicalUnit.SAC_OPERATOR_LT:
-        return new StringValue("<");
+        return new IdentValue("<");
       case LexicalUnit.SAC_OPERATOR_MINUS:
-        return new StringValue("-");
+        return new IdentValue("-");
       case LexicalUnit.SAC_OPERATOR_MOD:
-        return new StringValue("%");
+        return new IdentValue("%");
       case LexicalUnit.SAC_OPERATOR_MULTIPLY:
-        return new StringValue("*");
+        return new IdentValue("*");
       case LexicalUnit.SAC_OPERATOR_PLUS:
-        return new StringValue("+");
+        return new IdentValue("+");
       case LexicalUnit.SAC_OPERATOR_SLASH:
-        return new StringValue("/");
+        return new IdentValue("/");
       case LexicalUnit.SAC_OPERATOR_TILDE:
-        return new StringValue("~");
+        return new IdentValue("~");
       case LexicalUnit.SAC_RECT_FUNCTION: {
         // Just return this as a String
         List<Value> parameters = new ArrayList<Value>();
         extractValueOf(parameters, value.getParameters());
-        return new StringValue("rect(" + join(parameters, "") + ")");
+        return new IdentValue("rect(" + join(parameters, "") + ")");
       }
       case LexicalUnit.SAC_SUB_EXPRESSION:
         // Should have been taken care of by our own traversal
