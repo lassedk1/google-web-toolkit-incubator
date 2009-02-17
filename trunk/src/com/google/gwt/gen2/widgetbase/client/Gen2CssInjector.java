@@ -106,7 +106,9 @@ public class Gen2CssInjector {
    * included under public/widget.
    */
   public static void addFastTreeDefault() {
-    inject(DEFAULT_CSS_FILES.fastTree());
+    if (Gen2CssInjector.isInjectionEnabled()) {
+      inject(DEFAULT_CSS_FILES.fastTree());
+    }
   }
 
   /**
