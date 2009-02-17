@@ -25,7 +25,12 @@ import com.google.gwt.user.client.ui.Widget;
  * Note: This interface is NOT intended to be implemented by any classes other
  * then FastTree and FastTreeItem, even for testing, as methods will be added to
  * it over time.
+ * 
+ * @deprecated as of feb 13th 2009, this interface is probably going to become
+ *             package private as it should not be used outside FastTree 
+ *             directly.  Use FastTree.getTreeRoot() to crawl the tree instead.
  */
+@Deprecated
 public interface HasFastTreeItems {
 
   /**

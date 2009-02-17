@@ -123,7 +123,7 @@ public class FastTree extends Panel implements HasClickHandlers,
    * @param styleName style name for the widget
    * @return the standard css
    */
-  public static Css createCss(String styleName) {
+  static Css createCss(final String styleName) {
     return new StandardCss(styleName);
   }
 
@@ -141,9 +141,7 @@ public class FastTree extends Panel implements HasClickHandlers,
   private FastTreeItem curSelection;
   private final Element focusable;
   private final FastTreeItem root;
-
   private Event keyDown;
-
   private Event lastKeyDown;
 
   /**
@@ -153,7 +151,7 @@ public class FastTree extends Panel implements HasClickHandlers,
     this(StandardCss.ensureDefaultCss());
   }
 
-  FastTree(Css css) {
+  FastTree(final Css css) {
     setElement(DOM.createDiv());
 
     focusable = createFocusElement();
@@ -218,7 +216,7 @@ public class FastTree extends Panel implements HasClickHandlers,
    * @param item the item to be added
    */
   public void addItem(FastTreeItem item) {
-    root.addItem(item);
+    getTreeRoot().addItem(item);
   }
 
   /**
@@ -239,7 +237,7 @@ public class FastTree extends Panel implements HasClickHandlers,
    * @param widget the widget to be added
    */
   public FastTreeItem addItem(Widget widget) {
-    return root.addItem(widget);
+    return getTreeRoot().addItem(widget);
   }
 
   public HandlerRegistration addKeyDownHandler(KeyDownHandler handler) {
@@ -272,9 +270,9 @@ public class FastTree extends Panel implements HasClickHandlers,
    */
   @Override
   public void clear() {
-    int size = root.getChildCount();
+    int size = getTreeRoot().getChildCount();
     for (int i = size - 1; i >= 0; i--) {
-      root.getChild(i).remove();
+      getTreeRoot().getChild(i).remove();
     }
   }
 
@@ -296,15 +294,15 @@ public class FastTree extends Panel implements HasClickHandlers,
   }
 
   public FastTreeItem getChild(int index) {
-    return root.getChild(index);
+    return getTreeRoot().getChild(index);
   }
 
   public int getChildCount() {
-    return root.getChildCount();
+    return getTreeRoot().getChildCount();
   }
 
   public int getChildIndex(FastTreeItem child) {
-    return root.getChildIndex(child);
+    return getTreeRoot().getChildIndex(child);
   }
 
   /**
@@ -314,7 +312,7 @@ public class FastTree extends Panel implements HasClickHandlers,
    * @return the item at that index
    */
   public FastTreeItem getItem(int index) {
-    return root.getChild(index);
+    return getTreeRoot().getChild(index);
   }
 
   /**
@@ -323,7 +321,7 @@ public class FastTree extends Panel implements HasClickHandlers,
    * @return this tree's item count
    */
   public int getItemCount() {
-    return root.getChildCount();
+    return getTreeRoot().getChildCount();
   }
 
   /**
@@ -337,6 +335,14 @@ public class FastTree extends Panel implements HasClickHandlers,
 
   public int getTabIndex() {
     return impl.getTabIndex(focusable);
+  }
+  
+  /**
+   * The 'root' item is invisible and serves only as a container for 
+   * all top-level items.
+   */
+  public final FastTreeItem getTreeRoot() {
+    return root;
   }
 
   public Iterator<Widget> iterator() {
@@ -365,7 +371,7 @@ public class FastTree extends Panel implements HasClickHandlers,
         boolean left = e.getButton() == Event.BUTTON_LEFT;
 
         if (left && !hasModifiers(e)) {
-          elementClicked(root, e);
+          elementClicked(getTreeRoot(), e);
         }
         return;
 
@@ -379,7 +385,7 @@ public class FastTree extends Panel implements HasClickHandlers,
           if (DOM.eventGetKeyCode(e) == KeyboardHandler.KEY_TAB) {
             ArrayList<Element> chain = new ArrayList<Element>();
             collectElementChain(chain, getElement(), DOM.eventGetTarget(e));
-            FastTreeItem item = findItemByChain(chain, 0, root);
+            FastTreeItem item = findItemByChain(chain, 0, getTreeRoot());
             if (item != getSelectedItem()) {
               setSelectedItem(item, true);
             }
@@ -432,7 +438,7 @@ public class FastTree extends Panel implements HasClickHandlers,
    * @param item the item to be removed
    */
   public void removeItem(FastTreeItem item) {
-    root.removeItem(item);
+    getTreeRoot().removeItem(item);
   }
 
   /**
@@ -479,10 +485,14 @@ public class FastTree extends Panel implements HasClickHandlers,
    */
   public Iterator<FastTreeItem> treeItemIterator() {
     List<FastTreeItem> accum = new ArrayList<FastTreeItem>();
-    root.dumpTreeItems(accum);
+    getTreeRoot().dumpTreeItems(accum);
     return accum.iterator();
   }
 
+  /**
+   * @deprecated Use the public getTreeRoot() method instead.
+   */
+  @Deprecated
   protected FastTreeItem getRoot() {
     return root;
   }
@@ -490,8 +500,8 @@ public class FastTree extends Panel implements HasClickHandlers,
   protected void keyboardNavigation(Event e) {
     // If nothing's selected, select the first item.
     if (curSelection == null) {
-      if (root.getChildCount() > 0) {
-        onSelection(root.getChild(0), true, true);
+      if (getTreeRoot().getChildCount() > 0) {
+        onSelection(getTreeRoot().getChild(0), true, true);
       }
       super.onBrowserEvent(e);
     } else {
@@ -558,7 +568,7 @@ public class FastTree extends Panel implements HasClickHandlers,
       boolean moveFocus) {
     // 'root' isn't a real item, so don't let it be selected
     // (some cases in the keyboard handler will try to do this)
-    if (item == root) {
+    if (item == getTreeRoot()) {
       return;
     }
 
@@ -853,12 +863,12 @@ public class FastTree extends Panel implements HasClickHandlers,
    * Moves to the next item, going into children as if dig is enabled.
    */
   private void moveSelectionDown(FastTreeItem sel, boolean dig) {
-    if (sel == root) {
+    if (sel == getTreeRoot()) {
       return;
     }
     FastTreeItem parent = sel.getParentItem();
     if (parent == null) {
-      parent = root;
+      parent = getTreeRoot();
     }
     int idx = parent.getChildIndex(sel);
 
@@ -879,7 +889,7 @@ public class FastTree extends Panel implements HasClickHandlers,
   private void moveSelectionUp(FastTreeItem sel) {
     FastTreeItem parent = sel.getParentItem();
     if (parent == null) {
-      parent = root;
+      parent = getTreeRoot();
     }
     int idx = parent.getChildIndex(sel);
 
@@ -930,7 +940,7 @@ public class FastTree extends Panel implements HasClickHandlers,
 
     FastTreeItem curSelectionParent = selection.getParentItem();
     if (curSelectionParent == null) {
-      curSelectionParent = root;
+      curSelectionParent = getTreeRoot();
     }
 
     Accessibility.setState(selectionContentElement,
