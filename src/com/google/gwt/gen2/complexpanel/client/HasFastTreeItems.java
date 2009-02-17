@@ -15,8 +15,6 @@
  */
 package com.google.gwt.gen2.complexpanel.client;
 
-import com.google.gwt.user.client.ui.Widget;
-
 /**
  * 
  * A widget that implements this interface contains {@link FastTreeItem}
@@ -27,69 +25,10 @@ import com.google.gwt.user.client.ui.Widget;
  * it over time.
  * 
  * @deprecated as of feb 13th 2009, this interface is probably going to become
- *             package private as it should not be used outside FastTree 
- *             directly.  Use FastTree.getTreeRoot() to crawl the tree instead.
+ *             package private as it should not be used outside FastTree
+ *             directly. Use FastTree.getTreeRoot() to crawl the tree instead.
  */
 @Deprecated
-public interface HasFastTreeItems {
-
-  /**
-   * Adds another item as a child to this one.
-   * 
-   * @param item the item to be added
-   */
-
-  void addItem(FastTreeItem item);
-
-  /**
-   * Adds a child tree item containing the specified text.
-   * 
-   * @param itemText the text to be added
-   * @return the item that was added
-   */
-  FastTreeItem addItem(String itemText);
-
-  /**
-   * Adds a child tree item containing the specified widget.
-   * 
-   * @param widget the widget to be added
-   * @return the item that was added
-   */
-  FastTreeItem addItem(Widget widget);
-
-  /**
-   * Gets the child at the specified index.
-   * 
-   * 
-   * @param index the index to be retrieved
-   * @return the item at that index
-   */
-
-  FastTreeItem getChild(int index);
-
-  /**
-   * Gets the number of children contained in this item.
-   * 
-   * @return this item's child count.
-   */
-
-  int getChildCount();
-
-  /**
-   * Gets the index of the specified child item.
-   * 
-   * @param child the child item to be found
-   * @return the child's index, or <code>-1</code> if none is found
-   */
-
-  int getChildIndex(FastTreeItem child);
-
-  /**
-   * Removes one of this item's children.
-   * 
-   * @param item the item to be removed
-   */
-
-  void removeItem(FastTreeItem item);
+public interface HasFastTreeItems extends HasFastTreeItemsImpl {
 
 }
