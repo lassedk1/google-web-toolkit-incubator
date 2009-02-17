@@ -41,7 +41,7 @@ public class Gen2CssInjector {
 
     @Resource("com/google/gwt/gen2/widgetbase/public/LogHandlers.css")
     CssResource logHandlers();
- 
+
     @Resource("com/google/gwt/gen2/widgetbase/public/Picker.css")
     CssResource picker();
   }
@@ -120,7 +120,6 @@ public class Gen2CssInjector {
       inject(DEFAULT_CSS_FILES.logHandlers());
     }
   }
-  
 
   /**
    * If css dependency injection is enabled, adds the ToggleButton.css file
