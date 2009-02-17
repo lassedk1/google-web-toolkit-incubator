@@ -135,7 +135,19 @@ public class CSSResourceTest extends LibTestBase {
     return "orange";
   }
 
-  public void cssTest() {
+  public void report(String s) {
+    // Can be filled in if debugging.
+    System.out.println(s);
+  }
+
+  public void testConcatenatedResource() {
+    ConcatenatedResources r = GWT.create(ConcatenatedResources.class);
+    String text = r.css().getText();
+    assertTrue(text.contains(".partA"));
+    assertTrue(text.contains(".partB"));
+  }
+
+  public void testCss() {
     MyCssResourceWithSprite css = Resources.INSTANCE.css();
     String text = css.getText();
     report(text);
@@ -170,7 +182,16 @@ public class CSSResourceTest extends LibTestBase {
     assertTrue(text.contains("\\-some-wacky-extension"));
     assertTrue(text.contains(".ns\\:tag"));
     assertTrue(text.contains(".ns\\:tag:pseudo"));
-    assertTrue(text.contains("\"Hello world\""));
+
+    // Check escaped string values
+    assertTrue(text.contains("\"Hello\\\\\\\" world\""));
+
+    // Check values
+    assertFalse(text.contains("0.0;"));
+    assertFalse(text.contains("0.0px;"));
+    assertFalse(text.contains("0px;"));
+    assertTrue(text.contains("background-color:#fff;"));
+    assertTrue(text.contains("content:\"bar\";"));
 
     // Check invalid CSS values
     assertTrue(text.contains("top:expression(document.compatMode==\"CSS1Compat\" ? documentElement.scrollTop:document.body.scrollTop \\ 2);"));
@@ -194,17 +215,9 @@ public class CSSResourceTest extends LibTestBase {
     assertTrue(text.indexOf("may-not-combine") < text.indexOf("prevent:true"));
     assertTrue(text.indexOf("prevent:true") < text.indexOf("prevent-merge:true"));
     assertTrue(text.indexOf("prevent:true") < text.indexOf("may-not-combine2"));
-  }
 
-  public void report(String s) {
-    // Can be filled in if debugging.
-  }
-
-  public void testConcatenatedResource() {
-    ConcatenatedResources r = GWT.create(ConcatenatedResources.class);
-    String text = r.css().getText();
-    assertTrue(text.contains(".partA"));
-    assertTrue(text.contains(".partB"));
+    // Check commonly-used CSS3 constructs
+    assertTrue(text.contains("background-color:rgba(0,0,0,0.5);"));
   }
 
   public void testDefines() {

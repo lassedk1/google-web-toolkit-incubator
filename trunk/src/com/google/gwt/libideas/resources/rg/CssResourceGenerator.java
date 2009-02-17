@@ -785,7 +785,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
         properties.add(new CssProperty("width", new ExpressionValue(instance
             + ".getWidth() + \"px\""), false));
       }
-      properties.add(new CssProperty("overflow", new StringValue("hidden"),
+      properties.add(new CssProperty("overflow", new IdentValue("hidden"),
           false));
 
       String repeatText;

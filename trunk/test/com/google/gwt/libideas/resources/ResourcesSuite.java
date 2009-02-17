@@ -19,6 +19,7 @@ import com.google.gwt.junit.tools.GWTTestSuite;
 import com.google.gwt.libideas.resources.client.CSSResourceTest;
 import com.google.gwt.libideas.resources.client.NestedBundleTest;
 import com.google.gwt.libideas.resources.client.TextResourceTest;
+import com.google.gwt.libideas.resources.rg.CssReorderTest;
 import com.google.gwt.libideas.resources.rg.CssRtlTest;
 
 import junit.framework.Test;
@@ -28,9 +29,11 @@ import junit.framework.Test;
  */
 public class ResourcesSuite {
   public static Test suite() {
+
     GWTTestSuite suite = new GWTTestSuite(
         "Test for com.google.gwt.libideas.resources.client");
     suite.addTestSuite(CSSResourceTest.class);
+    suite.addTestSuite(CssReorderTest.class);
     suite.addTestSuite(CssRtlTest.class);
     // (ecc) Removed the ImageResourceTest suite due to IE7 failures.
     // suite.addTestSuite(ImageResourceTest.class);

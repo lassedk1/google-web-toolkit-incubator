@@ -170,6 +170,7 @@ public class CssProperty extends CssNode {
    * Represents a numeric value, possibly with attached units.
    */
   public static class NumberValue extends Value {
+    private final String css;
     private final String expression;
     private final String units;
     private final float value;
@@ -191,8 +192,13 @@ public class CssProperty extends CssNode {
       }
 
       if (units != null && value != 0) {
+        css = s + units;
         expression = '"' + s + Generator.escape(units) + '"';
+      } else if (value == 0) {
+        css = "0";
+        expression = "\"0\"";
       } else {
+        css = s;
         expression = '"' + s + '"';
       }
     }
@@ -215,7 +221,7 @@ public class CssProperty extends CssNode {
     }
 
     public String toCss() {
-      return value + (units != null ? units : "");
+      return css;
     }
   }
 
@@ -223,6 +229,45 @@ public class CssProperty extends CssNode {
    * Represents one or more quoted string literals.
    */
   public static class StringValue extends Value {
+    private static String escapeValue(String s, boolean inDoubleQuotes) {
+      StringBuilder b = new StringBuilder();
+      for (char c : s.toCharArray()) {
+        if (Character.isISOControl(c)) {
+          b.append('\\').append(Integer.toHexString(c).toUpperCase()).append(
+              " ");
+        } else {
+          switch (c) {
+            case '\'':
+              // Special case a single quote in a pair of double quotes
+              if (inDoubleQuotes) {
+                b.append(c);
+              } else {
+                b.append("\\'");
+              }
+              break;
+
+            case '"':
+              // Special case a single quote in a pair of single quotes
+              if (inDoubleQuotes) {
+                b.append("\\\"");
+              } else {
+                b.append(c);
+              }
+              break;
+
+            case '\\':
+              b.append("\\\\");
+              break;
+
+            default:
+              b.append(c);
+          }
+        }
+      }
+
+      return b.toString();
+    }
+
     private final String value;
 
     public StringValue(String value) {
@@ -230,7 +275,8 @@ public class CssProperty extends CssNode {
     }
 
     public String getExpression() {
-      return "\"" + Generator.escape(value) + "\"";
+      // The escaped CSS content has to be escaped to be a valid Java literal
+      return "\"" + Generator.escape(toCss()) + "\"";
     }
 
     public String getValue() {
@@ -242,9 +288,13 @@ public class CssProperty extends CssNode {
       return this;
     }
 
+    /**
+     * Returns a escaped, quoted representation of the underlying value.
+     */
     public String toCss() {
-      return '"' + value + '"';
+      return '"' + escapeValue(value, true) + '"';
     }
+
   }
 
   /**

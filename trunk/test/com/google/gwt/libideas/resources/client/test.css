@@ -91,7 +91,7 @@ div[foo="bar"] {
 }
 
 .replacement:after {
-  content: "Hello world";
+  content: "Hello\\\" world";
 }
 
 .replacement-not-java-ident {
@@ -203,4 +203,8 @@ div-with-literal {
 
 .multiClassA.multiClassB {
   border: 1px solid blue;
+}
+
+.css3Color {
+  background-color: rgba(0, 0, 0, 0.5); 
 }
