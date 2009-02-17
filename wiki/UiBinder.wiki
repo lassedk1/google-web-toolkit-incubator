@@ -389,7 +389,7 @@ public class UserDashboard extends Composite {
   }
 
   /** Used by MyUiBinder to instantiate CricketScores */
-  @UiFactory CricketScores() {
+  @UiFactory CricketScores CricketScores() {
     return new CricketScores(teamNames);
   }
 }
