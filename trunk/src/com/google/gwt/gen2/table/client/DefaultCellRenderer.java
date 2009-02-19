@@ -16,7 +16,6 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -37,7 +36,7 @@ public class DefaultCellRenderer<RowType, ColType> implements
     } else if (cellValue instanceof Widget) {
       view.setWidget((Widget) cellValue);
     } else {
-      view.setWidget(new HTML(cellValue.toString()));
+      view.setHTML(cellValue.toString());
     }
   }
 }
