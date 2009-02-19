@@ -15,4 +15,7 @@
   
   <!-- Define the RPC service -->
   <servlet path="/datasource" class="com.google.gwt.gen2.demo.scrolltable.server.DataSourceServiceImpl"/>
+
+  <!-- Internationalization support. -->
+  <extend-property name="locale" values="ar"/>
 </module>

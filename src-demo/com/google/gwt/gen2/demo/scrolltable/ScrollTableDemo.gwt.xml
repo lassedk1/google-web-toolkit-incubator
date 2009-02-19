@@ -12,4 +12,7 @@
 	<entry-point class='com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo'/>
   
   <stylesheet src='ScrollTableDemo.css'/>
+
+  <!-- Internationalization support. -->
+  <extend-property name="locale" values="ar"/>
 </module>
