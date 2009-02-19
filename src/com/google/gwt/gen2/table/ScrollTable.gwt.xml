@@ -24,24 +24,19 @@
   <source path='client' />
   <source path='event/client' />
 
-  <!-- FF uses negative offsets in RTL mode -->
-  <replace-with class="com.google.gwt.gen2.table.client.AbstractScrollTable.ImplFF">
-    <when-type-is class="com.google.gwt.gen2.table.client.AbstractScrollTable.Impl" />
-    <when-property-is name="user.agent" value="gecko1_8" />
-  </replace-with>
-  <!-- IE puts the scrollbar on the left in RTL mode -->
+  <!-- IE uses a different implementation -->
   <replace-with class="com.google.gwt.gen2.table.client.AbstractScrollTable.ImplIE6">
     <when-type-is class="com.google.gwt.gen2.table.client.AbstractScrollTable.Impl" />
     <when-property-is name="user.agent" value="ie6" />
   </replace-with>
-  <!-- Opera and old Mozilla put the scrollbar on the left in RTL mode -->
-  <replace-with class="com.google.gwt.gen2.table.client.AbstractScrollTable.ImplOldMozilla">
-    <when-type-is class="com.google.gwt.gen2.table.client.AbstractScrollTable.Impl" />
-    <when-property-is name="user.agent" value="gecko" />
-  </replace-with>
-  <replace-with class="com.google.gwt.gen2.table.client.AbstractScrollTable.ImplOldMozilla">
+  <!-- Opera and Old Mozilla put the scrollbar on the left in RTL mode -->
+  <replace-with class="com.google.gwt.gen2.table.client.AbstractScrollTable.ImplLeftScrollBar">
     <when-type-is class="com.google.gwt.gen2.table.client.AbstractScrollTable.Impl" />
     <when-property-is name="user.agent" value="opera" />
+  </replace-with>
+  <replace-with class="com.google.gwt.gen2.table.client.AbstractScrollTable.ImplLeftScrollBar">
+    <when-type-is class="com.google.gwt.gen2.table.client.AbstractScrollTable.Impl" />
+    <when-property-is name="user.agent" value="gecko" />
   </replace-with>
 
   <!-- Opera has a different MouseWorker implementation -->
