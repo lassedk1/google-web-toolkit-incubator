@@ -311,7 +311,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       // See if we are near the edge of the cell
       int clientX = event.getClientX();
       if (cell != null) {
-        int absLeft = cell.getAbsoluteLeft();
+        int absLeft = cell.getAbsoluteLeft() - Window.getScrollLeft();
         if (LocaleInfo.getCurrentLocale().isRTL()) {
           if (clientX < absLeft || clientX > absLeft + RESIZE_CURSOR_WIDTH) {
             cell = null;
