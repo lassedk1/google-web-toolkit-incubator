@@ -102,8 +102,26 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
      * @return the spacer element
      */
     public Element createSpacer(FixedWidthFlexTable table, Element wrapper) {
-      table.getElement().getStyle().setPropertyPx("paddingRight", 100);
+      resizeSpacer(table, null, 15);
       return null;
+    }
+
+    /**
+     * Returns the width of a table, minus any padding, in pixels.
+     * 
+     * @param table the table
+     * @return the width
+     */
+    public int getTableWidth(FixedWidthFlexTable table) {
+      String paddingStr = null;
+      if (isScrollBarOnRight()) {
+        paddingStr = table.getElement().getStyle().getProperty("paddingRight");
+      } else {
+        paddingStr = table.getElement().getStyle().getProperty("paddingLeft");
+      }
+      int padding = Integer.parseInt(paddingStr.substring(0,
+          paddingStr.length() - 2));
+      return table.getElement().getScrollWidth() - padding;
     }
 
     /**
@@ -111,17 +129,6 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
      * 
      * @param scrollTable the scroll table
      */
-    public void repositionSpacer(AbstractScrollTable scrollTable) {
-    }
-  }
-
-  /**
-   * FF uses negative offsets relative to the right side in RTL mode, so we need
-   * to make sure the spacer is the same size as the scroll bar.
-   */
-  @SuppressWarnings("unused")
-  private static class ImplFF extends Impl {
-    @Override
     public void repositionSpacer(AbstractScrollTable scrollTable) {
       Element dataWrapper = scrollTable.dataWrapper;
       int spacerWidth = dataWrapper.getOffsetWidth()
@@ -134,52 +141,53 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       }
     }
 
+    /**
+     * @return true if the scroll bar is on the right
+     */
+    boolean isScrollBarOnRight() {
+      return true;
+    }
+
     void resizeSpacer(FixedWidthFlexTable table, Element spacer, int spacerWidth) {
-      if (LocaleInfo.getCurrentLocale().isRTL()) {
+      if (isScrollBarOnRight()) {
         table.getElement().getStyle().setPropertyPx("paddingRight", spacerWidth);
-      }
-    }
-  }
-
-  /**
-   * Old Mozilla puts the scroll bar on the left side in RTL mode, so we need to
-   * swap the padding.
-   */
-  @SuppressWarnings("unused")
-  private static class ImplOldMozilla extends ImplFF {
-    @Override
-    public Element createSpacer(FixedWidthFlexTable table, Element wrapper) {
-      if (LocaleInfo.getCurrentLocale().isRTL()) {
-        table.getElement().getStyle().setPropertyPx("paddingLeft", 100);
-        return null;
-      }
-      return super.createSpacer(table, wrapper);
-    }
-
-    @Override
-    void resizeSpacer(FixedWidthFlexTable table, Element spacer, int spacerWidth) {
-      if (LocaleInfo.getCurrentLocale().isRTL()) {
+      } else {
         table.getElement().getStyle().setPropertyPx("paddingLeft", spacerWidth);
       }
     }
   }
 
   /**
-   * IE has a scroll bar on the left side in RTL mode. The padding trick doesn't
+   * Opera and Old Mozilla put the scroll bar on the left side in RTL mode.
+   */
+  @SuppressWarnings("unused")
+  private static class ImplLeftScrollBar extends Impl {
+    @Override
+    boolean isScrollBarOnRight() {
+      return !LocaleInfo.getCurrentLocale().isRTL();
+    }
+  }
+
+  /**
+   * IE puts the scroll bar on the left side in RTL mode. The padding trick doesn't
    * work, so we use a separate element.
    */
   @SuppressWarnings("unused")
-  private static class ImplIE6 extends ImplFF {
+  private static class ImplIE6 extends ImplLeftScrollBar {
     @Override
     public Element createSpacer(FixedWidthFlexTable table, Element wrapper) {
       Element spacer = DOM.createDiv();
       spacer.getStyle().setPropertyPx("height", 1);
       spacer.getStyle().setPropertyPx("width", 100);
       spacer.getStyle().setPropertyPx("top", 1);
-      spacer.getStyle().setPropertyPx("left", 1);
       spacer.getStyle().setProperty("position", "absolute");
       wrapper.appendChild(spacer);
       return spacer;
+    }
+
+    @Override
+    public int getTableWidth(FixedWidthFlexTable table) {
+      return table.getElement().getScrollWidth();
     }
 
     @Override
@@ -979,10 +987,10 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       // Determine the largest table
       if (numHeaderCols >= numDataCols && numHeaderCols >= numFooterCols) {
         numColumns = numHeaderCols;
-        diff = clientWidth - headerTable.getElement().getScrollWidth();
+        diff = clientWidth - impl.getTableWidth(headerTable);
       } else if (numFooterCols >= numDataCols && numFooterCols >= numHeaderCols) {
         numColumns = numFooterCols;
-        diff = clientWidth - footerTable.getElement().getScrollWidth();
+        diff = clientWidth - impl.getTableWidth(footerTable);
       } else if (numDataCols > 0) {
         numColumns = numDataCols;
         diff = clientWidth - dataTable.getElement().getScrollWidth();
