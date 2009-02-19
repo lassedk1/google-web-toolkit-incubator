@@ -86,6 +86,11 @@ public abstract class TableBulkRenderer<RowType> implements
     private String curCellHtml = null;
 
     /**
+     * The widget to add to the current cell.
+     */
+    private Widget curCellWidget = null;
+
+    /**
      * The style attributes to apply to the current cell.
      */
     private Map<String, String> curCellStyles = new HashMap<String, String>();
@@ -122,6 +127,7 @@ public abstract class TableBulkRenderer<RowType> implements
 
     @Override
     public void setHTML(String html) {
+      curCellWidget = null;
       curCellHtml = html;
     }
 
@@ -148,9 +154,8 @@ public abstract class TableBulkRenderer<RowType> implements
 
     @Override
     public void setWidget(Widget widget) {
-      int row = getRowIndex();
-      int cell = getCellIndex();
-      delayedWidgets.add(new DelayedWidget(row, cell, widget));
+      curCellHtml = null;
+      curCellWidget = widget;
     }
 
     protected StringBuffer getStringBuffer() {
@@ -160,11 +165,19 @@ public abstract class TableBulkRenderer<RowType> implements
     @Override
     protected void renderRowValue(RowType rowValue, ColumnDefinition columnDef) {
       curCellHtml = null;
+      curCellWidget = null;
       curCellStyleName = null;
       curCellHorizontalAlign = null;
       curCellVerticalAlign = null;
       curCellStyles.clear();
       super.renderRowValue(rowValue, columnDef);
+
+      // Save the widget until rendering is complete
+      if (curCellWidget != null) {
+        int row = getRowIndex();
+        int cell = getCellIndex();
+        delayedWidgets.add(new DelayedWidget(row, cell, curCellWidget));
+      }
 
       // Add the open tag
       buffer.append("<td");
@@ -352,7 +365,7 @@ public abstract class TableBulkRenderer<RowType> implements
 
           // Add widgets into the table
           for (DelayedWidget dw : cellView.delayedWidgets) {
-            bulkRenderer.table.setWidget(dw.rowIndex, dw.cellIndex, dw.widget);
+            bulkRenderer.setWidgetRaw(bulkRenderer.getTable(), dw.rowIndex, dw.cellIndex, dw.widget);
           }
 
           // Trigger the callback
@@ -651,5 +664,13 @@ public abstract class TableBulkRenderer<RowType> implements
   private native void setBodyElement(HTMLTable table, Element newBody)
   /*-{
     table.@com.google.gwt.gen2.table.override.client.HTMLTable::setBodyElement(Lcom/google/gwt/user/client/Element;)(newBody);
+  }-*/;
+
+  /**
+   * Set a widget without clearing its contents.
+   */
+  private native void setWidgetRaw(HTMLTable table, int row, int cell, Widget widget)
+  /*-{
+    table.@com.google.gwt.gen2.table.override.client.HTMLTable::setWidgetRaw(IILcom/google/gwt/user/client/ui/Widget;)(row, cell, widget);
   }-*/;
 }

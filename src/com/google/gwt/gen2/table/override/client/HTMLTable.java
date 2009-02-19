@@ -1559,4 +1559,28 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
       return widgetMap.getWidget(child);
     }
   }
+
+  /**
+   * Sets the widget of a cell without clearing the cell.
+   * 
+   * @param widget The widget to be added
+   * @param row the cell's row
+   * @param column the cell's column
+   * @throws IndexOutOfBoundsException
+   */
+  @SuppressWarnings("unused")
+  private void setWidgetRaw(int row, int column, Widget widget) {
+    if (widget != null) {
+      widget.removeFromParent();
+
+      // Logical attach.
+      widgetMap.putWidget(widget);
+
+      // Physical attach.
+      Element td = getCellFormatter().getRawElement(row, column);
+      DOM.appendChild(td, widget.getElement());
+
+      adopt(widget);
+    }
+  }
 }
