@@ -38,6 +38,16 @@ public class ScrollTable extends AbstractScrollTable {
   private Set<Integer> untruncatableColumns = new HashSet<Integer>();
 
   /**
+   * A set of untruncatable footer column indexes.
+   */
+  private Set<Integer> untruncatableFooters = new HashSet<Integer>();
+
+  /**
+   * A set of untruncatable header column indexes.
+   */
+  private Set<Integer> untruncatableHeaders = new HashSet<Integer>();
+
+  /**
    * A set of unsortable column indexes.
    */
   private Set<Integer> unsortableColumns = new HashSet<Integer>();
@@ -89,6 +99,16 @@ public class ScrollTable extends AbstractScrollTable {
     return !untruncatableColumns.contains(column);
   }
 
+  @Override
+  public boolean isFooterColumnTruncatable(int column) {
+    return !untruncatableFooters.contains(column);
+  }
+
+  @Override
+  public boolean isHeaderColumnTruncatable(int column) {
+    return !untruncatableHeaders.contains(column);
+  }
+
   /**
    * Enable or disable sorting on a specific column. All columns are sortable by
    * default. Use {@link #setSortPolicy(SortPolicy)} to disable sorting on all
@@ -118,6 +138,38 @@ public class ScrollTable extends AbstractScrollTable {
       untruncatableColumns.remove(column);
     } else {
       untruncatableColumns.add(column);
+    }
+  }
+
+  /**
+   * Enable or disable truncation on a specific footer column. When enabled, the
+   * column width will be adjusted to fit the content. All columns are
+   * truncatable by default.
+   * 
+   * @param column the index of the column
+   * @param truncatable true to enable truncation, false to disable
+   */
+  public void setFooterColumnTruncatable(int column, boolean truncatable) {
+    if (truncatable) {
+      untruncatableFooters.remove(column);
+    } else {
+      untruncatableFooters.add(column);
+    }
+  }
+
+  /**
+   * Enable or disable truncation on a specific header column. When enabled, the
+   * column width will be adjusted to fit the content. All columns are
+   * truncatable by default.
+   * 
+   * @param column the index of the column
+   * @param truncatable true to enable truncation, false to disable
+   */
+  public void setHeaderColumnTruncatable(int column, boolean truncatable) {
+    if (truncatable) {
+      untruncatableHeaders.remove(column);
+    } else {
+      untruncatableHeaders.add(column);
     }
   }
 

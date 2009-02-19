@@ -112,12 +112,24 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
   }
 
   /**
-   * Returns true if the column is truncatable, false if it is not.
-   * 
-   * @return true if the column is truncatable, false if it is not sortable
+   * @return true if the column is truncatable, false if not
    */
   public boolean isColumnTruncatable() {
     return getColumnProperty(TruncationProperty.TYPE).isColumnTruncatable();
+  }
+
+  /**
+   * @return true if the footer table is truncatable, false if not
+   */
+  public boolean isFooterTruncatable() {
+    return getColumnProperty(TruncationProperty.TYPE).isFooterTruncatable();
+  }
+
+  /**
+   * @return true if the header table is truncatable, false if not
+   */
+  public boolean isHeaderTruncatable() {
+    return getColumnProperty(TruncationProperty.TYPE).isHeaderTruncatable();
   }
 
   /**
@@ -180,8 +192,44 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
    * @param truncatable true to make truncatable, false to make non truncatable
    */
   public void setColumnTruncatable(boolean truncatable) {
-    setColumnProperty(TruncationProperty.TYPE, new TruncationProperty(
-        truncatable));
+    TruncationProperty prop = properties.getColumnProperty(
+        TruncationProperty.TYPE, false);
+    if (prop == null) {
+      prop = new TruncationProperty(truncatable);
+      setColumnProperty(TruncationProperty.TYPE, prop);
+    } else {
+      prop.setColumnTruncatable(truncatable);
+    }
+  }
+
+  /**
+   * Set whether or not this column is truncatable in the footer.
+   * 
+   * @param truncatable true to make truncatable, false to make non truncatable
+   */
+  public void setFooterTruncatable(boolean truncatable) {
+    TruncationProperty prop = properties.getColumnProperty(
+        TruncationProperty.TYPE, false);
+    if (prop == null) {
+      prop = new TruncationProperty();
+      setColumnProperty(TruncationProperty.TYPE, prop);
+    }
+    prop.setFooterTruncatable(truncatable);
+  }
+
+  /**
+   * Set whether or not this column is truncatable in the header.
+   * 
+   * @param truncatable true to make truncatable, false to make non truncatable
+   */
+  public void setHeaderTruncatable(boolean truncatable) {
+    TruncationProperty prop = properties.getColumnProperty(
+        TruncationProperty.TYPE, false);
+    if (prop == null) {
+      prop = new TruncationProperty();
+      setColumnProperty(TruncationProperty.TYPE, prop);
+    }
+    prop.setHeaderTruncatable(truncatable);
   }
 
   /**

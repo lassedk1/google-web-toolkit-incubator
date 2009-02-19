@@ -36,6 +36,15 @@ public class TruncationProperty extends ColumnProperty {
   };
 
   private boolean isTruncatable;
+  private boolean isFooterTruncatable;
+  private boolean isHeaderTruncatable;
+
+  /**
+   * Construct a new {@link TruncationProperty}.
+   */
+  public TruncationProperty() {
+    this(true);
+  }
 
   /**
    * Construct a new {@link TruncationProperty}.
@@ -44,14 +53,55 @@ public class TruncationProperty extends ColumnProperty {
    */
   public TruncationProperty(boolean isTruncatable) {
     this.isTruncatable = isTruncatable;
+    this.isHeaderTruncatable = true;
+    this.isFooterTruncatable = true;
   }
 
   /**
-   * Returns true if the specified column can be truncated.
-   * 
-   * @return true if the column is truncatable, false if it is not
+   * @return true (default) if the column is truncatable
    */
   public boolean isColumnTruncatable() {
     return isTruncatable;
+  }
+
+  /**
+   * @return true (default) if column in the footer is truncatable
+   */
+  public boolean isFooterTruncatable() {
+    return isFooterTruncatable;
+  }
+
+  /**
+   * @return true (default) if column in the header is truncatable
+   */
+  public boolean isHeaderTruncatable() {
+    return isHeaderTruncatable;
+  }
+
+  /**
+   * Set whether or not column are truncatable.
+   * 
+   * @param isTruncatable true to make truncatable
+   */
+  public void setColumnTruncatable(boolean isTruncatable) {
+    this.isTruncatable = isTruncatable;
+  }
+
+  /**
+   * Set whether or not the column in the footer is truncatable.
+   * 
+   * @param isTruncatable true to make truncatable
+   */
+  public void setFooterTruncatable(boolean isTruncatable) {
+    this.isFooterTruncatable = isTruncatable;
+  }
+
+  /**
+   * Set whether or not the column in the header is truncatable.
+   * 
+   * @param isTruncatable true to make truncatable
+   */
+  public void setHeaderTruncatable(boolean isTruncatable) {
+    this.isHeaderTruncatable = isTruncatable;
   }
 }

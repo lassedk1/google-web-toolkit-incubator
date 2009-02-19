@@ -214,7 +214,11 @@ public class LogOption extends AbstractOption {
           public void onPageLoad(PageLoadEvent event) {
             // Convert to 1 based index
             int page = event.getPage() + 1;
-            int duration = pageLoadDuration.elapsedMillis();
+            int duration = -1;
+            if (pageLoadDuration != null) {
+              duration = pageLoadDuration.elapsedMillis();
+              pageLoadDuration = null;
+            }
             String text = "Page " + page + " loaded in " + duration + "ms";
             addLogEntry(text, "black");
           }
