@@ -49,7 +49,6 @@ public class DefaultRowRenderer<RowType> implements RowRenderer<RowType> {
     if (rowColors != null) {
       int index = view.getRowIndex() % rowColors.length;
       view.setStyleAttribute("background", rowColors[index]);
-      view.setStyleName("test");
     }
   }
 }
