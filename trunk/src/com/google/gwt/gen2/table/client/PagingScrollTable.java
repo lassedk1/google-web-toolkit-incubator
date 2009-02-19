@@ -151,6 +151,10 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
 
     @Override
     public void setStyleName(String stylename) {
+      // If the row is selected, add the selected style name back
+      if (table.getDataTable().isRowSelected(getRowIndex())) {
+        stylename += " selected";
+      }
       table.getDataTable().getRowFormatter().setStyleName(getRowIndex(),
           stylename);
     }

@@ -365,7 +365,8 @@ public abstract class TableBulkRenderer<RowType> implements
 
           // Add widgets into the table
           for (DelayedWidget dw : cellView.delayedWidgets) {
-            bulkRenderer.setWidgetRaw(bulkRenderer.getTable(), dw.rowIndex, dw.cellIndex, dw.widget);
+            bulkRenderer.setWidgetRaw(bulkRenderer.getTable(), dw.rowIndex,
+                dw.cellIndex, dw.widget);
           }
 
           // Trigger the callback
@@ -669,7 +670,8 @@ public abstract class TableBulkRenderer<RowType> implements
   /**
    * Set a widget without clearing its contents.
    */
-  private native void setWidgetRaw(HTMLTable table, int row, int cell, Widget widget)
+  private native void setWidgetRaw(HTMLTable table, int row, int cell,
+      Widget widget)
   /*-{
     table.@com.google.gwt.gen2.table.override.client.HTMLTable::setWidgetRaw(IILcom/google/gwt/user/client/ui/Widget;)(row, cell, widget);
   }-*/;
