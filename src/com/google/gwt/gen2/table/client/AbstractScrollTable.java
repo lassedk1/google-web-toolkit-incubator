@@ -169,8 +169,8 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
-   * IE puts the scroll bar on the left side in RTL mode. The padding trick doesn't
-   * work, so we use a separate element.
+   * IE puts the scroll bar on the left side in RTL mode. The padding trick
+   * doesn't work, so we use a separate element.
    */
   @SuppressWarnings("unused")
   private static class ImplIE6 extends ImplLeftScrollBar {
@@ -1126,6 +1126,26 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    */
   public abstract boolean isColumnTruncatable(int column);
 
+  /**
+   * Returns true if the specified column in the footer table can be truncated.
+   * If it cannot be truncated, its minimum width will be adjusted to ensure the
+   * cell content is visible.
+   * 
+   * @param column the column index
+   * @return true if the column is truncatable, false if it is not
+   */
+  public abstract boolean isFooterColumnTruncatable(int column);
+
+  /**
+   * Returns true if the specified column in the header table can be truncated.
+   * If it cannot be truncated, its minimum width will be adjusted to ensure the
+   * cell content is visible.
+   * 
+   * @param column the column index
+   * @return true if the column is truncatable, false if it is not
+   */
+  public abstract boolean isHeaderColumnTruncatable(int column);
+
   @Override
   public void onBrowserEvent(Event event) {
     Element target = DOM.eventGetTarget(event);
@@ -1679,6 +1699,22 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     // Adjust the widths if the columns are not truncatable, up to maxWidth
     if (!isColumnTruncatable(column)) {
       int idealWidth = getDataTable().getIdealColumnWidth(column);
+      if (maxWidth != MaximumWidthProperty.NO_MAXIMUM_WIDTH) {
+        idealWidth = Math.min(idealWidth, maxWidth);
+      }
+      minWidth = Math.max(minWidth, idealWidth);
+    }
+    if (!isHeaderColumnTruncatable(column)) {
+      int idealWidth = getHeaderTable().getIdealColumnWidth(
+          column + getHeaderOffset());
+      if (maxWidth != MaximumWidthProperty.NO_MAXIMUM_WIDTH) {
+        idealWidth = Math.min(idealWidth, maxWidth);
+      }
+      minWidth = Math.max(minWidth, idealWidth);
+    }
+    if (footerTable != null && !isFooterColumnTruncatable(column)) {
+      int idealWidth = getFooterTable().getIdealColumnWidth(
+          column + getHeaderOffset());
       if (maxWidth != MaximumWidthProperty.NO_MAXIMUM_WIDTH) {
         idealWidth = Math.min(idealWidth, maxWidth);
       }

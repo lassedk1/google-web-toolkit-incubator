@@ -619,6 +619,24 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     return colDef.getColumnProperty(TruncationProperty.TYPE).isColumnTruncatable();
   }
 
+  @Override
+  public boolean isFooterColumnTruncatable(int column) {
+    ColumnDefinition<RowType, ?> colDef = getColumnDefinition(column);
+    if (colDef == null) {
+      return true;
+    }
+    return colDef.getColumnProperty(TruncationProperty.TYPE).isFooterTruncatable();
+  }
+
+  @Override
+  public boolean isHeaderColumnTruncatable(int column) {
+    ColumnDefinition<RowType, ?> colDef = getColumnDefinition(column);
+    if (colDef == null) {
+      return true;
+    }
+    return colDef.getColumnProperty(TruncationProperty.TYPE).isHeaderTruncatable();
+  }
+
   /**
    * Reload the current page.
    */

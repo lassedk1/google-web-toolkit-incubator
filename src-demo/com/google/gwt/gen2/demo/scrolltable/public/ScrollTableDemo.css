@@ -45,7 +45,7 @@ body {
   cursor: pointer;
 }
 
-.gwt-ScrollTable .dataTable tr.selected {
+.gwt-ScrollTable .dataTable tr.selected td {
   background: #7AA5D6;
 }
 
