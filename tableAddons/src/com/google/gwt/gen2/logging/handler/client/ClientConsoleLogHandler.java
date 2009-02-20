@@ -16,7 +16,7 @@
 
 package com.google.gwt.gen2.logging.handler.client;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.GWT; 
 import com.google.gwt.gen2.logging.shared.DefaultClientLogHandler;
 import com.google.gwt.gen2.logging.shared.Level;
 import com.google.gwt.gen2.logging.shared.LogEvent;
@@ -41,7 +41,12 @@ import com.google.gwt.gen2.logging.shared.SmartLogHandler;
  * <dt>Opera</dt>
  * <dd>window.opera.postError</dd>
  * </dl>
+ * 
+ * @deprecated as of feb 09, users should not directly use or modify
+ *             ClientConsoleLogHandler themselves.
  */
+
+@Deprecated
 public class ClientConsoleLogHandler extends SmartLogHandler implements
     DefaultClientLogHandler {
 
@@ -91,7 +96,7 @@ public class ClientConsoleLogHandler extends SmartLogHandler implements
   static class Firebug implements Impl {
     public void init(ClientConsoleLogHandler handler) {
       if (!isSupported()) {
-        handler.setLogHandler(new Console());
+        handler.setLogHandler(new Null());
       }
     }
 

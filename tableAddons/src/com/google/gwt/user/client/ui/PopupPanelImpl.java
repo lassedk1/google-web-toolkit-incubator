@@ -96,8 +96,8 @@ public class PopupPanelImpl extends PopupPanel {
    * 
    * @return whether the widget is being shown
    */
-
-  protected native boolean isShowing()/*-{
+  // Temporary method until the isShowing method makes its way through to trunk.
+  public native boolean isShowing()/*-{
     return this.@com.google.gwt.user.client.ui.PopupPanel::showing;
   }-*/;
 

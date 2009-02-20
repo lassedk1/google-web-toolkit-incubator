@@ -17,12 +17,15 @@ package com.google.gwt.demos.styleinjector.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.ParagraphElement;
 import com.google.gwt.libideas.client.StyleInjector;
 import com.google.gwt.libideas.resources.client.CssResource;
-import com.google.gwt.libideas.resources.client.DataResource;
+import com.google.gwt.libideas.resources.client.ImageResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.libideas.resources.client.TextResource;
+import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
+import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -35,11 +38,41 @@ public class StyleInjectorDemo implements EntryPoint {
   public interface Resources extends ImmutableResourceBundle {
     Resources INSTANCE = GWT.create(Resources.class);
 
-    @Resource("StyleInjectorDemo.jpg")
-    DataResource background();
+    @Resource("bt.png")
+    @ImageOptions(repeatStyle = RepeatStyle.Horizontal)
+    ImageResource bottomBorder();
 
     @Resource("StyleInjectorDemo.css")
     CssResource css();
+
+    @Resource("lr.png")
+    @ImageOptions(repeatStyle = RepeatStyle.Vertical, flipRtl = true)
+    ImageResource leftBorder();
+
+    @Resource("icon128.png")
+    @ImageOptions(flipRtl = true)
+    ImageResource logo();
+
+    @Resource("icon32.png")
+    @ImageOptions(flipRtl = true)
+    ImageResource logoSmall();
+
+    @Resource("icon16.png")
+    ImageResource logoTiny();
+
+    @Resource("rl.png")
+    @ImageOptions(repeatStyle = RepeatStyle.Vertical, flipRtl = true)
+    ImageResource rightBorder();
+
+    @Resource("filler.txt")
+    TextResource text();
+
+    @Resource("filler2.txt")
+    TextResource text2();
+
+    @Resource("tb.png")
+    @ImageOptions(repeatStyle = RepeatStyle.Horizontal)
+    ImageResource topBorder();
   }
 
   /**
@@ -47,9 +80,12 @@ public class StyleInjectorDemo implements EntryPoint {
    */
   public void onModuleLoad() {
     StyleInjector.injectStylesheet(Resources.INSTANCE.css().getText());
-    RootPanel.get().add(
-        new HTML("<p>This, a picture of Eric's mom and daughter, should take "
-            + "some time to load the first time. It should load like lighting "
-            + "the second time to show the value of immutable resources.</p>"));
+    Document doc = Document.get();
+
+    ParagraphElement p = doc.getElementById("filler").cast();
+    p.setInnerText(Resources.INSTANCE.text().getText());
+
+    ParagraphElement p2 = doc.getElementById("filler2").cast();
+    p2.setInnerText(Resources.INSTANCE.text2().getText());
   }
 }

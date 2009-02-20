@@ -15,8 +15,6 @@
  */
 package com.google.ant;
 
-import com.google.gwt.dev.GWTCompiler;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
@@ -36,10 +34,11 @@ public class GwtCompilerTask extends Task {
   private String logLevel = "WARN";
   private String moduleFile;
   private String moduleName;
-  private String out = "www";
+  private String war = "www";
   private String src = "src";
   private String style = "PRETTY";
   private String vmMaxMemory = "512m";
+  private String vmStackSize = "256k";
 
   public Path createClasspath() {
     return command.createClasspath(getProject());
@@ -57,19 +56,24 @@ public class GwtCompilerTask extends Task {
         throw new BuildException("Required: either moduleName or moduleFile");
       } else {
         if (new File(moduleFile).exists()) {
-          moduleName = convertModuleFileToName(srcDir, moduleFile);
+          try {
+            moduleName = convertModuleFileToName(srcDir, moduleFile);
+          } catch (IOException e) {
+            throw new BuildException(e);
+          }
         } else {
           throw new BuildException("FileTreeTableItem not found: " + moduleFile);
         }
       }
     }
 
-    command.setClassname(GWTCompiler.class.getCanonicalName());
+    command.setClassname(com.google.gwt.dev.Compiler.class.getCanonicalName());
     command.createArgument().setLine("-logLevel " + logLevel);
-    command.createArgument().setLine("-out " + out);
+    command.createArgument().setLine("-war " + war);
     command.createArgument().setLine("-style " + style);
     command.createArgument().setValue(moduleName);
     command.createVmArgument().setValue("-Xmx" + vmMaxMemory);
+    command.createVmArgument().setValue("-Xss" + vmStackSize);
 
     log("Compiling " + moduleName, Project.MSG_INFO);
 
@@ -81,7 +85,14 @@ public class GwtCompilerTask extends Task {
     try {
       exe.setNewenvironment(true);
       exe.setVMLauncher(false);
-      exe.execute();
+
+      int code = exe.execute();
+
+      if (code != 0) {
+        throw new BuildException("gwt Compiler returned with status code "
+            + code + ". See previous error.");
+      }
+
       redirector.complete();
     } catch (IOException e) {
       throw new BuildException(e);
@@ -100,10 +111,6 @@ public class GwtCompilerTask extends Task {
     this.moduleName = moduleName;
   }
 
-  public void setOut(final String out) {
-    this.out = out;
-  }
-
   public void setSrc(final String src) {
     this.src = src;
   }
@@ -116,12 +123,20 @@ public class GwtCompilerTask extends Task {
     this.vmMaxMemory = vmMaxMemory;
   }
 
+  public void setVmStackSize(final String vmStackSize) {
+    this.vmStackSize = vmStackSize;
+  }
+
+  public void setWar(final String war) {
+    this.war = war;
+  }
+
   private String convertModuleFileToName(final File srcDir,
-      final String moduleFile) {
+      final String moduleFile) throws IOException {
     log("Converting file name " + moduleFile
         + " to a module name relative to source root "
-        + srcDir.getAbsolutePath(), Project.MSG_DEBUG);
+        + srcDir.getCanonicalPath(), Project.MSG_DEBUG);
     return moduleFile.replace(File.separatorChar, '.').substring(
-        srcDir.getAbsolutePath().length() + 1, moduleFile.length() - 8);
+        srcDir.getCanonicalPath().length() + 1, moduleFile.length() - 8);
   }
 }

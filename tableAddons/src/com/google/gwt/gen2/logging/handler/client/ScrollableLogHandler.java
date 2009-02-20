@@ -16,9 +16,10 @@
 
 package com.google.gwt.gen2.logging.handler.client;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.logging.shared.LogHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -47,16 +48,18 @@ abstract class ScrollableLogHandler<ContentType extends Widget & HasWidgets>
     setStyleName(styleName);
     scroller.setStyleName("logContentPane");
     panel.add(scroller);
-    
+
     this.contents = createContents();
     scroller.add(contents);
-    Button button = new Button("clear log", new ClickListener() {
-      public void onClick(Widget sender) {
+    Button button = new Button("clear log", new ClickHandler() {
+      
+      public void onClick(ClickEvent event) {
         clear();
       }
+
     });
     panel.add(button);
-   panel.setCellHeight(button, "1px");
+    panel.setCellHeight(button, "1px");
   }
 
   /**

@@ -17,6 +17,7 @@
 package com.google.gwt.gen2.widgetbase.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.gen2.logging.shared.Level;
 import com.google.gwt.libideas.client.StyleInjector;
 import com.google.gwt.libideas.resources.client.CssResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
@@ -29,14 +30,28 @@ public class Gen2CssInjector {
    * CSS resources for all gen2 widgets.
    */
   static interface DefaultBundle extends ImmutableResourceBundle {
+    @Resource("com/google/gwt/gen2/widgetbase/public/DropDownDatePicker.css")
+    CssResource dropDownDatePicker();
+
     @Resource("com/google/gwt/gen2/widgetbase/public/DropDownListBox.css")
-    CssResource dropDownListBoxCss();
+    CssResource dropDownListBox();
+
+    @Resource("com/google/gwt/gen2/widgetbase/public/FastTree.css")
+    CssResource fastTree();
+
+    @Resource("com/google/gwt/gen2/widgetbase/public/LogHandlers.css")
+    CssResource logHandlers();
 
     @Resource("com/google/gwt/gen2/widgetbase/public/Picker.css")
-    CssResource pickerCss();
+    CssResource picker();
   }
 
   static class DisabledMode extends Mode {
+    @Override
+    public DefaultBundle createDefaultBundle() {
+      return null;
+    }
+
     @Override
     public void inject(CssResource res) {
     }
@@ -48,6 +63,10 @@ public class Gen2CssInjector {
   }
 
   static class Mode {
+    public DefaultBundle createDefaultBundle() {
+      return GWT.create(DefaultBundle.class);
+    }
+
     public void inject(CssResource res) {
       StyleInjector.injectStylesheet(res.getText());
     }
@@ -57,15 +76,49 @@ public class Gen2CssInjector {
     }
   }
 
-  static DefaultBundle DEFAULT_CSS_FILES = GWT.create(DefaultBundle.class);
-
   private static Mode m = GWT.create(Mode.class);
 
+  private static DefaultBundle DEFAULT_CSS_FILES = m.createDefaultBundle();
+
   /**
-   * If css dependency injection is enabled, adds the DropDownListBox.css file.
+   * If css dependency injection is enabled, adds the default dependencies for
+   * DropDownDatePicker.
+   */
+  public static void addDropDownDatePickerDefault() {
+    if (Gen2CssInjector.isInjectionEnabled()) {
+      inject(DEFAULT_CSS_FILES.dropDownDatePicker());
+      inject(DEFAULT_CSS_FILES.dropDownListBox());
+    }
+  }
+
+  /**
+   * If css dependency injection is enabled, adds the DropDownListBox
+   * dependencies.
    */
   public static void addDropDownListBoxDefault() {
-    inject(DEFAULT_CSS_FILES.dropDownListBoxCss());
+    if (Gen2CssInjector.isInjectionEnabled()) {
+      inject(DEFAULT_CSS_FILES.dropDownListBox());
+    }
+  }
+
+  /**
+   * If css dependency injection is enabled, adds the ToggleButton.css file
+   * included under public/widget.
+   */
+  public static void addFastTreeDefault() {
+    if (Gen2CssInjector.isInjectionEnabled()) {
+      inject(DEFAULT_CSS_FILES.fastTree());
+    }
+  }
+
+  /**
+   * Injects the default css used for the log handlers defined in this package.
+   */
+  public static void addLogHandlerDefault() {
+    if (Gen2CssInjector.isInjectionEnabled()) {
+      inject(DEFAULT_CSS_FILES.dropDownListBox());
+      inject(DEFAULT_CSS_FILES.logHandlers());
+    }
   }
 
   /**
@@ -73,7 +126,36 @@ public class Gen2CssInjector {
    * included under public/widget.
    */
   public static void addPickerDefault() {
-    inject(DEFAULT_CSS_FILES.pickerCss());
+    if (Gen2CssInjector.isInjectionEnabled()) {
+      inject(DEFAULT_CSS_FILES.picker());
+    }
+  }
+
+  /**
+   * Gets the style name associated with all predefined levels. This interface
+   * is primarily used by widget log handlers to display log levels
+   * consistently.
+   * 
+   * <dl>
+   * <dt>Severe</dt>
+   * <dd>logSEVERE</dd>
+   * <dt>Config</dt>
+   * <dd>logCONFIG</dd>
+   * <dt>Fine</dt>
+   * <dd>logFINE</dd>
+   * <dt>. . .</dt>
+   * <dd></dd>
+   * </dl>
+   * 
+   * 
+   * In other words, uses "log" + name of level to calculate the level name.
+   * 
+   * @param level level
+   * 
+   * @return style name
+   */
+  public static String getStyle(Level level) {
+    return "log" + level.getName();
   }
 
   /**

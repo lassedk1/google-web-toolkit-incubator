@@ -1,0 +1,60 @@
+<module>
+	<inherits name="com.google.gwt.gen2.base.Base" />
+	<inherits name="com.google.gwt.event.EventBase" />
+
+	<!--  Sets up source path -->
+	<source path="shared" />
+	<source path="client" />
+	<source path="impl/shared" />
+
+
+	<super-source path="translatable" />
+
+	<!-- Defines the logging property -->
+	<define-property name="gwt.logging" values="enabled,disabled,production" />
+	<set-property name="gwt.logging" value="enabled" />
+
+	<replace-with
+		class="com.google.gwt.gen2.logging.impl.shared.LogImplProduction">
+		<when-type-is class="com.google.gwt.gen2.logging.impl.shared.LogImpl" />
+		<when-property-is name="gwt.logging" value="production" />
+	</replace-with>
+
+	<replace-with class="com.google.gwt.gen2.logging.impl.shared.LogImplDisabled">
+		<when-type-is class="com.google.gwt.gen2.logging.impl.shared.LogImpl" />
+		<when-property-is name="gwt.logging" value="disabled" />
+	</replace-with>
+
+
+   
+  <!--
+      Default bindings for LogImplEnabled.
+  -->
+  <replace-with class="com.google.gwt.gen2.logging.impl.client.LogImplEnabled">
+    <when-type-is class="com.google.gwt.gen2.logging.impl.shared.LogImpl" />
+    <when-property-is name="gwt.logging" value="enabled" />
+  </replace-with>
+
+
+	<!--
+		Sets default client log handler to a null one in order to avoid
+		compilation errors if a user does not specify which log handler to
+		use.
+	-->
+	<replace-with class="com.google.gwt.gen2.logging.impl.shared.NullDefaultLogHandler">
+		<when-type-is
+			class="com.google.gwt.gen2.logging.shared.DefaultClientLogHandler" />
+	</replace-with>
+
+   
+   
+  <!--
+      Default bindings for LogImplEnabled.
+  -->
+  <replace-with class="com.google.gwt.gen2.logging.impl.shared.LogImplWithManager">
+    <when-type-is class="com.google.gwt.gen2.logging.impl.shared.LogImpl" />
+    <when-property-is name="gwt.logging" value="enabled" />
+  </replace-with>
+
+
+</module>

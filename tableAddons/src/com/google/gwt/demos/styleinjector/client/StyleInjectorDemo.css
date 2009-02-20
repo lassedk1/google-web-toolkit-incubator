@@ -22,25 +22,75 @@
 /*
  * This is a static definition.
  */
-@def H1COLOR white;
-
-/*
- * This rule will define a macro that evaluates to a URL by which the named
- * DataResource can be accessed.
- */
-@url BACKGROUND background;
+@def H1COLOR orange;
 
 body {
-  /* This will expand to url('http://...'), or perhaps a data: url. */
-  background: BACKGROUND repeat-x;
+  background: black;
+  direction: ltr;
+}
+
+@sprite .logoBig {
+  gwt-image: "logo";
+  float: right;
+} 
+
+@sprite .logoSmall {
+  gwt-image: "logoSmall";
+}
+
+@sprite .logoTiny {
+  gwt-image: "logoTiny";
+  position: absolute;
+}
+
+.contentArea {
+  padding: value('topBorder.getHeight', 'px') value('rightBorder.getWidth', 'px')
+      value('bottomBorder.getHeight', 'px') value('leftBorder.getWidth', 'px');
+  background: white;
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  right: 50px;
+  bottom: 50px;
+  border: 1px solid orange;
+  text-indent: value('logoTiny.getWidth', 'px');
+}
+
+@sprite .contentAreaTopBorder {
+  gwt-image: 'topBorder';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+@sprite .contentAreaBottomBorder {
+  gwt-image: 'bottomBorder';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+
+@sprite .contentAreaLeftBorder {
+  gwt-image: 'leftBorder';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+}
+
+@sprite .contentAreaRightBorder {
+  gwt-image: 'rightBorder';
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
 }
 
 h1 {
  color: H1COLOR;
-}
-
-p {
-  color: white;
 }
 
 /*
@@ -65,11 +115,21 @@ p {
 @if user.agent safari {
   h1 {
      /* The leading slash is needed to make this a valid css2 ident. */
-     \-webkit-transform: rotate(-10deg);
+     \-webkit-transform: rotate(-5deg);
+     padding-bottom: 60px;
   }
+}
 
-  p {
-    position: relative;
-    top: 60px;
+@noflip {
+  .ltrSwitch {
+    position: absolute;
+    left: value('leftBorder.getWidth', 'px');
+    bottom: value('bottomBorder.getHeight', 'px');
+  }
+  
+  .rtlSwitch {
+    position: absolute;
+    right: value('rightBorder.getWidth', 'px');
+    bottom: value('bottomBorder.getHeight', 'px');
   }
 }

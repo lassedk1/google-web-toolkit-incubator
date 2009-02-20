@@ -72,6 +72,9 @@ public class CssVisitor {
   public void endVisit(CssMediaRule x, Context ctx) {
   }
 
+  public void endVisit(CssNoFlip x, Context ctx) {
+  }
+
   public void endVisit(CssPageRule x, Context ctx) {
   }
 
@@ -106,6 +109,10 @@ public class CssVisitor {
   }
 
   public boolean visit(CssMediaRule x, Context ctx) {
+    return true;
+  }
+
+  public boolean visit(CssNoFlip x, Context ctx) {
     return true;
   }
 

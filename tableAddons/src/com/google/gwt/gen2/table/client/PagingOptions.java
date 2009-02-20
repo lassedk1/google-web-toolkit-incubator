@@ -16,6 +16,8 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.table.event.client.PageChangeEvent;
 import com.google.gwt.gen2.table.event.client.PageChangeHandler;
 import com.google.gwt.gen2.table.event.client.PageCountChangeEvent;
@@ -33,7 +35,6 @@ import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -41,9 +42,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.PushButton;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.SliderBar;
 import com.google.gwt.widgetideas.client.SliderBar.LabelFormatter;
@@ -382,26 +381,28 @@ public class PagingOptions extends Composite {
         createImage(resources.getStyle().previousPageDisabled()));
     previousPageButton.setTitle(resources.getMessages().gotoPreviousPage());
 
+
     // Create the listener
-    ClickListener listener = new ClickListener() {
-      public void onClick(Widget sender) {
-        if (sender == firstPageButton) {
+    ClickHandler handler = new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        Object source = event.getSource();
+        if (source == firstPageButton) {
           table.gotoFirstPage();
-        } else if (sender == lastPageButton) {
+        } else if (source == lastPageButton) {
           table.gotoLastPage();
-        } else if (sender == nextPageButton) {
+        } else if (source == nextPageButton) {
           table.gotoNextPage();
-        } else if (sender == previousPageButton) {
+        } else if (source == previousPageButton) {
           table.gotoPreviousPage();
         }
       }
     };
 
     // Add the listener to each image
-    firstPageButton.addClickListener(listener);
-    nextPageButton.addClickListener(listener);
-    lastPageButton.addClickListener(listener);
-    previousPageButton.addClickListener(listener);
+    firstPageButton.addClickHandler(handler);
+    lastPageButton.addClickHandler(handler);
+    nextPageButton.addClickHandler(handler);
+    previousPageButton.addClickHandler(handler);
   }
 
   protected Image createImage(ImageResource imageResource) {
