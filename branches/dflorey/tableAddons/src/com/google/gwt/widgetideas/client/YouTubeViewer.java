@@ -17,7 +17,11 @@ package com.google.gwt.widgetideas.client;
 
 /**
  * A Widget used to embed a single YouTube video.
+ * 
+ * @deprecated as of Feb 11th, as it is not a candidate for being a gwt widget
+ *             in of itself.
  */
+@Deprecated
 public class YouTubeViewer extends EmbeddedObject {
   /**
    * The base URL of all YouTube videos.
@@ -28,17 +32,17 @@ public class YouTubeViewer extends EmbeddedObject {
    * Indicates whether or not autoPlay is enabled.
    */
   private boolean autoPlayEnabled = false;
-  
+
   /**
    * The unique ID of the movie.
    */
   private String movieID;
- 
+
   /**
    * Indicates whether or not to show related videos in the player.
    */
   private boolean relatedVideosEnabled = false;
-  
+
   /**
    * Constructor.
    * 
@@ -47,7 +51,7 @@ public class YouTubeViewer extends EmbeddedObject {
   public YouTubeViewer(String movieID) {
     this(movieID, false);
   }
-  
+
   /**
    * Constructor.
    * 
@@ -60,7 +64,7 @@ public class YouTubeViewer extends EmbeddedObject {
     setInfo(new EmbeddedObjectInfo(TYPE_SHOCKWAVE, null), false);
     setMovieID(movieID);
   }
-  
+
   /**
    * Get the movie ID.
    * 
@@ -69,7 +73,7 @@ public class YouTubeViewer extends EmbeddedObject {
   public String getMovieID() {
     return movieID;
   }
-  
+
   /**
    * Get the full URL of the video.
    * 
@@ -78,22 +82,22 @@ public class YouTubeViewer extends EmbeddedObject {
   public String getURL() {
     // Base movie URL
     String url = BASE_URL + this.movieID;
-    
+
     // AutoPlay option
     if (autoPlayEnabled) {
       url += "&autoplay=1";
     }
-    
+
     // Related videos option
     if (relatedVideosEnabled) {
       url += "&rel=1";
     } else {
       url += "&rel=0";
     }
-    
+
     return url;
   }
-  
+
   /**
    * Check whether or not autoPlay is enabled.
    * 
@@ -102,7 +106,7 @@ public class YouTubeViewer extends EmbeddedObject {
   public boolean isAutoPlayEnabled() {
     return autoPlayEnabled;
   }
-  
+
   /**
    * Check whether or not the player will show related videos.
    * 
@@ -111,10 +115,10 @@ public class YouTubeViewer extends EmbeddedObject {
   public boolean isRelatedVideosEnabled() {
     return relatedVideosEnabled;
   }
-  
+
   /**
-   * Enable or disable autoPlay.  When enabled, videos will immediately
-   * start playing when you set the movieID.
+   * Enable or disable autoPlay. When enabled, videos will immediately start
+   * playing when you set the movieID.
    * 
    * By default, autoPlay is disabled.
    * 
@@ -123,7 +127,7 @@ public class YouTubeViewer extends EmbeddedObject {
   public void setAutoPlayEnabled(boolean autoPlayEnabled) {
     this.autoPlayEnabled = autoPlayEnabled;
   }
-  
+
   /**
    * Set the movie ID.
    * 
@@ -131,7 +135,7 @@ public class YouTubeViewer extends EmbeddedObject {
    */
   public void setMovieID(String movieID) {
     this.movieID = movieID;
-    
+
     // Update the info object
     String url = getURL();
     EmbeddedObjectInfo info = getInfo();
@@ -141,8 +145,8 @@ public class YouTubeViewer extends EmbeddedObject {
   }
 
   /**
-   * Enable or disable related videos in the player.  When enabled, the
-   * player will display related videos after the current video completed.
+   * Enable or disable related videos in the player. When enabled, the player
+   * will display related videos after the current video completed.
    * 
    * By default, related videos are disabled
    * 

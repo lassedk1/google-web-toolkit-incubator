@@ -765,7 +765,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     };
   }-*/;
 
-  private boolean elementClicked(FastTreeItem root, Event event) {
+  private void elementClicked(FastTreeItem root, Event event) {
     Element target = DOM.eventGetTarget(event);
     ArrayList<Element> chain = new ArrayList<Element>();
     collectElementChain(chain, getElement(), target);
@@ -775,14 +775,10 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
         item.setState(!item.isOpen(), true);
         moveSelectionBar(curSelection);
         disableSelection(target);
-        return false;
-      }
-      if (processElementClicked(item)) {
+      } else if (processElementClicked(item)) {
         onSelection(item, true, !shouldTreeDelegateFocusToElement(target));
-        return true;
       }
     }
-    return false;
   }
 
   private FastTreeItem findDeepestOpenChild(FastTreeItem item) {

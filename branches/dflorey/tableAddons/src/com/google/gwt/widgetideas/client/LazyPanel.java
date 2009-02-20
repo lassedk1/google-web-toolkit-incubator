@@ -24,7 +24,9 @@ import com.google.gwt.user.client.ui.Widget;
  * when setVisible(true) or ensureWidget is called.
  * 
  * @param <T> widget type
+ * @deprecated this class has graduated to GWT
  */
+@Deprecated
 public abstract class LazyPanel<T extends Widget> extends SimplePanel {
 
   public LazyPanel() {

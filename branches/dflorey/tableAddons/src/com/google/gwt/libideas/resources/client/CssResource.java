@@ -41,15 +41,21 @@ import java.lang.annotation.Target;
  * Currently-supported rules:
  * 
  * <ul>
- * <li>{@code @def NAME literal-value; .myClass background: NAME;} Define a
- * static constant.</li>
+ * <li>{@code @def NAME replacement-expression; .myClass background: NAME;}
+ * Define a static constant. The replacement expression may be any CSS that
+ * would be valid in a property value context. A {@code @def} may refer to
+ * previously-defined rules, but no forward-references will be honored.</li>
  * <li>{@code @eval NAME Java-expression; .myClass background: NAME;} Define a
  * constant based on a Java expression.</li>
- * <li><code>{@literal @if} [!]property (list of values) {ruleBlock}</code> Include
- * or exclude CSS rules based on the value of a deferred-binding property. Also
- * {@code @elif} and {@code @else} follow the same pattern.</li>
- * <li><code>{@literal @if} Java-expression {ruleBlock}</code> Include or exclude
+ * <li><code>{@literal @if} [!]property list of values {ruleBlock}</code> Include or
+ * exclude CSS rules based on the value of a deferred-binding property. Also
+ * {@code @elif} and {@code @else} follow the same pattern.<br/>
+ * This might look like {@code @if user.agent ie6 safari ...}.</li>
+ * <li><code>{@literal @if} (Java-expression) {ruleBlock}</code> Include or exclude
  * CSS rules based on a boolean Java expression.</li>
+ * <li><code>{@literal @noflip} { rules }</code> will suppress the automatic
+ * right-to-left transformation applied to the CSS when the module is compiled
+ * for an RTL language.</li>
  * <li>
  * <code>{@literal @}sprite .any .selector {gwt-image: "imageResourceFunction";}</code>
  * . The appearance, size, and height of the sprite will be affected by any
@@ -57,12 +63,16 @@ import java.lang.annotation.Target;
  * {@link ImageResource} accessor function. Additional properties may be
  * specified in the rule block.</li>
  * <li>{@code @url NAME siblingDataResource; .myClass background: NAME
- * repeat-x;} Use a DataResource to generate a <code>url('...'}</code> value.</li>
+ * repeat-x;} Use a {@link DataResource} to generate a <code>url('...'}</code> value.</li>
  * </ul>
  * 
  * <p>
  * Currently-supported CSS functions:
+ * 
  * <ul>
+ * <li>{@code literal("expression")} substitutes a property value that does not
+ * conform to CSS2 parsing rules. The escape sequences {@code \"} and {@code \\}
+ * will be replaced with {@code "} and {@code \} respectively.
  * <li>{@code value("bundleFunction.someFunction[.other[...]]" [, "suffix"])}
  * substitute the value of a sequence of named zero-arg function invocations. An
  * optional suffix will be appended to the return value of the function. The

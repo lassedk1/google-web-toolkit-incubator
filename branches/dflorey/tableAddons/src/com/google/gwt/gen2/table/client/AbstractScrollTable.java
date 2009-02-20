@@ -22,6 +22,7 @@ import com.google.gwt.gen2.event.dom.client.ScrollHandler;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.table.client.ColumnFilter.ColumnFilterListener;
 import com.google.gwt.gen2.table.client.ColumnResizer.ColumnWidthInfo;
+import com.google.gwt.gen2.table.client.property.MaximumWidthProperty;
 import com.google.gwt.gen2.table.event.client.ColumnSortEvent;
 import com.google.gwt.gen2.table.event.client.ColumnSortHandler;
 import com.google.gwt.gen2.table.override.client.ComplexPanel;
@@ -30,14 +31,12 @@ import com.google.gwt.gen2.table.shared.ColumnFilterInfo;
 import com.google.gwt.gen2.table.shared.ColumnSortList;
 import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
 import com.google.gwt.gen2.widgetbase.client.WidgetCss;
-import com.google.gwt.i18n.client.Constants;
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.Messages;
-import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.libideas.resources.client.ImageResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
-import com.google.gwt.libideas.resources.client.ImmutableResourceBundle.Resource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
@@ -81,31 +80,139 @@ import java.util.Map;
  * 
  * <h3>CSS Style Rules</h3>
  * 
- * <ul class="css">
- * 
- * <li>.gwt-ScrollTable { applied to the entire widget }</li>
- * 
- * <li>.gwt-ScrollTable .headerTable { applied to the header table }</li>
- * 
- * <li>.gwt-ScrollTable .dataTable { applied to the data table }</li>
- * 
- * <li>.gwt-ScrollTable .footerTable { applied to the footer table }</li>
- * 
- * <li>.gwt-ScrollTable .headerWrapper { wrapper around the header table }</li>
- * 
- * <li>.gwt-ScrollTable .dataWrapper { wrapper around the data table }</li>
- * 
- * <li>.gwt-ScrollTable .footerWrapper { wrapper around the footer table }</li>
- * 
- * </ul>
+ * <dl>
+ * <dt>.gwt-ScrollTable</dt>
+ * <dd>applied to the entire widget</dd>
+ * <dt>.gwt-ScrollTable .headerTable</dt>
+ * <dd>applied to the header table</dd>
+ * <dt>.gwt-ScrollTable .dataTable</dt>
+ * <dd>applied to the data table</dd>
+ * <dt>.gwt-ScrollTable .footerTable</dt>
+ * <dd>applied to the footer table</dd>
+ * <dt>.gwt-ScrollTable .headerWrapper</dt>
+ * <dd>wrapper around the header table</dd>
+ * <dt>.gwt-ScrollTable .dataWrapper</dt>
+ * <dd>wrapper around the data table</dd>
+ * <dt>.gwt-ScrollTable .footerWrapper</dt>
+ * <dd>wrapper around the footer table</dd>
+ * </dl>
  */
 public abstract class AbstractScrollTable extends ComplexPanel implements
     ResizableWidget, HasScrollHandlers {
+  /**
+   * Browser specific implementation class for {@link AbstractScrollTable}.
+   */
+  private static class Impl {
+    /**
+     * Create a spacer element that allows the header table to scroll over the
+     * vertical scroll bar of the data table.
+     * 
+     * @param wrapper the wrapper that contains the header table
+     * @return the spacer element
+     */
+    public Element createSpacer(FixedWidthFlexTable table, Element wrapper) {
+      table.getElement().getStyle().setPropertyPx("paddingRight", 100);
+      return null;
+    }
+
+    /**
+     * Reposition the header spacer as needed.
+     * 
+     * @param scrollTable the scroll table
+     */
+    public void repositionSpacer(AbstractScrollTable scrollTable) {
+    }
+  }
+
+  /**
+   * FF uses negative offsets relative to the right side in RTL mode, so we need
+   * to make sure the spacer is the same size as the scroll bar.
+   */
+  @SuppressWarnings("unused")
+  private static class ImplFF extends Impl {
+    @Override
+    public void repositionSpacer(AbstractScrollTable scrollTable) {
+      Element dataWrapper = scrollTable.dataWrapper;
+      int spacerWidth = dataWrapper.getOffsetWidth()
+          - dataWrapper.getPropertyInt("clientWidth");
+      resizeSpacer(scrollTable.headerTable, scrollTable.headerSpacer,
+          spacerWidth);
+      if (scrollTable.footerTable != null) {
+        resizeSpacer(scrollTable.footerTable, scrollTable.footerSpacer,
+            spacerWidth);
+      }
+    }
+
+    void resizeSpacer(FixedWidthFlexTable table, Element spacer, int spacerWidth) {
+      if (LocaleInfo.getCurrentLocale().isRTL()) {
+        table.getElement().getStyle().setPropertyPx("paddingRight", spacerWidth);
+      }
+    }
+  }
+
+  /**
+   * Old Mozilla puts the scroll bar on the left side in RTL mode, so we need to
+   * swap the padding.
+   */
+  @SuppressWarnings("unused")
+  private static class ImplOldMozilla extends ImplFF {
+    @Override
+    public Element createSpacer(FixedWidthFlexTable table, Element wrapper) {
+      if (LocaleInfo.getCurrentLocale().isRTL()) {
+        table.getElement().getStyle().setPropertyPx("paddingLeft", 100);
+        return null;
+      }
+      return super.createSpacer(table, wrapper);
+    }
+
+    @Override
+    void resizeSpacer(FixedWidthFlexTable table, Element spacer, int spacerWidth) {
+      if (LocaleInfo.getCurrentLocale().isRTL()) {
+        table.getElement().getStyle().setPropertyPx("paddingLeft", spacerWidth);
+      }
+    }
+  }
+
+  /**
+   * IE has a scroll bar on the left side in RTL mode. The padding trick doesn't
+   * work, so we use a separate element.
+   */
+  @SuppressWarnings("unused")
+  private static class ImplIE6 extends ImplFF {
+    @Override
+    public Element createSpacer(FixedWidthFlexTable table, Element wrapper) {
+      Element spacer = DOM.createDiv();
+      spacer.getStyle().setPropertyPx("height", 1);
+      spacer.getStyle().setPropertyPx("width", 100);
+      spacer.getStyle().setPropertyPx("top", 1);
+      spacer.getStyle().setPropertyPx("left", 1);
+      spacer.getStyle().setProperty("position", "absolute");
+      wrapper.appendChild(spacer);
+      return spacer;
+    }
+
+    @Override
+    void resizeSpacer(FixedWidthFlexTable table, Element spacer, int width) {
+      int headerWidth = table.getOffsetWidth();
+      if (LocaleInfo.getCurrentLocale().isRTL()) {
+        spacer.getStyle().setPropertyPx("width", width);
+        spacer.getStyle().setPropertyPx("right", headerWidth);
+      } else {
+        spacer.getStyle().setPropertyPx("left", headerWidth);
+      }
+    }
+  }
+
   /**
    * A helper class that handles some of the mouse events associated with
    * resizing columns.
    */
   private static class MouseResizeWorker {
+    /**
+     * The width of the area that is available for resize.
+     */
+    private static final int RESIZE_CURSOR_WIDTH = 15;
+
     /**
      * The current header cell that the mouse is affecting.
      */
@@ -213,9 +320,16 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       // See if we are near the edge of the cell
       int clientX = event.getClientX();
       if (cell != null) {
-        int absRight = cell.getAbsoluteLeft() + cell.getOffsetWidth();
-        if (clientX < absRight - 15 || clientX > absRight) {
-          cell = null;
+        int absLeft = cell.getAbsoluteLeft();
+        if (LocaleInfo.getCurrentLocale().isRTL()) {
+          if (clientX < absLeft || clientX > absLeft + RESIZE_CURSOR_WIDTH) {
+            cell = null;
+          }
+        } else {
+          int absRight = absLeft + cell.getOffsetWidth();
+          if (clientX < absRight - RESIZE_CURSOR_WIDTH || clientX > absRight) {
+            cell = null;
+          }
         }
       }
 
@@ -305,6 +419,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
      */
     public void stopResizing(Event event) {
       if (curCell != null && resizing) {
+        curCell.getStyle().setProperty("cursor", "");
         curCell = null;
         resizing = false;
         DOM.releaseCapture(table.headerWrapper);
@@ -347,6 +462,9 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
         // Distribute to the cells being resized
         int totalDelta = mouseXCurrent - mouseXStart;
+        if (LocaleInfo.getCurrentLocale().isRTL()) {
+          totalDelta *= -1;
+        }
         totalDelta -= table.columnResizer.distributeWidth(curCells, totalDelta);
 
         // Distribute to the sacrifice cells
@@ -712,6 +830,11 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * The images applied to the table.
    */
   private ScrollTableResources resources;
+
+  /**
+   * The implementation class for this widget.
+   */
+  private Impl impl = GWT.create(Impl.class);
 
   /**
    * The last known height of this widget that the user set.
@@ -1080,7 +1203,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * Get the absolute maximum width of a column.
    * 
    * @param column the column index
-   * @return the maximum allowable width of the column, or -1 if there is none
+   * @return the maximum allowable width of the column
    */
   public abstract int getMaximumColumnWidth(int column);
 
@@ -1156,6 +1279,16 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       return sortable.booleanValue();
     }
   }
+  
+  /**
+   * Returns true if the specified column can be truncated. If it cannot be
+   * truncated, its minimum width will be adjusted to ensure the cell content is
+   * visible.
+   * 
+   * @param column the column index
+   * @return true if the column is truncatable, false if it is not
+   */
+  public abstract boolean isColumnTruncatable(int column);
 
   @Override
   public void onBrowserEvent(Event event) {
@@ -1268,8 +1401,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
-   * Redraw the table. This is a relatively cheap operation and should be called
-   * after modifying the header or footer sections.
+   * Redraw the table.
    */
   public void redraw() {
     if (!isAttached()) {
@@ -1296,21 +1428,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * Reset the widths of all columns to their preferred sizes.
    */
   public void resetColumnWidths() {
-    // Calculate the new column widths
-    int numColumns = dataTable.getColumnCount();
-    int totalWidth = 0;
-    List<ColumnWidthInfo> colWidthInfos = getColumnWidthInfo(0, numColumns);
-    for (ColumnWidthInfo info : colWidthInfos) {
-      totalWidth += info.getCurrentWidth();
-      info.setCurrentWidth(0);
-    }
-    columnResizer.distributeWidth(colWidthInfos, totalWidth);
-
-    // Set the new column widths
-    applyNewColumnWidths(0, colWidthInfos, false);
-
-    // Rescroll the tables
-    scrollTables(false);
+    resetColumnWidths(false);
   }
 
   /**
@@ -1399,7 +1517,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     }
 
     // Reposition things as needed
-    repositionHeaderSpacer();
+    impl.repositionSpacer(this);
     scrollTables(false);
     return width;
   }
@@ -1431,7 +1549,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       // Create the footer wrapper and spacer
       if (footerWrapper == null) {
         footerWrapper = createWrapper(css.footerWrapper());
-        footerSpacer = createSpacer(footerWrapper);
+        footerSpacer = impl.createSpacer(footerTable, footerWrapper);
         DOM.setEventListener(footerWrapper, this);
         DOM.sinkEvents(footerWrapper, Event.ONMOUSEUP);
       }
@@ -1591,15 +1709,19 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * {@link ResizePolicy} requires it.
    */
   protected void maybeFillWidth() {
-    if (!fillWidthPending && isAttached()
-        && resizePolicy == ResizePolicy.FILL_WIDTH) {
-      fillWidthPending = true;
-      DeferredCommand.addCommand(new Command() {
-        public void execute() {
-          fillWidthPending = false;
-          fillWidth();
-        }
-      });
+    if (!fillWidthPending && isAttached()) {
+      if (resizePolicy == ResizePolicy.FILL_WIDTH) {
+        fillWidthPending = true;
+        DeferredCommand.addCommand(new Command() {
+          public void execute() {
+            fillWidthPending = false;
+            fillWidth();
+          }
+        });
+      } else {
+        resetColumnWidths(true);
+        impl.repositionSpacer(this);
+      }
     }
   }
 
@@ -1610,7 +1732,6 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   protected void onAttach() {
     super.onAttach();
     resizeTablesVertically();
-    repositionHeaderSpacer();
     maybeFillWidth();
   }
 
@@ -1733,6 +1854,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
         }
       }
     }
+    impl.repositionSpacer(this);
   }
 
   /**
@@ -1763,6 +1885,16 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     int maxWidth = getMaximumColumnWidth(column);
     int preferredWidth = getPreferredColumnWidth(column);
     int curWidth = getColumnWidth(column);
+
+    // Adjust the widths if the columns are not truncatable, up to maxWidth
+    if (!isColumnTruncatable(column)) {
+      int idealWidth = getDataTable().getIdealColumnWidth(column);
+      if (maxWidth != MaximumWidthProperty.NO_MAXIMUM_WIDTH) {
+        idealWidth = Math.min(idealWidth, maxWidth);
+      }
+      minWidth = Math.max(minWidth, idealWidth);
+    }
+
     return new ColumnWidthInfo(minWidth, maxWidth, preferredWidth, curWidth);
   }
 
@@ -1819,6 +1951,36 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       int footerWidth = footerTable.getOffsetWidth();
       footerSpacer.getStyle().setPropertyPx("left", footerWidth);
     }
+  }
+
+  /**
+   * Reset the widths of all columns, either to their preferred sizes or just
+   * ensure that they are within their min/max boundaries.
+   * 
+   * @param boundsOnly true to only ensure the widths are within the bounds
+   */
+  private void resetColumnWidths(boolean boundsOnly) {
+    // Calculate the new column widths
+    int numColumns = dataTable.getColumnCount();
+    int totalWidth = 0;
+    List<ColumnWidthInfo> colWidthInfos = getColumnWidthInfo(0, numColumns);
+
+    // If we are reseting to original widths, set all widths to 0
+    if (!boundsOnly) {
+      for (ColumnWidthInfo info : colWidthInfos) {
+        totalWidth += info.getCurrentWidth();
+        info.setCurrentWidth(0);
+      }
+    }
+
+    // Run the resize algorithm
+    columnResizer.distributeWidth(colWidthInfos, totalWidth);
+
+    // Set the new column widths
+    applyNewColumnWidths(0, colWidthInfos, false);
+
+    // Rescroll the tables
+    scrollTables(false);
   }
 
   /**

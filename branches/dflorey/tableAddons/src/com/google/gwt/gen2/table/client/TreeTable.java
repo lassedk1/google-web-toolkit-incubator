@@ -208,7 +208,7 @@ public class TreeTable<RowType extends TreeTableItem> extends
       for (ColumnFilterInfo columnFilterInfo : columnFilterList) {
         List<ColumnDefinition<RowType, ?>> visibleColumnDefinitions = tableDefinition.getVisibleColumnDefinitions();
         for (ColumnDefinition<RowType, ?> columnDefinition : visibleColumnDefinitions) {
-          if (columnDefinition.getColumnFilter().getColumn() == columnFilterInfo.getColumn()) {
+          if (columnDefinition.getColumnFilter() != null && columnFilterInfo.getColumn() == columnDefinition.getColumnFilter().getColumn()) {
             if (!columnFilterInfo.isFilterMatching(columnDefinition.getCellValue(treeItem.getTreeTableItem()))) {
               return false;
             }

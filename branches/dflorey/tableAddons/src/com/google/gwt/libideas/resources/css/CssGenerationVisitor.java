@@ -21,6 +21,7 @@ import com.google.gwt.libideas.resources.css.ast.CssDef;
 import com.google.gwt.libideas.resources.css.ast.CssEval;
 import com.google.gwt.libideas.resources.css.ast.CssIf;
 import com.google.gwt.libideas.resources.css.ast.CssMediaRule;
+import com.google.gwt.libideas.resources.css.ast.CssNoFlip;
 import com.google.gwt.libideas.resources.css.ast.CssNode;
 import com.google.gwt.libideas.resources.css.ast.CssPageRule;
 import com.google.gwt.libideas.resources.css.ast.CssProperty;
@@ -41,7 +42,9 @@ import java.util.TreeMap;
  */
 public class CssGenerationVisitor extends CssVisitor {
   private final TextOutput out;
+
   private boolean needsOpenBrace;
+
   private boolean needsComma;
   private final boolean substituteDots;
   private final SortedMap<Integer, List<CssNode>> substitutionPositions = new TreeMap<Integer, List<CssNode>>();
@@ -82,6 +85,12 @@ public class CssGenerationVisitor extends CssVisitor {
     out.indentOut();
     out.print("}");
     out.newline();
+  }
+
+  @Override
+  public void endVisit(CssNoFlip x, Context ctx) {
+    out.printOpt("/*} @noflip */");
+    out.newlineOpt();
   }
 
   @Override
@@ -149,6 +158,13 @@ public class CssGenerationVisitor extends CssVisitor {
     out.print("{");
     out.newlineOpt();
     out.indentIn();
+    return true;
+  }
+
+  @Override
+  public boolean visit(CssNoFlip x, Context ctx) {
+    out.printOpt("/*@noflip { */)");
+    out.newlineOpt();
     return true;
   }
 

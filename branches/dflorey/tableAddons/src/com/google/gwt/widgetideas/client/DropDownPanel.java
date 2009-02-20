@@ -31,6 +31,9 @@ import java.util.ArrayList;
  * A popup panel that can position itself relative to another widget.
  * 
  * @param <R> Relative widget type
+ * 
+ * @deprecated as of Jan 26, 2009: Use the gen2 version of DropDownPanel
+ *             instead.
  */
 // Direct copy of gen2 version, will be deprecated soon.
 public class DropDownPanel<R extends Widget> extends PopupPanelImpl {

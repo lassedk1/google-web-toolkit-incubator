@@ -434,7 +434,6 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    * Sets the state of the collapsible panel.
    * 
    * @param collapsed is the panel collapsed?
-   * @param fireEvents should the change listeners be fired?
    */
   public void setCollapsedState(boolean collapsed) {
     setCollapsedState(collapsed, false);

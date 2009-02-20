@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
+import com.google.gwt.user.datepicker.client.DatePicker;
 
 import java.util.Date;
 
@@ -105,6 +106,8 @@ public abstract class DateColumnDefinition<RowType> extends
      * createFilterWidget()
      */
     public Widget createFilterWidget() {
+      DatePicker datePicker = new DatePicker();
+
       primaryDateBox = new DateBox();
       primaryDateBox.setFormat(new DateBox.DefaultFormat(dateTimeFormat));
       primaryDateBox.setWidth("100%");

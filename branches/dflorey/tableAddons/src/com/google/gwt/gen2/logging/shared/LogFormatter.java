@@ -16,13 +16,10 @@
 
 package com.google.gwt.gen2.logging.shared;
 
-import com.google.gwt.gen2.logging.handler.client.LogHandlerUtil;
-
 /**
  * Formatter used to format logging messages.
  */
 public abstract class LogFormatter {
-
   /**
    * Default text log formatter.
    */
@@ -64,7 +61,7 @@ public abstract class LogFormatter {
         title += "  thrown: " + event.getThrown();
       }
 
-      String style = LogHandlerUtil.getStyle(event.getLevel());
+      String style = getStyle(event.getLevel());
       String htmlMessage = "<code class='" + style + "'" + "title='" + title
           + "'>" + baseMessage + "</code>";
       return htmlMessage;
@@ -88,6 +85,21 @@ public abstract class LogFormatter {
     text = text.replaceAll("<", "&lt;");
     text = text.replaceAll(">", "&gt;");
     return text;
+  }
+
+  /**
+   * Gets the style name associated with all predefined levels. This interface
+   * is primarily used by widget log handlers to display log levels
+   * consistently.
+   * 
+   * In other words, uses "log" + name of level to calculate the level name.
+   * 
+   * @param level level
+   * 
+   * @return style name
+   */
+  public static String getStyle(Level level) {
+    return "log" + level.getName();
   }
 
   /**

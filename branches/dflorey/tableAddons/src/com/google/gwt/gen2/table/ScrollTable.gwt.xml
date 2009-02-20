@@ -23,8 +23,24 @@
   <inherits name='com.google.gwt.gen2.table.FixedWidthFlexTable' />
   <source path='client' />
   <source path='event/client' />
-    
-    <!-- Opera has a different MouseWorker implementation -->
+
+  <!-- FF uses negative offsets in RTL mode -->
+  <replace-with class="com.google.gwt.gen2.table.client.AbstractScrollTable.ImplFF">
+    <when-type-is class="com.google.gwt.gen2.table.client.AbstractScrollTable.Impl" />
+    <when-property-is name="user.agent" value="gecko1_8" />
+  </replace-with>
+  <!-- IE puts the scrollbar on the left in RTL mode -->
+  <replace-with class="com.google.gwt.gen2.table.client.AbstractScrollTable.ImplIE6">
+    <when-type-is class="com.google.gwt.gen2.table.client.AbstractScrollTable.Impl" />
+    <when-property-is name="user.agent" value="ie6" />
+  </replace-with>
+  <!-- Old Mozilla puts the scrollbar on the left in RTL mode -->
+  <replace-with class="com.google.gwt.gen2.table.client.AbstractScrollTable.ImplOldMozilla">
+    <when-type-is class="com.google.gwt.gen2.table.client.AbstractScrollTable.Impl" />
+    <when-property-is name="user.agent" value="gecko" />
+  </replace-with>
+
+  <!-- Opera has a different MouseWorker implementation -->
   <replace-with class="com.google.gwt.gen2.table.client.AbstractScrollTable.MouseResizeWorkerOpera">
     <when-type-is class="com.google.gwt.gen2.table.client.AbstractScrollTable.MouseResizeWorker" />
     <when-property-is name="user.agent" value="opera" />

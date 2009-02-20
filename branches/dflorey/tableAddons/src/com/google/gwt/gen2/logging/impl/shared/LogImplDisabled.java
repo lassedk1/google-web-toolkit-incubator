@@ -26,28 +26,36 @@ import java.util.Iterator;
  */
 public class LogImplDisabled extends LogImpl {
 
+  @Override
   public void addLogHandler(LogHandler handler) {
   }
 
+  @Override
   public void clearLogHandlers() {
   }
 
+  @Override
   public void config(String msg, String category) {
   }
 
+  @Override
   public void fine(String msg, String category) {
   }
 
+  @Override
   public void finer(String msg, String category) {
   }
 
+  @Override
   public void finest(String msg, String category) {
   }
 
+  @Override
   public Level getDefaultLevel() {
     return null;
   }
 
+  @Override
   public void info(String msg, String category) {
   }
 
@@ -55,41 +63,52 @@ public class LogImplDisabled extends LogImpl {
   public void init() {
   }
 
+  @Override
   public boolean isLoggable(Level level) {
     return false;
   }
 
+  @Override
   public boolean isLoggingEnabled() {
     return false;
   }
 
+  @Override
   public boolean isLoggingProduction() {
     return false;
   }
 
+  @Override
   public Iterator<Level> levelIterator() {
     return null;
   }
 
+  @Override
   public void log(String msg, Level level, String category, Throwable e) {
   }
 
+  @Override
   public Level parse(String levelName) {
     return null;
   }
 
+  @Override
   public void registerLevel(Level level) {
   }
 
+  @Override
   public void removeLogHandler(LogHandler handler) {
   }
 
+  @Override
   public void setDefaultLevel(Level newLevel) {
   }
 
+  @Override
   public void setLevel(String category, Level level) {
   }
 
+  @Override
   public void severe(String msg, String category, Throwable t) {
   }
 
@@ -97,6 +116,7 @@ public class LogImplDisabled extends LogImpl {
     return null;
   }
 
+  @Override
   public void warning(String msg, String category, Throwable t) {
   }
 

@@ -85,7 +85,7 @@ public class RadioCellEditor<ColType> extends InlineCellEditor<ColType> {
     Iterator<Widget> it = vpanel.iterator();
     while (it.hasNext()) {
       RadioButton radio = (RadioButton) it.next();
-      if (radio.isChecked()) {
+      if (radio.getValue()) {
         radio.setFocus(true);
         return;
       }
@@ -122,7 +122,7 @@ public class RadioCellEditor<ColType> extends InlineCellEditor<ColType> {
     Iterator<Widget> it = vpanel.iterator();
     while (it.hasNext()) {
       RadioButton radio = (RadioButton) it.next();
-      if (radio.isChecked()) {
+      if (radio.getValue()) {
         return radioMap.get(radio);
       }
     }
@@ -133,9 +133,9 @@ public class RadioCellEditor<ColType> extends InlineCellEditor<ColType> {
   protected void setValue(ColType cellValue) {
     for (Map.Entry<RadioButton, ColType> entry : radioMap.entrySet()) {
       if (entry.getValue().equals(cellValue)) {
-        entry.getKey().setChecked(true);
+        entry.getKey().setValue(true);
       } else {
-        entry.getKey().setChecked(false);
+        entry.getKey().setValue(false);
       }
     }
   }

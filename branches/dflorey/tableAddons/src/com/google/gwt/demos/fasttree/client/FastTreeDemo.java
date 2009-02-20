@@ -46,6 +46,19 @@ import java.util.ArrayList;
  */
 public class FastTreeDemo implements EntryPoint {
 
+  private class StubbornTree extends FastTree {
+
+    @Override
+    protected boolean processElementClicked(FastTreeItem item) {
+      if (item.getChildCount() <= 1) {
+        Window.alert("sorry, i can't do that right now.  The selected element has 1 or less children.");
+        return false;
+      } else {
+        return true;
+      }
+    }
+  }
+
   public StackPanel createDemo() {
     FastTree.addDefaultCSS();
 
@@ -55,6 +68,7 @@ public class FastTreeDemo implements EntryPoint {
     p.add(lazyTree(), "Lazy tree");
     p.add(verboseTree(), "Verbose tree");
     p.add(profileTree(), "Profiling tree");
+    p.add(stubbornTree(), "Stubborn tree");
     return p;
   }
 
@@ -175,6 +189,26 @@ public class FastTreeDemo implements EntryPoint {
     table.getCellFormatter().setVerticalAlignment(row, 1,
         HasAlignment.ALIGN_TOP);
     return table;
+  }
+  
+  protected Widget stubbornTree() {
+    StubbornTree t = new StubbornTree();
+    FastTreeItem a = t.addItem("A root tree item");
+    a.addItem("A child");
+    FastTreeItem aXb = a.addItem("Another child");
+    aXb.addItem("a grand child");
+    FastTreeItem widgetBranch = a.addItem(new CheckBox("A checkbox child"));
+    FastTreeItem textBoxParent = widgetBranch.addItem("A TextBox parent");
+    textBoxParent.addItem(new TextBox());
+    textBoxParent.addItem("and another one...");
+    textBoxParent.addItem(new TextArea());
+
+    ListBox lb = new ListBox();
+    for (int i = 0; i < 100; i++) {
+      lb.addItem(i + "");
+    }
+    widgetBranch.addItem("A ListBox parent").addItem(lb);
+    return t;
   }
 
   protected Widget verboseTree() {
@@ -305,5 +339,4 @@ public class FastTreeDemo implements EntryPoint {
       verboseTreeItem(item, children - (i + 1));
     }
   }
-
 }

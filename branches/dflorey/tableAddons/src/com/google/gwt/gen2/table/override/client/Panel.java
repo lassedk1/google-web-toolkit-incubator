@@ -27,7 +27,10 @@ import java.util.Iterator;
 /**
  * Abstract base class for all panels, which are widgets that can contain other
  * widgets.
+ * 
+ * @deprecated as of Jan 26 2009,  No longer needed as events have graduated to gwt.
  */
+@Deprecated
 public abstract class Panel extends Gen2Widget implements HasWidgets {
 
   /**
@@ -53,7 +56,8 @@ public abstract class Panel extends Gen2Widget implements HasWidgets {
    * Widget.</li>
    * <li><b>Logical Attach:</b> Any state variables of the Panel should be
    * updated to reflect the addition of the new Widget. Example: the Widget is
-   * added to the Panel's {@link WidgetCollection} at the appropriate index.</li>
+   * added to the Panel's {@link com.google.gwt.user.client.ui.WidgetCollection}
+   * at the appropriate index.</li>
    * <li><b>Physical Attach:</b> The Widget's Element must be physically
    * attached to the Panel's Element, either directly or indirectly.</li>
    * <li><b>Adopt:</b> Call {@link #adopt(Widget)} to finalize the add as the
@@ -67,7 +71,8 @@ public abstract class Panel extends Gen2Widget implements HasWidgets {
    * @see HasWidgets#add(Widget)
    */
   public void add(Widget child) {
-    throw new UnsupportedOperationException("This panel does not support no-arg add()");
+    throw new UnsupportedOperationException(
+        "This panel does not support no-arg add()");
   }
 
   public void clear() {
@@ -98,7 +103,7 @@ public abstract class Panel extends Gen2Widget implements HasWidgets {
    * DOM.</li>
    * <li><b>Logical Detach:</b> Update the Panel's state variables to reflect
    * the removal of the child Widget. Example: the Widget is removed from the
-   * Panel's {@link WidgetCollection}.</li>
+   * Panel's {@link com.google.gwt.user.client.ui.WidgetCollection}.</li>
    * </ol>
    * </p>
    * 

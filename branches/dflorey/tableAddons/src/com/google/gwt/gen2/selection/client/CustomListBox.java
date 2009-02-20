@@ -18,153 +18,53 @@ package com.google.gwt.gen2.selection.client;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.gen2.commonwidget.client.Decorator;
-import com.google.gwt.gen2.commonwidget.client.impl.CellGridImpl;
 import com.google.gwt.gen2.commonwidget.client.impl.StandardCssImpl;
-import com.google.gwt.gen2.event.logical.shared.HasSelectionHandlers;
-import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
-import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
-import com.google.gwt.gen2.widgetbase.client.Gen2Composite;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.Widget;
-
-import java.util.HashMap;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.datepicker.client.ItemGridImpl;
 
 /**
- * A custom list box. Used as a base class for {@link DropDownListBox} and
- * (eventually) a multi-select list box. The abstract custom list box is a
- * composite to allow inherited classes to specialize the look and feel of the
- * widget.
+ * A custom list box contains a list of items. Used as a base class for
+ * {@link DropDownListBox} and (eventually) a multi-select list box. The
+ * abstract custom list box is a composite to allow inherited classes to
+ * specialize the look and feel of the widget.
  * 
  * <br/>
  * 
- * @param <ValueType> the type of the values backing this list box
+ * @param <V> the type of the values backing this list box
  */
-public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
-    implements HasSelectionHandlers<ValueType> {
 
-  /**
-   * Helper class to support styling.
-   */
-  static class StandardCss extends StandardCssImpl {
+abstract class CustomListBox<V> extends Composite {
 
-    public StandardCss(String styleName) {
-      super("gwt-CustomListBox", "CustomList");
-    }
+  class ItemList extends ItemGridImpl<V> {
+    private boolean firstInGroup = true;
 
-    public StandardCss() {
-      super("gwt-CustomListBox", "CustomList");
-    }
-
-    public String customListBoxDisabledItem() {
-      return wrap("DisabledItem");
-    }
-
-    public String customListBoxHighlightedItem() {
-      return wrap("HighlightedItem");
-    }
-
-    public String customListBoxInnerSeparator() {
-      return wrap("InnerSeparator");
-    }
-
-    public String customListBoxItem() {
-      return wrap("Item");
-    }
-
-    public String customListBoxList() {
-      return wrap("ListBox");
-    }
-
-    public String customListBoxOuterSeparator() {
-      return wrap("OuterSeparator");
-    }
-
-    public String customListBoxSelectedAndDisabledItem() {
-      return wrap("SelectedAndDisabledItem");
-    }
-
-    public String customListBoxSelectedAndHighlightedItem() {
-      return wrap("SelectedAndHighlightedItem");
-    }
-
-    public String customListBoxSelectedItem() {
-      return wrap("SelectedItem");
-    }
-  }
-
-  private class ItemList extends CellGridImpl<ValueType> {
-    private class Item extends Cell {
-      private String summary;
-
-      public Item(Element element, ValueType value, String summary) {
-        super(element, value);
-
-        this.summary = summary;
-        updateStyle();
-
-        valueToCell.put(value, this);
-      }
-
-      public String getSummary() {
-        return summary;
-      }
-
-      protected void updateStyle() {
-        String style = css.customListBoxItem() + " ";
-        if (isHighlighted() && isSelected()) {
-          style += css.customListBoxSelectedAndHighlightedItem();
-        } else if (isHighlighted()) {
-          style += css.customListBoxHighlightedItem();
-        } else if (isSelected()) {
-          style += css.customListBoxSelectedItem();
-        }
-        setStyleName(style);
-      }
-    }
-
-    private Cell oldCell;
-
-    private HashMap<ValueType, Cell> valueToCell = new HashMap<ValueType, Cell>();
-
-    public ItemList() {
+    ItemList(Css css) {
+      super(css);
       resizeColumns(1);
     }
 
-    public void addItem(String html, ValueType value, String tooltip,
-        String summary) {
+    public void addItem(String html, V value, String tooltip, String displayText) {
       assert (html != null);
       assert (value != null);
       Element e = itemList.addHtml(supplyItemDecorator().wrapHTML(html));
       e.setTitle(tooltip);
-      new Item(e, value, summary);
+      addItem(e, value, displayText, firstInGroup);
+      firstInGroup = false;
     }
 
     public void addSeparator() {
-      itemList.addHtml("<div class='" + css.customListBoxInnerSeparator()
-          + "'> <div class='" + css.customListBoxOuterSeparator() + "'/></div>");
+      itemList.addHtml("<div class='" + css.innerSeparator()
+          + "'> <div class='" + css.outerSeparator() + "'/></div>");
+      firstInGroup = true;
     }
 
-    public Cell getCellFromValue(ValueType value) {
-      return valueToCell.get(value);
+    public String getDisplayText(V value) {
+      return getItemFromValue(value).getDisplayText();
     }
 
-    public final void setSelectedValue(ValueType value) {
-      setSelected(getCellFromValue(value));
-    }
-
-    @Override
-    protected void onSelected(Cell oldCell, Cell newCell) {
-      Item oldItem = (Item) oldCell;
-      Item newItem = (Item) newCell;
-
-      currentSummary = defaultSummary;
-      if (newItem != null && (newItem.summary != null)) {
-        currentSummary = newItem.summary;
-      }
-
-      CustomListBox.this.fireEvent(new SelectionEvent<ValueType>(
-          getValue(oldItem), getValue(newItem)));
+    public void setSelectedItem(V value) {
+      setSelected(getItemFromValue(value));
     }
 
     private Element addHtml(String html) {
@@ -175,29 +75,76 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
     }
   }
 
-  private StandardCss css;
+  /**
+   * Helper class to support styling.
+   */
+  static class StandardCss extends StandardCssImpl implements ItemGridImpl.Css {
+
+    public StandardCss() {
+      super("gwt-CustomListBox", "ItemList");
+    }
+
+    public StandardCss(String styleName) {
+      super(styleName, "ListItem");
+    }
+
+    public String button() {
+      return "DropDownButton";
+    }
+
+    public String disabledItem() {
+      return wrap("IsDisabled");
+    }
+
+    public String innerSeparator() {
+      return wrap("InnerSeparator");
+    }
+
+    public String item() {
+      return wrap("");
+    }
+
+    public String itemFirstInGroup() {
+      return wrap("FirstInGroup");
+    }
+
+    public String itemIsHighlighted() {
+      return wrap("IsHighlighted");
+    }
+
+    public String itemIsSelected() {
+      return wrap("IsSelected");
+    }
+
+    public String itemIsSelectedAndDisabled() {
+      return wrap("IsSelectedAndDisabled");
+    }
+
+    public String itemIsSelectedAndHighlighted() {
+      return wrap("IsSelectedAndHighlighted");
+    }
+
+    public String itemList() {
+      return wrap("s");
+    }
+
+    public String outerSeparator() {
+      return wrap("OuterSeparator");
+    }
+  }
+
+  StandardCss css;
 
   // The fact that we are backed by an item grid is not part of the public API.
-  private ItemList itemList = new ItemList();
+  private ItemList itemList;
 
   /**
-   * default summary for this list box.
+   * Creates a custom list box with the given css and default displayText
+   * describing the list.
    */
-  private String defaultSummary;
-
-  /**
-   * Current summary of this list box.
-   */
-  private String currentSummary;
-
-  /**
-   * Creates a custom list box with the given css and default summary describing
-   * the list.
-   */
-  CustomListBox(StandardCss css, String defaultSummary) {
+  CustomListBox(StandardCss css) {
     setCss(css);
-    this.defaultSummary = defaultSummary;
-    this.currentSummary = defaultSummary;
+    itemList = new ItemList(css);
   }
 
   /**
@@ -206,8 +153,8 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
    * @param html the html of the item to be displayed
    * @param value the item's value.
    */
-  public final void addItem(String html, ValueType value) {
-    addItem(html, value, null, null);
+  public final void addItem(String html, V value) {
+    addItem(html, value, null, html);
   }
 
   /**
@@ -217,10 +164,10 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
    * @param value the item's value.
    * @param tooltip tooltip
    */
-  public final void addItem(String html, ValueType value, String tooltip) {
-    itemList.addItem(html, value, tooltip, null);
+  public final void addItem(String html, V value, String tooltip) {
+    itemList.addItem(html, value, tooltip, html);
   }
-
+ 
   /**
    * Adds an item to the custom list box.
    * 
@@ -230,14 +177,9 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
    * @param buttonFace the button face that should be displayed when this item
    *          is selected
    */
-  public final void addItem(String html, ValueType value, String tooltip,
+  public final void addItem(String html, V value, String tooltip,
       String buttonFace) {
     itemList.addItem(html, value, tooltip, buttonFace);
-  }
-
-  public final HandlerRegistration addSelectionHandler(
-      SelectionHandler<ValueType> handler) {
-    return super.addHandler(SelectionEvent.TYPE, handler);
   }
 
   /**
@@ -249,6 +191,8 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
 
   /**
    * Gets the number of items in the list.
+   * 
+   * @return the number of items in the list
    */
   public int getNumItems() {
     return itemList.getNumCells();
@@ -258,38 +202,6 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
   public void onBrowserEvent(Event e) {
     itemList.onBrowserEvent(e);
     super.onBrowserEvent(e);
-  }
-
-  /**
-   * Sets the selected value.
-   * 
-   * @param value the selected value
-   */
-  public final void setSelectedValue(ValueType value) {
-    itemList.setSelectedValue(value);
-  }
-
-  /**
-   * Gets the title for the most recently selected value.
-   */
-  protected final ValueType getLastSelectedValue() {
-    return itemList.getSelectedValue();
-  }
-
-  /**
-   * Returns the actual list box widget.
-   */
-  protected Widget getListBox() {
-    return itemList;
-  }
-
-  /**
-   * Gets an html summary for this list box's current state. Each item may
-   * supply its own summary, and that summary will be active when the item is
-   * selected.
-   */
-  protected String getSummary() {
-    return currentSummary;
   }
 
   /**
@@ -306,8 +218,17 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
    * 
    * @return a decorator
    */
-  protected Decorator supplyListBoxDecorator() {
+  protected Decorator supplyItemListDecorator() {
     return Decorator.DEFAULT;
+  }
+
+  /**
+   * Returns the actual list of items.
+   * 
+   * @return the list of items
+   */
+  ItemList getItemList() {
+    return itemList;
   }
 
   /**
@@ -315,6 +236,5 @@ public abstract class CustomListBox<ValueType> extends Gen2Composite<Widget>
    */
   void setCss(StandardCss css) {
     this.css = css;
-    itemList.setStylePrimaryName(css.customListBoxList());
   }
 }

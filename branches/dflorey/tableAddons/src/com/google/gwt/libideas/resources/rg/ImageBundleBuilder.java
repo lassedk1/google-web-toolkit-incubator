@@ -20,6 +20,7 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -46,12 +48,7 @@ class ImageBundleBuilder {
     /**
      * Determine the total area required to store a composite image.
      */
-    Size arrangeImages(Collection<? extends HasRect> rects);
-
-    /**
-     * Draw an image into a bounded canvas.
-     */
-    void place(Size canvasSize, Graphics2D canvas, ImageRect imageRect);
+    Size arrangeImages(Collection<HasRect> rects);
   }
 
   /**
@@ -83,7 +80,7 @@ class ImageBundleBuilder {
       }
     };
 
-    public Size arrangeImages(Collection<? extends HasRect> rects) {
+    public Size arrangeImages(Collection<HasRect> rects) {
       if (rects.size() == 0) {
         return new Size(0, 0);
       }
@@ -157,10 +154,6 @@ class ImageBundleBuilder {
       return new Size(curX, colH);
     }
 
-    public void place(Size canvasSize, Graphics2D canvas, ImageRect imageRect) {
-      canvas.drawImage(imageRect.image, imageRect.left, imageRect.top, null);
-    }
-
     /**
      * Companion method to {@link #arrangeImages()}. This method does a best
      * effort horizontal packing of a column after it was packed vertically.
@@ -217,17 +210,23 @@ class ImageBundleBuilder {
 
     int getHeight();
 
+    BufferedImage getImage();
+
     int getLeft();
 
     String getName();
 
     int getTop();
 
+    AffineTransform getTransform();
+
     int getWidth();
 
     boolean hasBeenPositioned();
 
     void setPosition(int left, int top);
+
+    AffineTransform transform();
   }
 
   /**
@@ -235,7 +234,7 @@ class ImageBundleBuilder {
    * tiled vertically to fill to fill the full height of the image.
    */
   static class HorizontalArranger implements Arranger {
-    public Size arrangeImages(Collection<? extends HasRect> rects) {
+    public Size arrangeImages(Collection<HasRect> rects) {
       int height = 1;
       int width = 0;
 
@@ -245,18 +244,37 @@ class ImageBundleBuilder {
         height = lcm(height, rect.getHeight());
       }
 
+      List<HasRect> toAdd = new ArrayList<HasRect>();
+      for (HasRect rect : rects) {
+        int y = rect.getHeight();
+        while (y < height) {
+          ImageRect newRect = new ImageRect(rect);
+          newRect.setPosition(rect.getLeft(), y);
+          y += rect.getHeight();
+          toAdd.add(newRect);
+        }
+      }
+      rects.addAll(toAdd);
+
       return new Size(width, height);
     }
+  }
 
-    /**
-     * Tiles the images vertically.
-     */
-    public void place(Size canvasSize, Graphics2D canvas, ImageRect imageRect) {
-      int y = 0;
-      while (y < canvasSize.height) {
-        canvas.drawImage(imageRect.image, imageRect.left, y, null);
-        y += imageRect.height;
+  /**
+   * Does not rearrange the rectangles, but simply computes the size of the
+   * canvas needed to hold the images in their current positions.
+   */
+  static class IdentityArranger implements Arranger {
+    public Size arrangeImages(Collection<HasRect> rects) {
+      int height = 0;
+      int width = 0;
+
+      for (HasRect rect : rects) {
+        height = Math.max(height, rect.getTop() + rect.getHeight());
+        width = Math.max(width, rect.getLeft() + rect.getWidth());
       }
+
+      return new Size(width, height);
     }
   }
 
@@ -266,12 +284,25 @@ class ImageBundleBuilder {
    */
   static class ImageRect implements HasRect {
 
-    private final String name;
+    private boolean hasBeenPositioned;
     private final int height, width;
     private final BufferedImage image;
     private int left, top;
+    private final String name;
+    private final AffineTransform transform = new AffineTransform();
 
-    private boolean hasBeenPositioned;
+    /**
+     * Copy constructor.
+     */
+    public ImageRect(HasRect other) {
+      this.name = other.getName();
+      this.height = other.getHeight();
+      this.width = other.getWidth();
+      this.image = other.getImage();
+      this.left = other.getLeft();
+      this.top = other.getTop();
+      setTransform(other.getTransform());
+    }
 
     public ImageRect(String name, BufferedImage image) {
       this.name = name;
@@ -282,6 +313,10 @@ class ImageBundleBuilder {
 
     public int getHeight() {
       return height;
+    }
+
+    public BufferedImage getImage() {
+      return image;
     }
 
     public int getLeft() {
@@ -296,6 +331,10 @@ class ImageBundleBuilder {
       return top;
     }
 
+    public AffineTransform getTransform() {
+      return new AffineTransform(transform);
+    }
+
     public int getWidth() {
       return width;
     }
@@ -308,6 +347,35 @@ class ImageBundleBuilder {
       hasBeenPositioned = true;
       this.left = left;
       this.top = top;
+    }
+
+    public void setTransform(AffineTransform transform) {
+      this.transform.setTransform(transform);
+    }
+
+    public AffineTransform transform() {
+      AffineTransform toReturn = new AffineTransform();
+      toReturn.translate(left, top);
+      toReturn.concatenate(transform);
+
+      assert checkTransform(toReturn);
+      return toReturn;
+    }
+
+    private boolean checkTransform(AffineTransform tx) {
+      double[] in = {0, 0, width, height};
+      double[] out = {0, 0, 0, 0};
+
+      tx.transform(in, 0, out, 0, 2);
+
+      assert width == Math.abs(out[0] - out[2]);
+      assert height == Math.abs(out[1] - out[3]);
+      assert out[0] >= 0;
+      assert out[1] >= 0;
+      assert out[2] >= 0;
+      assert out[3] >= 0;
+
+      return true;
     }
   }
 
@@ -329,7 +397,7 @@ class ImageBundleBuilder {
    * horizontally to fill the full width of the image.
    */
   static class VerticalArranger implements Arranger {
-    public Size arrangeImages(Collection<? extends HasRect> rects) {
+    public Size arrangeImages(Collection<HasRect> rects) {
       int height = 0;
       int width = 1;
 
@@ -339,18 +407,19 @@ class ImageBundleBuilder {
         height += rect.getHeight();
       }
 
-      return new Size(width, height);
-    }
-
-    /**
-     * Tiles the images horizontally.
-     */
-    public void place(Size canvasSize, Graphics2D canvas, ImageRect imageRect) {
-      int x = 0;
-      while (x < canvasSize.width) {
-        canvas.drawImage(imageRect.image, x, imageRect.top, null);
-        x += imageRect.width;
+      List<HasRect> toAdd = new ArrayList<HasRect>();
+      for (HasRect rect : rects) {
+        int x = rect.getWidth();
+        while (x < width) {
+          ImageRect newRect = new ImageRect(rect);
+          newRect.setPosition(x, rect.getTop());
+          x += rect.getWidth();
+          toAdd.add(newRect);
+        }
       }
+      rects.addAll(toAdd);
+
+      return new Size(width, height);
     }
   }
 
@@ -361,6 +430,30 @@ class ImageBundleBuilder {
   private static final String BUNDLE_FILE_TYPE = "png";
   private static final String BUNDLE_MIME_TYPE = "image/png";
   private static final int IMAGE_MAX_SIZE = 256;
+
+  public static byte[] toPng(TreeLogger logger, HasRect rect)
+      throws UnableToCompleteException {
+    // Create the bundled image.
+    BufferedImage bundledImage = new BufferedImage(rect.getWidth(),
+        rect.getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
+    Graphics2D g2d = bundledImage.createGraphics();
+
+    g2d.drawImage(rect.getImage(), rect.transform(), null);
+    g2d.dispose();
+
+    byte[] imageBytes;
+
+    try {
+      ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+      ImageIO.write(bundledImage, BUNDLE_FILE_TYPE, byteOutputStream);
+      imageBytes = byteOutputStream.toByteArray();
+    } catch (IOException e) {
+      logger.log(TreeLogger.ERROR,
+          "Unable to generate file name for image bundle file", null);
+      throw new UnableToCompleteException();
+    }
+    return imageBytes;
+  }
 
   /**
    * Compute the greatest common denominator of two numbers.
@@ -386,6 +479,19 @@ class ImageBundleBuilder {
 
   private final Map<String, ImageRect> imageNameToImageRectMap = new HashMap<String, ImageRect>();
 
+  public ImageBundleBuilder() {
+  }
+
+  /**
+   * Copy constructor.
+   */
+  public ImageBundleBuilder(ImageBundleBuilder other) {
+    for (Map.Entry<String, ImageRect> entry : other.imageNameToImageRectMap.entrySet()) {
+      imageNameToImageRectMap.put(entry.getKey(), new ImageRect(
+          entry.getValue()));
+    }
+  }
+
   /**
    * Assimilates the image associated with a particular image method into the
    * master composite. If the method names an image that has already been
@@ -398,7 +504,7 @@ class ImageBundleBuilder {
    *           <code>imageName</code> cannot be added to the master composite
    *           image
    */
-  public void assimilate(TreeLogger logger, String imageName, URL resource)
+  public ImageRect assimilate(TreeLogger logger, String imageName, URL resource)
       throws UnableToCompleteException, UnsuitableForStripException {
 
     /*
@@ -412,10 +518,13 @@ class ImageBundleBuilder {
       // Assimilate the image into the composite.
       rect = addImage(logger, imageName, resource);
 
-      // Map the URL to its image so that even if the same URL is used more than
-      // once, we only include the referenced image once in the bundled image.
-      putMapping(imageName, rect);
+      imageNameToImageRectMap.put(imageName, rect);
     }
+    return rect;
+  }
+
+  public int getImageCount() {
+    return imageNameToImageRectMap.size();
   }
 
   public ImageRect getMapping(String imageName) {
@@ -527,10 +636,13 @@ class ImageBundleBuilder {
    */
   private BufferedImage drawBundledImage(Arranger arranger) {
 
-    // There is no need to impose any order here, because arrangeImages
-    // will position the ImageRects in a deterministic fashion, even though
-    // we might paint them in a non-deterministic order.
-    Collection<ImageRect> imageRects = imageNameToImageRectMap.values();
+    /*
+     * There is no need to impose any order here, because arrangeImages will
+     * position the ImageRects in a deterministic fashion, even though we might
+     * paint them in a non-deterministic order.
+     */
+    Collection<HasRect> imageRects = new LinkedList<HasRect>(
+        imageNameToImageRectMap.values());
 
     // Arrange images and determine the size of the resulting bundle.
     Size size = arranger.arrangeImages(imageRects);
@@ -540,15 +652,11 @@ class ImageBundleBuilder {
         BufferedImage.TYPE_INT_ARGB_PRE);
     Graphics2D g2d = bundledImage.createGraphics();
 
-    for (ImageRect imageRect : imageRects) {
-      arranger.place(size, g2d, imageRect);
+    for (HasRect imageRect : imageRects) {
+      g2d.drawImage(imageRect.getImage(), imageRect.transform(), null);
     }
     g2d.dispose();
 
     return bundledImage;
-  }
-
-  private void putMapping(String imageName, ImageRect rect) {
-    imageNameToImageRectMap.put(imageName, rect);
   }
 }

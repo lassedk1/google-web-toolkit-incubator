@@ -1,6 +1,6 @@
 package com.google.gwt.gen2.table.shared;
 
-public abstract class AbstractTreeTableItem implements TreeTableItem {
+public class AbstractTreeTableItem implements TreeTableItem {
   String id, displayName;
   TreeTableItem parent;
   int row;
@@ -9,9 +9,13 @@ public abstract class AbstractTreeTableItem implements TreeTableItem {
   public AbstractTreeTableItem() {
   }
 
-  public abstract String getId();
+  public String getId() {
+    return id;
+  }
   
-  public abstract String getDisplayName();
+  public String getDisplayName() {
+    return displayName;
+  }
   
   public TreeTableItem getParent() {
     return parent;

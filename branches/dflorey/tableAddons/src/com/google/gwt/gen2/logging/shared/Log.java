@@ -225,7 +225,6 @@ public class Log {
    * 
    * @return whether logging is enabled
    */
-  @Deprecated
   public static boolean isLoggingEnabled() {
     return impl.isLoggingEnabled();
   }

@@ -63,6 +63,11 @@ public class ScrollTable extends AbstractScrollTable {
   private Map<Integer, ColumnWidthInfo> columnWidthInfos = new HashMap<Integer, ColumnWidthInfo>();
 
   /**
+   * A set of untruncatable column indexes.
+   */
+  private Set<Integer> untruncatableColumns = new HashSet<Integer>();
+
+  /**
    * A set of unsortable column indexes.
    */
   private Set<Integer> unsortableColumns = new HashSet<Integer>();
@@ -114,6 +119,11 @@ public class ScrollTable extends AbstractScrollTable {
     return (getSortPolicy() != SortPolicy.DISABLED && !unsortableColumns.contains(column));
   }
 
+  @Override
+  public boolean isColumnTruncatable(int column) {
+    return !untruncatableColumns.contains(column);
+  }
+
   /**
    * @param column the column index
    * @return true if the column is filterable, false if it is not filterable
@@ -134,6 +144,22 @@ public class ScrollTable extends AbstractScrollTable {
       unsortableColumns.remove(column);
     } else {
       unsortableColumns.add(column);
+    }
+  }
+
+  /**
+   * Enable or disable truncation on a specific column. When enabled, the column
+   * width will be adjusted to fit the content. All columns are truncatable by
+   * default.
+   * 
+   * @param column the index of the column
+   * @param truncatable true to enable truncation, false to disable
+   */
+  public void setColumnTruncatable(int column, boolean truncatable) {
+    if (truncatable) {
+      untruncatableColumns.remove(column);
+    } else {
+      untruncatableColumns.add(column);
     }
   }
 
