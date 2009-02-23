@@ -56,6 +56,16 @@ public class ScrollTableTest extends AbstractScrollTableTest {
       assertFalse(table.isColumnTruncatable(0));
       table.setColumnTruncatable(0, true);
       assertTrue(table.isColumnTruncatable(0));
+
+      table.setFooterColumnTruncatable(0, false);
+      assertFalse(table.isFooterColumnTruncatable(0));
+      table.setFooterColumnTruncatable(0, true);
+      assertTrue(table.isFooterColumnTruncatable(0));
+
+      table.setHeaderColumnTruncatable(0, false);
+      assertFalse(table.isHeaderColumnTruncatable(0));
+      table.setHeaderColumnTruncatable(0, true);
+      assertTrue(table.isHeaderColumnTruncatable(0));
     }
   }
 
