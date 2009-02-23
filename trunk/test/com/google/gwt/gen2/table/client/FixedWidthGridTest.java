@@ -92,7 +92,7 @@ public class FixedWidthGridTest extends SortableGridTest {
     // When not attached, the ideal width should be -1
     assertEquals(-1, testGrid.getIdealColumnWidth(0));
 
-    // Out of bounds indexes should
+    // Out of bounds indexes should be -1
     RootPanel.get().add(testGrid);
     assertEquals(-1, testGrid.getIdealColumnWidth(11));
 

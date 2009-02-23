@@ -17,6 +17,7 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.base.client.Gen2TestBase;
 import com.google.gwt.gen2.table.override.client.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * Tests methods used for all {@link FixedWidthFlexTable} class.
@@ -117,6 +118,24 @@ public class FixedWidthFlexTableTest extends Gen2TestBase {
     assertGhostCount(4, testTable);
     cellFormatter.setRowSpan(0, 1, 1);
     assertGhostCount(3, testTable);
+  }
+
+  public void testIdealColumnWidth() {
+    // Initialize the grid
+    FixedWidthFlexTable testTable = getFixedWidthFlexTable();
+    testTable.setHTML(0, 0, "test");
+
+    // When not attached, the ideal width should be -1
+    assertEquals(-1, testTable.getIdealColumnWidth(0));
+
+    // Out of bounds indexes should be -1
+    RootPanel.get().add(testTable);
+    assertEquals(-1, testTable.getIdealColumnWidth(11));
+
+    // Ideal width should be greater than 0
+    assertTrue(testTable.getIdealColumnWidth(0) > 0);
+
+    RootPanel.get().remove(testTable);
   }
 
   /**

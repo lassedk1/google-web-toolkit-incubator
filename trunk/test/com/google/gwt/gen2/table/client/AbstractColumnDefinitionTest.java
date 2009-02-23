@@ -163,6 +163,20 @@ public class AbstractColumnDefinitionTest extends Gen2TestBase {
       assertTrue(colDef.isColumnTruncatable());
       colDef.setColumnTruncatable(false);
       assertFalse(colDef.isColumnTruncatable());
+
+      colDef.setHeaderTruncatable(true);
+      assertTrue(colDef.isHeaderTruncatable());
+      colDef.setHeaderTruncatable(false);
+      assertFalse(colDef.isHeaderTruncatable());
+
+      colDef.setFooterTruncatable(true);
+      assertTrue(colDef.isFooterTruncatable());
+      colDef.setFooterTruncatable(false);
+      assertFalse(colDef.isFooterTruncatable());
+
+      assertFalse(colDef.isColumnTruncatable());
+      assertFalse(colDef.isHeaderTruncatable());
+      assertFalse(colDef.isFooterTruncatable());
     }
 
     // column width
