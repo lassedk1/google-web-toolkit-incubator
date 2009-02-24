@@ -33,6 +33,7 @@ import com.google.gwt.gen2.table.client.FixedWidthGrid;
 import com.google.gwt.gen2.table.client.FixedWidthGridBulkRenderer;
 import com.google.gwt.gen2.table.client.ListCellEditor;
 import com.google.gwt.gen2.table.client.PagingOptions;
+import com.google.gwt.gen2.table.client.PagingScrollTable;
 import com.google.gwt.gen2.table.client.RadioCellEditor;
 import com.google.gwt.gen2.table.client.ScrollTable;
 import com.google.gwt.gen2.table.client.TableDefinition;
@@ -68,9 +69,9 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   private CachedTableModel<Student> cachedTableModel = null;
 
   /**
-   * The {@link StudentPagingScrollTable}.
+   * The {@link PagingScrollTable}.
    */
-  private StudentPagingScrollTable pagingScrollTable = null;
+  private PagingScrollTable<Student> pagingScrollTable = null;
 
   /**
    * The {@link DataSourceTableModel}.
@@ -92,7 +93,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   /**
    * @return the {@link StudentPagingScrollTable}
    */
-  public StudentPagingScrollTable getPagingScrollTable() {
+  public PagingScrollTable<Student> getPagingScrollTable() {
     return pagingScrollTable;
   }
 
@@ -155,12 +156,13 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     TableDefinition<Student> tableDef = createTableDefinition();
 
     // Create the scroll table
-    pagingScrollTable = new StudentPagingScrollTable(cachedTableModel,
+    pagingScrollTable = new PagingScrollTable<Student>(cachedTableModel,
         dataTable, headerTable, tableDef);
     pagingScrollTable.setFooterTable(footerTable);
     pagingScrollTable.setPageSize(50);
     pagingScrollTable.setEmptyTableWidget(new HTML(
         "There is no data to display"));
+    pagingScrollTable.setHeaderGenerated(true);
 
     // Setup the bulk renderer
     FixedWidthGridBulkRenderer<Student> bulkRenderer = new FixedWidthGridBulkRenderer<Student>(
@@ -351,7 +353,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     // Favorite color
     {
       StudentColumnDefinition<String> columnDef = new StudentColumnDefinition<String>(
-          "Favorite Color", Group.PREFERENCES) {
+          "Favorite Color", null) {
         @Override
         public String getCellValue(Student rowValue) {
           return rowValue.getFavoriteColor();
@@ -390,7 +392,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     // Favorite Sport
     {
       StudentColumnDefinition<String> columnDef = new StudentColumnDefinition<String>(
-          "Preferred Sport", Group.PREFERENCES) {
+          "Preferred Sport", null) {
         @Override
         public String getCellValue(Student rowValue) {
           return rowValue.getFavoriteSport();

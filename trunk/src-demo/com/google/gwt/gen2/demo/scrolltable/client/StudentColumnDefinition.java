@@ -29,8 +29,7 @@ public abstract class StudentColumnDefinition<ColType> extends
    * The general grouping of the column definition.
    */
   public static enum Group {
-    GENERAL("General Info"), PREFERENCES("Prefences"), SCHOOL("School Info"), LOGIN(
-        "Login Info");
+    GENERAL("General Info"), SCHOOL("School Info"), LOGIN("Login Info");
 
     private String name;
 
@@ -47,37 +46,18 @@ public abstract class StudentColumnDefinition<ColType> extends
   }
 
   /**
-   * The name of the column.
-   */
-  private String name;
-
-  /**
-   * The {@link Group} that the column is in.
-   */
-  private Group group;
-
-  /**
    * Construct a new {@link StudentColumnDefinition}.
    * 
    * @param name the name of the column
    * @param group the column group
    */
   public StudentColumnDefinition(String name, Group group) {
-    this.name = name;
-    this.group = group;
-  }
-
-  /**
-   * @return the column group, used to create the header row
-   */
-  public Group getGroup() {
-    return group;
-  }
-
-  /**
-   * @return the name of the column, used to create the header row
-   */
-  public String getName() {
-    return name;
+    setHeader(0, name);
+    if (group == null) {
+      setHeader(1, name);
+    } else {
+      setHeader(1, group.getName());
+    }
+    setHeader(2, "User Information");
   }
 }

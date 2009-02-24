@@ -189,6 +189,21 @@ public class AbstractColumnDefinitionTest extends Gen2TestBase {
       colDef.setPreferredColumnWidth(75);
       assertEquals(75, colDef.getPreferredColumnWidth());
     }
+
+    // header
+    {
+      AbstractColumnDefinition<Object, Object> colDef = new CustomColumnDefinition<Object, Object>();
+      assertEquals(0, colDef.getHeaderCount());
+      assertNull(colDef.getHeader(0));
+
+      colDef.setHeaderCount(1);
+      assertEquals(1, colDef.getHeaderCount());
+
+      String header = "header";
+      colDef.setHeader(1, header);
+      assertEquals(2, colDef.getHeaderCount());
+      assertEquals(header, colDef.getHeader(1));
+    }
   }
 
   public void testProperties() {

@@ -42,7 +42,6 @@ public class HideColumnOption extends AbstractOption {
     final DefaultTableDefinition<Student> tableDef = PagingScrollTableDemo.get().getTableDefinition();
     int numColumns = tableDef.getColumnDefinitionCount();
     for (int i = 0; i < numColumns; i++) {
-      final int rowIndex = i;
       final StudentColumnDefinition<?> colDef = (StudentColumnDefinition<?>) tableDef.getColumnDefinition(i);
       final Button button = new Button("Hide Column");
       button.addClickHandler(new ClickHandler() {
@@ -57,7 +56,7 @@ public class HideColumnOption extends AbstractOption {
           PagingScrollTableDemo.get().getPagingScrollTable().reloadPage();
         }
       });
-      form.addLabeledWidget(colDef.getName(), button);
+      form.addLabeledWidget(colDef.getHeader(0).toString(), button);
     }
 
     // Add the description
