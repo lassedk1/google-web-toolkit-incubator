@@ -20,9 +20,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.PagingScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
-import com.google.gwt.gen2.demo.scrolltable.client.StudentPagingScrollTable;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
+import com.google.gwt.gen2.demo.scrolltable.shared.Student;
 import com.google.gwt.gen2.table.client.FixedWidthGrid;
+import com.google.gwt.gen2.table.client.PagingScrollTable;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
 import com.google.gwt.gen2.table.event.client.CellHighlightEvent;
 import com.google.gwt.gen2.table.event.client.CellHighlightHandler;
@@ -202,7 +203,7 @@ public class LogOption extends AbstractOption {
 
     // Paging specific options
     if (PagingScrollTableDemo.get() != null) {
-      StudentPagingScrollTable pagingScrollTable = PagingScrollTableDemo.get().getPagingScrollTable();
+      PagingScrollTable<Student> pagingScrollTable = PagingScrollTableDemo.get().getPagingScrollTable();
       if (pagingScrollTable != null) {
         pagingScrollTable.addPageChangeHandler(new PageChangeHandler() {
           public void onPageChange(PageChangeEvent event) {

@@ -17,6 +17,7 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.table.client.property.ColumnProperty;
 import com.google.gwt.gen2.table.client.property.ColumnPropertyManager;
+import com.google.gwt.gen2.table.client.property.HeaderProperty;
 import com.google.gwt.gen2.table.client.property.MaximumWidthProperty;
 import com.google.gwt.gen2.table.client.property.MinimumWidthProperty;
 import com.google.gwt.gen2.table.client.property.PreferredWidthProperty;
@@ -66,6 +67,23 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
   public <P extends ColumnProperty> P getColumnProperty(
       ColumnProperty.Type<P> type) {
     return properties.getColumnProperty(type);
+  }
+
+  /**
+   * Get the header at the given row index.
+   * 
+   * @param row the row index from the bottom.
+   * @return the header for the given row
+   */
+  public Object getHeader(int row) {
+    return getColumnProperty(HeaderProperty.TYPE).getHeader(row);
+  }
+
+  /**
+   * @return get the number of headers above the column
+   */
+  public int getHeaderCount() {
+    return getColumnProperty(HeaderProperty.TYPE).getHeaderCount();
   }
 
   /**
@@ -215,6 +233,39 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
       setColumnProperty(TruncationProperty.TYPE, prop);
     }
     prop.setFooterTruncatable(truncatable);
+  }
+
+  /**
+   * Set the header above this column. The row index starts with the bottom row,
+   * which is reverse of a normal table. The headerCount will automatically be
+   * increased to accommodate the row.
+   * 
+   * @param row the row index from the bottom
+   * @param header the header
+   */
+  public void setHeader(int row, Object header) {
+    HeaderProperty prop = properties.getColumnProperty(HeaderProperty.TYPE,
+        false);
+    if (prop == null) {
+      prop = new HeaderProperty();
+      setColumnProperty(HeaderProperty.TYPE, prop);
+    }
+    prop.setHeader(row, header);
+  }
+
+  /**
+   * Set the number of headers above the column.
+   * 
+   * @param headerCount the number of headers
+   */
+  public void setHeaderCount(int headerCount) {
+    HeaderProperty prop = properties.getColumnProperty(HeaderProperty.TYPE,
+        false);
+    if (prop == null) {
+      prop = new HeaderProperty();
+      setColumnProperty(HeaderProperty.TYPE, prop);
+    }
+    prop.setHeaderCount(headerCount);
   }
 
   /**

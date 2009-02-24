@@ -241,6 +241,126 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
     }
   }
 
+  /**
+   * Generate a two row, column spanning header.
+   */
+  public void testHeaderGenerationColSpan() {
+    PagingScrollTable<List<Object>> table = getPagingScrollTable();
+    FixedWidthFlexTable headerTable = table.getHeaderTable();
+    TableDefinition<List<Object>> tableDef = table.getTableDefinition();
+
+    // Setup the headers
+    List<ColumnDefinition<List<Object>, ?>> colDefs = tableDef.getVisibleColumnDefinitions();
+    int numColumns = colDefs.size();
+    for (int i = 0; i < numColumns; i++) {
+      AbstractColumnDefinition<List<Object>, ?> colDef = (AbstractColumnDefinition<List<Object>, ?>) colDefs.get(i);
+      colDef.setHeader(0, "Column");
+      colDef.setHeader(1, "Group");
+    }
+
+    // Test the header table
+    table.setHeaderGenerated(true);
+    assertEquals(numColumns, headerTable.getColumnCount());
+    assertEquals(1, headerTable.getCellCount(0));
+    assertEquals(1, headerTable.getCellCount(1));
+    assertEquals(2, headerTable.getRowCount());
+    assertEquals("Group", headerTable.getHTML(0, 0));
+    assertEquals("Column", headerTable.getHTML(1, 0));
+  }
+
+  /**
+   * Generate a two row, row spanning header.
+   */
+  public void testHeaderGenerationRowSpan() {
+    PagingScrollTable<List<Object>> table = getPagingScrollTable();
+    FixedWidthFlexTable headerTable = table.getHeaderTable();
+    TableDefinition<List<Object>> tableDef = table.getTableDefinition();
+
+    // Setup the headers
+    List<ColumnDefinition<List<Object>, ?>> colDefs = tableDef.getVisibleColumnDefinitions();
+    int numColumns = colDefs.size();
+    for (int i = 0; i < numColumns; i++) {
+      AbstractColumnDefinition<List<Object>, ?> colDef = (AbstractColumnDefinition<List<Object>, ?>) colDefs.get(i);
+      colDef.setHeader(0, "Column " + i);
+      colDef.setHeader(1, "Column " + i);
+    }
+
+    // Test the header table
+    table.setHeaderGenerated(true);
+    assertEquals(numColumns, headerTable.getColumnCount());
+    assertEquals(numColumns, headerTable.getCellCount(0));
+    assertEquals(1, headerTable.getRowCount());
+    for (int i = 0; i < numColumns; i++) {
+      assertEquals("Column " + i, headerTable.getHTML(0, i));
+    }
+  }
+
+  /**
+   * Generate a two row, non spanning header.
+   */
+  public void testHeaderGenerationSimple() {
+    PagingScrollTable<List<Object>> table = getPagingScrollTable();
+    FixedWidthFlexTable headerTable = table.getHeaderTable();
+    TableDefinition<List<Object>> tableDef = table.getTableDefinition();
+
+    // Setup the headers
+    List<ColumnDefinition<List<Object>, ?>> colDefs = tableDef.getVisibleColumnDefinitions();
+    int numColumns = colDefs.size();
+    for (int i = 0; i < numColumns; i++) {
+      AbstractColumnDefinition<List<Object>, ?> colDef = (AbstractColumnDefinition<List<Object>, ?>) colDefs.get(i);
+      colDef.setHeader(0, "Column " + i);
+      colDef.setHeader(1, "Group " + i);
+    }
+
+    // Test the header table
+    table.setHeaderGenerated(true);
+    assertEquals(numColumns, headerTable.getColumnCount());
+    assertEquals(numColumns, headerTable.getCellCount(0));
+    assertEquals(numColumns, headerTable.getCellCount(1));
+    assertEquals(2, headerTable.getRowCount());
+    for (int i = 0; i < numColumns; i++) {
+      assertEquals("Group " + i, headerTable.getHTML(0, i));
+      assertEquals("Column " + i, headerTable.getHTML(1, i));
+    }
+  }
+
+  /**
+   * Generate a two row, column spanning header.
+   */
+  public void testHeaderGenerationUneven() {
+    PagingScrollTable<List<Object>> table = getPagingScrollTable();
+    FixedWidthFlexTable headerTable = table.getHeaderTable();
+    TableDefinition<List<Object>> tableDef = table.getTableDefinition();
+
+    // Setup the headers
+    List<ColumnDefinition<List<Object>, ?>> colDefs = tableDef.getVisibleColumnDefinitions();
+    int numColumns = colDefs.size();
+    for (int i = 0; i < numColumns; i++) {
+      AbstractColumnDefinition<List<Object>, ?> colDef = (AbstractColumnDefinition<List<Object>, ?>) colDefs.get(i);
+      colDef.setHeader(0, "Column " + i);
+      if (i % 2 == 0) {
+        colDef.setHeader(1, "Group " + i);
+        colDef.setHeader(2, "Topic " + i);
+      }
+    }
+
+    // Test the header table
+    table.setHeaderGenerated(true);
+    assertEquals(numColumns, headerTable.getColumnCount());
+    assertEquals(numColumns, headerTable.getCellCount(0));
+    assertEquals(numColumns / 2, headerTable.getCellCount(1));
+    assertEquals(numColumns, headerTable.getCellCount(2));
+    assertEquals(3, headerTable.getRowCount());
+    for (int i = 0; i < numColumns; i++) {
+      if (i % 2 == 0) {
+        assertEquals("Topic " + i, headerTable.getHTML(0, i));
+      } else {
+        assertEquals("", headerTable.getHTML(0, i));
+      }
+      assertEquals("Column " + i, headerTable.getHTML(2, i));
+    }
+  }
+
   public void testPageChangeHandler() {
     // Initialize the grid
     PagingScrollTable<List<Object>> table = getPagingScrollTable();
@@ -410,6 +530,14 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
       Widget emptyTableWidget = new HTML("Empty");
       table.setEmptyTableWidget(emptyTableWidget);
       assertEquals(emptyTableWidget, table.getEmptyTableWidget());
+    }
+
+    // header generation
+    {
+      table.setHeaderGenerated(true);
+      assertTrue(table.isHeaderGenerated());
+      table.setHeaderGenerated(false);
+      assertFalse(table.isHeaderGenerated());
     }
   }
 
