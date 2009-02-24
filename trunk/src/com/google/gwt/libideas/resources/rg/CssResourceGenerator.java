@@ -63,7 +63,6 @@ import com.google.gwt.libideas.resources.css.ast.CssProperty.ExpressionValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.IdentValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.ListValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.NumberValue;
-import com.google.gwt.libideas.resources.css.ast.CssProperty.StringValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.Value;
 import com.google.gwt.libideas.resources.ext.ResourceBundleRequirements;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
