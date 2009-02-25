@@ -1491,6 +1491,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       Element parent = DOM.getParent(sortedColumnWrapper);
       if (parent != null) {
         parent.removeChild(sortedColumnWrapper);
+        headerTable.clearIdealWidths();
       }
       return;
     }
@@ -1502,6 +1503,10 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       images.scrollTableDescending().applyTo(sortedColumnIndicator);
     }
     sortedColumnTrigger = null;
+
+    // The column with the indicator now has a new ideal width
+    headerTable.clearIdealWidths();
+    resetColumnWidths(true);
   }
 
   /**
