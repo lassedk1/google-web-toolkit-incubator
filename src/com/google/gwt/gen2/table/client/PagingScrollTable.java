@@ -325,7 +325,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    * The values associated with each row. This is an optional list of data that
    * ties the visible content in each row to an underlying object.
    */
-  private List<RowType> rowValues = null;
+  private List<RowType> rowValues = new ArrayList<RowType>();
 
   /**
    * The view of this table.
@@ -580,7 +580,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    * @return the value associated with the row
    */
   public RowType getRowValue(int row) {
-    if (rowValues == null || rowValues.size() <= row) {
+    if (rowValues.size() <= row) {
       return null;
     }
     return rowValues.get(row);
@@ -789,9 +789,6 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   public void setRowValue(int row, RowType value) {
     // Make sure the list can fit the row
-    if (rowValues == null) {
-      rowValues = new ArrayList<RowType>(row + 1);
-    }
     for (int i = rowValues.size(); i <= row; i++) {
       rowValues.add(null);
     }
