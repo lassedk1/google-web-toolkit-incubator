@@ -294,7 +294,6 @@ public class CssProperty extends CssNode {
     public String toCss() {
       return '"' + escapeValue(value, true) + '"';
     }
-
   }
 
   /**

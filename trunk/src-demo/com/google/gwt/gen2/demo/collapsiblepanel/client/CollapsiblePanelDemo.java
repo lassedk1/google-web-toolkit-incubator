@@ -14,90 +14,59 @@
  * the License.
  */
 
-package com.google.gwt.widgetideas.demo.collapsiblepanel.client;
+package com.google.gwt.gen2.demo.collapsiblepanel.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.gen2.complexpanel.client.CollapsiblePanel;
+import com.google.gwt.gen2.complexpanel.client.FastTree;
+import com.google.gwt.gen2.complexpanel.client.FastTreeItem;
+import com.google.gwt.gen2.complexpanel.client.CollapsiblePanel.CollapsedStateEvent;
+import com.google.gwt.gen2.complexpanel.client.CollapsiblePanel.CollapsedStateHandler;
+import com.google.gwt.gen2.complexpanel.client.CollapsiblePanel.ExpandedStateEvent;
+import com.google.gwt.gen2.complexpanel.client.CollapsiblePanel.ExpandedStateHandler;
 import com.google.gwt.gen2.logging.shared.Log;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.client.CollapsiblePanel;
-import com.google.gwt.widgetideas.client.FastTree;
-import com.google.gwt.widgetideas.client.FastTreeItem;
-
-import java.util.ArrayList;
 
 /**
  * {@link CollapsiblePanel} demo.
  */
 public class CollapsiblePanelDemo implements EntryPoint {
 
-  /**
-   * A special purpose widget to allow scrollable stack panels.
-   */
-  public class MyStackPanel extends StackPanel {
-    private ArrayList<Widget> scrollers = new ArrayList<Widget>();
-
-    public void insert(Widget w, int before) {
-      ScrollPanel p = new ScrollPanel(w);
-      p.setWidth("100%");
-      scrollers.add(before, p);
-      super.insert(p, before);
-    }
-
-    public void onLoad() {
-      setWidth("100%");
-      showStack(getSelectedIndex());
-    }
-
-    /**
-     * Shows the widget at the specified child index.
-     * 
-     * @param index the index of the child to be shown
-     */
-    public void showStack(int index) {
-      super.showStack(index);
-
-      if (this.isAttached()) {
-        ScrollPanel me = (ScrollPanel) scrollers.get(index);
-        me.setHeight("1px");
-        Element tr = DOM.getChild(DOM.getFirstChild(getElement()),
-            index * 2 + 1);
-        int trHeight = DOM.getElementPropertyInt(tr, "offsetHeight");
-        me.setHeight(trHeight + "px");
-      }
-    }
-  }
-
-  ToggleButton controlButton;
+  private ToggleButton controlButton;
 
   /**
    * This is the entry point method.
    */
   public void onModuleLoad() {
-   
     try {
 
       // Some random contents to make the tree interesting.
       Panel contents = createSchoolNavBar();
-      FastTree.addDefaultCSS();
+      FastTree.injectDefaultCss();
+      CollapsiblePanel.injectDefaultCss();
 
       // The panel.
       final CollapsiblePanel panel = new CollapsiblePanel();
+      panel.addCollapsedStateHandler(new CollapsedStateHandler() {
+        public void onCollapsedState(CollapsedStateEvent e) {
+          Window.alert("panel collapsed");
+        }
+      });
+
+      panel.addExpandedStateHandler(new ExpandedStateHandler() {
+        public void onExpandedState(ExpandedStateEvent e) {
+          Window.alert("panel expanded");
+        }
+      });
+
       String value = Location.getParameter("collapsed");
-      Window.alert("bo");
       if (value != null) {
         value = value.trim();
         if (value.equals("true")) {
@@ -111,7 +80,7 @@ public class CollapsiblePanelDemo implements EntryPoint {
       }
       RootPanel.get("collapsible-panel").add(panel);
       panel.add(contents);
-      panel.setWidth("200px");
+      panel.setHeight(Window.getClientHeight() - 1 + "px");
       panel.hookupControlToggle(controlButton);
     } catch (RuntimeException e) {
       if (GWT.isScript()) {
@@ -122,37 +91,23 @@ public class CollapsiblePanelDemo implements EntryPoint {
   }
 
   private Panel createSchoolNavBar() {
-    ToggleButton toggler = new ToggleButton("Directory (click to pin)",
-        "Directory (click to collapse)");
-    toggler.setStyleName("CollapsibleToggle");
-    controlButton = toggler;
+    controlButton = new ToggleButton();
+    if (LocaleInfo.getCurrentLocale().isRTL()) {
+      controlButton.getUpFace().setHTML("<i>click to pin &larr; </i>");
+      controlButton.getDownFace().setHTML("<i> &rarr; click to collapse</i>  ");
+    } else {
+      controlButton.getUpFace().setHTML("<i>click to pin &rarr;</i>");
+      controlButton.getDownFace().setHTML("<i>&larr; click to collapse</i> ");
+    }
 
-    MyStackPanel wrapper = new MyStackPanel();
     FlowPanel navBar = new FlowPanel();
-    navBar.setSize("200px", "100%");
+    navBar.setSize("200px", "");
 
-    HorizontalPanel panel = new HorizontalPanel();
-    panel.setWidth("100%");
-
-    panel.setCellHorizontalAlignment(controlButton,
-        HasHorizontalAlignment.ALIGN_LEFT);
-
-    panel.add(controlButton);
-    panel.setCellWidth(controlButton, "1px");
-    panel.setCellHorizontalAlignment(controlButton,
-        HorizontalPanel.ALIGN_CENTER);
-
-    navBar.add(panel);
-
-    panel.setStyleName("nav-Tree-title");
-    wrapper = new MyStackPanel();
-    wrapper.setHeight("250px");
+    navBar.add(controlButton);
+    controlButton.setStylePrimaryName("CollapsibleTitle");
 
     final FastTree contents = new FastTree();
-    wrapper.add(contents, "<b>People</b>", true);
-
-    wrapper.add(new Label("None"), "<b>Academics</b>", true);
-    navBar.add(wrapper);
+    navBar.add(contents);
 
     FastTreeItem students = contents.addItem("Students");
     students.addItem("Jill");
