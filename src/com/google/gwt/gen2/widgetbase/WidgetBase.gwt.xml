@@ -13,7 +13,6 @@
 	-->
 	<inherits name='com.google.gwt.gen2.event.Event' />
 
-
 	<!--
 		Needs the event support until the last of of gen2 widgets switch over
 	-->
@@ -26,10 +25,5 @@
 
 	<!-- Source path -->
 	<source path="client" />
-
-	<!-- Remove comment to test RTL Mode -->
-	<!--
-		<extend-property name="locale" values="ar" /> <set-property
-		name="locale" value="ar" />
-	-->
+ 
 </module>

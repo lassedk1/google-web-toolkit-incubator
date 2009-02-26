@@ -30,14 +30,23 @@ public class Gen2CssInjector {
    * CSS resources for all gen2 widgets.
    */
   static interface DefaultBundle extends ImmutableResourceBundle {
+    @Resource("com/google/gwt/gen2/widgetbase/public/CollapsiblePanel_base.css")
+    CssResource collapsiblePanelBase();
+
+    @Resource("com/google/gwt/gen2/widgetbase/public/CollapsiblePanel_ltr.css")
+    CssResource collapsiblePanelLtr();
+
     @Resource("com/google/gwt/gen2/widgetbase/public/DropDownDatePicker.css")
     CssResource dropDownDatePicker();
 
     @Resource("com/google/gwt/gen2/widgetbase/public/DropDownListBox.css")
     CssResource dropDownListBox();
 
-    @Resource("com/google/gwt/gen2/widgetbase/public/FastTree.css")
-    CssResource fastTree();
+    @Resource("com/google/gwt/gen2/widgetbase/public/FastTree_base.css")
+    CssResource fastTreeBase();
+
+    @Resource("com/google/gwt/gen2/widgetbase/public/FastTree_ltr.css")
+    CssResource fastTreeLtr();
 
     @Resource("com/google/gwt/gen2/widgetbase/public/LogHandlers.css")
     CssResource logHandlers();
@@ -81,6 +90,17 @@ public class Gen2CssInjector {
   private static DefaultBundle DEFAULT_CSS_FILES = m.createDefaultBundle();
 
   /**
+   * If css dependency injection is enabled, adds the ToggleButton.css file
+   * included under public/widget.
+   */
+  public static void addCollapsiblePanelDefault() {
+    if (Gen2CssInjector.isInjectionEnabled()) {
+      inject(DEFAULT_CSS_FILES.collapsiblePanelBase(),
+          DEFAULT_CSS_FILES.collapsiblePanelLtr());
+    }
+  }
+
+  /**
    * If css dependency injection is enabled, adds the default dependencies for
    * DropDownDatePicker.
    */
@@ -107,7 +127,8 @@ public class Gen2CssInjector {
    */
   public static void addFastTreeDefault() {
     if (Gen2CssInjector.isInjectionEnabled()) {
-      inject(DEFAULT_CSS_FILES.fastTree());
+
+      inject(DEFAULT_CSS_FILES.fastTreeBase(), DEFAULT_CSS_FILES.fastTreeLtr());
     }
   }
 
@@ -172,5 +193,13 @@ public class Gen2CssInjector {
    */
   public static boolean isInjectionEnabled() {
     return m.shouldInject();
+  }
+
+  // Inject multiple style sheets
+  private static void inject(CssResource car, CssResource... cdr) {
+    inject(car);
+    for (CssResource resource : cdr) {
+      inject(resource);
+    }
   }
 }

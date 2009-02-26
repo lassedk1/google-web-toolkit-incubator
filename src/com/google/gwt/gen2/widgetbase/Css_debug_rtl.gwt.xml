@@ -21,12 +21,12 @@
 <module>
 	<inherits name="com.google.gwt.gen2.widgetbase._Resources" />
 	<inherits name="com.google.gwt.gen2.widgetbase.Css_disableDefault" />
+	<stylesheet src="FastTree_base.css" />
+	<stylesheet src="FastTree_rtl.css" />
 	<stylesheet src="LogHandlers.css" />
 	<stylesheet src="DropDownListBox.css" />
 	<stylesheet src="Picker.css" />
 	<stylesheet src="DropDownDatePicker.css" />
 	<stylesheet src="CollapsiblePanel_base.css" />
-	<stylesheet src="CollapsiblePanel_ltr.css" />
-	<stylesheet src="FastTree_base.css" />
-	<stylesheet src="FastTree_ltr.css" />
+	<stylesheet src="CollapsiblePanel_rtl.css" />
 </module>

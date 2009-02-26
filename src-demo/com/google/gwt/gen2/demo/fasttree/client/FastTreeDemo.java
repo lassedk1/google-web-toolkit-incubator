@@ -18,7 +18,6 @@ package com.google.gwt.gen2.demo.fasttree.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.OpenEvent;
@@ -64,7 +63,7 @@ public class FastTreeDemo implements EntryPoint {
     p.add(verboseTree(), "Verbose tree");
     p.add(crazyTree(), "Crazy tree");
     p.add(dynamicTree(), "DynamicTree");
-    
+
     return p;
   }
 
@@ -74,7 +73,7 @@ public class FastTreeDemo implements EntryPoint {
   public void onModuleLoad() {
     RootPanel.get().add(new FastTreeDemo().createDemo());
   }
-  
+
   protected Widget basicTree() {
     FastTree t = new FastTree();
     FastTreeItem a = t.addItem("A root tree item");
@@ -176,10 +175,10 @@ public class FastTreeDemo implements EntryPoint {
 
     return tree;
   }
-  
+
   private Widget dynamicTree() {
     FlowPanel container = new FlowPanel();
-    
+
     // Add Tree
     final FastTree topTree = new FastTree();
     FastTreeItem firstBranch = topTree.addItem("Inbox (3)");
@@ -188,45 +187,47 @@ public class FastTreeDemo implements EntryPoint {
     familyBranch.becomeInteriorNode();
     familyBranch.addItem("Mom");
     familyBranch.addItem("Brosef");
-    FastTreeItem SecondBranch = firstBranch.addItem("Calendar");
-    SecondBranch.addItem("Important Meetings");
+    FastTreeItem secondBranch = firstBranch.addItem("Calendar");
+    secondBranch.addItem("Important Meetings");
     container.add(topTree);
-        
-    final Button btnAdd = new Button("Add to Family Branch", 
+
+    final Button btnAdd = new Button("Add to Family Branch",
         new ClickHandler() {
 
-        public void onClick(ClickEvent event) {
-          FastTreeItem selectedItem = topTree.getChild(0).getChild(1);
-          Window.alert("Adding new " + selectedItem.getText() + " Child Nodes");
-          selectedItem.addItem("Dad");
-          selectedItem.addItem("Sissef");
-        }
-    });
-    
-    final Button btnKill = new Button("Disown Family Branch", new ClickHandler() {
+          public void onClick(ClickEvent event) {
+            FastTreeItem selectedItem = topTree.getChild(0).getChild(1);
+            Window.alert("Adding new " + selectedItem.getText()
+                + " Child Nodes");
+            selectedItem.addItem("Dad");
+            selectedItem.addItem("Sissef");
+          }
+        });
 
-      public void onClick(ClickEvent event) {
-        FastTreeItem selectedItem = topTree.getChild(0).getChild(1);
-        Window.alert("Disowning " + selectedItem.getText() + " Child Nodes");
-        selectedItem.becomeLeaf();
-        btnAdd.setVisible(true);        
-      }      
-    });
-    
+    final Button btnKill = new Button("Disown Family Branch",
+        new ClickHandler() {
+
+          public void onClick(ClickEvent event) {
+            FastTreeItem selectedItem = topTree.getChild(0).getChild(1);
+            Window.alert("Disowning " + selectedItem.getText() + " Child Nodes");
+            selectedItem.becomeLeaf();
+            btnAdd.setVisible(true);
+          }
+        });
+
     topTree.addBeforeCloseHandler(new BeforeCloseHandler<FastTreeItem>() {
       public void onBeforeClose(BeforeCloseEvent<FastTreeItem> event) {
-         btnKill.setVisible(event.getTarget().getText().equals("Family"));
+        btnKill.setVisible(event.getTarget().getText().equals("Family"));
       }
     });
     btnKill.setVisible(false);
     btnAdd.setVisible(false);
-    
+
     container.add(btnKill);
     container.add(btnAdd);
-    
+
     return container;
   }
-  
+
   private Widget hebrewTree() {
     final FastTree hebrewTree = new FastTree();
     FastTreeItem firstBranch = hebrewTree.addItem("דואר נכנס (3)");
@@ -235,12 +236,12 @@ public class FastTreeDemo implements EntryPoint {
     familyBranch.becomeInteriorNode();
     familyBranch.addItem("אמא");
     familyBranch.addItem("אח שלו");
-    FastTreeItem SecondBranch = firstBranch.addItem("יומן");
-    SecondBranch.addItem("פגישות חשובות");
-        
+    FastTreeItem secondBranch = firstBranch.addItem("יומן");
+    secondBranch.addItem("פגישות חשובות");
+
     return hebrewTree;
   }
-  
+
   private void lazyCreateChild(final HasFastTreeItems parent, final int index,
       final int children) {
 

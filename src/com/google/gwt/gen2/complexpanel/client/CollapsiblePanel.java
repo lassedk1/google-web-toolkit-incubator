@@ -17,49 +17,97 @@
 package com.google.gwt.gen2.complexpanel.client;
 
 import com.google.gwt.animation.client.Animation;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ChangeListenerCollection;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HasAnimation;
 import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.SourcesChangeEvents;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.client.overrides.WidgetIterators;
 
 import java.util.Iterator;
 
 /**
- * {@link CollapsiblePanel} makes its contained contents able to collapse. By
- * default, the contents are fully expanded. When collapsed, the contents of the
- * panel will be displayed only when the user mouse hovers over the hover bar,
- * otherwise is will stay collapsed to the left. A change event is fired
- * whenever the {@link CollapsiblePanel} switched between its expanded and
- * collapsed states.
- * <p>
- * The default style name is gwt-CollapsiblePanel.
- * <p>
- * Planned enhancements: Allow panel to be collapsed in arbitrary direction.
+ * {@link CollapsiblePanel} is intended to be used as a navigation panel with
+ * the ability to collapse itself.
  * 
+ * The {@link CollapsiblePanel} will collapse itself to the left in LTR mode and
+ * to the right in RTL mode.
+ * 
+ * When collapsed, the contents of the panel will be displayed only when the
+ * user mouse hovers over the hover bar, otherwise is will stay collapsed to the
+ * left.
+ * <p>
+ * 
+ * The user must specify a fixed width and height either programatically or via
+ * css that must already be fully loaded before the panel is attached.
+ * 
+ * <dl>
+ * <dd>.gwt-CollapsiblePanel</dd>
+ * <dt>the collapsible panel</dt>
+ * <dd>.CollapsibleHoverBox</dd>
+ * <dt>The hover bar that appears when the widget is collapsed</dt>
+ * <dd>.CollapsibleContainer</dd>
+ * <dt>The container for the panel's content</dt>
+ * </dl>
  */
-public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
-    HasWidgets, HasAnimation {
+public class CollapsiblePanel extends Composite implements HasWidgets {
+
   /**
-   * {@link CollapsiblePanel} styles.
-   * 
+   * Event fired after the panel shown in its collapsed state.
    */
-  public static class Styles {
-    static String DEFAULT = "gwt-CollapsiblePanel";
-    static String CONTAINER = "container";
-    static String HOVER_BAR = "hover-bar";
+  public static class CollapsedStateEvent extends
+      GwtEvent<CollapsedStateHandler> {
+    static Type<CollapsedStateHandler> type = new Type<CollapsedStateHandler>();;
+
+    @Override
+    public com.google.gwt.event.shared.GwtEvent.Type<CollapsedStateHandler> getAssociatedType() {
+      return type;
+    }
+
+    @Override
+    protected void dispatch(CollapsedStateHandler handler) {
+      handler.onCollapsedState(this);
+    }
+  }
+
+  /**
+   * Handler for {@link CollapsedStateEvent} events.
+   */
+  public static interface CollapsedStateHandler extends EventHandler {
+    void onCollapsedState(CollapsedStateEvent e);
+  }
+
+  /**
+   * Event fired after the panel is shown in a expanded state.
+   */
+  public static class ExpandedStateEvent extends GwtEvent<ExpandedStateHandler> {
+    static Type<ExpandedStateHandler> type = new Type<ExpandedStateHandler>();;
+
+    @Override
+    public com.google.gwt.event.shared.GwtEvent.Type<ExpandedStateHandler> getAssociatedType() {
+      return type;
+    }
+
+    @Override
+    protected void dispatch(ExpandedStateHandler handler) {
+      handler.onExpandedState(this);
+    }
+  }
+
+  /**
+   * Handler for {@link ExpandedStateEvent} events.
+   */
+  public static interface ExpandedStateHandler extends EventHandler {
+    void onExpandedState(ExpandedStateEvent e);
   }
 
   /**
@@ -111,10 +159,19 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   }
 
   /**
+   * {@link CollapsiblePanel} styles.
+   * 
+   */
+  static class Styles {
+    static String DEFAULT = "gwt-CollapsiblePanel";
+    static String CONTAINER = "CollapsibleContainer";
+    static String HOVER_BAR = "CollapsibleHoverBar";
+  }
+
+  /**
    * Delays showing of the {@link CollapsiblePanel}.
    */
   private class DelayHide extends Timer {
-
     public void activate() {
       setState(State.WILL_HIDE);
       delayedHide.schedule(getDelayBeforeHide());
@@ -130,7 +187,6 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    * Delays showing of the {@link CollapsiblePanel}.
    */
   private class DelayShow extends Timer {
-
     public void activate() {
       setState(State.WILL_SHOW);
       delayedShow.schedule(getDelayBeforeShow());
@@ -142,53 +198,14 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     }
   }
 
-  private class HidingAnimation extends Animation {
-    @Override
-    public void onCancel() {
-    }
-
-    @Override
-    public void onComplete() {
-      setPanelPos(0);
-      setState(State.IS_HIDDEN);
-    }
-
-    @Override
-    public void onStart() {
-    }
-
-    @Override
-    public void onUpdate(double progress) {
-      int slide = (int) (startFrom - (progress * startFrom));
-      setPanelPos(slide);
-    }
+  /**
+   * Injects the default css for the collapsible panel.
+   */
+  public static void injectDefaultCss() {
+    Gen2CssInjector.addCollapsiblePanelDefault();
   }
 
-  private class ShowingAnimation extends Animation {
-
-    @Override
-    public void onCancel() {
-      // Do nothing, must now be hiding.
-    }
-
-    @Override
-    public void onComplete() {
-      setPanelPos(maxOffshift);
-      setState(State.IS_SHOWN);
-    }
-
-    @Override
-    public void onStart() {
-    }
-
-    @Override
-    public void onUpdate(double progress) {
-      int pos = (int) ((double) (maxOffshift - startFrom) * progress);
-      setPanelPos(pos + startFrom);
-    }
-  }
-
-  private boolean animate = true;
+  private int hoverBarWidth;
 
   /**
    * Number of intervals used to display panel.
@@ -205,35 +222,77 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    */
   private int delayBeforeHide = 200;
 
+  /**
+   * The internal state of the Collapsible panel.
+   */
   private State state;
 
-  private ShowingAnimation overlayTimer = new ShowingAnimation();
+  /**
+   * Showing the panel bar sliding in.
+   */
+  private Animation hidingTimer = new Animation() {
+    @Override
+    public void onCancel() {
+      // Override default behavior to do nothing instead
+    }
 
-  private HidingAnimation hidingTimer = new HidingAnimation();
+    @Override
+    public void onComplete() {
+      container.completeHide();
+      setState(State.IS_HIDDEN);
+    }
 
-  private DelayShow delayedShow = new DelayShow();
-
-  private DelayHide delayedHide = new DelayHide();
-
-  private int width;
-  private int maxOffshift;
-  private int currentOffshift;
-  private int startFrom;
-  private Panel container;
-  private SimplePanel hoverBar;
-  private ToggleButton collapseToggle;
-  private AbsolutePanel master;
-  private ChangeListenerCollection changeListeners = new ChangeListenerCollection();
-  private Widget contents;
+    @Override
+    public void onUpdate(double progress) {
+      container.updateHide(progress);
+    }
+  };
 
   /**
-   * Constructor.
+   * Showing the panel sliding out.
+   */
+  private Animation showingTimer = new Animation() {
+    @Override
+    public void onCancel() {
+      // Override default behavior to do nothing instead
+    }
+
+    @Override
+    public void onComplete() {
+      container.completeShow();
+      setState(State.IS_SHOWN);
+    }
+
+    @Override
+    public void onUpdate(double progress) {
+      container.updateShow(progress);
+    }
+  };
+  /**
+   * How long to delay the showing of the panel.
+   */
+  private DelayShow delayedShow = new DelayShow();
+  /**
+   * How long to delay the hiding of the panel.
+   */
+  private DelayHide delayedHide = new DelayHide();
+
+  // Collapsible panel structure
+  private SliderPanelImpl container;
+
+  private SimplePanel hoverBar;
+  private ToggleButton collapseToggle;
+  private BiDiRelativePanel master;
+  private boolean hasContents;
+
+  /**
+   * Create a new collapsible panel.
    */
 
   public CollapsiblePanel() {
 
     // Create the composite widget.
-    master = new AbsolutePanel() {
+    master = new BiDiRelativePanel() {
       {
         sinkEvents(Event.ONMOUSEOUT | Event.ONMOUSEOVER);
       }
@@ -241,10 +300,10 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
       @Override
       public void onBrowserEvent(Event event) {
         // Cannot handle browser events until contents are initialized.
-        if (contents == null) {
+        if (!hasContents) {
           return;
         }
-        if (!CollapsiblePanel.this.collapseToggle.isDown()) {
+        if (isCollapsed()) {
           switch (DOM.eventGetType(event)) {
             case Event.ONMOUSEOUT:
               Element to = DOM.eventGetToElement(event);
@@ -275,12 +334,13 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
               }
               break;
           }
-          super.onBrowserEvent(event);
         }
+        super.onBrowserEvent(event);
       }
     };
 
-    DOM.setStyleAttribute(master.getElement(), "overflow", "visible");
+    master.getElement().getStyle().setProperty("overflow", "visible");
+
     initWidget(master);
     setStyleName(Styles.DEFAULT);
 
@@ -294,10 +354,10 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
       @Override
       public void onBrowserEvent(Event event) {
         // Cannot handle browser events until contents are initialized.
-        if (contents == null) {
+        if (!hasContents) {
           return;
         }
-        if (!CollapsiblePanel.this.collapseToggle.isDown()) {
+        if (isCollapsed()) {
           switch (DOM.eventGetType(event)) {
             case Event.ONMOUSEOVER:
               switch (state) {
@@ -316,30 +376,51 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
       }
     };
 
+    // Hover bar.
     hoverBar.setStyleName(Styles.HOVER_BAR);
-    master.add(hoverBar, 0, 0);
+    master.addAbsolute(hoverBar, 0, 0);
 
-    // Create the contents container.
-    container = new SimplePanel();
-    container.setStyleName(Styles.CONTAINER);
-    master.add(container, 0, 0);
+    // Actual slider panel.
+    container = new SliderPanelImpl();
+    master.addAbsolute(container, 0, 0);
     setState(State.EXPANDED);
   }
 
   /**
-   * Constructor.
+   * Creates a new collapsible panel.
+   * 
+   * @param contents the contents to be shown in the panel
    */
   public CollapsiblePanel(Widget contents) {
     this();
     initContents(contents);
   }
 
+  /**
+   * Adds the content to this panel. May only be called once.
+   */
   public void add(Widget w) {
     initContents(w);
   }
 
-  public void addChangeListener(ChangeListener listener) {
-    changeListeners.add(listener);
+  /**
+   * Add handler which is called when the widget is shown in its collapsed
+   * state.
+   * 
+   * @param handler the handler
+   */
+  public HandlerRegistration addCollapsedStateHandler(
+      CollapsedStateHandler handler) {
+    return addHandler(handler, CollapsedStateEvent.type);
+  }
+
+  /**
+   * Adds a handler to be shown when the panel is in its expanded state.
+   * 
+   * @param handler handler
+   */
+  public void addExpandedStateHandler(ExpandedStateHandler handler) {
+    addHandler(handler, ExpandedStateEvent.type);
   }
 
   public void clear() {
@@ -348,41 +429,14 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   }
 
   public Widget getContents() {
-    return contents;
-  }
-
-  /**
-   * Gets the delay before hiding.
-   * 
-   * @return the delayBeforeHide
-   */
-  public int getDelayBeforeHide() {
-    return delayBeforeHide;
-  }
-
-  /**
-   * Gets the delay before showing the panel.
-   * 
-   * @return the delayBeforeShow
-   */
-  public int getDelayBeforeShow() {
-    return delayBeforeShow;
-  }
-
-  /**
-   * Gets the time to slide the panel out.
-   * 
-   * @return the timeToSlide
-   */
-  public int getTimeToSlide() {
-    return timeToSlide;
+    return container.getWidget();
   }
 
   /**
    * Hides the panel when the panel is the collapsible state. Does nothing if
    * the panel is expanded or not attached.
    */
-  public void hide() {
+  public final void hide() {
     if (getState() != State.EXPANDED && isAttached()) {
       hiding();
     }
@@ -390,21 +444,17 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
 
   /**
    * Uses the given toggle button to control whether the panel is collapsed or
-   * not.
-   * 
+   * not. Note, does not move the control toggle, so it is up to the user to
+   * place the toggle in the desired location.
    */
   public void hookupControlToggle(ToggleButton button) {
     this.collapseToggle = button;
     collapseToggle.setDown(!this.isCollapsed());
-    collapseToggle.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
-        setCollapsedState(!CollapsiblePanel.this.collapseToggle.isDown(), true);
+    collapseToggle.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        setCollapsedState(!collapseToggle.isDown(), true);
       }
     });
-  }
-
-  public boolean isAnimationEnabled() {
-    return animate;
   }
 
   /**
@@ -415,19 +465,11 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   }
 
   public Iterator<Widget> iterator() {
-    return WidgetIterators.createWidgetIterator(this, new Widget[] {contents});
+    return master.iterator();
   }
 
   public boolean remove(Widget w) {
     return false;
-  }
-
-  public void removeChangeListener(ChangeListener listener) {
-    changeListeners.remove(listener);
-  }
-
-  public void setAnimationEnabled(boolean enable) {
-    animate = enable;
   }
 
   /**
@@ -435,7 +477,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    * 
    * @param collapsed is the panel collapsed?
    */
-  public void setCollapsedState(boolean collapsed) {
+  public final void setCollapsedState(boolean collapsed) {
     setCollapsedState(collapsed, false);
   }
 
@@ -445,7 +487,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    * @param collapsed is the panel collapsed?
    * @param fireEvents should the change listeners be fired?
    */
-  public void setCollapsedState(boolean collapsed, boolean fireEvents) {
+  public final void setCollapsedState(boolean collapsed, boolean fireEvents) {
     if (isCollapsed() == collapsed) {
       return;
     }
@@ -458,7 +500,11 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
       becomeExpanded();
     }
     if (fireEvents) {
-      changeListeners.fireChange(this);
+      if (collapsed) {
+        fireEvent(new CollapsedStateEvent());
+      } else {
+        fireEvent(new ExpandedStateEvent());
+      }
     }
   }
 
@@ -482,11 +528,26 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     this.delayBeforeShow = delayBeforeShow;
   }
 
+  @Override
+  public void setHeight(String height) {
+    container.setHeight(height);
+    computeSize();
+  }
+
   /**
    * Sets the contents of the hover bar.
    */
   public void setHoverBarContents(Widget bar) {
     hoverBar.setWidget(bar);
+    computeSize();
+  }
+
+  /**
+   * Sets the hover bar's width.
+   */
+  public void setHoverBarWidth(String width) {
+    hoverBar.setWidth(width);
+    computeSize();
   }
 
   /**
@@ -499,13 +560,17 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
   }
 
   @Override
-  public void setWidth(String width) {
-    if (contents == null) {
-      throw new IllegalStateException(
-          "Cannot set the width of the collapsible panel before its contents are initialized");
+  public void setVisible(boolean isVisible) {
+    super.setVisible(isVisible);
+    if (isVisible) {
+      computeSize();
     }
-    contents.setWidth(width);
-    refreshWidth();
+  }
+
+  @Override
+  public void setWidth(String width) {
+    container.setWidth(width);
+    computeSize();
   }
 
   /**
@@ -519,16 +584,39 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     if (getState() != State.EXPANDED && isAttached()) {
       cancelAllTimers();
       setState(State.SHOWING);
-      startFrom = currentOffshift;
-      overlayTimer.run(this.getTimeToSlide());
+
+      container.startShow();
+      showingTimer.run(this.getTimeToSlide());
     }
+  }
+
+  /**
+   * This method is called immediately after a widget becomes attached to the
+   * browser's document.
+   */
+  @Override
+  protected void onLoad() {
+    computeSize();
+  }
+
+  private void adjustmentsForCollapsedState() {
+    master.setHeight(container.getOffsetHeight() + "px");
+    // IE RTL bug create a phantom scrollbar without the +1
+    master.setWidth(hoverBarWidth + 1 + "px");
+    master.setAbsolutePosition(container, hoverBarWidth / 2, 0);
+  }
+
+  private void adjustmentsForExpandedState() {
+    container.completeShow();
+    master.setAbsolutePosition(container, 0, 0);
+    master.setWidth(container.getOffsetWidth() + "px");
   }
 
   /**
    * Display this panel in its collapsed state. The panel's contents will be
    * hidden and only the hover var will be visible.
    */
-  protected void becomeCollapsed() {
+  private void becomeCollapsed() {
     cancelAllTimers();
 
     // Now hide.
@@ -547,8 +635,9 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    * Display this panel in its expanded state. The panel's contents will be
    * fully visible and take up all required space.
    */
-  protected void becomeExpanded() {
+  private void becomeExpanded() {
     cancelAllTimers();
+
     // The master width needs to be readjusted back to it's original size.
     if (isAttached()) {
       adjustmentsForExpandedState();
@@ -556,56 +645,72 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     setState(State.EXPANDED);
   }
 
-  /**
-   * This method is called immediately after a widget becomes attached to the
-   * browser's document.
-   */
-  @Override
-  protected void onLoad() {
-    if (contents != null) {
-      refreshWidth();
-    }
-  }
-
-  protected void setPanelPos(int pos) {
-    currentOffshift = pos;
-    DOM.setStyleAttribute(container.getElement(), "left", pos - width + "px");
-  }
-
-  State getState() {
-    return state;
-  }
-
-  private void adjustmentsForCollapsedState() {
-    int hoverBarWidth = hoverBar.getOffsetWidth();
-    int aboutHalf = (hoverBarWidth / 2) + 1;
-    int newWidth = width + aboutHalf;
-    maxOffshift = newWidth;
-
-    // Width is now hoverBarWidth.
-    master.setWidth(hoverBarWidth + "px");
-
-    // clean up state.
-    currentOffshift = width;
-  }
-
-  private void adjustmentsForExpandedState() {
-    master.setWidth(width + "px");
-    DOM.setStyleAttribute(container.getElement(), "left", "0px");
-  }
-
   private void cancelAllTimers() {
     delayedHide.cancel();
     delayedShow.cancel();
-    overlayTimer.cancel();
+    showingTimer.cancel();
     hidingTimer.cancel();
+  }
+
+  private void computeSize() {
+    if (!(isAttached() && isVisible() && hasContents)) {
+      return;
+    }
+    // We need this + 1 to avoid triggering on IE a phantom right scrollbar when
+    // switching between collapsed and expanded states.
+    hoverBarWidth = hoverBar.getOffsetWidth();
+    if (hoverBarWidth <= 1) {
+      throw new IllegalStateException(
+          "The underlying hover bar width is not set. Please ensure that the .CollapsibleHoverBar css style has a fixed width");
+    }
+    container.computeSize();
+    master.setHeight(container.getOffsetHeight() + "px");
+    hoverBar.setHeight(container.getOffsetHeight() + "px");
+    if (getState() == State.EXPANDED) {
+      adjustmentsForExpandedState();
+    } else {
+      adjustmentsForCollapsedState();
+      container.completeHide();
+      state = State.IS_HIDDEN;
+    }
+  }
+
+  /**
+   * Gets the delay before hiding.
+   * 
+   * @return the delayBeforeHide
+   */
+  private int getDelayBeforeHide() {
+    return delayBeforeHide;
+  }
+
+  /**
+   * Gets the delay before showing the panel.
+   * 
+   * @return the delayBeforeShow
+   */
+  private int getDelayBeforeShow() {
+    return delayBeforeShow;
+  }
+
+  private State getState() {
+    return state;
+  }
+
+  /**
+   * Gets the time to slide the panel out.
+   * 
+   * @return the timeToSlide
+   */
+  private int getTimeToSlide() {
+    return timeToSlide;
   }
 
   private void hiding() {
     assert (isAttached());
     cancelAllTimers();
     setState(State.HIDING);
-    startFrom = currentOffshift;
+    container.startHide();
     hidingTimer.run(timeToSlide);
   }
 
@@ -615,41 +720,18 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
    * @param contents contents
    */
   private void initContents(Widget contents) {
-    if (this.contents != null) {
+    if (hasContents) {
       throw new IllegalStateException("Contents have already be set");
     }
-
-    this.contents = contents;
     container.add(contents);
-
-    if (isAttached()) {
-      refreshWidth();
-    }
-  }
-
-  private void refreshWidth() {
-    // Now include borders into master.
-    width = container.getOffsetWidth();
-    if (width == 0) {
-      throw new IllegalStateException(
-          "The underlying content width cannot be 0. Please ensure that the .container css style has a fixed width");
-    }
-    if (getState() == State.EXPANDED) {
-      adjustmentsForExpandedState();
-    } else {
-      adjustmentsForCollapsedState();
-      // we don't know if we just moved the mouse outside of the
-      setPanelPos(0);
-      state = State.IS_HIDDEN;
-    }
+    hasContents = true;
+    computeSize();
   }
 
   private void setState(State state) {
     // checks are assuming animation.
-    if (isAnimationEnabled()) {
-      State.checkTo(this.state, state);
-    }
-
+    State.checkTo(this.state, state);
     this.state = state;
   }
+
 }
