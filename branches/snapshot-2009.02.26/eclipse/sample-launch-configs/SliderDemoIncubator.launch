@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="com.google.gwt.eclipse.plugin.launch.gwtHostedMode">
+<stringAttribute key="com.google.gwt.eclipse.plugin.LOG_LEVEL" value="INFO"/>
+<booleanAttribute key="com.google.gwt.eclipse.plugin.NO_SERVER" value="false"/>
+<stringAttribute key="com.google.gwt.eclipse.plugin.OUT_DIR" value="www"/>
+<stringAttribute key="com.google.gwt.eclipse.plugin.PORT" value="auto"/>
+<stringAttribute key="com.google.gwt.eclipse.plugin.RUNTIME" value="gwt-source;;Workspace"/>
+<stringAttribute key="com.google.gwt.eclipse.plugin.STYLE" value="OBFUSCATED"/>
+<stringAttribute key="com.google.gwt.eclipse.plugin.URL" value="com.google.gwt.demos.sliderbar.SliderBarDemo/SliderBarDemo.html"/>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/gwt-incubator-sample-launch-configs"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="4"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="com.google.gwt.eclipse.plugin.moduleClasspathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.google.gwt.dev.GWTShell"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="gwt-incubator-sample-launch-configs"/>
+</launchConfiguration>
