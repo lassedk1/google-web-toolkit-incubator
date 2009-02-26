@@ -17,6 +17,7 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.table.client.property.ColumnProperty;
 import com.google.gwt.gen2.table.client.property.ColumnPropertyManager;
+import com.google.gwt.gen2.table.client.property.FooterProperty;
 import com.google.gwt.gen2.table.client.property.HeaderProperty;
 import com.google.gwt.gen2.table.client.property.MaximumWidthProperty;
 import com.google.gwt.gen2.table.client.property.MinimumWidthProperty;
@@ -67,6 +68,23 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
   public <P extends ColumnProperty> P getColumnProperty(
       ColumnProperty.Type<P> type) {
     return properties.getColumnProperty(type);
+  }
+
+  /**
+   * Get the footer at the given row index.
+   * 
+   * @param row the row index from the top
+   * @return the footer for the given row
+   */
+  public Object getFooter(int row) {
+    return getColumnProperty(FooterProperty.TYPE).getFooter(row);
+  }
+
+  /**
+   * @return get the number of footers below the column
+   */
+  public int getFooterCount() {
+    return getColumnProperty(FooterProperty.TYPE).getFooterCount();
   }
 
   /**
@@ -218,6 +236,39 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements
     } else {
       prop.setColumnTruncatable(truncatable);
     }
+  }
+
+  /**
+   * Set the footer below this column. The row index starts with the top row,
+   * such that index 0 is directly below the data table. The footerCount will
+   * automatically be increased to accommodate the row.
+   * 
+   * @param row the row index from the top
+   * @param footer the footer
+   */
+  public void setFooter(int row, Object footer) {
+    FooterProperty prop = properties.getColumnProperty(FooterProperty.TYPE,
+        false);
+    if (prop == null) {
+      prop = new FooterProperty();
+      setColumnProperty(FooterProperty.TYPE, prop);
+    }
+    prop.setFooter(row, footer);
+  }
+
+  /**
+   * Set the number of footers below the column.
+   * 
+   * @param footerCount the number of footers
+   */
+  public void setFooterCount(int footerCount) {
+    FooterProperty prop = properties.getColumnProperty(FooterProperty.TYPE,
+        false);
+    if (prop == null) {
+      prop = new FooterProperty();
+      setColumnProperty(FooterProperty.TYPE, prop);
+    }
+    prop.setFooterCount(footerCount);
   }
 
   /**

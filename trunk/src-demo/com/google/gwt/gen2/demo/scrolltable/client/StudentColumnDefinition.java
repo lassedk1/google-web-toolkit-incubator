@@ -17,6 +17,7 @@ package com.google.gwt.gen2.demo.scrolltable.client;
 
 import com.google.gwt.gen2.demo.scrolltable.shared.Student;
 import com.google.gwt.gen2.table.client.AbstractColumnDefinition;
+import com.google.gwt.gen2.table.client.property.FooterProperty;
 
 /**
  * An {@link AbstractColumnDefinition} applied to {@link Student} row values.
@@ -25,6 +26,23 @@ import com.google.gwt.gen2.table.client.AbstractColumnDefinition;
  */
 public abstract class StudentColumnDefinition<ColType> extends
     AbstractColumnDefinition<Student, ColType> {
+  /**
+   * Dynamic {@link FooterProperty} used with students.
+   */
+  static class StudentFooterProperty extends FooterProperty {
+    public StudentFooterProperty() {
+      setFooterCount(1);
+    }
+
+    @Override
+    public Object getFooter(int row, int column) {
+      if (row == 0) {
+        return "Col " + column;
+      }
+      return null;
+    }
+  }
+
   /**
    * The general grouping of the column definition.
    */
@@ -59,5 +77,8 @@ public abstract class StudentColumnDefinition<ColType> extends
       setHeader(1, group.getName());
     }
     setHeader(2, "User Information");
+
+    // Setup the footer property
+    setColumnProperty(FooterProperty.TYPE, new StudentFooterProperty());
   }
 }

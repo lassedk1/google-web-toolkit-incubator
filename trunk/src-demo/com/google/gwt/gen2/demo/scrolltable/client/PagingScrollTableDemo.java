@@ -16,6 +16,7 @@
 package com.google.gwt.gen2.demo.scrolltable.client;
 
 import com.google.gwt.gen2.demo.scrolltable.client.StudentColumnDefinition.Group;
+import com.google.gwt.gen2.demo.scrolltable.client.StudentColumnDefinition.StudentFooterProperty;
 import com.google.gwt.gen2.demo.scrolltable.client.option.paging.CacheSizeOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.paging.HideColumnOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.paging.ModeSelectionOption;
@@ -28,8 +29,6 @@ import com.google.gwt.gen2.table.client.CellRenderer;
 import com.google.gwt.gen2.table.client.ColumnDefinition;
 import com.google.gwt.gen2.table.client.DefaultRowRenderer;
 import com.google.gwt.gen2.table.client.DefaultTableDefinition;
-import com.google.gwt.gen2.table.client.FixedWidthFlexTable;
-import com.google.gwt.gen2.table.client.FixedWidthGrid;
 import com.google.gwt.gen2.table.client.FixedWidthGridBulkRenderer;
 import com.google.gwt.gen2.table.client.ListCellEditor;
 import com.google.gwt.gen2.table.client.PagingOptions;
@@ -39,6 +38,7 @@ import com.google.gwt.gen2.table.client.ScrollTable;
 import com.google.gwt.gen2.table.client.TableDefinition;
 import com.google.gwt.gen2.table.client.TextCellEditor;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
+import com.google.gwt.gen2.table.client.property.FooterProperty;
 import com.google.gwt.gen2.table.override.client.FlexTable;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
@@ -91,7 +91,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   }
 
   /**
-   * @return the {@link StudentPagingScrollTable}
+   * @return the {@link PagingScrollTable}
    */
   public PagingScrollTable<Student> getPagingScrollTable() {
     return pagingScrollTable;
@@ -132,19 +132,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
   }
 
   @Override
-  protected FixedWidthFlexTable createFooterTable() {
-    return new FixedWidthFlexTable();
-  }
-
-  @Override
-  protected FixedWidthFlexTable createHeaderTable() {
-    return new FixedWidthFlexTable();
-  }
-
-  @Override
-  protected AbstractScrollTable createScrollTable(
-      FixedWidthFlexTable headerTable, FixedWidthGrid dataTable,
-      FixedWidthFlexTable footerTable) {
+  protected AbstractScrollTable createScrollTable() {
     // Setup the controller
     tableModel = new DataSourceTableModel();
     cachedTableModel = new CachedTableModel<Student>(tableModel);
@@ -157,16 +145,14 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
     // Create the scroll table
     pagingScrollTable = new PagingScrollTable<Student>(cachedTableModel,
-        dataTable, headerTable, tableDef);
-    pagingScrollTable.setFooterTable(footerTable);
+        tableDef);
     pagingScrollTable.setPageSize(50);
     pagingScrollTable.setEmptyTableWidget(new HTML(
         "There is no data to display"));
-    pagingScrollTable.setHeaderGenerated(true);
 
     // Setup the bulk renderer
     FixedWidthGridBulkRenderer<Student> bulkRenderer = new FixedWidthGridBulkRenderer<Student>(
-        dataTable, pagingScrollTable);
+        pagingScrollTable.getDataTable(), pagingScrollTable);
     pagingScrollTable.setBulkRenderer(bulkRenderer);
 
     // Setup the formatting
@@ -273,6 +259,34 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
           rowValue.setAge(cellValue);
         }
       };
+
+      // Dynamic footer provides range of ages
+      StudentFooterProperty prop = new StudentFooterProperty() {
+        @Override
+        public Object getFooter(int row, int column) {
+          if (row == 1) {
+            int min = -1;
+            int max = -1;
+            int rowCount = pagingScrollTable.getDataTable().getRowCount();
+            for (int i = 0; i < rowCount; i++) {
+              int age = pagingScrollTable.getRowValue(i).getAge();
+              if (min == -1) {
+                min = age;
+                max = age;
+              } else {
+                min = Math.min(min, age);
+                max = Math.max(max, age);
+              }
+            }
+            return min + "-" + max;
+          }
+          return super.getFooter(row, column);
+        }
+      };
+      prop.setFooterCount(2);
+      prop.setDynamic(true);
+      columnDef.setColumnProperty(FooterProperty.TYPE, prop);
+
       columnDef.setCellRenderer(intCellRenderer);
       columnDef.setMinimumColumnWidth(35);
       columnDef.setPreferredColumnWidth(35);
@@ -375,6 +389,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       });
       columnDef.setPreferredColumnWidth(80);
       columnDef.setColumnSortable(true);
+      columnDef.setHeaderTruncatable(false);
       tableDefinition.addColumnDefinition(columnDef);
 
       // Setup the cell editor
@@ -476,6 +491,34 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
           rowValue.setGraduationYear(cellValue);
         }
       };
+
+      // Dynamic footer provides range of ages
+      StudentFooterProperty prop = new StudentFooterProperty() {
+        @Override
+        public Object getFooter(int row, int column) {
+          if (row == 1) {
+            int min = -1;
+            int max = -1;
+            int rowCount = pagingScrollTable.getDataTable().getRowCount();
+            for (int i = 0; i < rowCount; i++) {
+              int year = pagingScrollTable.getRowValue(i).getGraduationYear();
+              if (min == -1) {
+                min = year;
+                max = year;
+              } else {
+                min = Math.min(min, year);
+                max = Math.max(max, year);
+              }
+            }
+            return min + "-" + max;
+          }
+          return super.getFooter(row, column);
+        }
+      };
+      prop.setFooterCount(2);
+      prop.setDynamic(true);
+      columnDef.setColumnProperty(FooterProperty.TYPE, prop);
+
       columnDef.setCellRenderer(intCellRenderer);
       columnDef.setPreferredColumnWidth(35);
       columnDef.setMinimumColumnWidth(35);
@@ -499,6 +542,28 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
           rowValue.setGpa(cellValue);
         }
       };
+
+      // Dynamic footer provides average GPA
+      StudentFooterProperty prop = new StudentFooterProperty() {
+        @Override
+        public Object getFooter(int row, int column) {
+          if (row == 1) {
+            double avg = 0;
+            int rowCount = pagingScrollTable.getDataTable().getRowCount();
+            for (int i = 0; i < rowCount; i++) {
+              avg += pagingScrollTable.getRowValue(i).getGpa();
+            }
+            avg /= rowCount;
+            return gpaToString(avg);
+          }
+          return super.getFooter(row, column);
+        }
+      };
+      prop.setFooterCount(2);
+      prop.setDynamic(true);
+      columnDef.setColumnProperty(FooterProperty.TYPE, prop);
+
+      // Custom renderer uses background colors based on GPA
       columnDef.setCellRenderer(new CellRenderer<Student, Double>() {
         public void renderRowValue(Student rowValue,
             ColumnDefinition<Student, Double> columnDef,
@@ -513,21 +578,6 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
             view.setStyleName("greatGPA");
           }
           view.setHTML(gpaToString(gpa));
-        }
-
-        /**
-         * Convert a double to human readable format with a max of 2 significant
-         * digits.
-         * 
-         * @param gpa the GPA as a double
-         * @return a more readable format of the GPA
-         */
-        private String gpaToString(Double gpa) {
-          String gpaString = gpa.toString();
-          if (gpaString.length() > 4) {
-            gpaString = gpaString.substring(0, 4);
-          }
-          return gpaString;
         }
       });
       columnDef.setPreferredColumnWidth(35);
@@ -579,5 +629,20 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
     }
 
     return tableDefinition;
+  }
+
+  /**
+   * Convert a double to human readable format with a max of 2 significant
+   * digits.
+   * 
+   * @param gpa the GPA as a double
+   * @return a more readable format of the GPA
+   */
+  private String gpaToString(Double gpa) {
+    String gpaString = gpa.toString();
+    if (gpaString.length() > 4) {
+      gpaString = gpaString.substring(0, 4);
+    }
+    return gpaString;
   }
 }

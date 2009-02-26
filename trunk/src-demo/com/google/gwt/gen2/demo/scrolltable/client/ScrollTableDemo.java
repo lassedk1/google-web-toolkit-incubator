@@ -196,10 +196,7 @@ public class ScrollTableDemo implements EntryPoint {
     // Initialize the tables
     {
       // Create the tables
-      FixedWidthFlexTable headerTable = createHeaderTable();
-      FixedWidthFlexTable footerTable = createFooterTable();
-      FixedWidthGrid dataTable = createDataTable();
-      scrollTable = createScrollTable(headerTable, dataTable, footerTable);
+      scrollTable = createScrollTable();
       scrollTable.setHeight("400px");
 
       // Add the scroll table to the layout
@@ -251,90 +248,15 @@ public class ScrollTableDemo implements EntryPoint {
   }
 
   /**
-   * @return the newly created data table.
-   */
-  protected FixedWidthGrid createDataTable() {
-    FixedWidthGrid dataTable = new FixedWidthGrid();
-    dataTable.setSelectionPolicy(SelectionPolicy.CHECKBOX);
-    return dataTable;
-  }
-
-  /**
-   * @return the new footer table
-   */
-  protected FixedWidthFlexTable createFooterTable() {
-    FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
-    footerTable.setHTML(0, 0, "&nbsp;");
-    for (int i = 0; i < 12; i++) {
-      footerTable.setText(0, i + 1, "Col " + i);
-    }
-    return footerTable;
-  }
-
-  /**
-   * @return the new header table
-   */
-  protected FixedWidthFlexTable createHeaderTable() {
-    FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
-
-    // Level 1 headers
-    FlexCellFormatter headerFormatter = headerTable.getFlexCellFormatter();
-    headerTable.setHTML(0, 0, "User Information");
-    headerFormatter.setColSpan(0, 0, 13);
-
-    // Create the select all checkbox
-    final CheckBox selectAll = new CheckBox();
-    selectAll.addClickHandler(new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        if (selectAll.getValue()) {
-          getDataTable().selectAllRows();
-        } else {
-          getDataTable().deselectAllRows();
-        }
-      }
-    });
-
-    // Level 2 headers
-    headerTable.setWidget(1, 0, selectAll);
-    headerFormatter.setRowSpan(1, 0, 2);
-    headerFormatter.setHorizontalAlignment(1, 0,
-        HasHorizontalAlignment.ALIGN_CENTER);
-    headerTable.setHTML(1, 1, "First and Last Name");
-    headerFormatter.setColSpan(1, 1, 2);
-    headerFormatter.setRowSpan(1, 1, 2);
-    headerTable.setHTML(1, 2, "General Info");
-    headerFormatter.setColSpan(1, 2, 3);
-    headerTable.setHTML(1, 3, "Favorite Color");
-    headerFormatter.setColSpan(1, 3, 1);
-    headerFormatter.setRowSpan(1, 3, 2);
-    headerTable.setHTML(1, 4, "Preferred Sport");
-    headerFormatter.setColSpan(1, 4, 1);
-    headerFormatter.setRowSpan(1, 4, 2);
-    headerTable.setHTML(1, 5, "School Info");
-    headerFormatter.setColSpan(1, 5, 3);
-    headerTable.setHTML(1, 6, "Login Info");
-    headerFormatter.setColSpan(1, 6, 2);
-
-    // Level 3 headers
-    headerTable.setHTML(2, 0, "Age");
-    headerTable.setHTML(2, 1, "Gender");
-    headerTable.setHTML(2, 2, "Race");
-    headerTable.setHTML(2, 3, "College");
-    headerTable.setHTML(2, 4, "Year");
-    headerTable.setHTML(2, 5, "GPA");
-    headerTable.setHTML(2, 6, "ID");
-    headerTable.setHTML(2, 7, "Pin");
-
-    return headerTable;
-  }
-
-  /**
    * Setup the scroll table.
    */
-  protected AbstractScrollTable createScrollTable(
-      FixedWidthFlexTable headerTable, FixedWidthGrid dataTable,
-      FixedWidthFlexTable footerTable) {
-    // Add the scroll table to the page
+  protected AbstractScrollTable createScrollTable() {
+    // Create the three component tables
+    FixedWidthFlexTable headerTable = createHeaderTable();
+    FixedWidthFlexTable footerTable = createFooterTable();
+    FixedWidthGrid dataTable = createDataTable();
+
+    // Create the scroll table
     ScrollTable theScrollTable = new ScrollTable(dataTable, headerTable);
     theScrollTable.setFooterTable(footerTable);
 
@@ -487,5 +409,83 @@ public class ScrollTableDemo implements EntryPoint {
     for (int i = 0; i < 15; i++) {
       insertDataRow(i);
     }
+  }
+
+  /**
+   * @return the newly created data table.
+   */
+  private FixedWidthGrid createDataTable() {
+    FixedWidthGrid dataTable = new FixedWidthGrid();
+    dataTable.setSelectionPolicy(SelectionPolicy.CHECKBOX);
+    return dataTable;
+  }
+
+  /**
+   * @return the new footer table
+   */
+  private FixedWidthFlexTable createFooterTable() {
+    FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
+    footerTable.setHTML(0, 0, "&nbsp;");
+    for (int i = 0; i < 12; i++) {
+      footerTable.setText(0, i + 1, "Col " + i);
+    }
+    return footerTable;
+  }
+
+  /**
+   * @return the new header table
+   */
+  private FixedWidthFlexTable createHeaderTable() {
+    FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
+
+    // Level 1 headers
+    FlexCellFormatter headerFormatter = headerTable.getFlexCellFormatter();
+    headerTable.setHTML(0, 0, "User Information");
+    headerFormatter.setColSpan(0, 0, 13);
+
+    // Create the select all checkbox
+    final CheckBox selectAll = new CheckBox();
+    selectAll.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        if (selectAll.getValue()) {
+          getDataTable().selectAllRows();
+        } else {
+          getDataTable().deselectAllRows();
+        }
+      }
+    });
+
+    // Level 2 headers
+    headerTable.setWidget(1, 0, selectAll);
+    headerFormatter.setRowSpan(1, 0, 2);
+    headerFormatter.setHorizontalAlignment(1, 0,
+        HasHorizontalAlignment.ALIGN_CENTER);
+    headerTable.setHTML(1, 1, "First and Last Name");
+    headerFormatter.setColSpan(1, 1, 2);
+    headerFormatter.setRowSpan(1, 1, 2);
+    headerTable.setHTML(1, 2, "General Info");
+    headerFormatter.setColSpan(1, 2, 3);
+    headerTable.setHTML(1, 3, "Favorite Color");
+    headerFormatter.setColSpan(1, 3, 1);
+    headerFormatter.setRowSpan(1, 3, 2);
+    headerTable.setHTML(1, 4, "Preferred Sport");
+    headerFormatter.setColSpan(1, 4, 1);
+    headerFormatter.setRowSpan(1, 4, 2);
+    headerTable.setHTML(1, 5, "School Info");
+    headerFormatter.setColSpan(1, 5, 3);
+    headerTable.setHTML(1, 6, "Login Info");
+    headerFormatter.setColSpan(1, 6, 2);
+
+    // Level 3 headers
+    headerTable.setHTML(2, 0, "Age");
+    headerTable.setHTML(2, 1, "Gender");
+    headerTable.setHTML(2, 2, "Race");
+    headerTable.setHTML(2, 3, "College");
+    headerTable.setHTML(2, 4, "Year");
+    headerTable.setHTML(2, 5, "GPA");
+    headerTable.setHTML(2, 6, "ID");
+    headerTable.setHTML(2, 7, "Pin");
+
+    return headerTable;
   }
 }
