@@ -23,6 +23,7 @@ import com.google.gwt.junit.client.GWTTestCase;
  */
 public abstract class Gen2TestBase extends GWTTestCase {
   public static String MODULE = "com.google.gwt.gen2.Gen2Suite";
+  public static String RTL_MODULE = "com.google.gwt.gen2.Gen2Suite_rtl";
 
   @Override
   public String getModuleName() {
