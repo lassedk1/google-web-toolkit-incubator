@@ -15,15 +15,12 @@
  */
 package com.google.gwt.gen2.table.client.property;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * A {@link ColumnProperty} that provides information about the headers above a
  * column. The row indexes start from the bottom of the header, such that all
  * headers at the 0th index refer to the row directly above the data table.
  */
-public class HeaderProperty extends ColumnProperty {
+public class HeaderProperty extends HeaderPropertyBase {
   /**
    * Property type.
    */
@@ -39,24 +36,36 @@ public class HeaderProperty extends ColumnProperty {
     }
   };
 
-  private int headerCount;
-  private Map<Integer, Object> headers = new HashMap<Integer, Object>();
-
   /**
    * Get the header at the given row index.
    * 
    * @param row the row index from the bottom.
    * @return the header for the given row
    */
+  @Override
   public Object getHeader(int row) {
-    return headers.get(new Integer(row));
+    return super.getHeader(row);
+  }
+
+  /**
+   * Get the header at the given row and column index. Override this method if
+   * your header includes dynamic content that depends on the column index.
+   * 
+   * @param row the row index from the bottom
+   * @param column the column index at runtime
+   * @return the header for the given row
+   */
+  @Override
+  public Object getHeader(int row, int column) {
+    return getHeader(row);
   }
 
   /**
    * @return get the number of headers above the column
    */
+  @Override
   public int getHeaderCount() {
-    return headerCount;
+    return super.getHeaderCount();
   }
 
   /**
@@ -64,8 +73,9 @@ public class HeaderProperty extends ColumnProperty {
    * 
    * @param row the row index from the bottom
    */
+  @Override
   public void removeHeader(int row) {
-    headers.remove(new Integer(row));
+    super.removeHeader(row);
   }
 
   /**
@@ -76,9 +86,9 @@ public class HeaderProperty extends ColumnProperty {
    * @param row the row index from the bottom
    * @param header the header
    */
+  @Override
   public void setHeader(int row, Object header) {
-    headers.put(new Integer(row), header);
-    headerCount = Math.max(headerCount, row + 1);
+    super.setHeader(row, header);
   }
 
   /**
@@ -86,7 +96,8 @@ public class HeaderProperty extends ColumnProperty {
    * 
    * @param headerCount the number of headers
    */
+  @Override
   public void setHeaderCount(int headerCount) {
-    this.headerCount = headerCount;
+    super.setHeaderCount(headerCount);
   }
 }

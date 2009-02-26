@@ -242,6 +242,126 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
   }
 
   /**
+   * Generate a two row, column spanning footer.
+   */
+  public void testFooterGenerationColSpan() {
+    PagingScrollTable<List<Object>> table = getPagingScrollTable();
+    FixedWidthFlexTable footerTable = table.getFooterTable();
+    TableDefinition<List<Object>> tableDef = table.getTableDefinition();
+
+    // Setup the footers
+    List<ColumnDefinition<List<Object>, ?>> colDefs = tableDef.getVisibleColumnDefinitions();
+    int numColumns = colDefs.size();
+    for (int i = 0; i < numColumns; i++) {
+      AbstractColumnDefinition<List<Object>, ?> colDef = (AbstractColumnDefinition<List<Object>, ?>) colDefs.get(i);
+      colDef.setFooter(0, "Group");
+      colDef.setFooter(1, "Column");
+    }
+
+    // Test the footer table
+    table.setFooterGenerated(true);
+    assertEquals(numColumns, footerTable.getColumnCount());
+    assertEquals(1, footerTable.getCellCount(0));
+    assertEquals(1, footerTable.getCellCount(1));
+    assertEquals(2, footerTable.getRowCount());
+    assertEquals("Group", footerTable.getHTML(0, 0));
+    assertEquals("Column", footerTable.getHTML(1, 0));
+  }
+
+  /**
+   * Generate a two row, row spanning footer.
+   */
+  public void testFooterGenerationRowSpan() {
+    PagingScrollTable<List<Object>> table = getPagingScrollTable();
+    FixedWidthFlexTable footerTable = table.getFooterTable();
+    TableDefinition<List<Object>> tableDef = table.getTableDefinition();
+
+    // Setup the footers
+    List<ColumnDefinition<List<Object>, ?>> colDefs = tableDef.getVisibleColumnDefinitions();
+    int numColumns = colDefs.size();
+    for (int i = 0; i < numColumns; i++) {
+      AbstractColumnDefinition<List<Object>, ?> colDef = (AbstractColumnDefinition<List<Object>, ?>) colDefs.get(i);
+      colDef.setFooter(0, "Column " + i);
+      colDef.setFooter(1, "Column " + i);
+    }
+
+    // Test the footer table
+    table.setFooterGenerated(true);
+    assertEquals(numColumns, footerTable.getColumnCount());
+    assertEquals(numColumns, footerTable.getCellCount(0));
+    assertEquals(1, footerTable.getRowCount());
+    for (int i = 0; i < numColumns; i++) {
+      assertEquals("Column " + i, footerTable.getHTML(0, i));
+    }
+  }
+
+  /**
+   * Generate a two row, non spanning footer.
+   */
+  public void testFooterGenerationSimple() {
+    PagingScrollTable<List<Object>> table = getPagingScrollTable();
+    FixedWidthFlexTable footerTable = table.getFooterTable();
+    TableDefinition<List<Object>> tableDef = table.getTableDefinition();
+
+    // Setup the footers
+    List<ColumnDefinition<List<Object>, ?>> colDefs = tableDef.getVisibleColumnDefinitions();
+    int numColumns = colDefs.size();
+    for (int i = 0; i < numColumns; i++) {
+      AbstractColumnDefinition<List<Object>, ?> colDef = (AbstractColumnDefinition<List<Object>, ?>) colDefs.get(i);
+      colDef.setFooter(0, "Group " + i);
+      colDef.setFooter(1, "Column " + i);
+    }
+
+    // Test the footer table
+    table.setFooterGenerated(true);
+    assertEquals(numColumns, footerTable.getColumnCount());
+    assertEquals(numColumns, footerTable.getCellCount(0));
+    assertEquals(numColumns, footerTable.getCellCount(1));
+    assertEquals(2, footerTable.getRowCount());
+    for (int i = 0; i < numColumns; i++) {
+      assertEquals("Group " + i, footerTable.getHTML(0, i));
+      assertEquals("Column " + i, footerTable.getHTML(1, i));
+    }
+  }
+
+  /**
+   * Generate a two row, column spanning footer.
+   */
+  public void testFooterGenerationUneven() {
+    PagingScrollTable<List<Object>> table = getPagingScrollTable();
+    FixedWidthFlexTable footerTable = table.getFooterTable();
+    TableDefinition<List<Object>> tableDef = table.getTableDefinition();
+
+    // Setup the footers
+    List<ColumnDefinition<List<Object>, ?>> colDefs = tableDef.getVisibleColumnDefinitions();
+    int numColumns = colDefs.size();
+    for (int i = 0; i < numColumns; i++) {
+      AbstractColumnDefinition<List<Object>, ?> colDef = (AbstractColumnDefinition<List<Object>, ?>) colDefs.get(i);
+      colDef.setFooter(0, "Topic " + i);
+      if (i % 2 == 0) {
+        colDef.setFooter(1, "Group " + i);
+        colDef.setFooter(2, "Column " + i);
+      }
+    }
+
+    // Test the footer table
+    table.setFooterGenerated(true);
+    assertEquals(numColumns, footerTable.getColumnCount());
+    assertEquals(numColumns, footerTable.getCellCount(0));
+    assertEquals(numColumns, footerTable.getCellCount(1));
+    assertEquals(numColumns / 2, footerTable.getCellCount(2));
+    assertEquals(3, footerTable.getRowCount());
+    for (int i = 0; i < numColumns; i++) {
+      if (i % 2 == 0) {
+        assertEquals("Group " + i, footerTable.getHTML(1, i));
+      } else {
+        assertEquals("&nbsp;", footerTable.getHTML(1, i));
+      }
+      assertEquals("Topic " + i, footerTable.getHTML(0, i));
+    }
+  }
+
+  /**
    * Generate a two row, column spanning header.
    */
   public void testHeaderGenerationColSpan() {
@@ -355,7 +475,7 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
       if (i % 2 == 0) {
         assertEquals("Topic " + i, headerTable.getHTML(0, i));
       } else {
-        assertEquals("", headerTable.getHTML(0, i));
+        assertEquals("&nbsp;", headerTable.getHTML(0, i));
       }
       assertEquals("Column " + i, headerTable.getHTML(2, i));
     }
@@ -538,6 +658,14 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
       assertTrue(table.isHeaderGenerated());
       table.setHeaderGenerated(false);
       assertFalse(table.isHeaderGenerated());
+    }
+
+    // footer generation
+    {
+      table.setFooterGenerated(true);
+      assertTrue(table.isFooterGenerated());
+      table.setFooterGenerated(false);
+      assertFalse(table.isFooterGenerated());
     }
   }
 

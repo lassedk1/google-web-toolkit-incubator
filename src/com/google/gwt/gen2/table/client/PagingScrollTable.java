@@ -29,6 +29,7 @@ import com.google.gwt.gen2.table.client.TableModel.Callback;
 import com.google.gwt.gen2.table.client.TableModelHelper.ColumnSortList;
 import com.google.gwt.gen2.table.client.TableModelHelper.Request;
 import com.google.gwt.gen2.table.client.TableModelHelper.Response;
+import com.google.gwt.gen2.table.client.property.FooterProperty;
 import com.google.gwt.gen2.table.client.property.HeaderProperty;
 import com.google.gwt.gen2.table.client.property.MaximumWidthProperty;
 import com.google.gwt.gen2.table.client.property.MinimumWidthProperty;
@@ -179,7 +180,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     }
 
     public ColumnHeaderInfo(Object header, int rowSpan) {
-      this.header = (header == null) ? "" : header;
+      this.header = (header == null) ? "&nbsp;" : header;
       this.rowSpan = rowSpan;
     }
 
@@ -291,6 +292,11 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   private Request lastRequest = null;
 
   /**
+   * A boolean indicating that the footer should be generated automatically.
+   */
+  private boolean isFooterGenerated;
+
+  /**
    * A boolean indicating that the header should be generated automatically.
    */
   private boolean isHeaderGenerated;
@@ -348,6 +354,14 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   private RendererCallback tableRendererCallback = new RendererCallback() {
     public void onRendered() {
+      // Refresh the headers if needed
+      if (headersObsolete) {
+        refreshHeaderTable();
+        refreshFooterTable();
+        headersObsolete = false;
+      }
+
+      // Update the UI of the table
       getDataTable().clearIdealWidths();
       maybeFillWidth();
       resizeTablesVertically();
@@ -361,6 +375,11 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   private List<ColumnDefinition<RowType, ?>> visibleColumns = new ArrayList<ColumnDefinition<RowType, ?>>();
 
   /**
+   * The boolean indicating that the header tables are obsolete.
+   */
+  private boolean headersObsolete;
+
+  /**
    * Construct a new {@link PagingScrollTable}.
    * 
    * @param tableModel the underlying table model
@@ -371,6 +390,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     this(tableModel, new FixedWidthGrid(), new FixedWidthFlexTable(),
         tableDefinition);
     isHeaderGenerated = true;
+    isFooterGenerated = true;
   }
 
   /**
@@ -699,6 +719,13 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     return colDef.getColumnProperty(TruncationProperty.TYPE).isFooterTruncatable();
   }
 
+  /**
+   * @return true if the footer table is automatically generated
+   */
+  public boolean isFooterGenerated() {
+    return isFooterGenerated;
+  }
+
   @Override
   public boolean isHeaderColumnTruncatable(int column) {
     ColumnDefinition<RowType, ?> colDef = getColumnDefinition(column);
@@ -709,7 +736,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   }
 
   /**
-   * @return true if the header is automatically generated
+   * @return true if the header table is automatically generated
    */
   public boolean isHeaderGenerated() {
     return isHeaderGenerated;
@@ -743,6 +770,18 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   public void setEmptyTableWidget(Widget emptyTableWidget) {
     emptyTableWidgetWrapper.setWidget(emptyTableWidget);
+  }
+
+  /**
+   * Set whether or not the footer table should be automatically generated.
+   * 
+   * @param isGenerated true to enable, false to disable
+   */
+  public void setFooterGenerated(boolean isGenerated) {
+    this.isFooterGenerated = isGenerated;
+    if (isGenerated) {
+      refreshFooterTable();
+    }
   }
 
   /**
@@ -907,6 +946,13 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   }
 
   /**
+   * @return the list of current visible column definitions
+   */
+  protected List<ColumnDefinition<RowType, ?>> getVisibleColumnDefinitions() {
+    return visibleColumns;
+  }
+
+  /**
    * Insert a row into the table relative to the total number of rows.
    * 
    * @param beforeRow the row index
@@ -940,31 +986,82 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   }
 
   /**
-   * Update the header table based on the new {@link ColumnDefinition}.
+   * Update the footer table based on the new {@link ColumnDefinition}.
    */
-  protected void refreshHeaderTable() {
-    // Return if the header is not auto generated
-    if (!isHeaderGenerated || visibleColumns == null) {
+  protected void refreshFooterTable() {
+    if (!isFooterGenerated) {
       return;
     }
 
-    // Reset the header table
-    FixedWidthFlexTable headerTable = getHeaderTable();
-    int rowCount = headerTable.getRowCount();
-    for (int i = 0; i < rowCount; i++) {
-      headerTable.removeRow(0);
+    // Generate the list of lists of ColumnHeaderInfo.
+    List<List<ColumnHeaderInfo>> allInfos = new ArrayList<List<ColumnHeaderInfo>>();
+    int columnCount = visibleColumns.size();
+    int footerCounts[] = new int[columnCount];
+    int maxFooterCount = 0;
+    for (int col = 0; col < columnCount; col++) {
+      // Get the header property.
+      ColumnDefinition<RowType, ?> colDef = visibleColumns.get(col);
+      FooterProperty prop = colDef.getColumnProperty(FooterProperty.TYPE);
+      int footerCount = prop.getFooterCount();
+      footerCounts[col] = footerCount;
+      maxFooterCount = Math.max(maxFooterCount, footerCount);
+
+      // Add each ColumnHeaderInfo
+      List<ColumnHeaderInfo> infos = new ArrayList<ColumnHeaderInfo>();
+      ColumnHeaderInfo prev = null;
+      for (int row = 0; row < footerCount; row++) {
+        Object footer = prop.getFooter(row, col);
+        if (prev != null && prev.header.equals(footer)) {
+          prev.incrementRowSpan();
+        } else {
+          prev = new ColumnHeaderInfo(footer);
+          infos.add(prev);
+        }
+      }
+      allInfos.add(infos);
     }
 
-    // Generate the list of lists of ColumnHeaderInfo
+    // Return early if there is no footer
+    if (maxFooterCount == 0) {
+      return;
+    }
+
+    // Fill in missing rows
+    for (int col = 0; col < columnCount; col++) {
+      int footerCount = footerCounts[col];
+      if (footerCount < maxFooterCount) {
+        allInfos.get(col).add(
+            new ColumnHeaderInfo(null, maxFooterCount - footerCount));
+      }
+    }
+
+    // Ensure that we have a footer table
+    if (getFooterTable() == null) {
+      setFooterTable(new FixedWidthFlexTable());
+    }
+
+    // Refresh the table
+    refreshHeaderTable(getFooterTable(), allInfos, false);
+  }
+
+  /**
+   * Update the header table based on the new {@link ColumnDefinition}.
+   */
+  protected void refreshHeaderTable() {
+    if (!isHeaderGenerated) {
+      return;
+    }
+
+    // Generate the list of lists of ColumnHeaderInfo.
     List<List<ColumnHeaderInfo>> allInfos = new ArrayList<List<ColumnHeaderInfo>>();
     int columnCount = visibleColumns.size();
     int headerCounts[] = new int[columnCount];
     int maxHeaderCount = 0;
     for (int col = 0; col < columnCount; col++) {
-      // Get ColumnDefinition info
+      // Get the header property.
       ColumnDefinition<RowType, ?> colDef = visibleColumns.get(col);
-      HeaderProperty headerProp = colDef.getColumnProperty(HeaderProperty.TYPE);
-      int headerCount = headerProp.getHeaderCount();
+      HeaderProperty prop = colDef.getColumnProperty(HeaderProperty.TYPE);
+      int headerCount = prop.getHeaderCount();
       headerCounts[col] = headerCount;
       maxHeaderCount = Math.max(maxHeaderCount, headerCount);
 
@@ -972,7 +1069,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       List<ColumnHeaderInfo> infos = new ArrayList<ColumnHeaderInfo>();
       ColumnHeaderInfo prev = null;
       for (int row = 0; row < headerCount; row++) {
-        Object header = headerProp.getHeader(row);
+        Object header = prop.getHeader(row, col);
         if (prev != null && prev.header.equals(header)) {
           prev.incrementRowSpan();
         } else {
@@ -981,6 +1078,11 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
         }
       }
       allInfos.add(infos);
+    }
+
+    // Return early if there is no header
+    if (maxHeaderCount == 0) {
+      return;
     }
 
     // Fill in missing rows
@@ -992,82 +1094,8 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       }
     }
 
-    // Generate the header table
-    FlexCellFormatter formatter = headerTable.getFlexCellFormatter();
-    List<ColumnHeaderInfo> prevInfos = null;
-    for (int col = 0; col < columnCount; col++) {
-      List<ColumnHeaderInfo> infos = allInfos.get(col);
-      int row = 0;
-      for (ColumnHeaderInfo info : infos) {
-        // Get the actual row and cell index
-        int rowSpan = info.getRowSpan();
-        int cell = 0;
-        if (headerTable.getRowCount() > row) {
-          cell = headerTable.getCellCount(row);
-        }
-
-        // Compare to the cell in the previous column
-        if (prevInfos != null) {
-          boolean headerAdded = false;
-          int prevRow = 0;
-          for (ColumnHeaderInfo prevInfo : prevInfos) {
-            // Increase the colSpan of the previous cell
-            if (prevRow == row && info.equals(prevInfo)) {
-              int colSpan = formatter.getColSpan(row, cell - 1);
-              formatter.setColSpan(row, cell - 1, colSpan + 1);
-              headerAdded = true;
-              break;
-            }
-            prevRow += prevInfo.getRowSpan();
-          }
-
-          if (headerAdded) {
-            row += rowSpan;
-            continue;
-          }
-        }
-
-        // Set the new header
-        Object header = info.getHeader();
-        if (header instanceof Widget) {
-          headerTable.setWidget(row, cell, (Widget) header);
-        } else {
-          headerTable.setHTML(row, cell, header.toString());
-        }
-
-        // Update the rowSpan
-        if (rowSpan > 1) {
-          formatter.setRowSpan(row, cell, rowSpan);
-        }
-
-        // Increment the row
-        row += rowSpan;
-      }
-
-      // Increment the previous info
-      prevInfos = infos;
-    }
-
-    // Insert the checkbox column
-    SelectionPolicy selectionPolicy = getDataTable().getSelectionPolicy();
-    if (selectionPolicy.hasInputColumn()) {
-      // Get the select all box
-      Widget box = null;
-      if (getDataTable().getSelectionPolicy() == SelectionPolicy.CHECKBOX) {
-        box = getSelectAllWidget();
-      }
-
-      // Add the offset column
-      headerTable.insertCell(0, 0);
-      if (box != null) {
-        headerTable.setWidget(0, 0, box);
-      } else {
-        headerTable.setHTML(0, 0, "&nbsp;");
-      }
-      formatter.setRowSpan(0, 0, headerTable.getRowCount());
-      formatter.setHorizontalAlignment(0, 0,
-          HasHorizontalAlignment.ALIGN_CENTER);
-    }
+    // Refresh the table
+    refreshHeaderTable(getHeaderTable(), allInfos, true);
   }
 
   /**
@@ -1079,7 +1107,16 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
         tableDefinition.getVisibleColumnDefinitions());
     if (!colDefs.equals(visibleColumns)) {
       visibleColumns = colDefs;
-      refreshHeaderTable();
+      headersObsolete = true;
+    } else {
+      // Check if any of the headers are dynamic
+      for (ColumnDefinition<RowType, ?> colDef : colDefs) {
+        if (colDef.getColumnProperty(HeaderProperty.TYPE).isDynamic()
+            || colDef.getColumnProperty(FooterProperty.TYPE).isDynamic()) {
+          headersObsolete = true;
+          return;
+        }
+      }
     }
   }
 
@@ -1165,6 +1202,107 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       getDataWrapper().getStyle().setProperty("display", "none");
     } else {
       getDataWrapper().getStyle().setProperty("display", "");
+    }
+  }
+
+  /**
+   * Update the header or footer tables based on the new
+   * {@link ColumnDefinition}.
+   * 
+   * @param table the header or footer table
+   * @param allInfos the header info
+   * @param isHeader false if refreshing the footer table
+   */
+  private void refreshHeaderTable(FixedWidthFlexTable table,
+      List<List<ColumnHeaderInfo>> allInfos, boolean isHeader) {
+    // Return if we have no column definitions.
+    if (visibleColumns == null) {
+      return;
+    }
+
+    // Reset the header table.
+    int rowCount = table.getRowCount();
+    for (int i = 0; i < rowCount; i++) {
+      table.removeRow(0);
+    }
+
+    // Generate the header table
+    int columnCount = allInfos.size();
+    FlexCellFormatter formatter = table.getFlexCellFormatter();
+    List<ColumnHeaderInfo> prevInfos = null;
+    for (int col = 0; col < columnCount; col++) {
+      List<ColumnHeaderInfo> infos = allInfos.get(col);
+      int row = 0;
+      for (ColumnHeaderInfo info : infos) {
+        // Get the actual row and cell index
+        int rowSpan = info.getRowSpan();
+        int cell = 0;
+        if (table.getRowCount() > row) {
+          cell = table.getCellCount(row);
+        }
+
+        // Compare to the cell in the previous column
+        if (prevInfos != null) {
+          boolean headerAdded = false;
+          int prevRow = 0;
+          for (ColumnHeaderInfo prevInfo : prevInfos) {
+            // Increase the colSpan of the previous cell
+            if (prevRow == row && info.equals(prevInfo)) {
+              int colSpan = formatter.getColSpan(row, cell - 1);
+              formatter.setColSpan(row, cell - 1, colSpan + 1);
+              headerAdded = true;
+              break;
+            }
+            prevRow += prevInfo.getRowSpan();
+          }
+
+          if (headerAdded) {
+            row += rowSpan;
+            continue;
+          }
+        }
+
+        // Set the new header
+        Object header = info.getHeader();
+        if (header instanceof Widget) {
+          table.setWidget(row, cell, (Widget) header);
+        } else {
+          table.setHTML(row, cell, header.toString());
+        }
+
+        // Update the rowSpan
+        if (rowSpan > 1) {
+          formatter.setRowSpan(row, cell, rowSpan);
+        }
+
+        // Increment the row
+        row += rowSpan;
+      }
+
+      // Increment the previous info
+      prevInfos = infos;
+    }
+
+    // Insert the checkbox column
+    SelectionPolicy selectionPolicy = getDataTable().getSelectionPolicy();
+    if (selectionPolicy.hasInputColumn()) {
+      // Get the select all box
+      Widget box = null;
+      if (isHeader
+          && getDataTable().getSelectionPolicy() == SelectionPolicy.CHECKBOX) {
+        box = getSelectAllWidget();
+      }
+
+      // Add the offset column
+      table.insertCell(0, 0);
+      if (box != null) {
+        table.setWidget(0, 0, box);
+      } else {
+        table.setHTML(0, 0, "&nbsp;");
+      }
+      formatter.setRowSpan(0, 0, table.getRowCount());
+      formatter.setHorizontalAlignment(0, 0,
+          HasHorizontalAlignment.ALIGN_CENTER);
     }
   }
 

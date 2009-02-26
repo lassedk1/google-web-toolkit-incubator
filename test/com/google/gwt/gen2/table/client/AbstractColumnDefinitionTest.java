@@ -204,6 +204,21 @@ public class AbstractColumnDefinitionTest extends Gen2TestBase {
       assertEquals(2, colDef.getHeaderCount());
       assertEquals(header, colDef.getHeader(1));
     }
+
+    // footer
+    {
+      AbstractColumnDefinition<Object, Object> colDef = new CustomColumnDefinition<Object, Object>();
+      assertEquals(0, colDef.getFooterCount());
+      assertNull(colDef.getFooter(0));
+
+      colDef.setFooterCount(1);
+      assertEquals(1, colDef.getFooterCount());
+
+      String footer = "footer";
+      colDef.setFooter(1, footer);
+      assertEquals(2, colDef.getFooterCount());
+      assertEquals(footer, colDef.getFooter(1));
+    }
   }
 
   public void testProperties() {
