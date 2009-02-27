@@ -694,6 +694,14 @@ public class FastTree extends Panel implements HasClickHandlers,
     // Logical detach.
     childWidgets.remove(widget);
   }
+  
+  // @VisibleForTesting
+  FastTreeItem findDeepestOpenChild(FastTreeItem item) {
+    if (!item.isOpen() || item.getChildCount() == 0) {
+      return item;
+    }
+    return findDeepestOpenChild(item.getChild(item.getChildCount() - 1));
+  }
 
   /**
    * Helper to build the root item.
@@ -786,13 +794,6 @@ public class FastTree extends Panel implements HasClickHandlers,
       }
     }
     return;
-  }
-
-  private FastTreeItem findDeepestOpenChild(FastTreeItem item) {
-    if (!item.isOpen()) {
-      return item;
-    }
-    return findDeepestOpenChild(item.getChild(item.getChildCount() - 1));
   }
 
   private FastTreeItem findItemByChain(ArrayList<Element> chain, int index,

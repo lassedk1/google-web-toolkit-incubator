@@ -271,6 +271,24 @@ public class FastTreeTest extends Gen2TestBase {
     assertTrue(item3.isSelected());
     assertFalse(item1.isSelected());
   }
+  
+  public void testFindDeepestOpenChild() {
+    FastTree tree = createBeforeSelectTestableTree(false);
+    FastTreeItem item = tree.getItem(0);
+    item.setState(true);
+    tree.setSelectedItem(item);
+    assertTrue(item.isOpen());
+    assertEquals(2, item.getChildCount());
+    
+    // no try something funky
+    item.removeItems();
+    
+    try {
+      assertNotNull(tree.findDeepestOpenChild(item));
+    } catch (IndexOutOfBoundsException iobe) {
+      fail("Out of bound exception thrown!");
+    }
+  }
 
   /**
    * helper method for testing beforeSelect event.
