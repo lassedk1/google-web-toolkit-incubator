@@ -568,17 +568,18 @@ public class FastTree extends Panel implements HasClickHandlers,
       boolean moveFocus) {
     // 'root' isn't a real item, so don't let it be selected
     // (some cases in the keyboard handler will try to do this)
-    if (item == getTreeRoot()) {
+    if (item == getTreeRoot() || curSelection == item) {
       return;
     }
 
-    if (curSelection == item) {
-      return;
+    if (fireEvents) {
+       BeforeSelectionEvent<FastTreeItem> event = beforeSelected(item);
+       if (event != null && event.isCanceled()) {
+         return;
+       }
     }
+    
     if (curSelection != null) {
-      if (curSelection.beforeSelectionLost() == false) {
-        return;
-      }
       curSelection.setSelection(false, fireEvents);
     }
 
@@ -607,7 +608,11 @@ public class FastTree extends Panel implements HasClickHandlers,
    * 
    * @returns true if element should be processed normally, false otherwise.
    *          Default returns true.
+   *          
+   * @deprecated Add a beforeSelectionHandler by calling 
+   *             addBeforeSelectionHandler instead. 
    */
+  @Deprecated
   protected boolean processElementClicked(FastTreeItem item) {
     return true;
   }
@@ -639,7 +644,6 @@ public class FastTree extends Panel implements HasClickHandlers,
   /**
    * Called after the tree item is closed.
    */
-
   void afterClose(FastTreeItem fastTreeItem) {
     CloseEvent.fire(this, fastTreeItem);
   }
@@ -666,8 +670,8 @@ public class FastTree extends Panel implements HasClickHandlers,
     BeforeOpenEvent.fire(this, fastTreeItem, isFirstTime);
   }
 
-  void beforeSelected(FastTreeItem fastTreeItem) {
-    BeforeSelectionEvent.fire(this, fastTreeItem);
+  BeforeSelectionEvent<FastTreeItem> beforeSelected(FastTreeItem fastTreeItem) {
+    return BeforeSelectionEvent.fire(this, fastTreeItem);
   }
 
   /*
@@ -680,7 +684,6 @@ public class FastTree extends Panel implements HasClickHandlers,
   /**
    * Called when a tree item is selected.
    */
-
   void onSelected(FastTreeItem fastTreeItem) {
     SelectionEvent.fire(this, fastTreeItem);
   }
@@ -766,7 +769,7 @@ public class FastTree extends Panel implements HasClickHandlers,
     };
   }-*/;
 
-  private boolean elementClicked(FastTreeItem root, Event event) {
+  private void elementClicked(FastTreeItem root, Event event) {
     Element target = DOM.eventGetTarget(event);
     ArrayList<Element> chain = new ArrayList<Element>();
     collectElementChain(chain, getElement(), target);
@@ -776,14 +779,13 @@ public class FastTree extends Panel implements HasClickHandlers,
         item.setState(!item.isOpen(), true);
         moveSelectionBar(curSelection);
         disableSelection(target);
-        return false;
+        return;
       }
       if (processElementClicked(item)) {
         onSelection(item, true, !shouldTreeDelegateFocusToElement(target));
-        return true;
       }
     }
-    return false;
+    return;
   }
 
   private FastTreeItem findDeepestOpenChild(FastTreeItem item) {

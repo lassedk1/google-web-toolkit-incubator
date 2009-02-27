@@ -573,14 +573,6 @@ public class FastTreeItem extends UIObject implements HasFastTreeItems, HasHTML 
     return isFirstTime;
   }
 
-  /**
-   * Called when tree item is being unselected. Returning <code>false</code>
-   * cancels the unselection.
-   */
-  boolean beforeSelectionLost() {
-    return true;
-  }
-
   void clearTree() {
     if (tree != null) {
       if (widget != null) {
@@ -657,7 +649,6 @@ public class FastTreeItem extends UIObject implements HasFastTreeItems, HasHTML 
    *          it.
    */
   void setSelection(boolean selected, boolean fireEvents) {
-    tree.beforeSelected(this);
     setStyleName(getControlElement(), css.selected(), selected);
     if (selected && fireEvents) {
       onSelected();
