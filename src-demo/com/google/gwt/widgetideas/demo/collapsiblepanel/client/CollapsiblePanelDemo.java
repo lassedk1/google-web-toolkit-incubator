@@ -18,7 +18,7 @@ package com.google.gwt.widgetideas.demo.collapsiblepanel.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.gen2.logging.shared.Log;
+import com.google.gwt.libideas.logging.shared.Log;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
@@ -87,7 +87,6 @@ public class CollapsiblePanelDemo implements EntryPoint {
    * This is the entry point method.
    */
   public void onModuleLoad() {
-   
     try {
 
       // Some random contents to make the tree interesting.
@@ -97,7 +96,6 @@ public class CollapsiblePanelDemo implements EntryPoint {
       // The panel.
       final CollapsiblePanel panel = new CollapsiblePanel();
       String value = Location.getParameter("collapsed");
-      Window.alert("bo");
       if (value != null) {
         value = value.trim();
         if (value.equals("true")) {
