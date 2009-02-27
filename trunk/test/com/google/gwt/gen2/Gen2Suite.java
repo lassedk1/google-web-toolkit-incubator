@@ -17,6 +17,7 @@
 package com.google.gwt.gen2;
 
 import com.google.gwt.gen2.commonwidget.client.DecoratorTest;
+import com.google.gwt.gen2.complexpanel.client.CollapsiblePanelTest;
 import com.google.gwt.gen2.event.dom.client.GWTEventsTest;
 import com.google.gwt.gen2.event.shared.JSHanderRegistryTest;
 import com.google.gwt.gen2.logging.client.LogClientTest;
@@ -40,6 +41,7 @@ public class Gen2Suite {
     suite.addTestSuite(DecoratorTest.class);
     suite.addTestSuite(LogServerTest.class);
     suite.addTestSuite(LogClientTest.class);
+    suite.addTestSuite(CollapsiblePanelTest.class);
     return suite;
   }
 }
