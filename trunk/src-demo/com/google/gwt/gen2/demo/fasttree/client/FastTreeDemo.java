@@ -18,6 +18,8 @@ package com.google.gwt.gen2.demo.fasttree.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.OpenEvent;
@@ -62,7 +64,8 @@ public class FastTreeDemo implements EntryPoint {
     p.add(lazyTree(), "Lazy tree");
     p.add(verboseTree(), "Verbose tree");
     p.add(crazyTree(), "Crazy tree");
-    p.add(dynamicTree(), "DynamicTree");
+    p.add(dynamicTree(), "Dynamic tree");
+    p.add(cancelEventTree(), "Cancel event tree");
 
     return p;
   }
@@ -242,6 +245,30 @@ public class FastTreeDemo implements EntryPoint {
     return hebrewTree;
   }
 
+  private Widget cancelEventTree() {
+    final FastTree cancelEventTree = new FastTree();
+    FastTreeItem firstBranch = cancelEventTree.addItem("Select Me!");
+    firstBranch.addItem("No! Select Me!");
+    firstBranch.addItem("No! Select Me!");
+    firstBranch.addItem("No! Select Me!");
+    FastTreeItem secondBranch = cancelEventTree.addItem("Don't Select me!");
+    secondBranch.addItem("Not me!");
+    secondBranch.addItem("Not me!");
+    secondBranch.addItem("Not me!");
+    
+    cancelEventTree.addBeforeSelectionHandler(
+        new BeforeSelectionHandler<FastTreeItem>() {
+          public void onBeforeSelection(BeforeSelectionEvent<FastTreeItem> event) {
+              if (!Window.confirm("Continue?")) {
+                event.cancel();
+              }
+          }
+    });
+    
+    return cancelEventTree;
+  }
+
+  
   private void lazyCreateChild(final HasFastTreeItems parent, final int index,
       final int children) {
 

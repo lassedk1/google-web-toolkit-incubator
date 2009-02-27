@@ -48,6 +48,9 @@ import java.util.NoSuchElementException;
 /**
  * A standard hierarchical tree widget. The tree contains a hierarchy of
  * {@link FastTreeItem}s.
+ * 
+ * Explicitly call FastTree.addDefaultCSS() to include the default style sheet.
+ * 
  * <p>
  * <h3>CSS Style Rules</h3>
  * <ul class='css'>
@@ -109,6 +112,9 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
 
   /**
    * Add the default style sheet and images.
+   * 
+   * This method is not called by the Tree and should be called by explicitly
+   * by the consumer to include the default style sheet. 
    */
   public static void addDefaultCSS() {
     DefaultResources instance = GWT.create(DefaultResources.class);
