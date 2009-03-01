@@ -235,7 +235,7 @@ There are type matching issues here. The ui:field of a DOM element is a string i
 
 </blockquote>
 
-=Using ImmutableResourceBundles (e.g. CssResource) with a UiBinder=
+=Using an ImmutableResourceBundle (e.g. CssResource) with a UiBinder=
 
 {{{
 <!-- LogoNamePanel.ui.xml -->
