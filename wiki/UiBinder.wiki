@@ -68,9 +68,11 @@ Make a simple generated UI, with a named element, and without widgets.
 {{{
 <!-- HelloWorld.ui.xml -->
 
-<div xmlns:ui='urn:ui:com.google.gwt.uibinder'
-  Hello, <span ui:field="nameSpan"/>.
-</div>
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'>
+  <div>
+    Hello, <span ui:field="nameSpan"/>.
+  </div>
+</ui:UiBinder>
 }}}
 
 {{{
@@ -82,8 +84,8 @@ public class HelloWorld extends UIObject { // Could extend Widget instead
   @UiField SpanElement nameSpan;
 
   public HelloWorld(String name) {
-    // call setElement(), set nameSpan
-    uiBinder.createAndBindUi(this);
+    // call to createAndBindUi sets this.nameSpan
+    setElement(uiBinder.createAndBindUi(this));
     nameSpan.setInnerText(name);
   }
 }
@@ -100,10 +102,13 @@ Make a simple widget-based UI
 {{{
 <!-- HelloWidgetWorld.ui.xml -->
 
-<g:HTMLPanel xmlns:ui='urn:ui:com.google.gwt.uibinder'
+<ui:UiBinder 
+  xmlns:ui='urn:ui:com.google.gwt.uibinder'
   xmlns:g='import:com.google.gwt.user.client.ui'>
-  Hello, <g:ListBox ui:field="listBox"/>.
-</g:HTMLPanel>
+  <g:HTMLPanel>
+    Hello, <g:ListBox ui:field="listBox"/>.
+  </g:HTMLPanel>
+</ui:UiBinder>
 }}}
 
 {{{
@@ -115,8 +120,8 @@ public class HelloWidgetWorld extends Composite {
   @UiField ListBox listBox;
 
   public HelloWidgetWorld(String... names) {
-    // call initWidget(), set listBox
-    uiBinder.createAndBindUi(this);
+    // sets listBox
+    initWidget(uiBinder.createAndBindUi(this));
     for (String name : names) { listBox.addItem(name); }
   }
 }
@@ -135,10 +140,11 @@ Note that this example uses the same ui.xml file as the first. Templates need ha
 {{{
 <!-- HelloWorld.ui.xml -->
 
-<span xmlns:ui='urn:ui:com.google.gwt.uibinder'
-  xmlns:g='import:com.google.gwt.user.client.ui'>
-  Hello, <span ui:field='nameSpan'/>.
-</span>
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'>
+  <div>
+    Hello, <span ui:field="nameSpan"/>.
+  </div>
+</ui:UiBinder>
 }}}
 
 {{{
@@ -173,11 +179,12 @@ You want to make your personal variant on the single most common widget, a check
 {{{
 <!-- LabeledCheckBox.ui.xml -->
 
-<span xmlns:ui='urn:ui:com.google.gwt.uibinder'
-  xmlns:g='import:com.google.gwt.user.client.ui'>
-  <input type="checkbox" ui:field="myCheckBox">
-  <label g:for="myCheckBox" ui:field="myLabel"/>
-</span>
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'>
+  <span>
+    <input type="checkbox" ui:field="myCheckBox">
+    <label ui:for="myCheckBox" ui:field="myLabel"/>
+  </span>
+</ui>
 }}}
 
 {{{
@@ -188,7 +195,7 @@ public class LabeledCheckBox extends Widget {
   @UiField InputElement myCheckBox;
   @UiField LabelElement myLabel;
 
-  public LabeledCheckBox() { uiBinder.createAndBindUi(this); }
+  public LabeledCheckBox() { setElement(uiBinder.createAndBindUi(this)); }
  
   public void setValue(boolean b) { myCheckBox.setChecked(b); }
 
@@ -200,7 +207,7 @@ public class LabeledCheckBox extends Widget {
 }
 }}}
 
-The proposal here is that a g: prefix on any attribute other than id fills it with the id generated for a corresponding ui:field.
+The proposal here is that a ui: prefix on any attribute other than id fills it with the id generated for a corresponding ui:field.
 
 There are type matching issues here. The ui:field of a DOM element is a string id, while that for a UIObject is typed. So, this should fail with a type mismatch:
 
@@ -217,31 +224,37 @@ There are type matching issues here. The ui:field of a DOM element is a string i
   language, something like:
 
 {{{
-<span xmlns:ui='urn:ui:com.google.gwt.uibinder'
-  xmlns:g='import:com.google.gwt.user.client.ui'>
-  <input type="checkbox" ui:field="myCheckBox">
-  <label for="{myCheckBox}" ui:field="myLabel"/>
-</span>
+<ui:UiBinder
+  xmlns:ui='urn:ui:com.google.gwt.uibinder'>
+  <span>
+    <input type="checkbox" ui:field="myCheckBox">
+    <label for="{myCheckBox}" ui:field="myLabel"/>
+  </span>
+</ui:UiBinder>
 }}}
 
 </blockquote>
-=Using ClientBundles with a UiBinder=
+
+=Using ImmutableResourceBundles (e.g. CssResource) with a UiBinder=
 
 {{{
 <!-- LogoNamePanel.ui.xml -->
-<g:HTMLPanel xmlns:ui='urn:ui:com.google.gwt.uibinder'
+<ui:UiBinder
+  xmlns:ui='urn:ui:com.google.gwt.uibinder'
   xmlns:g="import:com.google.gwt.user.client.ui"
   xmlns:res="urn:with:com.my.app.widgets.logoname.Resources">
+  <g:HTMLPanel>
 
-  <img res:apply="logoImage">
+    <img res:apply="logoImage">
 
-  <div res:class="style.mainBlock">
-    <div res:apply="style.userPictureSprite">
-      Well hello there
-      <span res:class="style.nameSpan" ui:field="userNameField"/>
+    <div res:class="style.mainBlock">
+      <div res:apply="style.userPictureSprite">
+        Well hello there
+        <span res:class="style.nameSpan" ui:field="userNameField"/>
+      </div>
     </div>
-  </div>
-</g:HTMLPanel>
+  </g:HTMLPanel>
+</ui:UiBinder>
 }}}
 
 {{{
@@ -252,7 +265,7 @@ public class LogoNamePanel extends Composite {
   @UiField SpanElement nameSpan;
 
   public LogoNamePanel() {
-    uiBinder.createAndBindUi(this);
+    initWidget(uiBinder.createAndBindUi(this));
   }
 
   public void setUserName(String userName) {
@@ -292,15 +305,19 @@ ClientBundle interface.
   Here again we should use our little expression language:
 
 {{{
-<g:HTMLPanel xmlns:ui='urn:ui:com.google.gwt.uibinder'
+<ui:UiBinder
+  xmlns:ui='urn:ui:com.google.gwt.uibinder'
   xmlns:g="import:com.google.gwt.user.client.ui"
   xmlns:res="urn:with:com.my.app.widgets.logoname.Resources">
 
-  <div class="{res.style.mainBlock}">
-    Well hello there
-    <span class="{res.style.nameSpan}" ui:field="userNameField"/>
-  </div>
-</g:HTMLPanel>
+  <g:HTMLPanel>
+
+    <div class="{res.style.mainBlock}">
+      Well hello there
+      <span class="{res.style.nameSpan}" ui:field="userNameField"/>
+    </div>
+  </g:HTMLPanel>
+</ui:UiBinder>
 }}}
 
 </blockquote>
@@ -320,11 +337,30 @@ public class Resourceful extends Composite {
   private final Resources resources;
 
   public Resourceful(Resources resources) {
+    this.resources = resources;
     uiBinder.createAndBindUi(this);
   }
 
   @UiFactory Resources getResources() {
     return resources;
+  }
+}
+}}}
+
+This can be even more concise:
+
+{{{
+public class Resourceful extends Composite {
+ 
+  interface MyUiBinder extends UiBinder<Widget, Resourceful>;
+  private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
+
+  @UiField SpanElement widgetyText;
+  @UiField(provided=true) final Resources resources;
+
+  public Resourceful(Resources resources) {
+    this.resources = resources;
+    uiBinder.createAndBindUi(this);
   }
 }
 }}}
@@ -341,14 +377,17 @@ You use it in a template.
 
 {{{
 <!-- UserDashboard.ui.xml -->
-<g:HTMLPanel xmlns:ui='urn:ui:com.google.gwt.uibinder'
+< ui:UiBinder
+  xmlns:ui='urn:ui:com.google.gwt.uibinder'
   xmlns:g='import:com.google.gwt.user.client.ui'
   xmlns:my='import:com.my.app.widgets' >
 
-  <my:WeatherReport ui:field="weather"/>
-  <my:Stocks ui:field="stocks"/>
-  <my:CricketScores ui:field="scores" />
-</g:HTMLPanel>
+  <g:HTMLPanel>
+    <my:WeatherReport ui:field="weather"/>
+    <my:Stocks ui:field="stocks"/>
+    <my:CricketScores ui:field="scores" />
+  </g:HTMLPanel>
+</ui:UiBinder>
 }}}
 
 {{{
@@ -368,9 +407,10 @@ An error results:
 
 UserDashboard.ui.xml:7:2 [ERROR] com.my.app.widgets.CricketScores
 has no default (zero args) constructor. You can define a
-@UiFactory annotated method on UserDashboard to create an instance,
-or annotate a constructor of CricketScores with @UiConstructor to
-allow its arguments to be provided by the template.
+@UiFactory annotated method on UserDashboard to create an instance;
+mark a CrickectScores field of UserDashboard with @UiField(provided=true)
+and put an instance there; or annotate a constructor of CricketScores with 
+@UiConstructor to allow its arguments to be provided by the template.
 
 }}}
 
@@ -389,7 +429,7 @@ public class UserDashboard extends Composite {
   }
 
   /** Used by MyUiBinder to instantiate CricketScores */
-  @UiFactory CricketScores CricketScores() {
+  @UiFactory CricketScores makeCricketScores() { // method name is insignificant
     return new CricketScores(teamNames);
   }
 }
@@ -447,6 +487,24 @@ public @UiConstructor CricketScores(String... teamNames) {...}
 </g:HTMLPanel>
 }}}
 
+or fill in a field marked with @UiField(provided=true):
+
+{{{
+public class UserDashboard extends Composite {
+  interface MyUiBinder extends UiBinder<Widget, UserDashboard>;
+  private static final MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
+
+  @UiField(provided=true)
+  final CricketScores cricketScores; // cannot be private
+
+  public UserDashboard(CricketScores cricketScores) {
+    // DI fans take note!
+    this.cricketScores = cricketScores;
+    uiBinder.createAndBindUi(this);
+  }
+}
+}}}
+
 =Apply different xml templates to the same widget=
 
 You're an MVC developer. You have a nice view interface, and a templated Widget that implements it. How might you use several different xml templates for the same view?
@@ -454,8 +512,8 @@ You're an MVC developer. You have a nice view interface, and a templated Widget 
 {{{
 public class FooPickerController {
   public interface Display {
-    HasText titleField();
-    SourcesChangeEvents pickerSelect();
+    HasText getTitleField();
+    SourcesChangeEvents getPickerSelect();
   }
 
   public void setDisplay(FooPickerDisplay display) { ... }
@@ -472,8 +530,15 @@ public class FooPickerDisplay extends Composite
   interface BlueBinder extends UiBinder<Widget, FooPickerDisplay> {}
   private static BlueBinder blueBinder = GWT.create(MyUiBinder.class);
 
-  HasText titleField();
-  SourcesChangeEvents pickerSelect();
+  @UiField HasText titleField;
+  @UiField SourcesChangeEvents pickerSelect;
+
+  public HasText getTitleField() {
+    return titleField;
+  }
+  public SourcesChangeEvents getPickerSelect() {
+    return pickerSelect;
+  }
 
   protected FooPickerDisplay(UiBinder<Widget, FooPickerDisplay> binder) {
     uiBinder.createAndBindUi(this);
