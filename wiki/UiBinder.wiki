@@ -70,7 +70,7 @@ Make a simple generated UI, with a named element, and without widgets.
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'>
   <div>
-    Hello, <span ui:field="nameSpan"/>.
+    Hello, <span ui:field='nameSpan'/>.
   </div>
 </ui:UiBinder>
 }}}
@@ -106,7 +106,7 @@ Make a simple widget-based UI
   xmlns:ui='urn:ui:com.google.gwt.uibinder'
   xmlns:g='import:com.google.gwt.user.client.ui'>
   <g:HTMLPanel>
-    Hello, <g:ListBox ui:field="listBox"/>.
+    Hello, <g:ListBox ui:field='listBox'/>.
   </g:HTMLPanel>
 </ui:UiBinder>
 }}}
@@ -142,7 +142,7 @@ Note that this example uses the same ui.xml file as the first. Templates need ha
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'>
   <div>
-    Hello, <span ui:field="nameSpan"/>.
+    Hello, <span ui:field='nameSpan'/>.
   </div>
 </ui:UiBinder>
 }}}
@@ -181,8 +181,8 @@ You want to make your personal variant on the single most common widget, a check
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'>
   <span>
-    <input type="checkbox" ui:field="myCheckBox">
-    <label ui:for="myCheckBox" ui:field="myLabel"/>
+    <input type='checkbox' ui:field='myCheckBox'>
+    <label ui:for='myCheckBox' ui:field='myLabel'/>
   </span>
 </ui>
 }}}
@@ -212,7 +212,7 @@ The proposal here is that a ui: prefix on any attribute other than id fills it w
 There are type matching issues here. The ui:field of a DOM element is a string id, while that for a UIObject is typed. So, this should fail with a type mismatch:
 
 {{{
-<some:WidgetOfSomeKind ui:field="theWidget"> <label g:for="theWidget" />
+<some:WidgetOfSomeKind ui:field='theWidget'> <label g:for='theWidget' />
 }}}
 
 <blockquote> 
@@ -227,8 +227,8 @@ There are type matching issues here. The ui:field of a DOM element is a string i
 <ui:UiBinder
   xmlns:ui='urn:ui:com.google.gwt.uibinder'>
   <span>
-    <input type="checkbox" ui:field="myCheckBox">
-    <label for="{myCheckBox}" ui:field="myLabel"/>
+    <input type='checkbox' ui:field='myCheckBox'>
+    <label for='{myCheckBox}' ui:field='myLabel'/>
   </span>
 </ui:UiBinder>
 }}}
@@ -241,16 +241,16 @@ There are type matching issues here. The ui:field of a DOM element is a string i
 <!-- LogoNamePanel.ui.xml -->
 <ui:UiBinder
   xmlns:ui='urn:ui:com.google.gwt.uibinder'
-  xmlns:g="import:com.google.gwt.user.client.ui"
-  xmlns:res="urn:with:com.my.app.widgets.logoname.Resources">
+  xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:res='urn:with:com.my.app.widgets.logoname.Resources'>
   <g:HTMLPanel>
 
-    <img res:apply="logoImage">
+    <img res:apply='logoImage'>
 
-    <div res:class="style.mainBlock">
-      <div res:apply="style.userPictureSprite">
+    <div res:class='style.mainBlock'>
+      <div res:apply='style.userPictureSprite'>
         Well hello there
-        <span res:class="style.nameSpan" ui:field="userNameField"/>
+        <span res:class='style.nameSpan' ui:field='userNameField'/>
       </div>
     </div>
   </g:HTMLPanel>
@@ -307,14 +307,14 @@ ClientBundle interface.
 {{{
 <ui:UiBinder
   xmlns:ui='urn:ui:com.google.gwt.uibinder'
-  xmlns:g="import:com.google.gwt.user.client.ui"
-  xmlns:res="urn:with:com.my.app.widgets.logoname.Resources">
+  xmlns:g='urn:importcom.google.gwt.user.client.ui'
+  xmlns:res='urn:with:com.my.app.widgets.logoname.Resources'>
 
   <g:HTMLPanel>
 
-    <div class="{res.style.mainBlock}">
+    <div class='{res.style.mainBlock}'>
       Well hello there
-      <span class="{res.style.nameSpan}" ui:field="userNameField"/>
+      <span class='{res.style.nameSpan}' ui:field='userNameField'/>
     </div>
   </g:HTMLPanel>
 </ui:UiBinder>
@@ -383,9 +383,9 @@ You use it in a template.
   xmlns:my='import:com.my.app.widgets' >
 
   <g:HTMLPanel>
-    <my:WeatherReport ui:field="weather"/>
-    <my:Stocks ui:field="stocks"/>
-    <my:CricketScores ui:field="scores" />
+    <my:WeatherReport ui:field='weather'/>
+    <my:Stocks ui:field='stocks'/>
+    <my:CricketScores ui:field='scores' />
   </g:HTMLPanel>
 </ui:UiBinder>
 }}}
@@ -463,9 +463,9 @@ public class UserDashboard extends Composite {
   xmlns:g='import:com.google.gwt.user.client.ui'
   xmlns:my='import:com.my.app.widgets' >
 
-  <my:WeatherReport ui:field="weather"/>
-  <my:Stocks ui:field="stocks"/>
-  <my:CricketScores ui:field="scores" teamNames="AUS, SAF, WA, QLD, VIC"/>
+  <my:WeatherReport ui:field='weather'/>
+  <my:Stocks ui:field='stocks'/>
+  <my:CricketScores ui:field='scores' teamNames='AUS, SAF, WA, QLD, VIC'/>
 </g:HTMLPanel>
 }}}
 
@@ -481,9 +481,9 @@ public @UiConstructor CricketScores(String... teamNames) {...}
   xmlns:g='import:com.google.gwt.user.client.ui'
   xmlns:my='import:com.my.app.widgets' >
 
-  <my:WeatherReport ui:field="weather"/>
-  <my:Stocks ui:field="stocks"/>
-  <my:CricketScores ui:field="scores" teamNames="AUS, SAF, WA, QLD, VIC"/>
+  <my:WeatherReport ui:field='weather'/>
+  <my:Stocks ui:field='stocks'/>
+  <my:CricketScores ui:field='scores' teamNames='AUS, SAF, WA, QLD, VIC'/>
 </g:HTMLPanel>
 }}}
 
