@@ -5,13 +5,13 @@
 
 = gwt-incubator drop for gwt 1.6 =
 
-[http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator-march-02-2009.jar click here to download the 1.5 gwt-incubator jar]
+[http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator-march-02-2009.jar click here to download the 1.6 gwt-incubator jar]
  
 || Source || http://google-web-toolkit-incubator.googlecode.com/svn/trunk ||
 || Revision || 1539 ||
 || Last Changed Date || Fri, 27 Feb 2009 ||
 || Java docs || http://collectionofdemos.appspot.com/javadoc/index.html || 
-|| GWT version || GWT 1.6 milestone 1 or greater, available [http://code.google.com/p/google-web-toolkit/downloads/list here] ||
+|| GWT version || GWT 1.6 milestone 1 or greater, available [http://code.google.com/p/google-web-toolkit/downloads/list?can=4&q=1.6&sort=-downloadcount&colspec=Filename%20Summary%20Uploaded%20Size%20DownloadCount here] ||
 
 = gwt-incubator drop for gwt 1.5 =
 
