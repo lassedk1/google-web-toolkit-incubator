@@ -1,8 +1,4 @@
-For the 1.5 gwt-incubator drop's documentation, please visit [http://code.google.com/docreader/#p=google-web-toolkit-incubator,gwt-incubator-1-5-wiki&s=google-web-toolkit-incubator&t=FunctionalitySummary&t=FunctionalitySummary gwt-incubator 1.5 drop documentation site].
-
-
 For the current trunk gwt-incubator documentation, please visit [http://code.google.com/docreader/#p=google-web-toolkit-incubator&s=google-web-toolkit-incubator&t=FunctionalitySummary gwt-incubator documentation site].
-
 
 For a list of all wiki documents in this project, see the [http://code.google.com/p/google-web-toolkit-incubator/w/list Wiki document list].
  
