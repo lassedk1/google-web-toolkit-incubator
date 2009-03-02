@@ -12,7 +12,7 @@ Except as otherwise [http://code.google.com/policies.html#restrictions noted], t
 
 == Downloads ==
 
-The most current incubator libraries may be [http://code.google.com/p/google-web-toolkit-incubator/downloads/list downloaded here]. They are contained in a single jar file for convenience. 
+The most current incubator libraries may be [http://code.google.com/p/google-web-toolkit-incubator/wiki/Downloads?tm=2 downloaded here]. They are contained in a single jar file for convenience. 
 
 If you are interested in milestone builds that might be more recent than the latest official release, see the bottom of the [Downloads downloads] page.
 
