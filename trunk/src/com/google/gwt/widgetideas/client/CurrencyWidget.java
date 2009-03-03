@@ -40,6 +40,7 @@ package com.google.gwt.widgetideas.client;
  */
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.client.constants.NumberConstants;
 import com.google.gwt.i18n.client.impl.CurrencyData;
@@ -59,8 +60,7 @@ import com.google.gwt.widgetideas.client.overrides.DOMHelper;
  * TODO:Add javadoc
  */
 public class CurrencyWidget extends Composite {
-  protected static final NumberConstants numberConstants = (NumberConstants)
-      GWT.create(NumberConstants.class);
+  protected static final NumberConstants numberConstants = LocaleInfo.getCurrentLocale().getNumberConstants();
   protected static String acceptableCharset = getAcceptedCharset();
 
   private static String getAcceptedCharset() {
