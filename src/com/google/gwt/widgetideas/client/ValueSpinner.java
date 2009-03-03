@@ -63,7 +63,6 @@ public class ValueSpinner extends HorizontalPanel {
 
   private KeyPressHandler keyPressHandler = new KeyPressHandler() {
    
-    @Override
     public void onKeyPress(KeyPressEvent event) {
       int index = valueBox.getCursorPos();
       String previousText = valueBox.getText();
