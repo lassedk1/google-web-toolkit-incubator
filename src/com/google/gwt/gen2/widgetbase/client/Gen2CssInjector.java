@@ -53,6 +53,9 @@ public class Gen2CssInjector {
 
     @Resource("com/google/gwt/gen2/widgetbase/public/Picker.css")
     CssResource picker();
+
+    @Resource("com/google/gwt/gen2/widgetbase/public/SliderBar.css")
+    CssResource sliderBar();
   }
 
   static class DisabledMode extends Mode {
@@ -122,12 +125,11 @@ public class Gen2CssInjector {
   }
 
   /**
-   * If css dependency injection is enabled, adds the ToggleButton.css file
+   * If css dependency injection is enabled, adds the FastTree CSS files
    * included under public/widget.
    */
   public static void addFastTreeDefault() {
     if (Gen2CssInjector.isInjectionEnabled()) {
-
       inject(DEFAULT_CSS_FILES.fastTreeBase(), DEFAULT_CSS_FILES.fastTreeLtr());
     }
   }
@@ -143,12 +145,21 @@ public class Gen2CssInjector {
   }
 
   /**
-   * If css dependency injection is enabled, adds the ToggleButton.css file
+   * If css dependency injection is enabled, adds the Picker.css file
    * included under public/widget.
    */
   public static void addPickerDefault() {
     if (Gen2CssInjector.isInjectionEnabled()) {
       inject(DEFAULT_CSS_FILES.picker());
+    }
+  }
+
+  /**
+   * If css dependency injection is enabled, adds the SliderBar.css file.
+   */
+  public static void addSliderBarDefault() {
+    if (Gen2CssInjector.isInjectionEnabled()) {
+      inject(DEFAULT_CSS_FILES.sliderBar());
     }
   }
 
