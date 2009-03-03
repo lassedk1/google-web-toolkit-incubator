@@ -82,7 +82,6 @@ public class SliderBarDemo implements EntryPoint {
     mainSliderBar.setNumLabels(5);
     mainSliderBar.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
-      @Override
       public void onValueChange(ValueChangeEvent<Double> event) {
         curBox.setText(event.getValue().toString());
       }
@@ -109,7 +108,6 @@ public class SliderBarDemo implements EntryPoint {
     grid.setWidget(0, 1, curBox);
     grid.setHTML(0, 2, "The current value of the knob.");
     grid.setWidget(0, 0, new Button("Set Current Value", new ClickHandler() {
-      @Override
       public void onClick(ClickEvent event) {
         mainSliderBar.setCurrentValue(new Float(curBox.getText()).floatValue());
       }
@@ -121,7 +119,6 @@ public class SliderBarDemo implements EntryPoint {
     grid.setWidget(1, 1, minBox);
     grid.setHTML(1, 2, "The lower bounds (minimum) of the range.");
     grid.setWidget(1, 0, new Button("Set Min Value", new ClickHandler() {
-      @Override
       public void onClick(ClickEvent event) {
         mainSliderBar.setMinValue(new Float(minBox.getText()).floatValue());
       }
@@ -133,7 +130,6 @@ public class SliderBarDemo implements EntryPoint {
     grid.setWidget(2, 1, maxBox);
     grid.setHTML(2, 2, "The upper bounds (maximum) of the range.");
     grid.setWidget(2, 0, new Button("Set Max Value", new ClickHandler() {
-      @Override
       public void onClick(ClickEvent event) {
         mainSliderBar.setMaxValue(new Float(maxBox.getText()).floatValue());
       }
@@ -145,7 +141,6 @@ public class SliderBarDemo implements EntryPoint {
     grid.setWidget(3, 1, stepSizeBox);
     grid.setHTML(3, 2, "The increments between each knob position.");
     grid.setWidget(3, 0, new Button("Set Step Size", new ClickHandler() {
-      @Override
       public void onClick(ClickEvent event) {
         mainSliderBar.setStepSize(new Float(stepSizeBox.getText()).floatValue());
       }
@@ -161,7 +156,6 @@ public class SliderBarDemo implements EntryPoint {
             + "specify, so setting the number of ticks to one will display a "
             + "tick at each end of the slider.");
     grid.setWidget(4, 0, new Button("Set Num Ticks", new ClickHandler() {
-      @Override
       public void onClick(ClickEvent event) {
         mainSliderBar.setNumTicks(new Integer(numTicksBox.getText()).intValue());
       }
@@ -173,7 +167,6 @@ public class SliderBarDemo implements EntryPoint {
     grid.setWidget(5, 1, numLabelsBox);
     grid.setHTML(5, 2, "The labels above the ticks.");
     grid.setWidget(5, 0, new Button("Set Num Labels", new ClickHandler() {
-      @Override
       public void onClick(ClickEvent event) {
         mainSliderBar.setNumLabels(new Integer(numLabelsBox.getText()).intValue());
       }
@@ -186,7 +179,6 @@ public class SliderBarDemo implements EntryPoint {
     grid.setHTML(6, 2, "Set the width of the slider.  Use this to see how "
         + "resize checking detects the new dimensions and redraws the widget.");
     grid.setWidget(6, 0, new Button("Set Width", new ClickHandler() {
-      @Override
       public void onClick(ClickEvent event) {
         mainSliderBar.setWidth(widthBox.getText());
       }
@@ -197,7 +189,6 @@ public class SliderBarDemo implements EntryPoint {
     grid.setHTML(7, 2, "Override the format of the labels with a custom"
         + "format.");
     grid.setWidget(7, 0, new Button("Toggle Custom Text", new ClickHandler() {
-      @Override
       public void onClick(ClickEvent event) {
 
         if (useCustomText) {
@@ -220,7 +211,6 @@ public class SliderBarDemo implements EntryPoint {
         + "they change, the widget will be redrawn.");
     grid.setWidget(8, 0, new Button("Toggle Resize Checking",
         new ClickHandler() {
-          @Override
           public void onClick(ClickEvent event) {
             if (ResizableWidgetCollection.get().isResizeCheckingEnabled()) {
               ResizableWidgetCollection.get().setResizeCheckingEnabled(false);
