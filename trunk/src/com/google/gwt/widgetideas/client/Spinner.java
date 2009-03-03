@@ -111,7 +111,6 @@ public class Spinner {
 
   private MouseDownHandler mouseDownHandler = new MouseDownHandler() {
 
-    @Override
     public void onMouseDown(MouseDownEvent event) {
       if (enabled) {
         Image sender = (Image) event.getSource();
@@ -130,7 +129,6 @@ public class Spinner {
   };
   
   private MouseOverHandler mouseOverHandler = new MouseOverHandler() {
-    @Override
     public void onMouseOver(MouseOverEvent event) {
       if (enabled) {
         Image sender = (Image) event.getSource();
@@ -144,7 +142,6 @@ public class Spinner {
   };
   
   private MouseOutHandler mouseOutHandler = new MouseOutHandler() {
-    @Override
     public void onMouseOut(MouseOutEvent event) {
       if (enabled) {
         cancelTimer((Widget) event.getSource());
@@ -153,7 +150,6 @@ public class Spinner {
   };
   
   private MouseUpHandler mouseUpHandler = new MouseUpHandler() {
-    @Override
     public void onMouseUp(MouseUpEvent event) {
       if (enabled) {
         cancelTimer((Widget) event.getSource());

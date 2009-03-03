@@ -335,7 +335,6 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
     sinkEvents(Event.MOUSEEVENTS | Event.KEYEVENTS | Event.FOCUSEVENTS);
   }
 
-  @Override
   public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Double> handler) {
     return addHandler(handler, ValueChangeEvent.getType());
   }
@@ -416,7 +415,6 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
     }
   }
 
-  @Override
   public Double getValue() {
     return curValue;
   }
@@ -709,12 +707,10 @@ public class SliderBar extends FocusPanel implements ResizableWidget,
     resetCurrentValue();
   }
 
-  @Override
   public void setValue(Double value) {
     setCurrentValue(value, false);
   }
 
-  @Override
   public void setValue(Double value, boolean fireEvent) {
     setCurrentValue(value, fireEvent);
   }
