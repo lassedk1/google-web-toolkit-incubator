@@ -104,7 +104,7 @@ Make a simple widget-based UI
 
 <ui:UiBinder 
   xmlns:ui='urn:ui:com.google.gwt.uibinder'
-  xmlns:g='import:com.google.gwt.user.client.ui'>
+  xmlns:g='urn:import:com.google.gwt.user.client.ui'>
   <g:HTMLPanel>
     Hello, <g:ListBox ui:field='listBox'/>.
   </g:HTMLPanel>
@@ -379,8 +379,8 @@ You use it in a template.
 <!-- UserDashboard.ui.xml -->
 < ui:UiBinder
   xmlns:ui='urn:ui:com.google.gwt.uibinder'
-  xmlns:g='import:com.google.gwt.user.client.ui'
-  xmlns:my='import:com.my.app.widgets' >
+  xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:my='urn:import:com.my.app.widgets' >
 
   <g:HTMLPanel>
     <my:WeatherReport ui:field='weather'/>
@@ -460,8 +460,8 @@ public class UserDashboard extends Composite {
 {{{
 <!-- UserDashboard.ui.xml -->
 <g:HTMLPanel xmlns:ui='urn:ui:com.google.gwt.uibinder'
-  xmlns:g='import:com.google.gwt.user.client.ui'
-  xmlns:my='import:com.my.app.widgets' >
+  xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:my='urn:import:com.my.app.widgets' >
 
   <my:WeatherReport ui:field='weather'/>
   <my:Stocks ui:field='stocks'/>
@@ -478,8 +478,8 @@ public @UiConstructor CricketScores(String... teamNames) {...}
 {{{
 <!-- UserDashboard.ui.xml -->
 <g:HTMLPanel xmlns:ui='urn:ui:com.google.gwt.uibinder'
-  xmlns:g='import:com.google.gwt.user.client.ui'
-  xmlns:my='import:com.my.app.widgets' >
+  xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:my='urn:import:com.my.app.widgets' >
 
   <my:WeatherReport ui:field='weather'/>
   <my:Stocks ui:field='stocks'/>
