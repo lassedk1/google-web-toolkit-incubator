@@ -16,7 +16,7 @@
 
 package com.google.gwt.widgetideas.datepicker.client;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.constants.DateTimeConstants;
 
@@ -33,7 +33,8 @@ public class CalendarModel {
   public static final int WEEKS_IN_MONTH = 6;
   public static final int DAYS_IN_WEEK = 7;
 
-  private static final DateTimeConstants intlConstants = (DateTimeConstants) GWT.create(DateTimeConstants.class);
+  private static final DateTimeConstants intlConstants = 
+      LocaleInfo.getCurrentLocale().getDateTimeConstants();
 
   /**
    * dayOfWeekNames is kept as strings because used only once for initial
