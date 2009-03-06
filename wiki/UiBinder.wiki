@@ -322,26 +322,29 @@ ClientBundle interface.
 
 </blockquote>
 
-=Share ClientBundle instances=
+=Share ImmutableResourceBundle instances=
 
-Extends Resourceful (from the example above) to allow its bundle to be passed in.
+Extends LogoNamePanel (from the example above) to allow its bundle to be passed in.
 
 {{{
-public class Resourceful extends Composite {
- 
-  interface MyUiBinder extends UiBinder<Widget, Resourceful>;
+public class LogoNamePanel extends Composite {
+  interface MyUiBinder extend UiBinder<Widget, LogoNamePanel> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
-  @UiField SpanElement widgetyText;
-  
-  private final Resources resources;
+  @UiField SpanElement nameSpan;
+  final Resources resources;
 
-  public Resourceful(Resources resources) {
+  public LogoNamePanel(Resources resources) {
+    initWidget(uiBinder.createAndBindUi(this));
     this.resources = resources;
-    uiBinder.createAndBindUi(this);
   }
 
-  @UiFactory Resources getResources() {
+  public void setUserName(String userName) {
+    nameSpan.setInnerText(userName);
+  }
+
+  @UiFactory
+  public Resources getResources() {
     return resources;
   }
 }
@@ -350,20 +353,25 @@ public class Resourceful extends Composite {
 This can be even more concise:
 
 {{{
-public class Resourceful extends Composite {
- 
-  interface MyUiBinder extends UiBinder<Widget, Resourceful>;
+public class LogoNamePanel extends Composite {
+  interface MyUiBinder extend UiBinder<Widget, LogoNamePanel> {}
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
-  @UiField SpanElement widgetyText;
-  @UiField(provided=true) final Resources resources;
+  @UiField SpanElement nameSpan;
+  @UiField(provided = true)
+  final Resources resources;
 
-  public Resourceful(Resources resources) {
+  public LogoNamePanel(Resources resources) {
+    initWidget(uiBinder.createAndBindUi(this));
     this.resources = resources;
-    uiBinder.createAndBindUi(this);
+  }
+
+  public void setUserName(String userName) {
+    nameSpan.setInnerText(userName);
   }
 }
 }}}
+
 
 =Using a widget that requires constructor args=
 
