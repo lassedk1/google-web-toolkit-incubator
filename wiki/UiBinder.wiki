@@ -404,7 +404,7 @@ public class UserDashboard extends Composite {
   private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
   public UserDashboard() {
-    uiBinder.createAndBindUi(this);
+    initWidget(uiBinder.createAndBindUi(this));
   }
 }
 }}}
@@ -433,7 +433,7 @@ public class UserDashboard extends Composite {
 
   public UserDashboard(String... teamNames) {
     this.teamNames = teamNames;
-    uiBinder.createAndBindUi(this);
+    initWidget(uiBinder.createAndBindUi(this));
   }
 
   /** Used by MyUiBinder to instantiate CricketScores */
@@ -452,7 +452,7 @@ public class UserDashboard extends Composite {
 
   public UserDashboard() {
     this.teamNames = teamNames;
-    uiBinder.createAndBindUi(this);
+    initWidget(uiBinder.createAndBindUi(this));
   }
 
   /** 
@@ -508,7 +508,7 @@ public class UserDashboard extends Composite {
   public UserDashboard(CricketScores cricketScores) {
     // DI fans take note!
     this.cricketScores = cricketScores;
-    uiBinder.createAndBindUi(this);
+    initWidget(uiBinder.createAndBindUi(this));
   }
 }
 }}}
@@ -549,7 +549,7 @@ public class FooPickerDisplay extends Composite
   }
 
   protected FooPickerDisplay(UiBinder<Widget, FooPickerDisplay> binder) {
-    uiBinder.createAndBindUi(this);
+    initWidget(uiBinder.createAndBindUi(this));
   }
 
   public static FooPickerDisplay createRedPicker() {
