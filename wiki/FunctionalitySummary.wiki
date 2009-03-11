@@ -39,6 +39,6 @@ The [GWTCanvas GWTCanvas Widget] exposes an API for drawing and transforming sha
  * Image drawing and transformation.
  * Compositing operations and transparency.
  
- == Utilities == 
+== Utilities == 
  * [Decorators html decorators which allow more flexible styling of your widgets]
- * [ServerSideLocale
+ * [ServerSideLocale]
