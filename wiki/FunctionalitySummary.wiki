@@ -41,4 +41,4 @@ The [GWTCanvas GWTCanvas Widget] exposes an API for drawing and transforming sha
  
 == Utilities == 
  * [Decorators html decorators which allow more flexible styling of your widgets]
- * [ServerSideLocale]
+ * [ServerSideLocaleSelection server side locale]
