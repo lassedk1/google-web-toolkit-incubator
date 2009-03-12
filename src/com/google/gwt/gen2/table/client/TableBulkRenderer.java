@@ -445,7 +445,7 @@ public abstract class TableBulkRenderer<RowType> implements
   /**
    * Scratch Element used to render table and row strings.
    */
-  private static final Element WRAPPER_DIV = DOM.createElement("div");
+  private static Element WRAPPER_DIV;
 
   /**
    * Stamp used to detect when a request has been orphaned.
@@ -639,10 +639,17 @@ public abstract class TableBulkRenderer<RowType> implements
   }
 
   protected void renderRows(String rawHTMLTable) {
-    DOM.setInnerHTML(WRAPPER_DIV, rawHTMLTable);
-    Element tableElement = DOM.getFirstChild(WRAPPER_DIV);
+    DOM.setInnerHTML(getWrapperDiv(), rawHTMLTable);
+    Element tableElement = DOM.getFirstChild(getWrapperDiv());
     Element newBody = replaceBodyElement(table.getElement(), tableElement);
     setBodyElement(table, newBody);
+  }
+
+  private Element getWrapperDiv() {
+    if (WRAPPER_DIV == null) {
+      WRAPPER_DIV = DOM.createElement("div");
+    }
+    return WRAPPER_DIV;
   }
 
   /**
