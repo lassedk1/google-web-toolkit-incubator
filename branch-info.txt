@@ -7,3 +7,4 @@ Copies:
 
 Merges:
 /trunk@c1562 was merged (r1563) into this branch, fixes broken CalendarModel in old DatePicker
+/trunk@c1568 was merged (r1569) into this branch, allows mocking of Date and Table widgets
