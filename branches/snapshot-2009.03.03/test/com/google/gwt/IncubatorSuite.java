@@ -32,6 +32,7 @@ public class IncubatorSuite {
     suite.addTest(WidgetIdeasSuite.suite());
     suite.addTest(LibIdeasSuite.suite());
     suite.addTest(Gen2Suite.suite());
+    suite.addTestSuite(IncubatorClassInitTest.class);
     return suite;
   }
 }

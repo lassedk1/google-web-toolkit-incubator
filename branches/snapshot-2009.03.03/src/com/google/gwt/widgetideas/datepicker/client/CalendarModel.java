@@ -16,8 +16,8 @@
 
 package com.google.gwt.widgetideas.datepicker.client;
 
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.constants.DateTimeConstants;
 
 import java.util.Date;
@@ -33,19 +33,11 @@ public class CalendarModel {
   public static final int WEEKS_IN_MONTH = 6;
   public static final int DAYS_IN_WEEK = 7;
 
-  private static final DateTimeConstants intlConstants = 
-      LocaleInfo.getCurrentLocale().getDateTimeConstants();
-
   /**
    * dayOfWeekNames is kept as strings because used only once for initial
    * drawing.
    */
   private static final String[] dayOfWeekNames = new String[7];
-  private static final DateTimeFormat dayOfMonthFormatter = DateTimeFormat.getFormat("d");
-  private static final DateTimeFormat yearFormatter = DateTimeFormat.getFormat("yyyy");
-  private static final DateTimeFormat dayOfWeekFormatter = DateTimeFormat.getFormat("ccccc");
-  private static final DateTimeFormat monthAndYearFormatter = DateTimeFormat.getFormat("MMM yyyy");
-  private static final DateTimeFormat dateFormatter = DateTimeFormat.getShortDateFormat();
 
   /**
    * Is the year before the month?
@@ -56,13 +48,17 @@ public class CalendarModel {
   @Deprecated
   public static boolean computeYearBeforeMonth() {
     // Finding whether year is before month
-    String[] dateFormats = intlConstants.dateFormats();
+    String[] dateFormats = getIntlConstants().dateFormats();
     String dateLongFormat = dateFormats[3];
 
     int yIndex = dateLongFormat.indexOf("y");
     int mIndex = dateLongFormat.indexOf("M");
 
     return (yIndex < mIndex);
+  }
+
+  private static DateTimeConstants getIntlConstants() {
+    return LocaleInfo.getCurrentLocale().getDateTimeConstants();
   }
 
   /**
@@ -113,7 +109,7 @@ public class CalendarModel {
    * @return the day of the week on which week starts as per the locale.
    */
   public static int getLocaleStartingDayOfWeek() {
-    return Integer.parseInt(intlConstants.firstDayOfTheWeek()) - 1;
+    return Integer.parseInt(getIntlConstants().firstDayOfTheWeek()) - 1;
   }
 
   /**
@@ -209,7 +205,7 @@ public class CalendarModel {
     for (int i = 1; i <= 7; i++) {
       date.setDate(i);
       int dayOfWeek = date.getDay();
-      dayOfWeekNames[dayOfWeek] = dayOfWeekFormatter.format(date);
+      dayOfWeekNames[dayOfWeek] = DateTimeFormat.getFormat("ccccc").format(date);
     }
 
     // Finding day of month names
@@ -217,12 +213,12 @@ public class CalendarModel {
 
     for (int i = 1; i < 32; ++i) {
       date.setDate(i);
-      dayOfMonthNames[i] = dayOfMonthFormatter.format(date);
+      dayOfMonthNames[i] = DateTimeFormat.getFormat("d").format(date);
     }
 
     // Finding the start and end of weekend
-    firstDayOfWeekend = Integer.parseInt(intlConstants.weekendRange()[0]) - 1;
-    lastDayOfWeekend = Integer.parseInt(intlConstants.weekendRange()[1]) - 1;
+    firstDayOfWeekend = Integer.parseInt(getIntlConstants().weekendRange()[0]) - 1;
+    lastDayOfWeekend = Integer.parseInt(getIntlConstants().weekendRange()[1]) - 1;
   }
 
   /**
@@ -257,7 +253,7 @@ public class CalendarModel {
     if (date == null) {
       return "";
     } else {
-      return dateFormatter.format(date);
+      return DateTimeFormat.getShortDateFormat().format(date);
     }
   }
 
@@ -267,7 +263,7 @@ public class CalendarModel {
    * @return the formatted month in year
    */
   public String formatCurrentMonth() {
-    return monthAndYearFormatter.format(curMonthAndYear);
+    return DateTimeFormat.getFormat("MMM yyyy").format(curMonthAndYear);
   }
 
   /**
@@ -276,7 +272,7 @@ public class CalendarModel {
    * @return the formatted year
    */
   public String formatCurrentYear() {
-    return yearFormatter.format(curMonthAndYear);
+    return DateTimeFormat.getFormat("yyyy").format(curMonthAndYear);
   }
 
   /**
@@ -393,7 +389,7 @@ public class CalendarModel {
    * @return resulting Date object
    */
   public Date parseDate(String text) {
-    return dateFormatter.parse(text);
+    return DateTimeFormat.getShortDateFormat().parse(text);
   }
 
   /**
