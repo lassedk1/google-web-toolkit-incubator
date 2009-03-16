@@ -15,7 +15,7 @@
  */
  
  /* Tests merging adjacent rules with identical selectors */
-a {
+a , c {
   prop: value;
 }
 
