@@ -13,60 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
- 
- /* Tests merging adjacent rules with identical selectors */
-a {
-  prop: value; foo: bar;
-}
+package com.google.gwt.libideas.resources.css.ast;
 
-c {
-  prop: value;
-}
+import java.util.List;
 
-aNonBlocker {
-  random: other;
-}
-
-b {
-  border-left: 1px;
-}
-
-bBlocker {
-  border: solid;
-}
-
-b {
-  border-right: 2px;
-}
-
-/* Test blocking across @if rules. */
-if {
-  if1 : true;
-  if5 : true;
-}
-
-@if (true) {
-  if {
-    if3 : true;
-  }
-}
-
-if {
-  if3-block: false;
-}
-
-/* Test blocking across @media rules. */
-media {
-  media1 : true;
-  media5 : true;
-}
-
-@if (true) {
-  media {
-    media3 : true;
-  }
-}
-
-media {
-  media3-block : false;
+/**
+ * Something that has CSS selectors.
+ */
+public interface HasSelectors {
+  List<CssSelector> getSelectors();
 }

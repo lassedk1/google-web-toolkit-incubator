@@ -167,8 +167,15 @@ public class CssSprite extends CssRule {
     return resourceFunction;
   }
 
+  public void setResourceFunction(String resourceFunction) {
+    this.resourceFunction = resourceFunction;
+  }
+
   public void traverse(CssVisitor visitor, Context context) {
-    visitor.visit(this, context);
+    if (visitor.visit(this, context)) {
+      visitor.acceptWithInsertRemove(selectors);
+      visitor.acceptWithInsertRemove(getProperties());
+    }
     visitor.endVisit(this, context);
   }
 

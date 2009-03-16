@@ -17,6 +17,7 @@ package com.google.gwt.libideas.resources.rg;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.libideas.resources.css.ast.CssVisitor;
 import com.google.gwt.libideas.resources.rg.CssResourceGenerator.RtlVisitor;
 
 /**
@@ -24,26 +25,30 @@ import com.google.gwt.libideas.resources.rg.CssResourceGenerator.RtlVisitor;
  */
 public class CssRtlTest extends CssTestCase {
   public void testBackgroundProperties() throws UnableToCompleteException {
-    test(TreeLogger.NULL, "backgroundProperties", true, new RtlVisitor());
+    test(TreeLogger.NULL, "backgroundProperties", true, makeVisitors());
   }
 
   public void testCursorProperties() throws UnableToCompleteException {
-    test(TreeLogger.NULL, "cursorProperties", true, new RtlVisitor());
+    test(TreeLogger.NULL, "cursorProperties", true, makeVisitors());
   }
 
   public void testDirectionUpdatedInBodyOnly() throws UnableToCompleteException {
-    test(TreeLogger.NULL, "directionProperty", true, new RtlVisitor());
+    test(TreeLogger.NULL, "directionProperty", true, makeVisitors());
   }
 
   public void testFourValuedProperties() throws UnableToCompleteException {
-    test(TreeLogger.NULL, "fourValuedProperties", true, new RtlVisitor());
+    test(TreeLogger.NULL, "fourValuedProperties", true, makeVisitors());
   }
 
   public void testLeftRightProperties() throws UnableToCompleteException {
-    test(TreeLogger.NULL, "leftRightProperties", true, new RtlVisitor());
+    test(TreeLogger.NULL, "leftRightProperties", true, makeVisitors());
   }
 
   public void testNoFlip() throws UnableToCompleteException {
-    test(TreeLogger.NULL, "noflip", true, new RtlVisitor());
+    test(TreeLogger.NULL, "noflip", true, makeVisitors());
+  }
+
+  private CssVisitor[] makeVisitors() {
+    return new CssVisitor[] {new RtlVisitor(), new AliasDetector()};
   }
 }
