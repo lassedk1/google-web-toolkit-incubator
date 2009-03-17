@@ -48,17 +48,6 @@ public class CSSResourceTest extends LibTestBase {
     int rawInt();
   }
 
-  interface ForwardReferencesDerivedType extends
-      ForwardReferencesToDataResources {
-    @Resource("forwardDataRef.css")
-    DataResource data();
-  }
-
-  interface ForwardReferencesToDataResources extends ImmutableResourceBundle {
-    @Resource("forwardDataRef.css")
-    CssResource css();
-  }
-
   interface MyCssResource extends CssResource, MyNonCssResource {
     @ClassName("replacement-not-java-ident")
     String nameOverride();
@@ -244,12 +233,6 @@ public class CSSResourceTest extends LibTestBase {
 
     assertEquals(50, defines.percentInt());
     assertEquals(50.5, defines.percentFloat());
-  }
-
-  public void testForwardDataRef() {
-     ForwardReferencesDerivedType type = GWT.create(ForwardReferencesDerivedType.class);
-    String text = type.css().getText();
-    assertTrue(text.contains(type.data().getUrl()));
   }
 
   public void testMultipleBundles() {
