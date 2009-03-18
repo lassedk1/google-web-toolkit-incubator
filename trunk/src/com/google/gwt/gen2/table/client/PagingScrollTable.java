@@ -302,6 +302,11 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   private boolean isHeaderGenerated;
 
   /**
+   * A boolean indicating that the page is currently being loaded.
+   */
+  private boolean isPageLoading;
+
+  /**
    * The old page count, used to detect when the number of pages changes.
    */
   private int oldPageCount;
@@ -317,12 +322,14 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   private Callback<RowType> pagingCallback = new Callback<RowType>() {
     public void onFailure(Throwable caught) {
+      isPageLoading = false;
       fireEvent(new PagingFailureEvent(caught));
     }
 
     public void onRowsReady(Request request, Response<RowType> response) {
       if (lastRequest == request) {
         setData(request.getStartRow(), response.getRowValues());
+        lastRequest = null;
       }
     }
   };
@@ -365,6 +372,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       getDataTable().clearIdealWidths();
       maybeFillWidth();
       resizeTablesVertically();
+      isPageLoading = false;
       fireEvent(new PageLoadEvent(currentPage));
     }
   };
@@ -663,6 +671,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       dataTable.deselectAllRows();
 
       // Fire listeners
+      isPageLoading = true;
       fireEvent(new PageChangeEvent(oldPage, currentPage));
 
       // Clear out existing data if we aren't bulk rendering
@@ -740,6 +749,13 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   public boolean isHeaderGenerated() {
     return isHeaderGenerated;
+  }
+
+  /**
+   * @return true if a page load is pending
+   */
+  public boolean isPageLoading() {
+    return isPageLoading;
   }
 
   /**
