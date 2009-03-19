@@ -15,6 +15,7 @@
  */
 package com.google.gwt.widgetideas.client;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -32,9 +33,10 @@ public class ResizableWidgetCollectionTest extends WidgetTestBase {
    */
   private static class MockResizableWidget implements ResizableWidget {
     private boolean isAttached;
+    private com.google.gwt.dom.client.Element elem = Document.get().createDivElement();
 
     public Element getElement() {
-      return null;
+      return (Element) elem;
     }
 
     public boolean isAttached() {
@@ -153,6 +155,9 @@ public class ResizableWidgetCollectionTest extends WidgetTestBase {
       rwc.setResizeCheckingEnabled(true);
       assertTrue(rwc.isResizeCheckingEnabled());
     }
+
+    // Cleanup
+    cleanup(rwc);
   }
 
   /**
@@ -183,6 +188,16 @@ public class ResizableWidgetCollectionTest extends WidgetTestBase {
     {
       Iterator<ResizableWidget> iter = rwc.iterator();
       assertContains(iter, rw0, rw2);
+    }
+
+    // Cleanup
+    cleanup(rwc);
+  }
+
+  private void cleanup(ResizableWidgetCollection rwc) {
+    Iterator<ResizableWidget> iter = rwc.iterator();
+    while (iter.hasNext()) {
+      rwc.remove(iter.next());
     }
   }
 }
