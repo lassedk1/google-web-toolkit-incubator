@@ -12,7 +12,7 @@ Using the GWT incubator widgets and libraries is as simple as following the four
  # Add the following lines to your module file:
 {{{	
    <inherits name='com.google.gwt.widgetideas.WidgetIdeas' />	
-   <inherits name='com.google.gwt.widgetideas.LibIdeas' />
+   <inherits name='com.google.gwt.libideas.LibIdeas' />
 }}}
  # Report bugs and enhancement requests  [http://code.google.com/p/google-web-toolkit-incubator/issues/entry here].
 
