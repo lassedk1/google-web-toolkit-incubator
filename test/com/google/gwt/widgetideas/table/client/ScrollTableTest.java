@@ -15,6 +15,7 @@
  */
 package com.google.gwt.widgetideas.table.client;
 
+import com.google.gwt.widgetideas.client.ResizableWidgetCollectionTest;
 import com.google.gwt.widgetideas.client.WidgetTestBase;
 import com.google.gwt.widgetideas.table.client.ScrollTable.ScrollPolicy;
 
@@ -123,6 +124,14 @@ public class ScrollTableTest extends WidgetTestBase {
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
+  }
+
+  public void testResizableWidget() {
+    FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
+    FixedWidthGrid dataTable = new FixedWidthGrid();
+    FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
+    ScrollTable table = getScrollTable(headerTable, dataTable, footerTable);
+    ResizableWidgetCollectionTest.testResizableWidget(table);
   }
 
   /**

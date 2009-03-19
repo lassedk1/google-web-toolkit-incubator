@@ -930,9 +930,6 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
         }
       }
     });
-
-    // Add to Resizable Collection
-    ResizableWidgetCollection.get().add(this);
   }
 
   public HandlerRegistration addScrollHandler(ScrollHandler handler) {
@@ -1565,6 +1562,16 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     super.onAttach();
     resizeTablesVertically();
     maybeFillWidth();
+  }
+
+  @Override
+  protected void onLoad() {
+    ResizableWidgetCollection.get().add(this);
+  }
+
+  @Override
+  protected void onUnload() {
+    ResizableWidgetCollection.get().remove(this);
   }
 
   /**

@@ -29,6 +29,7 @@ public class ProgressBarTest extends WidgetTestBase {
   public void testAccessors() {
     // Create a progress bar with extra accessors
     ProgressBar bar = new ProgressBar() {
+      @Override
       public String generateText(double curProgress) {
         return super.generateText(curProgress);
       }
@@ -123,17 +124,23 @@ public class ProgressBarTest extends WidgetTestBase {
     assertEquals(bar4.getPercent(), 0.75, 0.0);
   }
 
+  public void testResizableWidget() {
+    ResizableWidgetCollectionTest.testResizableWidget(new ProgressBar());
+  }
+
   /**
    * Tests the various uses of TextFormatters.
    */
   public void testTextFormatter() {
     // Set a new text formatter
     ProgressBar bar = new ProgressBar() {
+      @Override
       protected String generateText(double curProgress) {
         return super.generateText(curProgress);
       }
     };
     bar.setTextFormatter(new ProgressBar.TextFormatter() {
+      @Override
       protected String getText(ProgressBar bar, double curProgress) {
         return "PROG: " + (int) curProgress;
       }

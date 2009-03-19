@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class SliderBarTest extends WidgetTestBase {
 
+  @Override
   public String getModuleName() {
     return "com.google.gwt.widgetideas.BasicWidget";
   }
@@ -97,6 +98,10 @@ public class SliderBarTest extends WidgetTestBase {
     assertEquals(slider.getCurrentValue(), 80.0, 0.0);
     slider.setStepSize(10.0);
     assertEquals(slider.getCurrentValue(), 75.0, 0.0);
+  }
+
+  public void testResizableWidget() {
+    ResizableWidgetCollectionTest.testResizableWidget(new SliderBar(0.0, 100.0));
   }
 
   /**

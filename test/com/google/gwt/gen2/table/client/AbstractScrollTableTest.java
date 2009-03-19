@@ -18,6 +18,7 @@ package com.google.gwt.gen2.table.client;
 import com.google.gwt.gen2.base.client.Gen2TestBase;
 import com.google.gwt.gen2.table.client.AbstractScrollTable.ScrollPolicy;
 import com.google.gwt.gen2.table.client.AbstractScrollTable.SortPolicy;
+import com.google.gwt.widgetideas.client.ResizableWidgetCollectionTest;
 
 /**
  * Tests methods in the {@link AbstractScrollTable} class.
@@ -117,6 +118,15 @@ public abstract class AbstractScrollTableTest extends Gen2TestBase {
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
+  }
+
+  public void testResizableWidget() {
+    FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
+    FixedWidthGrid dataTable = new FixedWidthGrid();
+    FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
+    AbstractScrollTable table = getScrollTable(headerTable, dataTable,
+        footerTable);
+    ResizableWidgetCollectionTest.testResizableWidget(table);
   }
 
   /**

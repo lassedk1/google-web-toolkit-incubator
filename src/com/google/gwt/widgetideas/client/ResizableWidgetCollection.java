@@ -15,12 +15,15 @@
  */
 package com.google.gwt.widgetideas.client;
 
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowResizeListener;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -34,7 +37,8 @@ import java.util.Map;
  * Widgets do not need to be added to a {@link ResizableWidgetCollection} as
  * they cannot be resized.
  */
-public class ResizableWidgetCollection implements WindowResizeListener {
+public class ResizableWidgetCollection implements WindowResizeListener,
+    Iterable<ResizableWidget> {
   /**
    * Information about a widgets size.
    */
@@ -181,7 +185,11 @@ public class ResizableWidgetCollection implements WindowResizeListener {
    */
   protected ResizableWidgetCollection(int resizeCheckDelay,
       boolean resizeCheckingEnabled) {
-    Window.addWindowResizeListener(this);
+    Window.addResizeHandler(new ResizeHandler() {
+      public void onResize(ResizeEvent event) {
+        onWindowResized(event.getWidth(), event.getHeight());
+      }
+    });
     setResizeCheckDelay(resizeCheckDelay);
     if (resizeCheckingEnabled) {
       resizeCheckTimer.schedule(resizeCheckDelay);
@@ -207,10 +215,8 @@ public class ResizableWidgetCollection implements WindowResizeListener {
     for (Map.Entry<ResizableWidget, ResizableWidgetInfo> entry : widgets.entrySet()) {
       ResizableWidget widget = entry.getKey();
       ResizableWidgetInfo info = entry.getValue();
-      int curWidth = DOM.getElementPropertyInt(widget.getElement(),
-          "clientWidth");
-      int curHeight = DOM.getElementPropertyInt(widget.getElement(),
-          "clientHeight");
+      int curWidth = widget.getElement().getClientWidth();
+      int curHeight = widget.getElement().getClientHeight();
 
       // Call the onResize method only if the widget is attached
       if (info.setClientSize(curWidth, curHeight)) {
@@ -239,12 +245,17 @@ public class ResizableWidgetCollection implements WindowResizeListener {
     return resizeCheckingEnabled;
   }
 
+  public Iterator<ResizableWidget> iterator() {
+    return widgets.keySet().iterator();
+  }
+
   /**
    * Called when the browser window is resized.
    * 
    * @param width the width of the window's client area.
    * @param height the height of the window's client area.
    */
+  @Deprecated
   public void onWindowResized(int width, int height) {
     checkWidgetSize();
   }
