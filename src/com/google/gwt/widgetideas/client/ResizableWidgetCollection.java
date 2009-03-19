@@ -215,8 +215,8 @@ public class ResizableWidgetCollection implements WindowResizeListener,
     for (Map.Entry<ResizableWidget, ResizableWidgetInfo> entry : widgets.entrySet()) {
       ResizableWidget widget = entry.getKey();
       ResizableWidgetInfo info = entry.getValue();
-      int curWidth = widget.getElement().getClientWidth();
-      int curHeight = widget.getElement().getClientHeight();
+      int curWidth = widget.getElement().getPropertyInt("clientWidth");
+      int curHeight = widget.getElement().getPropertyInt("clientHeight");
 
       // Call the onResize method only if the widget is attached
       if (info.setClientSize(curWidth, curHeight)) {

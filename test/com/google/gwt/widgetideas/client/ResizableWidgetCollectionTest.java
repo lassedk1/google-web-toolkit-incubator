@@ -20,8 +20,10 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -195,9 +197,16 @@ public class ResizableWidgetCollectionTest extends WidgetTestBase {
   }
 
   private void cleanup(ResizableWidgetCollection rwc) {
+    // Get a list of all widgets
+    List<ResizableWidget> widgets = new ArrayList<ResizableWidget>();
     Iterator<ResizableWidget> iter = rwc.iterator();
     while (iter.hasNext()) {
-      rwc.remove(iter.next());
+      widgets.add(iter.next());
+    }
+
+    // Remove each widget
+    for (ResizableWidget widget : widgets) {
+      rwc.remove(widget);
     }
   }
 }
