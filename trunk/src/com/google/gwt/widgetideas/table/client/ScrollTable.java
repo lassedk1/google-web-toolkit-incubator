@@ -775,9 +775,6 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget,
       }
     });
 
-    // Add to Resizable Collection
-    ResizableWidgetCollection.get().add(this);
-
     // Set the default supported operations
     try {
       setSortingEnabled(sortingEnabled);
@@ -1362,6 +1359,16 @@ public class ScrollTable extends ComplexPanel implements ResizableWidget,
     resizeTablesVertically();
     repositionHeaderSpacer();
     maybeFillWidth();
+  }
+
+  @Override
+  protected void onLoad() {
+    ResizableWidgetCollection.get().add(this);
+  }
+
+  @Override
+  protected void onUnload() {
+    ResizableWidgetCollection.get().remove(this);
   }
 
   /**
