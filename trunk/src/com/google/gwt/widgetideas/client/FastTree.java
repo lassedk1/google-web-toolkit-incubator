@@ -69,38 +69,32 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
 
     /**
      * The css file.
-     * 
-     * @gwt.resource FastTree.css
      */
+    @Resource("FastTree.css")
     TextResource css();
 
     /**
      * The rtl css file.
-     * 
-     * @gwt.resource FastTreeRTL.css
      */
+    @Resource("FastTreeRTL.css")
     TextResource cssRTL();
 
     /**
      * The gif used to highlight selection.
-     * 
-     * @gwt.resource selectionBar.gif
      */
+    @Resource("selectionBar.gif")
     DataResource selectionBar();
 
     /**
      * "+" gif.
-     * 
-     * @gwt.resource treeClosed.gif
      */
-
+    @Resource("treeClosed.gif")
     DataResource treeClosed();
 
     /**
      * "-" gif.
-     * 
-     * @gwt.resource treeOpen.gif
      */
+    @Resource("treeOpen.gif")
     DataResource treeOpen();
   }
 
