@@ -20,6 +20,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.CustomForm;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -58,6 +59,18 @@ public class TableSizeOption extends AbstractOption {
           ScrollTableDemo.get().getScrollTable().setSize(width, height);
         }
       });
+      form.addButton(button);
+    }
+
+    // Add button to get minimum offset width
+    {
+      Button button = new Button("Get Minimum Offset Width",
+          new ClickHandler() {
+            public void onClick(ClickEvent event) {
+              int width = ScrollTableDemo.get().getScrollTable().getMinimumOffsetWidth();
+              Window.alert("Minimum Offset Width: " + width);
+            }
+          });
       form.addButton(button);
     }
 

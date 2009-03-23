@@ -1077,6 +1077,46 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   public abstract int getMinimumColumnWidth(int column);
 
   /**
+   * Get the minimum offset width of the largest inner table given the
+   * constraints on the minimum and ideal column widths. Note that this does not
+   * account for the vertical scroll bar.
+   * 
+   * @return the tables minimum offset width, or -1 if it cannot be calculated
+   */
+  public int getMinimumOffsetWidth() {
+    if (!isAttached() || getOffsetWidth() == 0) {
+      return -1;
+    }
+
+    // Determine the width and column count of the largest table
+    int scrollWidth = 0;
+    int numColumns = 0;
+    {
+      int numHeaderCols = headerTable.getColumnCount() - getHeaderOffset();
+      int numDataCols = dataTable.getColumnCount();
+      int numFooterCols = (footerTable == null) ? -1
+          : footerTable.getColumnCount() - getHeaderOffset();
+      if (numHeaderCols >= numDataCols && numHeaderCols >= numFooterCols) {
+        numColumns = numHeaderCols;
+        scrollWidth = impl.getTableWidth(headerTable);
+      } else if (numFooterCols >= numDataCols && numFooterCols >= numHeaderCols) {
+        numColumns = numFooterCols;
+        scrollWidth = impl.getTableWidth(footerTable);
+      } else if (numDataCols > 0) {
+        numColumns = numDataCols;
+        scrollWidth = dataTable.getElement().getScrollWidth();
+      }
+    }
+    if (numColumns <= 0) {
+      return -1;
+    }
+
+    // Calculate the available diff
+    List<ColumnWidthInfo> colWidthInfos = getColumnWidthInfo(0, numColumns);
+    return -columnResizer.distributeWidth(colWidthInfos, -scrollWidth);
+  }
+
+  /**
    * Get the preferred width of a column.
    * 
    * @param column the column index
