@@ -20,7 +20,7 @@ package com.google.gwt.widgetideas.client.event;
  * Fires click events.
  */
 public interface FiresClickEvents {
-  public void addClickHandler(ClickHandler handler);
+  void addClickHandler(ClickHandler handler);
 
-  public void removeClickHandler(ClickHandler handler);
+  void removeClickHandler(ClickHandler handler);
 }

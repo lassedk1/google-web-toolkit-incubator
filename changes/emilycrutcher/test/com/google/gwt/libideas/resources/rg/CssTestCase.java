@@ -20,19 +20,55 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.libideas.resources.css.GenerateCssAst;
+import com.google.gwt.libideas.resources.css.ast.CssNode;
 import com.google.gwt.libideas.resources.css.ast.CssStylesheet;
 import com.google.gwt.libideas.resources.css.ast.CssVisitor;
+import com.google.gwt.libideas.resources.css.ast.HasNodes;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
 
 import junit.framework.TestCase;
 
 import java.net.URL;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Contains functions for golden-output tests that are concerned with structural
  * modifications to the CSS AST.
  */
 class CssTestCase extends TestCase {
+
+  /**
+   * Triggers an assertion if a CssNode is traversed more than once.
+   * 
+   * @see CssTestCase#assertNoAliasing(CssNode)
+   */
+  protected static class AliasDetector extends CssVisitor {
+    private final Map<CssNode, Void> seen = new IdentityHashMap<CssNode, Void>();
+
+    @Override
+    protected void doAccept(List<? extends CssNode> list) {
+      for (CssNode node : list) {
+        doAccept(node);
+      }
+    }
+
+    @Override
+    protected void doAcceptWithInsertRemove(List<? extends CssNode> list) {
+      for (CssNode node : list) {
+        doAccept(node);
+      }
+    }
+
+    @Override
+    protected <T extends CssNode> T doAccept(T node) {
+      assertFalse("Found repeated node " + node.toString(),
+          seen.containsKey(node));
+      seen.put(node, null);
+      return super.doAccept(node);
+    }
+  }
 
   /**
    * Total fake, no implementations.
@@ -67,35 +103,29 @@ class CssTestCase extends TestCase {
   }
 
   /**
-   * Runs a test.
-   * 
-   * @param testName is used to compute the test and expected resource paths.
-   * @param reversible if <code>true</code>, the test will attempt to transform
-   *          the expected css into the test css
+   * Asserts that two CssNodes are identical.
    */
-  void test(TreeLogger logger, String testName, boolean reversible,
-      CssVisitor... visitors) throws UnableToCompleteException {
-    String packagePath = getClass().getPackage().getName().replace('.', '/')
-        + "/";
-    URL testUrl = getClass().getClassLoader().getResource(
-        packagePath + testName + "_test.css");
-    assertNotNull("Cauld not find testUrl", testUrl);
-    URL expectedUrl = getClass().getClassLoader().getResource(
-        packagePath + testName + "_expected.css");
-    assertNotNull("Cauld not find testUrl", expectedUrl);
+  protected static <T extends CssNode & HasNodes> void assertEquals(
+      TreeLogger logger, T expected, T test) throws UnableToCompleteException {
+    String expectedCss = CssResourceGenerator.makeExpression(logger,
+        new FakeContext(), null, expected, false);
+    String testCss = CssResourceGenerator.makeExpression(logger,
+        new FakeContext(), null, test, false);
+    assertEquals(expectedCss, testCss);
+  }
 
-    test(logger, testUrl, expectedUrl, visitors);
-
-    if (reversible) {
-      test(logger, expectedUrl, testUrl, visitors);
-    }
+  /**
+   * Ensure that no CssNode is traversed more than once due to AST errors.
+   */
+  protected static void assertNoAliasing(CssNode node) {
+    (new AliasDetector()).accept(node);
   }
 
   /**
    * Compares the generated Java expressions for an input file, transformed in
    * order by the specified visitors, and a golden-output file.
    */
-  private void test(TreeLogger logger, URL test, URL expected,
+  private static void test(TreeLogger logger, URL test, URL expected,
       CssVisitor... visitors) throws UnableToCompleteException {
 
     CssStylesheet expectedSheet = null;
@@ -112,10 +142,31 @@ class CssTestCase extends TestCase {
       v.accept(testSheet);
     }
 
-    String testCss = CssResourceGenerator.makeExpression(logger,
-        new FakeContext(), null, testSheet, false);
-    String expectedCss = CssResourceGenerator.makeExpression(logger,
-        new FakeContext(), null, expectedSheet, false);
-    assertEquals(expectedCss, testCss);
+    assertEquals(logger, expectedSheet, testSheet);
+  }
+
+  /**
+   * Runs a test.
+   * 
+   * @param testName is used to compute the test and expected resource paths.
+   * @param reversible if <code>true</code>, the test will attempt to transform
+   *          the expected css into the test css
+   */
+  protected void test(TreeLogger logger, String testName, boolean reversible,
+      CssVisitor... visitors) throws UnableToCompleteException {
+    String packagePath = getClass().getPackage().getName().replace('.', '/')
+        + "/";
+    URL testUrl = getClass().getClassLoader().getResource(
+        packagePath + testName + "_test.css");
+    assertNotNull("Cauld not find testUrl", testUrl);
+    URL expectedUrl = getClass().getClassLoader().getResource(
+        packagePath + testName + "_expected.css");
+    assertNotNull("Cauld not find testUrl", expectedUrl);
+
+    test(logger, testUrl, expectedUrl, visitors);
+
+    if (reversible) {
+      test(logger, expectedUrl, testUrl, visitors);
+    }
   }
 }

@@ -117,6 +117,13 @@ public class FastTree extends Panel implements HasClickHandlers,
   static final String STYLENAME_DEFAULT = "gwt-FastTree";
 
   /**
+   * Injects the default styles as a css resource.
+   */
+  public static void injectDefaultCss() {
+    Gen2CssInjector.addFastTreeDefault();
+  }
+
+  /**
    * Creates a {@link Css} instance with the given style name. Note, only the
    * primary style name changes.
    * 
@@ -125,13 +132,6 @@ public class FastTree extends Panel implements HasClickHandlers,
    */
   static Css createCss(final String styleName) {
     return new StandardCss(styleName);
-  }
-
-  /**
-   * Injects the default styles as a css resource.
-   */
-  public static void injectDefaultCss() {
-    Gen2CssInjector.addFastTreeDefault();
   }
 
   /**
@@ -674,6 +674,14 @@ public class FastTree extends Panel implements HasClickHandlers,
     return BeforeSelectionEvent.fire(this, fastTreeItem);
   }
 
+  // @VisibleForTesting
+  FastTreeItem findDeepestOpenChild(FastTreeItem item) {
+    if (!item.isOpen() || item.getChildCount() == 0) {
+      return item;
+    }
+    return findDeepestOpenChild(item.getChild(item.getChildCount() - 1));
+  }
+
   /*
    * This method exists solely to support unit tests.
    */
@@ -687,20 +695,12 @@ public class FastTree extends Panel implements HasClickHandlers,
   void onSelected(FastTreeItem fastTreeItem) {
     SelectionEvent.fire(this, fastTreeItem);
   }
-
+  
   void treeOrphan(Widget widget) {
     super.orphan(widget);
 
     // Logical detach.
     childWidgets.remove(widget);
-  }
-  
-  // @VisibleForTesting
-  FastTreeItem findDeepestOpenChild(FastTreeItem item) {
-    if (!item.isOpen() || item.getChildCount() == 0) {
-      return item;
-    }
-    return findDeepestOpenChild(item.getChild(item.getChildCount() - 1));
   }
 
   /**

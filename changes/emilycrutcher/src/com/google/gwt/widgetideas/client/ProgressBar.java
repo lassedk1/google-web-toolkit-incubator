@@ -163,9 +163,6 @@ public class ProgressBar extends Widget implements ResizableWidget {
 
     // Set the current progress
     setProgress(curProgress);
-
-    // Make this a resizable widget
-    ResizableWidgetCollection.get().add(this);
   }
 
   /**
@@ -374,7 +371,13 @@ public class ProgressBar extends Widget implements ResizableWidget {
   protected void onLoad() {
     // Reset the position attribute of the parent element
     DOM.setStyleAttribute(getElement(), "position", "relative");
+    ResizableWidgetCollection.get().add(this);
     redraw();
+  }
+
+  @Override
+  protected void onUnload() {
+    ResizableWidgetCollection.get().remove(this);
   }
 
   /**

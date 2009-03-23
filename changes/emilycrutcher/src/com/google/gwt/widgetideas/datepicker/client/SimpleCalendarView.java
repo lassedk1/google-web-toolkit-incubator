@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Simple calendar view.
- * use the com.google.gwt.user.datepicker.client classes instead
+ * Simple calendar view. use the com.google.gwt.user.datepicker.client classes
+ * instead
  */
 @Deprecated
 @SuppressWarnings( {"deprecation"})

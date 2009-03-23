@@ -20,6 +20,7 @@ import com.google.gwt.gen2.selection.client.DropDownListBoxTest;
 import com.google.gwt.widgetideas.client.CollapsiblePanelTest;
 import com.google.gwt.widgetideas.client.FastTreeTest;
 import com.google.gwt.widgetideas.client.ProgressBarTest;
+import com.google.gwt.widgetideas.client.ResizableWidgetCollectionTest;
 import com.google.gwt.widgetideas.client.SliderBarTest;
 
 import junit.framework.Test;
@@ -38,6 +39,7 @@ public class TopLevelWidgetsTestSuite {
     suite.addTestSuite(CollapsiblePanelTest.class);
     suite.addTestSuite(FastTreeTest.class);
     suite.addTestSuite(DropDownListBoxTest.class);
+    suite.addTestSuite(ResizableWidgetCollectionTest.class);
     return suite;
   }
 

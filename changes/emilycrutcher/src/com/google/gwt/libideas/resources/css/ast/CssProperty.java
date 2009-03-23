@@ -19,6 +19,7 @@ import com.google.gwt.core.ext.Generator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -130,7 +131,7 @@ public class CssProperty extends CssNode {
     private final List<Value> values;
 
     public ListValue(List<Value> values) {
-      this.values = new ArrayList<Value>(values);
+      this.values = Collections.unmodifiableList(new ArrayList<Value>(values));
     }
 
     public ListValue(Value... values) {

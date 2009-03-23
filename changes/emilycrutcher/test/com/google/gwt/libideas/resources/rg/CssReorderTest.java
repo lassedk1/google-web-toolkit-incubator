@@ -36,7 +36,8 @@ public class CssReorderTest extends CssTestCase {
 
   private CssVisitor[] makeVisitors() {
     return new CssVisitor[] {
-        new SplitRulesVisitor(), new MergeIdenticalSelectorsVisitor(),
-        new MergeRulesByContentVisitor()};
+        new SplitRulesVisitor(), new AliasDetector(),
+        new MergeIdenticalSelectorsVisitor(), new AliasDetector(),
+        new MergeRulesByContentVisitor(), new AliasDetector()};
   }
 }

@@ -20,11 +20,11 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.gen2.selection.client.DropDownListBox;
-import com.google.gwt.gen2.table.override.client.Grid;
-import com.google.gwt.gen2.table.override.client.HTMLTable.CellFormatter;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.datepicker.client.MonthSelector;
 
 import java.util.Date;

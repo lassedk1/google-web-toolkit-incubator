@@ -7,12 +7,7 @@
 
 	<!-- All gen2 modules should extend Gen2 base -->
 	<inherits name='com.google.gwt.gen2.base.Base' />
-
-	<!--
-		Needs the event support until the last of of gen2 widgets switch over
-	-->
-	<inherits name='com.google.gwt.gen2.event.Event' />
-
+ 
 	<!--
 		Needs the event support until the last of of gen2 widgets switch over
 	-->

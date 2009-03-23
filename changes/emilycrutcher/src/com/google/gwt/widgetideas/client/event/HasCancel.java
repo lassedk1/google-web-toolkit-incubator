@@ -24,13 +24,12 @@ public interface HasCancel {
   /**
    * Cancels the current event.
    */
-  public void cancelEvent();
+  void cancelEvent();
 
   /**
    * Is the current event canceled?
    * 
    * @return is the event canceled?
    */
-  public boolean isCanceled();
-
+  boolean isCanceled();
 }

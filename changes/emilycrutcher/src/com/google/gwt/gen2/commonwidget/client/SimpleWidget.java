@@ -17,34 +17,33 @@
 package com.google.gwt.gen2.commonwidget.client;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.dom.client.MouseWheelEvent;
+import com.google.gwt.event.dom.client.MouseWheelHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.commonwidget.client.impl.StandardCssImpl;
-import com.google.gwt.gen2.event.dom.client.ClickEvent;
-import com.google.gwt.gen2.event.dom.client.ClickHandler;
-import com.google.gwt.gen2.event.dom.client.HasAllMouseHandlers;
-import com.google.gwt.gen2.event.dom.client.HasClickHandlers;
-import com.google.gwt.gen2.event.dom.client.MouseDownEvent;
-import com.google.gwt.gen2.event.dom.client.MouseDownHandler;
-import com.google.gwt.gen2.event.dom.client.MouseMoveEvent;
-import com.google.gwt.gen2.event.dom.client.MouseMoveHandler;
-import com.google.gwt.gen2.event.dom.client.MouseOutEvent;
-import com.google.gwt.gen2.event.dom.client.MouseOutHandler;
-import com.google.gwt.gen2.event.dom.client.MouseOverEvent;
-import com.google.gwt.gen2.event.dom.client.MouseOverHandler;
-import com.google.gwt.gen2.event.dom.client.MouseUpEvent;
-import com.google.gwt.gen2.event.dom.client.MouseUpHandler;
-import com.google.gwt.gen2.event.dom.client.MouseWheelEvent;
-import com.google.gwt.gen2.event.dom.client.MouseWheelHandler;
-import com.google.gwt.gen2.event.shared.HandlerRegistration;
-import com.google.gwt.gen2.widgetbase.client.Gen2Widget;
 import com.google.gwt.gen2.widgetbase.client.WidgetCss;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Simple widget which wraps a single element and adds mouse and click events to
  * it.
  */
-public class SimpleWidget extends Gen2Widget implements HasAllMouseHandlers,
-    HasClickHandlers {
+public class SimpleWidget extends Widget implements
+    com.google.gwt.event.dom.client.HasAllMouseHandlers, HasClickHandlers {
 
   /**
    * Css for simple widget.
@@ -125,8 +124,6 @@ public class SimpleWidget extends Gen2Widget implements HasAllMouseHandlers,
   public SimpleWidget(String html) {
     this(convertHtml(html), ensureDefaultCss());
   }
-  
-
 
   /**
    * Constructor. The html passed in to this constructor should represent a
@@ -138,30 +135,30 @@ public class SimpleWidget extends Gen2Widget implements HasAllMouseHandlers,
   }
 
   public HandlerRegistration addClickHandler(ClickHandler handler) {
-    return addDomHandler(ClickEvent.TYPE, handler);
+    return addDomHandler(handler, ClickEvent.getType());
   }
 
   public HandlerRegistration addMouseDownHandler(MouseDownHandler handler) {
-    return addDomHandler(MouseDownEvent.TYPE, handler);
+    return addDomHandler(handler, MouseDownEvent.getType());
   }
 
   public HandlerRegistration addMouseMoveHandler(MouseMoveHandler handler) {
-    return addDomHandler(MouseMoveEvent.TYPE, handler);
+    return addDomHandler(handler, MouseMoveEvent.getType());
   }
 
   public HandlerRegistration addMouseOutHandler(MouseOutHandler handler) {
-    return addDomHandler(MouseOutEvent.TYPE, handler);
+    return addDomHandler(handler, MouseOutEvent.getType());
   }
 
   public HandlerRegistration addMouseOverHandler(MouseOverHandler handler) {
-    return addDomHandler(MouseOverEvent.TYPE, handler);
+    return addDomHandler(handler, MouseOverEvent.getType());
   }
 
   public HandlerRegistration addMouseUpHandler(MouseUpHandler handler) {
-    return addDomHandler(MouseUpEvent.TYPE, handler);
+    return addDomHandler(handler, MouseUpEvent.getType());
   }
 
   public HandlerRegistration addMouseWheelHandler(MouseWheelHandler handler) {
-    return addDomHandler(MouseWheelEvent.TYPE, handler);
+    return addDomHandler(handler, MouseWheelEvent.getType());
   }
 }

@@ -16,9 +16,15 @@
 
 package com.google.gwt.gen2.commonwidget.client;
 
+import com.google.gwt.event.dom.client.HasMouseDownHandlers;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -35,7 +41,7 @@ public class DropDownPanel extends PopupPanel {
   private static ArrayList<DropDownPanel> openPanels;
   private static ResizeHandler resizeHandler = new ResizeHandler() {
 
-    public void onResize(ResizeEvent event) { 
+    public void onResize(ResizeEvent event) {
       if (openPanels != null) {
         ArrayList<DropDownPanel> old = openPanels;
         openPanels = null;
@@ -92,6 +98,20 @@ public class DropDownPanel extends PopupPanel {
     }
     openPanels.add(this);
     super.show();
+  }
+
+  /**
+   * Shows the drop down panel whenever the source receives a mouse down.
+   */
+  public <S extends Widget & HasMouseDownHandlers> void showOver(final S source) {
+    source.addMouseDownHandler(new MouseDownHandler() {
+
+      @Override
+      public void onMouseDown(MouseDownEvent event) {
+        showRelativeTo(source);
+      }
+
+    });
   }
 
   public void showRelativeTo(Widget anchor) {

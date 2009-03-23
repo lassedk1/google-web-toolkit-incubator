@@ -19,6 +19,7 @@ import com.google.gwt.junit.tools.GWTTestSuite;
 import com.google.gwt.libideas.resources.client.CSSResourceTest;
 import com.google.gwt.libideas.resources.client.NestedBundleTest;
 import com.google.gwt.libideas.resources.client.TextResourceTest;
+import com.google.gwt.libideas.resources.rg.CssNodeClonerTest;
 import com.google.gwt.libideas.resources.rg.CssReorderTest;
 import com.google.gwt.libideas.resources.rg.CssRtlTest;
 
@@ -35,6 +36,7 @@ public class ResourcesSuite {
     suite.addTestSuite(CSSResourceTest.class);
     suite.addTestSuite(CssReorderTest.class);
     suite.addTestSuite(CssRtlTest.class);
+    suite.addTestSuite(CssNodeClonerTest.class);
     // (ecc) Removed the ImageResourceTest suite due to IE7 failures.
     // suite.addTestSuite(ImageResourceTest.class);
     suite.addTestSuite(NestedBundleTest.class);

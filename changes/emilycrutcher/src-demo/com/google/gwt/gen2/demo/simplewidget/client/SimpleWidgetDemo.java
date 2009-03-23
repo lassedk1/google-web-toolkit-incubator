@@ -17,15 +17,15 @@
 package com.google.gwt.gen2.demo.simplewidget.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.gen2.commonwidget.client.SimpleWidget;
-import com.google.gwt.gen2.event.dom.client.ClickEvent;
-import com.google.gwt.gen2.event.dom.client.ClickHandler;
-import com.google.gwt.gen2.event.dom.client.MouseDownEvent;
-import com.google.gwt.gen2.event.dom.client.MouseDownHandler;
-import com.google.gwt.gen2.event.dom.client.MouseMoveEvent;
-import com.google.gwt.gen2.event.dom.client.MouseMoveHandler;
-import com.google.gwt.gen2.event.dom.client.MouseUpEvent;
-import com.google.gwt.gen2.event.dom.client.MouseUpHandler;
 import com.google.gwt.gen2.logging.handler.client.SimpleLogHandler;
 import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -45,14 +45,13 @@ public class SimpleWidgetDemo implements EntryPoint {
 
     SimpleLogHandler handler = new SimpleLogHandler();
     Log.addLogHandler(handler);
-    
-    
+
     HorizontalPanel p = new HorizontalPanel();
     VerticalPanel v = new VerticalPanel();
     p.add(v);
     p.add(handler);
     RootPanel.get().add(p);
-   
+
     // Set up clickable widget.
     SimpleWidget clickable = new SimpleWidget("<h1>clickMe</h1>");
     RootPanel.get().add(clickable);
@@ -62,7 +61,7 @@ public class SimpleWidgetDemo implements EntryPoint {
       }
     });
     v.add(clickable);
-    
+
     // Set up mouse move widget.
     SimpleWidget mouseMove = new SimpleWidget("<h2>mouseMove</h2>");
     mouseMove.addMouseMoveHandler(new MouseMoveHandler() {
@@ -71,7 +70,7 @@ public class SimpleWidgetDemo implements EntryPoint {
       }
     });
     v.add(mouseMove);
-    
+
     // Set up mouse down and up handler, here some syntactic sugar would be nice
     // to have.
 
