@@ -23,9 +23,9 @@ import java.io.File;
 
 /**
  * Tests that every class in com.google.gwt.user.client.ui and
- * com.google.gwt.user.datepicker.client can be init'd by the real Java
- * runtime. By ensuring this, we ensure that these classes all may be referenced
- * mocked out by pure Java unit tests, e.g. with EasyMock Class Extension
+ * com.google.gwt.user.datepicker.client can be init'd by the real Java runtime.
+ * By ensuring this, we ensure that these classes all may be referenced mocked
+ * out by pure Java unit tests, e.g. with EasyMock Class Extension
  */
 public class IncubatorClassInitTest extends TestCase {
   private static final String DOT_CLASS = ".class";
@@ -39,22 +39,6 @@ public class IncubatorClassInitTest extends TestCase {
   @Override
   public void tearDown() {
     GWTMockUtilities.restore();
-  }
-
-  public void testDatePicker() throws ClassNotFoundException {
-    doPackage("com.google.gwt.widgetideas.datepicker.client");
-  }
-
-  public void testTable() throws ClassNotFoundException {
-    doPackage("com.google.gwt.widgetideas.table.client");
-  }
-
-  public void testGen2DatePicker() throws ClassNotFoundException {
-    doPackage("com.google.gwt.gen2.datepicker.client");
-  }
-
-  public void testGen2Table() throws ClassNotFoundException {
-    doPackage("com.google.gwt.gen2.table.client");
   }
 
   private void doPackage(String packageName) throws ClassNotFoundException {
