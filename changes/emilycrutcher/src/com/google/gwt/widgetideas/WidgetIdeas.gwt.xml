@@ -18,10 +18,7 @@
 <!-- Most new code should inherit twh                                         -->
 <module>
 	<inherits name='com.google.gwt.widgetideas.BasicWidget' />
-	<inherits name='com.google.gwt.widgetideas.BasicTable' />
-	<inherits name='com.google.gwt.widgetideas.ScrollTable' />
 	<inherits name='com.google.gwt.widgetideas.GlassPanel' />
 	<inherits name='com.google.gwt.widgetideas.HyperlinkOverride' /> 
-	<inherits name='com.google.gwt.widgetideas.DatePicker' />
 	<inherits name='com.google.gwt.widgetideas.GWTCanvas'/>
 </module>

@@ -16,21 +16,19 @@
 
 package com.google.gwt.widgetideas;
 
-import com.google.gwt.widgetideas.table.TableSuite;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- Widget Ideas test suite.
-*/
+ * Widget Ideas test suite.
+ */
 public class WidgetIdeasSuite {
   public static Test suite() {
     TestSuite suite = new TestSuite(
         "Test for com.google.gwt.widgetideas.client");
     // Widget Tests.
     suite.addTest(TopLevelWidgetsTestSuite.suite());
-    suite.addTest(TableSuite.suite());
+
     return suite;
   }
 }

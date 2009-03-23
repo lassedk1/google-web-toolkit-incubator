@@ -25,6 +25,7 @@ import com.google.gwt.event.dom.client.HasKeyDownHandlers;
 import com.google.gwt.event.dom.client.HasKeyPressHandlers;
 import com.google.gwt.event.dom.client.HasKeyUpHandlers;
 import com.google.gwt.event.dom.client.HasMouseDownHandlers;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -59,7 +60,6 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.impl.FocusImpl;
-import com.google.gwt.widgetideas.client.event.KeyboardHandler;
 import com.google.gwt.widgetideas.client.overrides.DOMHelper;
 import com.google.gwt.widgetideas.client.overrides.WidgetIterators;
 
@@ -336,10 +336,10 @@ public class FastTree extends Panel implements HasClickHandlers,
   public int getTabIndex() {
     return impl.getTabIndex(focusable);
   }
-  
+
   /**
-   * The 'root' item is invisible and serves only as a container for 
-   * all top-level items.
+   * The 'root' item is invisible and serves only as a container for all
+   * top-level items.
    */
   public final FastTreeItem getTreeRoot() {
     return root;
@@ -382,7 +382,7 @@ public class FastTree extends Panel implements HasClickHandlers,
         if (e.getTypeInt() == Event.ONKEYUP) {
           // If we got here because of a key tab, then we need to make sure the
           // current tree item is selected.
-          if (DOM.eventGetKeyCode(e) == KeyboardHandler.KEY_TAB) {
+          if (DOM.eventGetKeyCode(e) == KeyCodes.KEY_TAB) {
             ArrayList<Element> chain = new ArrayList<Element>();
             collectElementChain(chain, getElement(), DOM.eventGetTarget(e));
             FastTreeItem item = findItemByChain(chain, 0, getTreeRoot());
@@ -418,7 +418,6 @@ public class FastTree extends Panel implements HasClickHandlers,
     super.onBrowserEvent(e);
   }
 
-  
   @Override
   public boolean remove(Widget w) {
     // Validate.
@@ -509,15 +508,15 @@ public class FastTree extends Panel implements HasClickHandlers,
       // Handle keyboard events if keyboard navigation is enabled
 
       switch (DOMHelper.standardizeKeycode(DOM.eventGetKeyCode(e))) {
-        case KeyboardHandler.KEY_UP: {
+        case KeyCodes.KEY_UP: {
           moveSelectionUp(curSelection);
           break;
         }
-        case KeyboardHandler.KEY_DOWN: {
+        case KeyCodes.KEY_DOWN: {
           moveSelectionDown(curSelection, true);
           break;
         }
-        case KeyboardHandler.KEY_LEFT: {
+        case KeyCodes.KEY_LEFT: {
           if (curSelection.isOpen()) {
             curSelection.setState(false);
           } else {
@@ -528,7 +527,7 @@ public class FastTree extends Panel implements HasClickHandlers,
           }
           break;
         }
-        case KeyboardHandler.KEY_RIGHT: {
+        case KeyCodes.KEY_RIGHT: {
           if (!curSelection.isOpen()) {
             curSelection.setState(true);
           }
@@ -573,12 +572,12 @@ public class FastTree extends Panel implements HasClickHandlers,
     }
 
     if (fireEvents) {
-       BeforeSelectionEvent<FastTreeItem> event = beforeSelected(item);
-       if (event != null && event.isCanceled()) {
-         return;
-       }
+      BeforeSelectionEvent<FastTreeItem> event = beforeSelected(item);
+      if (event != null && event.isCanceled()) {
+        return;
+      }
     }
-    
+
     if (curSelection != null) {
       curSelection.setSelection(false, fireEvents);
     }
@@ -608,9 +607,9 @@ public class FastTree extends Panel implements HasClickHandlers,
    * 
    * @returns true if element should be processed normally, false otherwise.
    *          Default returns true.
-   *          
-   * @deprecated Add a beforeSelectionHandler by calling 
-   *             addBeforeSelectionHandler instead. 
+   * 
+   * @deprecated Add a beforeSelectionHandler by calling
+   *             addBeforeSelectionHandler instead.
    */
   @Deprecated
   protected boolean processElementClicked(FastTreeItem item) {
@@ -695,7 +694,7 @@ public class FastTree extends Panel implements HasClickHandlers,
   void onSelected(FastTreeItem fastTreeItem) {
     SelectionEvent.fire(this, fastTreeItem);
   }
-  
+
   void treeOrphan(Widget widget) {
     super.orphan(widget);
 

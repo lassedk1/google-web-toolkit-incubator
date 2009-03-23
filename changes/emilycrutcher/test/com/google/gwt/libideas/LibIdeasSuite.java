@@ -16,8 +16,6 @@
 package com.google.gwt.libideas;
 
 import com.google.gwt.junit.tools.GWTTestSuite;
-import com.google.gwt.libideas.logging.LogServerTest;
-import com.google.gwt.libideas.logging.client.LogTest;
 import com.google.gwt.libideas.resources.ResourcesSuite;
 import com.google.gwt.libideas.server.LocaleMatcherTest;
 
@@ -31,10 +29,7 @@ public class LibIdeasSuite {
     GWTTestSuite suite = new GWTTestSuite(
         "Test for com.google.gwt.libideas.resources.client");
     suite.addTest(ResourcesSuite.suite());
-    suite.addTestSuite(LogTest.class);
-    suite.addTestSuite(LogServerTest.class);
     suite.addTestSuite(LocaleMatcherTest.class);
-
     return suite;
   }
 }
