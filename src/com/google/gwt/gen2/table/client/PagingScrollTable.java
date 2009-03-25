@@ -991,16 +991,6 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     }
   }
 
-  @Override
-  protected void onLoad() {
-    super.onLoad();
-
-    // If we have not loaded any pages, load one now
-    if (currentPage < 0) {
-      gotoPage(0, true);
-    }
-  }
-
   /**
    * Update the footer table based on the new {@link ColumnDefinition}.
    */
