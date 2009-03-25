@@ -685,7 +685,9 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       }
 
       // Request the new data from the table model
-      lastRequest = new Request(currentPage * pageSize, pageSize,
+      int firstRow = getAbsoluteFirstRowIndex();
+      int lastRow = pageSize == 0 ? tableModel.getRowCount() : pageSize;
+      lastRequest = new Request(firstRow, lastRow,
           dataTable.getColumnSortList());
       tableModel.requestRows(lastRequest, pagingCallback);
     }

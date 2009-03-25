@@ -671,6 +671,22 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
   }
 
   /**
+   * Test page navigation when there is only one page.
+   */
+  public void testPagingSinglePage() {
+    // Initialize the grid
+    PagingScrollTable<List<Object>> table = getPagingScrollTable();
+    TestListTableModel tableModel = (TestListTableModel) table.getTableModel();
+    table.setPageSize(0);
+
+    table.gotoPage(0, false);
+    assertEquals(0, table.getCurrentPage());
+    assertEquals(25, table.getDataTable().getRowCount());
+    assertEquals(0, tableModel.getLastRequest().getStartRow());
+    assertEquals(25, tableModel.getLastRequest().getNumRows());
+  }
+
+  /**
    * Test paging when the TableModel responds with a failure.
    */
   public void testPagingFailure() {
