@@ -1134,18 +1134,15 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    * @param row the row index
    */
   protected void removeAbsoluteRow(int row) {
-    // Physically remove the row
+    // Physically remove the row if it is in the middle of the data table
+    int firstRow = getAbsoluteFirstRowIndex();
     int lastRow = getAbsoluteLastRowIndex();
-    if (row <= lastRow) {
-      int firstRow = getAbsoluteFirstRowIndex();
-      if (row >= firstRow) {
-        // Remove a row in the middle of the page
-        getDataTable().removeRow(row - firstRow);
-      } else {
-        // Remove first row because row is before this page
-        getDataTable().removeRow(0);
+    if (row <= lastRow && row >= firstRow) {
+      FixedWidthGrid dataTable = getDataTable();
+      int relativeRow = row - firstRow;
+      if (relativeRow < dataTable.getRowCount()) {
+        dataTable.removeRow(relativeRow);
       }
-      getDataTable().insertRow(pageSize - 1);
     }
   }
 
