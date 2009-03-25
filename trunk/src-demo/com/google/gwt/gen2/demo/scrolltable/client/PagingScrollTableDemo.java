@@ -179,7 +179,7 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
 
   @Override
   protected void onModuleLoaded() {
-    // Do nothing
+    pagingScrollTable.gotoFirstPage();
   }
 
   /**
