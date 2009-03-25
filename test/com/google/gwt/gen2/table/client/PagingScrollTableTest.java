@@ -182,28 +182,53 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
    * Test absolute row operations.
    */
   public void testAbsoluteRows() {
-    // Initialize the grid
-    PagingScrollTable<List<Object>> table = getPagingScrollTable();
-    FixedWidthGrid grid = table.getDataTable();
-    table.setPageSize(5);
-
     // Insert absolute row
-    table.gotoPage(1, true);
-    assertEquals("cell 2:1", grid.getText(2, 1));
-    table.insertAbsoluteRow(10);
-    assertEquals("cell 2:1", grid.getText(2, 1));
-    table.insertAbsoluteRow(1);
-    assertEquals("cell 1:1", grid.getText(2, 1));
+    {
+      PagingScrollTable<List<Object>> table = getPagingScrollTable();
+      FixedWidthGrid grid = table.getDataTable();
+      table.setPageSize(5);
 
-    // Insert absolute row
-    table.gotoPage(1, true);
-    assertEquals("cell 2:1", grid.getText(2, 1));
-    table.removeAbsoluteRow(10);
-    assertEquals("cell 2:1", grid.getText(2, 1));
-    table.removeAbsoluteRow(1);
-    assertEquals("cell 3:1", grid.getText(2, 1));
-    table.removeAbsoluteRow(7);
-    assertEquals("cell 4:1", grid.getText(2, 1));
+      table.gotoPage(1, true);
+      assertEquals("cell 2:1", grid.getText(2, 1));
+      table.insertAbsoluteRow(10);
+      assertEquals("cell 2:1", grid.getText(2, 1));
+      table.insertAbsoluteRow(1);
+      assertEquals("cell 1:1", grid.getText(2, 1));
+    }
+
+    // Remove absolute row
+    {
+      PagingScrollTable<List<Object>> table = getPagingScrollTable();
+      FixedWidthGrid grid = table.getDataTable();
+      table.setPageSize(5);
+
+      table.gotoPage(1, true);
+      assertEquals("cell 2:1", grid.getText(2, 1));
+      table.removeAbsoluteRow(10);
+      assertEquals("cell 2:1", grid.getText(2, 1));
+      table.removeAbsoluteRow(1);
+      assertEquals("cell 2:1", grid.getText(2, 1));
+      table.removeAbsoluteRow(6);
+      assertEquals("cell 3:1", grid.getText(2, 1));
+    }
+
+    // Remove very last absolute row
+    {
+      PagingScrollTable<List<Object>> table = getPagingScrollTable();
+      FixedWidthGrid grid = table.getDataTable();
+      table.setPageSize(7);
+
+      table.gotoPage(3, true);
+      assertEquals(4, grid.getRowCount());
+      table.removeAbsoluteRow(24);
+      assertEquals(3, grid.getRowCount());
+      table.removeAbsoluteRow(23);
+      assertEquals(2, grid.getRowCount());
+      table.removeAbsoluteRow(22);
+      assertEquals(1, grid.getRowCount());
+      table.removeAbsoluteRow(21);
+      assertEquals(0, grid.getRowCount());
+    }
   }
 
   /**
