@@ -1294,6 +1294,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     // Apply the layout changes
     applyNewColumnWidths(0, colWidths, true);
     scrollTables(false);
+    ResizableWidgetCollection.get().updateWidgetSize(this);
   }
 
   /**
@@ -1795,11 +1796,12 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     }
 
     // Calculate how much room we have to work with
-    int clientWidth = absoluteElem.getClientWidth();
+    int clientWidth = absoluteElem.getPropertyInt("clientWidth");
     if (scrollPolicy == ScrollPolicy.BOTH) {
       int scrollbarWidth = mockScrollable.getOffsetWidth()
-          - mockScrollable.getClientWidth();
-      clientWidth = absoluteElem.getClientWidth() - scrollbarWidth - 1;
+          - mockScrollable.getPropertyInt("clientWidth");
+      clientWidth = absoluteElem.getPropertyInt("clientWidth") - scrollbarWidth
+          - 1;
     }
     if (clientWidth <= 0) {
       return null;
