@@ -370,8 +370,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
 
       // Update the UI of the table
       getDataTable().clearIdealWidths();
-      maybeFillWidth();
-      resizeTablesVertically();
+      redraw();
       isPageLoading = false;
       fireEvent(new PageLoadEvent(currentPage));
     }

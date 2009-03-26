@@ -505,20 +505,9 @@ public class FixedWidthGrid extends SortableGrid {
       return;
     }
 
-    // Let the table layout naturally
-    final Element tableElem = getElement();
-    tableElem.getStyle().setProperty("tableLayout", "");
-
-    // Determine the width of each column
-    FixedWidthGridCellFormatter formatter = getFixedWidthGridCellFormatter();
-    idealWidths = new int[columnCount];
-    for (int i = 0; i < columnCount; i++) {
-      Element td = formatter.getRawElement(0, i);
-      idealWidths[i] = td.getPropertyInt("clientWidth");
-    }
-
-    // Reset the table layout to fixed
-    tableElem.getStyle().setProperty("tableLayout", "fixed");
+    recalculateIdealColumnWidthsSetup();
+    recalculateIdealColumnWidthsImpl();
+    recalculateIdealColumnWidthsTeardown();
   }
 
   /**
@@ -570,6 +559,44 @@ public class FixedWidthGrid extends SortableGrid {
    */
   void clearIdealWidths() {
     idealWidths = null;
+  }
+
+  /**
+   * Recalculate the ideal column widths of each column in the data table. This
+   * method assumes that the tableLayout has already been changed.
+   */
+  void recalculateIdealColumnWidthsImpl() {
+    // We need at least one cell to do any calculations
+    int columnCount = getColumnCount();
+    if (!isAttached() || getRowCount() == 0 || columnCount < 0) {
+      idealWidths = new int[0];
+      return;
+    }
+
+    // Determine the width of each column
+    final Element tableElem = getElement();
+    FixedWidthGridCellFormatter formatter = getFixedWidthGridCellFormatter();
+    idealWidths = new int[columnCount];
+    for (int i = 0; i < columnCount; i++) {
+      Element td = formatter.getRawElement(0, i);
+      idealWidths[i] = td.getPropertyInt("clientWidth");
+    }
+  }
+
+  /**
+   * Setup to recalculate column widths.
+   */
+  void recalculateIdealColumnWidthsSetup() {
+    // Let the table layout naturally
+    getElement().getStyle().setProperty("tableLayout", "");
+  }
+
+  /**
+   * Tear down after recalculating column widths.
+   */
+  void recalculateIdealColumnWidthsTeardown() {
+    // Reset the table layout to fixed
+    getElement().getStyle().setProperty("tableLayout", "fixed");
   }
 
   /**

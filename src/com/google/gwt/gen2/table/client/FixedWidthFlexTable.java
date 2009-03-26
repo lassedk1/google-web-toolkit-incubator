@@ -54,21 +54,18 @@ public class FixedWidthFlexTable extends FlexTable {
     }
 
     /**
-     * Recalculate the ideal column widths.
+     * Recalculate the ideal column widths of each column in the data table.
+     * This method assumes that the tableLayout has already been changed.
      * 
      * @param table the table
      */
-    public void recalculateIdealColumnWidths(FixedWidthFlexTable table) {
+    public void recalculateIdealColumnWidthsImpl(FixedWidthFlexTable table) {
       // We need at least one cell to do any calculations
       int columnCount = table.getColumnCount();
       if (!table.isAttached() || table.getRowCount() == 0 || columnCount < 0) {
         table.idealWidths = new int[0];
         return;
       }
-
-      // Let the table layout naturally
-      final Element tableElem = table.getElement();
-      tableElem.getStyle().setProperty("tableLayout", "");
 
       // Determine the width of each column
       FixedWidthFlexCellFormatter formatter = (FixedWidthFlexCellFormatter) table.getCellFormatter();
@@ -77,9 +74,26 @@ public class FixedWidthFlexTable extends FlexTable {
         Element td = table.getGhostCellElement(i);
         table.idealWidths[i] = td.getPropertyInt("clientWidth");
       }
+    }
 
+    /**
+     * Setup to recalculate column widths.
+     * 
+     * @param table the table
+     */
+    public void recalculateIdealColumnWidthsSetup(FixedWidthFlexTable table) {
+      // Let the table layout naturally
+      table.getElement().getStyle().setProperty("tableLayout", "");
+    }
+
+    /**
+     * Tear down after recalculating column widths.
+     * 
+     * @param table the table
+     */
+    public void recalculateIdealColumnWidthsTeardown(FixedWidthFlexTable table) {
       // Reset the table layout to fixed
-      tableElem.getStyle().setProperty("tableLayout", "fixed");
+      table.getElement().getStyle().setProperty("tableLayout", "fixed");
     }
 
     /**
@@ -136,10 +150,15 @@ public class FixedWidthFlexTable extends FlexTable {
     }
 
     @Override
-    public void recalculateIdealColumnWidths(FixedWidthFlexTable table) {
+    public void recalculateIdealColumnWidthsSetup(FixedWidthFlexTable table) {
+      super.recalculateIdealColumnWidthsSetup(table);
       table.ghostRow.getStyle().setProperty("display", "");
-      super.recalculateIdealColumnWidths(table);
+    }
+
+    @Override
+    public void recalculateIdealColumnWidthsTeardown(FixedWidthFlexTable table) {
       table.ghostRow.getStyle().setProperty("display", "none");
+      super.recalculateIdealColumnWidthsTeardown(table);
     }
 
     @Override
@@ -708,7 +727,16 @@ public class FixedWidthFlexTable extends FlexTable {
    * Recalculate the ideal column widths of each column in the data table.
    */
   protected void recalculateIdealColumnWidths() {
-    impl.recalculateIdealColumnWidths(this);
+    // We need at least one cell to do any calculations
+    int columnCount = getColumnCount();
+    if (!isAttached() || getRowCount() == 0 || columnCount < 0) {
+      idealWidths = new int[0];
+      return;
+    }
+
+    recalculateIdealColumnWidthsSetup();
+    recalculateIdealColumnWidthsImpl();
+    recalculateIdealColumnWidthsTeardown();
   }
 
   /**
@@ -716,6 +744,28 @@ public class FixedWidthFlexTable extends FlexTable {
    */
   void clearIdealWidths() {
     idealWidths = null;
+  }
+
+  /**
+   * Recalculate the ideal column widths of each column in the data table. This
+   * method assumes that the tableLayout has already been changed.
+   */
+  void recalculateIdealColumnWidthsImpl() {
+    impl.recalculateIdealColumnWidthsImpl(this);
+  }
+
+  /**
+   * Setup to recalculate column widths.
+   */
+  void recalculateIdealColumnWidthsSetup() {
+    impl.recalculateIdealColumnWidthsSetup(this);
+  }
+
+  /**
+   * Tear down after recalculating column widths.
+   */
+  void recalculateIdealColumnWidthsTeardown() {
+    impl.recalculateIdealColumnWidthsTeardown(this);
   }
 
   /**
