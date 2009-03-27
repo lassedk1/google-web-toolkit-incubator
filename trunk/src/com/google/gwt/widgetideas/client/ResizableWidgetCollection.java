@@ -17,6 +17,7 @@ package com.google.gwt.widgetideas.client;
 
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -146,6 +147,11 @@ public class ResizableWidgetCollection implements WindowResizeListener,
   private int windowWidth = 0;
 
   /**
+   * The hook used to remove the window handler.
+   */
+  private HandlerRegistration windowHandler;
+
+  /**
    * The delay between resize checks.
    */
   private int resizeCheckDelay = DEFAULT_RESIZE_CHECK_DELAY;
@@ -153,7 +159,7 @@ public class ResizableWidgetCollection implements WindowResizeListener,
   /**
    * A boolean indicating that resize checking should run.
    */
-  private boolean resizeCheckingEnabled = true;
+  private boolean resizeCheckingEnabled;
 
   /**
    * Create a ResizableWidget.
@@ -168,7 +174,7 @@ public class ResizableWidgetCollection implements WindowResizeListener,
    * @param resizeCheckingEnabled false to disable resize checking
    */
   public ResizableWidgetCollection(boolean resizeCheckingEnabled) {
-    this(DEFAULT_RESIZE_CHECK_DELAY, false);
+    this(DEFAULT_RESIZE_CHECK_DELAY, resizeCheckingEnabled);
   }
 
   /**
@@ -185,17 +191,8 @@ public class ResizableWidgetCollection implements WindowResizeListener,
    */
   protected ResizableWidgetCollection(int resizeCheckDelay,
       boolean resizeCheckingEnabled) {
-    Window.addResizeHandler(new ResizeHandler() {
-      public void onResize(ResizeEvent event) {
-        onWindowResized(event.getWidth(), event.getHeight());
-      }
-    });
     setResizeCheckDelay(resizeCheckDelay);
-    if (resizeCheckingEnabled) {
-      resizeCheckTimer.schedule(resizeCheckDelay);
-    } else {
-      this.resizeCheckingEnabled = false;
-    }
+    setResizeCheckingEnabled(resizeCheckingEnabled);
   }
 
   /**
@@ -288,9 +285,20 @@ public class ResizableWidgetCollection implements WindowResizeListener,
   public void setResizeCheckingEnabled(boolean enabled) {
     if (enabled && !resizeCheckingEnabled) {
       resizeCheckingEnabled = true;
+      if (windowHandler == null) {
+        windowHandler = Window.addResizeHandler(new ResizeHandler() {
+          public void onResize(ResizeEvent event) {
+            onWindowResized(event.getWidth(), event.getHeight());
+          }
+        });
+      }
       resizeCheckTimer.schedule(resizeCheckDelay);
     } else if (!enabled && resizeCheckingEnabled) {
       resizeCheckingEnabled = false;
+      if (windowHandler != null) {
+        windowHandler.removeHandler();
+        windowHandler = null;
+      }
       resizeCheckTimer.cancel();
     }
   }
