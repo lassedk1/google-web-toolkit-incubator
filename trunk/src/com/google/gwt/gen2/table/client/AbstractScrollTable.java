@@ -1039,6 +1039,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     }
 
     // Determine the width and column count of the largest table
+    maybeRecalculateIdealColumnWidths();
     int scrollWidth = 0;
     int numColumns = 0;
     {
@@ -1252,21 +1253,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     }
 
     // Recalculate the ideal table widths of each column.
-    getDataTable().recalculateIdealColumnWidthsSetup();
-    getHeaderTable().recalculateIdealColumnWidthsSetup();
-    if (getFooterTable() != null) {
-      getFooterTable().recalculateIdealColumnWidthsSetup();
-    }
-    getDataTable().recalculateIdealColumnWidthsImpl();
-    getHeaderTable().recalculateIdealColumnWidthsImpl();
-    if (getFooterTable() != null) {
-      getFooterTable().recalculateIdealColumnWidthsImpl();
-    }
-    getDataTable().recalculateIdealColumnWidthsTeardown();
-    getHeaderTable().recalculateIdealColumnWidthsTeardown();
-    if (getFooterTable() != null) {
-      getFooterTable().recalculateIdealColumnWidthsTeardown();
-    }
+    maybeRecalculateIdealColumnWidths();
 
     // We update the ResizableWidgetCollection before changing the size of the
     // ScrollTable, because change the size of the scroll table could require
@@ -1282,12 +1269,12 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     }
     applyNewColumnWidths(0, colWidths, true);
 
-    // Update the overall height of the scroll table.  This can only happen
+    // Update the overall height of the scroll table. This can only happen
     // after the widths have been set because setting the width of cells can
     // cause word wrap, which increases the height of the inner tables.
     resizeTablesVertically();
 
-    // Reset the scroll position, which might be lost when we change the layout. 
+    // Reset the scroll position, which might be lost when we change the layout.
     scrollTables(false);
   }
 
@@ -1700,6 +1687,10 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * @param sizes the sizes to apply
    */
   private void applyTableWrapperSizes(TableWrapperSizes sizes) {
+    if (sizes == null) {
+      return;
+    }
+
     headerWrapper.getStyle().setPropertyPx("height", sizes.headerTableHeight);
     if (footerWrapper != null) {
       footerWrapper.getStyle().setPropertyPx("height", sizes.footerTableHeight);
@@ -1756,6 +1747,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     // Adjust the widths if the columns are not truncatable, up to maxWidth
     if (!isColumnTruncatable(column)) {
+      maybeRecalculateIdealColumnWidths();
       int idealWidth = getDataTable().getIdealColumnWidth(column);
       if (maxWidth != MaximumWidthProperty.NO_MAXIMUM_WIDTH) {
         idealWidth = Math.min(idealWidth, maxWidth);
@@ -1763,6 +1755,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       minWidth = Math.max(minWidth, idealWidth);
     }
     if (!isHeaderColumnTruncatable(column)) {
+      maybeRecalculateIdealColumnWidths();
       int idealWidth = getHeaderTable().getIdealColumnWidth(
           column + getHeaderOffset());
       if (maxWidth != MaximumWidthProperty.NO_MAXIMUM_WIDTH) {
@@ -1771,6 +1764,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       minWidth = Math.max(minWidth, idealWidth);
     }
     if (footerTable != null && !isFooterColumnTruncatable(column)) {
+      maybeRecalculateIdealColumnWidths();
       int idealWidth = getFooterTable().getIdealColumnWidth(
           column + getHeaderOffset());
       if (maxWidth != MaximumWidthProperty.NO_MAXIMUM_WIDTH) {
@@ -1902,6 +1896,35 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     sizes.dataTableHeight = totalHeight - sizes.headerTableHeight
         - sizes.footerTableHeight;
     return sizes;
+  }
+
+  /**
+   * Recalculate the ideal columns widths of all inner tables.
+   */
+  private void maybeRecalculateIdealColumnWidths() {
+    // Check if a recalculation is needed.
+    if (headerTable.isIdealColumnWidthsCalculated()
+        && dataTable.isIdealColumnWidthsCalculated()
+        && (footerTable == null || footerTable.isIdealColumnWidthsCalculated())) {
+      return;
+    }
+
+    // Recalculate the ideal table widths of each column.
+    getDataTable().recalculateIdealColumnWidthsSetup();
+    getHeaderTable().recalculateIdealColumnWidthsSetup();
+    if (getFooterTable() != null) {
+      getFooterTable().recalculateIdealColumnWidthsSetup();
+    }
+    getDataTable().recalculateIdealColumnWidthsImpl();
+    getHeaderTable().recalculateIdealColumnWidthsImpl();
+    if (getFooterTable() != null) {
+      getFooterTable().recalculateIdealColumnWidthsImpl();
+    }
+    getDataTable().recalculateIdealColumnWidthsTeardown();
+    getHeaderTable().recalculateIdealColumnWidthsTeardown();
+    if (getFooterTable() != null) {
+      getFooterTable().recalculateIdealColumnWidthsTeardown();
+    }
   }
 
   /**
