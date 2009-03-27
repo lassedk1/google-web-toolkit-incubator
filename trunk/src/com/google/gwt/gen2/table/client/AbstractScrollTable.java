@@ -108,18 +108,23 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
      * Returns the width of a table, minus any padding, in pixels.
      * 
      * @param table the table
+     * @param includeSpacer true to include the spacer width
      * @return the width
      */
-    public int getTableWidth(FixedWidthFlexTable table) {
-      String paddingStr = null;
-      if (isScrollBarOnRight()) {
-        paddingStr = table.getElement().getStyle().getProperty("paddingRight");
-      } else {
-        paddingStr = table.getElement().getStyle().getProperty("paddingLeft");
+    public int getTableWidth(FixedWidthFlexTable table, boolean includeSpacer) {
+      int scrollWidth = table.getElement().getScrollWidth();
+      if (includeSpacer) {
+        String paddingStr = null;
+        if (isScrollBarOnRight()) {
+          paddingStr = table.getElement().getStyle().getProperty("paddingRight");
+        } else {
+          paddingStr = table.getElement().getStyle().getProperty("paddingLeft");
+        }
+        int padding = Integer.parseInt(paddingStr.substring(0,
+            paddingStr.length() - 2));
+        scrollWidth -= padding;
       }
-      int padding = Integer.parseInt(paddingStr.substring(0,
-          paddingStr.length() - 2));
-      return table.getElement().getScrollWidth() - padding;
+      return scrollWidth;
     }
 
     /**
@@ -184,7 +189,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     }
 
     @Override
-    public int getTableWidth(FixedWidthFlexTable table) {
+    public int getTableWidth(FixedWidthFlexTable table, boolean includeSpacer) {
       return table.getElement().getScrollWidth();
     }
 
@@ -1049,10 +1054,10 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
           : footerTable.getColumnCount() - getHeaderOffset();
       if (numHeaderCols >= numDataCols && numHeaderCols >= numFooterCols) {
         numColumns = numHeaderCols;
-        scrollWidth = impl.getTableWidth(headerTable);
+        scrollWidth = impl.getTableWidth(headerTable, false);
       } else if (numFooterCols >= numDataCols && numFooterCols >= numHeaderCols) {
         numColumns = numFooterCols;
-        scrollWidth = impl.getTableWidth(footerTable);
+        scrollWidth = impl.getTableWidth(footerTable, false);
       } else if (numDataCols > 0) {
         numColumns = numDataCols;
         scrollWidth = dataTable.getElement().getScrollWidth();
@@ -1834,10 +1839,10 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       // Determine the largest table
       if (numHeaderCols >= numDataCols && numHeaderCols >= numFooterCols) {
         numColumns = numHeaderCols;
-        diff = clientWidth - impl.getTableWidth(headerTable);
+        diff = clientWidth - impl.getTableWidth(headerTable, true);
       } else if (numFooterCols >= numDataCols && numFooterCols >= numHeaderCols) {
         numColumns = numFooterCols;
-        diff = clientWidth - impl.getTableWidth(footerTable);
+        diff = clientWidth - impl.getTableWidth(footerTable, true);
       } else if (numDataCols > 0) {
         numColumns = numDataCols;
         diff = clientWidth - dataTable.getElement().getScrollWidth();
