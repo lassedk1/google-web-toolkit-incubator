@@ -1489,6 +1489,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     }
 
     // Resize the tables
+    impl.repositionSpacer(this);
     redraw();
   }
 
