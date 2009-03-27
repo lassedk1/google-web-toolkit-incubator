@@ -562,6 +562,13 @@ public class FixedWidthGrid extends SortableGrid {
   }
 
   /**
+   * @return true if the ideal column widths have already been calculated
+   */
+  boolean isIdealColumnWidthsCalculated() {
+    return idealWidths != null;
+  }
+
+  /**
    * Recalculate the ideal column widths of each column in the data table. This
    * method assumes that the tableLayout has already been changed.
    */
