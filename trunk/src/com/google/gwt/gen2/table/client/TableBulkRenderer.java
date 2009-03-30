@@ -249,12 +249,6 @@ public abstract class TableBulkRenderer<RowType> implements
     private String curRowStyleName = null;
 
     /**
-     * The absolute end time of the rendering process. If the table takes longer
-     * than this to render, an error will be thrown.
-     */
-    private double endTime;
-
-    /**
      * The {@link RenderingOptions} to apply to the table.
      */
     private RenderingOptions options;
@@ -277,7 +271,6 @@ public abstract class TableBulkRenderer<RowType> implements
       this.bulkRenderer = bulkRenderer;
       this.cellView = cellView;
       this.options = options;
-      endTime = Duration.currentTimeMillis() + MAX_TIME;
 
       // Create a string buffer to assemble the table
       buffer = new StringBuffer();
@@ -338,12 +331,6 @@ public abstract class TableBulkRenderer<RowType> implements
               checkRow = ROWS_PER_TIME_CHECK;
               double time = Duration.currentTimeMillis();
               if (time > endSlice) {
-                // We only check endTime at each slice.
-                if (time > endTime) {
-                  throw new IllegalStateException(
-                      "Cannot bulk render a table which takes more than "
-                          + MAX_TIME + " milliseconds to render");
-                }
                 return true;
               }
             }
@@ -429,11 +416,6 @@ public abstract class TableBulkRenderer<RowType> implements
    * before flushing the event cue.
    */
   public static int TIME_SLICE = 1000;
-
-  /**
-   * Maximum time allowable to create the table string. Ever.
-   */
-  public static int MAX_TIME = 20000;
 
   /**
    * How many rows should be processed before time is checked and the event loop
