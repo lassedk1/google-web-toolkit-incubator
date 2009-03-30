@@ -747,6 +747,35 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
   }
 
   /**
+   * Test changing a row value.
+   */
+  public void testRowValueChanged() {
+    PagingScrollTable<List<Object>> table = getPagingScrollTable();
+    TestListTableModel tableModel = (TestListTableModel) table.getTableModel();
+    table.setPageSize(5);
+    table.gotoPage(1, true);
+  
+    // Set a row value on the page
+    {
+      List<Object> rowValue = new ArrayList<Object>();
+      tableModel.setRowValue(6, rowValue);
+      assertEquals(rowValue, table.getRowValue(1));
+    }
+  
+    // Set a row value before the page
+    {
+      List<Object> rowValue = new ArrayList<Object>();
+      tableModel.setRowValue(4, rowValue);
+    }
+  
+    // Set a row value after the page
+    {
+      List<Object> rowValue = new ArrayList<Object>();
+      tableModel.setRowValue(10, rowValue);
+    }
+  }
+
+  /**
    * Test values associated with rows.
    */
   public void testRowValues() {
