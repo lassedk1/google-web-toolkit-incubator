@@ -470,7 +470,12 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     if (tableModel instanceof HasRowValueChangeHandlers) {
       ((HasRowValueChangeHandlers<RowType>) tableModel).addRowValueChangeHandler(new RowValueChangeHandler<RowType>() {
         public void onRowValueChange(RowValueChangeEvent<RowType> event) {
-          setRowValue(event.getRowIndex() - getAbsoluteFirstRowIndex(),
+          int rowIndex = event.getRowIndex();
+          if (rowIndex < getAbsoluteFirstRowIndex()
+              || rowIndex > getAbsoluteLastRowIndex()) {
+            return;
+          }
+          setRowValue(rowIndex - getAbsoluteFirstRowIndex(),
               event.getRowValue());
         }
       });
