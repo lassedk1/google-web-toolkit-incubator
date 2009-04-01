@@ -15,11 +15,8 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.gen2.table.override.client.OverrideDOM;
-import com.google.gwt.user.client.Command;
+import com.google.gwt.gen2.table.client.FixedWidthTableImpl.IdealColumnWidthInfo;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
@@ -70,122 +67,6 @@ public class FixedWidthGrid extends SortableGrid {
   }
 
   /**
-   * An implementation used to accommodate differences in column width
-   * implementations between browsers.
-   */
-  private static class FixedWidthGridImpl {
-    /**
-     * Create the ghost row.
-     * 
-     * @return the ghost row element
-     */
-    public Element createGhostRow() {
-      Element ghostRow = DOM.createTR();
-      DOM.setStyleAttribute(ghostRow, "margin", "0px");
-      DOM.setStyleAttribute(ghostRow, "padding", "0px");
-      DOM.setStyleAttribute(ghostRow, "height", "0px");
-      DOM.setStyleAttribute(ghostRow, "overflow", "hidden");
-      return ghostRow;
-    }
-
-    /**
-     * Set the width of a column.
-     * 
-     * @param grid the grid to resize
-     * @param column the index of the column
-     * @param width the width in pixels
-     * @throws IndexOutOfBoundsException
-     */
-    public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
-      DOM.setStyleAttribute(grid.getGhostCellElement(column), "width", width
-          + "px");
-    }
-  }
-
-  /**
-   * Firefox version of the implementation refreshes the table display so the
-   * new column size takes effect. Without the display refresh, the column width
-   * doesn't update in the browser.
-   */
-  @SuppressWarnings("unused")
-  private static class FixedWidthGridImplFirefox extends FixedWidthGridImpl {
-    private boolean pendingUpdate = false;
-
-    @Override
-    public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
-      super.setColumnWidth(grid, column, width);
-      if (!pendingUpdate) {
-        pendingUpdate = true;
-        final Element tableElem = grid.getElement();
-        tableElem.getStyle().setProperty("width", "1px");
-        DeferredCommand.addCommand(new Command() {
-          public void execute() {
-            tableElem.getStyle().setProperty("width", "0px");
-            pendingUpdate = false;
-          }
-        });
-      }
-    }
-  }
-
-  /**
-   * IE6 version of the implementation. IE6 sets the overall column width
-   * instead of the innerWidth, so we need to add the padding and spacing.
-   */
-  @SuppressWarnings("unused")
-  private static class FixedWidthGridImplIE6 extends FixedWidthGridImpl {
-    @Override
-    public Element createGhostRow() {
-      Element ghostRow = super.createGhostRow();
-      DOM.setStyleAttribute(ghostRow, "display", "none");
-      return ghostRow;
-    }
-
-    @Override
-    public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
-      width += 2 * grid.getCellPadding() + grid.getCellSpacing();
-      super.setColumnWidth(grid, column, width);
-    }
-  }
-
-  /**
-   * Opera version of the implementation refreshes the table display so the new
-   * column size takes effect. Without the display refresh, the column width
-   * doesn't update in the browser.
-   */
-  @SuppressWarnings("unused")
-  private static class FixedWidthGridImplOpera extends FixedWidthGridImpl {
-    @Override
-    public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
-      super.setColumnWidth(grid, column, width);
-      Element tableElem = grid.getElement();
-      Element parentElem = DOM.getParent(tableElem);
-      int scrollLeft = 0;
-      if (parentElem != null) {
-        scrollLeft = DOM.getElementPropertyInt(parentElem, "scrollLeft");
-      }
-      DOM.setStyleAttribute(tableElem, "display", "none");
-      DOM.setStyleAttribute(tableElem, "display", "");
-      if (parentElem != null) {
-        DOM.setElementPropertyInt(parentElem, "scrollLeft", scrollLeft);
-      }
-    }
-  }
-
-  /**
-   * Safari version of the implementation. Safari sets the overall column width
-   * instead of the innerWidth, so we need to add the padding and spacing.
-   */
-  @SuppressWarnings("unused")
-  private static class FixedWidthGridImplSafari extends FixedWidthGridImpl {
-    @Override
-    public void setColumnWidth(FixedWidthGrid grid, int column, int width) {
-      width += 2 * grid.getCellPadding() + grid.getCellSpacing();
-      super.setColumnWidth(grid, column, width);
-    }
-  }
-
-  /**
    * The default width of a column in pixels.
    */
   public static final int DEFAULT_COLUMN_WIDTH = 80;
@@ -196,9 +77,9 @@ public class FixedWidthGrid extends SortableGrid {
   public static final int MIN_COLUMN_WIDTH = 1;
 
   /**
-   * The implementation class.
+   * The cloned table element used to calculate ideal column widths.
    */
-  private static FixedWidthGridImpl impl = GWT.create(FixedWidthGridImpl.class);
+  private IdealColumnWidthInfo idealColumnWidthInfo;
 
   /**
    * A mapping of column indexes to their widths in pixels.
@@ -233,7 +114,7 @@ public class FixedWidthGrid extends SortableGrid {
     setColumnFormatter(new FixedWidthGridColumnFormatter());
 
     // Create the ghost row for sizing
-    ghostRow = impl.createGhostRow();
+    ghostRow = FixedWidthTableImpl.get().createGhostRow();
     DOM.insertChild(getBodyElement(), ghostRow, 0);
 
     // Sink highlight and selection events
@@ -333,7 +214,7 @@ public class FixedWidthGrid extends SortableGrid {
       setColumnWidth(entry.getKey(), entry.getValue());
     }
     if (getSelectionPolicy().hasInputColumn()) {
-      impl.setColumnWidth(this, -1, getInputColumnWidth());
+      setColumnWidthImpl(-1, getInputColumnWidth());
     }
   }
 
@@ -346,7 +227,7 @@ public class FixedWidthGrid extends SortableGrid {
       setColumnWidth(entry.getKey(), entry.getValue());
     }
     if (getSelectionPolicy().hasInputColumn()) {
-      impl.setColumnWidth(this, -1, getInputColumnWidth());
+      setColumnWidthImpl(-1, getInputColumnWidth());
     }
   }
 
@@ -374,7 +255,7 @@ public class FixedWidthGrid extends SortableGrid {
     }
 
     // Set the actual column width
-    impl.setColumnWidth(this, column, width);
+    setColumnWidthImpl(column, width);
   }
 
   @Override
@@ -390,10 +271,10 @@ public class FixedWidthGrid extends SortableGrid {
         && !getSelectionPolicy().hasInputColumn()) {
       // Add ghost input column
       Element tr = getGhostRow();
-      Element td = createGhostCell();
+      Element td = FixedWidthTableImpl.get().createGhostCell(null);
       tr.insertBefore(td, tr.getFirstChildElement());
       super.setSelectionPolicy(selectionPolicy);
-      impl.setColumnWidth(this, -1, getInputColumnWidth());
+      setColumnWidthImpl(-1, getInputColumnWidth());
     } else if (!selectionPolicy.hasInputColumn()
         && getSelectionPolicy().hasInputColumn()) {
       // Remove ghost input column
@@ -500,7 +381,7 @@ public class FixedWidthGrid extends SortableGrid {
   protected void recalculateIdealColumnWidths() {
     // We need at least one cell to do any calculations
     int columnCount = getColumnCount();
-    if (!isAttached() || getRowCount() == 0 || columnCount < 0) {
+    if (!isAttached() || getRowCount() == 0 || columnCount < 1) {
       idealWidths = new int[0];
       return;
     }
@@ -528,7 +409,7 @@ public class FixedWidthGrid extends SortableGrid {
     if (numColumns > numGhosts) {
       // Add ghosts as needed
       for (int i = numGhosts; i < numColumns; i++) {
-        Element td = createGhostCell();
+        Element td = FixedWidthTableImpl.get().createGhostCell(null);
         DOM.appendChild(ghostRow, td);
         setColumnWidth(i, getColumnWidth(i));
       }
@@ -573,52 +454,29 @@ public class FixedWidthGrid extends SortableGrid {
    * method assumes that the tableLayout has already been changed.
    */
   void recalculateIdealColumnWidthsImpl() {
-    // We need at least one cell to do any calculations
-    int columnCount = getColumnCount();
-    if (!isAttached() || getRowCount() == 0 || columnCount < 0) {
-      idealWidths = new int[0];
-      return;
+    int offset = 0;
+    if (getSelectionPolicy().hasInputColumn()) {
+      offset++;
     }
-
-    // Determine the width of each column
-    final Element tableElem = getElement();
-    FixedWidthGridCellFormatter formatter = getFixedWidthGridCellFormatter();
-    idealWidths = new int[columnCount];
-    for (int i = 0; i < columnCount; i++) {
-      Element td = formatter.getRawElement(0, i);
-      idealWidths[i] = td.getPropertyInt("clientWidth");
-    }
+    idealWidths = FixedWidthTableImpl.get().recalculateIdealColumnWidths(
+        idealColumnWidthInfo, getColumnCount(), offset);
   }
 
   /**
    * Setup to recalculate column widths.
    */
   void recalculateIdealColumnWidthsSetup() {
-    // Let the table layout naturally
-    getElement().getStyle().setProperty("tableLayout", "");
+    idealColumnWidthInfo = FixedWidthTableImpl.get().recalculateIdealColumnWidthsSetup(
+        this, ghostRow);
   }
 
   /**
    * Tear down after recalculating column widths.
    */
   void recalculateIdealColumnWidthsTeardown() {
-    // Reset the table layout to fixed
-    getElement().getStyle().setProperty("tableLayout", "fixed");
-  }
-
-  /**
-   * @return a cell to use in the ghost row
-   */
-  private Element createGhostCell() {
-    Element td = OverrideDOM.createTD();
-    td.getStyle().setPropertyPx("height", 0);
-    td.getStyle().setProperty("overflow", "hidden");
-    td.getStyle().setPropertyPx("paddingTop", 0);
-    td.getStyle().setPropertyPx("paddingBottom", 0);
-    td.getStyle().setPropertyPx("borderTop", 0);
-    td.getStyle().setPropertyPx("borderBottom", 0);
-    td.getStyle().setPropertyPx("margin", 0);
-    return td;
+    FixedWidthTableImpl.get().recalculateIdealColumnWidthsTeardown(
+        idealColumnWidthInfo);
+    idealColumnWidthInfo = null;
   }
 
   /**
@@ -631,7 +489,7 @@ public class FixedWidthGrid extends SortableGrid {
     if (getSelectionPolicy().hasInputColumn()) {
       column++;
     }
-    return DOM.getChild(ghostRow, column);
+    return FixedWidthTableImpl.get().getGhostCell(ghostRow, column);
   }
 
   /**
@@ -642,5 +500,18 @@ public class FixedWidthGrid extends SortableGrid {
     if (idealWidths == null) {
       recalculateIdealColumnWidths();
     }
+  }
+
+  /**
+   * Set the width of a column.
+   * 
+   * @param column the index of the column
+   * @param width the width in pixels
+   */
+  private void setColumnWidthImpl(int column, int width) {
+    if (getSelectionPolicy().hasInputColumn()) {
+      column++;
+    }
+    FixedWidthTableImpl.get().setColumnWidth(this, ghostRow, column, width);
   }
 }
