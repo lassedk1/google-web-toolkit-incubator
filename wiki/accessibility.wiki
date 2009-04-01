@@ -1,0 +1,6 @@
+#summary DRAFT GWT Accessibility enhancements.
+
+= Introduction =
+This document is intended to cover some proposed enhancements to the current GWT accessibility support.
+= Details =
+ 
