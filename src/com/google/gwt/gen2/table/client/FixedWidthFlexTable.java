@@ -15,11 +15,9 @@
  */
 package com.google.gwt.gen2.table.client;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.gen2.table.client.FixedWidthTableImpl.IdealColumnWidthInfo;
 import com.google.gwt.gen2.table.override.client.FlexTable;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -34,179 +32,6 @@ import java.util.Map;
  * {@link FixedWidthFlexTable} class are guaranteed to be resized correctly.
  */
 public class FixedWidthFlexTable extends FlexTable {
-  /**
-   * An implementation used accommodate differences in column width
-   * implementations between browsers.
-   */
-  private static class FixedWidthFlexTableImpl {
-    /**
-     * Create the ghost row.
-     * 
-     * @return the ghost row element
-     */
-    public Element createGhostRow() {
-      Element ghostRow = DOM.createTR();
-      ghostRow.getStyle().setPropertyPx("margin", 0);
-      ghostRow.getStyle().setPropertyPx("padding", 0);
-      ghostRow.getStyle().setPropertyPx("height", 0);
-      ghostRow.getStyle().setProperty("overflow", "hidden");
-      return ghostRow;
-    }
-
-    /**
-     * Recalculate the ideal column widths of each column in the data table.
-     * This method assumes that the tableLayout has already been changed.
-     * 
-     * @param table the table
-     */
-    public void recalculateIdealColumnWidthsImpl(FixedWidthFlexTable table) {
-      // We need at least one cell to do any calculations
-      int columnCount = table.getColumnCount();
-      if (!table.isAttached() || table.getRowCount() == 0 || columnCount < 0) {
-        table.idealWidths = new int[0];
-        return;
-      }
-
-      // Determine the width of each column
-      FixedWidthFlexCellFormatter formatter = (FixedWidthFlexCellFormatter) table.getCellFormatter();
-      table.idealWidths = new int[columnCount];
-      for (int i = 0; i < columnCount; i++) {
-        Element td = table.getGhostCellElement(i);
-        table.idealWidths[i] = td.getPropertyInt("clientWidth");
-      }
-    }
-
-    /**
-     * Setup to recalculate column widths.
-     * 
-     * @param table the table
-     */
-    public void recalculateIdealColumnWidthsSetup(FixedWidthFlexTable table) {
-      // Let the table layout naturally
-      table.getElement().getStyle().setProperty("tableLayout", "");
-    }
-
-    /**
-     * Tear down after recalculating column widths.
-     * 
-     * @param table the table
-     */
-    public void recalculateIdealColumnWidthsTeardown(FixedWidthFlexTable table) {
-      // Reset the table layout to fixed
-      table.getElement().getStyle().setProperty("tableLayout", "fixed");
-    }
-
-    /**
-     * Set the width of a column.
-     * 
-     * @param column the index of the column
-     * @param width the width in pixels
-     * @throws IndexOutOfBoundsException
-     */
-    public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
-      grid.getGhostCellElement(column).getStyle().setPropertyPx("width", width);
-    }
-  }
-
-  /**
-   * Firefox version of the implementation refreshes the table display so the
-   * new column size takes effect. Without the display refresh, the column width
-   * doesn't update in the browser.
-   */
-  @SuppressWarnings("unused")
-  private static class FixedWidthFlexTableImplFirefox extends
-      FixedWidthFlexTableImpl {
-    private boolean pendingUpdate = false;
-
-    @Override
-    public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
-      super.setColumnWidth(grid, column, width);
-      if (!pendingUpdate) {
-        pendingUpdate = true;
-        final Element tableElem = grid.getElement();
-        tableElem.getStyle().setProperty("width", "1px");
-        DeferredCommand.addCommand(new Command() {
-          public void execute() {
-            tableElem.getStyle().setProperty("width", "0px");
-            pendingUpdate = false;
-          }
-        });
-      }
-    }
-  }
-
-  /**
-   * IE6 version of the implementation. IE6 sets the overall column width
-   * instead of the innerWidth, so we need to add the padding and spacing.
-   */
-  @SuppressWarnings("unused")
-  private static class FixedWidthFlexTableImplIE6 extends
-      FixedWidthFlexTableImpl {
-    @Override
-    public Element createGhostRow() {
-      Element ghostRow = super.createGhostRow();
-      ghostRow.getStyle().setProperty("display", "none");
-      return ghostRow;
-    }
-
-    @Override
-    public void recalculateIdealColumnWidthsSetup(FixedWidthFlexTable table) {
-      super.recalculateIdealColumnWidthsSetup(table);
-      table.ghostRow.getStyle().setProperty("display", "");
-    }
-
-    @Override
-    public void recalculateIdealColumnWidthsTeardown(FixedWidthFlexTable table) {
-      table.ghostRow.getStyle().setProperty("display", "none");
-      super.recalculateIdealColumnWidthsTeardown(table);
-    }
-
-    @Override
-    public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
-      width += 2 * grid.getCellPadding() + grid.getCellSpacing();
-      super.setColumnWidth(grid, column, width);
-    }
-  }
-
-  /**
-   * Safari version of the implementation. Safari sets the overall column width
-   * instead of the innerWidth, so we need to add the padding and spacing.
-   */
-  @SuppressWarnings("unused")
-  private static class FixedWidthFlexTableImplSafari extends
-      FixedWidthFlexTableImpl {
-    @Override
-    public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
-      width += 2 * grid.getCellPadding() + grid.getCellSpacing();
-      super.setColumnWidth(grid, column, width);
-    }
-  }
-
-  /**
-   * Opera version of the implementation refreshes the table display so the new
-   * column size takes effect. Without the display refresh, the column width
-   * doesn't update in the browser.
-   */
-  @SuppressWarnings("unused")
-  private static class FixedWidthFlexTableImplOpera extends
-      FixedWidthFlexTableImpl {
-    @Override
-    public void setColumnWidth(FixedWidthFlexTable grid, int column, int width) {
-      super.setColumnWidth(grid, column, width);
-      Element tableElem = grid.getElement();
-      Element parentElem = DOM.getParent(tableElem);
-      int scrollLeft = 0;
-      if (parentElem != null) {
-        scrollLeft = parentElem.getScrollLeft();
-      }
-      tableElem.getStyle().setProperty("display", "none");
-      tableElem.getStyle().setProperty("display", "");
-      if (parentElem != null) {
-        parentElem.setScrollLeft(scrollLeft);
-      }
-    }
-  }
-
   /**
    * FlexTable-specific implementation of
    * {@link com.google.gwt.user.client.ui.HTMLTable.CellFormatter}.
@@ -333,9 +158,9 @@ public class FixedWidthFlexTable extends FlexTable {
   public static final int DEFAULT_COLUMN_WIDTH = 80;
 
   /**
-   * The implementation class.
+   * The cloned table element used to calculate ideal column widths.
    */
-  private static FixedWidthFlexTableImpl impl = GWT.create(FixedWidthFlexTableImpl.class);
+  private IdealColumnWidthInfo idealColumnWidthInfo;
 
   /**
    * A mapping of column indexes to their widths in pixels.
@@ -396,7 +221,7 @@ public class FixedWidthFlexTable extends FlexTable {
     setRowFormatter(new FixedWidthFlexRowFormatter());
 
     // Create the zero row for sizing
-    ghostRow = impl.createGhostRow();
+    ghostRow = FixedWidthTableImpl.get().createGhostRow();
     DOM.insertChild(getBodyElement(), ghostRow, 0);
   }
 
@@ -628,7 +453,7 @@ public class FixedWidthFlexTable extends FlexTable {
     }
 
     // Set the actual column width
-    impl.setColumnWidth(this, column, width);
+    FixedWidthTableImpl.get().setColumnWidth(this, ghostRow, column, width);
   }
 
   @Override
@@ -729,7 +554,7 @@ public class FixedWidthFlexTable extends FlexTable {
   protected void recalculateIdealColumnWidths() {
     // We need at least one cell to do any calculations
     int columnCount = getColumnCount();
-    if (!isAttached() || getRowCount() == 0 || columnCount < 0) {
+    if (!isAttached() || getRowCount() == 0 || columnCount < 1) {
       idealWidths = new int[0];
       return;
     }
@@ -758,31 +583,25 @@ public class FixedWidthFlexTable extends FlexTable {
    * method assumes that the tableLayout has already been changed.
    */
   void recalculateIdealColumnWidthsImpl() {
-    impl.recalculateIdealColumnWidthsImpl(this);
+    idealWidths = FixedWidthTableImpl.get().recalculateIdealColumnWidths(
+        idealColumnWidthInfo, getColumnCount(), 0);
   }
 
   /**
    * Setup to recalculate column widths.
    */
   void recalculateIdealColumnWidthsSetup() {
-    impl.recalculateIdealColumnWidthsSetup(this);
+    idealColumnWidthInfo = FixedWidthTableImpl.get().recalculateIdealColumnWidthsSetup(
+        this, ghostRow);
   }
 
   /**
    * Tear down after recalculating column widths.
    */
   void recalculateIdealColumnWidthsTeardown() {
-    impl.recalculateIdealColumnWidthsTeardown(this);
-  }
-
-  /**
-   * Returns a cell in the ghost row.
-   * 
-   * @param column the cell's column
-   * @return the ghost cell
-   */
-  private Element getGhostCellElement(int column) {
-    return DOM.getChild(ghostRow, column);
+    FixedWidthTableImpl.get().recalculateIdealColumnWidthsTeardown(
+        idealColumnWidthInfo);
+    idealColumnWidthInfo = null;
   }
 
   /**
@@ -879,20 +698,16 @@ public class FixedWidthFlexTable extends FlexTable {
       // Add ghosts as needed
       super.addCells(0, maxRawColumnCount - curNumGhosts);
       for (int i = curNumGhosts; i < maxRawColumnCount; i++) {
-        Element td = getGhostCellElement(i);
-        td.getStyle().setProperty("overflow", "hidden");
-        td.getStyle().setPropertyPx("height", 0);
-        td.getStyle().setPropertyPx("paddingTop", 0);
-        td.getStyle().setPropertyPx("paddingBottom", 0);
-        td.getStyle().setPropertyPx("borderTop", 0);
-        td.getStyle().setPropertyPx("borderBottom", 0);
+        Element td = FixedWidthTableImpl.get().getGhostCell(ghostRow, i);
+        FixedWidthTableImpl.get().createGhostCell(td);
         setColumnWidth(i, getColumnWidth(i));
       }
     } else if (maxRawColumnCount < curNumGhosts) {
       // Remove ghost rows as needed
       int cellsToRemove = curNumGhosts - maxRawColumnCount;
       for (int i = 0; i < cellsToRemove; i++) {
-        DOM.removeChild(ghostRow, getGhostCellElement(maxRawColumnCount));
+        DOM.removeChild(ghostRow, FixedWidthTableImpl.get().getGhostCell(
+            ghostRow, maxRawColumnCount));
       }
     }
   }

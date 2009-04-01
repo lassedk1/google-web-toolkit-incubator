@@ -28,6 +28,7 @@ import com.google.gwt.gen2.table.event.client.ColumnSortHandler;
 import com.google.gwt.gen2.table.override.client.ComplexPanel;
 import com.google.gwt.gen2.table.override.client.OverrideDOM;
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
@@ -113,7 +114,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
      */
     public int getTableWidth(FixedWidthFlexTable table, boolean includeSpacer) {
       int scrollWidth = table.getElement().getScrollWidth();
-      if (includeSpacer) {
+      if (!includeSpacer) {
         int spacerWidth = getSpacerWidth(table);
         if (spacerWidth > 0) {
           scrollWidth -= spacerWidth;
@@ -126,8 +127,14 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
      * Reposition the header spacer as needed.
      * 
      * @param scrollTable the scroll table
+     * @param force if true, ignore the scroll policy
      */
-    public void repositionSpacer(AbstractScrollTable scrollTable) {
+    public void repositionSpacer(AbstractScrollTable scrollTable, boolean force) {
+      // Only ScrollPolicy.BOTH has a vertical scroll bar
+      if (!force && scrollTable.scrollPolicy != ScrollPolicy.BOTH) {
+        return;
+      }
+
       Element dataWrapper = scrollTable.dataWrapper;
       int spacerWidth = dataWrapper.getOffsetWidth()
           - dataWrapper.getPropertyInt("clientWidth");
@@ -603,12 +610,19 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
-   * The heights to apply to the tables within the ScrollTable.
+   * Information about the height and width of the inner tables. This class is
+   * used to pass around info, often with only part of the attributes set.
    */
   private static class TableWrapperSizes {
     private int headerTableHeight;
     private int dataTableHeight;
     private int footerTableHeight;
+
+    private int headerTableWidth;
+    private int dataTableWidth;
+    private int footerTableWidth;
+
+    private int availableWidth;
   }
 
   /**
@@ -994,7 +1008,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * to work.
    */
   public void fillWidth() {
-    List<ColumnWidthInfo> colWidths = getFillColumnWidths();
+    List<ColumnWidthInfo> colWidths = getFillColumnWidths(null);
     applyNewColumnWidths(0, colWidths, false);
     scrollTables(false);
   }
@@ -1079,8 +1093,22 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       return -1;
     }
 
+    // Create a command to execute while recalculating widths. Using this
+    // command prevents an extra browser layout by grouping read operations.
+    final TableWrapperSizes redrawInfo = new TableWrapperSizes();
+    Command command = new Command() {
+      public void execute() {
+        // Get some information that will be used to render the table
+        redrawInfo.headerTableWidth = impl.getTableWidth(headerTable, true);
+        redrawInfo.dataTableWidth = dataTable.getElement().getScrollWidth();
+        if (footerTable != null) {
+          redrawInfo.footerTableWidth = impl.getTableWidth(footerTable, true);
+        }
+      }
+    };
+
     // Determine the width and column count of the largest table
-    maybeRecalculateIdealColumnWidths();
+    maybeRecalculateIdealColumnWidths(command);
     int scrollWidth = 0;
     int numColumns = 0;
     {
@@ -1090,13 +1118,13 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
           : footerTable.getColumnCount() - getHeaderOffset();
       if (numHeaderCols >= numDataCols && numHeaderCols >= numFooterCols) {
         numColumns = numHeaderCols;
-        scrollWidth = impl.getTableWidth(headerTable, false);
+        scrollWidth = redrawInfo.headerTableWidth;
       } else if (numFooterCols >= numDataCols && numFooterCols >= numHeaderCols) {
         numColumns = numFooterCols;
-        scrollWidth = impl.getTableWidth(footerTable, false);
+        scrollWidth = redrawInfo.footerTableWidth;
       } else if (numDataCols > 0) {
         numColumns = numDataCols;
-        scrollWidth = dataTable.getElement().getScrollWidth();
+        scrollWidth = redrawInfo.dataTableWidth;
       }
     }
     if (numColumns <= 0) {
@@ -1293,18 +1321,34 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       return;
     }
 
-    // Recalculate the ideal table widths of each column.
-    maybeRecalculateIdealColumnWidths();
+    // Create a command to execute while recalculating widths. Using this
+    // command prevents an extra browser layout by grouping read operations.
+    final TableWrapperSizes redrawInfo = new TableWrapperSizes();
+    Command command = new Command() {
+      public void execute() {
+        // We update the ResizableWidgetCollection before changing the size of
+        // the ScrollTable, because change the size of the scroll table could
+        // require an additional layout (ex. if window scroll bars show up).
+        ResizableWidgetCollection.get().updateWidgetSize(
+            AbstractScrollTable.this);
 
-    // We update the ResizableWidgetCollection before changing the size of the
-    // ScrollTable, because change the size of the scroll table could require
-    // an additional layout (ex. if window scroll bars show up).
-    ResizableWidgetCollection.get().updateWidgetSize(this);
+        // Get some information that will be used to render the table
+        redrawInfo.availableWidth = getAvailableWidth();
+        redrawInfo.headerTableWidth = impl.getTableWidth(headerTable, false);
+        redrawInfo.dataTableWidth = dataTable.getElement().getScrollWidth();
+        if (footerTable != null) {
+          redrawInfo.footerTableWidth = impl.getTableWidth(footerTable, false);
+        }
+      }
+    };
+
+    // Recalculate the ideal table widths of each column.
+    maybeRecalculateIdealColumnWidths(command);
 
     // Calculate the new widths of the columns
     List<ColumnWidthInfo> colWidths = null;
     if (resizePolicy == ResizePolicy.FILL_WIDTH) {
-      colWidths = getFillColumnWidths();
+      colWidths = getFillColumnWidths(redrawInfo);
     } else {
       colWidths = getBoundedColumnWidths(true);
     }
@@ -1426,7 +1470,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     }
 
     // Reposition things as needed
-    impl.repositionSpacer(this);
+    impl.repositionSpacer(this, false);
     resizeTablesVertically();
     scrollTables(false);
     return width;
@@ -1525,7 +1569,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     }
 
     // Resize the tables
-    impl.repositionSpacer(this);
+    impl.repositionSpacer(this, true);
     redraw();
   }
 
@@ -1720,7 +1764,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
         }
       }
     }
-    impl.repositionSpacer(this);
+    impl.repositionSpacer(this, false);
   }
 
   /**
@@ -1741,6 +1785,22 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
         Math.max(sizes.dataTableHeight, 0));
     dataWrapper.getStyle().setProperty("overflow", "hidden");
     dataWrapper.getStyle().setProperty("overflow", "auto");
+  }
+
+  /**
+   * Get the width available for the tables.
+   * 
+   * @return the available width, or -1 if not defined
+   */
+  private int getAvailableWidth() {
+    int clientWidth = absoluteElem.getPropertyInt("clientWidth");
+    if (scrollPolicy == ScrollPolicy.BOTH) {
+      int scrollbarWidth = mockScrollable.getOffsetWidth()
+          - mockScrollable.getPropertyInt("clientWidth");
+      clientWidth = absoluteElem.getPropertyInt("clientWidth") - scrollbarWidth
+          - 1;
+    }
+    return Math.max(clientWidth, -1);
   }
 
   /**
@@ -1789,7 +1849,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     // Adjust the widths if the columns are not truncatable, up to maxWidth
     if (!isColumnTruncatable(column)) {
-      maybeRecalculateIdealColumnWidths();
+      maybeRecalculateIdealColumnWidths(null);
       int idealWidth = getDataTable().getIdealColumnWidth(column);
       if (maxWidth != MaximumWidthProperty.NO_MAXIMUM_WIDTH) {
         idealWidth = Math.min(idealWidth, maxWidth);
@@ -1797,7 +1857,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       minWidth = Math.max(minWidth, idealWidth);
     }
     if (!isHeaderColumnTruncatable(column)) {
-      maybeRecalculateIdealColumnWidths();
+      maybeRecalculateIdealColumnWidths(null);
       int idealWidth = getHeaderTable().getIdealColumnWidth(
           column + getHeaderOffset());
       if (maxWidth != MaximumWidthProperty.NO_MAXIMUM_WIDTH) {
@@ -1806,7 +1866,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       minWidth = Math.max(minWidth, idealWidth);
     }
     if (footerTable != null && !isFooterColumnTruncatable(column)) {
-      maybeRecalculateIdealColumnWidths();
+      maybeRecalculateIdealColumnWidths(null);
       int idealWidth = getFooterTable().getIdealColumnWidth(
           column + getHeaderOffset());
       if (maxWidth != MaximumWidthProperty.NO_MAXIMUM_WIDTH) {
@@ -1836,21 +1896,27 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   /**
    * Get the column widths needed to fill with available ScrollTable width.
    * 
+   * @param info the optional precomputed sizes
    * @return the column widths
    */
-  private List<ColumnWidthInfo> getFillColumnWidths() {
+  private List<ColumnWidthInfo> getFillColumnWidths(TableWrapperSizes info) {
     if (!isAttached()) {
       return null;
     }
 
-    // Calculate how much room we have to work with
-    int clientWidth = absoluteElem.getPropertyInt("clientWidth");
-    if (scrollPolicy == ScrollPolicy.BOTH) {
-      int scrollbarWidth = mockScrollable.getOffsetWidth()
-          - mockScrollable.getPropertyInt("clientWidth");
-      clientWidth = absoluteElem.getPropertyInt("clientWidth") - scrollbarWidth
-          - 1;
+    // Precompute some sizes
+    if (info == null) {
+      info = new TableWrapperSizes();
+      info.availableWidth = getAvailableWidth();
+      info.headerTableWidth = impl.getTableWidth(headerTable, false);
+      info.dataTableWidth = dataTable.getElement().getScrollWidth();
+      if (footerTable != null) {
+        info.footerTableWidth = impl.getTableWidth(footerTable, false);
+      }
     }
+
+    // Calculate how much room we have to work with
+    int clientWidth = info.availableWidth;
     if (clientWidth <= 0) {
       return null;
     }
@@ -1863,26 +1929,26 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       int numHeaderCols = 0;
       int numDataCols = 0;
       int numFooterCols = 0;
-      if (headerTable.getElement().getScrollWidth() > 0) {
+      if (info.headerTableWidth > 0) {
         numHeaderCols = headerTable.getColumnCount() - getHeaderOffset();
       }
-      if (dataTable.getElement().getScrollWidth() > 0) {
+      if (info.dataTableWidth > 0) {
         numDataCols = dataTable.getColumnCount();
       }
-      if (footerTable != null && footerTable.getOffsetWidth() > 0) {
+      if (footerTable != null && info.footerTableWidth > 0) {
         numFooterCols = footerTable.getColumnCount() - getHeaderOffset();
       }
 
       // Determine the largest table
       if (numHeaderCols >= numDataCols && numHeaderCols >= numFooterCols) {
         numColumns = numHeaderCols;
-        diff = clientWidth - impl.getTableWidth(headerTable, true);
+        diff = clientWidth - info.headerTableWidth;
       } else if (numFooterCols >= numDataCols && numFooterCols >= numHeaderCols) {
         numColumns = numFooterCols;
-        diff = clientWidth - impl.getTableWidth(footerTable, true);
+        diff = clientWidth - info.footerTableWidth;
       } else if (numDataCols > 0) {
         numColumns = numDataCols;
-        diff = clientWidth - dataTable.getElement().getScrollWidth();
+        diff = clientWidth - info.dataTableWidth;
       }
     }
     if (numColumns <= 0) {
@@ -1942,26 +2008,45 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Recalculate the ideal columns widths of all inner tables.
+   * 
+   * @param command an optional command to execute while recalculating
    */
-  private void maybeRecalculateIdealColumnWidths() {
+  private void maybeRecalculateIdealColumnWidths(Command command) {
+    // Calculations require that we are attached
+    if (!isAttached()) {
+      return;
+    }
+
     // Check if a recalculation is needed.
     if (headerTable.isIdealColumnWidthsCalculated()
         && dataTable.isIdealColumnWidthsCalculated()
         && (footerTable == null || footerTable.isIdealColumnWidthsCalculated())) {
+      if (command != null) {
+        command.execute();
+      }
       return;
     }
 
-    // Recalculate the ideal table widths of each column.
+    // Setup all inner tables
     getDataTable().recalculateIdealColumnWidthsSetup();
     getHeaderTable().recalculateIdealColumnWidthsSetup();
     if (getFooterTable() != null) {
       getFooterTable().recalculateIdealColumnWidthsSetup();
     }
+
+    // Perform operations
     getDataTable().recalculateIdealColumnWidthsImpl();
     getHeaderTable().recalculateIdealColumnWidthsImpl();
     if (getFooterTable() != null) {
       getFooterTable().recalculateIdealColumnWidthsImpl();
     }
+
+    // Execute the optional command
+    if (command != null) {
+      command.execute();
+    }
+
+    // Teardown all inner tables
     getDataTable().recalculateIdealColumnWidthsTeardown();
     getHeaderTable().recalculateIdealColumnWidthsTeardown();
     if (getFooterTable() != null) {
