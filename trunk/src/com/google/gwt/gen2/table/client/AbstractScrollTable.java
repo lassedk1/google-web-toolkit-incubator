@@ -114,15 +114,10 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     public int getTableWidth(FixedWidthFlexTable table, boolean includeSpacer) {
       int scrollWidth = table.getElement().getScrollWidth();
       if (includeSpacer) {
-        String paddingStr = null;
-        if (isScrollBarOnRight()) {
-          paddingStr = table.getElement().getStyle().getProperty("paddingRight");
-        } else {
-          paddingStr = table.getElement().getStyle().getProperty("paddingLeft");
+        int spacerWidth = getSpacerWidth(table);
+        if (spacerWidth > 0) {
+          scrollWidth -= spacerWidth;
         }
-        int padding = Integer.parseInt(paddingStr.substring(0,
-            paddingStr.length() - 2));
-        scrollWidth -= padding;
       }
       return scrollWidth;
     }
@@ -152,10 +147,43 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     }
 
     void resizeSpacer(FixedWidthFlexTable table, Element spacer, int spacerWidth) {
+      // Exit early if the spacer is already the correct size
+      if (spacerWidth == getSpacerWidth(table)) {
+        return;
+      }
+
       if (isScrollBarOnRight()) {
         table.getElement().getStyle().setPropertyPx("paddingRight", spacerWidth);
       } else {
         table.getElement().getStyle().setPropertyPx("paddingLeft", spacerWidth);
+      }
+    }
+
+    /**
+     * Get the current width of the spacer element.
+     * 
+     * @param table the table to check
+     * @return the current width
+     */
+    private int getSpacerWidth(FixedWidthFlexTable table) {
+      // Get the padding string
+      String paddingStr;
+      if (isScrollBarOnRight()) {
+        paddingStr = table.getElement().getStyle().getProperty("paddingRight");
+      } else {
+        paddingStr = table.getElement().getStyle().getProperty("paddingLeft");
+      }
+
+      // Check the padding string
+      if (paddingStr == null || paddingStr.length() < 3) {
+        return -1;
+      }
+
+      // Parse the int from the padding
+      try {
+        return Integer.parseInt(paddingStr.substring(0, paddingStr.length() - 2));
+      } catch (NumberFormatException e) {
+        return -1;
       }
     }
   }
@@ -177,13 +205,23 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    */
   @SuppressWarnings("unused")
   private static class ImplIE6 extends ImplLeftScrollBar {
+    /**
+     * Adding padding to a table in IE will mess up the layout, so we use an
+     * absolutely positioned div to add padding. In RTL mode, the div needs to
+     * be exactly the right width and position or scrollLeft will be affected.
+     * In LTR mode, we can position it anywhere and set the width to a high
+     * number, improving performance.
+     */
     @Override
     public Element createSpacer(FixedWidthFlexTable table, Element wrapper) {
       Element spacer = DOM.createDiv();
       spacer.getStyle().setPropertyPx("height", 1);
-      spacer.getStyle().setPropertyPx("width", 100);
       spacer.getStyle().setPropertyPx("top", 1);
       spacer.getStyle().setProperty("position", "absolute");
+      if (!LocaleInfo.getCurrentLocale().isRTL()) {
+        spacer.getStyle().setPropertyPx("left", 1);
+        spacer.getStyle().setPropertyPx("width", 10000);
+      }
       wrapper.appendChild(spacer);
       return spacer;
     }
@@ -195,12 +233,10 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     @Override
     void resizeSpacer(FixedWidthFlexTable table, Element spacer, int width) {
-      int headerWidth = table.getOffsetWidth();
       if (LocaleInfo.getCurrentLocale().isRTL()) {
+        int headerWidth = table.getOffsetWidth();
         spacer.getStyle().setPropertyPx("width", width);
         spacer.getStyle().setPropertyPx("right", headerWidth);
-      } else {
-        spacer.getStyle().setPropertyPx("left", headerWidth);
       }
     }
   }
