@@ -91,6 +91,15 @@ public abstract class TableBulkRendererTestBase extends Gen2TestBase {
     });
   }
 
+  public void testEmptyTable() {
+    doTest(createOracle(0, 0), 0, new TestCallback() {
+      @Override
+      public void test(HTMLTable table) {
+        assert (table.getRowCount() == 0);
+      }
+    });
+  }
+
   public void testIterator() {
     doTest(createEmptyOracle(5, 5), 5, new TestCallback() {
       @Override
@@ -156,9 +165,11 @@ public abstract class TableBulkRendererTestBase extends Gen2TestBase {
     });
   }
 
-  protected abstract <R> TableRendererPair<R> createTableAndRenderer(int numColumns);
+  protected abstract <R> TableRendererPair<R> createTableAndRenderer(
+      int numColumns);
 
-  protected void doTest(MutableTableModel<List<Object>> model, int numColumns, TestCallback callback) {
+  protected void doTest(MutableTableModel<List<Object>> model, int numColumns,
+      TestCallback callback) {
     delayTestFinish(TIME_OUT);
     TableRendererPair<List<Object>> pair = createTableAndRenderer(numColumns);
     callback.table = pair.table;
@@ -169,7 +180,8 @@ public abstract class TableBulkRendererTestBase extends Gen2TestBase {
     return "cell " + rowNum + ":" + cellNum;
   }
 
-  private MutableTableModel<List<Object>> createEmptyOracle(final int numRows, final int numColumns) {
+  private MutableTableModel<List<Object>> createEmptyOracle(final int numRows,
+      final int numColumns) {
     ClientTableModel oracle = new ClientTableModel() {
       @Override
       public Object getCell(int rowNum, int cellNum) {
@@ -198,11 +210,12 @@ public abstract class TableBulkRendererTestBase extends Gen2TestBase {
     return oracle;
   }
 
-  private MutableTableModel<List<Object>> createOracle(final int numRows, final int numColumns) {
+  private MutableTableModel<List<Object>> createOracle(final int numRows,
+      final int numColumns) {
     ClientTableModel oracle = new ClientTableModel() {
       @Override
       public Object getCell(int rowNum, int cellNum) {
-        if (rowNum >= numRows | cellNum >= numColumns) {
+        if (rowNum >= numRows || cellNum >= numColumns) {
           return null;
         }
         return cellContents(rowNum, cellNum);
