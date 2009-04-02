@@ -1,10 +1,12 @@
 #summary DRAFT GWT Accessibility enhancements.
+#labels ddd,ddddd
 
 = Introduction =
 This document is intended to cover some proposed enhancements to the current GWT accessibility support.
 = Complete Keyboard accessibility =
 || Priority || High ||
 || Level of effort required || High ||
+
 
 == Justification ==
 While the visual impaired are certainly a large percentage of people that require accessibility, another important group is those that are not able to use a mouse due to physical handicaps. For them, having an application be fully keyboard navigable is absolutely critical.
@@ -23,5 +25,22 @@ Here we list some of the problems that must be solved in order to implement comp
   * If the container is not navigation aware, what should it do with the navigation keys?
   * How should containers that switch their children be navigated? (Stack Panel, TabPanel)
   * How should containers like DisclosurePanel be navigated? 
+==== How should we deal with elements not in the normal form-flow? ===
   * How should menus always be accessed?
   * How should popups be closed?
+== Solution ==
+Terminology:
+|| Focusable Widget || A widget which implements the Focusable interface, all others are assumed to be non focusable ||
+|| Cell Selectable Grid || A grid which has a cell highlighted, Date Picker is an example ||
+|| Row Selectable Grid || A grid which as a row highlighted ||
+|| Leaf Navigation Widget || A widget whose navigation typically consists of navigating within its own state or between leaf elements.  Textbox, DateBox, DatePicker, Tree are examples of such. || 
+|| Container Navigation Widget || A widget which typically navigates a set of containers. TabPanel, StackPanel, DocPanel are examples of such ||
+
+==== Constraints on all widgets ====    
+ * All navigation should be done on key down events.
+ * Each widget that uses a navigation key must consume it by calling stopPropagation on that key. 
+ * Each widget must also NOT consume the key if it did not actually use it. For instance, as a TextBox does not use a left arrow if it is at the beginning of its input, it must not consume that left arrow. 
+
+==== Constraints on Nav
+
+  
