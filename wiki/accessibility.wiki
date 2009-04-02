@@ -1,5 +1,4 @@
 #summary DRAFT GWT Accessibility enhancements.
-#labels ddd,ddddd
 
 = Introduction =
 This document is intended to cover some proposed enhancements to the current GWT accessibility support.
