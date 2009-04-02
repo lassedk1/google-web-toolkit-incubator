@@ -18,9 +18,7 @@ package com.google.gwt.gen2.table.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.table.override.client.HTMLTable;
 import com.google.gwt.gen2.table.override.client.OverrideDOM;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 
 /**
@@ -206,34 +204,6 @@ class FixedWidthTableImpl {
     /*-{
       return table.@com.google.gwt.gen2.table.override.client.HTMLTable::getBodyElement()();
     }-*/;
-  }
-
-  /**
-   * Firefox version of the implementation refreshes the table display so the
-   * new column size takes effect. Without the display refresh, the column width
-   * doesn't update in the browser.
-   */
-  @SuppressWarnings("unused")
-  public static class ImplFirefox extends Impl {
-    private boolean pendingUpdate = false;
-
-    @Override
-    public void setColumnWidth(HTMLTable table, Element ghostRow, int column,
-        int width) {
-      super.setColumnWidth(table, ghostRow, column, width);
-      if (!pendingUpdate) {
-        pendingUpdate = true;
-        final Element tableElem = table.getElement();
-        // TODO (jlabanca): Can we work around this deferred command?
-        tableElem.getStyle().setProperty("width", "1px");
-        DeferredCommand.addCommand(new Command() {
-          public void execute() {
-            tableElem.getStyle().setProperty("width", "0px");
-            pendingUpdate = false;
-          }
-        });
-      }
-    }
   }
 
   /**
