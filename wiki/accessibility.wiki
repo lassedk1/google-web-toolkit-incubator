@@ -15,7 +15,7 @@ Here we list some of the problems that must be solved in order to implement comp
  
 ==== When is a navigation key actually available for navigation? ====
   *  A text box consumes its Left-arrow, but not if it is at the beginning of its input. Similarly, it consumed its Right-arrow, but not if it is at the end of its input.
-  * A DateBox needs to defer to its underlying text box to determine which navigation keys are consumed, except if its DatePicker is currently showing. In that case, the DateBox should allow the DatePicker to determine which navigation keys are consumed.
+  * A `DateBox` needs to defer to its underlying text box to determine which navigation keys are consumed, except if its `DatePicker` is currently showing. In that case, the `DateBox` should allow the `DatePicker` to determine which navigation keys are consumed.
   * A Cell-based selectable grid consumes all the arrow key. A row selectable grid only consumed the Up-arrow and Down-arrow keys.
 
 ==== If a navigation key is available for navigation, what should be done with it? ====
@@ -23,24 +23,34 @@ Here we list some of the problems that must be solved in order to implement comp
   * In a grid control that has a selected cell, the four arrow keys should move the selected cell, and only move focus if the element in the cell is focusable.
   * In a grid control that can select rows, but not cells, the up and down arrows should move the selection, what should the left and right arrows do?
   * If the container is not navigation aware, what should it do with the navigation keys?
-  * How should containers that switch their children be navigated? (Stack Panel, TabPanel)
-  * How should containers like DisclosurePanel be navigated? 
+  * How should containers that switch their children be navigated? (`StackPanel`, `TabPanel`)
+  * How should containers like `DisclosurePanel` be navigated? 
 ==== How should we deal with elements not in the normal form-flow? ===
   * How should menus always be accessed?
   * How should popups be closed?
 == Solution ==
-Terminology:
-|| Focusable Widget || A widget which implements the Focusable interface, all others are assumed to be non focusable ||
-|| Cell Selectable Grid || A grid which has a cell highlighted, Date Picker is an example ||
-|| Row Selectable Grid || A grid which as a row highlighted ||
-|| Leaf Navigation Widget || A widget whose navigation typically consists of navigating within its own state or between leaf elements.  Textbox, DateBox, DatePicker, Tree are examples of such. || 
-|| Container Navigation Widget || A widget which typically navigates a set of containers. TabPanel, StackPanel, DocPanel are examples of such ||
+Terminology: 
+|| Leaf Navigation Widget || A widget whose navigation typically consists of navigating within its own state or between leaf elements. `DateBox`, `DatePicker`, `Tree` are examples of such. || 
+|| ViewPort Navigation Widget || A widget which typically shows a discrete portion of its content:  `TabPanel`, `StackPanel`, `DisclosurePanel`  are examples of such ||
+|| Cell Grid || A grid which has a cell highlighted, Date Picker is an example ||
+|| Row Grid || A grid which as a row highlighted ||
 
-==== Constraints on all widgets ====    
+==== Overview ====
+ 
+We leave tabs alone, as the application designer can set the correct tab stops on each focusable widget already, and thereby any attempt we make to interfere with this is probably going to cause more harm then good.
+
+We focus on the arrow keys as the primary means of navigating a GWT application. If there are three cell grids on a page, it should be possible to navigate all three grids using just those keys.
+
+To change what controls are visible in the application, we should, in general, use control arrow keys. So TabPanel's, StackPanel's, 
+
+
+Using event propagation, every widget should either use t
+
+==== Constraints on all Widgets ====    
  * All navigation should be done on key down events.
  * Each widget that uses a navigation key must consume it by calling stopPropagation on that key. 
- * Each widget must also NOT consume the key if it did not actually use it. For instance, as a TextBox does not use a left arrow if it is at the beginning of its input, it must not consume that left arrow. 
-
-==== Constraints on Nav
-
+ * Each widget must also NOT consume the key if it did not actually use it. For instance, as a `TextBox` does not use a left arrow if it is at the beginning of its input, it must not consume that left arrow. 
+ * If it is possible to focus on the widget at all, the widget must implement the `Focusable` interface.
+==== Constraints on Leaf Navigation Widgets == 
+ * 
   
