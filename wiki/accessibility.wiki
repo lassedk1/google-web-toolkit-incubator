@@ -5,6 +5,7 @@ This document is intended to cover some proposed enhancements to the current GWT
 = Complete Keyboard accessibility =
 || Priority || High ||
 || Level of effort required || High ||
+
 == Justification ==
 While the visual impaired are certainly a large percentage of people that require accessibility, another important group is those that are not able to use a mouse due to physical handicaps. For them, having an application be fully keyboard navigable is absolutely critical.
 == Challenges ==
