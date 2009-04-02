@@ -1276,7 +1276,8 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
             int column = headerTable.getColumnIndex(row, cell)
                 - getHeaderOffset();
             if (column >= 0 && isColumnSortable(column)) {
-              if (dataTable.getColumnCount() > column) {
+              if (dataTable.getColumnCount() > column
+                  && onHeaderSort(row, column)) {
                 sortedColumnTrigger = cellElem;
                 dataTable.sortColumn(column);
               }
@@ -1661,6 +1662,18 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   @Deprecated
   protected void maybeFillWidth() {
     redraw();
+  }
+
+  /**
+   * Called just before a column is sorted because of a user click on the header
+   * row.
+   * 
+   * @param row the row index that was clicked
+   * @param column the column index that was clicked
+   * @return true to sort, false to ignore
+   */
+  protected boolean onHeaderSort(int row, int column) {
+    return true;
   }
 
   @Override
