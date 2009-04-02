@@ -32,11 +32,10 @@ Here we list some of the problems that must be solved in order to implement comp
 ==== Proposed division of  widgets === 
 A navigable widget is a widget which has some sort of internal navigation. `TextBox`, `DateBox`, `DatePicker`, `Tree` are examples of such. Here we further subdivide the navigable widgets in order to be able to meaningfully define behaviors for them.
 
-|| Category || Description || Examples ||
-
+|| *Category* || *Description* || *Examples* ||
 || Interactive Widget || Any widget that can be manipulated by user input ||  `TextBox`, `HyperLink`, `Tree` ||
-|| Navigatable Widget || A widget which has some sort of internal navigation || `ListBox`, `Tree`,`DatePicker`
-|| Viewport Widget || A navigable widget which typically shows a discrete portion of its content|| `TabPanel`, `PagingScrollTable` and  `StackPanel` ||
+|| Navigatable Widget || A widget which has some sort of internal navigation || `ListBox`, `Tree`,`DatePicker` || 
+|| Viewport Widget || A navigable widget which typically shows a discrete portion of its content || `TabPanel`, `PagingScrollTable` and  `StackPanel` ||
 || Disclosure Widget || Widgets which can show/hide a single extra data section || `DisclosurePanel` and `SuggestBoxBox` ||
 || Cell Grid || A grid which has a cell highlighted, `DatePicker` is an example ||
  
