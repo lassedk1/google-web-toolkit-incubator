@@ -28,7 +28,6 @@ Here we list some of the problems that must be solved in order to implement comp
   * How should menus always be accessed?
   * How should popups be closed?
  
-== Solution ==
 ==== Proposed division of  widgets === 
 A navigable widget is a widget which has some sort of internal navigation. `TextBox`, `DateBox`, `DatePicker`, `Tree` are examples of such. Here we further subdivide the navigable widgets in order to be able to meaningfully define behaviors for them.
 
@@ -39,24 +38,4 @@ A navigable widget is a widget which has some sort of internal navigation. `Text
 || Disclosure Widget || Widgets which can show/hide a single extra data section || `DisclosurePanel` and `SuggestBoxBox` ||
 || Cell Grid || A grid which has a cell highlighted, `DatePicker` is an example ||
  
-==== Overview ====
- 
-We leave tabs alone, as the application designer can set the correct tab stops on each focusable widget already, and thereby any attempt we make to interfere with this is probably going to cause more harm then good.
-
-We focus on the arrow keys as the primary means of navigating a GWT application. If there are three cell grids on a page, it should be possible to navigate all three grids using just those keys.
-
-To change what controls are visible in the application, we should, in general, use control arrow keys. So `TabPanel`, `PagingScrollTable`, and `StackPanel`,  should all use control arrow keys to change what is being shown.
-
-
-
-
-Using event propagation, every widget should either use t
-
-==== Constraints on all Widgets ====    
- * All navigation should be done on key down events.
- * Each widget that uses a navigation key must consume it by calling stopPropagation on that key. 
- * Each widget must also NOT consume the key if it did not actually use it. For instance, as a `TextBox` does not use a left arrow if it is at the beginning of its input, it must not consume that left arrow. 
- * If it is possible to focus on the widget at all, the widget must implement the `Focusable` interface.
-==== Constraints on Leaf Navigation Widgets == 
- * 
   
