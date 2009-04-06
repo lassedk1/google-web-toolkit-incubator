@@ -555,6 +555,48 @@ public class FastTree extends Panel implements HasClickHandlers,
     moveElementOverTarget(focusable, selectedElem);
     UIObject.setVisible(focusable, true);
   }
+  
+  /**
+   * Moves to the next item, going into children as if dig is enabled.
+   */
+  protected void moveSelectionDown(FastTreeItem sel, boolean dig) {
+    if (sel == getTreeRoot()) {
+      return;
+    }
+    FastTreeItem parent = sel.getParentItem();
+    if (parent == null) {
+      parent = getTreeRoot();
+    }
+    int idx = parent.getChildIndex(sel);
+
+    if (!dig || !sel.isOpen()) {
+      if (idx < parent.getChildCount() - 1) {
+        onSelection(parent.getChild(idx + 1), true, true);
+      } else {
+        moveSelectionDown(parent, false);
+      }
+    } else if (sel.getChildCount() > 0) {
+      onSelection(sel.getChild(0), true, true);
+    }
+  }
+
+  /**
+   * Moves the selected item up one.
+   */
+  protected void moveSelectionUp(FastTreeItem sel) {
+    FastTreeItem parent = sel.getParentItem();
+    if (parent == null) {
+      parent = getTreeRoot();
+    }
+    int idx = parent.getChildIndex(sel);
+
+    if (idx > 0) {
+      FastTreeItem sibling = parent.getChild(idx - 1);
+      onSelection(findDeepestOpenChild(sibling), true, true);
+    } else {
+      onSelection(parent, true, true);
+    }
+  }
 
   @Override
   protected void onLoad() {
@@ -595,25 +637,6 @@ public class FastTree extends Panel implements HasClickHandlers,
       // Select the item and fire the selection event.
       curSelection.setSelection(true, fireEvents);
     }
-  }
-
-  /**
-   * This is called when a valid selectable element is clicked in the tree.
-   * Subclasses can override this method to decide whether or not FastTree
-   * should keep processing the element clicked. For example, a subclass may
-   * decide to return false for this method if selecting a new item in the tree
-   * is subject to asynchronous approval from other components of the
-   * application.
-   * 
-   * @returns true if element should be processed normally, false otherwise.
-   *          Default returns true.
-   * 
-   * @deprecated Add a beforeSelectionHandler by calling
-   *             addBeforeSelectionHandler instead.
-   */
-  @Deprecated
-  protected boolean processElementClicked(FastTreeItem item) {
-    return true;
   }
 
   /**
@@ -788,9 +811,7 @@ public class FastTree extends Panel implements HasClickHandlers,
         disableSelection(target);
         return;
       }
-      if (processElementClicked(item)) {
-        onSelection(item, true, !shouldTreeDelegateFocusToElement(target));
-      }
+      onSelection(item, true, !shouldTreeDelegateFocusToElement(target));
     }
     return;
   }
@@ -859,48 +880,6 @@ public class FastTree extends Panel implements HasClickHandlers,
     // Update ARIA attributes to reflect the information from the
     // newly-selected item.
     updateAriaAttributes(selection);
-  }
-
-  /**
-   * Moves to the next item, going into children as if dig is enabled.
-   */
-  private void moveSelectionDown(FastTreeItem sel, boolean dig) {
-    if (sel == getTreeRoot()) {
-      return;
-    }
-    FastTreeItem parent = sel.getParentItem();
-    if (parent == null) {
-      parent = getTreeRoot();
-    }
-    int idx = parent.getChildIndex(sel);
-
-    if (!dig || !sel.isOpen()) {
-      if (idx < parent.getChildCount() - 1) {
-        onSelection(parent.getChild(idx + 1), true, true);
-      } else {
-        moveSelectionDown(parent, false);
-      }
-    } else if (sel.getChildCount() > 0) {
-      onSelection(sel.getChild(0), true, true);
-    }
-  }
-
-  /**
-   * Moves the selected item up one.
-   */
-  private void moveSelectionUp(FastTreeItem sel) {
-    FastTreeItem parent = sel.getParentItem();
-    if (parent == null) {
-      parent = getTreeRoot();
-    }
-    int idx = parent.getChildIndex(sel);
-
-    if (idx > 0) {
-      FastTreeItem sibling = parent.getChild(idx - 1);
-      onSelection(findDeepestOpenChild(sibling), true, true);
-    } else {
-      onSelection(parent, true, true);
-    }
   }
 
   private native boolean shouldTreeDelegateFocusToElement(Element elem)

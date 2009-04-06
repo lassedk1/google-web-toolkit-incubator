@@ -140,7 +140,6 @@ public class DropDownListBox<V> extends CustomListBox<V> implements
     button.addStyleName(css.button());
     updateButtonText(defaultDisplayText);
     dropDown.addCloseHandler(new CloseHandler<PopupPanel>() {
-
       public void onClose(CloseEvent<PopupPanel> event) {
         button.setDown(false);
       }

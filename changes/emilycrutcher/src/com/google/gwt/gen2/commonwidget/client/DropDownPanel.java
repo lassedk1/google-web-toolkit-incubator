@@ -16,16 +16,19 @@
 
 package com.google.gwt.gen2.commonwidget.client;
 
-import com.google.gwt.event.dom.client.HasMouseDownHandlers;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.logical.shared.HasOpenHandlers;
+import com.google.gwt.event.logical.shared.OpenEvent;
+import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
@@ -34,7 +37,8 @@ import java.util.ArrayList;
  * A popup panel with some extra functionality specialized for use as a drop
  * down.
  */
-public class DropDownPanel extends PopupPanel {
+public class DropDownPanel extends PopupPanel implements
+    HasOpenHandlers<PopupPanel> {
 
   // Set of open panels so we can close them on window resize, because resizing
   // the window is equivalent to the user clicking outside the widget.
@@ -69,6 +73,15 @@ public class DropDownPanel extends PopupPanel {
   }
 
   @Override
+  public HandlerRegistration addOpenHandler(OpenHandler<PopupPanel> handler) {
+    return this.addHandler(handler, OpenEvent.getType());
+  }
+
+  public Widget getCurrentAnchor() {
+    return currentAnchor;
+  }
+
+  @Override
   public final void hide() {
     hide(false);
   }
@@ -86,6 +99,26 @@ public class DropDownPanel extends PopupPanel {
     }
   }
 
+  /**
+   * Hooks the toggle button to show/h
+   */
+  public void hookupTo(final ToggleButton source) {
+    addCloseHandler(new CloseHandler<PopupPanel>() {
+      public void onClose(CloseEvent<PopupPanel> event) {
+        source.setDown(false);
+      }
+    });
+
+    source.addMouseDownHandler(new MouseDownHandler() {
+      @Override
+      public void onMouseDown(MouseDownEvent event) {
+        if (!source.isDown()) {
+          showRelativeTo(source);
+        }
+      }
+    });
+  }
+
   @Override
   public void show() {
     if (isShowing()) {
@@ -98,20 +131,6 @@ public class DropDownPanel extends PopupPanel {
     }
     openPanels.add(this);
     super.show();
-  }
-
-  /**
-   * Shows the drop down panel whenever the source receives a mouse down.
-   */
-  public <S extends Widget & HasMouseDownHandlers> void showOver(final S source) {
-    source.addMouseDownHandler(new MouseDownHandler() {
-
-      @Override
-      public void onMouseDown(MouseDownEvent event) {
-        showRelativeTo(source);
-      }
-
-    });
   }
 
   public void showRelativeTo(Widget anchor) {
