@@ -17,7 +17,11 @@ package com.google.gwt.libideas.resources.client;
 
 /**
  * The base interface all bundle resource types must extend.
+ * 
+ * @deprecated Superseded by
+ *             {@link com.google.gwt.resources.client.ResourcePrototype}
  */
+@Deprecated
 public interface ResourcePrototype {
   /**
    * Returns the name of the function within the ResourceBundle used to create

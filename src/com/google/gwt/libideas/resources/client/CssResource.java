@@ -80,10 +80,12 @@ import java.lang.annotation.Target;
  * {@link com.google.gwt.core.client.GWT#create(Class)}.</li>
  * </ul>
  * 
+ * @deprecated Superseded by {@link com.google.gwt.resources.client.CssResource}
  * @see <a
  *      href="http://code.google.com/p/google-web-toolkit-incubator/wiki/CssResource"
  *      >CssResource design doc</a>
  */
+@Deprecated
 @ResourceGeneratorType(CssResourceGenerator.class)
 public interface CssResource extends ResourcePrototype {
   /**
