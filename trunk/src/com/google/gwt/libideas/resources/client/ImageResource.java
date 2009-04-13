@@ -30,7 +30,11 @@ import java.lang.annotation.Target;
  * with UI toolkits that are not derived from the standard GWT UI library, the
  * methods relating to {@link Image} have been deprecated in favor of exposing
  * the ImageResource's metadata in the public API.
+ * 
+ * @deprecated Superseded by
+ *             {@link com.google.gwt.resources.client.ImageResource}
  */
+@Deprecated
 @ResourceGeneratorType(ImageResourceGenerator.class)
 public interface ImageResource extends ResourcePrototype {
 

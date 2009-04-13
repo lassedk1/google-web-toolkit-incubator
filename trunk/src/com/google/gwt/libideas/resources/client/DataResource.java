@@ -20,7 +20,11 @@ import com.google.gwt.libideas.resources.rg.DataResourceGenerator;
 
 /**
  * A non-text resource.
+ * 
+ * @deprecated Superseded by
+ *             {@link com.google.gwt.resources.client.DataResource}
  */
+@Deprecated
 @ResourceGeneratorType(DataResourceGenerator.class)
 public interface DataResource extends ResourcePrototype {
   /**
