@@ -1,0 +1,10 @@
+branch-info.txt for the 2009.04.14-r1625 snapshot branch.
+Tracks interactions between this branch and other branches.
+See: http://code.google.com/p/google-web-toolkit/wiki/ManagingMerges
+
+Copies:
+/branches/snapshot-2009.04.14 was created (r1626) as a straight copy from /trunk/@1625
+/branches/snapshot-2009.04.14-r1625 was created (r1627) as a rename of /branches/snapshot-2009.04.14
+
+Merges:
+
