@@ -812,7 +812,7 @@ public class FastTree extends Panel implements HasClickHandlers,
         disableSelection(target);
         return;
       }
-      onSelection(item, true, !shouldTreeDelegateFocusToElement(target));
+      onSelection(item, true, false);
     }
     return;
   }
