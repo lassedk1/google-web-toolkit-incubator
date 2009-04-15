@@ -38,8 +38,10 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -89,6 +91,24 @@ public class FastTreeDemo implements EntryPoint {
     textBoxParent.addItem(new TextBox());
     textBoxParent.addItem("and another one...");
     textBoxParent.addItem(new TextArea());
+
+    // Add a large item
+    FastTreeItem hugeParent = a.addItem("I contain a huge item");
+    SimplePanel hugePanel = new SimplePanel();
+    hugePanel.setPixelSize(1000, 1000);
+    hugePanel.getElement().getStyle().setProperty("border", "2px solid blue");
+    hugePanel.getElement().getStyle().setPropertyPx("padding", 50);
+    Label clickableLabel = new Label("Click Me");
+    clickableLabel.setWidth("70px");
+    clickableLabel.getElement().getStyle().setProperty("border",
+        "1px solid blue");
+    clickableLabel.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        Window.alert("You clicked the label");
+      }
+    });
+    hugePanel.setWidget(clickableLabel);
+    hugeParent.addItem(hugePanel);
 
     ListBox lb = new ListBox();
     for (int i = 0; i < 100; i++) {
@@ -255,20 +275,18 @@ public class FastTreeDemo implements EntryPoint {
     secondBranch.addItem("Not me!");
     secondBranch.addItem("Not me!");
     secondBranch.addItem("Not me!");
-    
-    cancelEventTree.addBeforeSelectionHandler(
-        new BeforeSelectionHandler<FastTreeItem>() {
-          public void onBeforeSelection(BeforeSelectionEvent<FastTreeItem> event) {
-              if (!Window.confirm("Continue?")) {
-                event.cancel();
-              }
-          }
+
+    cancelEventTree.addBeforeSelectionHandler(new BeforeSelectionHandler<FastTreeItem>() {
+      public void onBeforeSelection(BeforeSelectionEvent<FastTreeItem> event) {
+        if (!Window.confirm("Continue?")) {
+          event.cancel();
+        }
+      }
     });
-    
+
     return cancelEventTree;
   }
 
-  
   private void lazyCreateChild(final HasFastTreeItems parent, final int index,
       final int children) {
 
