@@ -267,6 +267,32 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
   }
 
   /**
+   * Create a {@link PagingScrollTable} with an empty table definition.
+   */
+  public void testEmptyTableDefinition() {
+    // Without bulk renderer
+    {
+      TableDefinition<List<Object>> tableDef = new DefaultTableDefinition<List<Object>>();
+      TableModel<List<Object>> tableModel = createTableModel();
+      PagingScrollTable<List<Object>> table = new PagingScrollTable<List<Object>>(
+          tableModel, tableDef);
+      table.gotoFirstPage();
+    }
+
+    // With bulk renderer
+    {
+      TableDefinition<List<Object>> tableDef = new DefaultTableDefinition<List<Object>>();
+      TableModel<List<Object>> tableModel = createTableModel();
+      PagingScrollTable<List<Object>> table = new PagingScrollTable<List<Object>>(
+          tableModel, tableDef);
+      FixedWidthGridBulkRenderer<List<Object>> renderer = new FixedWidthGridBulkRenderer<List<Object>>(
+          table.getDataTable(), table);
+      table.setBulkRenderer(renderer);
+      table.gotoFirstPage();
+    }
+  }
+
+  /**
    * Generate a two row, column spanning footer.
    */
   public void testFooterGenerationColSpan() {
@@ -754,20 +780,20 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
     TestListTableModel tableModel = (TestListTableModel) table.getTableModel();
     table.setPageSize(5);
     table.gotoPage(1, true);
-  
+
     // Set a row value on the page
     {
       List<Object> rowValue = new ArrayList<Object>();
       tableModel.setRowValue(6, rowValue);
       assertEquals(rowValue, table.getRowValue(1));
     }
-  
+
     // Set a row value before the page
     {
       List<Object> rowValue = new ArrayList<Object>();
       tableModel.setRowValue(4, rowValue);
     }
-  
+
     // Set a row value after the page
     {
       List<Object> rowValue = new ArrayList<Object>();
