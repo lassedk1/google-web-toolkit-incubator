@@ -77,9 +77,8 @@ public class FastTree extends Panel implements HasClickHandlers,
     HasFastTreeItems, HasKeyDownHandlers, HasKeyPressHandlers,
     HasKeyUpHandlers, HasFastTreeItemHandlers {
   /**
-   * Interface used to allow the widget access to css style names.
-   * <p/>
-   * The class names indicate the default gwt names for these styles.
+   * Interface used to allow the widget access to css style names. <p/> The
+   * class names indicate the default gwt names for these styles.
    */
   static interface Css {
 
@@ -153,6 +152,7 @@ public class FastTree extends Panel implements HasClickHandlers,
 
   FastTree(final Css css) {
     setElement(DOM.createDiv());
+    getElement().getStyle().setProperty("position", "relative");
 
     focusable = createFocusElement();
     setStyleName(focusable, css.selectionBar());
@@ -336,10 +336,10 @@ public class FastTree extends Panel implements HasClickHandlers,
   public int getTabIndex() {
     return impl.getTabIndex(focusable);
   }
-  
+
   /**
-   * The 'root' item is invisible and serves only as a container for 
-   * all top-level items.
+   * The 'root' item is invisible and serves only as a container for all
+   * top-level items.
    */
   public final FastTreeItem getTreeRoot() {
     return root;
@@ -361,10 +361,8 @@ public class FastTree extends Panel implements HasClickHandlers,
           // The click event should have given focus to this element already.
           // Avoid moving focus back up to the tree (so that focusable widgets
           // attached to TreeItems can receive keyboard events).
-        } else {
-          if (!hasModifiers(e)) {
-            clickedOnFocus(DOM.eventGetTarget(e));
-          }
+        } else if (!hasModifiers(e)) {
+          impl.focus(focusable);
         }
         return;
       case Event.ONMOUSEDOWN:
@@ -418,7 +416,6 @@ public class FastTree extends Panel implements HasClickHandlers,
     super.onBrowserEvent(e);
   }
 
-  
   @Override
   public boolean remove(Widget w) {
     // Validate.
@@ -556,7 +553,7 @@ public class FastTree extends Panel implements HasClickHandlers,
     moveElementOverTarget(focusable, selectedElem);
     UIObject.setVisible(focusable, true);
   }
-  
+
   /**
    * Moves to the next item, going into children as if dig is enabled.
    */
@@ -615,12 +612,12 @@ public class FastTree extends Panel implements HasClickHandlers,
     }
 
     if (fireEvents) {
-       BeforeSelectionEvent<FastTreeItem> event = beforeSelected(item);
-       if (event != null && event.isCanceled()) {
-         return;
-       }
+      BeforeSelectionEvent<FastTreeItem> event = beforeSelected(item);
+      if (event != null && event.isCanceled()) {
+        return;
+      }
     }
-    
+
     if (curSelection != null) {
       curSelection.setSelection(false, fireEvents);
     }
@@ -697,6 +694,14 @@ public class FastTree extends Panel implements HasClickHandlers,
     return BeforeSelectionEvent.fire(this, fastTreeItem);
   }
 
+  // @VisibleForTesting
+  FastTreeItem findDeepestOpenChild(FastTreeItem item) {
+    if (!item.isOpen() || item.getChildCount() == 0) {
+      return item;
+    }
+    return findDeepestOpenChild(item.getChild(item.getChildCount() - 1));
+  }
+
   /*
    * This method exists solely to support unit tests.
    */
@@ -716,14 +721,6 @@ public class FastTree extends Panel implements HasClickHandlers,
 
     // Logical detach.
     childWidgets.remove(widget);
-  }
-  
-  // @VisibleForTesting
-  FastTreeItem findDeepestOpenChild(FastTreeItem item) {
-    if (!item.isOpen() || item.getChildCount() == 0) {
-      return item;
-    }
-    return findDeepestOpenChild(item.getChild(item.getChildCount() - 1));
   }
 
   /**
@@ -760,13 +757,6 @@ public class FastTree extends Panel implements HasClickHandlers,
     };
   }
 
-  private void clickedOnFocus(Element e) {
-    // An element was clicked on that is not focusable, so we use the hidden
-    // focusable to not shift focus.
-    moveElementOverTarget(focusable, e);
-    impl.focus(focusable);
-  }
-
   /**
    * Collects parents going up the element tree, terminated at the tree root.
    */
@@ -782,11 +772,12 @@ public class FastTree extends Panel implements HasClickHandlers,
 
   private Element createFocusElement() {
     Element e = impl.createFocusable();
-    DOM.setStyleAttribute(e, "position", "absolute");
-    DOM.appendChild(getElement(), e);
+    e.getStyle().setProperty("position", "absolute");
+    e.getStyle().setPropertyPx("width", 1);
+    getElement().appendChild(e);
     DOM.sinkEvents(e, Event.FOCUSEVENTS | Event.ONMOUSEDOWN);
     // Needed for IE only
-    DOM.setElementAttribute(e, "focus", "false");
+    e.setAttribute("focus", "false");
     return e;
   }
 
@@ -812,7 +803,7 @@ public class FastTree extends Panel implements HasClickHandlers,
         disableSelection(target);
         return;
       }
-      onSelection(item, true, !shouldTreeDelegateFocusToElement(target));
+      onSelection(item, true, false);
     }
     return;
   }
@@ -848,16 +839,23 @@ public class FastTree extends Panel implements HasClickHandlers,
     return alt || ctrl || meta || shift;
   }
 
+  /**
+   * Move the focusable element under an existing element.
+   * 
+   * @param target the target element
+   */
   private void moveElementOverTarget(Element movable, Element target) {
-    int containerTop = getAbsoluteTop();
-
-    int top = DOM.getAbsoluteTop(target) - containerTop;
-    int height = DOM.getElementPropertyInt(target, "offsetHeight");
-
+    int top = target.getAbsoluteTop() - getAbsoluteTop();
+    int left = target.getAbsoluteLeft() - getAbsoluteLeft();
+    int height = target.getOffsetHeight();
+    int width = target.getOffsetWidth();
+  
     // Set the element's position and size to exactly underlap the
     // item's content element.
-    DOM.setStyleAttribute(movable, "height", height + "px");
-    DOM.setStyleAttribute(movable, "top", top + "px");
+    movable.getStyle().setPropertyPx("height", height);
+    movable.getStyle().setPropertyPx("width", width);
+    movable.getStyle().setPropertyPx("top", top);
+    movable.getStyle().setPropertyPx("left", left);
   }
 
   /**
@@ -874,7 +872,6 @@ public class FastTree extends Panel implements HasClickHandlers,
     } else {
       // Ensure Focus is set, as focus may have been previously delegated by
       // tree.
-
       impl.focus(focusable);
     }
 
