@@ -165,7 +165,7 @@ public class FastTree extends Panel implements HasClickHandlers,
     root.setTree(this);
 
     setStyleName(css.fastTree());
-    moveSelectionBar(curSelection);
+    moveFocusable(curSelection, null);
 
     // Add accessibility role to tree.
     Accessibility.setRole(getElement(), Accessibility.ROLE_TREE);
@@ -290,7 +290,7 @@ public class FastTree extends Panel implements HasClickHandlers,
       parent.setState(true);
       parent = parent.getParentItem();
     }
-    moveFocus(curSelection);
+    moveFocus(curSelection, null);
   }
 
   public FastTreeItem getChild(int index) {
@@ -540,18 +540,12 @@ public class FastTree extends Panel implements HasClickHandlers,
    * Moves the selection bar around the given {@link FastTreeItem}.
    * 
    * @param item the item to move selection bar to
+   * @deprecated as of April 16, 2009. use
+   *             {@link #onSelection(FastTreeItem, boolean, boolean)} instead
    */
+  @Deprecated
   protected void moveSelectionBar(FastTreeItem item) {
-    if (item == null || item.isShowing() == false) {
-      UIObject.setVisible(focusable, false);
-      return;
-    }
-    // focusable is being used for highlight as well.
-    // Get the location and size of the given item's content element relative
-    // to the tree.
-    Element selectedElem = item.getContentElement();
-    moveElementOverTarget(focusable, selectedElem);
-    UIObject.setVisible(focusable, true);
+    moveFocusable(item, null);
   }
 
   /**
@@ -599,42 +593,20 @@ public class FastTree extends Panel implements HasClickHandlers,
   @Override
   protected void onLoad() {
     if (getSelectedItem() != null) {
-      moveSelectionBar(getSelectedItem());
+      moveFocusable(getSelectedItem(), null);
     }
   }
 
+  /**
+   * Called when a {@link FastTreeItem} is selected.
+   * 
+   * @param item the selected item
+   * @param fireEvents true to fire events to handles
+   * @param moveFocus true to move focus to the Tree
+   */
   protected void onSelection(FastTreeItem item, boolean fireEvents,
       boolean moveFocus) {
-    // 'root' isn't a real item, so don't let it be selected
-    // (some cases in the keyboard handler will try to do this)
-    if (item == getTreeRoot() || curSelection == item) {
-      return;
-    }
-
-    if (fireEvents) {
-      BeforeSelectionEvent<FastTreeItem> event = beforeSelected(item);
-      if (event != null && event.isCanceled()) {
-        return;
-      }
-    }
-
-    if (curSelection != null) {
-      curSelection.setSelection(false, fireEvents);
-    }
-
-    curSelection = item;
-
-    if (curSelection != null) {
-      if (moveFocus) {
-        moveFocus(curSelection);
-      } else {
-        // Move highlight even if we do no not need to move focus.
-        moveSelectionBar(curSelection);
-      }
-
-      // Select the item and fire the selection event.
-      curSelection.setSelection(true, fireEvents);
-    }
+    onSelection(item, fireEvents, moveFocus, null);
   }
 
   /**
@@ -799,11 +771,11 @@ public class FastTree extends Panel implements HasClickHandlers,
     if (item != null) {
       if (item.isInteriorNode() && item.getControlElement().equals(target)) {
         item.setState(!item.isOpen(), true);
-        moveSelectionBar(curSelection);
+        moveFocusable(curSelection, target);
         disableSelection(target);
         return;
       }
-      onSelection(item, true, false);
+      onSelection(item, true, false, target);
     }
     return;
   }
@@ -840,31 +812,13 @@ public class FastTree extends Panel implements HasClickHandlers,
   }
 
   /**
-   * Move the focusable element under an existing element.
-   * 
-   * @param target the target element
-   */
-  private void moveElementOverTarget(Element movable, Element target) {
-    int top = target.getAbsoluteTop() - getAbsoluteTop();
-    int left = target.getAbsoluteLeft() - getAbsoluteLeft();
-    int height = target.getOffsetHeight();
-    int width = target.getOffsetWidth();
-  
-    // Set the element's position and size to exactly underlap the
-    // item's content element.
-    movable.getStyle().setPropertyPx("height", height);
-    movable.getStyle().setPropertyPx("width", width);
-    movable.getStyle().setPropertyPx("top", top);
-    movable.getStyle().setPropertyPx("left", left);
-  }
-
-  /**
    * Move the tree focus to the specified selected item.
    * 
-   * @param selection
+   * @param selection the selected {@link FastTreeItem}
+   * @param targetElem the element that was actually targeted
    */
-  private void moveFocus(FastTreeItem selection) {
-    moveSelectionBar(selection);
+  private void moveFocus(FastTreeItem selection, Element targetElem) {
+    moveFocusable(selection, targetElem);
     DOM.scrollIntoView(focusable);
     Focusable focusableWidget = selection.getFocusable();
     if (focusableWidget != null) {
@@ -878,6 +832,82 @@ public class FastTree extends Panel implements HasClickHandlers,
     // Update ARIA attributes to reflect the information from the
     // newly-selected item.
     updateAriaAttributes(selection);
+  }
+
+  /**
+   * Moves the selection bar around the given {@link FastTreeItem}.
+   * 
+   * @param item the item to move selection bar to
+   * @param target the element to target
+   */
+  private void moveFocusable(FastTreeItem item, Element target) {
+    if (item == null || item.isShowing() == false) {
+      UIObject.setVisible(focusable, false);
+      return;
+    }
+
+    // Get the element to focus around
+    if (target == null) {
+      target = item.getContentElement();
+    }
+
+    // Set the focusable's position and size to exactly underlap the target.
+    int top = target.getAbsoluteTop() - getAbsoluteTop();
+    int left = target.getAbsoluteLeft() - getAbsoluteLeft();
+    focusable.getStyle().setPropertyPx("height", target.getOffsetHeight());
+    focusable.getStyle().setPropertyPx("width", target.getOffsetWidth());
+    focusable.getStyle().setPropertyPx("top", top);
+    focusable.getStyle().setPropertyPx("left", left);
+    UIObject.setVisible(focusable, true);
+  }
+
+  /**
+   * Called when a {@link FastTreeItem} is selected.
+   * 
+   * @param item the selected item
+   * @param fireEvents true to fire events to handles
+   * @param moveFocus true to move focus to the Tree
+   * @param targetElem the element that was actually targeted
+   */
+  private void onSelection(FastTreeItem item, boolean fireEvents,
+      boolean moveFocus, Element targetElem) {
+    // 'root' isn't a real item, so don't let it be selected
+    // (some cases in the keyboard handler will try to do this)
+    if (item == getTreeRoot()) {
+      return;
+    }
+
+    // Don't fire events if the selection hasn't changed, but do move the
+    // focusable element to the new target.
+    if (curSelection == item) {
+      moveFocusable(curSelection, targetElem);
+      return;
+    }
+
+    if (fireEvents) {
+      BeforeSelectionEvent<FastTreeItem> event = beforeSelected(item);
+      if (event != null && event.isCanceled()) {
+        return;
+      }
+    }
+
+    if (curSelection != null) {
+      curSelection.setSelection(false, fireEvents);
+    }
+
+    curSelection = item;
+
+    if (curSelection != null) {
+      if (moveFocus) {
+        moveFocus(curSelection, targetElem);
+      } else {
+        // Move highlight even if we do no not need to move focus.
+        moveFocusable(curSelection, targetElem);
+      }
+
+      // Select the item and fire the selection event.
+      curSelection.setSelection(true, fireEvents);
+    }
   }
 
   private native boolean shouldTreeDelegateFocusToElement(Element elem)
