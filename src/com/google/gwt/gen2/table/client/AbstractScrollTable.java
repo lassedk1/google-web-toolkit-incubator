@@ -1528,7 +1528,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   public void setHeight(String height) {
     this.lastHeight = height;
     super.setHeight(height);
-    redraw();
+    resizeTablesVertically();
   }
 
   /**
