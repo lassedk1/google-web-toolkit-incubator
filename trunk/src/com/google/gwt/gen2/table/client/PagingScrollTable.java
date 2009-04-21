@@ -361,18 +361,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   private RendererCallback tableRendererCallback = new RendererCallback() {
     public void onRendered() {
-      // Refresh the headers if needed
-      if (headersObsolete) {
-        refreshHeaderTable();
-        refreshFooterTable();
-        headersObsolete = false;
-      }
-
-      // Update the UI of the table
-      getDataTable().clearIdealWidths();
-      redraw();
-      isPageLoading = false;
-      fireEvent(new PageLoadEvent(currentPage));
+      onDataTableRendered();
     }
   };
 
@@ -998,6 +987,24 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   }
 
   /**
+   * Called when the data table has finished rendering.
+   */
+  protected void onDataTableRendered() {
+    // Refresh the headers if needed
+    if (headersObsolete) {
+      refreshHeaderTable();
+      refreshFooterTable();
+      headersObsolete = false;
+    }
+
+    // Update the UI of the table
+    getDataTable().clearIdealWidths();
+    redraw();
+    isPageLoading = false;
+    fireEvent(new PageLoadEvent(currentPage));
+  }
+
+  /**
    * Update the footer table based on the new {@link ColumnDefinition}.
    */
   protected void refreshFooterTable() {
@@ -1197,7 +1204,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     }
 
     // Fire page loaded event
-    tableRendererCallback.onRendered();
+    onDataTableRendered();
   }
 
   /**
