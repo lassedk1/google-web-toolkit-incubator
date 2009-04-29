@@ -1,0 +1,11 @@
+https://google-web-toolkit-incubator.googlecode.com/svn/branches/snapshot-2009.04.28-r1640
+
+branch-info.txt for the 2009.04.28-r1640 snapshot branch.
+Tracks interactions between this branch and other branches.
+See: http://code.google.com/p/google-web-toolkit/wiki/ManagingMerges
+
+Copies:
+/branches/snapshot-2009.04.28-r1640 was created (r1641) as a straight copy from /trunk/@1640
+
+Merges:
+
