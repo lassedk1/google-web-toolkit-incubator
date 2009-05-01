@@ -51,7 +51,10 @@
 		class="com.google.gwt.gen2.logging.impl.client.ClientConsoleLogHandlerImpl.Popup">
 		<when-type-is
 			class="com.google.gwt.gen2.logging.impl.client.ClientConsoleLogHandlerImpl.Impl" />
-		<when-property-is name="user.agent" value="ie6" />
+    <any>
+      <when-property-is name="user.agent" value="ie6" />
+      <when-property-is name="user.agent" value="ie8" />
+    </any>
 	</replace-with>
 
 	<replace-with
