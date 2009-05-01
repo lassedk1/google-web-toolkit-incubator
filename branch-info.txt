@@ -8,4 +8,5 @@ Copies:
 /branches/snapshot-2009.04.28-r1640 was created (r1641) as a straight copy from /trunk/@1640
 
 Merges:
-
+merged r1644 from trunk at r1645:
+  svn merge -r1643:1644  https://google-web-toolkit-incubator.googlecode.com/svn/trunk  .
