@@ -10,3 +10,5 @@ Copies:
 Merges:
 merged r1644 from trunk at r1645:
   svn merge -r1643:1644  https://google-web-toolkit-incubator.googlecode.com/svn/trunk  .
+merged r1643 from trunk at r1647:
+  svn merge -r 1642:1643 https://google-web-toolkit-incubator.googlecode.com/svn/trunk .
