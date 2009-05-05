@@ -38,6 +38,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -45,6 +46,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -91,6 +93,23 @@ public class FastTreeDemo implements EntryPoint {
     textBoxParent.addItem(new TextBox());
     textBoxParent.addItem("and another one...");
     textBoxParent.addItem(new TextArea());
+
+    // Add an item with basic elements inside of it
+    {
+      final TextBox textBox = new TextBox();
+      Hyperlink link = new Hyperlink("change focus", "blah");
+      link.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          textBox.setFocus(true);
+          event.getNativeEvent().stopPropagation();
+        }
+      });
+      VerticalPanel vPanel = new VerticalPanel();
+      vPanel.add(link);
+      vPanel.add(textBox);
+      a.addItem(vPanel);
+    }
 
     // Add a large item
     FastTreeItem hugeParent = a.addItem("I contain a huge item");

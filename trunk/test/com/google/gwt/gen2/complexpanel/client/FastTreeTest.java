@@ -15,6 +15,9 @@
  */
 package com.google.gwt.gen2.complexpanel.client;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.gen2.base.client.Gen2TestBase;
@@ -23,6 +26,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -75,6 +79,44 @@ public class FastTreeTest extends Gen2TestBase {
     assertEquals(2, t.getItemCount());
     assertEquals(ti, t.getItem(0));
     assertEquals(wti, t.getItem(1));
+  }
+
+  public void testKeyboardSupportDisabled() {
+    FastTree t = new FastTree();
+    RootPanel.get().add(t);
+    FastTreeItem t0 = t.addItem("item 0");
+    FastTreeItem t1 = t.addItem("item 1");
+    FastTreeItem t2 = t.addItem("item 2");
+
+    // test accessors
+    {
+      assertTrue(t.isKeyboardSupportEnabled());
+      t.setKeyboardSupportEnabled(false);
+      assertFalse(t.isKeyboardSupportEnabled());
+    }
+
+    // test keyboard support
+    {
+      t.setSelectedItem(t0);
+
+      // disable keyboard support
+      NativeEvent keyEvent0 = Document.get().createKeyPressEvent(false, false,
+          false, false, KeyCodes.KEY_DOWN, 0);
+      assertEquals(t0, t.getSelectedItem());
+      t.setKeyboardSupportEnabled(false);
+      t.getElement().dispatchEvent(keyEvent0);
+      assertEquals(t0, t.getSelectedItem());
+
+      // enable keyboard support
+      NativeEvent keyEvent1 = Document.get().createKeyPressEvent(false, false,
+          false, false, KeyCodes.KEY_DOWN, 0);
+      assertEquals(t0, t.getSelectedItem());
+      t.setKeyboardSupportEnabled(true);
+      t.getElement().dispatchEvent(keyEvent1);
+      assertEquals(t1, t.getSelectedItem());
+    }
+    
+    RootPanel.get().remove(t);
   }
 
   public void testRootAdd() {
@@ -180,22 +222,22 @@ public class FastTreeTest extends Gen2TestBase {
     assertNull(eLabel.getParent());
     assertFalse(childFastTree.getChildWidgets().containsKey(eLabel.getParent()));
   }
-  
+
   public void testBeforeSelectRespectsCancel() {
     FastTree tree = createBeforeSelectTestableTree(true);
-    
+
     // Get first branch
     FastTreeItem item0 = tree.getItem(0);
     tree.setSelectedItem(item0);
     assertEquals("a", item0.getText());
     assertFalse(item0.isSelected());
-    
+
     // Get second branch
     FastTreeItem item1 = tree.getItem(1);
     tree.setSelectedItem(item1);
     assertEquals("b", item1.getText());
     assertTrue(item1.isSelected());
-    
+
     // Now that the second branch is open
     // Try to select the first child
     FastTreeItem item2 = item1.getChild(0);
@@ -203,29 +245,29 @@ public class FastTreeTest extends Gen2TestBase {
     assertEquals("b-a", item2.getText());
     assertFalse(item2.isSelected());
     assertTrue(item1.isSelected());
-    
+
     FastTreeItem item3 = item1.getChild(1);
     tree.setSelectedItem(item3);
     assertEquals("b-b", item3.getText());
     assertTrue(item3.isSelected());
     assertFalse(item1.isSelected());
   }
-  
+
   public void testBeforeSelectNotFiredWhenEventsAreOff() {
     FastTree tree = createBeforeSelectTestableTree(true);
-    
+
     // Get first branch
     FastTreeItem item0 = tree.getItem(0);
     tree.setSelectedItem(item0, false);
     assertEquals("a", item0.getText());
     assertTrue(item0.isSelected());
-    
+
     // Get second branch
     FastTreeItem item1 = tree.getItem(1);
     tree.setSelectedItem(item1, false);
     assertEquals("b", item1.getText());
     assertTrue(item1.isSelected());
-    
+
     // Now that the second branch is open
     // Try to select the first child
     FastTreeItem item2 = item1.getChild(0);
@@ -233,30 +275,30 @@ public class FastTreeTest extends Gen2TestBase {
     assertEquals("b-a", item2.getText());
     assertTrue(item2.isSelected());
     assertFalse(item1.isSelected());
-    
+
     FastTreeItem item3 = item1.getChild(1);
     tree.setSelectedItem(item3, false);
     assertEquals("b-b", item3.getText());
     assertTrue(item3.isSelected());
     assertFalse(item1.isSelected());
   }
-  
+
   public void testBeforeSelectNotFiredWhenUndefined() {
     FastTree tree = createBeforeSelectTestableTree(false);
-    
+
     // Get first branch
-    FastTreeItem item0 = tree.getItem(0);    
+    FastTreeItem item0 = tree.getItem(0);
     assertNotNull(tree.beforeSelected(item0));
     tree.setSelectedItem(item0);
     assertEquals("a", item0.getText());
     assertTrue(item0.isSelected());
-        
+
     // Get second branch
     FastTreeItem item1 = tree.getItem(1);
     tree.setSelectedItem(item1);
     assertEquals("b", item1.getText());
     assertTrue(item1.isSelected());
-    
+
     // Now that the second branch is open
     // Try to select the first child
     FastTreeItem item2 = item1.getChild(0);
@@ -264,14 +306,14 @@ public class FastTreeTest extends Gen2TestBase {
     assertEquals("b-a", item2.getText());
     assertTrue(item2.isSelected());
     assertFalse(item1.isSelected());
-    
+
     FastTreeItem item3 = item1.getChild(1);
     tree.setSelectedItem(item3);
     assertEquals("b-b", item3.getText());
     assertTrue(item3.isSelected());
     assertFalse(item1.isSelected());
   }
-  
+
   public void testFindDeepestOpenChild() {
     FastTree tree = createBeforeSelectTestableTree(false);
     FastTreeItem item = tree.getItem(0);
@@ -279,10 +321,10 @@ public class FastTreeTest extends Gen2TestBase {
     tree.setSelectedItem(item);
     assertTrue(item.isOpen());
     assertEquals(2, item.getChildCount());
-    
+
     // no try something funky
     item.removeItems();
-    
+
     try {
       assertNotNull(tree.findDeepestOpenChild(item));
     } catch (IndexOutOfBoundsException iobe) {
@@ -292,6 +334,7 @@ public class FastTreeTest extends Gen2TestBase {
 
   /**
    * helper method for testing beforeSelect event.
+   * 
    * @param hasBeforeSelectionHandler TODO
    */
   private FastTree createBeforeSelectTestableTree(
@@ -303,19 +346,17 @@ public class FastTreeTest extends Gen2TestBase {
     FastTreeItem secondBranch = tree.addItem("b");
     secondBranch.addItem("b-a");
     secondBranch.addItem("b-b");
-    
+
     if (hasBeforeSelectionHandler) {
-      tree.addBeforeSelectionHandler(
-          new BeforeSelectionHandler<FastTreeItem>() {
-            public void onBeforeSelection(
-                BeforeSelectionEvent<FastTreeItem> event) {
-                if (event.getItem().getText().contains("a")) {
-                  event.cancel();
-                }
-            }
+      tree.addBeforeSelectionHandler(new BeforeSelectionHandler<FastTreeItem>() {
+        public void onBeforeSelection(BeforeSelectionEvent<FastTreeItem> event) {
+          if (event.getItem().getText().contains("a")) {
+            event.cancel();
+          }
+        }
       });
     }
-    
+
     return tree;
   }
 }
