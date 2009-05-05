@@ -99,7 +99,6 @@ public class FastTreeDemo implements EntryPoint {
       final TextBox textBox = new TextBox();
       Hyperlink link = new Hyperlink("change focus", "blah");
       link.addClickHandler(new ClickHandler() {
-        @Override
         public void onClick(ClickEvent event) {
           textBox.setFocus(true);
           event.getNativeEvent().stopPropagation();
