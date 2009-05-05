@@ -77,8 +77,9 @@ public class FastTree extends Panel implements HasClickHandlers,
     HasFastTreeItems, HasKeyDownHandlers, HasKeyPressHandlers,
     HasKeyUpHandlers, HasFastTreeItemHandlers {
   /**
-   * Interface used to allow the widget access to css style names. <p/> The
-   * class names indicate the default gwt names for these styles.
+   * Interface used to allow the widget access to css style names.
+   * <p/>
+   * The class names indicate the default gwt names for these styles.
    */
   static interface Css {
 
@@ -142,6 +143,7 @@ public class FastTree extends Panel implements HasClickHandlers,
   private final FastTreeItem root;
   private Event keyDown;
   private Event lastKeyDown;
+  private boolean isKeyboardSupportEnabled = true;
 
   /**
    * Constructs a tree.
@@ -345,6 +347,15 @@ public class FastTree extends Panel implements HasClickHandlers,
     return root;
   }
 
+  /**
+   * Check if keyboard support is enabled.
+   * 
+   * @return true if enabled, false if disabled
+   */
+  public boolean isKeyboardSupportEnabled() {
+    return isKeyboardSupportEnabled;
+  }
+
   public Iterator<Widget> iterator() {
     final Widget[] widgets = new Widget[childWidgets.size()];
     childWidgets.keySet().toArray(widgets);
@@ -391,7 +402,7 @@ public class FastTree extends Panel implements HasClickHandlers,
         }
         // Intentional fallthrough.
       case Event.ONKEYPRESS:
-        if (hasModifiers(e)) {
+        if (!isKeyboardSupportEnabled || hasModifiers(e)) {
           break;
         }
 
@@ -445,6 +456,16 @@ public class FastTree extends Panel implements HasClickHandlers,
     while (getItemCount() > 0) {
       removeItem(getItem(0));
     }
+  }
+
+  /**
+   * Enable or disable keyboard support. When disabled, the user will not be
+   * able to navigate between tree items using the keyboard.
+   * 
+   * @param enabled true to enable, false to disable
+   */
+  public void setKeyboardSupportEnabled(boolean enabled) {
+    this.isKeyboardSupportEnabled = enabled;
   }
 
   /**
