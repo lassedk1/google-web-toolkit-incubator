@@ -266,6 +266,198 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
     }
   }
 
+  public void testCrossPageSelectionDisabled() {
+    PagingScrollTable<List<Object>> scrollTable = getPagingScrollTable();
+    scrollTable.setCrossPageSelectionEnabled(false);
+    scrollTable.setPageSize(5);
+    FixedWidthGrid dataTable = scrollTable.getDataTable();
+
+    // Select rows on page 0
+    scrollTable.gotoFirstPage();
+    List<Object> rowValue0 = scrollTable.getRowValue(0);
+    List<Object> rowValue1 = scrollTable.getRowValue(0);
+    List<Object> rowValue2 = scrollTable.getRowValue(0);
+    List<Object> rowValue3 = scrollTable.getRowValue(0);
+    List<Object> rowValue4 = scrollTable.getRowValue(0);
+    {
+      assertEquals(0, scrollTable.getSelectedRowValues().size());
+      assertEquals(0, dataTable.getSelectedRows().size());
+
+      // Select row 0
+      dataTable.selectRow(0, false);
+      assertEquals(1, scrollTable.getSelectedRowValues().size());
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue0));
+
+      // Select row 2
+      dataTable.selectRow(2, false);
+      assertEquals(2, scrollTable.getSelectedRowValues().size());
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue0));
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue2));
+
+      // Select row 4
+      dataTable.selectRow(4, false);
+      assertEquals(3, scrollTable.getSelectedRowValues().size());
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue0));
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue2));
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue4));
+    }
+
+    // Select rows on page 2
+    {
+      scrollTable.gotoPage(2, true);
+      assertEquals(0, scrollTable.getSelectedRowValues().size());
+      assertEquals(0, dataTable.getSelectedRows().size());
+
+      // Select row 1
+      dataTable.selectRow(1, false);
+      assertEquals(1, scrollTable.getSelectedRowValues().size());
+      assertTrue(scrollTable.getSelectedRowValues().contains(
+          scrollTable.getRowValue(1)));
+
+      // Select row 3
+      dataTable.selectRow(3, false);
+      assertEquals(2, scrollTable.getSelectedRowValues().size());
+      assertTrue(scrollTable.getSelectedRowValues().contains(
+          scrollTable.getRowValue(1)));
+      assertTrue(scrollTable.getSelectedRowValues().contains(
+          scrollTable.getRowValue(3)));
+    }
+
+    // Return to page 0
+    {
+      scrollTable.gotoPage(0, true);
+      assertEquals(0, scrollTable.getSelectedRowValues().size());
+      assertEquals(0, dataTable.getSelectedRows().size());
+    }
+  }
+
+  /**
+   * Verify that if cross page selection is disabled after it has been enabled,
+   * {@link PagingScrollTable#getSelectedRowValues()} returns the row values on
+   * the current page.
+   */
+  public void testCrossPageSelectionDisabledAfterEnabled() {
+    PagingScrollTable<List<Object>> scrollTable = getPagingScrollTable();
+    scrollTable.setCrossPageSelectionEnabled(true);
+    scrollTable.setPageSize(5);
+    FixedWidthGrid dataTable = scrollTable.getDataTable();
+
+    // Select rows on page 0
+    scrollTable.gotoFirstPage();
+    {
+      assertEquals(0, scrollTable.getSelectedRowValues().size());
+      assertEquals(0, dataTable.getSelectedRows().size());
+      dataTable.selectRow(0, false);
+      dataTable.selectRow(2, false);
+      dataTable.selectRow(4, false);
+      assertEquals(3, scrollTable.getSelectedRowValues().size());
+      assertEquals(3, dataTable.getSelectedRows().size());
+    }
+
+    // Select rows on page 2
+    {
+      scrollTable.gotoPage(2, true);
+      assertEquals(3, scrollTable.getSelectedRowValues().size());
+      assertEquals(0, dataTable.getSelectedRows().size());
+      dataTable.selectRow(1, false);
+      dataTable.selectRow(3, false);
+      assertEquals(5, scrollTable.getSelectedRowValues().size());
+      assertEquals(2, dataTable.getSelectedRows().size());
+    }
+
+    // Disable cross page selection
+    {
+      scrollTable.setCrossPageSelectionEnabled(false);
+      assertEquals(2, scrollTable.getSelectedRowValues().size());
+      assertEquals(2, dataTable.getSelectedRows().size());
+      assertTrue(scrollTable.getSelectedRowValues().contains(
+          scrollTable.getRowValue(1)));
+      assertTrue(scrollTable.getSelectedRowValues().contains(
+          scrollTable.getRowValue(3)));
+    }
+  }
+
+  public void testCrossPageSelectionEnabled() {
+    PagingScrollTable<List<Object>> scrollTable = getPagingScrollTable();
+    scrollTable.setCrossPageSelectionEnabled(true);
+    scrollTable.setPageSize(5);
+    FixedWidthGrid dataTable = scrollTable.getDataTable();
+
+    // Select rows on page 0
+    scrollTable.gotoFirstPage();
+    List<Object> rowValue0 = scrollTable.getRowValue(0);
+    List<Object> rowValue1 = scrollTable.getRowValue(0);
+    List<Object> rowValue2 = scrollTable.getRowValue(0);
+    List<Object> rowValue3 = scrollTable.getRowValue(0);
+    List<Object> rowValue4 = scrollTable.getRowValue(0);
+    {
+      assertEquals(0, scrollTable.getSelectedRowValues().size());
+      assertEquals(0, dataTable.getSelectedRows().size());
+
+      // Select row 0
+      dataTable.selectRow(0, false);
+      assertEquals(1, scrollTable.getSelectedRowValues().size());
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue0));
+
+      // Select row 2
+      dataTable.selectRow(2, false);
+      assertEquals(2, scrollTable.getSelectedRowValues().size());
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue0));
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue2));
+
+      // Select row 4
+      dataTable.selectRow(4, false);
+      assertEquals(3, scrollTable.getSelectedRowValues().size());
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue0));
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue2));
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue4));
+    }
+
+    // Select rows on page 2
+    {
+      scrollTable.gotoPage(2, true);
+      assertEquals(3, scrollTable.getSelectedRowValues().size());
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue0));
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue2));
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue4));
+      assertEquals(0, dataTable.getSelectedRows().size());
+
+      // Select row 1
+      dataTable.selectRow(1, false);
+      assertEquals(4, scrollTable.getSelectedRowValues().size());
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue0));
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue2));
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue4));
+      assertTrue(scrollTable.getSelectedRowValues().contains(
+          scrollTable.getRowValue(1)));
+
+      // Select row 3
+      dataTable.selectRow(3, false);
+      assertEquals(5, scrollTable.getSelectedRowValues().size());
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue0));
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue2));
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue4));
+      assertTrue(scrollTable.getSelectedRowValues().contains(
+          scrollTable.getRowValue(1)));
+      assertTrue(scrollTable.getSelectedRowValues().contains(
+          scrollTable.getRowValue(3)));
+    }
+
+    // Return to page 0
+    {
+      scrollTable.gotoPage(0, true);
+      assertEquals(5, scrollTable.getSelectedRowValues().size());
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue0));
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue2));
+      assertTrue(scrollTable.getSelectedRowValues().contains(rowValue4));
+      assertTrue(dataTable.isRowSelected(0));
+      assertFalse(dataTable.isRowSelected(1));
+      assertTrue(dataTable.isRowSelected(2));
+      assertFalse(dataTable.isRowSelected(3));
+      assertTrue(dataTable.isRowSelected(4));
+    }
+  }
+
   /**
    * Create a {@link PagingScrollTable} with an empty table definition.
    */
@@ -737,6 +929,13 @@ public class PagingScrollTableTest extends AbstractScrollTableTest {
       assertTrue(table.isFooterGenerated());
       table.setFooterGenerated(false);
       assertFalse(table.isFooterGenerated());
+    }
+
+    // isCrossPageSelectionEnabled
+    {
+      assertFalse(table.isCrossPageSelectionEnabled());
+      table.setCrossPageSelectionEnabled(true);
+      assertTrue(table.isCrossPageSelectionEnabled());
     }
   }
 

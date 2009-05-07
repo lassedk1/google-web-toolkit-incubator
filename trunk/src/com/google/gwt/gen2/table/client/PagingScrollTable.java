@@ -57,8 +57,11 @@ import com.google.gwt.gen2.table.event.client.RowInsertionEvent;
 import com.google.gwt.gen2.table.event.client.RowInsertionHandler;
 import com.google.gwt.gen2.table.event.client.RowRemovalEvent;
 import com.google.gwt.gen2.table.event.client.RowRemovalHandler;
+import com.google.gwt.gen2.table.event.client.RowSelectionEvent;
+import com.google.gwt.gen2.table.event.client.RowSelectionHandler;
 import com.google.gwt.gen2.table.event.client.RowValueChangeEvent;
 import com.google.gwt.gen2.table.event.client.RowValueChangeHandler;
+import com.google.gwt.gen2.table.event.client.TableEvent.Row;
 import com.google.gwt.gen2.table.override.client.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -70,9 +73,11 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentC
 import com.google.gwt.user.client.ui.HasVerticalAlignment.VerticalAlignmentConstant;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * An {@link AbstractScrollTable} that acts as a view for an underlying
@@ -292,6 +297,16 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   private Request lastRequest = null;
 
   /**
+   * A boolean indicating that cross page selection is enabled.
+   */
+  private boolean isCrossPageSelectionEnabled;
+
+  /**
+   * The set of selected row values.
+   */
+  private Set<RowType> selectedRowValues = new HashSet<RowType>();
+
+  /**
    * A boolean indicating that the footer should be generated automatically.
    */
   private boolean isFooterGenerated;
@@ -489,6 +504,23 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       };
       dataTable.setColumnSorter(sorter);
     }
+
+    // Listen for selection events
+    dataTable.addRowSelectionHandler(new RowSelectionHandler() {
+      public void onRowSelection(RowSelectionEvent event) {
+        if (isPageLoading) {
+          return;
+        }
+        Set<Row> deselected = event.getDeselectedRows();
+        for (Row row : deselected) {
+          selectedRowValues.remove(getRowValue(row.getRowIndex()));
+        }
+        Set<Row> selected = event.getSelectedRows();
+        for (Row row : selected) {
+          selectedRowValues.add(getRowValue(row.getRowIndex()));
+        }
+      }
+    });
   }
 
   public HandlerRegistration addPageChangeHandler(PageChangeHandler handler) {
@@ -607,6 +639,17 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     return rowValues.get(row);
   }
 
+  /**
+   * Get the selected row values. If cross page selection is enabled, this will
+   * include row values selected on all pages.
+   * 
+   * @return the selected row values
+   * @see #setCrossPageSelectionEnabled(boolean)
+   */
+  public Set<RowType> getSelectedRowValues() {
+    return selectedRowValues;
+  }
+
   public TableDefinition<RowType> getTableDefinition() {
     return tableDefinition;
   }
@@ -659,12 +702,16 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     }
 
     if (currentPage != oldPage || forced) {
+      isPageLoading = true;
+
       // Deselect rows when switching pages
       FixedWidthGrid dataTable = getDataTable();
       dataTable.deselectAllRows();
+      if (!isCrossPageSelectionEnabled) {
+        selectedRowValues = new HashSet<RowType>();
+      }
 
       // Fire listeners
-      isPageLoading = true;
       fireEvent(new PageChangeEvent(oldPage, currentPage));
 
       // Clear out existing data if we aren't bulk rendering
@@ -712,6 +759,13 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       return true;
     }
     return colDef.getColumnProperty(TruncationProperty.TYPE).isColumnTruncatable();
+  }
+
+  /**
+   * @return true if cross page selection is enabled
+   */
+  public boolean isCrossPageSelectionEnabled() {
+    return isCrossPageSelectionEnabled;
   }
 
   @Override
@@ -771,6 +825,29 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   public void setBulkRenderer(FixedWidthGridBulkRenderer<RowType> bulkRenderer) {
     this.bulkRenderer = bulkRenderer;
+  }
+
+  /**
+   * Enable or disable cross page selection. When enabled, row value selections
+   * are maintained across page loads. Selections are remembered by type (not by
+   * row index), so row values can move around and still maintain their
+   * selection.
+   * 
+   * @param enabled true to enable, false to disable
+   */
+  public void setCrossPageSelectionEnabled(boolean enabled) {
+    if (isCrossPageSelectionEnabled != enabled) {
+      this.isCrossPageSelectionEnabled = enabled;
+
+      // Reselected only the rows on this page
+      if (!enabled) {
+        selectedRowValues = new HashSet<RowType>();
+        Set<Integer> selectedRows = getDataTable().getSelectedRows();
+        for (Integer selectedRow : selectedRows) {
+          selectedRowValues.add(getRowValue(selectedRow));
+        }
+      }
+    }
   }
 
   /**
@@ -997,8 +1074,17 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       headersObsolete = false;
     }
 
+    // Select rows
+    FixedWidthGrid dataTable = getDataTable();
+    int rowCount = dataTable.getRowCount();
+    for (int i = 0; i < rowCount; i++) {
+      if (selectedRowValues.contains(getRowValue(i))) {
+        dataTable.selectRow(i, false);
+      }
+    }
+
     // Update the UI of the table
-    getDataTable().clearIdealWidths();
+    dataTable.clearIdealWidths();
     redraw();
     isPageLoading = false;
     fireEvent(new PageLoadEvent(currentPage));
@@ -1319,6 +1405,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       formatter.setRowSpan(0, 0, table.getRowCount());
       formatter.setHorizontalAlignment(0, 0,
           HasHorizontalAlignment.ALIGN_CENTER);
+      table.setColumnWidth(0, getDataTable().getInputColumnWidth());
     }
   }
 
