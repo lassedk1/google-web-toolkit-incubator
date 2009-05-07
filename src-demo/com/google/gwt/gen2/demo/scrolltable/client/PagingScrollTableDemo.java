@@ -18,6 +18,7 @@ package com.google.gwt.gen2.demo.scrolltable.client;
 import com.google.gwt.gen2.demo.scrolltable.client.StudentColumnDefinition.Group;
 import com.google.gwt.gen2.demo.scrolltable.client.StudentColumnDefinition.StudentFooterProperty;
 import com.google.gwt.gen2.demo.scrolltable.client.option.paging.CacheSizeOption;
+import com.google.gwt.gen2.demo.scrolltable.client.option.paging.CrossPageSelectionOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.paging.HideColumnOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.paging.ModeSelectionOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.paging.PageSizeOption;
@@ -173,6 +174,8 @@ public class PagingScrollTableDemo extends ScrollTableDemo {
       mapOption(root.addItem("Page Size"), new PageSizeOption());
       mapOption(root.addItem("Cache Size"), new CacheSizeOption());
       mapOption(root.addItem("Hide Columns"), new HideColumnOption());
+      mapOption(root.addItem("Cross Page Selection"),
+          new CrossPageSelectionOption());
       mapOption(root.addItem("Mode Selection"), new ModeSelectionOption());
     }
   }

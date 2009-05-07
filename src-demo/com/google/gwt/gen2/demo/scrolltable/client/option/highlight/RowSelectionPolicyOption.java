@@ -17,6 +17,7 @@ package com.google.gwt.gen2.demo.scrolltable.client.option.highlight;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.gen2.demo.scrolltable.client.PagingScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.CustomForm;
@@ -86,6 +87,7 @@ public class RowSelectionPolicyOption extends AbstractOption {
               grid.setSelectionPolicy(SelectionPolicy.RADIO);
               break;
           }
+          PagingScrollTableDemo.get().getPagingScrollTable().reloadPage();
         }
       });
       form.addButton(button);
