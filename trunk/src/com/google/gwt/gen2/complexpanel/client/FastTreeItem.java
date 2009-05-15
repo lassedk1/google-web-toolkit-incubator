@@ -259,6 +259,7 @@ public class FastTreeItem extends UIObject implements HasFastTreeItems, HasHTML 
       }
 
       // clear element
+      contentElement.getParentElement().removeChild(contentElement);
       getElement().setInnerHTML("");
 
       // set leaf state
@@ -524,8 +525,8 @@ public class FastTreeItem extends UIObject implements HasFastTreeItems, HasHTML 
 
     // Physical detach old from self.
     // Clear out any existing content before adding a widget.
-    DOM.setInnerHTML(getElementToAttach(), "");
     clearWidget();
+    DOM.setInnerHTML(getElementToAttach(), "");
     addWidget(widget);
   }
 
@@ -694,10 +695,15 @@ public class FastTreeItem extends UIObject implements HasFastTreeItems, HasHTML 
     }
   }
 
+  /**
+   * Detach the current widget from the tree.
+   */
   private void clearWidget() {
-    // Detach old child from tree.
-    if (widget != null && this.tree != null) {
-      this.tree.treeOrphan(widget);
+    if (widget != null) {
+      if (this.tree != null) {
+        this.tree.treeOrphan(widget);
+      }
+      getElementToAttach().removeChild(widget.getElement());
       widget = null;
     }
   }
