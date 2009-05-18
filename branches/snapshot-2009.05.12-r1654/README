@@ -1,0 +1,55 @@
+There are two source roots at present:
+
+/src - Source to include in a distribution lives under here
+/test - For unit tests; the hierarchy should parallel /src
+
+Please use only the libideas and widgetideas package hierarchies,
+organized with typical GWT organizational conventions. 
+
+We are well aware that having many developers work in a small 
+number of packages invites collisions. That is intentional.  
+We don't want many different people working on slightly different versions 
+of the same thing in a way that will be unlikely to converge, thus turning 
+this project into a dumping ground. Instead, we want to force the issue of 
+"what if I'm trying to create the same widget that someone else is already 
+working on" so that the path of least resistance will (hopefully) be to 
+join forces to work on a single great implementation.
+
+=== Widget packages ===
+com.google.gwt.widgetideas
+- root package for all things visual, typically widgets
+- add module XML here
+
+com.google.gwt.widgetideas.client
+- actual widget code lives here; please don't create additional subpackages
+
+com.google.gwt.widgetideas.client.impl
+- contains deferred binding sublcasses and other low-level implementation
+
+com.google.gwt.widgetideas.rebind
+- contains deferred binding generators related to widgets
+
+com.google.gwt.widgetideas.server
+- contains server-side support related to widgets
+
+=== Library packages ===
+com.google.gwt.libideas  
+- root package for all things non-visual
+- add module XML here
+
+com.google.gwt.libideas.client
+- actual library code lives here; please don't create additional subpackages
+
+com.google.gwt.libideas.client.impl
+- contains deferred binding sublcasses and other low-level implementation
+
+com.google.gwt.libideas.linker
+- contains build-time support related to linkers
+
+com.google.gwt.libideas.rebind
+- contains deferred binding generators related to libraries
+
+com.google.gwt.libideas.server
+- contains server-side support related to libraries
+
+Happy coding.
