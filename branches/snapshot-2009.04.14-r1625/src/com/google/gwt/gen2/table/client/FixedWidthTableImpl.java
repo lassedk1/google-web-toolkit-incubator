@@ -16,6 +16,9 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.TableCellElement;
+import com.google.gwt.dom.client.TableRowElement;
 import com.google.gwt.gen2.table.override.client.HTMLTable;
 import com.google.gwt.gen2.table.override.client.OverrideDOM;
 import com.google.gwt.user.client.DOM;
@@ -46,8 +49,17 @@ class FixedWidthTableImpl {
    */
   public static class IdealColumnWidthInfo {
     private HTMLTable table;
-    private Element clonedTable;
-    private Element clonedTableBody;
+    private TableRowElement tr;
+    private int columnCount;
+    private int offset;
+
+    public IdealColumnWidthInfo(HTMLTable table, TableRowElement tr,
+        int columnCount, int offset) {
+      this.table = table;
+      this.tr = tr;
+      this.columnCount = columnCount;
+      this.offset = offset;
+    }
   }
 
   /**
@@ -105,54 +117,56 @@ class FixedWidthTableImpl {
      * This method assumes that the tableLayout has already been changed.
      * 
      * @param info the {@link IdealColumnWidthInfo}
-     * @param columnCount the number of columns in the table
-     * @param offset the offset of the first cell in the row
      * @return the ideal column widths
      */
-    public int[] recalculateIdealColumnWidths(IdealColumnWidthInfo info,
-        int columnCount, int offset) {
+    public int[] recalculateIdealColumnWidths(IdealColumnWidthInfo info) {
+      // Workaround for IE re-entrant bug on window resize
+      if (info == null) {
+        return new int[0];
+      }
+
       // We need at least one cell to do any calculations
+      int columnCount = info.columnCount;
       HTMLTable table = info.table;
       if (!table.isAttached() || table.getRowCount() == 0 || columnCount < 1) {
         return new int[0];
       }
 
-      // Get the first row in the cloned table
-      Element tbody = info.clonedTableBody;
-      com.google.gwt.dom.client.Element tr = getRowElement(tbody, 0);
-
       // Determine the width of each column
       int[] idealWidths = new int[columnCount];
-      com.google.gwt.dom.client.Element td = tr.getFirstChildElement();
-      for (int i = 0; i < offset; i++) {
+      com.google.gwt.dom.client.Element td = info.tr.getFirstChildElement();
+      for (int i = 0; i < info.offset; i++) {
         td = td.getNextSiblingElement();
       }
       for (int i = 0; i < columnCount; i++) {
-        idealWidths[i] = td.getPropertyInt("clientWidth");
+        idealWidths[i] = td.getClientWidth();
         td = td.getNextSiblingElement();
       }
       return idealWidths;
     }
 
     /**
-     * Setup to recalculate column widths. This method clones and returns the
-     * table element.
+     * Setup to recalculate column widths.
      * 
      * @param table the table
-     * @param ghostRow the ghost row
-     * @return the {@link IdealColumnWidthInfo} used during calculations
+     * @param columnCount the number of columns in the table
+     * @param offset the offset of the first logical column
+     * @return info used to calculate ideal column widths
      */
     public IdealColumnWidthInfo recalculateIdealColumnWidthsSetup(
-        HTMLTable table, Element ghostRow) {
-      Element tableElem = table.getElement();
-      IdealColumnWidthInfo info = new IdealColumnWidthInfo();
-      info.table = table;
-      info.clonedTable = (Element) tableElem.cloneNode(false);
-      info.clonedTableBody = (Element) getTableBody(table).cloneNode(true);
-      info.clonedTable.appendChild(info.clonedTableBody);
-      info.clonedTable.getStyle().setProperty("tableLayout", "");
-      tableElem.getParentElement().insertBefore(info.clonedTable, tableElem);
-      return info;
+        HTMLTable table, int columnCount, int offset) {
+      // Switch to normal layout
+      table.getElement().getStyle().setProperty("tableLayout", "");
+
+      // Add a full row to get ideal widths
+      TableRowElement tr = Document.get().createTRElement();
+      TableCellElement td = Document.get().createTDElement();
+      td.setInnerHTML("<div style=\"height:1px;width:1px;\"></div>");
+      for (int i = 0; i < columnCount + offset; i++) {
+        tr.appendChild(td.cloneNode(true));
+      }
+      getTableBody(table).appendChild(tr);
+      return new IdealColumnWidthInfo(table, tr, columnCount, offset);
     }
 
     /**
@@ -161,10 +175,12 @@ class FixedWidthTableImpl {
      * @param info the {@link IdealColumnWidthInfo}
      */
     public void recalculateIdealColumnWidthsTeardown(IdealColumnWidthInfo info) {
-      info.clonedTable.getParentElement().removeChild(info.clonedTable);
-      info.table = null;
-      info.clonedTable = null;
-      info.clonedTableBody = null;
+      // Workaround for IE re-entrant bug on window resize
+      if (info == null) {
+        return;
+      }
+      info.table.getElement().getStyle().setProperty("tableLayout", "fixed");
+      getTableBody(info.table).removeChild(info.tr);
     }
 
     /**
@@ -182,19 +198,6 @@ class FixedWidthTableImpl {
     }
 
     /**
-     * Gets the TR element representing the specified row.
-     * 
-     * @param tbody the table body element
-     * @param row the row of the cell to be retrieved
-     * @return the row's TR element
-     */
-    private native com.google.gwt.dom.client.Element getRowElement(
-        com.google.gwt.dom.client.Element tbody, int row)
-    /*-{
-      return tbody.rows[row];
-    }-*/;
-
-    /**
      * Get the body element of an {@link HTMLTable}.
      * 
      * @param table the table
@@ -210,23 +213,12 @@ class FixedWidthTableImpl {
    * IE6 version of the implementation. IE6 sets the overall column width
    * instead of the innerWidth, so we need to add the padding and spacing.
    */
-  @SuppressWarnings("unused")
   public static class ImplIE6 extends Impl {
     @Override
     public Element createGhostRow() {
       Element ghostRow = super.createGhostRow();
       ghostRow.getStyle().setProperty("display", "none");
       return ghostRow;
-    }
-
-    @Override
-    public IdealColumnWidthInfo recalculateIdealColumnWidthsSetup(
-        HTMLTable table, Element ghostRow) {
-      ghostRow.getStyle().setProperty("display", "");
-      IdealColumnWidthInfo toRet = super.recalculateIdealColumnWidthsSetup(
-          table, ghostRow);
-      ghostRow.getStyle().setProperty("display", "none");
-      return toRet;
     }
 
     @Override
@@ -241,7 +233,6 @@ class FixedWidthTableImpl {
    * Safari version of the implementation. Safari sets the overall column width
    * instead of the innerWidth, so we need to add the padding and spacing.
    */
-  @SuppressWarnings("unused")
   public static class ImplSafari extends Impl {
     @Override
     public void setColumnWidth(HTMLTable table, Element ghostRow, int column,
@@ -256,7 +247,6 @@ class FixedWidthTableImpl {
    * column size takes effect. Without the display refresh, the column width
    * doesn't update in the browser.
    */
-  @SuppressWarnings("unused")
   public static class ImplOpera extends Impl {
     @Override
     public void setColumnWidth(HTMLTable table, Element ghostRow, int column,

@@ -158,11 +158,6 @@ public class FixedWidthFlexTable extends FlexTable {
   public static final int DEFAULT_COLUMN_WIDTH = 80;
 
   /**
-   * The cloned table element used to calculate ideal column widths.
-   */
-  private IdealColumnWidthInfo idealColumnWidthInfo;
-
-  /**
    * A mapping of column indexes to their widths in pixels.
    * 
    * key = column index
@@ -206,6 +201,11 @@ public class FixedWidthFlexTable extends FlexTable {
    * The ideal widths of all columns (that are available).
    */
   private int[] idealWidths;
+
+  /**
+   * Info used to calculate ideal column width.
+   */
+  private IdealColumnWidthInfo idealColumnWidthInfo;
 
   /**
    * Constructor.
@@ -584,7 +584,7 @@ public class FixedWidthFlexTable extends FlexTable {
    */
   void recalculateIdealColumnWidthsImpl() {
     idealWidths = FixedWidthTableImpl.get().recalculateIdealColumnWidths(
-        idealColumnWidthInfo, getColumnCount(), 0);
+        idealColumnWidthInfo);
   }
 
   /**
@@ -592,7 +592,7 @@ public class FixedWidthFlexTable extends FlexTable {
    */
   void recalculateIdealColumnWidthsSetup() {
     idealColumnWidthInfo = FixedWidthTableImpl.get().recalculateIdealColumnWidthsSetup(
-        this, ghostRow);
+        this, getColumnCount(), 0);
   }
 
   /**
