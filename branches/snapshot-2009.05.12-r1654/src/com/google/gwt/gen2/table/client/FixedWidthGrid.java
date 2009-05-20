@@ -77,11 +77,6 @@ public class FixedWidthGrid extends SortableGrid {
   public static final int MIN_COLUMN_WIDTH = 1;
 
   /**
-   * The cloned table element used to calculate ideal column widths.
-   */
-  private IdealColumnWidthInfo idealColumnWidthInfo;
-
-  /**
    * A mapping of column indexes to their widths in pixels.
    */
   private Map<Integer, Integer> colWidths = new HashMap<Integer, Integer>();
@@ -95,6 +90,11 @@ public class FixedWidthGrid extends SortableGrid {
    * The ideal widths of all columns (that are available).
    */
   private int[] idealWidths;
+
+  /**
+   * Info used to calculate ideal column width.
+   */
+  private IdealColumnWidthInfo idealColumnWidthInfo;
 
   /**
    * Constructor.
@@ -454,20 +454,20 @@ public class FixedWidthGrid extends SortableGrid {
    * method assumes that the tableLayout has already been changed.
    */
   void recalculateIdealColumnWidthsImpl() {
-    int offset = 0;
-    if (getSelectionPolicy().hasInputColumn()) {
-      offset++;
-    }
     idealWidths = FixedWidthTableImpl.get().recalculateIdealColumnWidths(
-        idealColumnWidthInfo, getColumnCount(), offset);
+        idealColumnWidthInfo);
   }
 
   /**
    * Setup to recalculate column widths.
    */
   void recalculateIdealColumnWidthsSetup() {
+    int offset = 0;
+    if (getSelectionPolicy().hasInputColumn()) {
+      offset++;
+    }
     idealColumnWidthInfo = FixedWidthTableImpl.get().recalculateIdealColumnWidthsSetup(
-        this, ghostRow);
+        this, getColumnCount(), offset);
   }
 
   /**
