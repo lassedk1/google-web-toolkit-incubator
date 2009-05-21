@@ -1,7 +1,7 @@
 #summary Combines ImmutableResourceBundle with CSS styleshees
 #labels Type-Library
 
-*StyleInjector and CssResource been promoted from the incubator into mainline GWT development.  The incubator code has been deprecated.  [http://code.google.com/p/google-web-toolkit/wiki/ClientBundle Current documentation] is located in the [http://code.google.com/p/google-web-toolkit main GWT project].*
+*StyleInjector and CssResource have been promoted from the incubator into mainline GWT development.  The incubator code has been deprecated.  [http://code.google.com/p/google-web-toolkit/wiki/ClientBundle Current documentation] is located in the [http://code.google.com/p/google-web-toolkit main GWT project].*
 
 = Goal =
 
