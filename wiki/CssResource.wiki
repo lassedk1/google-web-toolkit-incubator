@@ -1,7 +1,9 @@
 #summary Compile-time CSS processing
 #labels Phase-Implementation,Type-Library
 
-<wiki:toc max_depth="2">
+*ImmutableResourceBundle and CssResource have been promoted from the incubator into mainline GWT development.  The incubator code has been deprecated.  [http://code.google.com/p/google-web-toolkit/wiki/CssResource Current documentation] is located in the [http://code.google.com/p/google-web-toolkit main GWT project].*
+
+<wiki:toc max_depth="2" />
 
 See also the CssResourceCookbook
 
