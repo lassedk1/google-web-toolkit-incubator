@@ -1,6 +1,8 @@
 #summary Provides structured access to application resources
 #labels Type-Library
 
+*ImmutableResourceBundle and CssResource have been promoted from the incubator into mainline GWT development.  The incubator code has been deprecated.  [http://code.google.com/p/google-web-toolkit/wiki/ClientBundle Current documentation] is located in the [http://code.google.com/p/google-web-toolkit main GWT project].*
+
 = Introduction =
 
  The resources in a deployed GWT application can be roughly categorized into resources to never cache `.nocache.js`, to cache forever `.cache.html`, and everything else `myapp.css`.  The proposed ImmutableResourceBundle interface seeks to move entries in the everything-else category into the cache-forever category.
