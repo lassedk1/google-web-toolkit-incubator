@@ -27,6 +27,7 @@ import com.google.gwt.gen2.table.event.client.ColumnSortEvent;
 import com.google.gwt.gen2.table.event.client.ColumnSortHandler;
 import com.google.gwt.gen2.table.override.client.ComplexPanel;
 import com.google.gwt.gen2.table.override.client.OverrideDOM;
+import com.google.gwt.gen2.table.override.client.HTMLTable.CellFormatter;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
@@ -922,14 +923,14 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   private SortPolicy sortPolicy = SortPolicy.SINGLE_CELL;
 
   /**
-   * The Image use to indicate the currently sorted column.
+   * The cell index of the TD cell that initiated a column sort operation.
    */
-  private Image sortedColumnIndicator = new Image();
+  private int sortedCellIndex = -1;
 
   /**
-   * The TD cell that initiated a column sort operation.
+   * The row index of the TD cell that initiated a column sort operation.
    */
-  private Element sortedColumnTrigger = null;
+  private int sortedRowIndex = -1;
 
   /**
    * The wrapper around the image indicator.
@@ -956,7 +957,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * @param images the images to use in the table
    */
   public AbstractScrollTable(FixedWidthGrid dataTable,
-      FixedWidthFlexTable headerTable, ScrollTableImages images) {
+      final FixedWidthFlexTable headerTable, ScrollTableImages images) {
     super();
     this.dataTable = dataTable;
     this.headerTable = headerTable;
@@ -1033,8 +1034,6 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     // Create the sort indicator Image
     sortedColumnWrapper = DOM.createSpan();
-    DOM.setInnerHTML(sortedColumnWrapper, "&nbsp;");
-    DOM.appendChild(sortedColumnWrapper, sortedColumnIndicator.getElement());
 
     // Add some event handling
     sinkEvents(Event.ONMOUSEOUT);
@@ -1065,9 +1064,14 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
           // Re-add the sorted column indicator
           if (column < 0) {
-            sortedColumnTrigger = null;
-          } else if (sortedColumnTrigger != null) {
-            applySortedColumnIndicator(sortedColumnTrigger, ascending);
+            sortedCellIndex = -1;
+            sortedRowIndex = -1;
+          } else if (sortedCellIndex >= 0 && sortedRowIndex >= 0
+              && headerTable.getRowCount() > sortedRowIndex
+              && headerTable.getCellCount(sortedRowIndex) > sortedCellIndex) {
+            CellFormatter formatter = headerTable.getCellFormatter();
+            Element td = formatter.getElement(sortedRowIndex, sortedCellIndex);
+            applySortedColumnIndicator(td, ascending);
           }
         }
       }
@@ -1327,14 +1331,14 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
             }
 
             // Sort the column
-            int row = OverrideDOM.getRowIndex(DOM.getParent(cellElem)) - 1;
-            int cell = OverrideDOM.getCellIndex(cellElem);
-            int column = headerTable.getColumnIndex(row, cell)
+            sortedRowIndex = OverrideDOM.getRowIndex(DOM.getParent(cellElem)) - 1;
+            sortedCellIndex = OverrideDOM.getCellIndex(cellElem);
+            int column = headerTable.getColumnIndex(sortedRowIndex,
+                sortedCellIndex)
                 - getHeaderOffset();
             if (column >= 0 && isColumnSortable(column)) {
               if (dataTable.getColumnCount() > column
-                  && onHeaderSort(row, column)) {
-                sortedColumnTrigger = cellElem;
+                  && onHeaderSort(sortedRowIndex, column)) {
                 dataTable.sortColumn(column);
               }
             }
@@ -1669,11 +1673,14 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     tdElem.appendChild(sortedColumnWrapper);
     if (ascending) {
-      images.scrollTableAscending().applyTo(sortedColumnIndicator);
+      sortedColumnWrapper.setInnerHTML("&nbsp;"
+          + images.scrollTableAscending().getHTML());
     } else {
-      images.scrollTableDescending().applyTo(sortedColumnIndicator);
+      sortedColumnWrapper.setInnerHTML("&nbsp;"
+          + images.scrollTableDescending().getHTML());
     }
-    sortedColumnTrigger = null;
+    sortedRowIndex = -1;
+    sortedCellIndex = -1;
 
     // The column with the indicator now has a new ideal width
     headerTable.clearIdealWidths();
