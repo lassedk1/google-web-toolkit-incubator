@@ -7,3 +7,4 @@ Copies:
 
 Merges:
 /trunk/@1656:1657 was merged (r1659) into branches/snapshot-2009.05.12-r1654
+/trunk/@1661:1662 was merged (r1666) into branches/snapshot-2009.05.12-r1654
