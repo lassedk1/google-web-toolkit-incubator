@@ -210,23 +210,35 @@ class FixedWidthTableImpl {
   }
 
   /**
-   * IE6 version of the implementation. IE6 sets the overall column width
-   * instead of the innerWidth, so we need to add the padding and spacing.
+   * IE version of the implementation. IE sets the overall column width instead
+   * of the innerWidth, so we need to add the padding and spacing.
    */
-  public static class ImplIE6 extends Impl {
-    @Override
-    public Element createGhostRow() {
-      Element ghostRow = super.createGhostRow();
-      ghostRow.getStyle().setProperty("display", "none");
-      return ghostRow;
-    }
-
+  public static class ImplTrident extends Impl {
     @Override
     public void setColumnWidth(HTMLTable table, Element ghostRow, int column,
         int width) {
       width += 2 * table.getCellPadding() + table.getCellSpacing();
       super.setColumnWidth(table, ghostRow, column, width);
     }
+  }
+
+  /**
+   * IE6 version of the implementation hides the ghost row using the display
+   * attribute.
+   */
+  public static class ImplIE6 extends ImplTrident {
+    @Override
+    public Element createGhostRow() {
+      Element ghostRow = super.createGhostRow();
+      ghostRow.getStyle().setProperty("display", "none");
+      return ghostRow;
+    }
+  }
+
+  /**
+   * IE8 version of the implementation.
+   */
+  public static class ImplIE8 extends ImplTrident {
   }
 
   /**

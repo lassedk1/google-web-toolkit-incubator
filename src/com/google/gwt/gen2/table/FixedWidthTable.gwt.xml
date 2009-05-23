@@ -19,10 +19,11 @@
   <!-- IE includes spacing and padding when rendering -->
   <replace-with class="com.google.gwt.gen2.table.client.FixedWidthTableImpl.ImplIE6">
     <when-type-is class="com.google.gwt.gen2.table.client.FixedWidthTableImpl.Impl"/>
-    <any>
-      <when-property-is name="user.agent" value="ie6"/>
-      <when-property-is name="user.agent" value="ie8"/>
-    </any>
+    <when-property-is name="user.agent" value="ie6"/>
+  </replace-with>
+  <replace-with class="com.google.gwt.gen2.table.client.FixedWidthTableImpl.ImplIE8">
+    <when-type-is class="com.google.gwt.gen2.table.client.FixedWidthTableImpl.Impl"/>
+    <when-property-is name="user.agent" value="ie8"/>
   </replace-with>
 
   <!-- Safari includes spacing and padding when rendering -->
