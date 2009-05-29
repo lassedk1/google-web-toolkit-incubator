@@ -19,8 +19,8 @@ package com.google.gwt.gen2.widgetbase.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.gen2.logging.shared.Level;
 import com.google.gwt.libideas.client.StyleInjector;
-import com.google.gwt.libideas.resources.client.CssResource;
-import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
+import com.google.gwt.resources.client.ClientBundleWithLookup;
+import com.google.gwt.resources.client.CssResource;
 
 /**
  * Helper class to allow developers to easily inject css for their widgets.
@@ -29,32 +29,32 @@ public class Gen2CssInjector {
   /**
    * CSS resources for all gen2 widgets.
    */
-  static interface DefaultBundle extends ImmutableResourceBundle {
-    @Resource("com/google/gwt/gen2/widgetbase/public/CollapsiblePanel_base.css")
+  static interface DefaultBundle extends ClientBundleWithLookup {
+    @Source("com/google/gwt/gen2/widgetbase/public/CollapsiblePanel_base.css")
     CssResource collapsiblePanelBase();
 
-    @Resource("com/google/gwt/gen2/widgetbase/public/CollapsiblePanel_ltr.css")
+    @Source("com/google/gwt/gen2/widgetbase/public/CollapsiblePanel_ltr.css")
     CssResource collapsiblePanelLtr();
 
-    @Resource("com/google/gwt/gen2/widgetbase/public/DropDownDatePicker.css")
+    @Source("com/google/gwt/gen2/widgetbase/public/DropDownDatePicker.css")
     CssResource dropDownDatePicker();
 
-    @Resource("com/google/gwt/gen2/widgetbase/public/DropDownListBox.css")
+    @Source("com/google/gwt/gen2/widgetbase/public/DropDownListBox.css")
     CssResource dropDownListBox();
 
-    @Resource("com/google/gwt/gen2/widgetbase/public/FastTree_base.css")
+    @Source("com/google/gwt/gen2/widgetbase/public/FastTree_base.css")
     CssResource fastTreeBase();
 
-    @Resource("com/google/gwt/gen2/widgetbase/public/FastTree_ltr.css")
+    @Source("com/google/gwt/gen2/widgetbase/public/FastTree_ltr.css")
     CssResource fastTreeLtr();
 
-    @Resource("com/google/gwt/gen2/widgetbase/public/LogHandlers.css")
+    @Source("com/google/gwt/gen2/widgetbase/public/LogHandlers.css")
     CssResource logHandlers();
 
-    @Resource("com/google/gwt/gen2/widgetbase/public/Picker.css")
+    @Source("com/google/gwt/gen2/widgetbase/public/Picker.css")
     CssResource picker();
 
-    @Resource("com/google/gwt/gen2/widgetbase/public/SliderBar.css")
+    @Source("com/google/gwt/gen2/widgetbase/public/SliderBar.css")
     CssResource sliderBar();
   }
 
