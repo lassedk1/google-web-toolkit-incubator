@@ -18,7 +18,7 @@ package com.google.gwt.widgetideas.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.ui.Focusable;
+import com.google.gwt.user.client.ui.HasFocus;
 import com.google.gwt.user.client.ui.HasHTML;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
@@ -453,10 +453,10 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * 
    * @return widget to be focused.
    */
-  protected Focusable getFocusableWidget() {
+  protected HasFocus getFocusableWidget() {
     Widget w = getWidget();
-    if (w instanceof Focusable) {
-      return (Focusable) w;
+    if (w instanceof HasFocus) {
+      return (HasFocus) w;
     } else {
       return null;
     }
