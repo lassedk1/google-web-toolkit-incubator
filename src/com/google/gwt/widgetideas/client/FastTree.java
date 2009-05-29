@@ -26,6 +26,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.FocusListenerCollection;
+import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HasFocus;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.KeyboardListener;
@@ -830,7 +831,7 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   private void moveFocus(FastTreeItem selection) {
     moveSelectionBar(selection);
     DOM.scrollIntoView(focusable);
-    HasFocus focusableWidget = selection.getFocusableWidget();
+    Focusable focusableWidget = selection.getFocusableWidget();
     if (focusableWidget != null) {
       focusableWidget.setFocus(true);
     } else {

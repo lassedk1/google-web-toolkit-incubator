@@ -101,7 +101,7 @@ public class FastTreeDemo implements EntryPoint {
       link.addClickHandler(new ClickHandler() {
         public void onClick(ClickEvent event) {
           textBox.setFocus(true);
-          event.getNativeEvent().stopPropagation();
+          event.stopPropagation();
         }
       });
       VerticalPanel vPanel = new VerticalPanel();
