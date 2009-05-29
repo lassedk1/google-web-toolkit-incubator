@@ -1,7 +1,6 @@
 <module>
   <!-- Inherit the complex panel code   -->
   <inherits name='com.google.gwt.gen2.complexpanel.ComplexPanel' />
-  <inherits name='com.google.gwt.user.theme.standard.Standard'/>
   
   <!-- Inherit the core Web Toolkit stuff.                  -->
   <inherits name='com.google.gwt.user.User' />

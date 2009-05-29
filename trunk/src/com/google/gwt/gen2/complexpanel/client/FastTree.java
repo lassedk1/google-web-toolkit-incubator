@@ -55,9 +55,10 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Accessibility;
 import com.google.gwt.user.client.ui.Focusable;
-import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.WidgetAdaptorImpl;
 import com.google.gwt.user.client.ui.impl.FocusImpl;
 import com.google.gwt.widgetideas.client.event.KeyboardHandler;
 import com.google.gwt.widgetideas.client.overrides.DOMHelper;
@@ -72,7 +73,7 @@ import java.util.Map;
 /**
  * Fast tree implementation.
  */
-public class FastTree extends Panel implements HasClickHandlers,
+public class FastTree extends Widget implements HasWidgets, HasClickHandlers,
     HasMouseDownHandlers, HasSelectionHandlers<FastTreeItem>, HasFocusHandlers,
     HasFastTreeItems, HasKeyDownHandlers, HasKeyPressHandlers,
     HasKeyUpHandlers, HasFastTreeItemHandlers {
@@ -651,7 +652,8 @@ public class FastTree extends Panel implements HasClickHandlers,
   void adopt(Widget widget, FastTreeItem treeItem) {
     assert (!childWidgets.containsKey(widget));
     childWidgets.put(widget, treeItem);
-    super.adopt(widget);
+    WidgetAdaptorImpl.setParent(widget, this);
+//    super.adopt(widget);
   }
 
   /**
@@ -710,7 +712,8 @@ public class FastTree extends Panel implements HasClickHandlers,
   }
 
   void treeOrphan(Widget widget) {
-    super.orphan(widget);
+//    super.orphan(widget);
+    WidgetAdaptorImpl.setParent(widget, null);
 
     // Logical detach.
     childWidgets.remove(widget);
