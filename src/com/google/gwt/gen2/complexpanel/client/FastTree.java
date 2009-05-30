@@ -55,6 +55,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Accessibility;
 import com.google.gwt.user.client.ui.Focusable;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
@@ -73,7 +74,7 @@ import java.util.Map;
 /**
  * Fast tree implementation.
  */
-public class FastTree extends Widget implements HasWidgets, HasClickHandlers,
+public class FastTree extends Panel implements HasClickHandlers,
     HasMouseDownHandlers, HasSelectionHandlers<FastTreeItem>, HasFocusHandlers,
     HasFastTreeItems, HasKeyDownHandlers, HasKeyPressHandlers,
     HasKeyUpHandlers, HasFastTreeItemHandlers {
