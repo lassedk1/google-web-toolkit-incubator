@@ -1,0 +1,12 @@
+branch-info.txt for the 2009.06.02-r1673 snapshot branch.
+Tracks interactions between this branch and other branches.
+See: http://code.google.com/p/google-web-toolkit/wiki/ManagingMerges
+
+Copies:
+/branches/snapshot-2009.06.02-r1673 was created (r1674) as a straight copy from /trunk/@1673
+   svn copy -r1673 \
+   https://google-web-toolkit-incubator.googlecode.com/svn/trunk \
+   https://google-web-toolkit-incubator.googlecode.com/svn/branches\
+      /snapshot-2009.06.02-r1673
+
+Merges:
