@@ -1,7 +1,8 @@
 #summary A full featured table that supports scrolling, paging, column resizing and sorting, cell editing, and more...
 #labels Type-Widget
   
-||Demo:|| [http://collectionofdemos.appspot.com/demo/com.google.gwt.gen2.demo.scrolltable.ScrollTableDemo/ScrollTableDemo.html live demo]||
+||Demo:|| [
+http://collectionofdemos.appspot.com/demo/com.google.gwt.gen2.demo.scrolltable.PagingScrollTableDemo/PagingScrollTableDemo.html live demo]||
 ||Java doc: || [http://collectionofdemos.appspot.com/javadoc/com/google/gwt/gen2/table/client/PagingScrollTable.html  java doc]||
 ||Module:|| [http://google-web-toolkit-incubator.googlecode.com/svn/trunk/src/com/google/gwt/gen2/table/Table.gwt.xml Table]||
  
