@@ -1279,6 +1279,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   @Override
   public void onBrowserEvent(Event event) {
+    super.onBrowserEvent(event);
     Element target = DOM.eventGetTarget(event);
     switch (DOM.eventGetType(event)) {
       case Event.ONSCROLL:
