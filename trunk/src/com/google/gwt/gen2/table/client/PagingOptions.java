@@ -182,7 +182,7 @@ public class PagingOptions extends Composite {
     numPagesLabel = new HTML();
 
     // Create the loading image
-    loadingImage = new Image("scrollTableLoading.gif");
+    loadingImage = new Image(GWT.getModuleBaseURL() + "scrollTableLoading.gif");
     loadingImage.setVisible(false);
 
     // Create the error label
