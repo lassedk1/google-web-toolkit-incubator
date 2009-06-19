@@ -23,38 +23,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * <p>
- * ScrollTable consists of a fixed header and footer (optional) that remain
- * visible and a scrollable body that contains the data.
- * </p>
- * 
- * <p>
- * In order for the columns in the header table and data table to line up, the
- * two table must have the same margin, padding, and border widths. You can use
- * CSS style sheets to manipulate the colors and styles of the cell's, but you
- * must keep the actual sizes consistent (especially with respect to the left
- * and right side of the cells).
- * </p>
- * 
- * <h3>CSS Style Rules</h3>
- * 
- * <ul class="css">
- * 
- * <li>.gwt-ScrollTable { applied to the entire widget }</li>
- * 
- * <li>.gwt-ScrollTable .headerTable { applied to the header table }</li>
- * 
- * <li>.gwt-ScrollTable .dataTable { applied to the data table }</li>
- * 
- * <li>.gwt-ScrollTable .footerTable { applied to the footer table }</li>
- * 
- * <li>.gwt-ScrollTable .headerWrapper { wrapper around the header table }</li>
- * 
- * <li>.gwt-ScrollTable .dataWrapper { wrapper around the data table }</li>
- * 
- * <li>.gwt-ScrollTable .footerWrapper { wrapper around the footer table }</li>
- * 
- * </ul>
+ * A static version of the {@link AbstractScrollTable} that combines a header,
+ * data, and footer section.
  */
 public class ScrollTable extends AbstractScrollTable {
   /**
@@ -66,6 +36,16 @@ public class ScrollTable extends AbstractScrollTable {
    * A set of untruncatable column indexes.
    */
   private Set<Integer> untruncatableColumns = new HashSet<Integer>();
+
+  /**
+   * A set of untruncatable footer column indexes.
+   */
+  private Set<Integer> untruncatableFooters = new HashSet<Integer>();
+
+  /**
+   * A set of untruncatable header column indexes.
+   */
+  private Set<Integer> untruncatableHeaders = new HashSet<Integer>();
 
   /**
    * A set of unsortable column indexes.
@@ -124,6 +104,15 @@ public class ScrollTable extends AbstractScrollTable {
     return !untruncatableColumns.contains(column);
   }
 
+  @Override
+  public boolean isFooterColumnTruncatable(int column) {
+    return !untruncatableFooters.contains(column);
+  }
+
+  @Override
+  public boolean isHeaderColumnTruncatable(int column) {
+    return !untruncatableHeaders.contains(column);
+  }
   /**
    * @param column the column index
    * @return true if the column is filterable, false if it is not filterable
@@ -160,6 +149,38 @@ public class ScrollTable extends AbstractScrollTable {
       untruncatableColumns.remove(column);
     } else {
       untruncatableColumns.add(column);
+    }
+  }
+
+  /**
+   * Enable or disable truncation on a specific footer column. When enabled, the
+   * column width will be adjusted to fit the content. All columns are
+   * truncatable by default.
+   * 
+   * @param column the index of the column
+   * @param truncatable true to enable truncation, false to disable
+   */
+  public void setFooterColumnTruncatable(int column, boolean truncatable) {
+    if (truncatable) {
+      untruncatableFooters.remove(column);
+    } else {
+      untruncatableFooters.add(column);
+    }
+  }
+
+  /**
+   * Enable or disable truncation on a specific header column. When enabled, the
+   * column width will be adjusted to fit the content. All columns are
+   * truncatable by default.
+   * 
+   * @param column the index of the column
+   * @param truncatable true to enable truncation, false to disable
+   */
+  public void setHeaderColumnTruncatable(int column, boolean truncatable) {
+    if (truncatable) {
+      untruncatableHeaders.remove(column);
+    } else {
+      untruncatableHeaders.add(column);
     }
   }
 

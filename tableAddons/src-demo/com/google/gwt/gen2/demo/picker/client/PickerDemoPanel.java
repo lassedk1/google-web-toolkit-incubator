@@ -15,16 +15,16 @@
  */
 package com.google.gwt.gen2.demo.picker.client;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.picker.client.DateTimePicker;
 import com.google.gwt.gen2.picker.client.TimePicker;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Date;
 
@@ -34,19 +34,16 @@ import java.util.Date;
 public class PickerDemoPanel extends Composite {
   public PickerDemoPanel() {
     FlexTable table = new FlexTable();
-    table.setHTML(1, 0, "Value spinner:");
-    // Create a value spinner with initial value=0 that allows values between
-    // -1000 and 1000
 
     // A TimePicker using AM/PM 12h format
     final TimePicker timePicker = new TimePicker(false);
     table.setHTML(3, 0, "Time picker:");
     table.setWidget(3, 1, timePicker);
     final CheckBox enableTimePicker = new CheckBox("Enable/disable");
-    enableTimePicker.setChecked(timePicker.isEnabled());
-    enableTimePicker.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
-        timePicker.setEnabled(enableTimePicker.isChecked());
+    enableTimePicker.setValue(timePicker.isEnabled());
+    enableTimePicker.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent source) {
+        timePicker.setEnabled(enableTimePicker.getValue());
       }
     });
     table.setWidget(3, 2, enableTimePicker);
@@ -57,8 +54,8 @@ public class PickerDemoPanel extends Composite {
     // Create a label to display the selected date
     final Label dateLabel = new Label();
     Button getDate = new Button("Show date");
-    getDate.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
+    getDate.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent source) {
         // Display the selected date/time using DateTimeFormat
         dateLabel.setText(DateTimeFormat.getMediumDateTimeFormat().format(
             dateTimePicker.getDate()));
@@ -66,14 +63,15 @@ public class PickerDemoPanel extends Composite {
     });
     dateLabel.setStyleName("sandbox-Date");
     table.setHTML(4, 0, "Date time picker:");
+
     table.setWidget(4, 1, dateTimePicker);
     table.setWidget(5, 0, getDate);
     table.setWidget(5, 1, dateLabel);
     final CheckBox enableDateTimePicker = new CheckBox("Enable/disable");
-    enableDateTimePicker.setChecked(dateTimePicker.isEnabled());
-    enableDateTimePicker.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
-        dateTimePicker.setEnabled(enableDateTimePicker.isChecked());
+    enableDateTimePicker.setValue(dateTimePicker.isEnabled());
+    enableDateTimePicker.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        dateTimePicker.setEnabled(enableDateTimePicker.getValue());
       }
     });
     table.setWidget(4, 2, enableDateTimePicker);
@@ -83,13 +81,15 @@ public class PickerDemoPanel extends Composite {
     table.setHTML(8, 0, "Another time picker (24h):");
     table.setWidget(8, 1, customTimePicker);
     final CheckBox enable = new CheckBox("Enable/disable");
-    enable.setChecked(customTimePicker.isEnabled());
-    enable.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
-        customTimePicker.setEnabled(enable.isChecked());
+    enable.setValue(customTimePicker.isEnabled());
+    enable.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent sender) {
+        customTimePicker.setEnabled(enable.getValue());
       }
+
     });
     table.setWidget(8, 2, enable);
+
     initWidget(table);
   }
 }

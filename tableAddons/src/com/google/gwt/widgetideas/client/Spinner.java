@@ -16,11 +16,18 @@
 package com.google.gwt.widgetideas.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ImageBundle;
-import com.google.gwt.user.client.ui.MouseListener;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
@@ -77,12 +84,14 @@ public class Spinner {
     private int counter = 0;
     private int speed = 7;
 
+    @Override
     public void cancel() {
       super.cancel();
       speed = initialSpeed;
       counter = 0;
     }
 
+    @Override
     public void run() {
       counter++;
       if (speed <= 0 || counter % speed == 0) {
@@ -100,48 +109,54 @@ public class Spinner {
     }
   };
 
-  private MouseListener mouseListener = new MouseListener() {
-    public void onMouseDown(Widget sender, int x, int y) {
+  private MouseDownHandler mouseDownHandler = new MouseDownHandler() {
+
+    public void onMouseDown(MouseDownEvent event) {
       if (enabled) {
+        Image sender = (Image) event.getSource();
         if (sender == incrementArrow) {
-          images.arrowUpPressed().applyTo((Image) sender);
+          images.arrowUpPressed().applyTo(sender);
           increment = true;
           increase();
         } else {
-          images.arrowDownPressed().applyTo((Image) sender);
+          images.arrowDownPressed().applyTo(sender);
           increment = false;
           decrease();
         }
         timer.scheduleRepeating(30);
-      }
+      }  
     }
-
-    public void onMouseEnter(Widget sender) {
+  };
+  
+  private MouseOverHandler mouseOverHandler = new MouseOverHandler() {
+    public void onMouseOver(MouseOverEvent event) {
       if (enabled) {
+        Image sender = (Image) event.getSource();
         if (sender == incrementArrow) {
-          images.arrowUpHover().applyTo((Image) sender);
+          images.arrowUpHover().applyTo(sender);
         } else {
-          images.arrowDownHover().applyTo((Image) sender);
+          images.arrowDownHover().applyTo(sender);
         }
       }
     }
-
-    public void onMouseLeave(Widget sender) {
+  };
+  
+  private MouseOutHandler mouseOutHandler = new MouseOutHandler() {
+    public void onMouseOut(MouseOutEvent event) {
       if (enabled) {
-        cancelTimer(sender);
-      }
-    }
-
-    public void onMouseMove(Widget sender, int x, int y) {
-    }
-
-    public void onMouseUp(Widget sender, int x, int y) {
-      if (enabled) {
-        cancelTimer(sender);
+        cancelTimer((Widget) event.getSource());
       }
     }
   };
-
+  
+  private MouseUpHandler mouseUpHandler = new MouseUpHandler() {
+    public void onMouseUp(MouseUpEvent event) {
+      if (enabled) {
+        cancelTimer((Widget) event.getSource());
+      }
+    }
+  };
+  
   /**
    * @param spinner the widget listening to the arrows
    * @param value initial value
@@ -211,9 +226,15 @@ public class Spinner {
     this.min = min;
     this.max = max;
     this.initialSpeed = INITIAL_SPEED;
-    incrementArrow.addMouseListener(mouseListener);
+    incrementArrow.addMouseUpHandler(mouseUpHandler);
+    incrementArrow.addMouseDownHandler(mouseDownHandler);
+    incrementArrow.addMouseOverHandler(mouseOverHandler);
+    incrementArrow.addMouseOutHandler(mouseOutHandler);
     images.arrowUp().applyTo(incrementArrow);
-    decrementArrow.addMouseListener(mouseListener);
+    decrementArrow.addMouseUpHandler(mouseUpHandler);
+    decrementArrow.addMouseDownHandler(mouseDownHandler);
+    decrementArrow.addMouseOverHandler(mouseOverHandler);
+    decrementArrow.addMouseOutHandler(mouseOutHandler);
     images.arrowDown().applyTo(decrementArrow);
     fireOnValueChanged();
   }
@@ -302,7 +323,7 @@ public class Spinner {
    */
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
-    if  ( enabled ) {
+    if (enabled) {
       images.arrowUp().applyTo(incrementArrow);
       images.arrowDown().applyTo(decrementArrow);
     } else {

@@ -29,8 +29,6 @@ import java.util.Iterator;
  */
 public class FixedWidthGridBulkRenderer<RowType> extends
     SelectionGridBulkRenderer<RowType> {
-  private int numColumns;
-
   /**
    * Constructor. Takes in the number of columns in the table to allow efficient
    * creation of the header row.
@@ -41,7 +39,6 @@ public class FixedWidthGridBulkRenderer<RowType> extends
   public FixedWidthGridBulkRenderer(FixedWidthGrid grid,
       TableDefinition<RowType> tableDef) {
     super(grid, tableDef);
-    init(grid, tableDef);
   }
 
   /**
@@ -54,7 +51,6 @@ public class FixedWidthGridBulkRenderer<RowType> extends
   public FixedWidthGridBulkRenderer(FixedWidthGrid grid,
       HasTableDefinition<RowType> sourceTableDef) {
     super(grid, sourceTableDef);
-    init(grid, sourceTableDef.getTableDefinition());
   }
 
   /**
@@ -71,12 +67,7 @@ public class FixedWidthGridBulkRenderer<RowType> extends
   @Override
   protected void renderRows(Iterator<RowType> iterator,
       final RenderingOptions options) {
-
     FixedWidthGrid table = (FixedWidthGrid) super.getTable();
-    if (table.getColumnCount() == 0) {
-      throw new IllegalStateException(
-          "Bulk Rendered FixedWidthGrids must call resizeColumns() before being loaded");
-    }
     options.headerRow = DOM.toString(table.getGhostRow());
     super.renderRows(iterator, options);
   }
@@ -90,10 +81,5 @@ public class FixedWidthGridBulkRenderer<RowType> extends
     FixedWidthGrid grid = (FixedWidthGrid) getTable();
     grid.setGhostRow(newGhostRow);
     grid.updateGhostRow();
-  }
-
-  private void init(FixedWidthGrid grid, TableDefinition<RowType> tableDef) {
-    numColumns = tableDef.getVisibleColumnDefinitions().size();
-    grid.resizeColumns(numColumns);
   }
 }

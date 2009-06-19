@@ -21,7 +21,11 @@ import com.google.gwt.libideas.resources.rg.TextResourceGenerator;
 /**
  * A resource that contains text that should be incorporated into the compiled
  * output.
+ * 
+ * @deprecated Superseded by
+ *             {@link com.google.gwt.resources.client.TextResource}
  */
+@Deprecated
 @ResourceGeneratorType(TextResourceGenerator.class)
 public interface TextResource extends ResourcePrototype {
   String getText();

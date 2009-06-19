@@ -120,8 +120,7 @@ public class CollapsiblePanelDemo implements EntryPoint {
   }
 
   private Panel createSchoolNavBar() {
-    ToggleButton toggler = new ToggleButton(
-        "Directory (click to pin)",
+    ToggleButton toggler = new ToggleButton("Directory (click to pin)",
         "Directory (click to collapse)");
     toggler.setStyleName("CollapsibleToggle");
     controlButton = toggler;
@@ -136,7 +135,6 @@ public class CollapsiblePanelDemo implements EntryPoint {
     panel.setCellHorizontalAlignment(controlButton,
         HasHorizontalAlignment.ALIGN_LEFT);
 
-    panel.add(controlButton);
     panel.add(controlButton);
     panel.setCellWidth(controlButton, "1px");
     panel.setCellHorizontalAlignment(controlButton,

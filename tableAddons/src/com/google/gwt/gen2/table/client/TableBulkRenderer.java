@@ -236,12 +236,6 @@ public abstract class TableBulkRenderer<RowType> implements
     private String curRowStyleName = null;
 
     /**
-     * The absolute end time of the rendering process. If the table takes longer
-     * than this to render, an error will be thrown.
-     */
-    private double endTime;
-
-    /**
      * The {@link RenderingOptions} to apply to the table.
      */
     private RenderingOptions options;
@@ -264,7 +258,6 @@ public abstract class TableBulkRenderer<RowType> implements
       this.bulkRenderer = bulkRenderer;
       this.cellView = cellView;
       this.options = options;
-      endTime = Duration.currentTimeMillis() + MAX_TIME;
 
       // Create a string buffer to assemble the table
       buffer = new StringBuffer();
@@ -332,12 +325,6 @@ public abstract class TableBulkRenderer<RowType> implements
               checkRow = ROWS_PER_TIME_CHECK;
               double time = Duration.currentTimeMillis();
               if (time > endSlice) {
-                // We only check endTime at each slice.
-                if (time > endTime) {
-                  throw new IllegalStateException(
-                      "Cannot bulk render a table which takes more than "
-                          + MAX_TIME + " milliseconds to render");
-                }
                 return true;
               }
             }
@@ -418,11 +405,6 @@ public abstract class TableBulkRenderer<RowType> implements
   public static int TIME_SLICE = 1000;
 
   /**
-   * Maximum time allowable to create the table string. Ever.
-   */
-  public static int MAX_TIME = 20000;
-
-  /**
    * How many rows should be processed before time is checked and the event loop
    * is potentially flushed.
    */
@@ -432,7 +414,7 @@ public abstract class TableBulkRenderer<RowType> implements
   /**
    * Scratch Element used to render table and row strings.
    */
-  private static final Element WRAPPER_DIV = DOM.createElement("div");
+  private static Element WRAPPER_DIV;
 
   /**
    * Stamp used to detect when a request has been orphaned.
@@ -626,10 +608,17 @@ public abstract class TableBulkRenderer<RowType> implements
   }
 
   protected void renderRows(String rawHTMLTable) {
-    DOM.setInnerHTML(WRAPPER_DIV, rawHTMLTable);
-    Element tableElement = DOM.getFirstChild(WRAPPER_DIV);
+    DOM.setInnerHTML(getWrapperDiv(), rawHTMLTable);
+    Element tableElement = DOM.getFirstChild(getWrapperDiv());
     Element newBody = replaceBodyElement(table.getElement(), tableElement);
     setBodyElement(table, newBody);
+  }
+
+  private Element getWrapperDiv() {
+    if (WRAPPER_DIV == null) {
+      WRAPPER_DIV = DOM.createElement("div");
+    }
+    return WRAPPER_DIV;
   }
 
   /**

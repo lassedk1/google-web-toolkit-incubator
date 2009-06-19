@@ -45,11 +45,25 @@ public class ColumnPropertyManager {
    * @param type the {@link ColumnProperty} type
    * @return the property, or the default value if the property is not defined
    */
-  @SuppressWarnings("unchecked")
   public <P extends ColumnProperty> P getColumnProperty(
       ColumnProperty.Type<P> type) {
+    return getColumnProperty(type, true);
+  }
+
+  /**
+   * Get the {@link ColumnProperty} associated with the specified
+   * {@link ColumnProperty.Type}.
+   * 
+   * @param <P> the column property type
+   * @param type the {@link ColumnProperty} type
+   * @param useDefault if true, return the default property instead of null
+   * @return the property, or the default value if the property is not defined
+   */
+  @SuppressWarnings("unchecked")
+  public <P extends ColumnProperty> P getColumnProperty(
+      ColumnProperty.Type<P> type, boolean useDefault) {
     Object property = properties.get(type);
-    if (property == null) {
+    if (property == null && useDefault) {
       return type.getDefault();
     }
     return (P) property;

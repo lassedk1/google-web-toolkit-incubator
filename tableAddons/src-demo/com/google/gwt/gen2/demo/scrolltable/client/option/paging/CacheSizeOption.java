@@ -15,12 +15,13 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client.option.paging;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.PagingScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.CustomForm;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -54,8 +55,8 @@ public class CacheSizeOption extends AbstractOption {
 
     // Add button to set the row count
     {
-      Button button = new Button("Set Cache Size", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Set Cache Size", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           try {
             int preCache = Integer.parseInt(preCacheBox.getText());
             int postCache = Integer.parseInt(postCacheBox.getText());

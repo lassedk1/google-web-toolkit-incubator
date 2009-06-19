@@ -15,13 +15,14 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client.option.data;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.PagingScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.CustomForm;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -46,8 +47,8 @@ public class InsertDataRowOption extends AbstractOption {
 
     // Add button to insert one row
     {
-      Button button = new Button("Insert 1 Row", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Insert 1 Row", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           try {
             int row = Integer.parseInt(rowBox.getText());
             insertDataRows(row, 1);
@@ -63,8 +64,8 @@ public class InsertDataRowOption extends AbstractOption {
 
     // Add button to insert 10 rows
     {
-      Button button = new Button("Insert 10 Rows", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Insert 10 Rows", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           try {
             int row = Integer.parseInt(rowBox.getText());
             insertDataRows(row, 10);
@@ -80,8 +81,8 @@ public class InsertDataRowOption extends AbstractOption {
 
     // Add button to insert 100 rows
     {
-      Button button = new Button("Insert 100 Rows", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Insert 100 Rows", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           try {
             int row = Integer.parseInt(rowBox.getText());
             insertDataRows(row, 100);
@@ -97,8 +98,8 @@ public class InsertDataRowOption extends AbstractOption {
 
     // Add button to remove a row
     {
-      Button button = new Button("Remove Row", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Remove Row", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           try {
             int row = Integer.parseInt(rowBox.getText());
             ScrollTableDemo.get().getDataTable().removeRow(row);

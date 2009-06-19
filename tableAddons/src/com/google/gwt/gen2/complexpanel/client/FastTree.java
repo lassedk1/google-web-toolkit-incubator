@@ -56,8 +56,10 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Accessibility;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.WidgetAdaptorImpl;
 import com.google.gwt.user.client.ui.impl.FocusImpl;
 import com.google.gwt.widgetideas.client.event.KeyboardHandler;
 import com.google.gwt.widgetideas.client.overrides.DOMHelper;
@@ -143,6 +145,7 @@ public class FastTree extends Panel implements HasClickHandlers,
   private final FastTreeItem root;
   private Event keyDown;
   private Event lastKeyDown;
+  private boolean isKeyboardSupportEnabled = true;
 
   /**
    * Constructs a tree.
@@ -153,6 +156,7 @@ public class FastTree extends Panel implements HasClickHandlers,
 
   FastTree(final Css css) {
     setElement(DOM.createDiv());
+    getElement().getStyle().setProperty("position", "relative");
 
     focusable = createFocusElement();
     setStyleName(focusable, css.selectionBar());
@@ -165,7 +169,7 @@ public class FastTree extends Panel implements HasClickHandlers,
     root.setTree(this);
 
     setStyleName(css.fastTree());
-    moveSelectionBar(curSelection);
+    moveFocusable(curSelection, null);
 
     // Add accessibility role to tree.
     Accessibility.setRole(getElement(), Accessibility.ROLE_TREE);
@@ -290,7 +294,7 @@ public class FastTree extends Panel implements HasClickHandlers,
       parent.setState(true);
       parent = parent.getParentItem();
     }
-    moveFocus(curSelection);
+    moveFocus(curSelection, null);
   }
 
   public FastTreeItem getChild(int index) {
@@ -336,13 +340,22 @@ public class FastTree extends Panel implements HasClickHandlers,
   public int getTabIndex() {
     return impl.getTabIndex(focusable);
   }
-  
+
   /**
-   * The 'root' item is invisible and serves only as a container for 
-   * all top-level items.
+   * The 'root' item is invisible and serves only as a container for all
+   * top-level items.
    */
   public final FastTreeItem getTreeRoot() {
     return root;
+  }
+
+  /**
+   * Check if keyboard support is enabled.
+   * 
+   * @return true if enabled, false if disabled
+   */
+  public boolean isKeyboardSupportEnabled() {
+    return isKeyboardSupportEnabled;
   }
 
   public Iterator<Widget> iterator() {
@@ -361,10 +374,8 @@ public class FastTree extends Panel implements HasClickHandlers,
           // The click event should have given focus to this element already.
           // Avoid moving focus back up to the tree (so that focusable widgets
           // attached to TreeItems can receive keyboard events).
-        } else {
-          if (!hasModifiers(e)) {
-            clickedOnFocus(DOM.eventGetTarget(e));
-          }
+        } else if (!hasModifiers(e)) {
+          impl.focus(focusable);
         }
         return;
       case Event.ONMOUSEDOWN:
@@ -393,7 +404,7 @@ public class FastTree extends Panel implements HasClickHandlers,
         }
         // Intentional fallthrough.
       case Event.ONKEYPRESS:
-        if (hasModifiers(e)) {
+        if (!isKeyboardSupportEnabled || hasModifiers(e)) {
           break;
         }
 
@@ -418,7 +429,6 @@ public class FastTree extends Panel implements HasClickHandlers,
     super.onBrowserEvent(e);
   }
 
-  
   @Override
   public boolean remove(Widget w) {
     // Validate.
@@ -448,6 +458,16 @@ public class FastTree extends Panel implements HasClickHandlers,
     while (getItemCount() > 0) {
       removeItem(getItem(0));
     }
+  }
+
+  /**
+   * Enable or disable keyboard support. When disabled, the user will not be
+   * able to navigate between tree items using the keyboard.
+   * 
+   * @param enabled true to enable, false to disable
+   */
+  public void setKeyboardSupportEnabled(boolean enabled) {
+    this.isKeyboardSupportEnabled = enabled;
   }
 
   /**
@@ -543,73 +563,73 @@ public class FastTree extends Panel implements HasClickHandlers,
    * Moves the selection bar around the given {@link FastTreeItem}.
    * 
    * @param item the item to move selection bar to
+   * @deprecated as of April 16, 2009. use
+   *             {@link #onSelection(FastTreeItem, boolean, boolean)} instead
    */
+  @Deprecated
   protected void moveSelectionBar(FastTreeItem item) {
-    if (item == null || item.isShowing() == false) {
-      UIObject.setVisible(focusable, false);
+    moveFocusable(item, null);
+  }
+
+  /**
+   * Moves to the next item, going into children as if dig is enabled.
+   */
+  protected void moveSelectionDown(FastTreeItem sel, boolean dig) {
+    if (sel == getTreeRoot()) {
       return;
     }
-    // focusable is being used for highlight as well.
-    // Get the location and size of the given item's content element relative
-    // to the tree.
-    Element selectedElem = item.getContentElement();
-    moveElementOverTarget(focusable, selectedElem);
-    UIObject.setVisible(focusable, true);
+    FastTreeItem parent = sel.getParentItem();
+    if (parent == null) {
+      parent = getTreeRoot();
+    }
+    int idx = parent.getChildIndex(sel);
+
+    if (!dig || !sel.isOpen()) {
+      if (idx < parent.getChildCount() - 1) {
+        onSelection(parent.getChild(idx + 1), true, true);
+      } else {
+        moveSelectionDown(parent, false);
+      }
+    } else if (sel.getChildCount() > 0) {
+      onSelection(sel.getChild(0), true, true);
+    }
+  }
+
+  /**
+   * Moves the selected item up one.
+   */
+  protected void moveSelectionUp(FastTreeItem sel) {
+    FastTreeItem parent = sel.getParentItem();
+    if (parent == null) {
+      parent = getTreeRoot();
+    }
+    int idx = parent.getChildIndex(sel);
+
+    if (idx > 0) {
+      FastTreeItem sibling = parent.getChild(idx - 1);
+      onSelection(findDeepestOpenChild(sibling), true, true);
+    } else {
+      onSelection(parent, true, true);
+    }
   }
 
   @Override
   protected void onLoad() {
     if (getSelectedItem() != null) {
-      moveSelectionBar(getSelectedItem());
-    }
-  }
-
-  protected void onSelection(FastTreeItem item, boolean fireEvents,
-      boolean moveFocus) {
-    // 'root' isn't a real item, so don't let it be selected
-    // (some cases in the keyboard handler will try to do this)
-    if (item == getTreeRoot()) {
-      return;
-    }
-
-    if (curSelection == item) {
-      return;
-    }
-    if (curSelection != null) {
-      if (curSelection.beforeSelectionLost() == false) {
-        return;
-      }
-      curSelection.setSelection(false, fireEvents);
-    }
-
-    curSelection = item;
-
-    if (curSelection != null) {
-      if (moveFocus) {
-        moveFocus(curSelection);
-      } else {
-        // Move highlight even if we do no not need to move focus.
-        moveSelectionBar(curSelection);
-      }
-
-      // Select the item and fire the selection event.
-      curSelection.setSelection(true, fireEvents);
+      moveFocusable(getSelectedItem(), null);
     }
   }
 
   /**
-   * This is called when a valid selectable element is clicked in the tree.
-   * Subclasses can override this method to decide whether or not FastTree
-   * should keep processing the element clicked. For example, a subclass may
-   * decide to return false for this method if selecting a new item in the tree
-   * is subject to asynchronous approval from other components of the
-   * application.
+   * Called when a {@link FastTreeItem} is selected.
    * 
-   * @returns true if element should be processed normally, false otherwise.
-   *          Default returns true.
+   * @param item the selected item
+   * @param fireEvents true to fire events to handles
+   * @param moveFocus true to move focus to the Tree
    */
-  protected boolean processElementClicked(FastTreeItem item) {
-    return true;
+  protected void onSelection(FastTreeItem item, boolean fireEvents,
+      boolean moveFocus) {
+    onSelection(item, fireEvents, moveFocus, null);
   }
 
   /**
@@ -633,13 +653,13 @@ public class FastTree extends Panel implements HasClickHandlers,
   void adopt(Widget widget, FastTreeItem treeItem) {
     assert (!childWidgets.containsKey(widget));
     childWidgets.put(widget, treeItem);
-    super.adopt(widget);
+    WidgetAdaptorImpl.setParent(widget, this);
+//    super.adopt(widget);
   }
 
   /**
    * Called after the tree item is closed.
    */
-
   void afterClose(FastTreeItem fastTreeItem) {
     CloseEvent.fire(this, fastTreeItem);
   }
@@ -666,8 +686,16 @@ public class FastTree extends Panel implements HasClickHandlers,
     BeforeOpenEvent.fire(this, fastTreeItem, isFirstTime);
   }
 
-  void beforeSelected(FastTreeItem fastTreeItem) {
-    BeforeSelectionEvent.fire(this, fastTreeItem);
+  BeforeSelectionEvent<FastTreeItem> beforeSelected(FastTreeItem fastTreeItem) {
+    return BeforeSelectionEvent.fire(this, fastTreeItem);
+  }
+
+  // @VisibleForTesting
+  FastTreeItem findDeepestOpenChild(FastTreeItem item) {
+    if (!item.isOpen() || item.getChildCount() == 0) {
+      return item;
+    }
+    return findDeepestOpenChild(item.getChild(item.getChildCount() - 1));
   }
 
   /*
@@ -680,13 +708,13 @@ public class FastTree extends Panel implements HasClickHandlers,
   /**
    * Called when a tree item is selected.
    */
-
   void onSelected(FastTreeItem fastTreeItem) {
     SelectionEvent.fire(this, fastTreeItem);
   }
 
   void treeOrphan(Widget widget) {
-    super.orphan(widget);
+//    super.orphan(widget);
+    WidgetAdaptorImpl.setParent(widget, null);
 
     // Logical detach.
     childWidgets.remove(widget);
@@ -726,13 +754,6 @@ public class FastTree extends Panel implements HasClickHandlers,
     };
   }
 
-  private void clickedOnFocus(Element e) {
-    // An element was clicked on that is not focusable, so we use the hidden
-    // focusable to not shift focus.
-    moveElementOverTarget(focusable, e);
-    impl.focus(focusable);
-  }
-
   /**
    * Collects parents going up the element tree, terminated at the tree root.
    */
@@ -748,11 +769,12 @@ public class FastTree extends Panel implements HasClickHandlers,
 
   private Element createFocusElement() {
     Element e = impl.createFocusable();
-    DOM.setStyleAttribute(e, "position", "absolute");
-    DOM.appendChild(getElement(), e);
+    e.getStyle().setProperty("position", "absolute");
+    e.getStyle().setPropertyPx("width", 1);
+    getElement().appendChild(e);
     DOM.sinkEvents(e, Event.FOCUSEVENTS | Event.ONMOUSEDOWN);
     // Needed for IE only
-    DOM.setElementAttribute(e, "focus", "false");
+    e.setAttribute("focus", "false");
     return e;
   }
 
@@ -766,7 +788,7 @@ public class FastTree extends Panel implements HasClickHandlers,
     };
   }-*/;
 
-  private boolean elementClicked(FastTreeItem root, Event event) {
+  private void elementClicked(FastTreeItem root, Event event) {
     Element target = DOM.eventGetTarget(event);
     ArrayList<Element> chain = new ArrayList<Element>();
     collectElementChain(chain, getElement(), target);
@@ -774,23 +796,13 @@ public class FastTree extends Panel implements HasClickHandlers,
     if (item != null) {
       if (item.isInteriorNode() && item.getControlElement().equals(target)) {
         item.setState(!item.isOpen(), true);
-        moveSelectionBar(curSelection);
+        moveFocusable(curSelection, target);
         disableSelection(target);
-        return false;
+        return;
       }
-      if (processElementClicked(item)) {
-        onSelection(item, true, !shouldTreeDelegateFocusToElement(target));
-        return true;
-      }
+      onSelection(item, true, false, target);
     }
-    return false;
-  }
-
-  private FastTreeItem findDeepestOpenChild(FastTreeItem item) {
-    if (!item.isOpen()) {
-      return item;
-    }
-    return findDeepestOpenChild(item.getChild(item.getChildCount() - 1));
+    return;
   }
 
   private FastTreeItem findItemByChain(ArrayList<Element> chain, int index,
@@ -824,25 +836,14 @@ public class FastTree extends Panel implements HasClickHandlers,
     return alt || ctrl || meta || shift;
   }
 
-  private void moveElementOverTarget(Element movable, Element target) {
-    int containerTop = getAbsoluteTop();
-
-    int top = DOM.getAbsoluteTop(target) - containerTop;
-    int height = DOM.getElementPropertyInt(target, "offsetHeight");
-
-    // Set the element's position and size to exactly underlap the
-    // item's content element.
-    DOM.setStyleAttribute(movable, "height", height + "px");
-    DOM.setStyleAttribute(movable, "top", top + "px");
-  }
-
   /**
    * Move the tree focus to the specified selected item.
    * 
-   * @param selection
+   * @param selection the selected {@link FastTreeItem}
+   * @param targetElem the element that was actually targeted
    */
-  private void moveFocus(FastTreeItem selection) {
-    moveSelectionBar(selection);
+  private void moveFocus(FastTreeItem selection, Element targetElem) {
+    moveFocusable(selection, targetElem);
     DOM.scrollIntoView(focusable);
     Focusable focusableWidget = selection.getFocusable();
     if (focusableWidget != null) {
@@ -850,7 +851,6 @@ public class FastTree extends Panel implements HasClickHandlers,
     } else {
       // Ensure Focus is set, as focus may have been previously delegated by
       // tree.
-
       impl.focus(focusable);
     }
 
@@ -860,44 +860,78 @@ public class FastTree extends Panel implements HasClickHandlers,
   }
 
   /**
-   * Moves to the next item, going into children as if dig is enabled.
+   * Moves the selection bar around the given {@link FastTreeItem}.
+   * 
+   * @param item the item to move selection bar to
+   * @param target the element to target
    */
-  private void moveSelectionDown(FastTreeItem sel, boolean dig) {
-    if (sel == getTreeRoot()) {
+  private void moveFocusable(FastTreeItem item, Element target) {
+    if (item == null || item.isShowing() == false) {
+      UIObject.setVisible(focusable, false);
       return;
     }
-    FastTreeItem parent = sel.getParentItem();
-    if (parent == null) {
-      parent = getTreeRoot();
-    }
-    int idx = parent.getChildIndex(sel);
 
-    if (!dig || !sel.isOpen()) {
-      if (idx < parent.getChildCount() - 1) {
-        onSelection(parent.getChild(idx + 1), true, true);
-      } else {
-        moveSelectionDown(parent, false);
-      }
-    } else if (sel.getChildCount() > 0) {
-      onSelection(sel.getChild(0), true, true);
+    // Get the element to focus around
+    if (target == null) {
+      target = item.getContentElement();
     }
+
+    // Set the focusable's position and size to exactly underlap the target.
+    int top = target.getAbsoluteTop() - getAbsoluteTop();
+    int left = target.getAbsoluteLeft() - getAbsoluteLeft();
+    focusable.getStyle().setPropertyPx("height", target.getOffsetHeight());
+    focusable.getStyle().setPropertyPx("width", target.getOffsetWidth());
+    focusable.getStyle().setPropertyPx("top", top);
+    focusable.getStyle().setPropertyPx("left", left);
+    UIObject.setVisible(focusable, true);
   }
 
   /**
-   * Moves the selected item up one.
+   * Called when a {@link FastTreeItem} is selected.
+   * 
+   * @param item the selected item
+   * @param fireEvents true to fire events to handles
+   * @param moveFocus true to move focus to the Tree
+   * @param targetElem the element that was actually targeted
    */
-  private void moveSelectionUp(FastTreeItem sel) {
-    FastTreeItem parent = sel.getParentItem();
-    if (parent == null) {
-      parent = getTreeRoot();
+  private void onSelection(FastTreeItem item, boolean fireEvents,
+      boolean moveFocus, Element targetElem) {
+    // 'root' isn't a real item, so don't let it be selected
+    // (some cases in the keyboard handler will try to do this)
+    if (item == getTreeRoot()) {
+      return;
     }
-    int idx = parent.getChildIndex(sel);
 
-    if (idx > 0) {
-      FastTreeItem sibling = parent.getChild(idx - 1);
-      onSelection(findDeepestOpenChild(sibling), true, true);
-    } else {
-      onSelection(parent, true, true);
+    // Don't fire events if the selection hasn't changed, but do move the
+    // focusable element to the new target.
+    if (curSelection == item) {
+      moveFocusable(curSelection, targetElem);
+      return;
+    }
+
+    if (fireEvents) {
+      BeforeSelectionEvent<FastTreeItem> event = beforeSelected(item);
+      if (event != null && event.isCanceled()) {
+        return;
+      }
+    }
+
+    if (curSelection != null) {
+      curSelection.setSelection(false, fireEvents);
+    }
+
+    curSelection = item;
+
+    if (curSelection != null) {
+      if (moveFocus) {
+        moveFocus(curSelection, targetElem);
+      } else {
+        // Move highlight even if we do no not need to move focus.
+        moveFocusable(curSelection, targetElem);
+      }
+
+      // Select the item and fire the selection event.
+      curSelection.setSelection(true, fireEvents);
     }
   }
 

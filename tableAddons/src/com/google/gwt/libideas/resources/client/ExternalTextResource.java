@@ -22,7 +22,11 @@ import com.google.gwt.libideas.resources.rg.ExternalTextResourceGenerator;
  * Identical to {@link TextResource}, except the contents of the resource are
  * not inlined into the compiled output. This is suitable for resources that are
  * not required as part of program initialization.
+ * 
+ * @deprecated Superseded by
+ *             {@link com.google.gwt.resources.client.ExternalTextResource}
  */
+@Deprecated
 @ResourceGeneratorType(ExternalTextResourceGenerator.class)
 public interface ExternalTextResource extends ResourcePrototype {
   void getText(ResourceCallback<TextResource> callback)

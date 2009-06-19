@@ -17,6 +17,8 @@ package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.table.client.property.ColumnProperty;
 import com.google.gwt.gen2.table.client.property.ColumnPropertyManager;
+import com.google.gwt.gen2.table.client.property.FooterProperty;
+import com.google.gwt.gen2.table.client.property.HeaderProperty;
 import com.google.gwt.gen2.table.client.property.FilterableProperty;
 import com.google.gwt.gen2.table.client.property.MaximumWidthProperty;
 import com.google.gwt.gen2.table.client.property.MinimumWidthProperty;
@@ -62,16 +64,6 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements Colu
   private ColumnFilter<ColType> columnFilter = null;
 
   /**
-   * The header string used for this column
-   */
-  private String header = null;
-  
-  /**
-   * The header widget used for this column
-   */
-  private Widget headerWidget = null;
-  
-  /**
    * The properties assigned to this column.
    */
   private ColumnPropertyManager properties = new ColumnPropertyManager();
@@ -95,14 +87,40 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements Colu
     return properties.getColumnProperty(type);
   }
 
-  public String getHeader() {
-    return header;
+  /**
+   * Get the footer at the given row index.
+   * 
+   * @param row the row index from the top
+   * @return the footer for the given row
+   */
+  public Object getFooter(int row) {
+    return getColumnProperty(FooterProperty.TYPE).getFooter(row);
   }
 
-  public Widget getHeaderWidget() {
-    return headerWidget;
+  /**
+   * @return get the number of footers below the column
+   */
+  public int getFooterCount() {
+    return getColumnProperty(FooterProperty.TYPE).getFooterCount();
   }
-  
+
+  /**
+   * Get the header at the given row index.
+   * 
+   * @param row the row index from the bottom.
+   * @return the header for the given row
+   */
+  public Object getHeader(int row) {
+    return getColumnProperty(HeaderProperty.TYPE).getHeader(row);
+  }
+
+  /**
+   * @return get the number of headers above the column
+   */
+  public int getHeaderCount() {
+    return getColumnProperty(HeaderProperty.TYPE).getHeaderCount();
+  }
+
   /**
    * Get the maximum width of the column. A return value of -1 indicates that
    * the column has no maximum width, but the consumer of the data may impose
@@ -162,6 +180,20 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements Colu
    */
   public boolean isColumnTruncatable() {
     return getColumnProperty(TruncationProperty.TYPE).isColumnTruncatable();
+  }
+
+  /**
+   * @return true if the footer table is truncatable, false if not
+   */
+  public boolean isFooterTruncatable() {
+    return getColumnProperty(TruncationProperty.TYPE).isFooterTruncatable();
+  }
+
+  /**
+   * @return true if the header table is truncatable, false if not
+   */
+  public boolean isHeaderTruncatable() {
+    return getColumnProperty(TruncationProperty.TYPE).isHeaderTruncatable();
   }
 
   /**
@@ -233,26 +265,111 @@ public abstract class AbstractColumnDefinition<RowType, ColType> implements Colu
    * 
    * @param filterable true to make filterable, false to make unfilterable
    */
-  public void setColumnFilterable(boolean filterable) {
-    setColumnProperty(FilterableProperty.TYPE, new FilterableProperty(filterable));
+  public void setColumnTruncatable(boolean truncatable) {
+    TruncationProperty prop = properties.getColumnProperty(
+        TruncationProperty.TYPE, false);
+    if (prop == null) {
+      prop = new TruncationProperty(truncatable);
+      setColumnProperty(TruncationProperty.TYPE, prop);
+    } else {
+      prop.setColumnTruncatable(truncatable);
+    }
   }
 
   /**
-   * Set whether or not this column is truncatable.
+   * Set the footer below this column. The row index starts with the top row,
+   * such that index 0 is directly below the data table. The footerCount will
+   * automatically be increased to accommodate the row.
+   * 
+   * @param row the row index from the top
+   * @param footer the footer
+   */
+  public void setFooter(int row, Object footer) {
+    FooterProperty prop = properties.getColumnProperty(FooterProperty.TYPE,
+        false);
+    if (prop == null) {
+      prop = new FooterProperty();
+      setColumnProperty(FooterProperty.TYPE, prop);
+    }
+    prop.setFooter(row, footer);
+  }
+
+  /**
+   * Set the number of footers below the column.
+   * 
+   * @param footerCount the number of footers
+   */
+  public void setFooterCount(int footerCount) {
+    FooterProperty prop = properties.getColumnProperty(FooterProperty.TYPE,
+        false);
+    if (prop == null) {
+      prop = new FooterProperty();
+      setColumnProperty(FooterProperty.TYPE, prop);
+    }
+    prop.setFooterCount(footerCount);
+  }
+
+  /**
+   * Set whether or not this column is truncatable in the footer.
    * 
    * @param truncatable true to make truncatable, false to make non truncatable
    */
-  public void setColumnTruncatable(boolean truncatable) {
-    setColumnProperty(TruncationProperty.TYPE, new TruncationProperty(
-        truncatable));
+  public void setFooterTruncatable(boolean truncatable) {
+    TruncationProperty prop = properties.getColumnProperty(
+        TruncationProperty.TYPE, false);
+    if (prop == null) {
+      prop = new TruncationProperty();
+      setColumnProperty(TruncationProperty.TYPE, prop);
+    }
+    prop.setFooterTruncatable(truncatable);
   }
 
-  public void setHeader(String header) {
-    this.header = header;
+  /**
+   * Set the header above this column. The row index starts with the bottom row,
+   * which is reverse of a normal table. The headerCount will automatically be
+   * increased to accommodate the row.
+   * 
+   * @param row the row index from the bottom
+   * @param header the header
+   */
+  public void setHeader(int row, Object header) {
+    HeaderProperty prop = properties.getColumnProperty(HeaderProperty.TYPE,
+        false);
+    if (prop == null) {
+      prop = new HeaderProperty();
+      setColumnProperty(HeaderProperty.TYPE, prop);
+    }
+    prop.setHeader(row, header);
   }
 
-  public void setHeaderWidget(Widget headerWidget) {
-    this.headerWidget = headerWidget;
+  /**
+   * Set the number of headers above the column.
+   * 
+   * @param headerCount the number of headers
+   */
+  public void setHeaderCount(int headerCount) {
+    HeaderProperty prop = properties.getColumnProperty(HeaderProperty.TYPE,
+        false);
+    if (prop == null) {
+      prop = new HeaderProperty();
+      setColumnProperty(HeaderProperty.TYPE, prop);
+    }
+    prop.setHeaderCount(headerCount);
+  }
+
+  /**
+   * Set whether or not this column is truncatable in the header.
+   * 
+   * @param truncatable true to make truncatable, false to make non truncatable
+   */
+  public void setHeaderTruncatable(boolean truncatable) {
+    TruncationProperty prop = properties.getColumnProperty(
+        TruncationProperty.TYPE, false);
+    if (prop == null) {
+      prop = new TruncationProperty();
+      setColumnProperty(TruncationProperty.TYPE, prop);
+    }
+    prop.setHeaderTruncatable(truncatable);
   }
   
   /**

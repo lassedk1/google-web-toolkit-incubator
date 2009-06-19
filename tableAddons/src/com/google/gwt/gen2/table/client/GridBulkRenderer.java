@@ -60,8 +60,12 @@ public class GridBulkRenderer<RowType> extends TableBulkRenderer<RowType> {
   native void setGridDimensions(Grid table) /*-{
     var numRows =  table.@com.google.gwt.gen2.table.override.client.HTMLTable::getDOMRowCount()();
     table.@com.google.gwt.gen2.table.override.client.Grid::numRows = numRows;
-    table.@com.google.gwt.gen2.table.override.client.Grid::numColumns =
-      table.@com.google.gwt.gen2.table.override.client.HTMLTable::getDOMCellCount(I)(numRows - 1);
+    var cellCount = 0;
+    if (numRows > 0) {
+      cellCount =
+        table.@com.google.gwt.gen2.table.override.client.HTMLTable::getDOMCellCount(I)(0);
+    }
+    table.@com.google.gwt.gen2.table.override.client.Grid::numColumns = cellCount;
   }-*/;
 
   private void init(Grid grid) {

@@ -15,13 +15,14 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client.option.column;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.CustomForm;
 import com.google.gwt.gen2.table.client.AbstractScrollTable;
 import com.google.gwt.gen2.table.client.ScrollTable;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -53,8 +54,8 @@ public class ColumnResizePolicyOption extends AbstractOption {
 
     // Add button to change status
     {
-      Button button = new Button("Set Resize Policy", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Set Resize Policy", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           AbstractScrollTable scrollTable = ScrollTableDemo.get().getScrollTable();
           switch (policyBox.getSelectedIndex()) {
             case 0:
@@ -74,8 +75,8 @@ public class ColumnResizePolicyOption extends AbstractOption {
 
     // Add button to reset column widths
     {
-      Button button = new Button("Reset Column Widths", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Reset Column Widths", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           AbstractScrollTable scrollTable = ScrollTableDemo.get().getScrollTable();
           scrollTable.resetColumnWidths();
         }

@@ -48,10 +48,6 @@ public interface ColumnDefinition<RowType, ColType> {
    * @return the cell value for the given row value
    */
   ColType getCellValue(RowType rowValue);
-
-  String getHeader();
-  
-  Widget getHeaderWidget();
   
   /**
    * <p>

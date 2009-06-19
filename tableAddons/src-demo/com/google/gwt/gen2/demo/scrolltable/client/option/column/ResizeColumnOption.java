@@ -15,6 +15,8 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client.option.column;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.PagingScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
@@ -22,7 +24,6 @@ import com.google.gwt.gen2.demo.scrolltable.client.option.CustomForm;
 import com.google.gwt.gen2.table.client.ScrollTable;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -54,31 +55,30 @@ public class ResizeColumnOption extends AbstractOption {
 
     // Add button to set column size
     {
-      Button button = new Button("Set Actual Column Width",
-          new ClickListener() {
-            public void onClick(Widget sender) {
-              try {
-                int column = Integer.parseInt(columnBox.getText());
-                int width = Integer.parseInt(widthBox.getText());
-                if (column >= 0) {
-                  ScrollTableDemo.get().getScrollTable().setColumnWidth(column,
-                      width);
-                }
-              } catch (NumberFormatException e) {
-                Window.alert("Please enter valid integers for the row and column.");
-              } catch (IndexOutOfBoundsException e) {
-                Window.alert("The row or column index you entered is out of bounds.");
-              }
+      Button button = new Button("Set Actual Column Width", new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          try {
+            int column = Integer.parseInt(columnBox.getText());
+            int width = Integer.parseInt(widthBox.getText());
+            if (column >= 0) {
+              ScrollTableDemo.get().getScrollTable().setColumnWidth(column,
+                  width);
             }
-          });
+          } catch (NumberFormatException e) {
+            Window.alert("Please enter valid integers for the row and column.");
+          } catch (IndexOutOfBoundsException e) {
+            Window.alert("The row or column index you entered is out of bounds.");
+          }
+        }
+      });
       form.addButton(button);
     }
 
     // Add button to set preferred column size
     if (PagingScrollTableDemo.get() == null) {
       Button button = new Button("Set Preferred Column Width",
-          new ClickListener() {
-            public void onClick(Widget sender) {
+          new ClickHandler() {
+            public void onClick(ClickEvent event) {
               try {
                 int column = Integer.parseInt(columnBox.getText());
                 int width = Integer.parseInt(widthBox.getText());
@@ -99,8 +99,8 @@ public class ResizeColumnOption extends AbstractOption {
     // Add button to set min column size
     if (PagingScrollTableDemo.get() == null) {
       Button button = new Button("Set Minimum Column Width",
-          new ClickListener() {
-            public void onClick(Widget sender) {
+          new ClickHandler() {
+            public void onClick(ClickEvent event) {
               try {
                 int column = Integer.parseInt(columnBox.getText());
                 int width = Integer.parseInt(widthBox.getText());
@@ -121,8 +121,8 @@ public class ResizeColumnOption extends AbstractOption {
     // Add button to set max column size
     if (PagingScrollTableDemo.get() == null) {
       Button button = new Button("Set Maximum Column Width",
-          new ClickListener() {
-            public void onClick(Widget sender) {
+          new ClickHandler() {
+            public void onClick(ClickEvent event) {
               try {
                 int column = Integer.parseInt(columnBox.getText());
                 int width = Integer.parseInt(widthBox.getText());

@@ -324,7 +324,7 @@ public abstract class NumberColumnDefinition<RowType> extends
   public NumberColumnDefinition(Widget headerWidget, NumberFormat numberFormat,
       boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled, NumberColumnResources resources) {
     this(numberFormat, filterEnabled, supportedOperators, editingEnabled, resources);
-    setHeaderWidget(headerWidget);
+    setHeader(0, headerWidget);
   }
 
   public NumberColumnDefinition(String header, NumberFormat numberFormat,
@@ -345,7 +345,7 @@ public abstract class NumberColumnDefinition<RowType> extends
   public NumberColumnDefinition(String header, NumberFormat numberFormat,
       boolean filterEnabled, Operator[] supportedOperators, boolean editingEnabled, NumberColumnResources resources) {
     this(numberFormat, filterEnabled, supportedOperators, editingEnabled, resources);
-    setHeader(header);
+    setHeader(0, header);
   }
 
   public NumberColumnDefinition(NumberFormat numberFormat,

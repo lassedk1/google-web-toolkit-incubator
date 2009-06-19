@@ -29,6 +29,10 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 
 import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -117,78 +121,37 @@ public class SortableGrid extends SelectionGrid implements
       int column = sortList.getPrimaryColumn();
       boolean ascending = sortList.isPrimaryAscending();
 
-      // Apply the default quicksort algorithm
+      // Get all of the cell elements
       SelectionGridCellFormatter formatter = grid.getSelectionGridCellFormatter();
-      Element[] tdElems = new Element[grid.getRowCount()];
-      for (int i = 0; i < tdElems.length; i++) {
-        tdElems[i] = formatter.getRawElement(i, column);
+      int rowCount = grid.getRowCount();
+      List<Element> tdElems = new ArrayList<Element>(rowCount);
+      for (int i = 0; i < rowCount; i++) {
+        tdElems.add(formatter.getRawElement(i, column));
       }
-      quicksort(tdElems, 0, tdElems.length - 1);
+
+      // Sort the cell elements
+      if (ascending) {
+        Collections.sort(tdElems, new Comparator<Element>() {
+          public int compare(Element o1, Element o2) {
+            return o1.getInnerText().compareTo(o2.getInnerText());
+          }
+        });
+      } else {
+        Collections.sort(tdElems, new Comparator<Element>() {
+          public int compare(Element o1, Element o2) {
+            return o2.getInnerText().compareTo(o1.getInnerText());
+          }
+        });
+      }
 
       // Convert tdElems to trElems, reversing if needed
-      Element[] trElems = new Element[tdElems.length];
-      if (ascending) {
-        for (int i = 0; i < tdElems.length; i++) {
-          trElems[i] = DOM.getParent(tdElems[i]);
-        }
-      } else {
-        int maxElem = tdElems.length - 1;
-        for (int i = 0; i <= maxElem; i++) {
-          trElems[i] = DOM.getParent(tdElems[maxElem - i]);
-        }
+      Element[] trElems = new Element[rowCount];
+      for (int i = 0; i < rowCount; i++) {
+        trElems[i] = DOM.getParent(tdElems.get(i));
       }
 
       // Use the callback to complete the sorting
       callback.onSortingComplete(trElems);
-    }
-
-    /**
-     * Recursive quicksort algorithm.
-     * 
-     * @param tdElems an array of row elements
-     * @param start the start index to sort
-     * @param end the last index to sort
-     */
-    private void quicksort(Element[] tdElems, int start, int end) {
-      // No need to sort
-      if (start >= end) {
-        return;
-      }
-
-      // Sort this set
-      int i = start + 1;
-      int k = end;
-      String pivot = DOM.getInnerText(tdElems[start]);
-      while (k >= i) {
-        if (DOM.getInnerText(tdElems[i]).compareTo(pivot) < 0) {
-          // Move i until the value is great than the pivot
-          i++;
-        } else if (k == i) {
-          // Don't swap if equal
-          k--;
-        } else if (DOM.getInnerText(tdElems[k]).compareTo(pivot) < 0) {
-          // Swap the elements at k and i
-          Element tr = tdElems[i];
-          tdElems[i] = tdElems[k];
-          tdElems[k] = tr;
-          i++;
-          k--;
-        } else {
-          // Decrement k
-          k--;
-        }
-      }
-
-      // Swap k and pivot
-      if (k != start) {
-        Element tr = tdElems[k];
-        tdElems[k] = tdElems[start];
-        tdElems[start] = tr;
-      }
-
-      // Sort the subsets
-      quicksort(tdElems, start, k - 1);
-      quicksort(tdElems, k + 1, end);
     }
   }
 

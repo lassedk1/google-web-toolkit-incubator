@@ -1,15 +1,20 @@
-/** Add css rules here for your application. */ /**
+/**  
  * Demo styling
  */
-.gwt-Stepper {
-  position: absolute;
-  top: 200px;
-  left: 50px;
+.demo-decorator {
+  padding: 4px;
+  border: 1px dotted black;
 }
 
-.demo-decorator {
-  padding: 3px;
-  border: 1px dotted black;
+.demo-pane {
+  padding: 20px;
+}
+
+/**  
+ * Widget styling
+ */
+.gwt-DropDownListBox ListItems {
+  width: 100px;
 }
 
 /**

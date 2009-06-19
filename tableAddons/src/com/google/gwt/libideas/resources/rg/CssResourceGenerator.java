@@ -41,6 +41,7 @@ import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
 import com.google.gwt.libideas.resources.css.CssGenerationVisitor;
 import com.google.gwt.libideas.resources.css.GenerateCssAst;
+import com.google.gwt.libideas.resources.css.ast.CollapsedNode;
 import com.google.gwt.libideas.resources.css.ast.Context;
 import com.google.gwt.libideas.resources.css.ast.CssCompilerException;
 import com.google.gwt.libideas.resources.css.ast.CssDef;
@@ -50,6 +51,7 @@ import com.google.gwt.libideas.resources.css.ast.CssMediaRule;
 import com.google.gwt.libideas.resources.css.ast.CssModVisitor;
 import com.google.gwt.libideas.resources.css.ast.CssNoFlip;
 import com.google.gwt.libideas.resources.css.ast.CssNode;
+import com.google.gwt.libideas.resources.css.ast.CssNodeCloner;
 import com.google.gwt.libideas.resources.css.ast.CssProperty;
 import com.google.gwt.libideas.resources.css.ast.CssRule;
 import com.google.gwt.libideas.resources.css.ast.CssSelector;
@@ -63,7 +65,6 @@ import com.google.gwt.libideas.resources.css.ast.CssProperty.ExpressionValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.IdentValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.ListValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.NumberValue;
-import com.google.gwt.libideas.resources.css.ast.CssProperty.StringValue;
 import com.google.gwt.libideas.resources.css.ast.CssProperty.Value;
 import com.google.gwt.libideas.resources.ext.ResourceBundleRequirements;
 import com.google.gwt.libideas.resources.ext.ResourceContext;
@@ -197,32 +198,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
   }
 
   /**
-   * This delegate class bypasses traversal of a node, instead traversing the
-   * node's children. Any modifications made to the node list of the
-   * CollapsedNode will be reflected in the original node.
-   */
-  static class CollapsedNode extends CssNode implements HasNodes {
-
-    private final List<CssNode> nodes;
-
-    public CollapsedNode(HasNodes parent) {
-      this(parent.getNodes());
-    }
-
-    public CollapsedNode(List<CssNode> nodes) {
-      this.nodes = nodes;
-    }
-
-    public List<CssNode> getNodes() {
-      return nodes;
-    }
-
-    public void traverse(CssVisitor visitor, Context context) {
-      visitor.acceptWithInsertRemove(getNodes());
-    }
-  }
-
-  /**
    * Statically evaluates {@literal @if} rules.
    */
   static class IfEvaluator extends CssModVisitor {
@@ -332,7 +307,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
     private void visitInNewContext(List<CssNode> nodes) {
       MergeIdenticalSelectorsVisitor v = new MergeIdenticalSelectorsVisitor();
-      v.accept(nodes);
+      v.acceptWithInsertRemove(nodes);
       rulesInOrder.addAll(v.rulesInOrder);
     }
   }
@@ -394,7 +369,7 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
 
     private void visitInNewContext(List<CssNode> nodes) {
       MergeRulesByContentVisitor v = new MergeRulesByContentVisitor();
-      v.accept(nodes);
+      v.acceptWithInsertRemove(nodes);
       rulesInOrder.addAll(v.rulesInOrder);
     }
   }
@@ -435,7 +410,6 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
     @Override
     public void endVisit(CssProperty x, Context ctx) {
       String name = x.getName();
-      List<Value> values = x.getValues().getValues();
 
       if (name.equalsIgnoreCase("left")) {
         x.setName("right");
@@ -452,7 +426,9 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       } else if (name.contains("-left-")) {
         x.setName(name.replace("-left-", "-right-"));
       } else {
+        List<Value> values = new ArrayList<Value>(x.getValues().getValues());
         invokePropertyHandler(x.getName(), values);
+        x.setValue(new CssProperty.ListValue(values));
       }
     }
 
@@ -691,7 +667,9 @@ public class CssResourceGenerator extends AbstractResourceGenerator {
       for (CssSelector sel : x.getSelectors()) {
         CssRule newRule = new CssRule();
         newRule.getSelectors().add(sel);
-        newRule.getProperties().addAll(x.getProperties());
+        newRule.getProperties().addAll(
+            CssNodeCloner.clone(CssProperty.class, x.getProperties()));
+        // newRule.getProperties().addAll(x.getProperties());
         ctx.insertBefore(newRule);
       }
       ctx.removeMe();

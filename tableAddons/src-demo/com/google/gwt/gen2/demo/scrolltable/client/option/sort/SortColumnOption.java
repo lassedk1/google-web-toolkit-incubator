@@ -15,6 +15,8 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client.option.sort;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.PagingScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
@@ -24,7 +26,6 @@ import com.google.gwt.gen2.table.client.ScrollTable;
 import com.google.gwt.gen2.table.client.AbstractScrollTable.SortPolicy;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -64,8 +65,8 @@ public class SortColumnOption extends AbstractOption {
 
     // Add button to change policy
     {
-      Button button = new Button("Set Sort Policy", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Set Sort Policy", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           AbstractScrollTable scrollTable = ScrollTableDemo.get().getScrollTable();
           switch (policyBox.getSelectedIndex()) {
             case 0:
@@ -91,8 +92,8 @@ public class SortColumnOption extends AbstractOption {
 
     // Add a button to sort the column
     {
-      Button button = new Button("Sort Column", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Sort Column", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           try {
             int column = Integer.parseInt(columnBox.getText());
             ScrollTableDemo.get().getDataTable().sortColumn(column);
@@ -109,8 +110,8 @@ public class SortColumnOption extends AbstractOption {
 
     // Add a button to make column sortable
     if (PagingScrollTableDemo.get() == null) {
-      Button button = new Button("Make Sortable", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Make Sortable", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           try {
             int column = Integer.parseInt(columnBox.getText());
             ScrollTable scrollTable = (ScrollTable) ScrollTableDemo.get().getScrollTable();
@@ -125,8 +126,8 @@ public class SortColumnOption extends AbstractOption {
 
     // Add a button to make column unsortable
     if (PagingScrollTableDemo.get() == null) {
-      Button button = new Button("Make Unsortable", new ClickListener() {
-        public void onClick(Widget sender) {
+      Button button = new Button("Make Unsortable", new ClickHandler() {
+        public void onClick(ClickEvent event) {
           try {
             int column = Integer.parseInt(columnBox.getText());
             ScrollTable scrollTable = (ScrollTable) ScrollTableDemo.get().getScrollTable();

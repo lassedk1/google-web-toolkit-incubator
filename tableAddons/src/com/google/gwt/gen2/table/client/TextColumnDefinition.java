@@ -298,7 +298,7 @@ public abstract class TextColumnDefinition<RowType> extends
       boolean filterEnabled, Operator[] supportedOperators,
       boolean editingEnabled, TextColumnResources resources) {
     this(sortable, filterEnabled, supportedOperators, editingEnabled, resources);
-    setHeaderWidget(headerWidget);
+    setHeader(0, headerWidget);
   }
 
   public TextColumnDefinition(String header, boolean sortable,
@@ -318,14 +318,14 @@ public abstract class TextColumnDefinition<RowType> extends
       boolean editingEnabled) {
     this(sortable, filterEnabled, supportedOperators, editingEnabled,
         new DefaultTextColumnResources());
-    setHeader(header);
+    setHeader(0, header);
   }
 
   public TextColumnDefinition(String header, boolean sortable,
       boolean filterEnabled, Operator[] supportedOperators,
       boolean editingEnabled, TextColumnResources resources) {
     this(sortable, filterEnabled, supportedOperators, editingEnabled, resources);
-    setHeader(header);
+    setHeader(0, header);
   }
 
   public TextColumnDefinition(boolean sortable, boolean filterEnabled,

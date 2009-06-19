@@ -15,15 +15,21 @@
  */
 package com.google.gwt.gen2.table.client;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.table.client.CellEditor.CellEditInfo;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnFilterCallback;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnFilterer;
+import com.google.gwt.gen2.table.client.SelectionGrid.SelectionPolicy;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorter;
 import com.google.gwt.gen2.table.client.SortableGrid.ColumnSorterCallback;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractRowView;
 import com.google.gwt.gen2.table.client.TableModel.Callback;
+import com.google.gwt.gen2.table.client.property.FooterProperty;
+import com.google.gwt.gen2.table.client.property.HeaderProperty;
 import com.google.gwt.gen2.table.client.property.MaximumWidthProperty;
 import com.google.gwt.gen2.table.client.property.MinimumWidthProperty;
 import com.google.gwt.gen2.table.client.property.PreferredWidthProperty;
@@ -50,6 +56,8 @@ import com.google.gwt.gen2.table.event.client.RowInsertionEvent;
 import com.google.gwt.gen2.table.event.client.RowInsertionHandler;
 import com.google.gwt.gen2.table.event.client.RowRemovalEvent;
 import com.google.gwt.gen2.table.event.client.RowRemovalHandler;
+import com.google.gwt.gen2.table.event.client.RowSelectionEvent;
+import com.google.gwt.gen2.table.event.client.RowSelectionHandler;
 import com.google.gwt.gen2.table.event.client.RowValueChangeEvent;
 import com.google.gwt.gen2.table.event.client.RowValueChangeHandler;
 import com.google.gwt.gen2.table.shared.ColumnFilterList;
@@ -59,6 +67,10 @@ import com.google.gwt.gen2.table.shared.Response;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.gen2.table.event.client.TableEvent.Row;
+import com.google.gwt.gen2.table.override.client.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
@@ -67,9 +79,11 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentC
 import com.google.gwt.user.client.ui.HasVerticalAlignment.VerticalAlignmentConstant;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * An {@link AbstractScrollTable} that acts as a view for an underlying
@@ -168,6 +182,47 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   }
 
   /**
+   * Information about a column header.
+   */
+  private static class ColumnHeaderInfo {
+    private int rowSpan = 1;
+    private Object header;
+
+    public ColumnHeaderInfo(Object header) {
+      this.header = (header == null) ? "" : header;
+    }
+
+    public ColumnHeaderInfo(Object header, int rowSpan) {
+      this.header = (header == null) ? "&nbsp;" : header;
+      this.rowSpan = rowSpan;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (o == null) {
+        return false;
+      }
+      if (o instanceof ColumnHeaderInfo) {
+        ColumnHeaderInfo info = (ColumnHeaderInfo) o;
+        return (rowSpan == info.rowSpan) && header.equals(info.header);
+      }
+      return false;
+    }
+
+    public Object getHeader() {
+      return header;
+    }
+
+    public int getRowSpan() {
+      return rowSpan;
+    }
+
+    public void incrementRowSpan() {
+      rowSpan++;
+    }
+  }
+
+  /**
    * An iterator over the visible rows in an iterator over many rows.
    */
   private class VisibleRowsIterator implements Iterator<RowType> {
@@ -256,6 +311,31 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   private Request lastRequest = null;
 
   /**
+   * A boolean indicating that cross page selection is enabled.
+   */
+  private boolean isCrossPageSelectionEnabled;
+
+  /**
+   * The set of selected row values.
+   */
+  private Set<RowType> selectedRowValues = new HashSet<RowType>();
+
+  /**
+   * A boolean indicating that the footer should be generated automatically.
+   */
+  private boolean isFooterGenerated;
+
+  /**
+   * A boolean indicating that the header should be generated automatically.
+   */
+  private boolean isHeaderGenerated;
+
+  /**
+   * A boolean indicating that the page is currently being loaded.
+   */
+  private boolean isPageLoading;
+
+  /**
    * The old page count, used to detect when the number of pages changes.
    */
   private int oldPageCount;
@@ -271,6 +351,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   private Callback<RowType> pagingCallback = new Callback<RowType>() {
     public void onFailure(Throwable caught) {
+      isPageLoading = false;
       fireEvent(new PagingFailureEvent(caught));
     }
 
@@ -278,6 +359,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       getTableModel().setRowCount(response.getRowCount());
       if (lastRequest == request) {
         setData(request.getStartRow(), response.getRowValues());
+        lastRequest = null;
       }
     }
   };
@@ -286,13 +368,18 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    * The values associated with each row. This is an optional list of data that
    * ties the visible content in each row to an underlying object.
    */
-  private List<RowType> rowValues = null;
+  private List<RowType> rowValues = new ArrayList<RowType>();
 
   /**
    * The view of this table.
    */
   private AbstractRowView<RowType> rowView = new PagingScrollTableRowView<RowType>(
       this);
+
+  /**
+   * The {@link CheckBox} used to select all rows.
+   */
+  private Widget selectAllWidget;
 
   /**
    * The underlying table model.
@@ -304,10 +391,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   private RendererCallback tableRendererCallback = new RendererCallback() {
     public void onRendered() {
-      getDataTable().clearIdealWidths();
-      maybeFillWidth();
-      resizeTablesVertically();
-      fireEvent(new PageLoadEvent(currentPage));
+      onDataTableRendered();
     }
   };
 
@@ -317,22 +401,30 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   private List<ColumnDefinition<RowType, ?>> visibleColumns = new ArrayList<ColumnDefinition<RowType, ?>>();
 
   /**
+   * The boolean indicating that the header tables are obsolete.
+   */
+  private boolean headersObsolete;
+
+  /**
    * Construct a new {@link PagingScrollTable}.
    * 
    * @param tableModel the underlying table model
-   * @param dataTable the table used to display data
-   * @param headerTable the header table
    * @param tableDefinition the column definitions
    */
-  public PagingScrollTable(TableModel<RowType> tableModel, TableDefinition<RowType> tableDefinition) {
-    this(tableModel, tableDefinition, new DefatulScrollTableResources());
+  public PagingScrollTable(TableModel<RowType> tableModel,
+      TableDefinition<RowType> tableDefinition) {
+    this(tableModel, new FixedWidthGrid(), new FixedWidthFlexTable(),
+        tableDefinition);
+    isHeaderGenerated = true;
+    isFooterGenerated = true;
   }
 
-  public PagingScrollTable(TableModel<RowType> tableModel, TableDefinition<RowType> tableDefinition, ScrollTableResources resources) {
-    this(tableModel, new FixedWidthGrid(), new FixedWidthFlexTable(), tableDefinition, resources);
+  public PagingScrollTable(TableModel<RowType> tableModel,
+      TableDefinition<RowType> tableDefinition, ScrollTableResources resources) {
+    this(tableModel, new FixedWidthGrid(), new FixedWidthFlexTable(),
+        tableDefinition, resources);
   }
 
-  
   /**
    * Construct a new {@link PagingScrollTable}.
    * 
@@ -403,7 +495,12 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     if (tableModel instanceof HasRowValueChangeHandlers) {
       ((HasRowValueChangeHandlers<RowType>) tableModel).addRowValueChangeHandler(new RowValueChangeHandler<RowType>() {
         public void onRowValueChange(RowValueChangeEvent<RowType> event) {
-          setRowValue(event.getRowIndex() - getAbsoluteFirstRowIndex(),
+          int rowIndex = event.getRowIndex();
+          if (rowIndex < getAbsoluteFirstRowIndex()
+              || rowIndex > getAbsoluteLastRowIndex()) {
+            return;
+          }
+          setRowValue(rowIndex - getAbsoluteFirstRowIndex(),
               event.getRowValue());
         }
       });
@@ -454,6 +551,23 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       };
       dataTable.setColumnFilterer(filterer);
     }
+
+    // Listen for selection events
+    dataTable.addRowSelectionHandler(new RowSelectionHandler() {
+      public void onRowSelection(RowSelectionEvent event) {
+        if (isPageLoading) {
+          return;
+        }
+        Set<Row> deselected = event.getDeselectedRows();
+        for (Row row : deselected) {
+          selectedRowValues.remove(getRowValue(row.getRowIndex()));
+        }
+        Set<Row> selected = event.getSelectedRows();
+        for (Row row : selected) {
+          selectedRowValues.add(getRowValue(row.getRowIndex()));
+        }
+      }
+    });
   }
 
   public HandlerRegistration addPageChangeHandler(PageChangeHandler handler) {
@@ -576,10 +690,21 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    * @return the value associated with the row
    */
   public RowType getRowValue(int row) {
-    if (rowValues == null || rowValues.size() <= row) {
+    if (rowValues.size() <= row) {
       return null;
     }
     return rowValues.get(row);
+  }
+
+  /**
+   * Get the selected row values. If cross page selection is enabled, this will
+   * include row values selected on all pages.
+   * 
+   * @return the selected row values
+   * @see #setCrossPageSelectionEnabled(boolean)
+   */
+  public Set<RowType> getSelectedRowValues() {
+    return selectedRowValues;
   }
 
   public TableDefinition<RowType> getTableDefinition() {
@@ -634,9 +759,14 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     }
 
     if (currentPage != oldPage || forced) {
+      isPageLoading = true;
+
       // Deselect rows when switching pages
       FixedWidthGrid dataTable = getDataTable();
       dataTable.deselectAllRows();
+      if (!isCrossPageSelectionEnabled) {
+        selectedRowValues = new HashSet<RowType>();
+      }
 
       // Fire listeners
       fireEvent(new PageChangeEvent(oldPage, currentPage));
@@ -652,7 +782,9 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       }
 
       // Request the new data from the table model
-      lastRequest = createRequest(currentPage * pageSize, pageSize,
+      int firstRow = getAbsoluteFirstRowIndex();
+      int lastRow = pageSize == 0 ? tableModel.getRowCount() : pageSize;
+      lastRequest = createRequest(firstRow, pageSize,
           dataTable.getColumnSortList(), dataTable.getColumnFilterList());
       tableModel.requestRows(lastRequest, pagingCallback);
     }
@@ -693,6 +825,52 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   }
 
   /**
+   * @return true if cross page selection is enabled
+   */
+  public boolean isCrossPageSelectionEnabled() {
+    return isCrossPageSelectionEnabled;
+  }
+
+  @Override
+  public boolean isFooterColumnTruncatable(int column) {
+    ColumnDefinition<RowType, ?> colDef = getColumnDefinition(column);
+    if (colDef == null) {
+      return true;
+    }
+    return colDef.getColumnProperty(TruncationProperty.TYPE).isFooterTruncatable();
+  }
+
+  /**
+   * @return true if the footer table is automatically generated
+   */
+  public boolean isFooterGenerated() {
+    return isFooterGenerated;
+  }
+
+  @Override
+  public boolean isHeaderColumnTruncatable(int column) {
+    ColumnDefinition<RowType, ?> colDef = getColumnDefinition(column);
+    if (colDef == null) {
+      return true;
+    }
+    return colDef.getColumnProperty(TruncationProperty.TYPE).isHeaderTruncatable();
+  }
+
+  /**
+   * @return true if the header table is automatically generated
+   */
+  public boolean isHeaderGenerated() {
+    return isHeaderGenerated;
+  }
+
+  /**
+   * @return true if a page load is pending
+   */
+  public boolean isPageLoading() {
+    return isPageLoading;
+  }
+
+  /**
    * Reload the current page.
    */
   public void reloadPage() {
@@ -713,6 +891,29 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   }
 
   /**
+   * Enable or disable cross page selection. When enabled, row value selections
+   * are maintained across page loads. Selections are remembered by type (not by
+   * row index), so row values can move around and still maintain their
+   * selection.
+   * 
+   * @param enabled true to enable, false to disable
+   */
+  public void setCrossPageSelectionEnabled(boolean enabled) {
+    if (isCrossPageSelectionEnabled != enabled) {
+      this.isCrossPageSelectionEnabled = enabled;
+
+      // Reselected only the rows on this page
+      if (!enabled) {
+        selectedRowValues = new HashSet<RowType>();
+        Set<Integer> selectedRows = getDataTable().getSelectedRows();
+        for (Integer selectedRow : selectedRows) {
+          selectedRowValues.add(getRowValue(selectedRow));
+        }
+      }
+    }
+  }
+
+  /**
    * Set the {@link Widget} that will be displayed in place of the data table
    * when the data table has no data to display.
    * 
@@ -720,6 +921,30 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   public void setEmptyTableWidget(Widget emptyTableWidget) {
     emptyTableWidgetWrapper.setWidget(emptyTableWidget);
+  }
+
+  /**
+   * Set whether or not the footer table should be automatically generated.
+   * 
+   * @param isGenerated true to enable, false to disable
+   */
+  public void setFooterGenerated(boolean isGenerated) {
+    this.isFooterGenerated = isGenerated;
+    if (isGenerated) {
+      refreshFooterTable();
+    }
+  }
+
+  /**
+   * Set whether or not the header table should be automatically generated.
+   * 
+   * @param isGenerated true to enable, false to disable
+   */
+  public void setHeaderGenerated(boolean isGenerated) {
+    this.isHeaderGenerated = isGenerated;
+    if (isGenerated) {
+      refreshHeaderTable();
+    }
   }
 
   /**
@@ -754,9 +979,6 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    */
   public void setRowValue(int row, RowType value) {
     // Make sure the list can fit the row
-    if (rowValues == null) {
-      rowValues = new ArrayList<RowType>(row + 1);
-    }
     for (int i = rowValues.size(); i <= row; i++) {
       rowValues.add(null);
     }
@@ -878,6 +1100,33 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   }
 
   /**
+   * @return the header widget used to select all rows
+   */
+  protected Widget getSelectAllWidget() {
+    if (selectAllWidget == null) {
+      final CheckBox box = new CheckBox();
+      selectAllWidget = box;
+      box.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          if (box.getValue()) {
+            getDataTable().selectAllRows();
+          } else {
+            getDataTable().deselectAllRows();
+          }
+        }
+      });
+    }
+    return selectAllWidget;
+  }
+
+  /**
+   * @return the list of current visible column definitions
+   */
+  protected List<ColumnDefinition<RowType, ?>> getVisibleColumnDefinitions() {
+    return visibleColumns;
+  }
+
+  /**
    * Insert a row into the table relative to the total number of rows.
    * 
    * @param beforeRow the row index
@@ -900,28 +1149,45 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     }
   }
 
-  @Override
-  protected void onLoad() {
-    super.onLoad();
-
-    // If we have not loaded any pages, load one now
-    if (currentPage < 0) {
-      gotoPage(0, true);
+  /**
+   * Called when the data table has finished rendering.
+   */
+  protected void onDataTableRendered() {
+    // Refresh the headers if needed
+    if (headersObsolete) {
+      refreshHeaderTable();
+      refreshFooterTable();
+      headersObsolete = false;
     }
+
+    // Select rows
+    FixedWidthGrid dataTable = getDataTable();
+    int rowCount = dataTable.getRowCount();
+    for (int i = 0; i < rowCount; i++) {
+      if (selectedRowValues.contains(getRowValue(i))) {
+        dataTable.selectRow(i, false);
+      }
+    }
+
+    // Update the UI of the table
+    dataTable.clearIdealWidths();
+    redraw();
+    isPageLoading = false;
+    fireEvent(new PageLoadEvent(currentPage));
   }
 
   protected void populateHeaderTable(FixedWidthFlexTable headerTable,
       TableDefinition tableDefinition) {
     int column = 0;
     for (ColumnDefinition<RowType, ?> columnDefinition : ((TableDefinition<RowType>) tableDefinition).getVisibleColumnDefinitions()) {
-      String header = columnDefinition.getHeader();
+      Object header = columnDefinition.getColumnProperty(HeaderProperty.TYPE).getHeader(
+          0);
       if (header != null) {
-        headerTable.setHTML(0, column, header);
-        column++;
-      } else {
-        Widget headerWidget = columnDefinition.getHeaderWidget();
-        if (headerWidget != null) {
-          headerTable.setWidget(0, column, headerWidget);
+        if (header instanceof Widget) {
+          headerTable.setWidget(0, column, (Widget) header);
+          column++;
+        } else if (header instanceof String) {
+          headerTable.setHTML(0, column, (String) header);
           column++;
         }
       }
@@ -948,12 +1214,138 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
   }
 
   /**
+   * Update the footer table based on the new {@link ColumnDefinition}.
+   */
+  protected void refreshFooterTable() {
+    if (!isFooterGenerated) {
+      return;
+    }
+
+    // Generate the list of lists of ColumnHeaderInfo.
+    List<List<ColumnHeaderInfo>> allInfos = new ArrayList<List<ColumnHeaderInfo>>();
+    int columnCount = visibleColumns.size();
+    int footerCounts[] = new int[columnCount];
+    int maxFooterCount = 0;
+    for (int col = 0; col < columnCount; col++) {
+      // Get the header property.
+      ColumnDefinition<RowType, ?> colDef = visibleColumns.get(col);
+      FooterProperty prop = colDef.getColumnProperty(FooterProperty.TYPE);
+      int footerCount = prop.getFooterCount();
+      footerCounts[col] = footerCount;
+      maxFooterCount = Math.max(maxFooterCount, footerCount);
+
+      // Add each ColumnHeaderInfo
+      List<ColumnHeaderInfo> infos = new ArrayList<ColumnHeaderInfo>();
+      ColumnHeaderInfo prev = null;
+      for (int row = 0; row < footerCount; row++) {
+        Object footer = prop.getFooter(row, col);
+        if (prev != null && prev.header.equals(footer)) {
+          prev.incrementRowSpan();
+        } else {
+          prev = new ColumnHeaderInfo(footer);
+          infos.add(prev);
+        }
+      }
+      allInfos.add(infos);
+    }
+
+    // Return early if there is no footer
+    if (maxFooterCount == 0) {
+      return;
+    }
+
+    // Fill in missing rows
+    for (int col = 0; col < columnCount; col++) {
+      int footerCount = footerCounts[col];
+      if (footerCount < maxFooterCount) {
+        allInfos.get(col).add(
+            new ColumnHeaderInfo(null, maxFooterCount - footerCount));
+      }
+    }
+
+    // Ensure that we have a footer table
+    if (getFooterTable() == null) {
+      setFooterTable(new FixedWidthFlexTable());
+    }
+
+    // Refresh the table
+    refreshHeaderTable(getFooterTable(), allInfos, false);
+  }
+
+  /**
+   * Update the header table based on the new {@link ColumnDefinition}.
+   */
+  protected void refreshHeaderTable() {
+    if (!isHeaderGenerated) {
+      return;
+    }
+
+    // Generate the list of lists of ColumnHeaderInfo.
+    List<List<ColumnHeaderInfo>> allInfos = new ArrayList<List<ColumnHeaderInfo>>();
+    int columnCount = visibleColumns.size();
+    int headerCounts[] = new int[columnCount];
+    int maxHeaderCount = 0;
+    for (int col = 0; col < columnCount; col++) {
+      // Get the header property.
+      ColumnDefinition<RowType, ?> colDef = visibleColumns.get(col);
+      HeaderProperty prop = colDef.getColumnProperty(HeaderProperty.TYPE);
+      int headerCount = prop.getHeaderCount();
+      headerCounts[col] = headerCount;
+      maxHeaderCount = Math.max(maxHeaderCount, headerCount);
+
+      // Add each ColumnHeaderInfo
+      List<ColumnHeaderInfo> infos = new ArrayList<ColumnHeaderInfo>();
+      ColumnHeaderInfo prev = null;
+      for (int row = 0; row < headerCount; row++) {
+        Object header = prop.getHeader(row, col);
+        if (prev != null && prev.header.equals(header)) {
+          prev.incrementRowSpan();
+        } else {
+          prev = new ColumnHeaderInfo(header);
+          infos.add(0, prev);
+        }
+      }
+      allInfos.add(infos);
+    }
+
+    // Return early if there is no header
+    if (maxHeaderCount == 0) {
+      return;
+    }
+
+    // Fill in missing rows
+    for (int col = 0; col < columnCount; col++) {
+      int headerCount = headerCounts[col];
+      if (headerCount < maxHeaderCount) {
+        allInfos.get(col).add(0,
+            new ColumnHeaderInfo(null, maxHeaderCount - headerCount));
+      }
+    }
+
+    // Refresh the table
+    refreshHeaderTable(getHeaderTable(), allInfos, true);
+  }
+
+  /**
    * Refresh the list of the currently visible column definitions based on the
    * {@link TableDefinition}.
    */
   protected void refreshVisibleColumnDefinitions() {
-    visibleColumns = new ArrayList<ColumnDefinition<RowType, ?>>(
+    List<ColumnDefinition<RowType, ?>> colDefs = new ArrayList<ColumnDefinition<RowType, ?>>(
         tableDefinition.getVisibleColumnDefinitions());
+    if (!colDefs.equals(visibleColumns)) {
+      visibleColumns = colDefs;
+      headersObsolete = true;
+    } else {
+      // Check if any of the headers are dynamic
+      for (ColumnDefinition<RowType, ?> colDef : colDefs) {
+        if (colDef.getColumnProperty(HeaderProperty.TYPE).isDynamic()
+            || colDef.getColumnProperty(FooterProperty.TYPE).isDynamic()) {
+          headersObsolete = true;
+          return;
+        }
+      }
+    }
   }
 
   /**
@@ -962,18 +1354,15 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    * @param row the row index
    */
   protected void removeAbsoluteRow(int row) {
-    // Physically remove the row
+    // Physically remove the row if it is in the middle of the data table
+    int firstRow = getAbsoluteFirstRowIndex();
     int lastRow = getAbsoluteLastRowIndex();
-    if (row <= lastRow) {
-      int firstRow = getAbsoluteFirstRowIndex();
-      if (row >= firstRow) {
-        // Remove a row in the middle of the page
-        getDataTable().removeRow(row - firstRow);
-      } else {
-        // Remove first row because row is before this page
-        getDataTable().removeRow(0);
+    if (row <= lastRow && row >= firstRow) {
+      FixedWidthGrid dataTable = getDataTable();
+      int relativeRow = row - firstRow;
+      if (relativeRow < dataTable.getRowCount()) {
+        dataTable.removeRow(relativeRow);
       }
-      getDataTable().insertRow(pageSize - 1);
     }
   }
 
@@ -1024,7 +1413,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
     }
 
     // Fire page loaded event
-    tableRendererCallback.onRendered();
+    onDataTableRendered();
   }
 
   /**
@@ -1038,6 +1427,108 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       getDataWrapper().getStyle().setProperty("display", "none");
     } else {
       getDataWrapper().getStyle().setProperty("display", "");
+    }
+  }
+
+  /**
+   * Update the header or footer tables based on the new
+   * {@link ColumnDefinition}.
+   * 
+   * @param table the header or footer table
+   * @param allInfos the header info
+   * @param isHeader false if refreshing the footer table
+   */
+  private void refreshHeaderTable(FixedWidthFlexTable table,
+      List<List<ColumnHeaderInfo>> allInfos, boolean isHeader) {
+    // Return if we have no column definitions.
+    if (visibleColumns == null) {
+      return;
+    }
+
+    // Reset the header table.
+    int rowCount = table.getRowCount();
+    for (int i = 0; i < rowCount; i++) {
+      table.removeRow(0);
+    }
+
+    // Generate the header table
+    int columnCount = allInfos.size();
+    FlexCellFormatter formatter = table.getFlexCellFormatter();
+    List<ColumnHeaderInfo> prevInfos = null;
+    for (int col = 0; col < columnCount; col++) {
+      List<ColumnHeaderInfo> infos = allInfos.get(col);
+      int row = 0;
+      for (ColumnHeaderInfo info : infos) {
+        // Get the actual row and cell index
+        int rowSpan = info.getRowSpan();
+        int cell = 0;
+        if (table.getRowCount() > row) {
+          cell = table.getCellCount(row);
+        }
+
+        // Compare to the cell in the previous column
+        if (prevInfos != null) {
+          boolean headerAdded = false;
+          int prevRow = 0;
+          for (ColumnHeaderInfo prevInfo : prevInfos) {
+            // Increase the colSpan of the previous cell
+            if (prevRow == row && info.equals(prevInfo)) {
+              int colSpan = formatter.getColSpan(row, cell - 1);
+              formatter.setColSpan(row, cell - 1, colSpan + 1);
+              headerAdded = true;
+              break;
+            }
+            prevRow += prevInfo.getRowSpan();
+          }
+
+          if (headerAdded) {
+            row += rowSpan;
+            continue;
+          }
+        }
+
+        // Set the new header
+        Object header = info.getHeader();
+        if (header instanceof Widget) {
+          table.setWidget(row, cell, (Widget) header);
+        } else {
+          table.setHTML(row, cell, header.toString());
+        }
+
+        // Update the rowSpan
+        if (rowSpan > 1) {
+          formatter.setRowSpan(row, cell, rowSpan);
+        }
+
+        // Increment the row
+        row += rowSpan;
+      }
+
+      // Increment the previous info
+      prevInfos = infos;
+    }
+
+    // Insert the checkbox column
+    SelectionPolicy selectionPolicy = getDataTable().getSelectionPolicy();
+    if (selectionPolicy.hasInputColumn()) {
+      // Get the select all box
+      Widget box = null;
+      if (isHeader
+          && getDataTable().getSelectionPolicy() == SelectionPolicy.CHECKBOX) {
+        box = getSelectAllWidget();
+      }
+
+      // Add the offset column
+      table.insertCell(0, 0);
+      if (box != null) {
+        table.setWidget(0, 0, box);
+      } else {
+        table.setHTML(0, 0, "&nbsp;");
+      }
+      formatter.setRowSpan(0, 0, table.getRowCount());
+      formatter.setHorizontalAlignment(0, 0,
+          HasHorizontalAlignment.ALIGN_CENTER);
+      table.setColumnWidth(0, getDataTable().getInputColumnWidth());
     }
   }
 

@@ -15,6 +15,8 @@
  */
 package com.google.gwt.gen2.demo.scrolltable.client.option.paging;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.PagingScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.StudentColumnDefinition;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
@@ -22,7 +24,6 @@ import com.google.gwt.gen2.demo.scrolltable.client.option.CustomForm;
 import com.google.gwt.gen2.demo.scrolltable.shared.Student;
 import com.google.gwt.gen2.table.client.DefaultTableDefinition;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -41,11 +42,10 @@ public class HideColumnOption extends AbstractOption {
     final DefaultTableDefinition<Student> tableDef = PagingScrollTableDemo.get().getTableDefinition();
     int numColumns = tableDef.getColumnDefinitionCount();
     for (int i = 0; i < numColumns; i++) {
-      final int rowIndex = i;
       final StudentColumnDefinition<?> colDef = (StudentColumnDefinition<?>) tableDef.getColumnDefinition(i);
       final Button button = new Button("Hide Column");
-      button.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+      button.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
           if (tableDef.isColumnVisible(colDef)) {
             tableDef.setColumnVisible(colDef, false);
             button.setText("Show Column");
@@ -56,7 +56,7 @@ public class HideColumnOption extends AbstractOption {
           PagingScrollTableDemo.get().getPagingScrollTable().reloadPage();
         }
       });
-      form.addLabeledWidget(colDef.getName(), button);
+      form.addLabeledWidget(colDef.getHeader(0).toString(), button);
     }
 
     // Add the description

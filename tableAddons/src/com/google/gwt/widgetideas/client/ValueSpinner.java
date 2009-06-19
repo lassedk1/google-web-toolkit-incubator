@@ -16,15 +16,15 @@
 package com.google.gwt.widgetideas.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.libideas.client.StyleInjector;
+import com.google.gwt.libideas.resources.client.CssResource;
 import com.google.gwt.libideas.resources.client.DataResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
-import com.google.gwt.libideas.resources.client.TextResource;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.Spinner.SpinnerResources;
 
 /**
@@ -43,9 +43,10 @@ public class ValueSpinner extends HorizontalPanel {
     DataResource background();
 
     @Resource("ValueSpinner.css")
-    TextResource css();
+    CssResource css();
   }
-
+  private static ValueSpinnerResources defaultResources;
+  
   private static final String STYLENAME_DEFAULT = "gwt-ValueSpinner";
 
   private Spinner spinner;
@@ -60,21 +61,19 @@ public class ValueSpinner extends HorizontalPanel {
     }
   };
 
-  private KeyboardListener keyboardListener = new KeyboardListener() {
-    public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-    }
-
-    public void onKeyPress(Widget sender, char keyCode, int modifiers) {
+  private KeyPressHandler keyPressHandler = new KeyPressHandler() {
+   
+    public void onKeyPress(KeyPressEvent event) {
       int index = valueBox.getCursorPos();
       String previousText = valueBox.getText();
       String newText;
       if (valueBox.getSelectionLength() > 0) {
         newText = previousText.substring(0, valueBox.getCursorPos())
-            + keyCode
+            + event.getCharCode()
             + previousText.substring(valueBox.getCursorPos()
                 + valueBox.getSelectionLength(), previousText.length());
       } else {
-        newText = previousText.substring(0, index) + keyCode
+        newText = previousText.substring(0, index) + event.getCharCode()
             + previousText.substring(index, previousText.length());
       }
       valueBox.cancelKey();
@@ -89,9 +88,6 @@ public class ValueSpinner extends HorizontalPanel {
         // valueBox.cancelKey();
       }
     }
-
-    public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-    }
   };
 
   /**
@@ -103,7 +99,7 @@ public class ValueSpinner extends HorizontalPanel {
 
   /**
    * @param value initial value
-   * @param resources the styles and images used by this widget
+   * @param styles the styles and images used by this widget
    * @param images the images used by the spinner
    */
   public ValueSpinner(long value, ValueSpinnerResources styles,
@@ -175,10 +171,12 @@ public class ValueSpinner extends HorizontalPanel {
       boolean constrained, ValueSpinnerResources resources,
       SpinnerResources images) {
     super();
-    if (resources == null) {
-      resources = (ValueSpinnerResources) GWT.create(ValueSpinnerResources.class);
-    }
-    StyleInjector.injectStylesheet(resources.css().getText(), resources);
+    if (resources != null) {
+      StyleInjector.injectStylesheet(resources.css().getText(), resources);
+    } else if (defaultResources == null) {
+      defaultResources = GWT.create(ValueSpinnerResources.class);
+      StyleInjector.injectStylesheet(defaultResources.css().getText());
+    }  
     setStylePrimaryName(STYLENAME_DEFAULT);
     if (images == null) {
       spinner = new Spinner(spinnerListener, value, min, max, minStep, maxStep,
@@ -188,7 +186,7 @@ public class ValueSpinner extends HorizontalPanel {
           constrained, images);
     }
     valueBox.setStyleName("textBox");
-    valueBox.addKeyboardListener(keyboardListener);
+    valueBox.addKeyPressHandler(keyPressHandler);
     setVerticalAlignment(ALIGN_MIDDLE);
     add(valueBox);
     VerticalPanel arrowsPanel = new VerticalPanel();
@@ -221,8 +219,7 @@ public class ValueSpinner extends HorizontalPanel {
   }
   
   /**
-   * Gets whether this widget is enabled.
-   * 
+   * @return whether this widget is enabled.
    */
   public boolean isEnabled() {
     return spinner.isEnabled();

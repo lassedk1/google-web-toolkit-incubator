@@ -81,8 +81,7 @@
   <set-property name="CssResource.globalPrefix" value="default" />
 
   <!-- This can be used to make CssResource produce human-readable CSS -->
-  <define-property name="CssResource.style" values="obf,OBF,pretty,PRETTY" />
-  <set-property name="CssResource.style" value="obf" />
+  <set-configuration-property name="CssResource.style" value="obf" />
 
   <!-- This can be used to disable sound resources -->
   <define-property name="ResourceBundle.enableSound" values="true,false" />
@@ -103,6 +102,7 @@
         class="com.google.gwt.libideas.resources.client.impl.SoundPlugin" />
       <any>
         <when-property-is name="user.agent" value="ie6" />
+        <when-property-is name="user.agent" value="ie8" />
         <when-property-is name="user.agent" value="opera" />
       </any>
     </all>

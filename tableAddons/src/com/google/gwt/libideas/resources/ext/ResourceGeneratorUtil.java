@@ -31,10 +31,6 @@ import java.net.URL;
  * Utility methods for building ResourceGenerators.
  */
 public final class ResourceGeneratorUtil {
-  @Deprecated
-  public static final String METADATA_TAG = "gwt.resource";
-  @Deprecated
-  public static final String TRANSFORMER_TAG = "gwt.transformer";
 
   /**
    * Apply Transformers to a resource. The presence of one or more
@@ -60,20 +56,7 @@ public final class ResourceGeneratorUtil {
     if (method.getAnnotation(Transform.class) != null) {
       transformerNames = method.getAnnotation(Transform.class).value();
     } else {
-      String[][] md = method.getMetaData(TRANSFORMER_TAG);
-      transformerNames = new String[md.length];
-
-      if (md.length > 0) {
-        // Emit a deprecation warning about metadata:
-        logger.log(TreeLogger.WARN, "Method " + method.getName() + " uses a "
-            + "deprecated @gwt.transformer metadata annotation.  Convert to @"
-            + Transform.class.getName());
-
-        int index = 0;
-        for (String[] elt : md) {
-          transformerNames[index++] = elt[0];
-        }
-      }
+      transformerNames = new String[0];
     }
 
     logger = logger.branch(TreeLogger.DEBUG,
@@ -96,7 +79,7 @@ public final class ResourceGeneratorUtil {
 
       return input;
     } catch (ClassCastException e) {
-      logger.log(TreeLogger.ERROR, "The class specified by " + TRANSFORMER_TAG
+      logger.log(TreeLogger.ERROR, "The class specified by the Transform"
           + " annotation is not a Transformer<" + baseType.getName() + ">",
           null);
     } catch (ClassNotFoundException e) {
@@ -184,24 +167,9 @@ public final class ResourceGeneratorUtil {
       Resource resource = method.getAnnotation(Resource.class);
       resources = resource.value();
     } else {
-      String[][] md = method.getMetaData(METADATA_TAG);
-
-      if (md.length == 0) {
-        logger.log(TreeLogger.ERROR, "Method " + method.getName()
-            + " does not have a @" + Resource.class.getName() + " annotations.");
-        throw new UnableToCompleteException();
-      }
-
-      // Emit a deprecation warning about metadata:
-      logger.log(TreeLogger.WARN, "Method " + method.getName() + " uses a "
-          + "deprecated @gwt.resources metadata annotation.  Convert to @"
-          + Resource.class.getName());
-
-      resources = new String[md.length];
-      for (int tagIndex = 0; tagIndex < md.length; tagIndex++) {
-        int lastIndex = md[tagIndex].length - 1;
-        resources[tagIndex] = md[tagIndex][lastIndex];
-      }
+      logger.log(TreeLogger.ERROR, "Method " + method.getName()
+          + " does not have a @" + Resource.class.getName() + " annotations.");
+      throw new UnableToCompleteException();
     }
 
     String locale;
