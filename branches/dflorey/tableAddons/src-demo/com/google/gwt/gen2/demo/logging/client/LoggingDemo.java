@@ -17,19 +17,19 @@
 package com.google.gwt.gen2.demo.logging.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.gen2.event.logical.shared.SelectionEvent;
-import com.google.gwt.gen2.event.logical.shared.SelectionHandler;
-import com.google.gwt.gen2.logging.handler.client.LogHandlerUtil;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.gen2.logging.handler.client.GroupedLogHandler;
 import com.google.gwt.gen2.logging.handler.client.PopupLogHandler;
 import com.google.gwt.gen2.logging.handler.client.RemoteLogHandler;
 import com.google.gwt.gen2.logging.handler.client.SimpleLogHandler;
-import com.google.gwt.gen2.logging.handler.client.GroupedLogHandler;
 import com.google.gwt.gen2.logging.shared.Level;
 import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.gen2.logging.shared.LogFormatter;
 import com.google.gwt.gen2.logging.shared.LogHandler;
 import com.google.gwt.gen2.logging.shared.SmartLogHandler;
 import com.google.gwt.gen2.selection.client.DropDownListBox;
+import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -55,7 +55,7 @@ public class LoggingDemo implements EntryPoint {
 
       add(new HTML("<h3>" + title + "</h3>"));
 
-      final DropDownListBox<Level> levelList = new DropDownListBox("");
+      final DropDownListBox<Level> levelList = new DropDownListBox<Level>("");
       Iterator<Level> levels = Log.levelIterator();
       while (levels.hasNext()) {
         final Level level = levels.next();
@@ -65,8 +65,9 @@ public class LoggingDemo implements EntryPoint {
       }
       levelList.setValue(Level.OFF);
       handler.setLevel(Level.OFF);
-      levelList.addSelectionHandler(new SelectionHandler() {
-        public void onSelection(SelectionEvent event) {
+
+      levelList.addValueChangeHandler(new ValueChangeHandler<Level>() {
+        public void onValueChange(ValueChangeEvent<Level> event) {
           handler.setLevel(levelList.getValue());
           Log.finest("Setting " + title + " to level " + levelList.getValue(),
               Log.CATEGORY);
@@ -93,8 +94,7 @@ public class LoggingDemo implements EntryPoint {
    */
   public void onModuleLoad() {
     if (Log.isLoggingSupported() && !Log.isLoggingMinimal()) {
-      LogHandlerUtil.injectDefaultCss();
-      DropDownListBox.injectDefaultCss();
+      Gen2CssInjector.addLogHandlerDefault();
       Log.setDefaultLevel(Level.ALL);
 
       final FlexTable control = new FlexTable();

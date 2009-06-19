@@ -15,12 +15,16 @@
  */
 package com.google.gwt.widgetideas.client;
 
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowResizeListener;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -34,7 +38,8 @@ import java.util.Map;
  * Widgets do not need to be added to a {@link ResizableWidgetCollection} as
  * they cannot be resized.
  */
-public class ResizableWidgetCollection implements WindowResizeListener {
+public class ResizableWidgetCollection implements WindowResizeListener,
+    Iterable<ResizableWidget> {
   /**
    * Information about a widgets size.
    */
@@ -142,6 +147,11 @@ public class ResizableWidgetCollection implements WindowResizeListener {
   private int windowWidth = 0;
 
   /**
+   * The hook used to remove the window handler.
+   */
+  private HandlerRegistration windowHandler;
+
+  /**
    * The delay between resize checks.
    */
   private int resizeCheckDelay = DEFAULT_RESIZE_CHECK_DELAY;
@@ -149,7 +159,7 @@ public class ResizableWidgetCollection implements WindowResizeListener {
   /**
    * A boolean indicating that resize checking should run.
    */
-  private boolean resizeCheckingEnabled = true;
+  private boolean resizeCheckingEnabled;
 
   /**
    * Create a ResizableWidget.
@@ -164,7 +174,7 @@ public class ResizableWidgetCollection implements WindowResizeListener {
    * @param resizeCheckingEnabled false to disable resize checking
    */
   public ResizableWidgetCollection(boolean resizeCheckingEnabled) {
-    this(DEFAULT_RESIZE_CHECK_DELAY, false);
+    this(DEFAULT_RESIZE_CHECK_DELAY, resizeCheckingEnabled);
   }
 
   /**
@@ -181,13 +191,8 @@ public class ResizableWidgetCollection implements WindowResizeListener {
    */
   protected ResizableWidgetCollection(int resizeCheckDelay,
       boolean resizeCheckingEnabled) {
-    Window.addWindowResizeListener(this);
     setResizeCheckDelay(resizeCheckDelay);
-    if (resizeCheckingEnabled) {
-      resizeCheckTimer.schedule(resizeCheckDelay);
-    } else {
-      this.resizeCheckingEnabled = false;
-    }
+    setResizeCheckingEnabled(resizeCheckingEnabled);
   }
 
   /**
@@ -207,10 +212,8 @@ public class ResizableWidgetCollection implements WindowResizeListener {
     for (Map.Entry<ResizableWidget, ResizableWidgetInfo> entry : widgets.entrySet()) {
       ResizableWidget widget = entry.getKey();
       ResizableWidgetInfo info = entry.getValue();
-      int curWidth = DOM.getElementPropertyInt(widget.getElement(),
-          "clientWidth");
-      int curHeight = DOM.getElementPropertyInt(widget.getElement(),
-          "clientHeight");
+      int curWidth = widget.getElement().getPropertyInt("clientWidth");
+      int curHeight = widget.getElement().getPropertyInt("clientHeight");
 
       // Call the onResize method only if the widget is attached
       if (info.setClientSize(curWidth, curHeight)) {
@@ -239,12 +242,17 @@ public class ResizableWidgetCollection implements WindowResizeListener {
     return resizeCheckingEnabled;
   }
 
+  public Iterator<ResizableWidget> iterator() {
+    return widgets.keySet().iterator();
+  }
+
   /**
    * Called when the browser window is resized.
    * 
    * @param width the width of the window's client area.
    * @param height the height of the window's client area.
    */
+  @Deprecated
   public void onWindowResized(int width, int height) {
     checkWidgetSize();
   }
@@ -277,10 +285,42 @@ public class ResizableWidgetCollection implements WindowResizeListener {
   public void setResizeCheckingEnabled(boolean enabled) {
     if (enabled && !resizeCheckingEnabled) {
       resizeCheckingEnabled = true;
+      if (windowHandler == null) {
+        windowHandler = Window.addResizeHandler(new ResizeHandler() {
+          public void onResize(ResizeEvent event) {
+            onWindowResized(event.getWidth(), event.getHeight());
+          }
+        });
+      }
       resizeCheckTimer.schedule(resizeCheckDelay);
     } else if (!enabled && resizeCheckingEnabled) {
       resizeCheckingEnabled = false;
+      if (windowHandler != null) {
+        windowHandler.removeHandler();
+        windowHandler = null;
+      }
       resizeCheckTimer.cancel();
     }
   }
+
+  /**
+   * Inform the {@link ResizableWidgetCollection} that the size of a widget has
+   * changed and already been redrawn. This will prevent the widget from being
+   * redrawn on the next loop.
+   * 
+   * @param widget the widget's size that changed
+   */
+  public void updateWidgetSize(ResizableWidget widget) {
+    if (!widget.isAttached()) {
+      return;
+    }
+
+    ResizableWidgetInfo info = widgets.get(widget);
+    if (info != null) {
+      int curWidth = widget.getElement().getPropertyInt("clientWidth");
+      int curHeight = widget.getElement().getPropertyInt("clientHeight");
+      info.setClientSize(curWidth, curHeight);
+    }
+  }
+
 }

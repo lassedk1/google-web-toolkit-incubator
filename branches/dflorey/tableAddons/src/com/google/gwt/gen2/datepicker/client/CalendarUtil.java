@@ -16,8 +16,7 @@
 
 package com.google.gwt.gen2.datepicker.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.i18n.client.constants.DateTimeConstants;
+import com.google.gwt.i18n.client.LocaleInfo;
 
 import java.util.Date;
 
@@ -28,21 +27,6 @@ import java.util.Date;
  */
 @Deprecated
 public class CalendarUtil {
-
-  static final DateTimeConstants intlConstants;
-
-  private static int firstDayOfWeekend;
-
-  private static int lastDayOfWeekend;
-  private static int startingDay;
-
-  static {
-    intlConstants = (DateTimeConstants) GWT.create(DateTimeConstants.class);
-    // Finding the start and end of weekend
-    firstDayOfWeekend = Integer.parseInt(intlConstants.weekendRange()[0]) - 1;
-    lastDayOfWeekend = Integer.parseInt(intlConstants.weekendRange()[1]) - 1;
-    startingDay = Integer.parseInt(CalendarUtil.intlConstants.firstDayOfTheWeek()) - 1;
-  }
 
   /**
    * Adds the given number of days to a date.
@@ -123,7 +107,7 @@ public class CalendarUtil {
    * @return the day of the week
    */
   public static int getStartingDayOfWeek() {
-    return startingDay;
+    return Integer.parseInt(LocaleInfo.getCurrentLocale().getDateTimeConstants().firstDayOfTheWeek()) - 1;
   }
 
   /**
@@ -149,7 +133,7 @@ public class CalendarUtil {
    * @return is the day of week a weekend?
    */
   static boolean isWeekend(int dayOfWeek) {
-    return dayOfWeek == firstDayOfWeekend || dayOfWeek == lastDayOfWeekend;
+    return dayOfWeek == (Integer.parseInt(LocaleInfo.getCurrentLocale().getDateTimeConstants().weekendRange()[0]) - 1) || dayOfWeek == (Integer.parseInt(LocaleInfo.getCurrentLocale().getDateTimeConstants().weekendRange()[1]) - 1);
   }
 
   /**

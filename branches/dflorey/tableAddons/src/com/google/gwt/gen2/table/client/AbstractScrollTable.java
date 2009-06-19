@@ -16,6 +16,7 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.StyleInjector;
 import com.google.gwt.gen2.event.dom.client.HasScrollHandlers;
 import com.google.gwt.gen2.event.dom.client.ScrollEvent;
 import com.google.gwt.gen2.event.dom.client.ScrollHandler;
@@ -30,16 +31,16 @@ import com.google.gwt.gen2.table.override.client.OverrideDOM;
 import com.google.gwt.gen2.table.shared.ColumnFilterInfo;
 import com.google.gwt.gen2.table.shared.ColumnSortList;
 import com.google.gwt.gen2.widgetbase.client.Gen2CssInjector;
-import com.google.gwt.gen2.widgetbase.client.WidgetCss;
+import com.google.gwt.gen2.table.override.client.HTMLTable.CellFormatter;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.Messages;
-import com.google.gwt.libideas.resources.client.ImageResource;
-import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
-import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
-import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ImageResource.ImageOptions;
+import com.google.gwt.resources.client.ImageResource.RepeatStyle;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
@@ -111,27 +112,79 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
      * @return the spacer element
      */
     public Element createSpacer(FixedWidthFlexTable table, Element wrapper) {
-      table.getElement().getStyle().setPropertyPx("paddingRight", 100);
+      resizeSpacer(table, null, 15);
       return null;
+    }
+
+    /**
+     * Returns the width of a table, minus any padding, in pixels.
+     * 
+     * @param table the table
+     * @param includeSpacer true to include the spacer width
+     * @return the width
+     */
+    public int getTableWidth(FixedWidthFlexTable table, boolean includeSpacer) {
+      int scrollWidth = table.getElement().getScrollWidth();
+      if (!includeSpacer) {
+        int spacerWidth = getSpacerWidth(table);
+        if (spacerWidth > 0) {
+          scrollWidth -= spacerWidth;
+        }
+      }
+      return scrollWidth;
+    }
+
+    /**
+     * Recalculate the ideal widths of columns.
+     * 
+     * @param scrollTable the scroll table
+     * @param command an optional command to execute while recalculating
+     */
+    public void recalculateIdealColumnWidths(AbstractScrollTable scrollTable,
+        Command command) {
+      FixedWidthFlexTable headerTable = scrollTable.getHeaderTable();
+      FixedWidthFlexTable footerTable = scrollTable.getFooterTable();
+      FixedWidthGrid dataTable = scrollTable.getDataTable();
+
+      // Setup all inner tables
+      dataTable.recalculateIdealColumnWidthsSetup();
+      headerTable.recalculateIdealColumnWidthsSetup();
+      if (footerTable != null) {
+        footerTable.recalculateIdealColumnWidthsSetup();
+      }
+
+      // Perform operations
+      dataTable.recalculateIdealColumnWidthsImpl();
+      headerTable.recalculateIdealColumnWidthsImpl();
+      if (footerTable != null) {
+        footerTable.recalculateIdealColumnWidthsImpl();
+      }
+
+      // Execute the optional command
+      if (command != null) {
+        command.execute();
+      }
+
+      // Teardown all inner tables
+      dataTable.recalculateIdealColumnWidthsTeardown();
+      headerTable.recalculateIdealColumnWidthsTeardown();
+      if (footerTable != null) {
+        footerTable.recalculateIdealColumnWidthsTeardown();
+      }
     }
 
     /**
      * Reposition the header spacer as needed.
      * 
      * @param scrollTable the scroll table
+     * @param force if true, ignore the scroll policy
      */
-    public void repositionSpacer(AbstractScrollTable scrollTable) {
-    }
-  }
+    public void repositionSpacer(AbstractScrollTable scrollTable, boolean force) {
+      // Only ScrollPolicy.BOTH has a vertical scroll bar
+      if (!force && scrollTable.scrollPolicy != ScrollPolicy.BOTH) {
+        return;
+      }
 
-  /**
-   * FF uses negative offsets relative to the right side in RTL mode, so we need
-   * to make sure the spacer is the same size as the scroll bar.
-   */
-  @SuppressWarnings("unused")
-  private static class ImplFF extends Impl {
-    @Override
-    public void repositionSpacer(AbstractScrollTable scrollTable) {
       Element dataWrapper = scrollTable.dataWrapper;
       int spacerWidth = dataWrapper.getOffsetWidth()
           - dataWrapper.getPropertyInt("clientWidth");
@@ -143,62 +196,115 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       }
     }
 
+    /**
+     * @return true if the scroll bar is on the right
+     */
+    boolean isScrollBarOnRight() {
+      return true;
+    }
+
     void resizeSpacer(FixedWidthFlexTable table, Element spacer, int spacerWidth) {
-      if (LocaleInfo.getCurrentLocale().isRTL()) {
+      // Exit early if the spacer is already the correct size
+      if (spacerWidth == getSpacerWidth(table)) {
+        return;
+      }
+
+      if (isScrollBarOnRight()) {
         table.getElement().getStyle().setPropertyPx("paddingRight", spacerWidth);
-      }
-    }
-  }
-
-  /**
-   * Old Mozilla puts the scroll bar on the left side in RTL mode, so we need to
-   * swap the padding.
-   */
-  @SuppressWarnings("unused")
-  private static class ImplOldMozilla extends ImplFF {
-    @Override
-    public Element createSpacer(FixedWidthFlexTable table, Element wrapper) {
-      if (LocaleInfo.getCurrentLocale().isRTL()) {
-        table.getElement().getStyle().setPropertyPx("paddingLeft", 100);
-        return null;
-      }
-      return super.createSpacer(table, wrapper);
-    }
-
-    @Override
-    void resizeSpacer(FixedWidthFlexTable table, Element spacer, int spacerWidth) {
-      if (LocaleInfo.getCurrentLocale().isRTL()) {
+      } else {
         table.getElement().getStyle().setPropertyPx("paddingLeft", spacerWidth);
       }
     }
+
+    /**
+     * Get the current width of the spacer element.
+     * 
+     * @param table the table to check
+     * @return the current width
+     */
+    private int getSpacerWidth(FixedWidthFlexTable table) {
+      // Get the padding string
+      String paddingStr;
+      if (isScrollBarOnRight()) {
+        paddingStr = table.getElement().getStyle().getProperty("paddingRight");
+      } else {
+        paddingStr = table.getElement().getStyle().getProperty("paddingLeft");
+      }
+
+      // Check the padding string
+      if (paddingStr == null || paddingStr.length() < 3) {
+        return -1;
+      }
+
+      // Parse the int from the padding
+      try {
+        return Integer.parseInt(paddingStr.substring(0, paddingStr.length() - 2));
+      } catch (NumberFormatException e) {
+        return -1;
+      }
+    }
   }
 
   /**
-   * IE has a scroll bar on the left side in RTL mode. The padding trick doesn't
-   * work, so we use a separate element.
+   * Opera and Old Mozilla put the scroll bar on the left side in RTL mode.
+   */
+  private static class ImplLeftScrollBar extends Impl {
+    @Override
+    boolean isScrollBarOnRight() {
+      return !LocaleInfo.getCurrentLocale().isRTL();
+    }
+  }
+
+  /**
+   * IE puts the scroll bar on the left side in RTL mode. The padding trick
+   * doesn't work, so we use a separate element.
    */
   @SuppressWarnings("unused")
-  private static class ImplIE6 extends ImplFF {
+  private static class ImplIE6 extends ImplLeftScrollBar {
+    /**
+     * Adding padding to a table in IE will mess up the layout, so we use an
+     * absolutely positioned div to add padding. In RTL mode, the div needs to
+     * be exactly the right width and position or scrollLeft will be affected.
+     * In LTR mode, we can position it anywhere and set the width to a high
+     * number, improving performance.
+     */
     @Override
     public Element createSpacer(FixedWidthFlexTable table, Element wrapper) {
       Element spacer = DOM.createDiv();
       spacer.getStyle().setPropertyPx("height", 1);
-      spacer.getStyle().setPropertyPx("width", 100);
       spacer.getStyle().setPropertyPx("top", 1);
-      spacer.getStyle().setPropertyPx("left", 1);
       spacer.getStyle().setProperty("position", "absolute");
+      if (!LocaleInfo.getCurrentLocale().isRTL()) {
+        spacer.getStyle().setPropertyPx("left", 1);
+        spacer.getStyle().setPropertyPx("width", 10000);
+      }
       wrapper.appendChild(spacer);
       return spacer;
     }
 
     @Override
+    public int getTableWidth(FixedWidthFlexTable table, boolean includeSpacer) {
+      return table.getElement().getScrollWidth();
+    }
+
+    /**
+     * IE allows the table to resize as widely as needed unless we restrict the
+     * width of a parent element.
+     */
+    @Override
+    public void recalculateIdealColumnWidths(AbstractScrollTable scrollTable,
+        Command command) {
+      scrollTable.getAbsoluteElement().getStyle().setPropertyPx("width", 1);
+      super.recalculateIdealColumnWidths(scrollTable, command);
+      scrollTable.getAbsoluteElement().getStyle().setProperty("width", "100%");
+    }
+
+    @Override
     void resizeSpacer(FixedWidthFlexTable table, Element spacer, int width) {
-      int headerWidth = table.getOffsetWidth();
       if (LocaleInfo.getCurrentLocale().isRTL()) {
+        int headerWidth = table.getOffsetWidth();
         spacer.getStyle().setPropertyPx("width", width);
         spacer.getStyle().setPropertyPx("right", headerWidth);
-      } else {
-        spacer.getStyle().setPropertyPx("left", headerWidth);
       }
     }
   }
@@ -320,7 +426,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       // See if we are near the edge of the cell
       int clientX = event.getClientX();
       if (cell != null) {
-        int absLeft = cell.getAbsoluteLeft();
+        int absLeft = cell.getAbsoluteLeft() - Window.getScrollLeft();
         if (LocaleInfo.getCurrentLocale().isRTL()) {
           if (clientX < absLeft || clientX > absLeft + RESIZE_CURSOR_WIDTH) {
             cell = null;
@@ -350,8 +456,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
             return false;
           }
 
-          // Check for resizable columns within one of the cells in
-          // the colspan
+          // Check for resizable columns within one of the cells in the colspan
           boolean resizable = false;
           int colSpan = cell.getPropertyInt("colSpan");
           curCells = table.getColumnWidthInfo(curCellIndex, colSpan);
@@ -427,6 +532,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
         resizeColumn();
         curCells = null;
         sacrificeCells = null;
+        table.resizeTablesVertically();
       }
     }
 
@@ -565,11 +671,55 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
-   * Interface used to allow the widget access to css style names. <p/> The
-   * class names indicate the default gwt names for these styles. <br>
-   * 
+   * Information about the height of the inner tables.
    */
-  public static interface Css extends WidgetCss {
+  private class TableHeightInfo {
+    private int headerTableHeight;
+    private int dataTableHeight;
+    private int footerTableHeight;
+
+    /**
+     * Construct a new {@link TableHeightInfo}.
+     */
+    public TableHeightInfo() {
+      int totalHeight = DOM.getElementPropertyInt(getElement(), "clientHeight");
+      headerTableHeight = headerTable.getOffsetHeight();
+      if (footerTable != null) {
+        footerTableHeight = footerTable.getOffsetHeight();
+      }
+      dataTableHeight = totalHeight - headerTableHeight - footerTableHeight;
+    }
+  }
+
+  /**
+   * Information about the width of the inner tables.
+   */
+  private class TableWidthInfo {
+    private int headerTableWidth;
+    private int dataTableWidth;
+    private int footerTableWidth;
+    private int availableWidth;
+
+    /**
+     * Construct a new {@link TableWidthInfo}.
+     * 
+     * @param includeSpacer true to include spacer in calculations
+     */
+    public TableWidthInfo(boolean includeSpacer) {
+      availableWidth = getAvailableWidth();
+      headerTableWidth = impl.getTableWidth(headerTable, includeSpacer);
+      dataTableWidth = dataTable.getElement().getScrollWidth();
+      if (footerTable != null) {
+        footerTableWidth = impl.getTableWidth(footerTable, includeSpacer);
+      }
+    }
+  }
+
+  /**
+   * An {@link ImageBundle} that provides images for {@link AbstractScrollTable}
+   * .
+   */
+  public static interface Css extends CssResource {
     /**
      * Widget style name.
      * 
@@ -594,11 +744,11 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   /**
    * Resources used.
    */
-  public interface ScrollTableStyle extends ImmutableResourceBundle {
+  public interface ScrollTableStyle extends ClientBundle {
     /**
      * The css file.
      */
-    @Resource("com/google/gwt/gen2/widgetbase/public/ScrollTable.css")
+    @Source("com/google/gwt/gen2/widgetbase/public/ScrollTable.css")
     Css css();
 
     /**
@@ -606,7 +756,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
      * 
      * @return an image resource of this image
      */
-    @Resource("scrollTableFillWidth.gif")
+    @Source("scrollTableFillWidth.gif")
     ImageResource scrollTableFillWidth();
 
     /**
@@ -614,7 +764,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
      * 
      * @return an image resource of this image
      */
-    @Resource("scrollTableAscending.gif")
+    @Source("scrollTableAscending.gif")
     ImageResource scrollTableAscending();
 
     /**
@@ -622,10 +772,10 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
      * 
      * @return an image resource of this image
      */
-    @Resource("scrollTableDescending.gif")
+    @Source("scrollTableDescending.gif")
     ImageResource scrollTableDescending();
 
-    @Resource("headerBackground.png")
+    @Source("headerBackground.png")
     @ImageOptions(repeatStyle = RepeatStyle.Horizontal)
     ImageResource headerBackground();
   }
@@ -775,11 +925,6 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   private ColumnResizePolicy columnResizePolicy = ColumnResizePolicy.MULTI_CELL;
 
   /**
-   * If true, a fill width is already pending.
-   */
-  private boolean fillWidthPending = false;
-
-  /**
    * The data table.
    */
   private FixedWidthGrid dataTable;
@@ -842,6 +987,16 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   private String lastHeight = null;
 
   /**
+   * The last scrollLeft position.
+   */
+  private int lastScrollLeft;
+
+  /**
+   * An element used to determine the width of the scroll bar.
+   */
+  private com.google.gwt.dom.client.Element mockScrollable;
+
+  /**
    * A boolean indicating whether or not the grid should try to maintain its
    * width as much as possible.
    */
@@ -851,18 +1006,6 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * The worker that helps with mouse resize events.
    */
   private MouseResizeWorker resizeWorker = GWT.create(MouseResizeWorker.class);
-
-  /**
-   * A Deferred command used to resize tables vertically. Using this command
-   * ensures that the tables don't resize until the client has time to modify
-   * rendering.
-   */
-  private Command resizeTablesVerticallyCommand = new Command() {
-    public void execute() {
-      verticalResizePending = false;
-      resizeTablesVerticallyNow();
-    }
-  };
 
   /**
    * A boolean indicating whether or not filtering is enabled.
@@ -880,14 +1023,14 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   private SortPolicy sortPolicy = SortPolicy.SINGLE_CELL;
 
   /**
-   * The Image use to indicate the currently sorted column.
+   * The cell index of the TD cell that initiated a column sort operation.
    */
-  private Image sortedColumnIndicator = new Image();
+  private int sortedCellIndex = -1;
 
   /**
-   * The TD cell that initiated a column sort operation.
+   * The row index of the TD cell that initiated a column sort operation.
    */
-  private Element sortedColumnTrigger = null;
+  private int sortedRowIndex = -1;
 
   /**
    * The wrapper around the image indicator.
@@ -932,15 +1075,13 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * @param images the images to use in the table
    */
   public AbstractScrollTable(FixedWidthGrid dataTable,
-      FixedWidthFlexTable headerTable, TableDefinition tableDefinition, ScrollTableResources resources) {
+      final FixedWidthFlexTable headerTable, TableDefinition tableDefinition, ScrollTableResources resources) {
     super();
     this.dataTable = dataTable;
     this.headerTable = headerTable;
     this.resources = resources;
     Css css = resources.getStyle().css();
-    if (Gen2CssInjector.isInjectionEnabled()) {
-      Gen2CssInjector.inject(css);
-    }
+    StyleInjector.injectStylesheet(css.getText());
     resizeWorker.setScrollTable(this);
 
     // Prepare the header and data tables
@@ -971,9 +1112,21 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     mainElem.appendChild(absoluteElem);
 
     // Create the table wrapper and spacer
-    headerWrapper = createWrapper(css.headerWrapper());
-    headerSpacer = createSpacer(headerWrapper);
-    dataWrapper = createWrapper(css.dataWrapper());
+    headerWrapper = createWrapper("headerWrapper");
+    headerSpacer = impl.createSpacer(headerTable, headerWrapper);
+    dataWrapper = createWrapper("dataWrapper");
+
+    // Create an element to determine the scroll bar width
+    mockScrollable = com.google.gwt.dom.client.Element.as(dataWrapper.cloneNode(false));
+    mockScrollable.getStyle().setProperty("position", "absolute");
+    mockScrollable.getStyle().setProperty("top", "0px");
+    mockScrollable.getStyle().setProperty("left", "0px");
+    mockScrollable.getStyle().setProperty("width", "100px");
+    mockScrollable.getStyle().setProperty("height", "100px");
+    mockScrollable.getStyle().setProperty("visibility", "hidden");
+    mockScrollable.getStyle().setProperty("overflow", "scroll");
+    mockScrollable.getStyle().setProperty("zIndex", "-1");
+    absoluteElem.appendChild(mockScrollable);
 
     // Create image to fill width
     fillWidthImage = new Image() {
@@ -1002,13 +1155,10 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     adoptTable(headerTable, headerWrapper, 0);
     adoptTable(dataTable, dataWrapper, 1);
 
-    // Populate header table
     populateHeaderTable(headerTable, tableDefinition);
-
+    
     // Create the sort indicator Image
     sortedColumnWrapper = DOM.createSpan();
-    DOM.setInnerHTML(sortedColumnWrapper, "&nbsp;");
-    DOM.appendChild(sortedColumnWrapper, sortedColumnIndicator.getElement());
 
     // Add some event handling
     sinkEvents(Event.ONMOUSEOUT);
@@ -1039,18 +1189,40 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
           // Re-add the sorted column indicator
           if (column < 0) {
-            sortedColumnTrigger = null;
-          } else if (sortedColumnTrigger != null) {
-            applySortedColumnIndicator(sortedColumnTrigger, ascending);
+            sortedCellIndex = -1;
+            sortedRowIndex = -1;
+          } else if (sortedCellIndex >= 0 && sortedRowIndex >= 0
+              && headerTable.getRowCount() > sortedRowIndex
+              && headerTable.getCellCount(sortedRowIndex) > sortedCellIndex) {
+            CellFormatter formatter = headerTable.getCellFormatter();
+            Element td = formatter.getElement(sortedRowIndex, sortedCellIndex);
+            applySortedColumnIndicator(td, ascending);
           }
         }
       }
     });
-  
-  	// Add to Resizable Collection
-    ResizableWidgetCollection.get().add(this);
   }
 
+  /**
+   * Enable or disable sorting on a specific header row. All header rows are
+   * sortable by default. Use {@link #setSortingEnabled(boolean)} to disable
+   * sorting on all rows.
+   * 
+   * @param row the index of the row
+   * @param sortable true to enable sorting for this column, false to disable
+   */
+  public void setHeaderRowSortable(int row, boolean sortable) {
+    unsortableHeaderRows.put(new Integer(row), Boolean.valueOf(sortable));
+  }
+
+  /**
+   * @param column the column to create the filter for
+   * @return a filter or null if no filtering should occur on this column
+   */
+  protected ColumnFilter createColumnFilter(int column) {
+    return null;
+  }
+  
   protected void populateHeaderTable(FixedWidthFlexTable headerTable, TableDefinition tableDefinition) {
     // Create the column filters
     int filterRow = headerTable.getRowCount();
@@ -1085,65 +1257,8 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * to work.
    */
   public void fillWidth() {
-    // Skip if we aren't attached
-    if (!isAttached()) {
-      return;
-    }
-
-    // Calculate how much room we have to work with
-    int clientWidth = -1;
-    if (scrollPolicy == ScrollPolicy.BOTH) {
-      absoluteElem.getStyle().setProperty("overflow", "scroll");
-      clientWidth = absoluteElem.getPropertyInt("clientWidth") - 1;
-      absoluteElem.getStyle().setProperty("overflow", "hidden");
-    } else {
-      clientWidth = absoluteElem.getPropertyInt("clientWidth");
-    }
-    if (clientWidth <= 0) {
-      return;
-    }
-    // Calculate the difference and number of column to resize
-    int diff = 0;
-    int numColumns = 0;
-    {
-      // Calculate the number of columns in each table
-      int numHeaderCols = 0;
-      int numDataCols = 0;
-      int numFooterCols = 0;
-      if (headerTable.getElement().getScrollWidth() > 0) {
-        numHeaderCols = headerTable.getColumnCount() - getHeaderOffset();
-      }
-      if (dataTable.getElement().getScrollWidth() > 0) {
-        numDataCols = dataTable.getColumnCount();
-      }
-      if (footerTable != null && footerTable.getOffsetWidth() > 0) {
-        numFooterCols = footerTable.getColumnCount() - getHeaderOffset();
-      }
-
-      // Determine the largest table
-      if (numHeaderCols >= numDataCols && numHeaderCols >= numFooterCols) {
-        numColumns = numHeaderCols;
-        diff = clientWidth - headerTable.getElement().getScrollWidth();
-      } else if (numFooterCols >= numDataCols && numFooterCols >= numHeaderCols) {
-        numColumns = numFooterCols;
-        diff = clientWidth - footerTable.getElement().getScrollWidth();
-      } else if (numDataCols > 0) {
-        numColumns = numDataCols;
-        diff = clientWidth - dataTable.getElement().getScrollWidth();
-      }
-    }
-    if (diff == 0 || numColumns <= 0) {
-      return;
-    }
-
-    // Calculate the new column widths
-    List<ColumnWidthInfo> colWidthInfos = getColumnWidthInfo(0, numColumns);
-    columnResizer.distributeWidth(colWidthInfos, diff);
-
-    // Set the new column widths
-    applyNewColumnWidths(0, colWidthInfos, false);
-
-    // Rescroll the tables
+    List<ColumnWidthInfo> colWidths = getFillColumnWidths(null);
+    applyNewColumnWidths(0, colWidths, false);
     scrollTables(false);
   }
 
@@ -1216,6 +1331,52 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   public abstract int getMinimumColumnWidth(int column);
 
   /**
+   * Get the minimum offset width of the largest inner table given the
+   * constraints on the minimum and ideal column widths. Note that this does not
+   * account for the vertical scroll bar.
+   * 
+   * @return the tables minimum offset width, or -1 if it cannot be calculated
+   */
+  public int getMinimumOffsetWidth() {
+    if (!isAttached()) {
+      return -1;
+    }
+
+    // Determine the width and column count of the largest table
+    TableWidthInfo redrawInfo = new TableWidthInfo(true);
+    maybeRecalculateIdealColumnWidths(null);
+    if (redrawInfo.availableWidth < 1) {
+      return -1;
+    }
+
+    int scrollWidth = 0;
+    int numColumns = 0;
+    {
+      int numHeaderCols = headerTable.getColumnCount() - getHeaderOffset();
+      int numDataCols = dataTable.getColumnCount();
+      int numFooterCols = (footerTable == null) ? -1
+          : footerTable.getColumnCount() - getHeaderOffset();
+      if (numHeaderCols >= numDataCols && numHeaderCols >= numFooterCols) {
+        numColumns = numHeaderCols;
+        scrollWidth = redrawInfo.headerTableWidth;
+      } else if (numFooterCols >= numDataCols && numFooterCols >= numHeaderCols) {
+        numColumns = numFooterCols;
+        scrollWidth = redrawInfo.footerTableWidth;
+      } else if (numDataCols > 0) {
+        numColumns = numDataCols;
+        scrollWidth = redrawInfo.dataTableWidth;
+      }
+    }
+    if (numColumns <= 0) {
+      return -1;
+    }
+
+    // Calculate the available diff
+    List<ColumnWidthInfo> colWidthInfos = getColumnWidthInfo(0, numColumns);
+    return -columnResizer.distributeWidth(colWidthInfos, -scrollWidth);
+  }
+
+  /**
    * Get the preferred width of a column.
    * 
    * @param column the column index
@@ -1279,7 +1440,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       return sortable.booleanValue();
     }
   }
-  
+
   /**
    * Returns true if the specified column can be truncated. If it cannot be
    * truncated, its minimum width will be adjusted to ensure the cell content is
@@ -1290,12 +1451,34 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    */
   public abstract boolean isColumnTruncatable(int column);
 
+  /**
+   * Returns true if the specified column in the footer table can be truncated.
+   * If it cannot be truncated, its minimum width will be adjusted to ensure the
+   * cell content is visible.
+   * 
+   * @param column the column index
+   * @return true if the column is truncatable, false if it is not
+   */
+  public abstract boolean isFooterColumnTruncatable(int column);
+
+  /**
+   * Returns true if the specified column in the header table can be truncated.
+   * If it cannot be truncated, its minimum width will be adjusted to ensure the
+   * cell content is visible.
+   * 
+   * @param column the column index
+   * @return true if the column is truncatable, false if it is not
+   */
+  public abstract boolean isHeaderColumnTruncatable(int column);
+
   @Override
   public void onBrowserEvent(Event event) {
+    super.onBrowserEvent(event);
     Element target = DOM.eventGetTarget(event);
     switch (DOM.eventGetType(event)) {
       case Event.ONSCROLL:
         // Reposition the tables on scroll
+        lastScrollLeft = dataWrapper.getScrollLeft();
         scrollTables(false);
         if (dataWrapper.isOrHasChild(target)) {
           fireEvent(new ScrollEvent(event));
@@ -1343,14 +1526,14 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
             }
 
             // Sort the column
-            int row = OverrideDOM.getRowIndex(DOM.getParent(cellElem)) - 1;
-            int cell = OverrideDOM.getCellIndex(cellElem);
-            int column = headerTable.getColumnIndex(row, cell)
+            sortedRowIndex = OverrideDOM.getRowIndex(DOM.getParent(cellElem)) - 1;
+            sortedCellIndex = OverrideDOM.getCellIndex(cellElem);
+            int column = headerTable.getColumnIndex(sortedRowIndex,
+                sortedCellIndex)
                 - getHeaderOffset();
-            if (column >= 0 && isColumnSortable(column)
-                && isHeaderRowSortable(row)) {
-              if (dataTable.getColumnCount() > column) {
-                sortedColumnTrigger = cellElem;
+            if (column >= 0 && isColumnSortable(column) && isHeaderRowSortable(sortedRowIndex) ) {
+              if (dataTable.getColumnCount() > column
+                  && onHeaderSort(sortedRowIndex, column)) {
                 dataTable.sortColumn(column);
               }
             }
@@ -1407,8 +1590,39 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     if (!isAttached()) {
       return;
     }
+
+    // Create a command to execute while recalculating widths. Using this
+    // command prevents an extra browser layout by grouping read operations.
+    TableWidthInfo redrawInfo = new TableWidthInfo(false);
+    Command command = new Command() {
+      public void execute() {
+        // We update the ResizableWidgetCollection before changing the size of
+        // the ScrollTable, because change the size of the scroll table could
+        // require an additional layout (ex. if window scroll bars show up).
+        ResizableWidgetCollection.get().updateWidgetSize(
+            AbstractScrollTable.this);
+      }
+    };
+
+    // Recalculate the ideal table widths of each column.
+    maybeRecalculateIdealColumnWidths(command);
+
+    // Calculate the new widths of the columns
+    List<ColumnWidthInfo> colWidths = null;
+    if (resizePolicy == ResizePolicy.FILL_WIDTH) {
+      colWidths = getFillColumnWidths(redrawInfo);
+    } else {
+      colWidths = getBoundedColumnWidths(true);
+    }
+    applyNewColumnWidths(0, colWidths, true);
+
+    // Update the overall height of the scroll table. This can only happen
+    // after the widths have been set because setting the width of cells can
+    // cause word wrap, which increases the height of the inner tables.
     resizeTablesVertically();
-    maybeFillWidth();
+
+    // Reset the scroll position, which might be lost when we change the layout.
+    scrollTables(false);
   }
 
   /**
@@ -1428,7 +1642,8 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * Reset the widths of all columns to their preferred sizes.
    */
   public void resetColumnWidths() {
-    resetColumnWidths(false);
+    applyNewColumnWidths(0, getBoundedColumnWidths(false), false);
+    scrollTables(false);
   }
 
   /**
@@ -1517,7 +1732,8 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     }
 
     // Reposition things as needed
-    impl.repositionSpacer(this);
+    impl.repositionSpacer(this, false);
+    resizeTablesVertically();
     scrollTables(false);
     return width;
   }
@@ -1558,21 +1774,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       adoptTable(footerTable, footerWrapper,
           absoluteElem.getChildNodes().getLength());
     }
-
-    // Resize the tables
-    resizeTablesVertically();
-  }
-
-  /**
-   * Enable or disable sorting on a specific header row. All header rows are
-   * sortable by default. Use {@link #setSortingEnabled(boolean)} to disable
-   * sorting on all rows.
-   * 
-   * @param row the index of the row
-   * @param sortable true to enable sorting for this column, false to disable
-   */
-  public void setHeaderRowSortable(int row, boolean sortable) {
-    unsortableHeaderRows.put(new Integer(row), Boolean.valueOf(sortable));
+    redraw();
   }
 
   /**
@@ -1593,7 +1795,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   public void setResizePolicy(ResizePolicy resizePolicy) {
     this.resizePolicy = resizePolicy;
     updateFillWidthImage();
-    maybeFillWidth();
+    redraw();
   }
 
   /**
@@ -1602,7 +1804,17 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * @param scrollPolicy the new scroll policy
    */
   public void setScrollPolicy(ScrollPolicy scrollPolicy) {
+    if (scrollPolicy == this.scrollPolicy) {
+      return;
+    }
     this.scrollPolicy = scrollPolicy;
+
+    // Clear the heights of the wrappers
+    headerWrapper.getStyle().setProperty("height", "");
+    dataWrapper.getStyle().setProperty("height", "");
+    if (footerWrapper != null) {
+      footerWrapper.getStyle().setProperty("height", "");
+    }
 
     if (scrollPolicy == ScrollPolicy.DISABLED) {
       // Disabled scroll bars
@@ -1623,6 +1835,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     }
 
     // Resize the tables
+    impl.repositionSpacer(this, true);
     redraw();
   }
 
@@ -1652,6 +1865,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
       Element parent = DOM.getParent(sortedColumnWrapper);
       if (parent != null) {
         parent.removeChild(sortedColumnWrapper);
+        headerTable.clearIdealWidths();
       }
       return;
     }
@@ -1663,19 +1877,20 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     } else {
       imageResource = resources.getStyle().scrollTableDescending();
     }
-    sortedColumnIndicator.setUrlAndVisibleRect(imageResource.getURL(),
+    Image sortIndicator = new Image();
+    sortIndicator.setTitle(resources.getMessages().shrinkExpandTooltip());
+    sortIndicator.setUrlAndVisibleRect(imageResource.getURL(),
         imageResource.getLeft(), imageResource.getTop(),
         imageResource.getWidth(), imageResource.getHeight());
-    sortedColumnTrigger = null;
+    sortedColumnWrapper.setInnerHTML("&nbsp;"+sortIndicator.toString());
+    sortedRowIndex = -1;
+    sortedCellIndex = -1;
+
+    // The column with the indicator now has a new ideal width
+    headerTable.clearIdealWidths();
+    redraw();
   }
 
-  /**
-   * @param column the column to create the filter for
-   * @return a filter or null if no filtering should occur on this column
-   */
-  protected ColumnFilter createColumnFilter(int column) {
-    return null;
-  }
 
   /**
    * Create a wrapper element that will hold a table.
@@ -1687,7 +1902,6 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     Element wrapper = DOM.createDiv();
     wrapper.getStyle().setProperty("width", "100%");
     wrapper.getStyle().setProperty("overflow", "hidden");
-    wrapper.getStyle().setProperty("position", "relative");
     wrapper.getStyle().setPropertyPx("padding", 0);
     wrapper.getStyle().setPropertyPx("margin", 0);
     wrapper.getStyle().setPropertyPx("border", 0);
@@ -1707,32 +1921,35 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   /**
    * Extend the columns to exactly fill the available space, if the current
    * {@link ResizePolicy} requires it.
+   * 
+   * @deprecated use {@link #redraw()} instead
    */
+  @Deprecated
   protected void maybeFillWidth() {
-    if (!fillWidthPending && isAttached()) {
-      if (resizePolicy == ResizePolicy.FILL_WIDTH) {
-        fillWidthPending = true;
-        DeferredCommand.addCommand(new Command() {
-          public void execute() {
-            fillWidthPending = false;
-            fillWidth();
-          }
-        });
-      } else {
-        resetColumnWidths(true);
-        impl.repositionSpacer(this);
-      }
-    }
+    redraw();
   }
 
   /**
-   * Resize the widget and redistribute space as needed.
+   * Called just before a column is sorted because of a user click on the header
+   * row.
+   * 
+   * @param row the row index that was clicked
+   * @param column the column index that was clicked
+   * @return true to sort, false to ignore
    */
+  protected boolean onHeaderSort(int row, int column) {
+    return true;
+  }
+
   @Override
-  protected void onAttach() {
-    super.onAttach();
-    resizeTablesVertically();
-    maybeFillWidth();
+  protected void onLoad() {
+    ResizableWidgetCollection.get().add(this);
+    redraw();
+  }
+
+  @Override
+  protected void onUnload() {
+    ResizableWidgetCollection.get().remove(this);
   }
 
   /**
@@ -1740,75 +1957,50 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * remaining vertical space.
    */
   protected void resizeTablesVertically() {
-    if (!verticalResizePending && isAttached()) {
-      verticalResizePending = true;
-      DeferredCommand.addCommand(resizeTablesVerticallyCommand);
+    if (scrollPolicy == ScrollPolicy.DISABLED) {
+      dataWrapper.getStyle().setProperty("overflow", "auto");
+      dataWrapper.getStyle().setProperty("overflow", "");
+      int height = Math.max(1, absoluteElem.getOffsetHeight());
+      super.setHeight(height + "px");
+    } else if (scrollPolicy == ScrollPolicy.HORIZONTAL) {
+      dataWrapper.getStyle().setProperty("overflow", "hidden");
+      dataWrapper.getStyle().setProperty("overflow", "auto");
+      int height = Math.max(1, absoluteElem.getOffsetHeight());
+      super.setHeight(height + "px");
+    } else {
+      applyTableWrapperSizes(getTableWrapperSizes());
+      dataWrapper.getStyle().setProperty("width", "100%");
     }
   }
 
   /**
    * Helper method that actually performs the vertical resizing.
+   * 
+   * @deprecated use {@link #redraw()} instead
    */
+  @Deprecated
   protected void resizeTablesVerticallyNow() {
-    // If we aren't attached, return immediately
-    if (!isAttached()) {
-      return;
-    }
-
-    // Force browser to redraw
-    if (scrollPolicy == ScrollPolicy.DISABLED) {
-      dataWrapper.getStyle().setProperty("overflow", "auto");
-      dataWrapper.getStyle().setProperty("overflow", "");
-      resizeTablesVerticallyNowImpl();
-      return;
-    } else if (scrollPolicy == ScrollPolicy.HORIZONTAL) {
-      dataWrapper.getStyle().setProperty("overflow", "hidden");
-      dataWrapper.getStyle().setProperty("overflow", "auto");
-      resizeTablesVerticallyNowImpl();
-      scrollTables(true);
-      return;
-    }
-
-    // Give the data wrapper all remaining height
-    int totalHeight = DOM.getElementPropertyInt(getElement(), "clientHeight");
-    int headerHeight = headerTable.getOffsetHeight();
-    int footerHeight = 0;
-    if (footerTable != null) {
-      footerHeight = footerTable.getOffsetHeight();
-    }
-    DOM.setStyleAttribute(headerWrapper, "height", headerHeight + "px");
-    if (footerWrapper != null) {
-      DOM.setStyleAttribute(footerWrapper, "height", footerHeight + "px");
-    }
-    DOM.setStyleAttribute(dataWrapper, "height", Math.max(totalHeight
-        - headerHeight - footerHeight, 0)
-        + "px");
-    DOM.setStyleAttribute(dataWrapper, "overflow", "hidden");
-    DOM.setStyleAttribute(dataWrapper, "overflow", "auto");
-    scrollTables(true);
+    redraw();
   }
 
   /**
-   * Sets the scroll property of the header and data wrappers when scrolling so
-   * that the header, footer, and data tables line up.
+   * Sets the scroll property of the header and footers wrappers when scrolling
+   * so that the header, footer, and data tables line up.
    * 
-   * @param baseHeader If true, use the header as the alignment source
+   * @param baseHeader true to scroll the data table as well
    */
   protected void scrollTables(boolean baseHeader) {
-    // Return if scrolling is disabled
     if (scrollPolicy == ScrollPolicy.DISABLED) {
       return;
     }
 
-    if (isAttached()) {
+    if (lastScrollLeft >= 0) {
+      headerWrapper.setScrollLeft(lastScrollLeft);
       if (baseHeader) {
-        int headerScrollLeft = headerWrapper.getScrollLeft();
-        dataWrapper.setScrollLeft(headerScrollLeft);
+        dataWrapper.setScrollLeft(lastScrollLeft);
       }
-      int scrollLeft = dataWrapper.getScrollLeft();
-      headerWrapper.setScrollLeft(scrollLeft);
       if (footerWrapper != null) {
-        footerWrapper.setScrollLeft(scrollLeft);
+        footerWrapper.setScrollLeft(lastScrollLeft);
       }
     }
   }
@@ -1841,6 +2033,11 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    */
   private void applyNewColumnWidths(int startIndex,
       List<ColumnWidthInfo> infos, boolean forced) {
+    // Infos can be null if the widths cannot be calculated
+    if (infos == null) {
+      return;
+    }
+
     int offset = getHeaderOffset();
     int numColumns = infos.size();
     for (int i = 0; i < numColumns; i++) {
@@ -1854,24 +2051,75 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
         }
       }
     }
-    impl.repositionSpacer(this);
+    impl.repositionSpacer(this, false);
   }
 
   /**
-   * Create a spacer element that allows scrolling past the edge of a table.
+   * Apply the new sizes to the table wrappers.
    * 
-   * @param wrapper the wrapper element
-   * @return a new spacer element
+   * @param sizes the sizes to apply
    */
-  private Element createSpacer(Element wrapper) {
-    Element spacer = DOM.createDiv();
-    DOM.setStyleAttribute(spacer, "height", "1px");
-    DOM.setStyleAttribute(spacer, "width", "10000px");
-    DOM.setStyleAttribute(spacer, "position", "absolute");
-    DOM.setStyleAttribute(spacer, "top", "1px");
-    DOM.setStyleAttribute(spacer, "left", "1px");
-    DOM.appendChild(wrapper, spacer);
-    return spacer;
+  private void applyTableWrapperSizes(TableHeightInfo sizes) {
+    if (sizes == null) {
+      return;
+    }
+
+    headerWrapper.getStyle().setPropertyPx("height", sizes.headerTableHeight);
+    if (footerWrapper != null) {
+      footerWrapper.getStyle().setPropertyPx("height", sizes.footerTableHeight);
+    }
+    dataWrapper.getStyle().setPropertyPx("height",
+        Math.max(sizes.dataTableHeight, 0));
+    dataWrapper.getStyle().setProperty("overflow", "hidden");
+    dataWrapper.getStyle().setProperty("overflow", "auto");
+  }
+
+  /**
+   * Get the width available for the tables.
+   * 
+   * @return the available width, or -1 if not defined
+   */
+  private int getAvailableWidth() {
+    int clientWidth = absoluteElem.getPropertyInt("clientWidth");
+    if (scrollPolicy == ScrollPolicy.BOTH) {
+      int scrollbarWidth = mockScrollable.getOffsetWidth()
+          - mockScrollable.getPropertyInt("clientWidth");
+      clientWidth = absoluteElem.getPropertyInt("clientWidth") - scrollbarWidth
+          - 1;
+    }
+    return Math.max(clientWidth, -1);
+  }
+
+  /**
+   * Get the widths of all columns, either to their preferred sizes or just
+   * ensure that they are within their min/max boundaries.
+   * 
+   * @param boundsOnly true to only ensure the widths are within the bounds
+   * @return the column widths
+   */
+  private List<ColumnWidthInfo> getBoundedColumnWidths(boolean boundsOnly) {
+    if (!isAttached()) {
+      return null;
+    }
+
+    // Calculate the new column widths
+    int numColumns = dataTable.getColumnCount();
+    int totalWidth = 0;
+    List<ColumnWidthInfo> colWidthInfos = getColumnWidthInfo(0, numColumns);
+
+    // If we are reseting to original widths, set all widths to 0
+    if (!boundsOnly) {
+      for (ColumnWidthInfo info : colWidthInfos) {
+        totalWidth += info.getCurrentWidth();
+        info.setCurrentWidth(0);
+      }
+    }
+
+    // Run the resize algorithm
+    columnResizer.distributeWidth(colWidthInfos, totalWidth);
+
+    // Set the new column widths
+    return colWidthInfos;
   }
 
   /**
@@ -1888,7 +2136,26 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     // Adjust the widths if the columns are not truncatable, up to maxWidth
     if (!isColumnTruncatable(column)) {
+      maybeRecalculateIdealColumnWidths(null);
       int idealWidth = getDataTable().getIdealColumnWidth(column);
+      if (maxWidth != MaximumWidthProperty.NO_MAXIMUM_WIDTH) {
+        idealWidth = Math.min(idealWidth, maxWidth);
+      }
+      minWidth = Math.max(minWidth, idealWidth);
+    }
+    if (!isHeaderColumnTruncatable(column)) {
+      maybeRecalculateIdealColumnWidths(null);
+      int idealWidth = getHeaderTable().getIdealColumnWidth(
+          column + getHeaderOffset());
+      if (maxWidth != MaximumWidthProperty.NO_MAXIMUM_WIDTH) {
+        idealWidth = Math.min(idealWidth, maxWidth);
+      }
+      minWidth = Math.max(minWidth, idealWidth);
+    }
+    if (footerTable != null && !isFooterColumnTruncatable(column)) {
+      maybeRecalculateIdealColumnWidths(null);
+      int idealWidth = getFooterTable().getIdealColumnWidth(
+          column + getHeaderOffset());
       if (maxWidth != MaximumWidthProperty.NO_MAXIMUM_WIDTH) {
         idealWidth = Math.min(idealWidth, maxWidth);
       }
@@ -1914,6 +2181,68 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
+   * Get the column widths needed to fill with available ScrollTable width.
+   * 
+   * @param info the optional precomputed sizes
+   * @return the column widths
+   */
+  private List<ColumnWidthInfo> getFillColumnWidths(TableWidthInfo info) {
+    if (!isAttached()) {
+      return null;
+    }
+
+    // Precompute some sizes
+    if (info == null) {
+      info = new TableWidthInfo(false);
+    }
+
+    // Calculate how much room we have to work with
+    int clientWidth = info.availableWidth;
+    if (clientWidth <= 0) {
+      return null;
+    }
+
+    // Calculate the difference and number of column to resize
+    int diff = 0;
+    int numColumns = 0;
+    {
+      // Calculate the number of columns in each table
+      int numHeaderCols = 0;
+      int numDataCols = 0;
+      int numFooterCols = 0;
+      if (info.headerTableWidth > 0) {
+        numHeaderCols = headerTable.getColumnCount() - getHeaderOffset();
+      }
+      if (info.dataTableWidth > 0) {
+        numDataCols = dataTable.getColumnCount();
+      }
+      if (footerTable != null && info.footerTableWidth > 0) {
+        numFooterCols = footerTable.getColumnCount() - getHeaderOffset();
+      }
+
+      // Determine the largest table
+      if (numHeaderCols >= numDataCols && numHeaderCols >= numFooterCols) {
+        numColumns = numHeaderCols;
+        diff = clientWidth - info.headerTableWidth;
+      } else if (numFooterCols >= numDataCols && numFooterCols >= numHeaderCols) {
+        numColumns = numFooterCols;
+        diff = clientWidth - info.footerTableWidth;
+      } else if (numDataCols > 0) {
+        numColumns = numDataCols;
+        diff = clientWidth - info.dataTableWidth;
+      }
+    }
+    if (numColumns <= 0) {
+      return null;
+    }
+
+    // Calculate the new column widths
+    List<ColumnWidthInfo> colWidthInfos = getColumnWidthInfo(0, numColumns);
+    columnResizer.distributeWidth(colWidthInfos, diff);
+    return colWidthInfos;
+  }
+
+  /**
    * Get the offset between the data and header and footer tables. An offset of
    * one means that the header and footer table indexes are one greater than the
    * data table indexes, probably because the data table contains a checkbox
@@ -1929,6 +2258,52 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
+   * Returns the new heights of the header, data, and footer tables based on the
+   * {@link ScrollPolicy}.
+   * 
+   * @return the new table heights, or null
+   */
+  private TableHeightInfo getTableWrapperSizes() {
+    // If we aren't attached, return immediately
+    if (!isAttached()) {
+      return null;
+    }
+
+    // Heights only apply with vertical scrolling
+    if (scrollPolicy == ScrollPolicy.DISABLED
+        || scrollPolicy == ScrollPolicy.HORIZONTAL) {
+      return null;
+    }
+
+    // Give the data wrapper all remaining height
+    return new TableHeightInfo();
+  }
+
+  /**
+   * Recalculate the ideal columns widths of all inner tables.
+   * 
+   * @param command an optional command to execute while recalculating
+   */
+  private void maybeRecalculateIdealColumnWidths(Command command) {
+    // Calculations require that we are attached
+    if (!isAttached()) {
+      return;
+    }
+
+    // Check if a recalculation is needed.
+    if (headerTable.isIdealColumnWidthsCalculated()
+        && dataTable.isIdealColumnWidthsCalculated()
+        && (footerTable == null || footerTable.isIdealColumnWidthsCalculated())) {
+      if (command != null) {
+        command.execute();
+      }
+      return;
+    }
+
+    impl.recalculateIdealColumnWidths(this, command);
+  }
+
+  /**
    * Prepare a table to be added to the {@link AbstractScrollTable}.
    * 
    * @param table the table to prepare
@@ -1939,59 +2314,6 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     DOM.setStyleAttribute(tableElem, "margin", "0px");
     DOM.setStyleAttribute(tableElem, "border", "0px");
     table.addStyleName(cssName);
-  }
-
-  /**
-   * Reposition the header spacer next to the header table.
-   */
-  private void repositionHeaderSpacer() {
-    int headerWidth = headerTable.getOffsetWidth();
-    headerSpacer.getStyle().setPropertyPx("left", headerWidth);
-    if (footerTable != null) {
-      int footerWidth = footerTable.getOffsetWidth();
-      footerSpacer.getStyle().setPropertyPx("left", footerWidth);
-    }
-  }
-
-  /**
-   * Reset the widths of all columns, either to their preferred sizes or just
-   * ensure that they are within their min/max boundaries.
-   * 
-   * @param boundsOnly true to only ensure the widths are within the bounds
-   */
-  private void resetColumnWidths(boolean boundsOnly) {
-    // Calculate the new column widths
-    int numColumns = dataTable.getColumnCount();
-    int totalWidth = 0;
-    List<ColumnWidthInfo> colWidthInfos = getColumnWidthInfo(0, numColumns);
-
-    // If we are reseting to original widths, set all widths to 0
-    if (!boundsOnly) {
-      for (ColumnWidthInfo info : colWidthInfos) {
-        totalWidth += info.getCurrentWidth();
-        info.setCurrentWidth(0);
-      }
-    }
-
-    // Run the resize algorithm
-    columnResizer.distributeWidth(colWidthInfos, totalWidth);
-
-    // Set the new column widths
-    applyNewColumnWidths(0, colWidthInfos, false);
-
-    // Rescroll the tables
-    scrollTables(false);
-  }
-
-  /**
-   * Set the height of the outer div equal to the height of the absolute
-   * element.
-   */
-  private void resizeTablesVerticallyNowImpl() {
-    // Old mozilla reports the offset height of elements as 0px if the parent
-    // has a height of 0px, so we need to set the height to 1px as a workaround.
-    int height = Math.max(1, absoluteElem.getOffsetHeight());
-    super.setHeight(height + "px");
   }
 
   /**

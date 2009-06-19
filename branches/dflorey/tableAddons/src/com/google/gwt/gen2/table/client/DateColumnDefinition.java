@@ -323,7 +323,7 @@ public abstract class DateColumnDefinition<RowType> extends
       DateColumnResources resources) {
     this(dateTimeFormat, sortingEnabled, filterEnabled, supportedOperators,
         editingEnabled, resources);
-    setHeader(header);
+    setHeader(0, header);
   }
 
   public DateColumnDefinition(Widget headerWidget,
@@ -348,9 +348,9 @@ public abstract class DateColumnDefinition<RowType> extends
       boolean editingEnabled, DateColumnResources resources) {
     this(dateTimeFormat, sortingEnabled, filterEnabled, supportedOperators,
         editingEnabled, resources);
-    setHeaderWidget(headerWidget);
+    setHeader(0, headerWidget);
   }
-
+ 
   /**
    * Column definition used for columns containing {@link Date} objects
    * 
@@ -392,7 +392,6 @@ public abstract class DateColumnDefinition<RowType> extends
       Operator[] supportedOperators, boolean editingEnabled,
       DateColumnResources resources) {
     setColumnSortable(sortingEnabled);
-    setColumnFilterable(filterEnabled);
     if (filterEnabled) {
       setColumnFilter(createDateColumnFilter(dateTimeFormat,
           supportedOperators, resources));

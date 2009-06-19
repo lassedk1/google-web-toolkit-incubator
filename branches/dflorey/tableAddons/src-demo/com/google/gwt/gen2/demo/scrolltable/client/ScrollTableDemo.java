@@ -16,6 +16,10 @@
 package com.google.gwt.gen2.demo.scrolltable.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.column.CellPaddingAndSpacingOption;
 import com.google.gwt.gen2.demo.scrolltable.client.option.column.ColumnResizePolicyOption;
@@ -45,7 +49,6 @@ import com.google.gwt.gen2.table.override.client.FlexTable;
 import com.google.gwt.gen2.table.override.client.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
@@ -54,7 +57,6 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.HashMap;
@@ -191,21 +193,28 @@ public class ScrollTableDemo implements EntryPoint {
     final FlexCellFormatter formatter = layout.getFlexCellFormatter();
     RootPanel.get().add(layout);
 
+    // Initialize the tables
+    {
+      // Create the tables
+      scrollTable = createScrollTable();
+      scrollTable.setHeight("400px");
+
+      // Add the scroll table to the layout
+      layout.setWidget(0, 1, scrollTable);
+      formatter.setWidth(0, 1, "100%");
+      formatter.setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_TOP);
+    }
+
     // Initialize the options menu
     {
-      // Create the options menu
-      Tree menu = new Tree();
-
       // Attach a tree listener
-      menu.addTreeListener(new TreeListener() {
-        public void onTreeItemSelected(TreeItem item) {
-          Widget option = optionMap.get(item);
+      Tree menu = new Tree();
+      menu.addSelectionHandler(new SelectionHandler<TreeItem>() {
+        public void onSelection(SelectionEvent<TreeItem> event) {
+          Widget option = optionMap.get(event.getSelectedItem());
           if (option != null) {
             optionWrapper.setWidget(option);
           }
-        }
-
-        public void onTreeItemStateChanged(TreeItem item) {
         }
       });
 
@@ -221,21 +230,6 @@ public class ScrollTableDemo implements EntryPoint {
 
       // Initialize the options in the menu
       initOptions(menu);
-    }
-
-    // Initialize the tables
-    {
-      // Create the tables
-      FixedWidthFlexTable headerTable = createHeaderTable();
-      FixedWidthFlexTable footerTable = createFooterTable();
-      FixedWidthGrid dataTable = createDataTable();
-      scrollTable = createScrollTable(headerTable, dataTable, footerTable);
-      scrollTable.setHeight("400px");
-
-      // Add the scroll table to the layout
-      layout.setWidget(0, 1, scrollTable);
-      formatter.setWidth(0, 1, "100%");
-      formatter.setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_TOP);
     }
 
     // Initialize the options area
@@ -254,90 +248,15 @@ public class ScrollTableDemo implements EntryPoint {
   }
 
   /**
-   * @return the newly created data table.
-   */
-  protected FixedWidthGrid createDataTable() {
-    FixedWidthGrid dataTable = new FixedWidthGrid();
-    dataTable.setSelectionPolicy(SelectionPolicy.CHECKBOX);
-    return dataTable;
-  }
-
-  /**
-   * @return the new footer table
-   */
-  protected FixedWidthFlexTable createFooterTable() {
-    FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
-    footerTable.setHTML(0, 0, "&nbsp;");
-    for (int i = 0; i < 12; i++) {
-      footerTable.setText(0, i + 1, "Col " + i);
-    }
-    return footerTable;
-  }
-
-  /**
-   * @return the new header table
-   */
-  protected FixedWidthFlexTable createHeaderTable() {
-    FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
-
-    // Level 1 headers
-    FlexCellFormatter headerFormatter = headerTable.getFlexCellFormatter();
-    headerTable.setHTML(0, 0, "User Information");
-    headerFormatter.setColSpan(0, 0, 13);
-
-    // Create the select all checkbox
-    final CheckBox selectAll = new CheckBox();
-    selectAll.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
-        if (selectAll.isChecked()) {
-          getDataTable().selectAllRows();
-        } else {
-          getDataTable().deselectAllRows();
-        }
-      }
-    });
-
-    // Level 2 headers
-    headerTable.setWidget(1, 0, selectAll);
-    headerFormatter.setRowSpan(1, 0, 2);
-    headerFormatter.setHorizontalAlignment(1, 0,
-        HasHorizontalAlignment.ALIGN_CENTER);
-    headerTable.setHTML(1, 1, "First and Last Name");
-    headerFormatter.setColSpan(1, 1, 2);
-    headerFormatter.setRowSpan(1, 1, 2);
-    headerTable.setHTML(1, 2, "General Info");
-    headerFormatter.setColSpan(1, 2, 3);
-    headerTable.setHTML(1, 3, "Favorite Color");
-    headerFormatter.setColSpan(1, 3, 1);
-    headerFormatter.setRowSpan(1, 3, 2);
-    headerTable.setHTML(1, 4, "Preferred Sport");
-    headerFormatter.setColSpan(1, 4, 1);
-    headerFormatter.setRowSpan(1, 4, 2);
-    headerTable.setHTML(1, 5, "School Info");
-    headerFormatter.setColSpan(1, 5, 3);
-    headerTable.setHTML(1, 6, "Login Info");
-    headerFormatter.setColSpan(1, 6, 2);
-
-    // Level 3 headers
-    headerTable.setHTML(2, 0, "Age");
-    headerTable.setHTML(2, 1, "Gender");
-    headerTable.setHTML(2, 2, "Race");
-    headerTable.setHTML(2, 3, "College");
-    headerTable.setHTML(2, 4, "Year");
-    headerTable.setHTML(2, 5, "GPA");
-    headerTable.setHTML(2, 6, "ID");
-    headerTable.setHTML(2, 7, "Pin");
-
-    return headerTable;
-  }
-
-  /**
    * Setup the scroll table.
    */
-  protected AbstractScrollTable createScrollTable(
-      FixedWidthFlexTable headerTable, FixedWidthGrid dataTable,
-      FixedWidthFlexTable footerTable) {
-    // Add the scroll table to the page
+  protected AbstractScrollTable createScrollTable() {
+    // Create the three component tables
+    FixedWidthFlexTable headerTable = createHeaderTable();
+    FixedWidthFlexTable footerTable = createFooterTable();
+    FixedWidthGrid dataTable = createDataTable();
+
+    // Create the scroll table
     ScrollTable theScrollTable = new ScrollTable(dataTable, headerTable);
     theScrollTable.setFooterTable(footerTable);
 
@@ -349,10 +268,12 @@ public class ScrollTableDemo implements EntryPoint {
     // first name
     theScrollTable.setMinimumColumnWidth(0, 50);
     theScrollTable.setPreferredColumnWidth(0, 100);
+    theScrollTable.setColumnTruncatable(0, false);
 
     // last name
     theScrollTable.setMinimumColumnWidth(1, 50);
     theScrollTable.setPreferredColumnWidth(1, 100);
+    theScrollTable.setColumnTruncatable(1, false);
 
     // age
     theScrollTable.setMinimumColumnWidth(2, 35);
@@ -383,15 +304,19 @@ public class ScrollTableDemo implements EntryPoint {
 
     // year
     theScrollTable.setPreferredColumnWidth(8, 25);
+    theScrollTable.setColumnTruncatable(8, false);
 
     // gpa
     theScrollTable.setPreferredColumnWidth(9, 35);
+    theScrollTable.setColumnTruncatable(9, false);
 
     // id
     theScrollTable.setPreferredColumnWidth(10, 55);
+    theScrollTable.setColumnTruncatable(10, false);
 
     // pin
     theScrollTable.setPreferredColumnWidth(11, 45);
+    theScrollTable.setColumnTruncatable(11, false);
 
     return theScrollTable;
   }
@@ -484,5 +409,83 @@ public class ScrollTableDemo implements EntryPoint {
     for (int i = 0; i < 15; i++) {
       insertDataRow(i);
     }
+  }
+
+  /**
+   * @return the newly created data table.
+   */
+  private FixedWidthGrid createDataTable() {
+    FixedWidthGrid dataTable = new FixedWidthGrid();
+    dataTable.setSelectionPolicy(SelectionPolicy.CHECKBOX);
+    return dataTable;
+  }
+
+  /**
+   * @return the new footer table
+   */
+  private FixedWidthFlexTable createFooterTable() {
+    FixedWidthFlexTable footerTable = new FixedWidthFlexTable();
+    footerTable.setHTML(0, 0, "&nbsp;");
+    for (int i = 0; i < 12; i++) {
+      footerTable.setText(0, i + 1, "Col " + i);
+    }
+    return footerTable;
+  }
+
+  /**
+   * @return the new header table
+   */
+  private FixedWidthFlexTable createHeaderTable() {
+    FixedWidthFlexTable headerTable = new FixedWidthFlexTable();
+
+    // Level 1 headers
+    FlexCellFormatter headerFormatter = headerTable.getFlexCellFormatter();
+    headerTable.setHTML(0, 0, "User Information");
+    headerFormatter.setColSpan(0, 0, 13);
+
+    // Create the select all checkbox
+    final CheckBox selectAll = new CheckBox();
+    selectAll.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        if (selectAll.getValue()) {
+          getDataTable().selectAllRows();
+        } else {
+          getDataTable().deselectAllRows();
+        }
+      }
+    });
+
+    // Level 2 headers
+    headerTable.setWidget(1, 0, selectAll);
+    headerFormatter.setRowSpan(1, 0, 2);
+    headerFormatter.setHorizontalAlignment(1, 0,
+        HasHorizontalAlignment.ALIGN_CENTER);
+    headerTable.setHTML(1, 1, "First and Last Name");
+    headerFormatter.setColSpan(1, 1, 2);
+    headerFormatter.setRowSpan(1, 1, 2);
+    headerTable.setHTML(1, 2, "General Info");
+    headerFormatter.setColSpan(1, 2, 3);
+    headerTable.setHTML(1, 3, "Favorite Color");
+    headerFormatter.setColSpan(1, 3, 1);
+    headerFormatter.setRowSpan(1, 3, 2);
+    headerTable.setHTML(1, 4, "Preferred Sport");
+    headerFormatter.setColSpan(1, 4, 1);
+    headerFormatter.setRowSpan(1, 4, 2);
+    headerTable.setHTML(1, 5, "School Info");
+    headerFormatter.setColSpan(1, 5, 3);
+    headerTable.setHTML(1, 6, "Login Info");
+    headerFormatter.setColSpan(1, 6, 2);
+
+    // Level 3 headers
+    headerTable.setHTML(2, 0, "Age");
+    headerTable.setHTML(2, 1, "Gender");
+    headerTable.setHTML(2, 2, "Race");
+    headerTable.setHTML(2, 3, "College");
+    headerTable.setHTML(2, 4, "Year");
+    headerTable.setHTML(2, 5, "GPA");
+    headerTable.setHTML(2, 6, "ID");
+    headerTable.setHTML(2, 7, "Pin");
+
+    return headerTable;
   }
 }

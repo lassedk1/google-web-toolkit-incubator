@@ -33,7 +33,10 @@ import java.lang.annotation.Target;
  * 
  * @param <T> The type that should be returned from the
  *          <code>GWT.create()</code> call
+ * @deprecated Superseded by
+ *             {@link com.google.gwt.resources.client.GwtCreateResource}
  */
+@Deprecated
 @ResourceGeneratorType(GwtCreateResourceGenerator.class)
 public interface GwtCreateResource<T> extends ResourcePrototype {
   /**

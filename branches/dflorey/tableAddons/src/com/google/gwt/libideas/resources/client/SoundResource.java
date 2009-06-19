@@ -27,7 +27,11 @@ import com.google.gwt.libideas.resources.rg.SoundResourceGenerator;
  * <li>ADPCM/WAV files</li>
  * </ul>
  * The browser must support playing SWF files of version 8 or better.
+ * 
+ * @deprecated This resource type has not been retained in GWT trunk due to
+ *             perceived lack of interest.
  */
+@Deprecated
 @ResourceGeneratorType(SoundResourceGenerator.class)
 public interface SoundResource extends ResourcePrototype {
   /**

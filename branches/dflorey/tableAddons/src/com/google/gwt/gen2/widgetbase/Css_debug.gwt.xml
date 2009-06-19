@@ -25,5 +25,8 @@
 	<stylesheet src="DropDownListBox.css" />
 	<stylesheet src="Picker.css" />
 	<stylesheet src="DropDownDatePicker.css" />
-    <stylesheet src="FastTree.css" />
+	<stylesheet src="CollapsiblePanel_base.css" />
+	<stylesheet src="CollapsiblePanel_ltr.css" />
+	<stylesheet src="FastTree_base.css" />
+	<stylesheet src="FastTree_ltr.css" />
 </module>

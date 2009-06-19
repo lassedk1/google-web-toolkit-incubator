@@ -21,9 +21,9 @@ import java.util.List;
 /**
  * 
  */
-public class CssRule extends CssNode implements HasProperties {
-  private final List<CssProperty> properties = new ArrayList<CssProperty>();
-  private final List<CssSelector> selectors = new ArrayList<CssSelector>();
+public class CssRule extends CssNode implements HasProperties, HasSelectors {
+  protected final List<CssProperty> properties = new ArrayList<CssProperty>();
+  protected final List<CssSelector> selectors = new ArrayList<CssSelector>();
 
   public List<CssProperty> getProperties() {
     return properties;

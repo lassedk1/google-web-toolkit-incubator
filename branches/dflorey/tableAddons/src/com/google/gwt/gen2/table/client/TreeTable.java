@@ -16,6 +16,8 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractRowView;
 import com.google.gwt.gen2.table.shared.ColumnFilterInfo;
 import com.google.gwt.gen2.table.shared.ColumnFilterList;
@@ -25,10 +27,9 @@ import com.google.gwt.gen2.table.shared.Request;
 import com.google.gwt.gen2.table.shared.SerializableResponse;
 import com.google.gwt.gen2.table.shared.TreeRequest;
 import com.google.gwt.gen2.table.shared.TreeTableItem;
-import com.google.gwt.libideas.resources.client.ImageResource;
-import com.google.gwt.libideas.resources.client.ImageResource.ImageOptions;
-import com.google.gwt.libideas.resources.client.ImageResource.RepeatStyle;
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ImageResource.ImageOptions;
+import com.google.gwt.resources.client.ImageResource.RepeatStyle;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -283,22 +284,22 @@ public class TreeTable<RowType extends TreeTableItem> extends
     /**
      * The css file.
      */
-    @Resource("com/google/gwt/gen2/widgetbase/public/TreeTable.css")
+    @Source("com/google/gwt/gen2/widgetbase/public/TreeTable.css")
     Css css();
 
-    @Resource("treeClosed.gif")
+    @Source("treeClosed.gif")
     ImageResource treeClosed();
 
-    @Resource("treeOpen.gif")
+    @Source("treeOpen.gif")
     ImageResource treeOpen();
 
-    @Resource("treeIndent.gif")
+    @Source("treeIndent.gif")
     ImageResource treeIndent();
 
-    @Resource("treeIndentUp.gif")
+    @Source("treeIndentUp.gif")
     ImageResource treeIndentUp();
 
-    @Resource("headerBackground.png")
+    @Source("headerBackground.png")
     @ImageOptions(repeatStyle = RepeatStyle.Horizontal)
     ImageResource headerBackground();
   }
@@ -398,8 +399,8 @@ public class TreeTable<RowType extends TreeTableItem> extends
           nodeIndicator.setTitle(messages.closeTreeNodeTooltip(treeTableItem.getDisplayName()));
           nodeIndicator.setStyleName(css.treeTableOpenNode());
         }
-        nodeIndicator.addClickListener(new ClickListener() {
-          public void onClick(Widget sender) {
+        nodeIndicator.addClickHandler(new ClickHandler() {
+          public void onClick(ClickEvent event) {
             invertedNodes.remove(treeTableItem.getId());
             treeTable.reloadPage();
           }
@@ -414,8 +415,8 @@ public class TreeTable<RowType extends TreeTableItem> extends
           nodeIndicator.setTitle(messages.openTreeNodeTooltip(treeTableItem.getDisplayName()));
           nodeIndicator.setStyleName(css.treeTableClosedNode());
         }
-        nodeIndicator.addClickListener(new ClickListener() {
-          public void onClick(Widget sender) {
+        nodeIndicator.addClickHandler(new ClickHandler() {
+          public void onClick(ClickEvent event) {
             invertedNodes.add(treeTableItem.getId());
             treeTable.reloadPage();
           }
@@ -430,8 +431,8 @@ public class TreeTable<RowType extends TreeTableItem> extends
       final TreeTableItem parent = treeTableItem.getParent();
       spacer.setTitle(treeTable.getResources().getMessages().jumpTo(
           parent.getDisplayName()));
-      spacer.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+      spacer.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
           int row = parent.getRow();
           treeTable.gotoPage(row / treeTable.getPageSize(), false);
           treeTable.getDataTable().selectRow(row % treeTable.getPageSize(),

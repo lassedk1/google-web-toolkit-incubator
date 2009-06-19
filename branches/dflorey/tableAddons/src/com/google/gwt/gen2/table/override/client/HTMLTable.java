@@ -898,7 +898,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
     Element td = DOM.eventGetTarget(event);
     for (; td != null; td = DOM.getParent(td)) {
       // If it's a TD, it might be the one we're looking for.
-      if (DOM.getElementProperty(td, "tagName").equalsIgnoreCase("td")) {
+      if ("td".equalsIgnoreCase(td.getPropertyString("tagName"))) {
         // Make sure it's directly a part of this table before returning
         // it.
         Element tr = DOM.getParent(td);
@@ -926,7 +926,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
     Element tr = DOM.eventGetTarget(event);
     for (; tr != null; tr = DOM.getParent(tr)) {
       // If it's a TD, it might be the one we're looking for.
-      if (DOM.getElementProperty(tr, "tagName").equalsIgnoreCase("tr")) {
+      if ("tr".equalsIgnoreCase(tr.getPropertyString("tagName"))) {
         // Make sure it's directly a part of this table before returning
         // it.
         Element body = DOM.getParent(tr);

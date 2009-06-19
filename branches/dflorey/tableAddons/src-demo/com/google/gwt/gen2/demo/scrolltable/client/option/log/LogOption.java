@@ -16,11 +16,14 @@
 package com.google.gwt.gen2.demo.scrolltable.client.option.log;
 
 import com.google.gwt.core.client.Duration;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.demo.scrolltable.client.PagingScrollTableDemo;
 import com.google.gwt.gen2.demo.scrolltable.client.ScrollTableDemo;
-import com.google.gwt.gen2.demo.scrolltable.client.StudentPagingScrollTable;
 import com.google.gwt.gen2.demo.scrolltable.client.option.AbstractOption;
+import com.google.gwt.gen2.demo.scrolltable.shared.Student;
 import com.google.gwt.gen2.table.client.FixedWidthGrid;
+import com.google.gwt.gen2.table.client.PagingScrollTable;
 import com.google.gwt.gen2.table.event.client.CellHighlightEvent;
 import com.google.gwt.gen2.table.event.client.CellHighlightHandler;
 import com.google.gwt.gen2.table.event.client.CellUnhighlightEvent;
@@ -43,7 +46,6 @@ import com.google.gwt.gen2.table.override.client.FlexTable;
 import com.google.gwt.gen2.table.shared.ColumnSortList;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -77,6 +79,11 @@ public class LogOption extends AbstractOption {
    */
   private Duration pageLoadDuration = null;
 
+  public LogOption() {
+    // The log should initialize immediately
+    initialize();
+  }
+
   @Override
   protected String getDescription() {
     return "";
@@ -97,8 +104,8 @@ public class LogOption extends AbstractOption {
     layout.getFlexCellFormatter().setColSpan(0, 0, 2);
 
     // Add a clear button
-    Button clearButton = new Button("Clear Log", new ClickListener() {
-      public void onClick(Widget sender) {
+    Button clearButton = new Button("Clear Log", new ClickHandler() {
+      public void onClick(ClickEvent event) {
         logLabel.setHTML("");
         lineCount = 0;
       }
@@ -195,23 +202,25 @@ public class LogOption extends AbstractOption {
     });
 
     // Paging specific options
-    StudentPagingScrollTable pagingScrollTable = PagingScrollTableDemo.get().getPagingScrollTable();
-    if (pagingScrollTable != null) {
-      pagingScrollTable.addPageChangeHandler(new PageChangeHandler() {
-        public void onPageChange(PageChangeEvent event) {
-          pageLoadDuration = new Duration();
-        }
-      });
+    if (PagingScrollTableDemo.get() != null) {
+      PagingScrollTable<Student> pagingScrollTable = PagingScrollTableDemo.get().getPagingScrollTable();
+      if (pagingScrollTable != null) {
+        pagingScrollTable.addPageChangeHandler(new PageChangeHandler() {
+          public void onPageChange(PageChangeEvent event) {
+            pageLoadDuration = new Duration();
+          }
+        });
 
-      pagingScrollTable.addPageLoadHandler(new PageLoadHandler() {
-        public void onPageLoad(PageLoadEvent event) {
-          // Convert to 1 based index
-          int page = event.getPage() + 1;
-          int duration = pageLoadDuration.elapsedMillis();
-          String text = "Page " + page + " loaded in " + duration + "ms";
-          addLogEntry(text, "black");
-        }
-      });
+        pagingScrollTable.addPageLoadHandler(new PageLoadHandler() {
+          public void onPageLoad(PageLoadEvent event) {
+            // Convert to 1 based index
+            int page = event.getPage() + 1;
+            int duration = pageLoadDuration.elapsedMillis();
+            String text = "Page " + page + " loaded in " + duration + "ms";
+            addLogEntry(text, "black");
+          }
+        });
+      }
     }
 
     return layout;

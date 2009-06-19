@@ -28,7 +28,11 @@ import java.lang.annotation.Target;
  * specifying the classpath location of the resource to include in the output.
  * At runtime, the functions will return an object that can be used to access
  * the data in the original resource.
+ * 
+ * @deprecated Superseded by
+ *             {@link com.google.gwt.resources.client.ClientBundle}.
  */
+@Deprecated
 @ResourceGeneratorType(BundleResourceGenerator.class)
 public interface ImmutableResourceBundle {
   // TODO(bobv): Rename to ClientBundle
@@ -36,7 +40,11 @@ public interface ImmutableResourceBundle {
   /**
    * Specifies the classpath location of the resource or resources associated
    * with the {@link ResourcePrototype}.
+   * 
+   * @deprecated Superseded by
+   *             {@link com.google.gwt.resources.client.ClientBundle.Source}.
    */
+  @Deprecated
   @Target(ElementType.METHOD)
   public @interface Resource {
     // TODO(bobv): Rename to @Source
@@ -61,14 +69,23 @@ public interface ImmutableResourceBundle {
    * 
    * @param name the name of the desired resource
    * @return the resource, or <code>null</code> if no such resource is defined.
+   * @deprecated Superseded by
+   *             {@link com.google.gwt.resources.client.ClientBundleWithLookup#getResource(String)}
+   *             .
    */
+  @Deprecated
   // TODO(bobv): Move this to ClientBundleWithLookup
   ResourcePrototype getResource(String name);
 
   /**
    * A convenience method to iterate over all ResourcePrototypes contained in
    * the ResourceBundle.
+   * 
+   * @deprecated Superseded by
+   *             {@link com.google.gwt.resources.client.ClientBundleWithLookup#getResources}
+   *             .
    */
   // TODO(bobv): Move this to ClientBundleWithLookup
+  @Deprecated
   ResourcePrototype[] getResources();
 }
