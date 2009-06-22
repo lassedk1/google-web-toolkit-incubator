@@ -52,6 +52,7 @@ public abstract class Gen2Widget extends Widget implements HasHandlerManager {
 
   @Override
   public void onBrowserEvent(Event nativeEvent) {
+    super.onBrowserEvent(nativeEvent);
     if (handlerManager != null) {
       DomEvent.fireNativeEvent(nativeEvent, handlerManager);
     }
