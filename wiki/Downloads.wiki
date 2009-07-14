@@ -1,7 +1,15 @@
 #summary gwt-incubator download launch page
  [http://code.google.com/p/google-web-toolkit-incubator/downloads/list?can=2&q=&colspec=Filename+Summary+Uploaded+Size+DownloadCount For a list of all downloads, click here] 
 
+= gwt-incubator drop for gwt 1.7 =
 
+[http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator-july-14-2009.jar click here to download the 1.7 gwt-incubator jar]
+ 
+|| Source || http://google-web-toolkit-incubator.googlecode.com/svn/trunk ||
+|| Revision || 1686 ||
+|| Last Changed Date || Mon, 22 Jun 2009 ||
+|| Java docs || http://collectionofdemos.appspot.com/javadoc/index.html || 
+|| GWT version || GWT 1.7 or greater, available [http://code.google.com/p/google-web-toolkit/downloads/list?can=1&q=1.7&sort=-downloadcount&colspec=Filename+Summary+Uploaded+Size+DownloadCount here] ||
 
 = gwt-incubator drop for gwt 1.6 =
 
