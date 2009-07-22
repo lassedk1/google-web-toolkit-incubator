@@ -1,0 +1,31 @@
+@CHARSET "UTF-8";
+
+HTML,BODY {
+  padding: 10px;
+  margin: 10px 20px 30px 40px;
+}
+
+BODY {
+  border: 1px solid blue;
+}
+
+* {
+  z-index: 1;
+}
+
+BUTTON {
+  margin: 2px;
+}
+
+.buttons {
+  z-index: 2;
+  text-align: center;
+}
+
+.green {
+  background-color: green !important;
+}
+
+.red {
+  background-color: red !important;
+}
