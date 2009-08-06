@@ -72,7 +72,7 @@ public interface MyUiMessages extends com.google.gwt.i18.client.Messages {
 
 *Explanation*
 
-This is the hello world case‚Äîa simple, unparametrized string.
+This is the hello world case‚ a simple, unparametrized string.
 
 = Simple HTML tags inside message =
 
