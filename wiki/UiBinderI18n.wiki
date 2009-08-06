@@ -70,8 +70,6 @@ public interface MyUiMessages extends com.google.gwt.i18.client.Messages {
 }
 }}}
 
-*Explanation*
-
 This is the hello world case‚ a simple, unparametrized string.
 
 = Simple HTML tags inside message =
@@ -90,7 +88,71 @@ We <b>strongly</b> urge you to reconsider.
 
 As above
 
-*Explanation*
-
 Simple formatting is reasonable to put in front of a translator, and
 so UiBinder supports html in messages, not just text.
+
+
+= Messages with unclobberable portions =
+
+*Original*
+{{{
+<!-- Uh oh, don't want translator to mess up brand CSS or the trademark span -->
+<div><span class="brand">Colgate</span>, with MFP!<span class="tm">TM</span></div>
+}}}
+
+*Tagged* 
+{{{
+<div>
+  <ui:msg description="blurb"><span class="brand" ui:ph="brandedSpan">Colgate</span>,
+  with MFP!<ui:ph name="trademark"><span class="tm">TM</span></ui:ph></ui:msg>
+</div>
+}}}
+
+
+*Generated*
+{{{
+public class MyUiBinderImpl implements MyUiBinder {
+  static final String MESSAGE1_BRANDED_SPAN_OPEN = "<span class=\"brand\">";
+  static final String MESSAGE1_BRANDED_SPAN_CLOSE = "</span>";
+  static final String MESSAGE1_TRADEMARK = "<span class='tm'>TM</span>";
+  static final MyUiMessages messages = GWT.create(MyUiMessages.class);
+
+  static final MyUiMessages messages = GWT.create(MyUiMessages.class);
+
+  public void bind(MyUi myUi) {
+    HTML html = new HTML();
+    html.setHtml("<div>"
+      + messages.message1(MESSAGE1_BRANDED_SPAN_OPEN,
+            MESSAGE1_BRANDED_SPAN_CLOSE, MESSAGE1_TRADEMARK)
+      + "</div>");
+  }
+}
+
+@DefaultLocale("en_US")
+@Description("blurb")
+@GenerateKeys
+@GeneratedFrom("com.foo.bar.MyUi.ul.xml")
+public interface MyUiMessages extends com.google.gwt.i18.client.Messages {
+  @DefaultMessage("{0}Colgate{1}, with MFP!{2}")
+  String message1(
+    @Example(MyUiBinderImpl.MESSAGE1_BRANDED_SPAN_OPEN) String brandedSpanOpen, 
+    @Example(MyUiBinderImpl.MESSAGE1_BRANDED_SPAN_CLOSE) String brandedSpanClose,
+    @Example(MyUiBinderImpl.MESSAGE1_TRADEMARK) String trademark
+  );
+}
+}}}
+
+There are two examples in here. First, you see a {{{ui:ph}}} attribute that
+can be added to any child of a {{{ui:msg}}}, to indicate that placholders
+should be created to protect it from translators. Two placeholders are
+created, for the opening and closing tags of the element (in this
+case, brandedSpanOpen and brandedSpanClose).
+
+Second, we see an element, also named {{{ui:ph}}}, that can surround an
+arbitrary bit of markup to be protected in its entirety (in this case,
+the trademark placeholder).
+
+So, you have both an element *<ui:ph>*to surround untranslatable
+runs*</ui:ph>*, and the <span *ui:ph*>attribute{{{<}}}/span> to put in
+arbitrary elements to hide their begin and end tags from translators,
+but keep their content as part of the message.
