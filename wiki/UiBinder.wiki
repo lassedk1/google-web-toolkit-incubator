@@ -7,6 +7,8 @@ Ray Ryan
 
 This document provides various use cases for the use of the UiBinder, a proposed service to generate Widget and DOM structures from XML markup.
 
+The samples here ignore binder's localization features. See UiBinderI18n.
+
 = Background =
 
 There are problems with the declarative ui template service as it was [DeclarativeUi originally proposed]
