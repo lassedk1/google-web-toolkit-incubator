@@ -1,0 +1,6 @@
+#summary Localization features of UiBinder
+
+= Introduction =
+
+The page will provide a terse description of the localization features of UiBinder, and examples of their use. In a moment or two.
+
