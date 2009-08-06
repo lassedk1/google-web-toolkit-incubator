@@ -33,10 +33,64 @@ So far, I have found no use for Gxp's <ui:eph/> element. Is it really not needed
 
 Unannotated user visible text is allowed--a feature is needed to make this a compile time error.
 
-= Sample =
+= Complete sentence or headline with no internal tags. =
 
 *Original*
+{{{
+<h1>User Account Management.</h1>
+}}}
 
 *Tagged* 
+{{{
+<h1>
+  <ui:msg description="Title of UAM page">User Account Management.</ui:msg>
+</h1>
+}}}
+
 
 *Generated*
+{{{
+public class MyUiBinderImpl implements MyUiBinder {
+  static final MyUiMessages messages = GWT.create(MyUiMessages.class);
+
+  void bindUi(MyUi myUi) {
+    HTML html = new HTML();
+    html.setHtml("<h1>" + messages.message1() + "</h1>");
+    myUi.setElement(html.getElement());
+  }
+}
+
+@DefaultLocale("en_US")
+@GenerateKeys
+@GeneratedFrom("com.foo.bar.MyUi.ul.xml")
+public interface MyUiMessages extends com.google.gwt.i18.client.Messages {
+  @DefaultMessage("User Account Management.")
+  @Description("Title of UAM page")
+  String message1();
+}
+}}}
+
+*Explanation*
+
+This is the hello world case‚Äîa simple, unparametrized string.
+
+= Simple HTML tags inside message =
+
+*Original*
+{{{
+We <b>strongly</b> urge you to reconsider.
+}}}
+
+*Tagged* 
+{{{
+<ui:msg>We <b>strongly</b> urge you to reconsider.</ui:msg>
+}}}
+
+*Generated*
+
+As above
+
+*Explanation*
+
+Simple formatting is reasonable to put in front of a translator, and
+so UiBinder supports html in messages, not just text.
