@@ -1,9 +1,42 @@
-#summary Localization features of UiBinder
+#summary GWT UiBinder i18n use cases
 
 Ray Ryan <br />
 freely plagiarizing from the brilliant minds behind [http://code.google.com/p/gxp/ gxp]
 
+This document explores internationalization use cases supported the GWT UiBinder. 
 
-= Introduction =
+= Background =
 
-The page will provide a terse description of the localization features of UiBinder, and examples of their use. In a moment or two.
+The basic idea is that the localizable bits of your ui.xml template file are marked up as such. When the UiBinder code generator processes the template, it gathers these and creates an interface  extends com.google.gwt.i18.client.Messages. You then provide localized versions of these messages as you would for any other portion of your app. (See the Binding to Properties Files section of the [http://google-web-toolkit.googlecode.com/svn/javadoc/1.6/com/google/gwt/i18n/client/Messages.html Messages javadoc].)
+
+Values for annotations that apply at the Messages interface level are set as attributes on the root element. Here is an example with all possible values set (normally you'd let some of these default).
+
+{{{
+<ui:UiBinder
+  xmlns:ui='urn:ui:com.google.gwt.uibinder'
+
+  ui:defaultLocale="en_us"
+  ui:generateKeys="com.my.app.KeyGenerator"
+  ui:generateFormat="com.my.app.MessageCatalogFormat1, com.my.app.MessageCatalogFormat2"
+  ui:generateFilename="myapp_translate_source"
+  ui:generateLocales="default"
+> 
+}}}
+
+= Open Issues =
+
+Support for Constants and ConstantsWithLookup is not yet designed.
+
+PluralText is theoretically supported, but untested.
+
+So far, I have found no use for Gxp's <ui:eph/> element. Is it really not needed, or do I just lack imagination?
+
+Unannotated user visible text is allowed--a feature is needed to make this a compile time error.
+
+= Sample =
+
+*Original*
+
+*Tagged* 
+
+*Generated*
