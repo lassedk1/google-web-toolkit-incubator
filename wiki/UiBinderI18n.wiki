@@ -183,6 +183,182 @@ name. The {{{ui:field}}} attribute's appearance inside a child of a
 required, and the field name can be used as the placeholder name.
 
 The {{{ui:example}}} attribute is optional, and allows more useful
-text to be provided in the @Example() attribute of the generated
+text to be provided in the {{{@Example()}}} attribute of the generated
 Mesages interface (and hence to the translator). Without it, the
 parameters here would both be annotated {{{@Example("<span/>")}}}
+
+
+= Message containing widgets (HTMLPanel only) =
+
+*Original*
+{{{
+<ui:HTMLPanel>
+  Meeting starts at
+    <my:TimePicker ui:field="startPicker"/>
+  and ends at
+    <my:TimePicker ui:field="endPicker"/>.
+</ui:HTMLPanel>
+}}}
+
+*Tagged* 
+{{{
+<ui:HTMLPanel>
+  <ui:msg>Meeting starts at
+    <my:TimePicker ui:field="startPicker"/>
+  and ends at
+    <my:TimePicker ui:field="endPicker"/>.
+  </ui:msg>
+</ui:HTMLPanel>
+}}}
+
+
+Note that there is no {{{ui:ph}}} attribute on the widgets. There's no
+need for them, as there is no ambiguity about what must be done when a
+widget shows up in the middle of a message. Note also that you can
+only do this kind of thing (widgets in messages) inside of an
+HTMLPanel, the only widget in the GWT collection that intermixes
+markup and child widgets.
+
+= Message containing widgets with text bodies (HasText or HasHtml inside HTMLPanel) =
+
+*Original*
+{{{
+<ui:HTMLPanel>
+  To do the thing,
+  <ui:HyperLink token="/doThe#thing">click
+  here</ui:HyperLink> and massage vigorously.
+</ui:HTMLPanel>
+}}}
+
+*Tagged* 
+{{{
+<ui:HTMLPanel>
+  <ui:msg>To do the thing,
+  <ui:HyperLink token="/doThe#thing">click
+  here</ui:HyperLink> and massage vigorously.
+  </ui:msg>
+</ui:HTMLPanel> 
+}}}
+
+
+*Generated*
+{{{
+@Default("To do the thing, {0}click here{1} and massage vigorously.")
+String message536(
+  @Example("<span>") String startWidget,
+  @Example("</span>") String endWidget
+);
+
+HTMLPanel panel = ..." + messages.message536("<span id='xyz'>", "</span>") + "...
+HyperLink link = new HyperLink();
+link.setHistoryToken("/doThe#thing");
+link.setText(panel.getElementById("xyz").getInnerText());
+panel.addAndReplace(link, "xyz");
+}}}
+
+Again, only an HTMLPanel can intermix markup and widgets, and so only
+an HTMLPanel can hold a {{{<ui:msg>}}} in this style. Further, only the
+bodies of HasHTML and HasText children can be recognized as part of
+the message.
+
+= HTML attributes that need translation =
+
+*Original*
+{{{
+<th title="Keyword targeted">
+  <ui:msg>Keyword</ui:msg>
+</th>
+}}}
+
+*Tagged* 
+{{{
+<th title="Keyword targeted">
+  <ui:attribute ui:name="title" ui:description="Tooltip text for keyword column"/>
+  <ui:msg>Keyword</ui:msg>
+</th>
+}}}
+
+
+*Generated*
+{{{
+@DefaultLocale("en_US")
+@GenerateKeys
+@GeneratedFrom("com.foo.bar.MyUi.ul.xml")
+public class MyUiBinderImpl implements MyUiBinder {
+   static final MyUiMessages messages = GWT.create(MyUiMessages.class);
+
+   void bindUi(MyUi myUi) {
+     HTML html = new HTML();
+     html.setHtml("<th title='" + messages.message1() + ">"
+       + messages.message2()
+       + "</th>");
+     myUi.setElement(html.getElement());
+   }
+}
+
+public interface MyUiMessages extends com.google.gwt.i18.client.Messages {
+  @DefaultMessage("Keyword targetted")
+  @Description("Tooltip text for keyword column")
+  String message1();
+
+  @DefaultMessage("Keyword")
+  String message2();
+} 
+}}}
+
+Most common examples of this are the title attribute, for tool-tip
+text, and the alt tag of an <img> element.
+
+= Plural vs. Singular =
+
+*Original*
+{{{
+<!-- Imagine code that shows or hides these spans as appropriate -->
+<span ui:field="plural">
+  You have <span ui:field="pluralFormCount"/> active campaigns.
+</span>
+<span ui:field="singular">
+  You have one active campaign.
+</span>
+}}}
+
+*Tagged* 
+{{{
+<ui:msg>
+  You have <ui:ph name="campaignCount" example="5"/> active campaigns.
+  <ui:pluralText key="one">You have one active campaign.</ui:pluralText>
+</ui:msg>
+}}}
+
+= Words with Multiple Meanings =
+
+*Original*
+{{{
+Favorite Color:
+  <ui:RadioButton name="color">Red</ui:RadioButton>
+  <ui:RadioButton name="color">Orange</ui:RadioButton>
+
+Favorite Fruit:
+  <ui:RadioButton name="fruit">Apple</ui:RadioButton>
+  <ui:RadioButton name="fruit">Orange</ui:RadioButton>
+}}}
+
+*Tagged* 
+{{{
+Favorite Color:
+  <ui:RadioButton name="color"><ui:msg>Red</ui:msg></ui:RadioButton>
+  <ui:RadioButton name="color"><ui:msg meaning="the color"/>Orange</ui:msg></ui:RadioButton>
+
+Favorite Fruit:
+  <ui:RadioButton name="fruit"><ui:msg>Apple</ui:msg></ui:RadioButton>
+  <ui:RadioButton name="fruit"><ui:msg meaning="the fruit">Orange</ui:msg></ui:RadioButton>
+}}}
+
+
+The punchline here is that a translator may well be working with no
+more context than the attributes you set on an individual
+message. Post processors that generate unique hashes on the contents
+of the default message can use the optional {{{meaning}}} attribute to
+modify the hash. In this example that ensures that we get two
+different translations of the word "orange" in languages where it's
+needed.
