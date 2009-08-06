@@ -1,6 +1,10 @@
 #summary Localization features of UiBinder
 
+Ray Ryan <br />
+freely plagiarizing from the brilliant minds behind [http://code.google.com/p/gxp/ gxp]
+
+
 = Introduction =
 
-The page will provide a terse description of the localization features of UiBinder, and examples of their use. In a moment or two.
-
+The page will provide a terse description of the localization features of UiBinder, and examples of their\
+ use. In a moment or two.
