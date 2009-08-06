@@ -1,7 +1,7 @@
 #summary UI Binder Use Cases
 #labels Type-Library
 
-= GWT UI Binder Use Cases =
+= GWT UiBinder Use Cases =
 
 Ray Ryan
 
