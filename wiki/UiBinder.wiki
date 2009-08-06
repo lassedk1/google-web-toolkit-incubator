@@ -1,4 +1,4 @@
-#summary UI Binder Use Cases
+#summary UiBinder use cases
 #labels Type-Library
 
 = GWT UiBinder Use Cases =
