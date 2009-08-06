@@ -1,5 +1,7 @@
 #summary GWT UiBinder i18n use cases
 
+= GWT UiBinder i18n use cases =
+
 Ray Ryan <br />
 freely plagiarizing from the brilliant minds behind [http://code.google.com/p/gxp/ gxp]
 
