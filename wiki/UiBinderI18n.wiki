@@ -156,3 +156,33 @@ So, you have both an element *<ui:ph>*to surround untranslatable
 runs*</ui:ph>*, and the <span *ui:ph*>attribute{{{<}}}/span> to put in
 arbitrary elements to hide their begin and end tags from translators,
 but keep their content as part of the message.
+
+
+= Messages with runtime computed values =
+
+*Original*
+{{{
+<!-- Java code will make calls like getClosingDate().setInnerText(closingDate()) -->
+
+(closed <span ui:field="closingDate" /> through <span ui:field="reopeningDate"/>)
+}}}
+
+*Tagged* 
+{{{
+<ui:msg>
+  (closed <span ui:field="closingDate" ui:example="7/12/2008" />
+  through <span ui:field="reopeningDate" ui:example="7/19/2008" />)
+</ui:msg>
+}}}
+
+
+Note that there is no {{{ui:ph}}} attribute here, which would normally
+be used to identify a span as a placeholder, and also to provide its
+name. The {{{ui:field}}} attribute's appearance inside a child of a
+{{{ui:msg}}} element is enough to make it clear that a placeholder is
+required, and the field name can be used as the placeholder name.
+
+The {{{ui:example}}} attribute is optional, and allows more useful
+text to be provided in the @Example() attribute of the generated
+Mesages interface (and hence to the translator). Without it, the
+parameters here would both be annotated {{{@Example("<span/>")}}}
