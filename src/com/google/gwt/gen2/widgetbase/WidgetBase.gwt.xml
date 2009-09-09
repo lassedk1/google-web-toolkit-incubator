@@ -19,7 +19,6 @@
 	<inherits name='com.google.gwt.gen2.logging.Logging' />
 
 	<!-- Needed to support css infrastructure -->
-	<inherits name='com.google.gwt.libideas.StyleInjector' />
 	<inherits name='com.google.gwt.libideas.ImmutableResources' />
 	<inherits name='com.google.gwt.gen2.widgetbase._Resources' />
 

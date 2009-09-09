@@ -16,10 +16,11 @@
 package com.google.gwt.widgetideas.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.StyleInjector;
 import com.google.gwt.i18n.client.LocaleInfo;
-import com.google.gwt.libideas.client.StyleInjector;
 import com.google.gwt.libideas.resources.client.DataResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
+import com.google.gwt.libideas.resources.client.ResourcePrototype;
 import com.google.gwt.libideas.resources.client.TextResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -113,10 +114,23 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   public static void addDefaultCSS() {
     DefaultResources instance = GWT.create(DefaultResources.class);
     if (LocaleInfo.getCurrentLocale().isRTL()) {
-      StyleInjector.injectStylesheet(instance.cssRTL().getText(), instance);
+      injectStylesheet(instance.cssRTL().getText(), instance);
     } else {
-      StyleInjector.injectStylesheet(instance.css().getText(), instance);
+      injectStylesheet(instance.css().getText(), instance);
     }
+  }
+
+  private static void injectStylesheet(String contents,
+      ImmutableResourceBundle references) {
+    if (references != null) {
+      for (ResourcePrototype p : references.getResources()) {
+        if (p instanceof DataResource) {
+          contents = contents.replaceAll("%" + p.getName() + "%",
+                                         ((DataResource) p).getUrl());
+        }
+      }
+    }
+    StyleInjector.injectStylesheet(contents);
   }
 
   private static boolean hasModifiers(Event event) {
