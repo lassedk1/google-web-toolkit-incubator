@@ -17,8 +17,8 @@
 package com.google.gwt.gen2.widgetbase.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.StyleInjector;
 import com.google.gwt.gen2.logging.shared.Level;
-import com.google.gwt.libideas.client.StyleInjector;
 import com.google.gwt.libideas.resources.client.CssResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 

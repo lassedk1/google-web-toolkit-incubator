@@ -37,7 +37,7 @@ package com.google.gwt.widgetideas.client;
  */
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.libideas.client.StyleInjector;
+import com.google.gwt.dom.client.StyleInjector;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
 import com.google.gwt.libideas.resources.client.TextResource;
 import com.google.gwt.user.client.Timer;

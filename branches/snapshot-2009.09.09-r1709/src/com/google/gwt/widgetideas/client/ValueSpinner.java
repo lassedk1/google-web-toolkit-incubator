@@ -16,12 +16,13 @@
 package com.google.gwt.widgetideas.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.StyleInjector;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.libideas.client.StyleInjector;
 import com.google.gwt.libideas.resources.client.CssResource;
 import com.google.gwt.libideas.resources.client.DataResource;
 import com.google.gwt.libideas.resources.client.ImmutableResourceBundle;
+import com.google.gwt.libideas.resources.client.ResourcePrototype;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -156,6 +157,19 @@ public class ValueSpinner extends HorizontalPanel {
     this(value, min, max, minStep, maxStep, constrained, resources, null);
   }
 
+  private static void injectStylesheet(String contents,
+      ImmutableResourceBundle references) {
+    if (references != null) {
+      for (ResourcePrototype p : references.getResources()) {
+        if (p instanceof DataResource) {
+          contents = contents.replaceAll("%" + p.getName() + "%",
+                                         ((DataResource) p).getUrl());
+        }
+      }
+    }
+    StyleInjector.injectStylesheet(contents);
+  }
+
   /**
    * @param value initial value
    * @param min min value
@@ -172,11 +186,11 @@ public class ValueSpinner extends HorizontalPanel {
       SpinnerResources images) {
     super();
     if (resources != null) {
-      StyleInjector.injectStylesheet(resources.css().getText(), resources);
+      injectStylesheet(resources.css().getText(), resources);
     } else if (defaultResources == null) {
       defaultResources = GWT.create(ValueSpinnerResources.class);
       StyleInjector.injectStylesheet(defaultResources.css().getText());
-    }  
+    }
     setStylePrimaryName(STYLENAME_DEFAULT);
     if (images == null) {
       spinner = new Spinner(spinnerListener, value, min, max, minStep, maxStep,
