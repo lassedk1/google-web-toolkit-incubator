@@ -18,7 +18,7 @@
 <!-- Most new code should inherit this module.                              -->
 <!--                                                                        -->
 <module>
-  <inherits name="com.google.gwt.libideas.StyleInjector" />
+  <inherits name="com.google.gwt.libideas.ImmutableResources" />
   <inherits name="com.google.gwt.libideas.Logging" />
   <inherits name="com.google.gwt.libideas.Validation" />
   <inherits name="com.google.gwt.libideas.Event" />
