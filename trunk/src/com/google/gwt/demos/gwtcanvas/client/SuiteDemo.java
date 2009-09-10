@@ -16,23 +16,23 @@
 package com.google.gwt.demos.gwtcanvas.client;
 
 import com.google.gwt.core.client.Duration;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.graphics.client.Color;
 import com.google.gwt.widgetideas.graphics.client.GWTCanvas;
 
 import java.util.Date;
 
 /**
- * Demo showcaseing a range of tests from the Mozilla Canvas Tutorial
- * and from contributions from Oliver Zoran.
+ * Demo showcaseing a range of tests from the Mozilla Canvas Tutorial and from
+ * contributions from Oliver Zoran.
  * 
  */
 public class SuiteDemo extends SimpleCanvasDemo {
@@ -40,9 +40,9 @@ public class SuiteDemo extends SimpleCanvasDemo {
   class SuiteDemoControls extends Composite {
     public SuiteDemoControls() {
 
-      Button b2 = new Button("Compositing");
-      b2.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+      Button compositeButton = new Button("Compositing", new ClickHandler() {
+
+        public void onClick(ClickEvent event) {
           if (timer != null) {
             timer.cancel();
           }
@@ -59,11 +59,12 @@ public class SuiteDemo extends SimpleCanvasDemo {
           canvas.fillRect(40, 85, 100, 100);
           canvas.restoreContext();
         }
+
       });
 
-      Button b3 = new Button("Paths & shapes");
-      b3.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+      Button pathsButton = new Button("Paths & shapes", new ClickHandler() {
+
+        public void onClick(ClickEvent event) {
           if (timer != null) {
             timer.cancel();
           }
@@ -97,11 +98,12 @@ public class SuiteDemo extends SimpleCanvasDemo {
           canvas.stroke();
           canvas.restoreContext();
         }
+
       });
 
-      Button b4 = new Button("Arcs & circles");
-      b4.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+      Button arcsButton = new Button("Arcs & circles", new ClickHandler() {
+
+        public void onClick(ClickEvent event) {
           if (timer != null) {
             timer.cancel();
           }
@@ -142,11 +144,12 @@ public class SuiteDemo extends SimpleCanvasDemo {
           canvas.stroke();
           canvas.restoreContext();
         }
+
       });
 
-      Button b1 = new Button("Bezier curves");
-      b1.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+      Button bezierButton = new Button("Bezier curves", new ClickHandler() {
+
+        public void onClick(ClickEvent event) {
           if (timer != null) {
             timer.cancel();
           }
@@ -177,11 +180,12 @@ public class SuiteDemo extends SimpleCanvasDemo {
           canvas.fill();
           canvas.restoreContext();
         }
+
       });
 
-      Button b6 = new Button("Colors");
-      b6.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+      Button colorsButton = new Button("Colors", new ClickHandler() {
+
+        public void onClick(ClickEvent event) {
           if (timer != null) {
             timer.cancel();
           }
@@ -211,11 +215,12 @@ public class SuiteDemo extends SimpleCanvasDemo {
           }
           canvas.restoreContext();
         }
+
       });
 
-      Button b7 = new Button("Translating");
-      b7.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+      Button translateButton = new Button("Translating", new ClickHandler() {
+
+        public void onClick(ClickEvent event) {
           if (timer != null) {
             timer.cancel();
           }
@@ -236,11 +241,12 @@ public class SuiteDemo extends SimpleCanvasDemo {
           }
           canvas.restoreContext();
         }
+
       });
 
-      Button b8 = new Button("Scaling");
-      b8.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+      Button scaleButton = new Button("Scaling", new ClickHandler() {
+
+        public void onClick(ClickEvent event) {
           if (timer != null) {
             timer.cancel();
           }
@@ -285,11 +291,12 @@ public class SuiteDemo extends SimpleCanvasDemo {
           canvas.restoreContext();
           canvas.restoreContext();
         }
+
       });
 
-      Button b5 = new Button("Rotating");
-      b5.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+      Button rotateButton = new Button("Rotating", new ClickHandler() {
+
+        public void onClick(ClickEvent event) {
           if (timer != null) {
             timer.cancel();
           }
@@ -302,68 +309,71 @@ public class SuiteDemo extends SimpleCanvasDemo {
             canvas.setFillStyle(new Color("rgb(" + (51 * i) + ","
                 + (255 - 51 * i) + ",255)"));
             for (int j = 0; j < i * 6; ++j) {
-              canvas.rotate((float) (Math.PI * 2 / (i * 6)));
+              canvas.rotate(Math.PI * 2 / (i * 6));
               canvas.beginPath();
-              canvas.arc(0, i * 12.5f, 5, 0, (float) (Math.PI * 2), true);
-              // canvas.rect(0,i*12.5f,5,5);
+              canvas.arc(0, i * 12.5f, 5, 0, Math.PI * 2, true);
               canvas.fill();
             }
             canvas.restoreContext();
           }
           canvas.restoreContext();
         }
+
       });
 
-      Button b10 = new Button("Transparency");
-      b10.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          if (timer != null) {
-            timer.cancel();
-          }
-          canvas.saveContext();
-          canvas.clear();
-          canvas.translate(20, 180);
-          canvas.setFillStyle(new Color("rgb(255,221,0)"));
-          canvas.fillRect(0, 0, 150, 37.5f);
-          canvas.setFillStyle(new Color("rgb(102,204,0)"));
-          canvas.fillRect(0, 37.5f, 150, 37.5f);
-          canvas.setFillStyle(new Color("rgb(0,153,255)"));
-          canvas.fillRect(0, 75, 150, 37.5f);
-          canvas.setFillStyle(new Color("rgb(255,51,0)"));
-          canvas.fillRect(0, 112.5f, 150, 37.5f);
-          for (int i = 0; i < 10; ++i) {
-            canvas.setFillStyle(new Color("rgba(255,255,255,"
-                + ((i + 1) / 10.0f) + ")"));
-            for (int j = 0; j < 4; ++j) {
-              canvas.fillRect(5 + i * 14.0f, 5 + j * 37.5f, 14, 27.5f);
+      Button transparencyButton = new Button("Transparency",
+          new ClickHandler() {
+
+            public void onClick(ClickEvent event) {
+              if (timer != null) {
+                timer.cancel();
+              }
+              canvas.saveContext();
+              canvas.clear();
+              canvas.translate(20, 180);
+              canvas.setFillStyle(new Color("rgb(255,221,0)"));
+              canvas.fillRect(0, 0, 150, 37.5f);
+              canvas.setFillStyle(new Color("rgb(102,204,0)"));
+              canvas.fillRect(0, 37.5f, 150, 37.5f);
+              canvas.setFillStyle(new Color("rgb(0,153,255)"));
+              canvas.fillRect(0, 75, 150, 37.5f);
+              canvas.setFillStyle(new Color("rgb(255,51,0)"));
+              canvas.fillRect(0, 112.5f, 150, 37.5f);
+              for (int i = 0; i < 10; ++i) {
+                canvas.setFillStyle(new Color("rgba(255,255,255,"
+                    + ((i + 1) / 10.0f) + ")"));
+                for (int j = 0; j < 4; ++j) {
+                  canvas.fillRect(5 + i * 14.0f, 5 + j * 37.5f, 14, 27.5f);
+                }
+              }
+              canvas.restoreContext();
+              canvas.saveContext();
+              canvas.translate(180, 20);
+              canvas.setGlobalAlpha(1.0f);
+              canvas.setFillStyle(new Color("#FD0"));
+              canvas.fillRect(0, 0, 75, 75);
+              canvas.setFillStyle(new Color("#6C0"));
+              canvas.fillRect(75, 0, 75, 75);
+              canvas.setFillStyle(new Color("#09F"));
+              canvas.fillRect(0, 75, 75, 75);
+              canvas.setFillStyle(new Color("#F30"));
+              canvas.fillRect(75, 75, 75, 75);
+              canvas.setFillStyle(new Color("#FFF"));
+              canvas.setGlobalAlpha(0.2f);
+              for (int i = 0; i < 7; ++i) {
+                canvas.beginPath();
+                canvas.arc(75, 75, 10 + (10 * i), 0, (float) (Math.PI * 2),
+                    true);
+                canvas.fill();
+              }
+              canvas.restoreContext();
             }
-          }
-          canvas.restoreContext();
-          canvas.saveContext();
-          canvas.translate(180, 20);
-          canvas.setGlobalAlpha(1.0f);
-          canvas.setFillStyle(new Color("#FD0"));
-          canvas.fillRect(0, 0, 75, 75);
-          canvas.setFillStyle(new Color("#6C0"));
-          canvas.fillRect(75, 0, 75, 75);
-          canvas.setFillStyle(new Color("#09F"));
-          canvas.fillRect(0, 75, 75, 75);
-          canvas.setFillStyle(new Color("#F30"));
-          canvas.fillRect(75, 75, 75, 75);
-          canvas.setFillStyle(new Color("#FFF"));
-          canvas.setGlobalAlpha(0.2f);
-          for (int i = 0; i < 7; ++i) {
-            canvas.beginPath();
-            canvas.arc(75, 75, 10 + (10 * i), 0, (float) (Math.PI * 2), true);
-            canvas.fill();
-          }
-          canvas.restoreContext();
-        }
-      });
 
-      Button b11 = new Button("Lines");
-      b11.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+          });
+
+      Button linesButton = new Button("Lines", new ClickHandler() {
+
+        public void onClick(ClickEvent event) {
           if (timer != null) {
             timer.cancel();
           }
@@ -461,11 +471,12 @@ public class SuiteDemo extends SimpleCanvasDemo {
           canvas.restoreContext();
           canvas.restoreContext();
         }
+
       });
 
-      Button b9 = new Button("Animations");
-      b9.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+      Button animtationButton = new Button("Animations", new ClickHandler() {
+
+        public void onClick(ClickEvent event) {
           if (timer == null) {
             timer = new Timer() {
               public void run() {
@@ -475,6 +486,7 @@ public class SuiteDemo extends SimpleCanvasDemo {
           }
           drawClock();
         }
+
       });
 
       HorizontalPanel hp = new HorizontalPanel();
@@ -482,17 +494,17 @@ public class SuiteDemo extends SimpleCanvasDemo {
       vp.setHorizontalAlignment(HasAlignment.ALIGN_LEFT);
       vp.add(new Label("MENU"));
       vp.setSpacing(6);
-      vp.add(b2);
-      vp.add(b3);
-      vp.add(b4);
-      vp.add(b1);
-      vp.add(b6);
-      vp.add(b7);
-      vp.add(b8);
-      vp.add(b5);
-      vp.add(b10);
-      vp.add(b11);
-      vp.add(b9);
+      vp.add(compositeButton);
+      vp.add(pathsButton);
+      vp.add(arcsButton);
+      vp.add(bezierButton);
+      vp.add(colorsButton);
+      vp.add(translateButton);
+      vp.add(scaleButton);
+      vp.add(rotateButton);
+      vp.add(transparencyButton);
+      vp.add(linesButton);
+      vp.add(animtationButton);
       hp.add(vp);
 
       initWidget(hp);

@@ -16,12 +16,12 @@
 package com.google.gwt.demos.gwtcanvas.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.graphics.client.GWTCanvas;
 
 import java.util.ArrayList;
@@ -78,9 +78,9 @@ public class GWTCanvasDemo implements EntryPoint {
       lb.addItem(((SimpleCanvasDemo) demos.get(i)).getName()); 
     }
     
-    lb.addChangeListener(new ChangeListener() {
-      public void onChange(Widget listBox) {
-        int choice = ((ListBox) listBox).getSelectedIndex();
+    lb.addChangeHandler(new ChangeHandler() {
+      public void onChange(ChangeEvent event) {
+        int choice = ((ListBox) event.getSource()).getSelectedIndex();
         swapDemo(demos.get(choice));
       }
     });
