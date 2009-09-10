@@ -29,9 +29,9 @@ public class VMLContext {
   public double fillAlpha;
 
   public String fillStyle;
-  
+
   public CanvasGradientImplIE6 fillGradient;
-  
+
   public CanvasGradientImplIE6 strokeGradient;
 
   public double globalAlpha;
@@ -41,6 +41,8 @@ public class VMLContext {
   public String lineCap;
 
   public String lineJoin;
+  
+  public double lineScale;
 
   public double lineWidth;
 
@@ -55,46 +57,60 @@ public class VMLContext {
   public VMLContext() {
 
     // load identity matrix
-    matrix[0] = 1; matrix[1] = 0; matrix[2] = 0;
-    matrix[3] = 0; matrix[4] = 1; matrix[5] = 0;
-    matrix[6] = 0; matrix[7] = 0; matrix[8] = 1;
+    matrix[0] = 1;
+    matrix[1] = 0;
+    matrix[2] = 0;
+    matrix[3] = 0;
+    matrix[4] = 1;
+    matrix[5] = 0;
+    matrix[6] = 0;
+    matrix[7] = 0;
+    matrix[8] = 1;
 
     // init other stuff
-    arcScaleX         =  1;
-    arcScaleY         =  1;
-    globalAlpha         =  1;
-    strokeAlpha         =  1;
-    fillAlpha         =  1;
-    miterLimit          = 10;
-    lineWidth         =  1;
-    lineCap           =  GWTCanvasImplIE6.BUTT;
-    lineJoin          =  GWTCanvas.MITER;
-    strokeStyle         =  "#000";
-    fillStyle         =  "#000";
-    globalCompositeOperation  =  GWTCanvasImplIE6.SOURCE_OVER;
+    arcScaleX = 1;
+    arcScaleY = 1;
+    globalAlpha = 1;
+    strokeAlpha = 1;
+    fillAlpha = 1;
+    miterLimit = 10;
+    lineWidth = 1;
+    lineCap = GWTCanvasImplIE6.BUTT;
+    lineScale = 1;
+    lineJoin = GWTCanvas.MITER;
+    strokeStyle = "#000";
+    fillStyle = "#000";
+    globalCompositeOperation = GWTCanvasImplIE6.SOURCE_OVER;
   }
 
   public VMLContext(VMLContext ctx) {
 
     // copy the matrix
-    matrix[0] = ctx.matrix[0]; matrix[1] = ctx.matrix[1]; matrix[2] = ctx.matrix[2];
-    matrix[3] = ctx.matrix[3]; matrix[4] = ctx.matrix[4]; matrix[5] = ctx.matrix[5];
-    matrix[6] = ctx.matrix[6]; matrix[7] = ctx.matrix[7]; matrix[8] = ctx.matrix[8];
+    matrix[0] = ctx.matrix[0];
+    matrix[1] = ctx.matrix[1];
+    matrix[2] = ctx.matrix[2];
+    matrix[3] = ctx.matrix[3];
+    matrix[4] = ctx.matrix[4];
+    matrix[5] = ctx.matrix[5];
+    matrix[6] = ctx.matrix[6];
+    matrix[7] = ctx.matrix[7];
+    matrix[8] = ctx.matrix[8];
 
     // copy other stuff
-    arcScaleX         = ctx.arcScaleX;
-    arcScaleY         = ctx.arcScaleY;
-    globalAlpha         = ctx.globalAlpha;
-    strokeAlpha         = ctx.strokeAlpha;
-    fillAlpha         = ctx.fillAlpha;
-    miterLimit          = ctx.miterLimit;
-    lineWidth         = ctx.lineWidth;
-    lineCap           = ctx.lineCap;
-    lineJoin          = ctx.lineJoin;
-    strokeStyle         = ctx.strokeStyle;
-    fillStyle         = ctx.fillStyle;
+    arcScaleX = ctx.arcScaleX;
+    arcScaleY = ctx.arcScaleY;
+    globalAlpha = ctx.globalAlpha;
+    strokeAlpha = ctx.strokeAlpha;
+    fillAlpha = ctx.fillAlpha;
+    miterLimit = ctx.miterLimit;
+    lineScale = ctx.lineScale;
+    lineWidth = ctx.lineWidth;
+    lineCap = ctx.lineCap;
+    lineJoin = ctx.lineJoin;
+    strokeStyle = ctx.strokeStyle;
+    fillStyle = ctx.fillStyle;
     fillGradient = ctx.fillGradient;
     strokeGradient = ctx.strokeGradient;
-    globalCompositeOperation  = ctx.globalCompositeOperation;
+    globalCompositeOperation = ctx.globalCompositeOperation;
   }
 }

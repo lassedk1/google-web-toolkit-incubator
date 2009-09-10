@@ -560,6 +560,10 @@ public class GWTCanvas extends Widget {
   /**
    * Set the current Fill Style to the specified color gradient.
    * 
+   * WARNING: Canvas Gradients currently have an unfinished implementation for
+   * Internet Explorer. We would more than welcome a patch from the community to
+   * get gradients working on IE.
+   * 
    * @param grad {@link CanvasGradient}
    */
   public void setFillStyle(CanvasGradient grad) {
@@ -676,6 +680,10 @@ public class GWTCanvas extends Widget {
 
   /**
    * Set the current Stroke Style to the specified color gradient.
+   * 
+   * WARNING: Canvas Gradients currently have an unfinished implementation for
+   * Internet Explorer. We would more than welcome a patch from the community to
+   * get gradients working on IE.
    * 
    * @param grad {@link CanvasGradient}
    */

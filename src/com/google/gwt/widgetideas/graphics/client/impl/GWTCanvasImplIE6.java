@@ -37,16 +37,21 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
 
   public static final String SOURCE_OVER = "beforeEnd";
 
+  // Used for sub pixel precision in pathing calculations.
+  protected static final double subPixlFactor = 10;
+
+  protected static final double halfSubPixelFactor = subPixlFactor / 2;
+
   static {
     init();
   }
 
   /**
-   * Takes in a double and returns a floored int.
-   * Leverages the fact that bitwise OR intifies the value.
+   * Takes in a double and returns a floored int. Leverages the fact that
+   * bitwise OR intifies the value.
    */
   public static native int doubleToFlooredInt(double val) /*-{
-   return (val | 0);
+    return (val | 0);
   }-*/;
 
   private static native void init() /*-{
@@ -115,6 +120,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
   public Element createParentElement() {
     parentElement = DOM.createElement("div");
     DOM.setStyleAttribute(parentElement, "overflow", "hidden");
+    DOM.setElementAttribute(parentElement, "align", "left");
     return parentElement;
   }
 
@@ -209,6 +215,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     shapeStr.push(" e\"><v:fill opacity=\"");
     shapeStr.push("" + context.globalAlpha * context.fillAlpha);
 
+    // Unfinished Gradient implementation. Contributions welcome :).
     if (context.fillGradient != null
         && context.fillGradient.colorStops.size() > 0) {
       ArrayList<ColorStop> colorStops = context.fillGradient.colorStops;
@@ -244,15 +251,15 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
         }
       }
       shapeStr.push("\" colors=\"");
-      // shapeStr.push(colors);
-      shapeStr.push("50% white,51% #0f0,100% #fff,");
+      shapeStr.push(colors);
+
       shapeStr.push("\" angle=\"");
-      shapeStr.push(/* context.fillGradient.angle */"180" + "");
+      shapeStr.push(context.fillGradient.angle + "");
     }
 
     shapeStr.push("\"></v:fill></v:shape>");
     String daStr = shapeStr.join();
-    // Window.alert(daStr);
+
     insert(context.globalCompositeOperation, daStr);
   }
 
@@ -389,6 +396,10 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
   public void scale(double x, double y) {
     context.arcScaleX *= x;
     context.arcScaleY *= y;
+    // TODO(jaimeyap): We should try to figure out how to support scaling with
+    // different proportions in the X and Y axis. For now, supporting simple 1:1
+    // scaling is better than nothing.
+    context.lineScale *= x;
     matrix[0] *= x;
     matrix[1] *= y;
     matrix[3] *= x;
@@ -516,7 +527,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     shapeStr.push("<v:shape style=\"position:absolute;width:10;height:10;\" coordsize=\"100,100\" filled=\"f\" strokecolor=\"");
     shapeStr.push(context.strokeStyle);
     shapeStr.push("\" strokeweight=\"");
-    shapeStr.push("" + context.lineWidth);
+    shapeStr.push("" + context.lineWidth * context.lineScale);
     shapeStr.push("px\" path=\"");
 
     shapeStr.push(pathStr.join());
