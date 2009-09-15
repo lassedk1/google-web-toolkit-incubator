@@ -3,8 +3,9 @@
 = Making GWT Incubator Better =
 This page explains how to develop with the gwt-incubator source.  
 
-As of 9 September 2009, incubator development against GWT 1.7 has ceased in anticipation
-of the imminent arrival of GWT 2.0. Critical fixes for 1.7 will be accepted in its release branch, but new development should be done against GWT trunk. Read how to build GWT from source at http://code.google.com/webtoolkit/makinggwtbetter.html
+As of 9 September 2009, incubator development against GWT 1.7 has ceased. Incubator code now depends upon GWT trunk, as w work toward releasing GWT 2.0. Read how to build GWT from source at http://code.google.com/webtoolkit/makinggwtbetter.html.
+
+Critical fixes for incubator 1.7 will be accepted in its release branch, but new development should be done against GWT trunk. 
  
 == Setting up the incubator project ==
 
