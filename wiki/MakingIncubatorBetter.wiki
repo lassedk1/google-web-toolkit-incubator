@@ -3,7 +3,8 @@
 = Making GWT Incubator Better =
 This page explains how to develop with the gwt-incubator source.  
 
-One of the most important things to remember is that gwt-incubator should be compiled against the most current *released* version of GWT. You can download the latest release of GWT for your platform [http://code.google.com/webtoolkit/download.html here].
+As of 9 September 2009, incubator development against GWT 1.7 has ceased in anticipation
+of the imminent arrival of GWT 2.0. Critical fixes for 1.7 will be accepted in its release branch, but new development should be done against GWT trunk. Read how to build GWT from source at http://code.google.com/webtoolkit/makinggwtbetter.html
  
 == Setting up the incubator project ==
 
