@@ -1,0 +1,22 @@
+<module>
+
+	<!-- Inherit the core Web Toolkit stuff.                  -->
+	<inherits name='com.google.gwt.user.User' />
+	<inherits name='com.google.gwt.user.theme.standard.Standard' />
+
+
+	<!-- Inherit the logging system -->
+	<inherits name='com.google.gwt.gen2.logging.Logging' />
+
+	<!-- Inherit the selection system -->
+	<inherits name='com.google.gwt.gen2.selection.Selection' />
+
+	<!-- Logging demo stylesheet -->
+	<stylesheet src='LoggingDemo.css' />
+
+	<!-- Specify the app entry point class.                         -->
+	<entry-point class='com.google.gwt.gen2.demo.logging.client.LoggingDemo' />
+	<!-- used to debug this widget's css -->
+	<!--  <inherits name='com.google.gwt.gen2.widgetbase.DebugCss' /> -->
+
+</module>
