@@ -599,6 +599,25 @@ public class CollapsiblePanel extends Composite implements HasWidgets {
     computeSize();
   }
 
+  /**
+   * Visible for testing.
+   * 
+   * @return the hover bar component
+   */
+  SimplePanel getHoverBar() {
+    return hoverBar;
+  }
+
+  /**
+   * Visible for testing. Note that the state is completely internal to the
+   * implementation. 
+   * 
+   * @return the current state
+   */
+  State getState() {
+    return state;
+  }
+
   private void adjustmentsForCollapsedState() {
     master.setHeight(container.getOffsetHeight() + "px");
     // IE RTL bug create a phantom scrollbar without the +1
@@ -669,6 +688,7 @@ public class CollapsiblePanel extends Composite implements HasWidgets {
     if (getState() == State.EXPANDED) {
       adjustmentsForExpandedState();
     } else {
+      cancelAllTimers();
       adjustmentsForCollapsedState();
       container.completeHide();
       state = State.IS_HIDDEN;
@@ -691,10 +711,6 @@ public class CollapsiblePanel extends Composite implements HasWidgets {
    */
   private int getDelayBeforeShow() {
     return delayBeforeShow;
-  }
-
-  private State getState() {
-    return state;
   }
 
   /**
