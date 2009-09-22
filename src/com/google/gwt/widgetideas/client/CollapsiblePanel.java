@@ -572,6 +572,21 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     DOM.setStyleAttribute(container.getElement(), "left", pos - width + "px");
   }
 
+  /**
+   * Visible for testing.
+   * 
+   * @return the hover bar component
+   */
+  SimplePanel getHoverBar() {
+    return hoverBar;
+  }
+
+  /**
+   * Visible for testing. Note that the state is completely internal to the
+   * implementation. 
+   * 
+   * @return the current state
+   */
   State getState() {
     return state;
   }
@@ -637,6 +652,7 @@ public class CollapsiblePanel extends Composite implements SourcesChangeEvents,
     if (getState() == State.EXPANDED) {
       adjustmentsForExpandedState();
     } else {
+      cancelAllTimers();
       adjustmentsForCollapsedState();
       // we don't know if we just moved the mouse outside of the
       setPanelPos(0);
