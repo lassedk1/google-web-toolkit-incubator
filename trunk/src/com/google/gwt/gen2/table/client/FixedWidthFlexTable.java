@@ -505,6 +505,13 @@ public class FixedWidthFlexTable extends FlexTable {
     return super.getDOMCellCount(0);
   }
 
+  /**
+   * @return the ghost row element
+   */
+  protected Element getGhostRow() {
+    return ghostRow;
+  }
+
   @Override
   protected int getRowIndex(Element rowElem) {
     int rowIndex = super.getRowIndex(rowElem);
