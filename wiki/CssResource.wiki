@@ -547,17 +547,6 @@ The `@Strict` annotation can be applied to a CssResource accessor function to ma
 
 Strict scoping can be forced on for all CssResources by adding `<set-property name="CssResource.forceStrict" value="true" />` to the module XML file, however this is only recommended for use by applications or test modules and never in any module that will be redistributed.
 
-== Automatically generating CssResource interfaces ==
-
-A utility is included in the GWT distribution which will analyze a CssResource-compatible CSS file and create a corresponding Java interface for accessing the classnames used in the file.
-
-{{{
-java -cp gwt-dev.jar:gwt-user.jar com.google.gwt.resources.css.InterfaceGenerator \
-  -standalone -typeName some.package.MyCssResource -css input.css
-}}}
-
-The generated interface will be emitted to `System.out`. The `-standalone` option will add the necessary `package` and `import` statements to the output so that it can be used as part of a build process.
-
 =Important open questions=
   * Can we manipulate style rules across browsers?
     * Maybe make MyCSSResource.mySpriteClass() return Rule object
