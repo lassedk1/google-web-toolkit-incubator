@@ -20,6 +20,7 @@ import com.google.gwt.gen2.table.client.AbstractColumnDefinitionTest;
 import com.google.gwt.gen2.table.client.CachedTableModelTest;
 import com.google.gwt.gen2.table.client.ClientTableModelTest;
 import com.google.gwt.gen2.table.client.ColumnResizerTest;
+import com.google.gwt.gen2.table.client.DefaultCellRendererTest;
 import com.google.gwt.gen2.table.client.DefaultTableDefinitionTest;
 import com.google.gwt.gen2.table.client.FixedWidthFlexTableTest;
 import com.google.gwt.gen2.table.client.FixedWidthGridTest;
@@ -49,7 +50,7 @@ import junit.framework.TestSuite;
 public class TableSuite {
   public static Test suite() {
     TestSuite suite = new TestSuite(
-        "Test for com.google.gwt.widgetideas.table.client");
+        "Test for com.google.gwt.gen2.table.client");
     // $JUnit-BEGIN$
 
     // TableModel tests
@@ -81,6 +82,7 @@ public class TableSuite {
     suite.addTestSuite(PagingScrollTableTest.class);
 
     // Bulk Renderer Tests
+    suite.addTestSuite(DefaultCellRendererTest.class);
     suite.addTestSuite(FlexTableBulkRendererTest.class);
     suite.addTestSuite(GridBulkRendererTest.class);
 

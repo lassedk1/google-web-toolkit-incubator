@@ -17,6 +17,7 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.core.client.Duration;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractCellView;
 import com.google.gwt.gen2.table.client.TableDefinition.AbstractRowView;
 import com.google.gwt.gen2.table.client.TableModelHelper.Request;
@@ -74,6 +75,11 @@ public abstract class TableBulkRenderer<RowType> implements
      * A {@link StringBuffer} used to assemble the HTML of the table.
      */
     private StringBuffer buffer = null;
+
+    /**
+     * An element used to convert text to escaped html.
+     */
+    private Element htmlCleaner = Document.get().createDivElement().cast();
 
     /**
      * The horizontal alignment to apply to the current cell.
@@ -143,8 +149,8 @@ public abstract class TableBulkRenderer<RowType> implements
 
     @Override
     public void setText(String text) {
-      throw new UnsupportedOperationException(
-          "setText(String) is not supported by the TableBulkRenderer.  Use setHTML(String) instead.");
+      htmlCleaner.setInnerText(text);
+      setHTML(htmlCleaner.getInnerHTML());
     }
 
     @Override
@@ -214,6 +220,15 @@ public abstract class TableBulkRenderer<RowType> implements
 
       // Add close tag
       buffer.append("</td>");
+    }
+
+    /**
+     * Visible for testing.
+     * 
+     * @return the cell's html contents.
+     */
+    String getHtml() {
+      return curCellHtml;
     }
   }
 

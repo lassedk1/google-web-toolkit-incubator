@@ -16,6 +16,7 @@
 package com.google.gwt.gen2.table.client;
 
 import com.google.gwt.gen2.base.client.Gen2TestBase;
+import com.google.gwt.gen2.table.override.client.FlexTable;
 import com.google.gwt.gen2.table.override.client.HTMLTable;
 import com.google.gwt.gen2.table.override.client.HTMLTable.RowFormatter;
 import com.google.gwt.user.client.ui.Label;
@@ -89,6 +90,27 @@ public abstract class TableBulkRendererTestBase extends Gen2TestBase {
         }
       }
     });
+  }
+
+  public void testBulkCellViewSetText() {
+    TableBulkRenderer<Object> tableRenderer = new FlexTableBulkRenderer<Object>(
+        new FlexTable(), (TableDefinition<Object>) null);
+    TableBulkRenderer.BulkCellView<?> view = new TableBulkRenderer.BulkCellView<Object>(
+        tableRenderer);
+
+    // Normal text.
+    {
+      view.setText("test");
+      assertEquals("test", view.getHtml());
+    }
+
+    // Html converted to text.
+    {
+      view.setText("<b>test<b>");
+      String html = view.getHtml();
+      assertTrue(html.contains("test"));
+      assertFalse(html.contains("<"));
+    }
   }
 
   public void testEmptyTable() {
