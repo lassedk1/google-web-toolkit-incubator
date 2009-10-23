@@ -1,0 +1,25 @@
+/*----------------------------------------------------------------------------
+* Demo code.
+*/
+ 
+.CollapsibleToggle {
+  background-color: #navy;
+  text-align: center;
+  cursor: pointer;
+  cursor: hand;
+  font-size: 80%;
+  white-space: nowrap;
+  padding-right: 10px;
+  padding-top: 5px;
+  color: white;
+}
+
+.nav-tree-title {
+  height: 30px;
+  background-color: #26a;
+}
+
+.gwt-StackPanel {
+  padding-right: 50px;
+  height: 500px;
+}
