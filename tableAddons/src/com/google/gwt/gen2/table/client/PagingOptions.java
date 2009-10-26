@@ -203,8 +203,8 @@ public class PagingOptions extends Composite {
    * 
    * @param table the table being ad
    */
-  public PagingOptions(PagingScrollTable<?> table) {
-    this(table, new DefaultPagingOptionsResources());
+  public PagingOptions(PagingScrollTable<?> table, boolean pageCountAvailable) {
+    this(table, new DefaultPagingOptionsResources(), pageCountAvailable);
   }
 
   /**
@@ -214,7 +214,7 @@ public class PagingOptions extends Composite {
    * @param resources the images to use
    */
   public PagingOptions(PagingScrollTable<?> table,
-      PagingOptionsResources resources) {
+      PagingOptionsResources resources, boolean pageCountAvailable) {
     this.table = table;
     this.resources = resources;
     Css css = resources.getStyle().css();
@@ -232,9 +232,31 @@ public class PagingOptions extends Composite {
     // Create the paging image buttons
     createPageButtons();
 
-    // Create the current page box
-    createCurrentPageBox();
+    if ( pageCountAvailable ) {
+    	// Create the current page box
+    	createCurrentPageBox();
 
+    	pageSlider.setStepSize(1.0);
+        pageSlider.setMaxValue(getPageCount());
+        pageSlider.addChangeListener(new ChangeListener() {
+          private Timer timer;
+
+          public void onChange(Widget sender) {
+            final int currentPage = (int) pageSlider.getCurrentValue();
+            pageSlider.setTitle(PagingOptions.this.resources.getMessages().currentOfPages(
+                currentPage, getPageCount()));
+            if (timer != null) {
+              timer.cancel();
+            }
+            timer = new Timer() {
+              public void run() {
+                PagingOptions.this.table.gotoPage(currentPage - 1, false);
+              }
+            };
+            timer.schedule(250);
+          }
+        });
+    }
     // Create the loading image
     loadingImage = new Image("scrollTableLoading.gif");
     loadingImage.setVisible(false);
@@ -242,36 +264,20 @@ public class PagingOptions extends Composite {
     // Create the error label
     errorLabel = new HTML();
     errorLabel.setStylePrimaryName("errorMessage");
-    pageSlider.setStepSize(1.0);
-    pageSlider.setMaxValue(getPageCount());
-    pageSlider.addChangeListener(new ChangeListener() {
-      private Timer timer;
-
-      public void onChange(Widget sender) {
-        final int currentPage = (int) pageSlider.getCurrentValue();
-        pageSlider.setTitle(PagingOptions.this.resources.getMessages().currentOfPages(
-            currentPage, getPageCount()));
-        if (timer != null) {
-          timer.cancel();
-        }
-        timer = new Timer() {
-          public void run() {
-            PagingOptions.this.table.gotoPage(currentPage - 1, false);
-          }
-        };
-        timer.schedule(250);
-      }
-    });
-
+    
     buttonPanel = new HorizontalPanel();
     buttonPanel.setSpacing(3);
     buttonPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
     buttonPanel.add(firstPageButton);
     buttonPanel.add(previousPageButton);
-    buttonPanel.add(pageSlider);
-    buttonPanel.add(currentPageBox);
+    if ( pageCountAvailable ) {
+    	buttonPanel.add(pageSlider);
+    	buttonPanel.add(currentPageBox);
+    }
     buttonPanel.add(nextPageButton);
-    buttonPanel.add(lastPageButton);
+    if ( pageCountAvailable ) {
+        buttonPanel.add(lastPageButton);
+    }
     buttonPanel.add(loadingImage);
     pagingPanel.add(buttonPanel);
     // Add the widgets to the panel

@@ -1112,7 +1112,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     mainElem.appendChild(absoluteElem);
 
     // Create the table wrapper and spacer
-    headerWrapper = createWrapper("headerWrapper");
+    headerWrapper = createWrapper(css.headerWrapper());
     headerSpacer = impl.createSpacer(headerTable, headerWrapper);
     dataWrapper = createWrapper("dataWrapper");
 

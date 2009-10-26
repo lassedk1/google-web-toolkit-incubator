@@ -89,13 +89,13 @@ public class TreeTableController extends PagingOptions {
   private PushButton toggleTreeButton, flattenTreeButton;
   private TreeTableControllerResources resources;
 
-  public TreeTableController(TreeTable<?> treeTable) {
-    this(treeTable, new DefaultTreeTableControllerResources());
+  public TreeTableController(TreeTable<?> treeTable, boolean pageCountAvailable) {
+    this(treeTable, new DefaultTreeTableControllerResources(), pageCountAvailable);
   }
 
   public TreeTableController(TreeTable<?> treeTable,
-      TreeTableControllerResources resources) {
-    super(treeTable, resources);
+      TreeTableControllerResources resources, boolean pageCountAvailable) {
+    super(treeTable, resources, pageCountAvailable);
     this.treeTable = treeTable;
     this.resources = resources;
     flattenTreeImage = createImage(resources.getStyle().tableView());
