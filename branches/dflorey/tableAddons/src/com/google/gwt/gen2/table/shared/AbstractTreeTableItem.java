@@ -1,43 +1,51 @@
 package com.google.gwt.gen2.table.shared;
 
 public class AbstractTreeTableItem implements TreeTableItem {
-  String id, displayName;
-  TreeTableItem parent;
-  int row;
-  boolean hasChildren;
+	String id, displayName;
+	TreeTableItem parent;
+	int row;
+	boolean hasChildren;
 
-  public AbstractTreeTableItem() {
-  }
+	public AbstractTreeTableItem() {
+	}
 
-  public String getId() {
-    return id;
-  }
-  
-  public String getDisplayName() {
-    return displayName;
-  }
-  
-  public TreeTableItem getParent() {
-    return parent;
-  }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-  public void setParent(TreeTableItem parent) {
-    this.parent = parent;
-  }
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 
-  public int getRow() {
-    return row;
-  }
+	public String getId() {
+		return id;
+	}
 
-  public void setRow(int row) {
-    this.row = row;
-  }
+	public String getDisplayName() {
+		return displayName;
+	}
 
-  public boolean hasChildren() {
-    return hasChildren;
-  }
+	public TreeTableItem getParent() {
+		return parent;
+	}
 
-  public void setChildren(boolean hasChildren) {
-    this.hasChildren = hasChildren;
-  }
+	public void setParent(TreeTableItem parent) {
+		this.parent = parent;
+	}
+
+	public int getRow() {
+		return row;
+	}
+
+	public void setRow(int row) {
+		this.row = row;
+	}
+
+	public boolean hasChildren() {
+		return hasChildren;
+	}
+
+	public void setChildren(boolean hasChildren) {
+		this.hasChildren = hasChildren;
+	}
 }

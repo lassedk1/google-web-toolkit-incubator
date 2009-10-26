@@ -82,18 +82,6 @@ public abstract class TextColumnDefinition<RowType> extends
       filterTextBox = new TextBox();
       filterTextBox.setWidth("100%");
       filterTextBox.addStyleName("textBox");
-      operatorButton = new PushButton();
-      setButtonText(operatorButton, operator);
-      operatorButton.addClickListener(clickListener);
-      operatorButton.addStyleName("operatorButton");
-      HorizontalPanel horizontalPanel = new HorizontalPanel();
-      horizontalPanel.addStyleName("columnTextFilter");
-      horizontalPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
-      horizontalPanel.add(operatorButton);
-      horizontalPanel.add(filterTextBox);
-      horizontalPanel.setCellWidth(operatorButton, "30px");
-      horizontalPanel.setCellWidth(filterTextBox, "100%");
-      horizontalPanel.setSpacing(2);
       filterTextBox.addKeyboardListener(new KeyboardListener() {
         public void onKeyDown(Widget sender, char keyCode, int modifiers) {
         }
@@ -106,7 +94,23 @@ public abstract class TextColumnDefinition<RowType> extends
               filterTextBox.getText(), operator));
         }
       });
+      if ( supportedOperators.length > 1 ) {
+      operatorButton = new PushButton();
+      setButtonText(operatorButton, operator);
+      operatorButton.addClickListener(clickListener);
+      operatorButton.addStyleName("operatorButton");
+      HorizontalPanel horizontalPanel = new HorizontalPanel();
+      horizontalPanel.addStyleName("columnTextFilter");
+      horizontalPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
+      horizontalPanel.add(operatorButton);
+      horizontalPanel.add(filterTextBox);
+      horizontalPanel.setCellWidth(operatorButton, "30px");
+      horizontalPanel.setCellWidth(filterTextBox, "100%");
+      horizontalPanel.setSpacing(2);
       return horizontalPanel;
+      } else {
+	return filterTextBox;
+      }
     }
 
     private void setButtonText(PushButton pushButton, Operator operator) {
