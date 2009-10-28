@@ -212,38 +212,17 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
         is executing
         -->
     <limit failonerror="true" hours="2">
-      <parallel threadsPerProcessor="2">
-        <!-- test.remoteweb.body is a no-op unless gwt.remote.browsers is defined -->
-        <antcall target="test.remoteweb.body" />
-        <antcall target="test.hosted.body" />
-        <antcall target="test.web.body" />
-        <!-- test.selenium.body is a no-op unless gwt.selenium.hosts is defined -->
-        <antcall target="test.selenium.body" />
+      <parallel threadsPerProcessor="${gwt.threadsPerProcessor}"
+      	  threadCount="${gwt.threadCount}">
+        <!-- remote tests are a no-op unless gwt.remote.browsers is defined -->
+        <antcall target="test.dev.remote" />
+        <antcall target="test.web.remote" />
+        <!-- selenium tests are a no-op unless gwt.selenium.hosts is defined -->
+        <antcall target="test.dev.selenium" />
+        <antcall target="test.web.selenium" />
       </parallel>
     </limit>
   </target>
-
-
-  <target name="test.selenium"
-          description="Run a remote test using Selenium RC test at the given host and path"
-          depends="build.tests,test.selenium.body">
-  </target>
-
-  <target name="test.hosted"
-          depends="build.tests, test.hosted.body"
-          description="Runs only hosted mode tests">
-  </target>
-
-  <target name="test.web"
-          depends="build.tests, test.web.body"
-          description="Run only web-mode tests, locally, for this project.">
-  </target>
-
-  <target name="test.remoteweb"
-          description="Run a remoteweb test at the given host and path"
-          depends="build.tests,test.remoteweb.body">
-  </target>
-
 
   <target name="createJavadoc">
     <delete dir="${project.javadoc}" />
@@ -340,42 +319,44 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
     </jar>
   </target>
 
-  <target name="test.hosted.body">
-    <gwt.junit test.out="${project.test.results}/${gwt.platform}-hosted-mode"
-               test.cases="default.hosted.tests" />
-    <fail message="Hosted mode tests failed, log should be in '${project.test.results}\${gwt.platform}-hosted-mode\reports\' directory"
+  <target name="test.dev.selenium" if="gwt.selenium.hosts">
+    <echo message="Performing remote testing using Selenium RC at ${gwt.selenium.hosts}" />
+    <gwt.junit test.args="-out www -runStyle Selenium:${gwt.selenium.hosts}"
+               test.out="${project.test.results}/dev-selenium"
+               test.cases="default.hosted.tests">
+    </gwt.junit>
+    <fail message="Selenium tests failed, log should be in '${project.test.results}\dev-selenium' directory"
           if="junit.failure" />
-  </target>
+	</target>
 
-  <target name="test.web.body">
-    <gwt.junit test.args="-out www -web"
-               test.out="${project.test.results}/${gwt.platform}-web-mode"
-               test.cases="default.web.tests" />
-    <fail message="Web mode tests failed, log should be in '${project.test.results}\${gwt.platform}-web-mode\reports\' directory"
-          if="junit.failure" />
-  </target>
-
-
-  <target name="test.selenium.body" if="gwt.selenium.hosts">
-    <echo message="Performing remote browser testing using Selenium RC at ${gwt.selenium.hosts}" />
-    <gwt.junit test.args=" -out www -selenium ${gwt.selenium.hosts}"
-               test.out="${project.test.results}/selenium"
+  <target name="test.web.selenium" if="gwt.selenium.hosts">
+    <echo message="Performing remote testing using Selenium RC at ${gwt.selenium.hosts}" />
+    <gwt.junit test.args="-web -out www -runStyle Selenium:${gwt.selenium.hosts}"
+               test.out="${project.test.results}/web-selenium"
                test.cases="default.web.tests">
     </gwt.junit>
-    <fail message="Selenium tests failed, log should be in '${project.test.results}\selenium' directory"
+    <fail message="Selenium tests failed, log should be in '${project.test.results}\web-selenium' directory"
           if="junit.failure" />
-
   </target>
 
-  <target name="test.remoteweb.body" if="gwt.remote.browsers">
-    <echo message="Performing remote browser testing at ${gwt.remote.browsers}" />
-    <gwt.junit test.args="-out www -remoteweb ${gwt.remote.browsers}"
-               test.out="${project.test.results}/remoteweb"
+  <target name="test.dev.remote" if="gwt.remote.browsers">
+    <echo message="Performing remote testing at ${gwt.remote.browsers}" />
+    <gwt.junit test.args="-out www -runStyle RemoteWeb:${gwt.remote.browsers}"
+               test.out="${project.test.results}/dev-remote"
+               test.cases="default.hosted.tests">
+    </gwt.junit>
+    <fail message="Selenium tests failed, log should be in '${project.test.results}\dev-remote' directory"
+          if="junit.failure" />
+  </target>
+
+  <target name="test.web.remote" if="gwt.remote.browsers">
+    <echo message="Performing remote testing at ${gwt.remote.browsers}" />
+    <gwt.junit test.args="-web -out www -runStyle RemoteWeb:${gwt.remote.browsers}"
+               test.out="${project.test.results}/web-remote"
                test.cases="default.web.tests">
     </gwt.junit>
-    <fail message="Remote web mode tests failed, log should be in '${project.test.results}\remoteweb\' directory"
+    <fail message="Remote tests failed, log should be in '${project.test.results}\web-remote' directory"
           if="junit.failure" />
-
   </target>
 
 
