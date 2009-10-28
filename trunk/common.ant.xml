@@ -67,7 +67,7 @@
   <property name="gwt.tools" value="${project.root}/../tools" />
   <property name="gwt.tools.lib" location="${gwt.tools}/lib" />
   <property name="gwt.tools.antlib" location="${gwt.tools}/antlib" />
-  <property name="gwt.dev.jar" location="${gwt.home}/gwt-dev-${gwt.platform}.jar" />
+  <property name="gwt.dev.jar" location="${gwt.home}/gwt-dev.jar" />
   <property name="gwt.user.jar" location="${gwt.home}/gwt-user.jar" />
 
 
