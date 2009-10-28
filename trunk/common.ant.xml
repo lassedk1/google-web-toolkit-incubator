@@ -55,6 +55,8 @@
   <property name="project.src" location="${project.root}/src" />
 
   <!-- GWT specific properties -->
+  <property name="gwt.threadsPerProcessor" value="1" />
+  <property name="gwt.threadCount" value="1" />
   <condition property="gwt.tools" value="${env.GWT_TOOLS}">
     <isset property="env.GWT_TOOLS" />
   </condition>
