@@ -27,6 +27,14 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
 
   <property file="${project.build.properties}" />
 
+  <!-- support old variables names -->
+  <condition property="gwt.hosts.web.remote" value="${gwt.remote.browsers}">
+    <isset property="gwt.remote.browsers" />
+  </condition>
+  <condition property="gwt.hosts.web.selenium" value="${gwt.selenium.hosts}">
+    <isset property="gwt.selenium.hosts" />
+  </condition>
+
   <!-- Also check for global-incubator.properties in the directory above -->
   <property file="${project.root}/../global-incubator.properties" />
 
@@ -92,8 +100,11 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
             gwt.tools
             The location of your GWT tools dir.
             
-            gwt.remote.browsers
-            list of remote browsers to run while running junit tests.
+            gwt.hosts.dev.remote
+            list of remote browsers to run while running junit dev tests.
+
+            gwt.hosts.web.remote
+            list of remote browsers to run while running junit web tests.
             
             project.jar
             Where should the gwt-incubator jar be created.
@@ -214,11 +225,13 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
     <limit failonerror="true" hours="2">
       <parallel threadsPerProcessor="${gwt.threadsPerProcessor}"
       	  threadCount="${gwt.threadCount}">
-        <!-- remote tests are a no-op unless gwt.remote.browsers is defined -->
+        <!-- remote tests are a no-op unless gwt.hosts.dev.remote is defined -->
         <antcall target="test.dev.remote" />
+        <!-- remote tests are a no-op unless gwt.hosts.web.remote is defined -->
         <antcall target="test.web.remote" />
-        <!-- selenium tests are a no-op unless gwt.selenium.hosts is defined -->
+        <!-- selenium tests are a no-op unless gwt.hosts.dev.selenium is defined -->
         <antcall target="test.dev.selenium" />
+        <!-- selenium tests are a no-op unless gwt.hosts.web.selenium is defined -->
         <antcall target="test.web.selenium" />
       </parallel>
     </limit>
@@ -319,9 +332,9 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
     </jar>
   </target>
 
-  <target name="test.dev.selenium" if="gwt.selenium.hosts">
-    <echo message="Performing remote testing using Selenium RC at ${gwt.selenium.hosts}" />
-    <gwt.junit test.args="-out www -runStyle Selenium:${gwt.selenium.hosts}"
+  <target name="test.dev.selenium" if="gwt.hosts.dev.selenium">
+    <echo message="Performing remote testing using Selenium RC at ${gwt.hosts.dev.selenium}" />
+    <gwt.junit test.args="-out www -runStyle Selenium:${gwt.hosts.dev.selenium}"
                test.out="${project.test.results}/dev-selenium"
                test.cases="default.hosted.tests">
     </gwt.junit>
@@ -329,9 +342,9 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
           if="junit.failure" />
 	</target>
 
-  <target name="test.web.selenium" if="gwt.selenium.hosts">
-    <echo message="Performing remote testing using Selenium RC at ${gwt.selenium.hosts}" />
-    <gwt.junit test.args="-web -out www -runStyle Selenium:${gwt.selenium.hosts}"
+  <target name="test.web.selenium" if="gwt.hosts.web.selenium">
+    <echo message="Performing remote testing using Selenium RC at ${gwt.hosts.web.selenium}" />
+    <gwt.junit test.args="-web -out www -runStyle Selenium:${gwt.hosts.web.selenium}"
                test.out="${project.test.results}/web-selenium"
                test.cases="default.web.tests">
     </gwt.junit>
@@ -339,9 +352,9 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
           if="junit.failure" />
   </target>
 
-  <target name="test.dev.remote" if="gwt.remote.browsers">
-    <echo message="Performing remote testing at ${gwt.remote.browsers}" />
-    <gwt.junit test.args="-out www -runStyle RemoteWeb:${gwt.remote.browsers}"
+  <target name="test.dev.remote" if="gwt.hosts.dev.remote">
+    <echo message="Performing remote testing at ${gwt.hosts.dev.remote}" />
+    <gwt.junit test.args="-out www -runStyle RemoteWeb:${gwt.hosts.dev.remote}"
                test.out="${project.test.results}/dev-remote"
                test.cases="default.hosted.tests">
     </gwt.junit>
@@ -349,9 +362,9 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
           if="junit.failure" />
   </target>
 
-  <target name="test.web.remote" if="gwt.remote.browsers">
-    <echo message="Performing remote testing at ${gwt.remote.browsers}" />
-    <gwt.junit test.args="-web -out www -runStyle RemoteWeb:${gwt.remote.browsers}"
+  <target name="test.web.remote" if="gwt.hosts.web.remote">
+    <echo message="Performing remote testing at ${gwt.hosts.web.remote}" />
+    <gwt.junit test.args="-web -out www -runStyle RemoteWeb:${gwt.hosts.web.remote}"
                test.out="${project.test.results}/web-remote"
                test.cases="default.web.tests">
     </gwt.junit>
