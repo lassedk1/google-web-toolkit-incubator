@@ -1023,7 +1023,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents {
    * 
    * @return the iterator
    */
-  public Iterator iterator() {
+  public Iterator<Widget> iterator() {
     return widgetMap.widgetIterator();
   }
 
