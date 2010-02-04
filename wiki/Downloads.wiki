@@ -1,6 +1,16 @@
 #summary gwt-incubator download launch page
  [http://code.google.com/p/google-web-toolkit-incubator/downloads/list?can=2&q=&colspec=Filename+Summary+Uploaded+Size+DownloadCount For a list of all downloads, click here] 
 
+= gwt-incubator drop for gwt 2.0.1 =
+
+[http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator-20090204-r1747.jar click here to download the 2.0.1 gwt-incubator jar]
+ 
+|| Source || http://google-web-toolkit-incubator.googlecode.com/svn/trunk ||
+|| Revision || 1747 ||
+|| Last Changed Date || Thur, 4 Feb 2010 ||
+|| Java docs || http://collectionofdemos.appspot.com/javadoc/index.html || 
+|| GWT version || GWT 2.0.1, available [http://code.google.com/p/google-web-toolkit/downloads/list?can=1&q=2.0.1&sort=-downloadcount&colspec=Filename+Summary+Uploaded+Size+DownloadCount here] ||
+
 = gwt-incubator drop for gwt 2.0 =
 
 [http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator-20091216-r1739.jar click here to download the 2.0 gwt-incubator jar]
