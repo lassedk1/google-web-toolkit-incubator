@@ -3,7 +3,7 @@
 
 = gwt-incubator drop for gwt 2.0.1 =
 
-[http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator-20090204-r1747.jar click here to download the 2.0.1 gwt-incubator jar]
+[http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator-20100204-r1747.jar click here to download the 2.0.1 gwt-incubator jar]
  
 || Source || http://google-web-toolkit-incubator.googlecode.com/svn/trunk ||
 || Revision || 1747 ||
