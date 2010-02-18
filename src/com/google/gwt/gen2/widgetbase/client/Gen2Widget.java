@@ -45,7 +45,7 @@ public abstract class Gen2Widget extends Widget implements HasHandlerManager {
    */
   public final HandlerManager getHandlerManager() {
     if (handlerManager == null) {
-      handlerManager = createHandlerManager();
+      handlerManager = createLegacyHandlerManager();
     }
     return handlerManager;
   }
@@ -105,13 +105,21 @@ public abstract class Gen2Widget extends Widget implements HasHandlerManager {
   }
 
   /**
+   * <p>
    * Creates the {@link HandlerManager} used by this widget for event
    * management.
+   * </p>
+   * <p>
+   * Note that {@link Gen2Widget} is deprecated and should not be used. The
+   * HandlerManager has been moved to GWT trunk and included in {@link Widget},
+   * so Gen2Widget contains both the deprecated {@link HandlerManager} and the
+   * non-deprecated {@link com.google.gwt.event.shared.HandlerManager}. 
+   * </p>
    * 
    * @return the handler manager
-   * 
+   * @see #createHandlerManager()
    */
-  protected HandlerManager createHandlerManager() {
+  protected HandlerManager createLegacyHandlerManager() {
     return new HandlerManager(this);
   }
 
