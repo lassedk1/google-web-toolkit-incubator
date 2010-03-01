@@ -18,7 +18,6 @@ package com.google.gwt.widgetideas.client;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowResizeListener;
@@ -43,16 +42,13 @@ public class ResizableWidgetCollection implements WindowResizeListener,
   /**
    * Information about a widgets size.
    */
-  private static class ResizableWidgetInfo {
-    /**
-     * The current clientHeight.
-     */
-    private int curHeight = 0;
+  static class ResizableWidgetInfo {
 
-    /**
-     * The current clientWidth.
-     */
-    private int curWidth = 0;
+    private ResizableWidget widget;
+    private int curOffsetHeight = 0;
+    private int curOffsetWidth = 0;
+    private int curClientHeight = 0;
+    private int curClientWidth = 0;
 
     /**
      * Constructor.
@@ -60,25 +56,46 @@ public class ResizableWidgetCollection implements WindowResizeListener,
      * @param widget the widget that will be monitored
      */
     public ResizableWidgetInfo(ResizableWidget widget) {
-      curWidth = DOM.getElementPropertyInt(widget.getElement(), "clientWidth");
-      curHeight = DOM.getElementPropertyInt(widget.getElement(), "clientHeight");
+      this.widget = widget;
+      updateSizes();
+    }
+
+    public int getClientHeight() {
+      return curClientHeight;
+    }
+
+    public int getClientWidth() {
+      return curClientWidth;
+    }
+
+    public int getOffsetHeight() {
+      return curOffsetHeight;
+    }
+
+    public int getOffsetWidth() {
+      return curOffsetWidth;
     }
 
     /**
-     * Set the new dimensions of the widget if they changed.
+     * Update the current sizes.
      * 
-     * @param width the new width
-     * @param height the new height
-     * @return true if the dimensions have changed
+     * @return true if the sizes changed, false if not.
      */
-    public boolean setClientSize(int width, int height) {
-      if (width != curWidth || height != curHeight) {
-        this.curWidth = width;
-        this.curHeight = height;
+    public boolean updateSizes() {
+      int offsetWidth = widget.getElement().getOffsetWidth();
+      int offsetHeight = widget.getElement().getOffsetHeight();
+      int clientWidth = widget.getElement().getClientWidth();
+      int clientHeight = widget.getElement().getClientHeight();
+      if (offsetWidth != curOffsetWidth || offsetHeight != curOffsetHeight
+          || clientWidth != curClientWidth || clientHeight != curClientHeight) {
+        this.curOffsetWidth = offsetWidth;
+        this.curOffsetHeight = offsetHeight;
+        this.curClientWidth = clientWidth;
+        this.curClientHeight = clientHeight;
         return true;
-      } else {
-        return false;
       }
+
+      return false;
     }
   }
 
@@ -212,13 +229,15 @@ public class ResizableWidgetCollection implements WindowResizeListener,
     for (Map.Entry<ResizableWidget, ResizableWidgetInfo> entry : widgets.entrySet()) {
       ResizableWidget widget = entry.getKey();
       ResizableWidgetInfo info = entry.getValue();
-      int curWidth = widget.getElement().getPropertyInt("clientWidth");
-      int curHeight = widget.getElement().getPropertyInt("clientHeight");
 
       // Call the onResize method only if the widget is attached
-      if (info.setClientSize(curWidth, curHeight)) {
-        if (curWidth > 0 && curHeight > 0 && widget.isAttached()) {
-          widget.onResize(curWidth, curHeight);
+      if (info.updateSizes()) {
+        // Check that the offset width and height are greater than 0.
+        if (info.getOffsetWidth() > 0 && info.getOffsetHeight() > 0
+            && widget.isAttached()) {
+          // Send the client dimensions, which is the space available for
+          // rendering.
+          widget.onResize(info.getOffsetWidth(), info.getOffsetHeight());
         }
       }
     }
@@ -317,9 +336,7 @@ public class ResizableWidgetCollection implements WindowResizeListener,
 
     ResizableWidgetInfo info = widgets.get(widget);
     if (info != null) {
-      int curWidth = widget.getElement().getPropertyInt("clientWidth");
-      int curHeight = widget.getElement().getPropertyInt("clientHeight");
-      info.setClientSize(curWidth, curHeight);
+      info.updateSizes();
     }
   }
 
