@@ -16,9 +16,11 @@
 package com.google.gwt.widgetideas.client;
 
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.widgetideas.client.ResizableWidgetCollection.ResizableWidgetInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,23 +35,20 @@ public class ResizableWidgetCollectionTest extends WidgetTestBase {
   /**
    * A {@link ResizableWidget} used for testing.
    */
-  private static class MockResizableWidget implements ResizableWidget {
-    private boolean isAttached;
-    private com.google.gwt.dom.client.Element elem = Document.get().createDivElement();
+  private static class MockResizableWidget extends Widget implements
+      ResizableWidget {
+    private boolean onResizeCalled;
 
-    public Element getElement() {
-      return (Element) elem;
+    public MockResizableWidget() {
+      setElement(Document.get().createDivElement());
     }
 
-    public boolean isAttached() {
-      return isAttached;
+    public void assertOnResizeCalled(boolean expected) {
+      assertEquals(expected, onResizeCalled);
     }
 
     public void onResize(int width, int height) {
-    }
-
-    public void setAttached(boolean isAttached) {
-      this.isAttached = isAttached;
+      onResizeCalled = true;
     }
   }
 
@@ -176,9 +175,9 @@ public class ResizableWidgetCollectionTest extends WidgetTestBase {
 
     // Add when attached
     {
-      rw0.setAttached(true);
-      rw1.setAttached(true);
-      rw2.setAttached(true);
+      RootPanel.get().add(rw0);
+      RootPanel.get().add(rw1);
+      RootPanel.get().add(rw2);
       rwc.add(rw1);
       rwc.add(rw2);
     }
@@ -194,6 +193,72 @@ public class ResizableWidgetCollectionTest extends WidgetTestBase {
 
     // Cleanup
     cleanup(rwc);
+  }
+
+  public void testResizableWidgetInfo() {
+    final int WIDTH = 40;
+    final int HEIGHT = 50;
+
+    final MockResizableWidget widget = new MockResizableWidget();
+    RootPanel.get().add(widget);
+    Element elem = widget.getElement();
+    elem.getStyle().setProperty("border", "2px solid black");
+    elem.getStyle().setMargin(0.0, Unit.PX);
+    elem.getStyle().setPadding(0.0, Unit.PX);
+    widget.setPixelSize(WIDTH, HEIGHT);
+
+    // Check initialization.
+    final ResizableWidgetInfo info = new ResizableWidgetInfo(widget);
+    final int clientWidth = info.getClientWidth();
+    final int clientHeight = info.getClientHeight();
+    final int offsetWidth = info.getOffsetWidth();
+    final int offsetHeight = info.getOffsetHeight();
+
+    // Update with no change.
+    assertFalse(info.updateSizes());
+    assertEquals(clientWidth, info.getClientWidth());
+    assertEquals(clientHeight, info.getClientHeight());
+    assertEquals(offsetWidth, info.getOffsetWidth());
+    assertEquals(offsetHeight, info.getOffsetHeight());
+
+    // Change the size and verify that it is updated.
+    widget.setPixelSize(WIDTH - 2, HEIGHT - 10);
+    assertTrue(info.updateSizes());
+    assertEquals(clientWidth - 2, info.getClientWidth());
+    assertEquals(clientHeight - 10, info.getClientHeight());
+    assertEquals(offsetWidth - 2, info.getOffsetWidth());
+    assertEquals(offsetHeight - 10, info.getOffsetHeight());
+
+    RootPanel.get().remove(widget);
+  }
+
+  /**
+   * Test that resize works even if the widget has a board.
+   */
+  public void testResizeWithBorder() {
+    final ResizableWidgetCollection rwc = new ResizableWidgetCollection();
+    rwc.setResizeCheckDelay(100);
+
+    // Add a widget with a height of 1px, border of 1px.
+    final MockResizableWidget rw = new MockResizableWidget() {
+      @Override
+      public void onResize(int width, int height) {
+        super.onResize(width, height);
+        RootPanel.get().remove(this);
+        cleanup(rwc);
+        finishTest();
+      }
+    };
+    rw.setPixelSize(20, 10);
+    rw.getElement().getStyle().setProperty("border", "1px solid red");
+    RootPanel.get().add(rw);
+    rwc.add(rw);
+    rw.assertOnResizeCalled(false);
+
+    // Change the border height, which changes the offsetHeight but not the
+    // clientHeight.
+    delayTestFinish(5000);
+    rw.getElement().getStyle().setProperty("border", "2px solid red");
   }
 
   private void cleanup(ResizableWidgetCollection rwc) {
