@@ -17,6 +17,7 @@
 package com.google.gwt.widgetideas;
 
 import com.google.gwt.gen2.selection.client.DropDownListBoxTest;
+import com.google.gwt.junit.tools.GWTTestSuite;
 import com.google.gwt.widgetideas.client.CollapsiblePanelTest;
 import com.google.gwt.widgetideas.client.FastTreeTest;
 import com.google.gwt.widgetideas.client.ProgressBarTest;
@@ -24,16 +25,15 @@ import com.google.gwt.widgetideas.client.ResizableWidgetCollectionTest;
 import com.google.gwt.widgetideas.client.SliderBarTest;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * Tests the top level widgets.
  */
 public class TopLevelWidgetsTestSuite {
   public static Test suite() {
-    TestSuite suite = new TestSuite(
+    GWTTestSuite suite = new GWTTestSuite(
         "Test for com.google.gwt.widgetideas.client");
-    // Widget Tests.
+
     suite.addTestSuite(ProgressBarTest.class);
     suite.addTestSuite(SliderBarTest.class);
     suite.addTestSuite(CollapsiblePanelTest.class);

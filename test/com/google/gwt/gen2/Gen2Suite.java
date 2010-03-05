@@ -23,9 +23,9 @@ import com.google.gwt.gen2.event.shared.JSHanderRegistryTest;
 import com.google.gwt.gen2.logging.client.LogClientTest;
 import com.google.gwt.gen2.logging.server.LogServerTest;
 import com.google.gwt.gen2.selection.client.DropDownListBoxTest;
+import com.google.gwt.junit.tools.GWTTestSuite;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * Gen2 test suite.
@@ -33,8 +33,9 @@ import junit.framework.TestSuite;
 public class Gen2Suite {
   /** These tests should eventually be refactored into their own sub-suites. */
   public static Test suite() {
-    TestSuite suite = new TestSuite("Tests for gen2 widgets and libraries.");
-    // Widget Tests.
+    GWTTestSuite suite = new GWTTestSuite(
+        "Tests for gen2 widgets and libraries.");
+
     suite.addTestSuite(GWTEventsTest.class);
     suite.addTestSuite(JSHanderRegistryTest.class);
     suite.addTestSuite(DropDownListBoxTest.class);
