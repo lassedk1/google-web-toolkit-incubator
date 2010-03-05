@@ -39,9 +39,9 @@ import com.google.gwt.gen2.table.client.SelectionGridTest;
 import com.google.gwt.gen2.table.client.SortableGridTest;
 import com.google.gwt.gen2.table.client.TableModelTest;
 import com.google.gwt.gen2.table.client.TextCellEditorTest;
+import com.google.gwt.junit.tools.GWTTestSuite;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * Table suite.
@@ -49,9 +49,8 @@ import junit.framework.TestSuite;
 
 public class TableSuite {
   public static Test suite() {
-    TestSuite suite = new TestSuite(
+    GWTTestSuite suite = new GWTTestSuite(
         "Test for com.google.gwt.gen2.table.client");
-    // $JUnit-BEGIN$
 
     // TableModel tests
     suite.addTestSuite(TableModelTest.class);
@@ -86,7 +85,6 @@ public class TableSuite {
     suite.addTestSuite(FlexTableBulkRendererTest.class);
     suite.addTestSuite(GridBulkRendererTest.class);
 
-    // $JUnit-END$
     return suite;
   }
 }

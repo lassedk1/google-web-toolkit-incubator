@@ -344,7 +344,7 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
 
   <target name="test.web.selenium" if="gwt.hosts.web.selenium">
     <echo message="Performing remote testing using Selenium RC at ${gwt.hosts.web.selenium}" />
-    <gwt.junit test.args='-web -out www -runStyle "Selenium:${gwt.hosts.web.selenium}"'
+    <gwt.junit test.args='-web -out www -ea -runStyle "Selenium:${gwt.hosts.web.selenium}"'
                test.out="${project.test.results}/web-selenium"
                test.cases="default.web.tests">
     </gwt.junit>
@@ -364,7 +364,7 @@ there exists a [out-of-date] command which may allow us to avoid the .body tasks
 
   <target name="test.web.remote" if="gwt.hosts.web.remote">
     <echo message="Performing remote testing at ${gwt.hosts.web.remote}" />
-    <gwt.junit test.args="-web -out www -runStyle RemoteWeb:${gwt.hosts.web.remote}"
+    <gwt.junit test.args="-web -out www -ea -runStyle RemoteWeb:${gwt.hosts.web.remote}"
                test.out="${project.test.results}/web-remote"
                test.cases="default.web.tests">
     </gwt.junit>

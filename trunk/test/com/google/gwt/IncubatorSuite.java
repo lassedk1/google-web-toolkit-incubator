@@ -16,10 +16,7 @@
 
 package com.google.gwt;
 
-import com.google.gwt.gen2.Gen2Suite;
 import com.google.gwt.junit.tools.GWTTestSuite;
-import com.google.gwt.libideas.LibIdeasSuite;
-import com.google.gwt.widgetideas.WidgetIdeasSuite;
 
 import junit.framework.Test;
 
@@ -29,9 +26,6 @@ import junit.framework.Test;
 public class IncubatorSuite {
   public static Test suite() {
     GWTTestSuite suite = new GWTTestSuite("Tests for incubator");
-    suite.addTest(WidgetIdeasSuite.suite());
-    suite.addTest(LibIdeasSuite.suite());
-    suite.addTest(Gen2Suite.suite());
     suite.addTestSuite(IncubatorClassInitTest.class);
     return suite;
   }

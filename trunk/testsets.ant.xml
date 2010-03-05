@@ -2,7 +2,7 @@
 
 <project name="testsets">
     
-    <condition property="project.test.filter" value="**/IncubatorSuite.class">
+    <condition property="project.test.filter" value="**/*Suite.class">
         <not>
             <isset property="project.test.filter"/>
         </not>

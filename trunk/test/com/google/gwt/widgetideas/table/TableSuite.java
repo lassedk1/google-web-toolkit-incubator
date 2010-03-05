@@ -16,6 +16,7 @@
 
 package com.google.gwt.widgetideas.table;
 
+import com.google.gwt.junit.tools.GWTTestSuite;
 import com.google.gwt.widgetideas.table.client.CachedTableModelTest;
 import com.google.gwt.widgetideas.table.client.ClientTableModelTest;
 import com.google.gwt.widgetideas.table.client.FixedWidthFlexTableTest;
@@ -36,7 +37,6 @@ import com.google.gwt.widgetideas.table.client.TableModelTest;
 import com.google.gwt.widgetideas.table.client.TextCellEditorTest;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * Table suite.
@@ -44,9 +44,9 @@ import junit.framework.TestSuite;
 
 public class TableSuite {
   public static Test suite() {
-    TestSuite suite = new TestSuite(
+    GWTTestSuite suite = new GWTTestSuite(
         "Test for com.google.gwt.widgetideas.table.client");
-    // $JUnit-BEGIN$
+
     suite.addTestSuite(FlexTableBulkRendererTest.class);
     suite.addTestSuite(FixedWidthGridTest.class);
     suite.addTestSuite(PagingScrollTableTest.class);
@@ -65,8 +65,7 @@ public class TableSuite {
     suite.addTestSuite(RadioCellEditorTest.class);
     suite.addTestSuite(InlineCellEditorTest.class);
     suite.addTestSuite(CachedTableModelTest.class);
-    //$JUnit-END$
-    // $JUnit-END$
+
     return suite;
   }
 
