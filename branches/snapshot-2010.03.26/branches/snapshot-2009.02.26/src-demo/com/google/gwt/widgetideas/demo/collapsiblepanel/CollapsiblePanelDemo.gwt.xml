@@ -1,0 +1,14 @@
+<module>
+
+	<!-- Inherit the core Web Toolkit stuff.                  -->
+	<inherits name='com.google.gwt.user.User' />
+    <inherits name="com.google.gwt.user.theme.standard.Standard" />
+
+	<!-- Must include PinnedPanel module -->
+	<inherits name='com.google.gwt.widgetideas.BasicWidget' />
+
+	<!-- Specify the app entry point class.                   -->
+	<entry-point
+		class='com.google.gwt.widgetideas.demo.collapsiblepanel.client.CollapsiblePanelDemo' />
+	<stylesheet src='CollapsiblePanelDemo.css' />
+</module>

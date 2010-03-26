@@ -1,0 +1,14 @@
+.handler-control {
+  border: 1px solid blue;
+  margin-right: 3 em;
+  width: 12 em;
+}
+
+.gwt-ToggleButton,.gwt-PushButton {
+ }
+
+.gwt-Button {
+  height: 50px;
+  width: 8em;
+  color: green;
+}

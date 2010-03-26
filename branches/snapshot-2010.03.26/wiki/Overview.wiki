@@ -1,0 +1,32 @@
+#summary Overview of the Google Web Toolkit Incubator
+
+= Overview =
+The Google Web Toolkit (GWT) Incubator fosters additional widgets and libraries for GWT before they are added to the core toolkit. The project is managed by the GWT engineering team at Google, and is used as a place to share, discuss, and vet future or speculative GWT features. Future releases of GWT may or may not use these features, but you are welcome to pull them from here to use today.
+
+== Licensing ==
+
+The Google Web Toolkit Incubator is an open source project under the Apache 2.0 license.
+
+Except as otherwise [http://code.google.com/policies.html#restrictions noted], the documentation, including the class reference, is licensed under a [http://creativecommons.org/licenses/by/2.5/ Creative Commons Attribution 2.5 License]. Examples are licensed under the [http://www.apache.org/licenses/LICENSE-2.0 Apache 2.0 license].
+
+
+== Downloads ==
+
+The most current incubator libraries may be [http://code.google.com/p/google-web-toolkit-incubator/wiki/Downloads?tm=2 downloaded here]. They are contained in a single jar file for convenience. 
+
+If you are interested in milestone builds that might be more recent than the latest official release, see the bottom of the [Downloads downloads] page.
+
+== Forums ==
+
+For questions related to the libraries, please see the Google Group named [http://groups.google.com/group/Google-Web-Toolkit Google-Web-Toolkit].
+
+== Reporting Bugs ==
+
+First, consult the issue tracker for the project at 
+[http://code.google.com/p/google-web-toolkit-incubator Google Code].  If you do not see the bug listed, and are not sure if you've found a bug, search the [http://groups.google.com/group/Google-Web-Toolkit Google-Web-Toolkit groups].  If you are sure you've found a bug,  please file a new issue.  You can follow up with a post to the [http://groups.google.com/group/Google-Web-Toolkit-Contributors Google-Web-Toolkit-Contributors] mailing list if you like.
+
+If you find a bug that matches the problem you describe, make sure to _star_ it by clicking on the star at the upper left of the bug.  This helps us judge how many people are affected by the problem.
+
+== Contributing  to the project ==
+
+If you are interested in contributing to the incubator, please read [http://code.google.com/docreader/#p=google-web-toolkit-incubator&s=google-web-toolkit-incubator&t=MakingIncubatorBetter Making the GWT Incubator Better] guide. 

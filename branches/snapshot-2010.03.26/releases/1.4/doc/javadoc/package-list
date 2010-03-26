@@ -1,0 +1,12 @@
+com.google.gwt.libideas.client
+com.google.gwt.libideas.resources.client
+com.google.gwt.libideas.resources.client.impl
+com.google.gwt.libideas.resources.rebind
+com.google.gwt.libideas.resources.rebind.context
+com.google.gwt.libideas.resources.rg
+com.google.gwt.widgetideas.client
+com.google.gwt.widgetideas.datepicker.client
+com.google.gwt.widgetideas.datepicker.client.impl
+com.google.gwt.widgetideas.datepicker.client.overrides
+com.google.gwt.widgetideas.table.client
+com.google.gwt.widgetideas.table.client.overrides

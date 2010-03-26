@@ -1,0 +1,23 @@
+<module>
+	<inherits name='com.google.gwt.gen2.widgetbase.WidgetBase' />
+	<inherits name='com.google.gwt.gen2.commonwidget.CommonWidget' />
+	<inherits name='com.google.gwt.gen2.commonevent.CommonEvent' />
+	<!--
+		This dependency should be removed as soon as we can, as we do not want
+		gen2 widgets dependent upon widgetideas
+	-->
+	<inherits name='com.google.gwt.widgetideas.WidgetIdeas' />
+	<source path="client" />
+	 
+
+	<!--
+      Bindings for SlidingPanelImpl, used by CollapsiblePanel
+  -->
+	<!--
+		<replace-with
+		class="com.google.gwt.gen2.complexpanel.client.SliderPanelImplIE">
+		<when-type-is
+		class="com.google.gwt.gen2.complexpanel.client.SliderPanelImpl" />
+		<when-property-is name="user.agent" value="ie6" /> </replace-with>
+	-->
+</module>

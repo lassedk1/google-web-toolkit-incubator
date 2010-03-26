@@ -1,0 +1,10 @@
+branch-info.txt for the 2009.03.30 snapshot branch:
+Tracks interactions between this branch and other branches.
+See: http://code.google.com/p/google-web-toolkit/wiki/ManagingMerges
+
+Copies:
+/branches/snapshot-2009.03.30-r1600/ was created (r1601) as a straight copy from /trunk/@1600
+
+Merges:
+/trunk/@1629:1630 was merged (r1631) into branch/snapshot-2009.03.30-r1600/
+/trunk/@1628:1629 was merged (r????) into branch/snapshot-2009.03.30-r1600/

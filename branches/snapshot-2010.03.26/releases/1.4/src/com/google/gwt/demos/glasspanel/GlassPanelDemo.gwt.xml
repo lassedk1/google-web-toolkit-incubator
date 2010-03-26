@@ -1,0 +1,15 @@
+<module>
+
+	<!-- Inherit the core Web Toolkit stuff.                  -->
+	<inherits name='com.google.gwt.user.User'/>
+
+  <!-- Inherit GlassPanel module                       -->
+  <inherits name='com.google.gwt.widgetideas.GlassPanel'/>
+
+	<!-- Specify the app entry point class.                                      -->
+	<entry-point class='com.google.gwt.demos.glasspanel.client.GlassPanelDemo'/>
+  
+	<!-- Include Demo CSS              -->
+	<stylesheet src='GlassPanelDemo.css'/>
+
+</module>

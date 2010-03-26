@@ -1,0 +1,21 @@
+<module>
+	<!-- Inherit the core Web Toolkit stuff.                  -->
+	<inherits name='com.google.gwt.gen2.complexpanel.ComplexPanel' />
+
+	<!-- Specify the app entry point class.                   -->
+	<entry-point
+		class='com.google.gwt.gen2.demo.collapsiblepanel.client.CollapsiblePanelDemo' />
+
+
+ 
+	<inherits name='com.google.gwt.user.theme.standard.StandardRTL' />
+	
+	
+  <!-- used to debug this widget's css -->
+
+ <!--  <inherits name='com.google.gwt.gen2.widgetbase.Css_debug_rtl' -->
+  
+	<extend-property name="locale" values="ar" />
+	<set-property name="locale" value="ar" />
+  <stylesheet src='CollapsiblePanelDemo_rtl.css' />
+</module>

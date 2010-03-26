@@ -1,0 +1,12 @@
+<module>
+    <!-- Inherit the core Web Toolkit stuff.                  -->
+    <inherits name='com.google.gwt.user.User'/>
+    <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
+    <!-- comment in an out to see effect of stylesheets
+    <inherits name='com.google.gwt.user.theme.standard.Standard'/>
+    -->
+    
+    <!-- Specify the app entry point class.                   -->
+    <entry-point class='com.google.gwt.demos.bulkloadingtable.client.BulkLoadingTableDemo'/>
+    <stylesheet src='BulkLoadedTableDemo.css'/>
+</module>

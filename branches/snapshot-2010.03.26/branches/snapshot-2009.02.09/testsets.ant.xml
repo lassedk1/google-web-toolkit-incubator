@@ -1,0 +1,26 @@
+<!-- A file to define the test sets for Incubator testing -->
+
+<project name="testsets">
+    
+    <condition property="project.test.filter" value="**/IncubatorSuite.class">
+        <not>
+            <isset property="project.test.filter"/>
+        </not>
+    </condition>
+
+    <!-- Default test set: -->
+    <patternset id="default.tests">
+        <include name="${project.test.filter}"/>
+    </patternset>
+    
+    <!-- Hosted mode tests: -->
+    <fileset id="default.hosted.tests" dir="${project.test.bin}">
+        <patternset refid="default.tests"/>
+    </fileset>
+    
+    <!-- Web mode tests: -->
+    <fileset id="default.web.tests" dir="${project.test.bin}">
+        <patternset refid="default.tests"/>
+    </fileset>
+    
+</project>

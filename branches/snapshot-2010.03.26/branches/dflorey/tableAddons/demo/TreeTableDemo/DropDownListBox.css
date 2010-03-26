@@ -1,0 +1,52 @@
+/**
+ * Default DropDownListBox styling.
+ */
+.customListBoxList{
+  background-color: #efefef;
+  border: 1px dotted gray;
+}
+
+.gwt-DropDownListBox {
+  
+}
+
+.customListBoxItem {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 2px;
+}
+
+.customListBoxHighlightedItem {
+  background: #b7d6f6;
+}
+
+.customListBoxSelectedItem {
+  background: #95b4d4;
+}
+
+.customListBoxSelectedAndHighlightedItem {
+  background: #84c5e5;
+}
+
+.customListBoxSelectedAndDisabledItem {
+  background: #84c5e5;
+  color: #efefef;
+}
+
+.customListBoxDisabledItem {
+  color: #efefef;
+}
+
+.customListBoxOuterSeparator {
+  padding: 2px 0px;
+}
+
+.customListBoxInnerSeparator {
+  height: 1px;
+  padding: 0px;
+  border: 0px;
+  border-top: 1px solid #777777;
+  background: #ddddee;
+  overflow: hidden;
+}

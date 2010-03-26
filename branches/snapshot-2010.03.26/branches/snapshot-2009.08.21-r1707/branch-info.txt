@@ -1,0 +1,9 @@
+branch-info.txt for the 2009.09.21-r1707 snapshot branch.
+Tracks interactions between this branch and other branches.
+See: http://code.google.com/p/google-web-toolkit/wiki/ManagingMerges
+
+Copies:
+/branches/snapshot-2009.08.21-r1707 was created (r1708) as a straight copy from /trunk/@1707
+
+Merges:
+

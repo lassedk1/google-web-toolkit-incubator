@@ -1,0 +1,18 @@
+<module>
+
+	<!-- Inherit the core Web Toolkit stuff.                  -->
+	<inherits name='com.google.gwt.user.User'/>
+  <inherits name='com.google.gwt.gen2.table.Table'/>
+  <inherits name='com.google.gwt.user.theme.standard.Standard'/>
+
+  <source path='client'/>
+  <source path='shared'/>
+
+  <!-- Specify the app entry point class.                   -->
+  <entry-point class='com.google.gwt.gen2.demo.scrolltable.client.PagingScrollTableDemo'/>
+  
+  <stylesheet src='ScrollTableDemo.css'/>
+  
+  <!-- Define the RPC service -->
+  <servlet path="/datasource" class="com.google.gwt.gen2.demo.scrolltable.server.DataSourceServiceImpl"/>
+</module>

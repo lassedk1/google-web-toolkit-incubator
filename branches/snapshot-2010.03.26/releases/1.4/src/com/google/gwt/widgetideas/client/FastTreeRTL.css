@@ -1,0 +1,59 @@
+/* Users usually should override styles in gwt-Tree*/
+.gwt-FastTree {
+  
+}
+
+.gwt-FastTreeItem .open,.gwt-FastTreeItem .closed,.gwt-FastTreeItem .leaf
+  {
+  cursor: default;
+  -moz-user-select: none;
+  position: relative;
+  white-space: nowrap;
+}
+.gwt-FastTreeItem .open,.gwt-FastTreeItem .closed {
+  color: black;
+  font-size: 110%;
+}
+
+.gwt-FastTreeItem .gwt-CheckBox {
+  
+}
+
+.gwt-FastTreeItem .leaf {
+  color: black;
+  font-size: 90%;
+}
+
+.gwt-FastTreeItem .children {
+  white-space: nowrap;
+  margin-right: 10px;
+}
+
+.gwt-FastTree .placeholder {
+  width: 12px;
+  height: 100%;
+}
+
+.gwt-FastTreeItem .open .placeholder {
+  background: url('%treeOpen%') no-repeat center right;
+}
+
+.gwt-FastTreeItem .closed .placeholder {
+  background: url('%treeClosed%') no-repeat center right;
+}
+
+.gwt-FastTree .gwt-FastTreeItem {
+  
+}
+
+.gwt-FastTree .gwt-TreeItem-selected {
+  
+}
+
+.gwt-FastTree .selection-bar {
+  background: #e3e8f3 url('%selectionBar%') repeat-x;
+  font-size: 0;
+  position: absolute;
+  width: 100%;
+  border: 1px solid black;
+}

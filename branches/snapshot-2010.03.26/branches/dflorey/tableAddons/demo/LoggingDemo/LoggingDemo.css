@@ -1,0 +1,97 @@
+.gwt-TreeHandler-popup {
+  background-color: white;
+  border: 1px solid #87B3FF;
+  padding: 4px;
+}
+
+.gwt-FastTree .info div {
+  color: black;
+}
+
+.gwt-FastTree .info div {
+  color: black;
+}
+
+.gwt-FastTree .severe div {
+  color: red;
+}
+
+.gwt-FastTree .warning div {
+  color: orange;
+}
+
+.gwt-FastTree .finest div {
+  color: gray;
+}
+
+.gwt-FastTree .finer div {
+  color: gray;
+}
+
+.gwt-FastTree .fine div {
+  color: gray;
+}
+
+button {
+  width: 8 em;
+  margin-left: 1 em;
+}
+
+.level-control {
+  border: 1px solid gray;
+  margin-left: 3 em;
+  width: 8 em;
+  padding: 2 px;
+}
+
+.handler-control {
+  border: 1px solid blue;
+  margin-right: 3 em;
+  width: 15 em;
+}
+
+.log-panel,.gwt-PopupWidgetHandler {
+  background-color: #E8EEF7;
+  border: 1px solid red;
+  padding: 0.2em;
+  margin: 0px;
+  filter: alpha(opacity =                 95);
+  opacity: 0.95;
+  z-index: 1000;
+  width: 15 em;
+  height: 20 em;
+  overflow: auto;
+}
+
+.gwt-FastTree .selection-bar {
+  background: red;
+}
+
+.log-panel .log-header {
+  cursor: move;
+}
+
+.log-panel .log-text-area {
+  text-align: left;
+  font-size: 10pt;
+}
+
+.log-panel .log-text-area * {
+  font-family: monospace;
+}
+
+.log-panel .log-stacktrace {
+  white-space: nowrap;
+}
+
+.log-panel .log-message {
+  cursor: help;
+}
+
+.log-panel .log-message-hover {
+  background-color: #F0F0F0;
+}
+
+.log-panel .log-scroll-panel {
+  background-color: #FFF;
+}

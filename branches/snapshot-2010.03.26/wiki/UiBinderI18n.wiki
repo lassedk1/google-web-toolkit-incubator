@@ -1,0 +1,1 @@
+Moved to http://code.google.com/p/google-web-toolkit/wiki/UiBinderI18n

@@ -1,0 +1,19 @@
+#summary How to use the incubator widgets and libraries
+#labels Type-Guide
+
+= How to Use the GWT Incubator =
+
+Using the GWT incubator widgets and libraries is as simple as following the four steps below. Give them a try and your project should be ready to roll with the GWT incubator.
+
+ # Get the incubator jar:
+   * Download [http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator.jar].
+   * Follow the instructions in [MakingIncubatorBetter Making GWT Incubator Better] to create your own incubator.jar.
+ # Add the incubator.jar to your project's classpath.
+ # Add the following lines to your module file:
+{{{	
+   <inherits name='com.google.gwt.widgetideas.WidgetIdeas' />	
+   <inherits name='com.google.gwt.libideas.LibIdeas' />
+}}}
+ # Report bugs and enhancement requests  [http://code.google.com/p/google-web-toolkit-incubator/issues/entry here].
+
+Have fun!

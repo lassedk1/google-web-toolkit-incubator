@@ -1,0 +1,22 @@
+#summary The best answers to the Frequently Asked Questions on the GWT group can be found here.
+#labels Type-FAQ
+
+= Google-Widget-Toolkit group FAQ =
+
+This FAQ contains answers to questions often encountered on the [http://groups.google.com/group/Google-Web-Toolkit GWT newsgroup].
+ 
+ 
+
+== In-Depth Articles ==
+
+  * [ServerPushFAQ Server Push] - a method for sending events asynchronously from your server to GWT.
+
+  * [PathsHandlingFAQ How GWT handles paths] - Read this if you're getting 'can't find file' errors from GWT.
+
+  * [LoginSecurityFAQ Login Security] - Basic treatise on writing your login system in a secure fashion.
+
+  * [StubbingRPC Stubbing RPC for hosted mode] - How to stub RPC servlets to make deployment a breeze while making hosted mode testing simple and easy.
+
+  * [IntegratingWithSpring Integrating GWT with Spring 2.0]
+
+  * I'd like to unit test my server's email facility: Use [http://quintanasoft.com/dumbster/ Dumbster] - it's a fake SMTP server written in java that stores the email it would have sent so your testing utility can check it.

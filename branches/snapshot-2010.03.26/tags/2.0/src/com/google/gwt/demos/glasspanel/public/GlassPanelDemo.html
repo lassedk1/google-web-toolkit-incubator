@@ -1,0 +1,41 @@
+<html>
+	<head>
+		<title>GlassPanelDemo</title>
+		<script language='javascript' src='com.google.gwt.demos.glasspanel.GlassPanelDemo.nocache.js'></script>
+	</head>
+
+	<body>
+		<iframe src="javascript:''" id="__gwt_historyFrame" style="position:absolute;width:0;height:0;border:none"></iframe>
+
+    <div style="height: 7em;"></div>
+    
+    <div id="xyz" style="width: 20em;">
+      <table border="1">
+        <tr>
+          <th>HEADING 1</th>
+          <th>HEADING 2</th>
+          <th>HEADING 3</th>
+        </tr>
+        <tr>
+          <td>CELL 1</td>
+          <td>CELL 2</td>
+          <td>CELL 3</td>
+        </tr>
+      </table>
+    </div>
+
+    <div style="height: 2em;"></div>
+
+<u>GlassPanel test cases to consider</u>
+<ol>
+  <li>Every GWT supported browser/platform</li>
+  <li>Quirks (<code>BackCompat</code>) and Strict mode (<code>CSS1Compat</code>)</li>
+  <li>Each combination of above states: BODY size; HTML size;, document scrolling enabled</li>
+  <li>Varying sizes of margins/borders on both HTML and BODY element, possibly with the exception of negative margins which are not yet fully supported</li>
+  <li>Attached to the document BODY (<code>RootPanel.get()</code>), various HTML elements (<code>RootPanel.get(String id)</code>), instances of <code>AbsolutePanel</code></li>
+  <li>With the browser window either smaller or larger than the document body (indicated with a 1px blue border)</li>
+</ol>
+
+
+	</body>
+</html>

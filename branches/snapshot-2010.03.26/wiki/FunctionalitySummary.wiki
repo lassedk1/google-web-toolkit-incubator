@@ -1,0 +1,44 @@
+#summary Functionality currently included in the incubator
+
+The following is a summary of widgets and libraries that are currently available in the GWT incubator.
+ 
+== Widgets ==
+  * [GlassPanel], exactly what is sounds, very useful to produce translucent effects]. 
+  * [DropDownListBox], a fully customizable drop down list box.
+  * [CollapsiblePanel], an easy and convinient panel to create hidable navigation panels.
+  * [FastTree], a fully customizable tree with a rich event model.
+  * [Spinner SliderBar/ProgressBar/Spinner/TimePicker/DateTimePicker], A set of really useful widgets to add zazz to your project. 
+ 
+== Tables ==
+  * [BulkTableRenderers] Bulk rendering of tables(up to 10x faster then normal rendering).
+  * [ScrollTable Scrolling tables], where the footer and header are fixed.
+  * [PagingScrollTable Paging tables], where the table can page through arbitrary data sets.
+  * [PagingScrollTable Editable tables], complete with common cell editors.
+ 
+== Logging ==
+[Logging The  logging suite] provides additional logging capabilities, including:
+  * Logging levels based on Java's logging system.
+  * Categories and filters to narrow logging output.
+  * A native java mode for shared code, where the output can be integrated with your server logging system.
+  * Compilation options so logging can be completely removed or minimally included for production mode.
+  * A variety of logging handlers that output to everything from firebug to a GWT tree widget.
+
+== Css support ==
+[CssResource] optimizes `css` source files for download, allowing them to be fully commented and modularized source, but quick and efficient in production. CssResource generates CSS that is: 
+  * Stripped of comments and white space.
+  * Aggregated into a single html file.
+  * (And in an advanced configuration)
+    * Obfucated css style names
+    * Unused css rules eliminated
+    * Rules selectively applied per browser.
+ 
+== Graphics ==
+The [GWTCanvas GWTCanvas Widget] exposes an API for drawing and transforming shapes and images, as well as for defining paths to create custom shapes. GWTCanvas currently supports:
+ * Rotations, scales, and translations.
+ * Custom paths including arcs, lines and curves.
+ * Image drawing and transformation.
+ * Compositing operations and transparency.
+ 
+== Utilities == 
+ * [Decorators html decorators which allow more flexible styling of your widgets]
+ * [ServerSideLocaleSelection server side locale]

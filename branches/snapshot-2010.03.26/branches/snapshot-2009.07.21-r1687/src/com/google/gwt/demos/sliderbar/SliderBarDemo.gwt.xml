@@ -1,0 +1,12 @@
+<module>
+
+	<!-- Inherit the core Web Toolkit stuff.                  -->
+	<inherits name='com.google.gwt.user.User'/>
+  <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
+  
+	<!-- Specify the app entry point class.                   -->
+	<entry-point class='com.google.gwt.demos.sliderbar.client.SliderBarDemo'/>
+  
+  <!-- Specify the styles to apply -->
+  <stylesheet src='SliderBarDemo.css'/>
+</module>

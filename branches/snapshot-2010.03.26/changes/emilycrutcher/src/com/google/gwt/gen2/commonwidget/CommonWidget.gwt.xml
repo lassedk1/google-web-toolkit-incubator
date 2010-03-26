@@ -1,0 +1,4 @@
+<module>
+	<inherits name='com.google.gwt.gen2.widgetbase.WidgetBase' />
+	<source path="client" />
+</module>

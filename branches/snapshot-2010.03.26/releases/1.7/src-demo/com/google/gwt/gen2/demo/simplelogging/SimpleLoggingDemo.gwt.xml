@@ -1,0 +1,20 @@
+<module>
+
+	<!-- Inherit the logging system -->
+	<inherits name='com.google.gwt.gen2.logging.LoggingBase' />
+
+	<!-- Specify the app entry point class.                         -->
+	<entry-point
+		class='com.google.gwt.gen2.demo.simplelogging.client.SimpleLoggingDemo' />
+
+
+	<!--
+		Sets default client log handler. 
+	-->
+	<replace-with
+		class="com.google.gwt.gen2.demo.simplelogging.client.SimpleLoggingDemo">
+		<when-type-is
+			class="com.google.gwt.gen2.logging.shared.DefaultClientLogHandler" />
+	</replace-with>
+
+</module>
