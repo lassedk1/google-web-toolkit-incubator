@@ -1,7 +1,0 @@
-<module>  
-  <!--  This module is now deprecated, use the 1.6 date picker instead -->
-  <inherits name='com.google.gwt.gen2.commonwidget.CommonWidget' />
-  <inherits name='com.google.gwt.widgetideas.BasicTable' />
-  <source path="client" />
-</module>
-

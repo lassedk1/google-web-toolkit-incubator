@@ -1,8 +1,0 @@
-branch-info.txt for incubator snapshot-2009.08.04-r1689 branch
-Tracks interactions between this branch and other branches.
-See: http://code.google.com/p/google-web-toolkit/wiki/ManagingMerges
-
-Copies:
-/branches/snapshot-2009.08.04-r1689 was created (r1690) as a straight copy from /trunk/@1689
-
-Merges:

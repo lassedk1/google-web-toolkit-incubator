@@ -1,9 +1,0 @@
-<module>
-	<!-- Selection includes Gen2Base, Event, CommonWidget -->
-	<inherits name='com.google.gwt.gen2.Gen2Suite' />
-
-	<!--  put in RTL mode -->
-	<extend-property name="locale" values="ar" />
-	<set-property name="locale" value="ar" />
-
-</module>

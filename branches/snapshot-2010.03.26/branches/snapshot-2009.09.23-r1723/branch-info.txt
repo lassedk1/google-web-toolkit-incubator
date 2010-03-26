@@ -1,8 +1,0 @@
-branch-info.txt for the 2009.09.23-r1723 snapshot branch.
-Tracks interactions between this branch and other branches.
-See: http://code.google.com/p/google-web-toolkit/wiki/ManagingMerges
-
-Copies:
-/branches/snapshot-2009.09.23-r1723 was created (r1724) as a straight copy from /trunk/@1723
-
-Merges:

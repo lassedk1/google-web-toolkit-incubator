@@ -1,2 +1,0 @@
-#summary display name for the docreader
-Google Web Toolkit Incubator

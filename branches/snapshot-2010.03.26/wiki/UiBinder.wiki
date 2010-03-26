@@ -1,2 +1,0 @@
-#labels Type-Library
-Moved to http://code.google.com/p/google-web-toolkit/wiki/UiBinder

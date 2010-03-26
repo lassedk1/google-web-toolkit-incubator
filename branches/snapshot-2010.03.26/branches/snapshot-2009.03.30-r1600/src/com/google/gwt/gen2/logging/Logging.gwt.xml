@@ -1,5 +1,0 @@
-<module>
-	<!--  Ensures user is included first -->
-	<inherits name="com.google.gwt.gen2.logging.handler.LogHandler" />
-    <inherits name="com.google.gwt.gen2.logging.CoreLogging" />
-</module>

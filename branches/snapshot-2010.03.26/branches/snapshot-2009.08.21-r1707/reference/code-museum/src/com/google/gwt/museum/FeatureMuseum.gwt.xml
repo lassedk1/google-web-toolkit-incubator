@@ -1,8 +1,0 @@
-<module>
-    
-    <!-- Inherit the core Web Toolkit stuff.                  -->
-    <inherits name='com.google.gwt.museum.Museum'/>
-    <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
-    <source path="client/feature"/>
-    <entry-point class="com.google.gwt.museum.client.feature.FeatureMuseum"/>
-</module>

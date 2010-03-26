@@ -1,6 +1,0 @@
-<module>  
-  <inherits name='com.google.gwt.gen2.commonwidget.CommonWidget' />
-  <inherits name='com.google.gwt.widgetideas.BasicTable' />
-  <source path="client" />
-</module>
-

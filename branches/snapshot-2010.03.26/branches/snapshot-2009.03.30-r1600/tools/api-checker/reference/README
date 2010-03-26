@@ -1,3 +1,0 @@
-The jar file in this directory is the reference version of gwt-incubator against which the API check is done. When the jar is updated, the svn information below must be updated as well.
-
-Svn info: svn.r1265 
