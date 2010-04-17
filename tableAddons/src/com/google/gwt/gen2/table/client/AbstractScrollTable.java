@@ -1,12 +1,12 @@
 /*
  * Copyright 2008 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -36,6 +36,7 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.Messages;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.CssResource.NotStrict;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.resources.client.ImageResource.RepeatStyle;
@@ -61,7 +62,7 @@ import java.util.Map;
  * A ScrollTable consists of a fixed header and footer (optional) that remain
  * visible and a scrollable body that contains the data.
  * </p>
- * 
+ *
  * <p>
  * In order for the columns in the header table and data table to line up, the
  * two table must have the same margin, padding, and border widths. You can use
@@ -69,7 +70,7 @@ import java.util.Map;
  * must keep the actual sizes consistent (especially with respect to the left
  * and right side of the cells).
  * </p>
- * 
+ *
  * <p>
  * NOTE: AbstractScrollTable does not resize correctly in older versions of
  * Mozilla (specifically, Linux hosted mode). In use, the PagingScrollTable will
@@ -78,9 +79,9 @@ import java.util.Map;
  * in percentages) on all modern browsers including IE6+, FF2+, Safari2+,
  * Chrome, Opera 9.6.
  * </p>
- * 
+ *
  * <h3>CSS Style Rules</h3>
- * 
+ *
  * <dl>
  * <dt>.gwt-ScrollTable</dt>
  * <dd>applied to the entire widget</dd>
@@ -107,7 +108,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     /**
      * Create a spacer element that allows the header table to scroll over the
      * vertical scroll bar of the data table.
-     * 
+     *
      * @param wrapper the wrapper that contains the header table
      * @return the spacer element
      */
@@ -118,7 +119,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     /**
      * Returns the width of a table, minus any padding, in pixels.
-     * 
+     *
      * @param table the table
      * @param includeSpacer true to include the spacer width
      * @return the width
@@ -136,7 +137,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     /**
      * Recalculate the ideal widths of columns.
-     * 
+     *
      * @param scrollTable the scroll table
      * @param command an optional command to execute while recalculating
      */
@@ -175,7 +176,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     /**
      * Reposition the header spacer as needed.
-     * 
+     *
      * @param scrollTable the scroll table
      * @param force if true, ignore the scroll policy
      */
@@ -218,7 +219,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     /**
      * Get the current width of the spacer element.
-     * 
+     *
      * @param table the table to check
      * @return the current width
      */
@@ -398,7 +399,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     /**
      * Resize the column on a mouse event. This method also marks the client as
      * busy so we do not try to change the size repeatedly.
-     * 
+     *
      * @param event the mouse event
      */
     public void resizeColumn(Event event) {
@@ -407,7 +408,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     /**
      * Set the current cell that will be resized based on the mouse event.
-     * 
+     *
      * @param event the event that triggered the new cell
      * @return true if the cell was actually changed
      */
@@ -484,7 +485,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     /**
      * Set the ScrollTable table that this worker affects.
-     * 
+     *
      * @param table the scroll table
      */
     public void setScrollTable(AbstractScrollTable table) {
@@ -494,7 +495,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     /**
      * Start resizing the current cell when the user clicks on the right edge of
      * the cell.
-     * 
+     *
      * @param event the mouse event
      */
     public void startResizing(Event event) {
@@ -519,7 +520,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     /**
      * Stop resizing the current cell.
-     * 
+     *
      * @param event the mouse event
      */
     public void stopResizing(Event event) {
@@ -538,7 +539,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     /**
      * Get the scroll table.
-     * 
+     *
      * @return the scroll table
      */
     protected AbstractScrollTable getScrollTable() {
@@ -547,7 +548,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     /**
      * Get the actual cell index of a cell in the header table.
-     * 
+     *
      * @param cell the cell element
      * @return the cell index
      */
@@ -619,7 +620,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     /**
      * Set the current cell that will be resized based on the mouse event.
-     * 
+     *
      * @param event the event that triggered the new cell
      * @return true if the cell was actually changed
      */
@@ -650,7 +651,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     /**
      * Start resizing the current cell.
-     * 
+     *
      * @param event the mouse event
      */
     @Override
@@ -702,7 +703,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     /**
      * Construct a new {@link TableWidthInfo}.
-     * 
+     *
      * @param includeSpacer true to include spacer in calculations
      */
     public TableWidthInfo(boolean includeSpacer) {
@@ -722,7 +723,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   public static interface Css extends CssResource {
     /**
      * Widget style name.
-     * 
+     *
      * @return the widget's style name
      */
     @ClassName("gwt-ScrollTable")
@@ -749,11 +750,12 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
      * The css file.
      */
     @Source("com/google/gwt/gen2/widgetbase/public/ScrollTable.css")
+	@NotStrict
     Css css();
 
     /**
      * An image used to fill the available width.
-     * 
+     *
      * @return an image resource of this image
      */
     @Source("scrollTableFillWidth.gif")
@@ -761,7 +763,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     /**
      * An image indicating that a column is sorted in ascending order.
-     * 
+     *
      * @return an image resource of this image
      */
     @Source("scrollTableAscending.gif")
@@ -769,7 +771,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
     /**
      * An image indicating a column is sorted in descending order.
-     * 
+     *
      * @return an image resource of this image
      */
     @Source("scrollTableDescending.gif")
@@ -783,19 +785,19 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   public interface ScrollTableMessages extends Messages {
     @DefaultMessage("Shrink/Expand to fill visible area")
     String shrinkExpandTooltip();
-    
+
     @DefaultMessage("Shows only dates that are equal")
     String dateOperatorEqualTooltip();
-    
+
     @DefaultMessage("Shows only dates that not equal")
     String dateOperatorUnequalTooltip();
-    
+
     @DefaultMessage("Show only dates before the given date")
     String dateOperatorBeforeTooltip();
-    
+
     @DefaultMessage("Show only dates after the given date")
     String dateOperatorAfterTooltip();
-    
+
     @DefaultMessage("Show only dates between the given dates")
     String dateOperatorBetweenTooltip();
   }
@@ -828,7 +830,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * The resize policies related to user resizing.
-   * 
+   *
    * <ul>
    * <li>DISABLED - Columns cannot be resized by the user</li>
    * <li>SINGLE_CELL - Only cells with a colspan of 1 can be resized</li>
@@ -841,7 +843,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * The resize policies of table cells.
-   * 
+   *
    * <ul>
    * <li>UNCONSTRAINED - Columns shrink and expand independently of each other</li>
    * <li>FLOW - As one column expands or shrinks, the columns to the right will
@@ -879,7 +881,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * The scroll policy of the table.
-   * 
+   *
    * <ul>
    * <li>HORIZONTAL - Only a horizontal scrollbar will be present.</li>
    * <li>BOTH - Both a vertical and horizontal scrollbar will be present.</li>
@@ -898,7 +900,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * The sorting policies related to user column sorting.
-   * 
+   *
    * <ul>
    * <li>DISABLED - Columns cannot be sorted by the user</li>
    * <li>SINGLE_CELL - Only cells with a colspan of 1 can be sorted</li>
@@ -1039,9 +1041,9 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * A map of header rows that cannot be sorted.
-   * 
+   *
    * key = the row index
-   * 
+   *
    * value = true if the row is sortable, false of not
    */
   private Map<Integer, Boolean> unsortableHeaderRows = new HashMap<Integer, Boolean>();
@@ -1053,7 +1055,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Constructor.
-   * 
+   *
    * @param dataTable the data table
    * @param headerTable the header table
    */
@@ -1069,7 +1071,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Constructor.
-   * 
+   *
    * @param dataTable the data table
    * @param headerTable the header table
    * @param images the images to use in the table
@@ -1156,7 +1158,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
     adoptTable(dataTable, dataWrapper, 1);
 
     populateHeaderTable(headerTable, tableDefinition);
-    
+
     // Create the sort indicator Image
     sortedColumnWrapper = DOM.createSpan();
 
@@ -1207,7 +1209,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * Enable or disable sorting on a specific header row. All header rows are
    * sortable by default. Use {@link #setSortingEnabled(boolean)} to disable
    * sorting on all rows.
-   * 
+   *
    * @param row the index of the row
    * @param sortable true to enable sorting for this column, false to disable
    */
@@ -1222,7 +1224,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   protected ColumnFilter createColumnFilter(int column) {
     return null;
   }
-  
+
   protected void populateHeaderTable(FixedWidthFlexTable headerTable, TableDefinition tableDefinition) {
     // Create the column filters
     int filterRow = headerTable.getRowCount();
@@ -1252,7 +1254,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * Adjust all column widths so they take up the maximum amount of space
    * without needing a horizontal scroll bar. The distribution will be
    * proportional to the current width of each column.
-   * 
+   *
    * The {@link AbstractScrollTable} must be visible on the page for this method
    * to work.
    */
@@ -1285,7 +1287,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Return the column width for a given column index.
-   * 
+   *
    * @param column the column index
    * @return the column width in pixels
    */
@@ -1316,7 +1318,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Get the absolute maximum width of a column.
-   * 
+   *
    * @param column the column index
    * @return the maximum allowable width of the column
    */
@@ -1324,7 +1326,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Get the absolute minimum width of a column.
-   * 
+   *
    * @param column the column index
    * @return the minimum allowable width of the column
    */
@@ -1334,7 +1336,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * Get the minimum offset width of the largest inner table given the
    * constraints on the minimum and ideal column widths. Note that this does not
    * account for the vertical scroll bar.
-   * 
+   *
    * @return the tables minimum offset width, or -1 if it cannot be calculated
    */
   public int getMinimumOffsetWidth() {
@@ -1378,7 +1380,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Get the preferred width of a column.
-   * 
+   *
    * @param column the column index
    * @return the preferred width of the column
    */
@@ -1400,7 +1402,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Returns true if the specified column is filterable.
-   * 
+   *
    * @param column the column index
    * @return true if the column is filterable, false if it is not filterable
    */
@@ -1415,7 +1417,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Returns true if the specified column is sortable.
-   * 
+   *
    * @param column the column index
    * @return true if the column is sortable, false if it is not sortable
    */
@@ -1445,7 +1447,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * Returns true if the specified column can be truncated. If it cannot be
    * truncated, its minimum width will be adjusted to ensure the cell content is
    * visible.
-   * 
+   *
    * @param column the column index
    * @return true if the column is truncatable, false if it is not
    */
@@ -1455,7 +1457,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * Returns true if the specified column in the footer table can be truncated.
    * If it cannot be truncated, its minimum width will be adjusted to ensure the
    * cell content is visible.
-   * 
+   *
    * @param column the column index
    * @return true if the column is truncatable, false if it is not
    */
@@ -1465,7 +1467,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * Returns true if the specified column in the header table can be truncated.
    * If it cannot be truncated, its minimum width will be adjusted to ensure the
    * cell content is visible.
-   * 
+   *
    * @param column the column index
    * @return true if the column is truncatable, false if it is not
    */
@@ -1575,7 +1577,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   /**
    * This method is called when the dimensions of the parent element change.
    * Subclasses should override this method as needed.
-   * 
+   *
    * @param width the new client width of the element
    * @param height the new client height of the element
    */
@@ -1627,7 +1629,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Unsupported.
-   * 
+   *
    * @param child the widget to be removed
    * @return false
    * @throws UnsupportedOperationException
@@ -1648,7 +1650,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Sets the amount of padding to be added around all cells.
-   * 
+   *
    * @param padding the cell padding, in pixels
    */
   public void setCellPadding(int padding) {
@@ -1662,7 +1664,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Sets the amount of spacing to be added around all cells.
-   * 
+   *
    * @param spacing the cell spacing, in pixels
    */
   public void setCellSpacing(int spacing) {
@@ -1676,7 +1678,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Set the resize policy applied to user actions that resize columns.
-   * 
+   *
    * @param columnResizePolicy the resize policy
    */
   public void setColumnResizePolicy(ColumnResizePolicy columnResizePolicy) {
@@ -1686,7 +1688,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Set the width of a column.
-   * 
+   *
    * @param column the index of the column
    * @param width the width in pixels
    * @return the new column width
@@ -1741,7 +1743,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   /**
    * Set the footer table that appears under the data table. If set to null, the
    * footer table will not be shown.
-   * 
+   *
    * @param footerTable the table to use in the footer
    */
   public void setFooterTable(FixedWidthFlexTable footerTable) {
@@ -1789,7 +1791,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Set the resize policy of the table.
-   * 
+   *
    * @param resizePolicy the resize policy
    */
   public void setResizePolicy(ResizePolicy resizePolicy) {
@@ -1800,7 +1802,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Set the scroll policy of the table.
-   * 
+   *
    * @param scrollPolicy the new scroll policy
    */
   public void setScrollPolicy(ScrollPolicy scrollPolicy) {
@@ -1841,7 +1843,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Set the {@link SortPolicy} that defines what columns users can sort.
-   * 
+   *
    * @param sortPolicy the {@link SortPolicy}
    */
   public void setSortPolicy(SortPolicy sortPolicy) {
@@ -1854,7 +1856,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   /**
    * Apply the sorted column indicator to a specific table cell in the header
    * table.
-   * 
+   *
    * @param tdElem the cell in the header table, or null to remove it
    * @param ascending true to apply the ascending indicator, false for
    *          descending
@@ -1894,7 +1896,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Create a wrapper element that will hold a table.
-   * 
+   *
    * @param cssName the style name added to the base name
    * @return a new wrapper element
    */
@@ -1921,7 +1923,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   /**
    * Extend the columns to exactly fill the available space, if the current
    * {@link ResizePolicy} requires it.
-   * 
+   *
    * @deprecated use {@link #redraw()} instead
    */
   @Deprecated
@@ -1932,7 +1934,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   /**
    * Called just before a column is sorted because of a user click on the header
    * row.
-   * 
+   *
    * @param row the row index that was clicked
    * @param column the column index that was clicked
    * @return true to sort, false to ignore
@@ -1975,7 +1977,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Helper method that actually performs the vertical resizing.
-   * 
+   *
    * @deprecated use {@link #redraw()} instead
    */
   @Deprecated
@@ -1986,7 +1988,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   /**
    * Sets the scroll property of the header and footers wrappers when scrolling
    * so that the header, footer, and data tables line up.
-   * 
+   *
    * @param baseHeader true to scroll the data table as well
    */
   protected void scrollTables(boolean baseHeader) {
@@ -2014,7 +2016,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Adopt a table into this {@link AbstractScrollTable} within its wrapper.
-   * 
+   *
    * @param table the table to adopt
    * @param wrapper the wrapper element
    * @param index the index to insert the wrapper in the main element
@@ -2026,7 +2028,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Apply the new widths to a list of columns.
-   * 
+   *
    * @param startIndex the index of the first column
    * @param infos the new column width info
    * @param forced if false, only set column widths that have changed
@@ -2056,7 +2058,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Apply the new sizes to the table wrappers.
-   * 
+   *
    * @param sizes the sizes to apply
    */
   private void applyTableWrapperSizes(TableHeightInfo sizes) {
@@ -2076,7 +2078,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Get the width available for the tables.
-   * 
+   *
    * @return the available width, or -1 if not defined
    */
   private int getAvailableWidth() {
@@ -2093,7 +2095,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   /**
    * Get the widths of all columns, either to their preferred sizes or just
    * ensure that they are within their min/max boundaries.
-   * 
+   *
    * @param boundsOnly true to only ensure the widths are within the bounds
    * @return the column widths
    */
@@ -2124,7 +2126,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Get info about the width of a column.
-   * 
+   *
    * @param column the column index
    * @return the info about the column width
    */
@@ -2167,7 +2169,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Get info about the width of multiple columns.
-   * 
+   *
    * @param column the start column index
    * @param numColumns the number of columns
    * @return the info about the column widths of the columns
@@ -2182,7 +2184,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Get the column widths needed to fill with available ScrollTable width.
-   * 
+   *
    * @param info the optional precomputed sizes
    * @return the column widths
    */
@@ -2247,7 +2249,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
    * one means that the header and footer table indexes are one greater than the
    * data table indexes, probably because the data table contains a checkbox
    * column.
-   * 
+   *
    * @return the offset
    */
   private int getHeaderOffset() {
@@ -2260,7 +2262,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   /**
    * Returns the new heights of the header, data, and footer tables based on the
    * {@link ScrollPolicy}.
-   * 
+   *
    * @return the new table heights, or null
    */
   private TableHeightInfo getTableWrapperSizes() {
@@ -2281,7 +2283,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Recalculate the ideal columns widths of all inner tables.
-   * 
+   *
    * @param command an optional command to execute while recalculating
    */
   private void maybeRecalculateIdealColumnWidths(Command command) {
@@ -2305,7 +2307,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
 
   /**
    * Prepare a table to be added to the {@link AbstractScrollTable}.
-   * 
+   *
    * @param table the table to prepare
    * @param cssName the style name added to the base name
    */

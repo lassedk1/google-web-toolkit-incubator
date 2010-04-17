@@ -1,12 +1,12 @@
 /*
  * Copyright 2008 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.resources.client.CssResource.NotStrict;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +46,7 @@ import java.util.Set;
 
 /**
  * A {@link PagingScrollTable} that hides child rows to emulate TreeTable
- * 
+ *
  * @param <RowType> the data type of the row values
  */
 public class TreeTable<RowType extends TreeTableItem> extends
@@ -223,12 +224,12 @@ public class TreeTable<RowType extends TreeTableItem> extends
   /**
    * Interface used to allow the widget access to css style names. <p/> The
    * class names indicate the default gwt names for these styles. <br>
-   * 
+   *
    */
   public static interface Css extends AbstractScrollTable.Css {
     /**
      * Widget style name.
-     * 
+     *
      * @return the widget's style name
      */
     @ClassName("gwt-TreeTable")
@@ -285,6 +286,7 @@ public class TreeTable<RowType extends TreeTableItem> extends
      * The css file.
      */
     @Source("com/google/gwt/gen2/widgetbase/public/TreeTable.css")
+    @NotStrict
     Css css();
 
     @Source("treeClosed.gif")
@@ -369,8 +371,9 @@ public class TreeTable<RowType extends TreeTableItem> extends
     public void setWidget(Widget widget) {
       String treeNodeWrapper = treeTable.getResources().getStyle().css().treeNodeWrapper();
       if (getCellIndex() == 0 && !treeTable.isFlattened()) {
-        ComplexPanel treeNode = renderTreeNode(getRowIndex());
+        HorizontalPanel treeNode = renderTreeNode(getRowIndex());
         treeNode.add(widget);
+        treeNode.setCellWidth(widget, "100%");
         treeNode.setStyleName(treeNodeWrapper);
         treeTable.getDataTable().setWidget(getRowIndex(), getCellIndex(),
             treeNode);
@@ -380,7 +383,7 @@ public class TreeTable<RowType extends TreeTableItem> extends
       }
     }
 
-    protected ComplexPanel renderTreeNode(int rowIndex) {
+    protected HorizontalPanel renderTreeNode(int rowIndex) {
       final RowType treeTableItem = treeTable.getRowValue(getRowIndex());
       final Set<String> invertedNodes = treeTable.getInvertedNodes();
       Css css = treeTable.getResources().getStyle().css();
@@ -390,7 +393,7 @@ public class TreeTable<RowType extends TreeTableItem> extends
       treeNode.setSpacing(0);
       treeNode.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
       indent(treeNode, treeTableItem);
-      if (invertedNodes.contains(treeTableItem.getId())) {
+      if (treeTableItem.hasChildren() && invertedNodes.contains(treeTableItem.getId())) {
         HTML nodeIndicator = new HTML();
         if (treeTable.isTreeOpen()) {
           nodeIndicator.setTitle(messages.openTreeNodeTooltip(treeTableItem.getDisplayName()));
@@ -460,7 +463,7 @@ public class TreeTable<RowType extends TreeTableItem> extends
 
   /**
    * A custom {@link AbstractRowView} used by the {@link TreeTable}.
-   * 
+   *
    * @param <RowType> the type of the row values
    */
   protected static class TreeTableRowView<RowType extends TreeTableItem>
@@ -533,7 +536,7 @@ public class TreeTable<RowType extends TreeTableItem> extends
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.google.gwt.gen2.table.client.PagingScrollTable#gotoPage(int,
    * boolean)
    */
@@ -545,7 +548,7 @@ public class TreeTable<RowType extends TreeTableItem> extends
   /**
    * Return a set of nodes containing all tree nodes that differ from the tree
    * state
-   * 
+   *
    * @return the list of inverted nodes
    */
   public Set<String> getInvertedNodes() {
@@ -589,7 +592,7 @@ public class TreeTable<RowType extends TreeTableItem> extends
 
   /**
    * Opens the given tree item if children are available
-   * 
+   *
    * @param item the tree node to open
    */
   public void openTreeNode(TreeTableItem item) {
@@ -598,7 +601,7 @@ public class TreeTable<RowType extends TreeTableItem> extends
 
   /**
    * Closes the given tree node
-   * 
+   *
    * @param item the tree node to open
    */
   public void closeTreeNode(TreeTableItem item) {
