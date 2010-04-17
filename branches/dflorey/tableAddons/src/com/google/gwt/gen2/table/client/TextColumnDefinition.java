@@ -80,7 +80,6 @@ public abstract class TextColumnDefinition<RowType> extends
      */
     public Widget createFilterWidget() {
       filterTextBox = new TextBox();
-      filterTextBox.setWidth("100%");
       filterTextBox.addStyleName("textBox");
       filterTextBox.addKeyboardListener(new KeyboardListener() {
         public void onKeyDown(Widget sender, char keyCode, int modifiers) {

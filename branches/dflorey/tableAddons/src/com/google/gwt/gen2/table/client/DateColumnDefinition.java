@@ -130,7 +130,6 @@ public abstract class DateColumnDefinition<RowType> extends
       horizontalPanel.setCellWidth(operatorButton, "30px");
       horizontalPanel.setCellWidth(primaryDateBox, "100%");
       secondaryDateBox.setVisible(false);
-      horizontalPanel.setSpacing(2);
       return horizontalPanel;
     }
 

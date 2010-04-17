@@ -39,6 +39,13 @@ public abstract class RemoteTreeTable<RowType extends TreeTableItem> extends
     ((RemoteTreeTableModel<RowType>) getTableModel()).setRemoteTreeTable(this);
   }
 
+  public RemoteTreeTable(DefaultTableDefinition<RowType> tableDefinition,
+      boolean open, TreeTableResources resources) {
+    super(new RemoteTreeTableModel<RowType>(), new FixedWidthGrid(),
+        new FixedWidthFlexTable(), tableDefinition, open, resources);
+    ((RemoteTreeTableModel<RowType>) getTableModel()).setRemoteTreeTable(this);
+  }
+
   protected void requestTreeItems(final TreeRequest request, final Callback<RowType> callback) {
     requestTreeItems(request, new AsyncCallback<SerializableResponse<RowType>>() {
     public void onFailure(Throwable caught) {
