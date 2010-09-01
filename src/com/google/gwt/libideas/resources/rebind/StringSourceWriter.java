@@ -15,89 +15,11 @@
  */
 package com.google.gwt.libideas.resources.rebind;
 
-import com.google.gwt.core.ext.TreeLogger;
-import com.google.gwt.user.rebind.SourceWriter;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 /**
  * A SourceWriter that accumulates source and returns it in the
  * {@link #toString()} method.
+ *
+ * @deprecated Use {@link com.google.gwt.user.rebind.StringSourceWriter}
  */
-public class StringSourceWriter implements SourceWriter {
-  /*
-   * TODO(bobv): Move this type into a gwt.dev utility package.
-   */
-
-  private final StringWriter buffer = new StringWriter();
-  private int indentLevel = 0;
-  private String indentPrefix = "";
-  private boolean needsIndent;
-  private final PrintWriter out = new PrintWriter(buffer);
-
-  public void beginJavaDocComment() {
-    out.println("/**");
-    indent();
-    indentPrefix = " * ";
-  }
-
-  /**
-   * This is a no-op.
-   */
-  public void commit(TreeLogger logger) {
-    out.flush();
-  }
-
-  public void endJavaDocComment() {
-    out.println("*/");
-    outdent();
-    indentPrefix = "";
-  }
-
-  public void indent() {
-    indentLevel++;
-  }
-
-  public void indentln(String s) {
-    indent();
-    println(s);
-    outdent();
-  }
-
-  public void outdent() {
-    indentLevel = Math.max(indentLevel - 1, 0);
-  }
-
-  public void print(String s) {
-    maybeIndent();
-    out.print(s);
-  }
-
-  public void println() {
-    maybeIndent();
-    out.println();
-    needsIndent = true;
-  }
-
-  public void println(String s) {
-    print(s);
-    println();
-  }
-
-  @Override
-  public String toString() {
-    out.flush();
-    return buffer.getBuffer().toString();
-  }
-
-  private void maybeIndent() {
-    if (needsIndent) {
-      needsIndent = false;
-      for (int i = 0; i < indentLevel; i++) {
-        out.print("  ");
-        out.print(indentPrefix);
-      }
-    }
-  }
+public class StringSourceWriter extends com.google.gwt.user.rebind.StringSourceWriter {
 }
