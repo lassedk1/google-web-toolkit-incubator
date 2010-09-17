@@ -259,7 +259,7 @@ public class MakeBundle extends ToolBase {
           }
         }));
     oracle.setPathPrefixes(pps);
-    oracle.refresh(logger);
+    ResourceOracleImpl.refresh(logger, oracle);
     return oracle;
   }
 
