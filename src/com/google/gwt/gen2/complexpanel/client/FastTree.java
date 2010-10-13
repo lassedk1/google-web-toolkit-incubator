@@ -494,6 +494,7 @@ public class FastTree extends Panel implements HasClickHandlers,
       }
       curSelection.setSelection(false, fireEvents);
       curSelection = null;
+      moveFocusable(null, null);
       return;
     }
 
