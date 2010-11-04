@@ -86,4 +86,9 @@ public class NumberColumnFilterInfo extends ColumnFilterInfo<Double> {
     return new NumberColumnFilterInfo(numberFormat, getColumn(),
         primaryNumber, secondaryNumber, operator);
   }
+
+  @Override
+	public boolean isActive() {
+		return primaryNumber != null;
+	}
 }

@@ -329,18 +329,22 @@ public class TreeTable<RowType extends TreeTableItem> extends
   protected static class TreeTableCellView<RowType extends TreeTableItem>
       extends PagingScrollTableCellView<RowType> {
     private TreeTable<RowType> treeTable;
+    private int treeColumn;
 
-    public TreeTableCellView(TreeTable<RowType> table) {
+    public TreeTableCellView(TreeTable<RowType> table, int treeColumn) {
       super(table);
       this.treeTable = table;
+      this.treeColumn = treeColumn;
     }
 
     @Override
     public void setText(String text) {
-      if (getCellIndex() == 0 && !treeTable.isFlattened()) {
-        ComplexPanel treeNode = renderTreeNode(getRowIndex());
+      if (getCellIndex() == treeColumn && !treeTable.isFlattened()) {
+        HorizontalPanel treeNode = renderTreeNode(getRowIndex());
         if (text != null && text.length() > 0) {
-          treeNode.add(new Label(text));
+        	Label widget = new Label(text);
+          treeNode.add(widget);
+          treeNode.setCellWidth(widget, "100%");
         }
         String treeNodeWrapper = treeTable.getResources().getStyle().css().treeNodeWrapper();
         treeNode.setStyleName(treeNodeWrapper);
@@ -353,12 +357,14 @@ public class TreeTable<RowType extends TreeTableItem> extends
 
     @Override
     public void setHTML(String html) {
-      if (getCellIndex() == 0 && !treeTable.isFlattened()) {
-        ComplexPanel treeNode = renderTreeNode(getRowIndex());
+      if (getCellIndex() == treeColumn && !treeTable.isFlattened()) {
+    	  HorizontalPanel treeNode = renderTreeNode(getRowIndex());
         String treeNodeWrapper = treeTable.getResources().getStyle().css().treeNodeWrapper();
         treeNode.setStyleName(treeNodeWrapper);
         if (html != null && html.length() > 0) {
-          treeNode.add(new HTML(html));
+        	HTML widget = new HTML(html);
+        	treeNode.add(widget);
+        	treeNode.setCellWidth(widget, "100%");
         }
         treeTable.getDataTable().setWidget(getRowIndex(), getCellIndex(),
             treeNode);
@@ -370,7 +376,7 @@ public class TreeTable<RowType extends TreeTableItem> extends
     @Override
     public void setWidget(Widget widget) {
       String treeNodeWrapper = treeTable.getResources().getStyle().css().treeNodeWrapper();
-      if (getCellIndex() == 0 && !treeTable.isFlattened()) {
+      if (getCellIndex() == treeColumn && !treeTable.isFlattened()) {
         HorizontalPanel treeNode = renderTreeNode(getRowIndex());
         treeNode.add(widget);
         treeNode.setCellWidth(widget, "100%");
@@ -503,24 +509,24 @@ public class TreeTable<RowType extends TreeTableItem> extends
 
   public TreeTable(TableDefinition<RowType> tableDefinition,
       List<TreeItem<RowType>> rootItems) {
-    this(new ClientTreeTableModel<RowType>(tableDefinition, rootItems, true),
+    this(new ClientTreeTableModel<RowType>(tableDefinition, rootItems, true), 0,
         new FixedWidthGrid(), new FixedWidthFlexTable(), tableDefinition, false);
   }
 
   public TreeTable(TableDefinition<RowType> tableDefinition,
       List<TreeItem<RowType>> rootItems, boolean open) {
-    this(new ClientTreeTableModel<RowType>(tableDefinition, rootItems, true),
+    this(new ClientTreeTableModel<RowType>(tableDefinition, rootItems, true), 0, 
         new FixedWidthGrid(), new FixedWidthFlexTable(), tableDefinition, open);
   }
 
-  public TreeTable(TreeTableModel<RowType> tableModel,
+  public TreeTable(TreeTableModel<RowType> tableModel, int treeColumn, 
       FixedWidthGrid dataTable, FixedWidthFlexTable headerTable,
       TableDefinition<RowType> tableDefinition, boolean open) {
-    this(tableModel, dataTable, headerTable, tableDefinition, open,
+    this(tableModel, treeColumn,  dataTable, headerTable, tableDefinition, open,
         new DefaultTreeTableResources());
   }
 
-  public TreeTable(TreeTableModel<RowType> tableModel,
+  public TreeTable(TreeTableModel<RowType> tableModel, int treeColumn, 
       FixedWidthGrid dataTable, FixedWidthFlexTable headerTable,
       TableDefinition<RowType> tableDefinition, boolean open,
       TreeTableResources resources) {
@@ -529,7 +535,7 @@ public class TreeTable<RowType extends TreeTableItem> extends
     this.resources = resources;
     this.open = open;
     rowView = new TreeTableRowView<RowType>(
-        new TreeTableCellView<RowType>(this), this);
+        new TreeTableCellView<RowType>(this, treeColumn), this);
     setCellPadding(0);
     setCellSpacing(0);
   }
@@ -558,7 +564,7 @@ public class TreeTable<RowType extends TreeTableItem> extends
   public boolean isFlattened() {
     return flattened;
   }
-
+  
   /**
    * @return the default state of the tree nodes. true is all nodes are
    *         displayed open by default, false if all nodes are closed

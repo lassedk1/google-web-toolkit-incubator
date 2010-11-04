@@ -117,4 +117,9 @@ public class DateColumnFilterInfo extends ColumnFilterInfo<Date> {
     return new DateColumnFilterInfo(getColumn(), datePattern, primaryDate,
         secondaryDate, operator);
   }
+  
+  @Override
+	public boolean isActive() {
+		return primaryDate != null;
+	}
 }

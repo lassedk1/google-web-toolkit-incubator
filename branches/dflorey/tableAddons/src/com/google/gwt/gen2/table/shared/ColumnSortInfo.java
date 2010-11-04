@@ -1,11 +1,13 @@
 package com.google.gwt.gen2.table.shared;
 
+import java.io.Serializable;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * Information about the sort order of a specific column in a table.
  */
-public class ColumnSortInfo implements IsSerializable {
+public class ColumnSortInfo implements IsSerializable, Serializable {
   /**
    * True if the sort order is ascending.
    */
