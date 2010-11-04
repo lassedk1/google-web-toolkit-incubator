@@ -27,22 +27,29 @@ public abstract class RemoteTreeTable<RowType extends TreeTableItem> extends
   }
 
   public RemoteTreeTable(DefaultTableDefinition<RowType> tableDefinition) {
-    super(new RemoteTreeTableModel<RowType>(), new FixedWidthGrid(),
+    super(new RemoteTreeTableModel<RowType>(), 0, new FixedWidthGrid(),
         new FixedWidthFlexTable(), tableDefinition, false);
     ((RemoteTreeTableModel<RowType>) getTableModel()).setRemoteTreeTable(this);
   }
 
   public RemoteTreeTable(DefaultTableDefinition<RowType> tableDefinition,
       boolean open) {
-    super(new RemoteTreeTableModel<RowType>(), new FixedWidthGrid(),
+    super(new RemoteTreeTableModel<RowType>(), 0, new FixedWidthGrid(),
         new FixedWidthFlexTable(), tableDefinition, open);
     ((RemoteTreeTableModel<RowType>) getTableModel()).setRemoteTreeTable(this);
   }
 
   public RemoteTreeTable(DefaultTableDefinition<RowType> tableDefinition,
       boolean open, TreeTableResources resources) {
-    super(new RemoteTreeTableModel<RowType>(), new FixedWidthGrid(),
+    super(new RemoteTreeTableModel<RowType>(), 0, new FixedWidthGrid(), 
         new FixedWidthFlexTable(), tableDefinition, open, resources);
+    ((RemoteTreeTableModel<RowType>) getTableModel()).setRemoteTreeTable(this);
+  }
+
+  public RemoteTreeTable(DefaultTableDefinition<RowType> tableDefinition, int treeColumn, FixedWidthGrid dataTable, FixedWidthFlexTable headerTable,
+      boolean open, TreeTableResources resources) {
+    super(new RemoteTreeTableModel<RowType>(), treeColumn, dataTable,
+        headerTable, tableDefinition, open, resources);
     ((RemoteTreeTableModel<RowType>) getTableModel()).setRemoteTreeTable(this);
   }
 

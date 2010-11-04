@@ -772,6 +772,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
       fireEvent(new PageChangeEvent(oldPage, currentPage));
 
       // Clear out existing data if we aren't bulk rendering
+      /*
       if (bulkRenderer == null) {
         int rowCount = getAbsoluteLastRowIndex() - getAbsoluteFirstRowIndex()
             + 1;
@@ -780,6 +781,7 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
         }
         dataTable.clearAll();
       }
+	  */
 
       // Request the new data from the table model
       int firstRow = getAbsoluteFirstRowIndex();
@@ -1376,7 +1378,6 @@ public class PagingScrollTable<RowType> extends AbstractScrollTable implements
    * @param rows the values associated with each row
    */
   protected void setData(int firstRow, Iterator<RowType> rows) {
-    getDataTable().deselectAllRows();
     rowValues = new ArrayList<RowType>();
     if (rows != null && rows.hasNext()) {
       setEmptyTableWidgetVisible(false);

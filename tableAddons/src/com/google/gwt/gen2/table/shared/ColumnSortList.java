@@ -2,6 +2,7 @@ package com.google.gwt.gen2.table.shared;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  * single column. The first entry is the primary sort order, the second entry
  * is the first tie-breaker, and so on.
  */
-public class ColumnSortList implements IsSerializable,
+public class ColumnSortList implements IsSerializable, Serializable,
     Iterable<ColumnSortInfo> {
   /**
    * A List used to manage the insertion/removal of {@link ColumnSortInfo}.

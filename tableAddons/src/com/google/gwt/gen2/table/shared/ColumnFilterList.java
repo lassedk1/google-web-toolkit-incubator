@@ -2,6 +2,7 @@ package com.google.gwt.gen2.table.shared;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * An ordered list of filter info where each entry tells us how to filter a
  * single column.
  */
-public class ColumnFilterList implements IsSerializable,
+public class ColumnFilterList implements IsSerializable, Serializable,
     Iterable<ColumnFilterInfo<?>> {
   /**
    * A List used to manage the insertion/removal of {@link ColumnFilterInfo}.
@@ -92,9 +93,10 @@ public class ColumnFilterList implements IsSerializable,
         i--;
       }
     }
-
+    if ( info.isActive() ) {
     // Insert the new sort info
-    infos.add(0, info);
+    	infos.add(0, info);
+    }
   }
 
   /**
