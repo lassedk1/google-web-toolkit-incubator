@@ -15,8 +15,11 @@
  */
 package com.google.gwt.widgetideas.graphics.client.impl;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.user.client.DOM;
+import com.google.gwt.dom.client.Style.Overflow;
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.widgetideas.graphics.client.CanvasGradient;
 import com.google.gwt.widgetideas.graphics.client.GWTCanvas;
@@ -40,11 +43,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
   // Used for sub pixel precision in pathing calculations.
   protected static final double subPixlFactor = 10;
 
-  protected static final double halfSubPixelFactor = subPixlFactor / 2;
-
-  static {
-    init();
-  }
+  protected static final double subPixelFactorHalf = subPixlFactor / 2;
 
   /**
    * Takes in a double and returns a floored int. Leverages the fact that
@@ -54,10 +53,26 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     return (val | 0);
   }-*/;
 
-  private static native void init() /*-{
-    if (!$doc.namespaces["v"]) {
-      $doc.namespaces.add("v", "urn:schemas-microsoft-com:vml");
-      $doc.createStyleSheet().cssText = "v\\:*{behavior:url(#default#VML);}";
+  private static native void ensureNamespace(Document doc, String prefix,
+      String urn) /*-{
+    if (!doc.namespaces[prefix]) {
+      doc.namespaces.add(prefix, urn, "#default#VML");
+    }
+  }-*/;
+
+  private static void ensureNamespacesAndStylesheet(Document doc) {
+    ensureNamespace(doc, "g_vml_", "urn:schemas-microsoft-com:vml");
+    ensureStyleSheet(doc);
+  }
+
+  private static native void ensureStyleSheet(Document doc) /*-{
+    if (!doc.styleSheets["gwt_canvas_"]) {
+      var ss = doc.createStyleSheet();
+      ss.owningElement.id = "gwt_canvas_";
+      ss.cssText = "canvas{display:inline-block;overflow:hidden;" +
+        // default size is 300x150 in Gecko and Opera
+        "text-align:left;width:300px;height:150px}" +
+        "g_vml_\\:*{behavior:url(#default#VML)}";
     }
   }-*/;
 
@@ -88,6 +103,8 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
 
   private int parentWidth = 0;
 
+  private Element shapeContainer = null;
+
   public void arc(double x, double y, double radius, double startAngle,
       double endAngle, boolean anticlockwise) {
     pathStr.push(PathElement.arc(x, y, radius, startAngle, endAngle,
@@ -100,7 +117,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
 
   public void clear() {
     pathStr.clear();
-    DOM.setInnerHTML(parentElement, "");
+    shapeContainer.setInnerHTML("");
   }
 
   public void clear(int width, int height) {
@@ -115,13 +132,6 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     context = new VMLContext();
     matrix = context.matrix;
     return createParentElement();
-  }
-
-  public Element createParentElement() {
-    parentElement = DOM.createElement("div");
-    DOM.setStyleAttribute(parentElement, "overflow", "hidden");
-    DOM.setElementAttribute(parentElement, "align", "left");
-    return parentElement;
   }
 
   public void cubicCurveTo(double cp1x, double cp1y, double cp2x, double cp2y,
@@ -140,7 +150,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
 
     JSOStack<String> vmlStr = JSOStack.getScratchArray();
 
-    vmlStr.push("<v:group style=\"position:absolute;width:10;height:10;");
+    vmlStr.push("<g_vml_:group style=\"position:absolute;width:10px;height:10px;");
     double dX = getCoordX(matrix, destX, destY);
     double dY = getCoordY(matrix, destX, destY);
 
@@ -179,15 +189,15 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
       vmlStr.push((int) dY / 10 + "px");
     }
 
-    vmlStr.push("\" coordsize=\"100,100\" coordorigin=\"0,0\"><v:image src=\"");
+    vmlStr.push("\" coordsize=\"100 100\" coordorigin=\"0 0\"><g_vml_:image src=\"");
     vmlStr.push(img.getSrc());
     vmlStr.push("\" style=\"");
 
     vmlStr.push("width:");
     vmlStr.push(String.valueOf((int) (destWidth * 10)));
-    vmlStr.push(";height:");
+    vmlStr.push("px;height:");
     vmlStr.push(String.valueOf((int) (destHeight * 10)));
-    vmlStr.push(";\" cropleft=\"");
+    vmlStr.push("px;\" cropleft=\"");
     vmlStr.push(String.valueOf(sourceX / fullWidth));
     vmlStr.push("\" croptop=\"");
     vmlStr.push(String.valueOf(sourceY / fullHeight));
@@ -196,7 +206,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     vmlStr.push("\" cropbottom=\"");
     vmlStr.push(String.valueOf((fullHeight - sourceY - sourceHeight)
         / fullHeight));
-    vmlStr.push("\"/></v:group>");
+    vmlStr.push("\"/></g_vml_:group>");
 
     insert("BeforeEnd", vmlStr.join());
   }
@@ -206,13 +216,13 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
       return;
     }
     JSOStack<String> shapeStr = JSOStack.getScratchArray();
-    shapeStr.push("<v:shape style=\"position:absolute;width:10;height:10;\" coordsize=\"100,100\" fillcolor=\"");
+    shapeStr.push("<g_vml_:shape style=\"position:absolute;width:10px;height:10px;\" coordorigin=\"0 0\" coordsize=\"100 100\" fillcolor=\"");
     shapeStr.push(context.fillStyle);
     shapeStr.push("\" stroked=\"f\" path=\"");
 
     shapeStr.push(pathStr.join());
 
-    shapeStr.push(" e\"><v:fill opacity=\"");
+    shapeStr.push(" e\"><g_vml_:fill opacity=\"");
     shapeStr.push("" + context.globalAlpha * context.fillAlpha);
 
     // Unfinished Gradient implementation. Contributions welcome :).
@@ -257,7 +267,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
       shapeStr.push(context.fillGradient.angle + "");
     }
 
-    shapeStr.push("\"></v:fill></v:shape>");
+    shapeStr.push("\"></g_vml_:fill></g_vml_:shape>");
     String daStr = shapeStr.join();
 
     insert(context.globalCompositeOperation, daStr);
@@ -407,16 +417,16 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
   }
 
   public void setBackgroundColor(Element element, String color) {
-    DOM.setStyleAttribute(element, "backgroundColor", color);
+    element.getStyle().setBackgroundColor(color);
   }
 
   public void setCoordHeight(Element elem, int height) {
-    DOM.setElementAttribute(elem, "width", String.valueOf(height));
+    elem.setAttribute("height", height + "");
     clear(0, 0);
   }
 
   public void setCoordWidth(Element elem, int width) {
-    DOM.setElementAttribute(elem, "width", String.valueOf(width));
+    elem.setAttribute("width", width + "");
     clear(0, 0);
   }
 
@@ -483,17 +493,13 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     context.miterLimit = miterLimit;
   }
 
-  public void setParentElement(Element g) {
-    this.parentElement = g;
-  }
-
   public void setPixelHeight(Element elem, int height) {
-    DOM.setStyleAttribute(elem, "height", String.valueOf(height) + "px");
+    elem.getStyle().setHeight(height, Unit.PX);
     parentHeight = height;
   }
 
   public void setPixelWidth(Element elem, int width) {
-    DOM.setStyleAttribute(elem, "width", String.valueOf(width) + "px");
+    elem.getStyle().setWidth(width, Unit.PX);
     parentWidth = width;
   }
 
@@ -524,7 +530,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
       return;
     }
     JSOStack<String> shapeStr = JSOStack.getScratchArray();
-    shapeStr.push("<v:shape style=\"position:absolute;width:10;height:10;\" coordsize=\"100,100\" filled=\"f\" strokecolor=\"");
+    shapeStr.push("<g_vml_:shape style=\"position:absolute;width:10px;height:10px;\" coordorigin=\"0 0\" coordsize=\"100 100\" filled=\"f\" strokecolor=\"");
     shapeStr.push(context.strokeStyle);
     shapeStr.push("\" strokeweight=\"");
     shapeStr.push("" + context.lineWidth * context.lineScale);
@@ -532,7 +538,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
 
     shapeStr.push(pathStr.join());
 
-    shapeStr.push(" e\"><v:stroke opacity=\"");
+    shapeStr.push(" e\"><g_vml_:stroke opacity=\"");
     shapeStr.push("" + context.globalAlpha * context.strokeAlpha);
     shapeStr.push("\" miterlimit=\"");
     shapeStr.push("" + context.miterLimit);
@@ -541,7 +547,7 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     shapeStr.push("\" endcap=\"");
     shapeStr.push(context.lineCap);
 
-    shapeStr.push("\"></v:stroke></v:shape>");
+    shapeStr.push("\"></g_vml_:stroke></g_vml_:shape>");
     insert(context.globalCompositeOperation, shapeStr.join());
   }
 
@@ -577,7 +583,22 @@ public class GWTCanvasImplIE6 implements GWTCanvasImpl {
     matrix[5] += matrix[3] * x + matrix[4] * y;
   }
 
+  private Element createParentElement() {
+    // TODO(jaimeyap): We should probably refactor the Widget's constructor to
+    // take in the Document as a dependency.
+    Document doc = Document.get();
+    parentElement = doc.createElement("canvas").cast();
+    shapeContainer = doc.createDivElement().cast();
+    shapeContainer.getStyle().setPosition(Position.ABSOLUTE);
+    shapeContainer.getStyle().setOverflow(Overflow.HIDDEN);
+    shapeContainer.getStyle().setWidth(100, Unit.PCT);
+    shapeContainer.getStyle().setHeight(100, Unit.PCT);
+    parentElement.appendChild(shapeContainer);
+    ensureNamespacesAndStylesheet(doc);
+    return parentElement;
+  }
+
   private native void insert(String gco, String html) /*-{
-    this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplIE6::parentElement.insertAdjacentHTML(gco, html);
+    this.@com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImplIE6::shapeContainer.insertAdjacentHTML(gco, html);
   }-*/;
 }

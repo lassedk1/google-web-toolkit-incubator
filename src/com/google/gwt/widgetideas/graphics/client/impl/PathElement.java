@@ -89,11 +89,11 @@ public class PathElement {
 
     ar = radius * GWTCanvasImplIE6.subPixlFactor;
     startX = (x + Math.cos(startAngle)
-        * (ar - GWTCanvasImplIE6.halfSubPixelFactor));
+        * (ar - GWTCanvasImplIE6.subPixelFactorHalf));
     startY = (y + Math.sin(startAngle)
-        * (ar - GWTCanvasImplIE6.halfSubPixelFactor));
-    endX = (x + Math.cos(endAngle) * (ar - GWTCanvasImplIE6.halfSubPixelFactor));
-    endY = (y + Math.sin(endAngle) * (ar - GWTCanvasImplIE6.halfSubPixelFactor));
+        * (ar - GWTCanvasImplIE6.subPixelFactorHalf));
+    endX = (x + Math.cos(endAngle) * (ar - GWTCanvasImplIE6.subPixelFactorHalf));
+    endY = (y + Math.sin(endAngle) * (ar - GWTCanvasImplIE6.subPixelFactorHalf));
 
     double cx = canvas.getCoordX(matrix, x, y);
     double cy = canvas.getCoordY(matrix, x, y);
