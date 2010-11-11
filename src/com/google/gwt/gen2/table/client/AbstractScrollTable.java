@@ -236,7 +236,7 @@ public abstract class AbstractScrollTable extends ComplexPanel implements
   }
 
   /**
-   * Opera and Old Mozilla put the scroll bar on the left side in RTL mode.
+   * Opera puts the scroll bar on the left side in RTL mode.
    */
   private static class ImplLeftScrollBar extends Impl {
     @Override
