@@ -28,14 +28,10 @@
       <when-property-is name="user.agent" value="ie8" />
     </any>
   </replace-with>
-  <!-- Opera and Old Mozilla put the scrollbar on the left in RTL mode -->
+  <!-- Opera puts the scrollbar on the left in RTL mode -->
   <replace-with class="com.google.gwt.gen2.table.client.AbstractScrollTable.ImplLeftScrollBar">
     <when-type-is class="com.google.gwt.gen2.table.client.AbstractScrollTable.Impl" />
     <when-property-is name="user.agent" value="opera" />
-  </replace-with>
-  <replace-with class="com.google.gwt.gen2.table.client.AbstractScrollTable.ImplLeftScrollBar">
-    <when-type-is class="com.google.gwt.gen2.table.client.AbstractScrollTable.Impl" />
-    <when-property-is name="user.agent" value="gecko" />
   </replace-with>
 
   <!-- Opera has a different MouseWorker implementation -->
