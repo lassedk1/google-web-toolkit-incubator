@@ -3,11 +3,11 @@
 
 = gwt-incubator drop for gwt 2.1.0 =
 
-[http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator-20101117-r1767.jar click here to download the 2.1.0 gwt-incubator jar]
+[http://google-web-toolkit-incubator.googlecode.com/files/gwt-incubator-20101117-r1766.jar click here to download the 2.1.0 gwt-incubator jar]
  
 || Source || http://google-web-toolkit-incubator.googlecode.com/svn/trunk ||
-|| Revision || 1767 ||
-|| Last Changed Date || Wed, 17 Nov 2010 ||
+|| Revision || 1766 ||
+|| Last Changed Date || Mon, 8 Nov 2010 ||
 || Java docs || http://collectionofdemos.appspot.com/javadoc/index.html || 
 || GWT version || GWT 2.1.0, available [http://code.google.com/p/google-web-toolkit/downloads/list?can=1&q=2.1.0&sort=-downloadcount&colspec=Filename+Summary+Uploaded+Size+DownloadCount here] ||
 
