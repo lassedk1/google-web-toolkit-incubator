@@ -32,7 +32,7 @@ public class DecoratorPanel extends SimplePanel {
    * Creates a new decorator panel.
    */
   public DecoratorPanel(Decorator decorator) {
-    super(null);
+    super((Element) null);
     container = DOM.createDiv();
     elem = decorator.wrapElement(container);
     setElement(elem);
