@@ -400,6 +400,7 @@ public abstract class TableBulkRenderer {
   /**
    * Short term hack to get protected setBodyElement.
    */
+  @SuppressWarnings("deprecation")
   private native void setBodyElement(HTMLTable table, Element newBody) /*-{
     table.@com.google.gwt.widgetideas.table.client.overrides.HTMLTable::setBodyElement(Lcom/google/gwt/user/client/Element;)(newBody);
   }-*/;

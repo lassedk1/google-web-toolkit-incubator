@@ -117,6 +117,7 @@ public class FixedWidthGridBulkRenderer extends SelectionGridBulkRenderer {
    * @param table the table
    * @return the new ghost row
    */
+  @SuppressWarnings("deprecation")
   protected native Element getBulkLoadedGhostRow(HTMLTable table)
   /*-{
     return table.@com.google.gwt.widgetideas.table.client.overrides.HTMLTable::getBodyElement()(table).rows[0];

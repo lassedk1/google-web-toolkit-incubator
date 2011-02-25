@@ -25,6 +25,7 @@ public abstract class GlassPanelImpl {
   /**
    * TODO Replace with Window.getScrollHeight() when GWT issue 2068 is addressed
    */
+  @SuppressWarnings("deprecation")
   protected static native int getWindowScrollHeight()
   /*-{
     return @com.google.gwt.user.client.impl.DocumentRootImpl::documentRoot.scrollHeight;
@@ -33,6 +34,7 @@ public abstract class GlassPanelImpl {
   /**
    * TODO Replace with Window.getScrollWidth() when GWT issue 2068 is addressed
    */
+  @SuppressWarnings("deprecation")
   protected static native int getWindowScrollWidth()
   /*-{
     return @com.google.gwt.user.client.impl.DocumentRootImpl::documentRoot.scrollWidth;
