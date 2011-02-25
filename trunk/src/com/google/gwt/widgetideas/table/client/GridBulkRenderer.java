@@ -98,6 +98,7 @@ public class GridBulkRenderer extends TableBulkRenderer {
   /**
    * Short term hack to set protected row and columns.
    */
+  @SuppressWarnings("deprecation")
   native void setGridDimensions(Grid table) /*-{
     var numRows =  table.@com.google.gwt.widgetideas.table.client.overrides.HTMLTable::getDOMRowCount()();
     table.@com.google.gwt.widgetideas.table.client.overrides.Grid::numRows = numRows;
