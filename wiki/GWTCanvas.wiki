@@ -1,6 +1,6 @@
 #summary Provides cross Browser Vector Graphics support in the spirit of the Javascript canvas element API.
 
-This code is now deprecated. [http://google-web-toolkit.googlecode.com/svn/javadoc/latest/com/google/gwt/canvas/client/Canvas.html Canvas] support is now included in the GWT mainline.
+* This code is now deprecated. [http://google-web-toolkit.googlecode.com/svn/javadoc/latest/com/google/gwt/canvas/client/Canvas.html Canvas] support is now included in the GWT mainline. *
 
 = Introduction =
 
