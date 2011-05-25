@@ -1,14 +1,7 @@
-#summary DRAFT Validation library
+#summary Validation library
 #labels Phase-Design,Type-Library
 
-= Introduction =
-
-Validation is a very common task for web-developers. The purpose of the Validation API is to provide an API that handles the highly repeatable aspects of the validation task, allowing developers to focus on area-specific validations and design. The Validation API should be as data-model agnostic as possible, to make it widely usable.
-== Goals ==
-  * To provide a simple, extensible API for client data validation
-  * To provide implementations for the most commonly needed validations
-  * To provide a clean, easy way to create and share third party validations
-  * To provide a clean, easy way to create custom validations
-
+Code to support validation is now a part of the GWT mainline
+[http://code.google.com/webtoolkit/doc/latest/DevGuideUiEditors.html Editor] and [http://code.google.com/webtoolkit/doc/latest/DevGuideRequestFactory.html RequestFactory].
 
 
