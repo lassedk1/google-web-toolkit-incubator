@@ -1,6 +1,8 @@
 #summary GWT logging API.
 #labels Type-Library
 
+*An updated logging system that emulates _java.util.logging_ is now present in mainline GWT development.  The incubator code has been deprecated.  [http://code.google.com/p/google-web-toolkit/wiki/Logging Current documentation] is located in the [http://code.google.com/webtoolkit/doc/latest/DevGuideLogging.html main GWT project].*
+
 
 || Demo: || [http://collectionofdemos.appspot.com/demo/com.google.gwt.gen2.demo.logging.LoggingDemo/LoggingDemo.html live demo] || 
 || Java doc: || [http://collectionofdemos.appspot.com/javadoc/com/google/gwt/gen2/logging/shared/Log.html  java doc] || 
