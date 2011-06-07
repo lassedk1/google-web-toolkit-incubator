@@ -53,7 +53,12 @@ import com.google.gwt.widgetideas.client.impl.GlassPanelImpl;
  * <h3>Example</h3>
  * {@example com.google.gwt.examples.GlassPanelExample}
  * </p>
+ *
+ * @deprecated As of GWT 2.0, use 
+ * {@link com.google.gwt.user.client.ui.PopupPanel#setGlassEnabled(boolean)}
+ *
  */
+@Deprecated
 public class GlassPanel extends Composite implements EventPreview {
   /**
    * A FocusPanel which automatically focuses itself when
