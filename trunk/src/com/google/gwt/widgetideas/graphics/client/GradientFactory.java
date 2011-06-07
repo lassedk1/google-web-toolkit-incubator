@@ -20,7 +20,10 @@ import com.google.gwt.user.client.Element;
 /**
  * Radial Gradient for use as a stroke or fill style. Depends on deferred
  * binding implementations.
+ * 
+ * @deprecated As of GWT 2.3, use {@link com.google.gwt.canvas.client.Canvas} instead.
  */
+@Deprecated
 public interface GradientFactory {
 
   CanvasGradient createLinearGradient(double x0, double y0, double x1,

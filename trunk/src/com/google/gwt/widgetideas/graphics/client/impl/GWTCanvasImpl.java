@@ -22,7 +22,10 @@ import com.google.gwt.widgetideas.graphics.client.CanvasGradient;
 /**
  * Common interface for all Deferred binding implementations of 
  * GWTCanvas.
+ *
+ * @deprecated As of GWT 2.3, use {@link com.google.gwt.canvas.client.Canvas} instead.
  */
+@Deprecated
 public interface GWTCanvasImpl {
   
   void arc(double x, double y, double radius, double startAngle, 
