@@ -30,7 +30,10 @@ import com.google.gwt.widgetideas.graphics.client.impl.GWTCanvasImpl;
  * Performance may scale differently for IE than for browsers with a native
  * canvas implementation. Sub-pixel precision is supported where possible.
  * </p>
+ * 
+ * @deprecated As of GWT 2.3, use {@link com.google.gwt.canvas.client.Canvas} instead.
  */
+@Deprecated
 public class GWTCanvas extends Widget {
 
   /**
@@ -228,7 +231,7 @@ public class GWTCanvas extends Widget {
    * 
    * Does nothing if the context's path is empty. Otherwise, it connects the
    * last point in the path to the given point <b>(x, y)</b> using a cubic
-   * Bezier curve with control points <b>(cp1x, cp1y)</b> and <b>(cp2x,
+   * Bézier curve with control points <b>(cp1x, cp1y)</b> and <b>(cp2x,
    * cp2y)</b>. Then, it must add the point <b>(x, y)</b> to the path.
    * 
    * This function corresponds to the
@@ -432,7 +435,7 @@ public class GWTCanvas extends Widget {
   /**
    * Does nothing if the context has an empty path. Otherwise it connects the
    * last point in the path to the given point <b>(x, y)</b> using a quadratic
-   * B�zier curve with control point <b>(cpx, cpy)</b>, and then adds the given
+   * Bézier curve with control point <b>(cpx, cpy)</b>, and then adds the given
    * point <b>(x, y)</b> to the path.
    * 
    * @param cpx x coord of the control point

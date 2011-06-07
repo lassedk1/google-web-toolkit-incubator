@@ -18,7 +18,10 @@ package com.google.gwt.widgetideas.graphics.client;
 /**
  * Abstract Class representing a color gradient.
  * Color gradients are comprised of multiple colors located at color stops.
+ * 
+ * @deprecated As of GWT 2.3, use {@link com.google.gwt.canvas.client.Canvas} instead.
  */
+@Deprecated
 public abstract class CanvasGradient {
   
   /**
