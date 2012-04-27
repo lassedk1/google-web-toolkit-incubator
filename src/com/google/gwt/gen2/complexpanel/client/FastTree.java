@@ -214,6 +214,13 @@ public class FastTree extends Panel implements HasClickHandlers,
     return addHandler(handler, FocusEvent.getType());
   }
 
+  public FastTreeItem addHtmlItem(String itemHtml) {
+    FastTreeItem fastTreeItem = new FastTreeItem();
+    fastTreeItem.setHTML(itemHtml);
+    addItem(fastTreeItem);
+    return fastTreeItem;
+  }
+
   /**
    * Adds an item to the root level of this tree.
    * 
@@ -224,15 +231,15 @@ public class FastTree extends Panel implements HasClickHandlers,
   }
 
   /**
-   * Adds a simple tree item containing the specified text.
+   * Adds a simple tree item containing the specified html.
    * 
-   * @param itemText the text of the item to be added
+   * @param itemHtml the html of the item to be added
    * @return the item that was added
+   * @deprecated use {@link #addHtmlItem(String)} instead
    */
-  public FastTreeItem addItem(String itemText) {
-    FastTreeItem fastTreeItem = new FastTreeItem(itemText);
-    addItem(fastTreeItem);
-    return fastTreeItem;
+  @Deprecated
+  public FastTreeItem addItem(String itemHtml) {
+    return addHtmlItem(itemHtml);
   }
 
   /**
@@ -267,6 +274,13 @@ public class FastTree extends Panel implements HasClickHandlers,
   public HandlerRegistration addSelectionHandler(
       SelectionHandler<FastTreeItem> handler) {
     return addHandler(handler, SelectionEvent.getType());
+  }
+
+  public FastTreeItem addTextItem(String itemText) {
+    FastTreeItem fastTreeItem = new FastTreeItem();
+    fastTreeItem.setText(itemText);
+    addItem(fastTreeItem);
+    return fastTreeItem;
   }
 
   /**
