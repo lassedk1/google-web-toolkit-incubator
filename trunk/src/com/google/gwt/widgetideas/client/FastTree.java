@@ -224,6 +224,13 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
     focusListeners.add(listener);
   }
 
+  public FastTreeItem addHtmlItem(String itemHtml) {
+    FastTreeItem ret = new FastTreeItem();
+    ret.setHTML(itemHtml);
+    addItem(ret);
+    return ret;
+  }
+
   /**
    * Adds an item to the root level of this tree.
    * 
@@ -234,16 +241,15 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
   }
 
   /**
-   * Adds a simple tree item containing the specified text.
+   * Adds a simple tree item containing the specified html.
    * 
-   * @param itemText the text of the item to be added
+   * @param itemHtml the text of the item to be added
    * @return the item that was added
+   * @deprecated use {@link #addHtmlItem(String)} instead
    */
-  public FastTreeItem addItem(String itemText) {
-    FastTreeItem ret = new FastTreeItem(itemText);
-    addItem(ret);
-
-    return ret;
+  @Deprecated
+  public FastTreeItem addItem(String itemHtml) {
+    return addHtmlItem(itemHtml);
   }
 
   /**
@@ -253,6 +259,13 @@ public class FastTree extends Panel implements HasWidgets, HasFocus,
    */
   public FastTreeItem addItem(Widget widget) {
     return root.addItem(widget);
+  }
+
+  public FastTreeItem addTextItem(String itemText) {
+    FastTreeItem ret = new FastTreeItem();
+    ret.setText(itemText);
+    addItem(ret);
+    return ret;
   }
 
   public void addKeyboardListener(KeyboardListener listener) {

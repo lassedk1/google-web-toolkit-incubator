@@ -26,6 +26,14 @@ import com.google.gwt.user.client.ui.Widget;
 public interface HasFastTreeItems {
 
   /**
+   * Adds a child tree item containing the specified html.
+   * 
+   * @param itemHtml the html to be added
+   * @return the item that was added
+   */
+  FastTreeItem addHtmlItem(String itemHtml);
+
+  /**
    * Adds another item as a child to this one.
    * 
    * @param item the item to be added
@@ -34,12 +42,14 @@ public interface HasFastTreeItems {
   void addItem(FastTreeItem item);
 
   /**
-   * Adds a child tree item containing the specified text.
+   * Adds a child tree item containing the specified html.
    * 
-   * @param itemText the text to be added
+   * @param itemHtml the html to be added
    * @return the item that was added
+   * @deprecated use {@link #addHtmlItem(String)} instead
    */
-  FastTreeItem addItem(String itemText);
+  @Deprecated
+  FastTreeItem addItem(String itemHtml);
 
   /**
    * Adds a child tree item containing the specified widget.
@@ -48,6 +58,14 @@ public interface HasFastTreeItems {
    * @return the item that was added
    */
   FastTreeItem addItem(Widget widget);
+
+  /**
+   * Adds a child tree item containing the specified text.
+   * 
+   * @param itemText the text to be added
+   * @return the item that was added
+   */
+  FastTreeItem addTextItem(String itemText);
 
   /**
    * Gets the child at the specified index.

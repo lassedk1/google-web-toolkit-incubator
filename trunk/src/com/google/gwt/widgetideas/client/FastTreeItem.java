@@ -90,7 +90,9 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    * Constructs a tree item with the given HTML.
    * 
    * @param html the item's HTML
+   * @deprecated use {@link #FastTreeItem()} and {@link #setHTML(String)} instaed
    */
+  @Deprecated
   public FastTreeItem(String html) {
     this();
     DOM.setInnerHTML(getElementToAttach(), html);
@@ -113,6 +115,13 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
    */
   FastTreeItem(Element element) {
     setElement(element);
+  }
+
+  public FastTreeItem addHtmlItem(String itemHtml) {
+    FastTreeItem ret = new FastTreeItem();
+    ret.setHTML(itemHtml);
+    addItem(ret);
+    return ret;
   }
 
   public void addItem(FastTreeItem item) {
@@ -142,14 +151,20 @@ public class FastTreeItem extends UIObject implements HasHTML, HasFastTreeItems 
     }
   }
 
-  public FastTreeItem addItem(String itemText) {
-    FastTreeItem ret = new FastTreeItem(itemText);
-    addItem(ret);
-    return ret;
+  @Deprecated
+  public FastTreeItem addItem(String itemHtml) {
+    return addHtmlItem(itemHtml);
   }
 
   public FastTreeItem addItem(Widget widget) {
     FastTreeItem ret = new FastTreeItem(widget);
+    addItem(ret);
+    return ret;
+  }
+
+  public FastTreeItem addTextItem(String itemText) {
+    FastTreeItem ret = new FastTreeItem();
+    ret.setText(itemText);
     addItem(ret);
     return ret;
   }
