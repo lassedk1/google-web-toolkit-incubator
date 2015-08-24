@@ -1,0 +1,1 @@
+Css Resources are now a part of mainline GWT.  See the [latest GWT Documentation](http://code.google.com/webtoolkit/doc/latest/DevGuideClientBundle.html#CssResource)
